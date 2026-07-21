@@ -307,7 +307,7 @@ const TipOfTongue = ({ tool }) => {
         {matches.map((m, idx) => (
           <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + confBg(m.confidence)}>
             <button onClick={() => setExpandedMatch(expandedMatch === idx ? -1 : idx)}
-              className="w-full text-left p-5">
+              className="w-full text-start p-5">
               <div className="flex items-center gap-3 mb-2">
                 <span className={'text-xl font-bold ' + confText(m.confidence)}>#{idx + 1}</span>
                 <div className="flex-1 min-w-0">
@@ -489,7 +489,7 @@ const TipOfTongue = ({ tool }) => {
     };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🕐</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tot_past_searches')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -501,7 +501,7 @@ const TipOfTongue = ({ tool }) => {
               const restorable = !!(entry.inputs && entry.results);
               return restorable ? (
               <button key={entry.id} onClick={() => restoreFromHistory(entry)}
-                className={'w-full rounded-xl border p-3 flex items-start gap-3 text-left transition-all hover:border-[#4a6a8a] ' + c.card + ' ' + c.border}>
+                className={'w-full rounded-xl border p-3 flex items-start gap-3 text-start transition-all hover:border-[#4a6a8a] ' + c.card + ' ' + c.border}>
                 <span className="text-lg mt-0.5 flex-shrink-0">{entry.emoji}</span>
                 <div className="flex-1 min-w-0">
                   <div className={'text-sm font-semibold ' + c.text + ' truncate'}>{entry.preview}</div>
@@ -548,7 +548,7 @@ const TipOfTongue = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.headingTxt}`}>
-              <span className="mr-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? t('tot_title')}
+              <span className="me-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? t('tot_title')}
             </h2>
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? t('tot_tagline')}</p>
           </div>

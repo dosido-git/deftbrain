@@ -322,7 +322,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           the first card (not in this row) so it labels the cards, not the
           search box — on mobile the row wraps and the old placement left the
           label orphaned far from its content. */}
-      <div className="flex items-center justify-end gap-3 mt-4 mb-3" style={{ paddingLeft: 12, paddingRight: 12 }}>
+      <div className="flex items-center justify-end gap-3 mt-4 mb-3" style={{ paddingInlineStart: 12, paddingInlineEnd: 12 }}>
         <div className="flex items-center gap-2 flex-shrink-0">
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
@@ -331,7 +331,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {!isSearching && (
         <>
           <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2"
-             style={{ color: CLR.navy500, paddingLeft: 12 }}>Examples</p>
+             style={{ color: CLR.navy500, paddingInlineStart: 12 }}>Examples</p>
           <DemoCards isDark={false} />
         </>
       )}
@@ -340,7 +340,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
-      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingLeft: 12, scrollMarginTop: 12 }}>
+      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingInlineStart: 12, scrollMarginTop: 12 }}>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
            style={{ color: CLR.navy500 }}>Categories</p>
       </div>
@@ -372,7 +372,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             overflowX: 'auto',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingRight: 40,
+            paddingInlineEnd: 40,
           }}>
             {CATEGORY_META.map(cat => {
               const count = categoryCounts[cat.name] || 0;
@@ -399,7 +399,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             background: `linear-gradient(to right, ${CLR.navy500}00, ${CLR.navy500} 65%)`,
             pointerEvents: 'none', zIndex: 2,
             display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-            paddingRight: 2,
+            paddingInlineEnd: 2,
           }}>
             {/* 13px @ 45% was invisible in practice — 9 of 12 categories hide
                 behind this scroll on a phone, so the hint has to be seen. */}
@@ -432,7 +432,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               <button
                 onClick={() => selectCategory('All')}
                 title="Clear filter"
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'start' }}
               >
                 <h2 className="text-base font-extrabold leading-tight tracking-tight"
                     style={{ color: CLR.navy700 }}>
@@ -444,7 +444,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
                   </p>
                 )}
               </button>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded ml-1"
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded ms-1"
                     style={{ background: CLR.navy500 + '18', color: CLR.navy500 }}>
                 {filteredTools.length}
               </span>
@@ -588,7 +588,7 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
         onChange={e => { setSearchTerm(e.target.value); setActiveCategory('All'); }}
         placeholder="Search tools"
         style={{
-          paddingLeft: 22, paddingRight: searchTerm ? 22 : 36,
+          paddingInlineStart: 22, paddingInlineEnd: searchTerm ? 22 : 36,
           paddingTop: 5, paddingBottom: 5,
           width: searchTerm ? 320 : 160,
           border: `1.5px solid ${CLR.sand300}`,
@@ -695,7 +695,7 @@ function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, h
         fontSize: 8.5, fontWeight: 600, lineHeight: 1.1, marginTop: 1,
         letterSpacing: '0.02em', textTransform: 'lowercase',
         color: isActive ? 'rgba(30,42,58,0.62)' : 'rgba(255,255,255,0.5)',
-        minHeight: 10, whiteSpace: 'nowrap', textAlign: 'left',
+        minHeight: 10, whiteSpace: 'nowrap', textAlign: 'start',
       }}>{tag || ''}</span>
     </button>
   );

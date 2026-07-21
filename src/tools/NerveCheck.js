@@ -400,7 +400,7 @@ const NerveCheck = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? t('nck_title')}
+                  <span className="me-2">{tool?.icon ?? '💪'}</span>{tool?.title ?? t('nck_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('nck_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -414,7 +414,7 @@ const NerveCheck = ({ tool }) => {
           </div>
         </div>
         <div className="px-5 pb-4 pt-3">
-          {error && <div className={`p-3 rounded-xl border mb-3 ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+          {error && <div className={`p-3 rounded-xl border mb-3 ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
         </div>
       </div>
 
@@ -428,7 +428,7 @@ const NerveCheck = ({ tool }) => {
                 {overdueCheckins.slice(0, 2).map(p => (
                   <div key={p.id} className="flex items-center justify-between mb-1.5">
                     <p className={`text-xs ${c.text} truncate flex-1`}>{p.situation}</p>
-                    <div className="flex gap-1.5 shrink-0 ml-2">
+                    <div className="flex gap-1.5 shrink-0 ms-2">
                       <button onClick={() => { setSituation(p.situation); setSituationType(p.type || ''); completeCheckin(p.id); setView('debrief'); }} className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${c.btnPrimary}`}>{t('nck_debrief')}</button>
                       <button onClick={() => completeCheckin(p.id)} className={`px-2 py-1 rounded-lg text-[10px] ${c.btnSoft}`}>{t('nck_dismiss')}</button>
                     </div>
@@ -449,7 +449,7 @@ const NerveCheck = ({ tool }) => {
                   {templates.map(tpl => (
                     <button key={tpl.id} onClick={() => loadTemplate(tpl)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/10' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
                       <span>{SIT_TYPES.find(s => s.value === tpl.situationType)?.icon || '🌀'}</span><span className={c.text}>{tpl.name}</span>
-                      <span onClick={(e) => { e.stopPropagation(); setTemplates(prev => prev.filter(p => p.id !== tpl.id)); }} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400 ml-1`}>✕</span>
+                      <span onClick={(e) => { e.stopPropagation(); setTemplates(prev => prev.filter(p => p.id !== tpl.id)); }} className={`text-[9px] ${c.textMuteded} hover:text-zinc-400 ms-1`}>✕</span>
                     </button>
                   ))}
                 </div>
@@ -489,7 +489,7 @@ const NerveCheck = ({ tool }) => {
               </div>
               <div className="flex gap-2">
                 <button onClick={analyze} disabled={loading || !situation.trim()} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
+                  {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_courage')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_check_nerves')}</>}
                 </button>
               </div>
               <p className={`text-xs ${c.textMuted}`}>{t('nck_rehearse_hint')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('nck_xref_dtc')}</a> {t('nck_rehearse_hint_end')}</p>
@@ -569,7 +569,7 @@ const NerveCheck = ({ tool }) => {
                   <div><label className={`text-xs font-bold ${c.textMuteded}`}>{t('nck_panic_level')} <span className={`font-black ${confColor(11 - panicLevel)}`}>{panicLevel}/10</span></label><input type="range" min="1" max="10" value={panicLevel} onChange={e => setPanicLevel(Number(e.target.value))} className="w-full accent-red-500" /></div>
                   <div><label className={`text-xs font-bold ${c.textMuteded}`}>{t('nck_minutes')}</label><div className="flex gap-2 mt-1">{[1, 2, 5, 10, 15].map(m => (<button key={m} onClick={() => setMinutesUntil(m)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${minutesUntil === m ? (isDark ? 'border-red-500 bg-red-900/20' : 'border-red-500 bg-red-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{m}{t('nck_min_suffix')}</button>))}</div></div>
                   {!situation.trim() && <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('nck_about_to_do_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />}
-                  <button onClick={goLive} disabled={liveLoading} className={`w-full ${c.btnDanger} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{liveLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_loading')}</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> {t('nck_get_ready')}</>}</button>
+                  <button onClick={goLive} disabled={liveLoading} className={`w-full ${c.btnDanger} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{liveLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_loading')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_get_ready')}</>}</button>
                 </div>
               </div>
             )}
@@ -701,7 +701,7 @@ const NerveCheck = ({ tool }) => {
                   </div>
                   <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>{t('nck_relationship')}</p><div className="grid grid-cols-3 gap-2">{COACH_RELATIONS.map(r => (<button key={r.value} onClick={() => setCoachRelation(r.value)} className={`p-2 rounded-xl border text-center text-xs font-bold ${coachRelation === r.value ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{r.icon} {t(r.tkey)}</button>))}</div></div>
                   <div><p className={`text-[10px] font-bold ${c.textMuteded} mb-1.5`}>{t('nck_age')}</p><div className="flex gap-2">{['child', 'teen', 'adult'].map(a => (<button key={a} onClick={() => setCoachAge(a)} className={`flex-1 py-2 rounded-xl text-xs font-bold border ${coachAge === a ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-600' : 'border-zinc-200')}`}>{a === 'child' ? '👶' : a === 'teen' ? '🧑' : '🧑‍💼'} {a === 'child' ? t('nck_age_child') : a === 'teen' ? t('nck_age_teen') : t('nck_age_adult')}</button>))}</div></div>
-                  <button onClick={runCoach} disabled={coachLoading || !coachSituation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{coachLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_thinking')}</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> {t('nck_how_help')}</>}</button>
+                  <button onClick={runCoach} disabled={coachLoading || !coachSituation.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{coachLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_thinking')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_how_help')}</>}</button>
                 </div>
               </div>
             )}
@@ -801,7 +801,7 @@ const NerveCheck = ({ tool }) => {
                     <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_ladder_q')} <span className={c.required}>*</span></label>
                     <textarea value={ladderFear} onChange={e => setLadderFear(e.target.value)} placeholder={t('nck_ladder_ph')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm ${c.input}`} />
                   </div>
-                  <button onClick={runLadder} disabled={ladderLoading || !ladderFear.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{ladderLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_ladder')}</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> {t('nck_build_my_ladder')}</>}</button>
+                  <button onClick={runLadder} disabled={ladderLoading || !ladderFear.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{ladderLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_building_ladder')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_build_my_ladder')}</>}</button>
                 </div>
                 {ladderResults && (
                   <div className={`mt-3 p-3 rounded-xl ${isDark ? 'bg-emerald-900/15' : 'bg-emerald-50'}`}>
@@ -908,7 +908,7 @@ const NerveCheck = ({ tool }) => {
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('nck_how_go_label')} <span className={c.required}>*</span></label><textarea value={howItWent} onChange={e => setHowItWent(e.target.value)} placeholder={t('nck_how_go_ph')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} /></div>
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_conf_now_label')} <span className={`font-black ${confColor(confAfter)}`}>{confAfter}/10</span></label><input type="range" min="1" max="10" value={confAfter} onChange={e => setConfAfter(Number(e.target.value))} className="w-full accent-emerald-500" /></div>
                   <div><label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuteded}`}>{t('nck_surprised_label')}</label><input type="text" value={whatSurprised} onChange={e => setWhatSurprised(e.target.value)} placeholder={t('nck_surprised_ph')} className={`w-full p-2.5 border-2 rounded-xl text-sm ${c.input}`} /></div>
-                  <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_processing')}</> : <><span className="mr-1">{tool?.icon ?? '💪'}</span> {t('nck_debrief_me')}</>}</button>
+                  <button onClick={runDebrief} disabled={debriefLoading || !howItWent.trim()} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>{debriefLoading ? <><span className="inline-block animate-spin">{tool?.icon ?? '💪'}</span> {t('nck_processing')}</> : <><span className="me-1">{tool?.icon ?? '💪'}</span> {t('nck_debrief_me')}</>}</button>
                 </div>
               </div>
             )}
@@ -1007,7 +1007,7 @@ const NerveCheck = ({ tool }) => {
                       </div>
                       {j.headline && <p className={`text-xs ${c.textSecondary}`}>{j.headline}</p>}
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    <div className="flex items-center gap-1.5 shrink-0 ms-2">
                       <span className={`text-sm font-black ${confColor(j.confBefore)}`}>{j.confBefore}</span>
                       <span className={`${j.confAfter > j.confBefore ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>→</span>
                       <span className={`text-sm font-black ${confColor(j.confAfter)}`}>{j.confAfter}</span>
@@ -1039,7 +1039,7 @@ const NerveCheck = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>{t('nck_disclaimer')}</p>
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('nck_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('nck_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('nck_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('nck_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

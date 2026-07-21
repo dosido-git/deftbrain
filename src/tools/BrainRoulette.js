@@ -113,7 +113,7 @@ const BrainRoulette = ({ tool }) => {
     footerText:    isDark ? 'text-zinc-500' : 'text-slate-400',
     welcomeBg:     isDark ? 'bg-cyan-900/20 border-cyan-700/40' : 'bg-cyan-50 border-cyan-200',
     welcomeText:   isDark ? 'text-cyan-200' : 'text-cyan-900',
-    chainBorder:   isDark ? 'border-l-cyan-500' : 'border-l-cyan-400',
+    chainBorder:   isDark ? 'border-s-cyan-500' : 'border-s-cyan-400',
     tabActive:     isDark ? 'border-cyan-500 text-cyan-400' : 'border-cyan-500 text-cyan-600',
     tabInactive:   isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-slate-400 hover:text-slate-600',
     historyRow:    isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-slate-50',
@@ -619,7 +619,7 @@ const BrainRoulette = ({ tool }) => {
     if (welcomeDismissed) return null;
     return (
       <div className={`mb-5 p-5 rounded-2xl border ${c.welcomeBg} relative`}>
-        <button onClick={() => setWelcomeDismissed(true)} className={`absolute top-3 right-3 text-xs ${c.textMuted} hover:opacity-70`}>✕</button>
+        <button onClick={() => setWelcomeDismissed(true)} className={`absolute top-3 end-3 text-xs ${c.textMuted} hover:opacity-70`}>✕</button>
         <h3 className={`text-sm font-bold mb-3 ${c.welcomeText}`}>{t('br_welcome_title')}</h3>
         <div className="grid grid-cols-2 gap-2">
           {[['🔬', t('br_welcome_feat1_title'), t('br_welcome_feat1_desc')], ['🎭', t('br_welcome_feat2_title'), t('br_welcome_feat2_desc')], ['🧭', t('br_welcome_feat3_title'), t('br_welcome_feat3_desc')], ['📬', t('br_welcome_feat4_title'), t('br_welcome_feat4_desc')]].map(([e, title, d]) => (
@@ -862,7 +862,7 @@ const BrainRoulette = ({ tool }) => {
     return (
       <>
         {deeperResults && (
-          <div className={`rounded-2xl overflow-hidden mb-3 border-l-4 ${c.chainBorder} border ${c.border} ${c.card}`}>
+          <div className={`rounded-2xl overflow-hidden mb-3 border-s-4 ${c.chainBorder} border ${c.border} ${c.card}`}>
             {deeperResults._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
                 <p className={`text-xs ${c.textMuted}`}>{t('br_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{deeperResults._clickedLabel}</span></p>
@@ -877,7 +877,7 @@ const BrainRoulette = ({ tool }) => {
           </div>
         )}
         {chainResults.map((cr, idx) => (
-          <div key={idx} className={`rounded-2xl overflow-hidden mb-3 border-l-4 ${c.chainBorder} border ${c.border} ${c.card}`} style={{ marginLeft: Math.min(idx + 1, 3) * 8 }}>
+          <div key={idx} className={`rounded-2xl overflow-hidden mb-3 border-s-4 ${c.chainBorder} border ${c.border} ${c.card}`} style={{ marginInlineStart: Math.min(idx + 1, 3) * 8 }}>
             {cr._clickedLabel && (
               <div className={`px-6 pt-4 pb-2`}>
                 <p className={`text-xs ${c.textMuted}`}>{t('br_went_deeper_on')} <span className={`font-semibold ${c.textCyan}`}>{cr._clickedLabel}</span></p>
@@ -892,12 +892,12 @@ const BrainRoulette = ({ tool }) => {
           </div>
         ))}
         {latestChainThreads?.length > 0 && (
-          <div className={`rounded-xl p-4 mb-3 border ${c.threadPanelBg}`} style={{ marginLeft: Math.min(chainResults.length, 3) * 8 }}>
+          <div className={`rounded-xl p-4 mb-3 border ${c.threadPanelBg}`} style={{ marginInlineStart: Math.min(chainResults.length, 3) * 8 }}>
             <h3 className={`text-sm font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${c.textMuted}`}><span>🔗</span> {t('br_keep_going')}</h3>
             <div className="space-y-2">
               {latestChainThreads.map((thread, i) => (
                 <button key={i} onClick={() => handleChainDeeper(thread)} disabled={!canSpin}
-                  className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
+                  className={`w-full text-start flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
                   <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{thread.label}</span>
                 </button>
               ))}
@@ -918,7 +918,7 @@ const BrainRoulette = ({ tool }) => {
             <div className="space-y-2">
               {extractedConcepts.map((con, i) => (
                 <button key={i} onClick={() => handleSpinFromConcept(con)}
-                  className={`w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all ${c.deeperCard}`}>
+                  className={`w-full text-start flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all ${c.deeperCard}`}>
                   <span className={c.textCyan}>🎲</span>
                   <div><span className={`text-sm font-semibold ${c.text}`}>{con.label}</span><p className={`text-xs ${c.textMuted}`}>{con.angle}</p></div>
                 </button>
@@ -951,22 +951,22 @@ const BrainRoulette = ({ tool }) => {
               const isExp = expandedSavedIdx === idx;
               return (
                 <div key={item.topic_tag} className={`rounded-xl overflow-hidden ${c.savedCard} relative group`}>
-                  <button onClick={() => setExpandedSavedIdx(isExp ? null : idx)} className={`w-full text-left p-4 ${c.savedItemHover} transition-colors`}>
+                  <button onClick={() => setExpandedSavedIdx(isExp ? null : idx)} className={`w-full text-start p-4 ${c.savedItemHover} transition-colors`}>
                     <div className="flex items-start gap-3">
                       <span className="text-sm mt-0.5">{isExp ? '▲' : '▼'}</span>
-                      <div className="flex-1 pr-8">
+                      <div className="flex-1 pe-8">
                         <h4 className={`font-bold text-sm mb-1 ${c.textStrong}`}>{item.title}</h4>
                         {!isExp && <p className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{item.hook}</p>}
                         {item.interest_connections && <div className="flex gap-1.5 mt-2">{item.interest_connections.map((cn, i) => <span key={i} className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{cn}</span>)}</div>}
                       </div>
                     </div>
                   </button>
-                  <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 right-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} ${c.deleteHover}`}>🗑️</button>
+                  <button onClick={e => { e.stopPropagation(); removeSavedItem(item.topic_tag); }} className={`absolute top-3 end-3 text-xs opacity-0 group-hover:opacity-100 ${c.btnGhost} ${c.deleteHover}`}>🗑️</button>
                   {isExp && (
                     <div className={`px-4 pb-4 border-t ${c.border}`}>
                       <p className={`text-sm leading-relaxed whitespace-pre-line mt-3 ${c.textSecondary}`}>{item.hook}</p>
-                      {item.deeperResults && <div className={`mt-3 p-3 rounded-lg border-l-4 ${c.chainBorder} ${c.savedInner}`}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{item.deeperResults.title}</h5><p className={`text-xs ${c.textSecondary}`}>{item.deeperResults.content}</p>{item.deeperResults.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {item.deeperResults.mind_blown}</p>}</div>}
-                      {item.chainResults?.map((cr, ci) => <div key={ci} className={`mt-2 p-3 rounded-lg border-l-4 ${c.chainBorder} ${c.savedInner}`} style={{ marginLeft: (ci+1)*4 }}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{cr.title}</h5><p className={`text-xs ${c.textSecondary}`}>{cr.content}</p></div>)}
+                      {item.deeperResults && <div className={`mt-3 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{item.deeperResults.title}</h5><p className={`text-xs ${c.textSecondary}`}>{item.deeperResults.content}</p>{item.deeperResults.mind_blown && <p className={`text-xs font-semibold mt-2`}>🤯 {item.deeperResults.mind_blown}</p>}</div>}
+                      {item.chainResults?.map((cr, ci) => <div key={ci} className={`mt-2 p-3 rounded-lg border-s-4 ${c.chainBorder} ${c.savedInner}`} style={{ marginInlineStart: (ci+1)*4 }}><h5 className={`text-sm font-bold ${c.text} mb-1`}>{cr.title}</h5><p className={`text-xs ${c.textSecondary}`}>{cr.content}</p></div>)}
                       <div className="mt-3" />
                     </div>
                   )}
@@ -1082,7 +1082,7 @@ const BrainRoulette = ({ tool }) => {
           <div className="divide-y" style={{ borderColor: c.divideColor }}>
             {sessionHistory.slice(0, 50).map((h, i) => (
               <div key={i} className={`px-4 py-3 ${c.historyRow}`}>
-                <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pr-3`}>{h.title}</h5><span className={`text-[10px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
+                <div className="flex items-center justify-between"><h5 className={`text-sm font-semibold ${c.textStrong} flex-1 pe-3`}>{h.title}</h5><span className={`text-[10px] ${c.textMuted}`}>{new Date(h.spunAt).toLocaleDateString()}</span></div>
                 <p className={`text-xs ${c.textMuted} line-clamp-1 mt-0.5`}>{h.hook}</p>
                 {h.interest_connections?.length > 0 && <div className="flex gap-1 mt-1">{h.interest_connections.map((ic, j) => <span key={j} className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${c.savedPill}`}>{ic}</span>)}</div>}
               </div>
@@ -1118,7 +1118,7 @@ const BrainRoulette = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="mr-2">{tool?.icon ?? '🎲'}</span>
+              <span className="me-2">{tool?.icon ?? '🎲'}</span>
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>{tool?.title ?? 'Brain Roulette'}</h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? "Personalized rabbit holes you can't resist"}</p>
@@ -1182,7 +1182,7 @@ const BrainRoulette = ({ tool }) => {
                   <button key={int.id} onClick={() => toggleInterest(int.id)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all ${active ? (int.isCustom ? c.pillCustom : c.pillActive) : c.pillInactive}`}>
                     <span>{int.emoji}</span><span>{intLabel(int)}</span>
-                    {int.isCustom && active && <button onClick={e => { e.stopPropagation(); removeCustomInterest(int.label); }} className="ml-0.5 opacity-60 hover:opacity-100">✕</button>}
+                    {int.isCustom && active && <button onClick={e => { e.stopPropagation(); removeCustomInterest(int.label); }} className="ms-0.5 opacity-60 hover:opacity-100">✕</button>}
                   </button>
                 );
               })}
@@ -1212,7 +1212,7 @@ const BrainRoulette = ({ tool }) => {
             <div className="grid grid-cols-3 gap-2 mb-5">
               {DEPTH_OPTIONS.map(opt => (
                 <button key={opt.id} onClick={() => setDepth(opt.id)}
-                  className={`text-left p-3 rounded-xl border-2 transition-all ${depth === opt.id ? c.depthActive : c.depthInactive}`}>
+                  className={`text-start p-3 rounded-xl border-2 transition-all ${depth === opt.id ? c.depthActive : c.depthInactive}`}>
                   <div className="text-lg mb-0.5">{opt.icon}</div><div className={`text-xs font-bold ${c.textStrong}`}>{t(opt.labelKey)}</div><div className={`text-[10px] mt-0.5 ${c.textMuted}`}>{t(opt.descKey)}</div>
                 </button>
               ))}
@@ -1281,7 +1281,7 @@ const BrainRoulette = ({ tool }) => {
                   <div className="space-y-2">
                     {result.deeper_threads.map((thread, i) => (
                       <button key={i} onClick={() => handleGoDeeper(thread)} disabled={!canSpin}
-                        className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
+                        className={`w-full text-start flex items-center gap-3 px-4 py-3 rounded-xl border transition-all disabled:opacity-40 ${c.deeperCard}`}>
                         <span className={c.textCyan}>→</span><span className={`text-sm font-semibold ${c.textSecondary}`}>{thread.label}</span>
                       </button>
                     ))}

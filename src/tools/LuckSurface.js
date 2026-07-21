@@ -150,7 +150,7 @@ const LuckSurface = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? t('lks_title')}
+              <span className="me-2">{tool?.icon ?? '🧲'}</span>{tool?.title ?? t('lks_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lks_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -193,12 +193,12 @@ const LuckSurface = ({ tool }) => {
                   className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
               </div>
             </div>
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
             <button onClick={handleSubmit} disabled={loading || !description.trim()}
               className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧲'}</span> {t('lks_calculating')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🧲'}</span> {t('lks_calculate')}</>}
+              : <><span className="me-1">{tool?.icon ?? '🧲'}</span> {t('lks_calculate')}</>}
             </button>
           </div>
         )}
@@ -252,7 +252,7 @@ const LuckSurface = ({ tool }) => {
                   const isOpen = expanded[i];
                   return (
                     <div key={i} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                      <button onClick={() => toggle(i)} className="w-full text-left p-5">
+                      <button onClick={() => toggle(i)} className="w-full text-start p-5">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
                             <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black ${isDark ? 'bg-[rgb(44,74,110)] text-white' : 'bg-[rgb(44,74,110)] text-white'}`}>{i + 1}</span>
@@ -342,7 +342,7 @@ const LuckSurface = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('lks_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

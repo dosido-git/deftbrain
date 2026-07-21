@@ -364,7 +364,7 @@ const DreamPatternSpotter = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span className="mr-2">{tool?.icon ?? '🌙'}</span>{tool?.title ?? t('dps_title')}
+                  <span className="me-2">{tool?.icon ?? '🌙'}</span>{tool?.title ?? t('dps_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dps_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -645,7 +645,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🔍</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_classification')}</h3>
-                  <span className="ml-auto">{expandedSections.dreamClassification ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.dreamClassification ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.dreamClassification && (
                   <div className="space-y-3">
@@ -684,7 +684,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📊</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_type_distribution')}</h3>
-                  <span className="ml-auto">{expandedSections.dreamTypeDistribution ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.dreamTypeDistribution ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.dreamTypeDistribution && (
                   <div className="grid grid-cols-2 gap-3">
@@ -707,9 +707,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>📖</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_themes')}</h3>
                   {expandedSections.themes ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -774,9 +774,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>⭐</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_symbols')}</h3>
                   {expandedSections.symbols ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -831,7 +831,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⭐</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_dream_symbols')}</h3>
-                  <span className="ml-auto">{expandedSections.singleSymbols ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.singleSymbols ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.singleSymbols && (
                   <div className="space-y-4">
@@ -870,7 +870,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>💛</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_emotional_sig')}</h3>
-                  <span className="ml-auto">{expandedSections.emotionalSig ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.emotionalSig ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.emotionalSig && (
                   <div className={`${c.dreamEmotion} border rounded-lg p-4 space-y-3`}>
@@ -904,7 +904,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>😴</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_sleep_quality')}</h3>
-                  <span className="ml-auto">{expandedSections.sleepQuality ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.sleepQuality ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.sleepQuality && (
                   <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
@@ -934,7 +934,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⚠️</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_nightmare_analysis')}</h3>
-                  <span className="ml-auto">{expandedSections.nightmareAnalysis ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.nightmareAnalysis ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.nightmareAnalysis && (
                   <div className={`${c.danger} border rounded-lg p-4 space-y-4`}>
@@ -989,7 +989,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⚠️</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_nightmare_patterns')}</h3>
-                  <span className="ml-auto">{expandedSections.nightmarePattern ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.nightmarePattern ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.nightmarePattern && (
                   <div className="space-y-4">
@@ -1060,7 +1060,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>✨</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_lucid_potential_title')}</h3>
-                  <span className="ml-auto">{expandedSections.lucidDreaming ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.lucidDreaming ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.lucidDreaming && (
                   <div className="space-y-4">
@@ -1107,7 +1107,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>✨</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_lucid_potential_title')}</h3>
-                  <span className="ml-auto">{expandedSections.lucidPattern ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.lucidPattern ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.lucidPattern && (
                   <div className="space-y-4">
@@ -1156,7 +1156,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>😴</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_sleep_patterns')}</h3>
-                  <span className="ml-auto">{expandedSections.sleepPattern ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.sleepPattern ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.sleepPattern && (
                   <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
@@ -1193,7 +1193,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🔗</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_life_connections')}</h3>
-                  <span className="ml-auto">{expandedSections.lifeConnections ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.lifeConnections ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.lifeConnections && (
                   <div className="space-y-3">
@@ -1223,9 +1223,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_people')}</h3>
                   {expandedSections.people ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1260,9 +1260,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_emotional_patterns')}</h3>
                   {expandedSections.emotions ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1298,9 +1298,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>📅</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_life_event_correlations')}</h3>
                   {expandedSections.correlations ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1332,9 +1332,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>🧠</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_preoccupations')}</h3>
                   {expandedSections.preoccupations ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1370,9 +1370,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_reflection_questions')}</h3>
                   {expandedSections.questions ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1404,9 +1404,9 @@ const DreamPatternSpotter = ({ tool }) => {
                   <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_insights')}</h3>
                   {expandedSections.insights ? (
-                    <span className="ml-auto">▲</span>
+                    <span className="ms-auto">▲</span>
                   ) : (
-                    <span className="ml-auto">▼</span>
+                    <span className="ms-auto">▼</span>
                   )}
                 </button>
 
@@ -1462,7 +1462,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📋</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_therapist_export')}</h3>
-                  <span className="ml-auto">{expandedSections.therapistExport ? '▲' : '▼'}</span>
+                  <span className="ms-auto">{expandedSections.therapistExport ? '▲' : '▼'}</span>
                 </button>
                 {expandedSections.therapistExport && (
                   <div className="space-y-3">
@@ -1499,7 +1499,7 @@ const DreamPatternSpotter = ({ tool }) => {
             )}
 
             {/* Disclaimer */}
-            <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}>
+            <div className={`${c.cardAlt} border-s-4 rounded-e-lg p-4`}>
               <p className="text-xs opacity-75">
                 <strong>{t('dps_disclaimer_label')}</strong> {t('dps_disclaimer_body')}
               </p>
@@ -1534,13 +1534,13 @@ const DreamPatternSpotter = ({ tool }) => {
                     }
                   }}
                   disabled={!h.results}
-                  className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${h.results ? `${c.cardAlt} hover:opacity-80 cursor-pointer` : `${c.cardAlt} opacity-50 cursor-default`}`}
+                  className={`w-full flex items-center justify-between p-2.5 rounded-lg text-start transition-colors ${h.results ? `${c.cardAlt} hover:opacity-80 cursor-pointer` : `${c.cardAlt} opacity-50 cursor-default`}`}
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <span className="text-xs">{h.mode === 'pattern' ? '🔁' : '🌙'}</span>
                     <span className={`text-xs ${c.text} truncate`}>{h.preview}{h.dreamCount ? ` ${t('dps_more_suffix', { n: h.dreamCount - 1 })}` : ''}</span>
                   </div>
-                  <span className={`text-xs ${c.textMuted} ml-2 flex-shrink-0`}>{formatDate(h.date, userLocale)}</span>
+                  <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{formatDate(h.date, userLocale)}</span>
                 </button>
               ))}
             </div>

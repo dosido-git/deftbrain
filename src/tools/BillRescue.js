@@ -164,7 +164,7 @@ const BillRescue = ({ tool }) => {
     hardModeBadge: isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-50 text-red-700 border-red-200',
     microStepBg:   isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
     progressTrack: isDark ? 'bg-zinc-700' : 'bg-slate-200',
-    stepBorderL:   isDark ? 'border-l-cyan-600' : 'border-l-cyan-400',
+    stepBorderL:   isDark ? 'border-s-cyan-600' : 'border-s-cyan-400',
     // Resolution outcomes
     resolvedAccepted: isDark ? 'text-emerald-300' : 'text-emerald-700',
     resolvedDenied:   isDark ? 'text-red-300' : 'text-red-700',
@@ -877,7 +877,7 @@ const BillRescue = ({ tool }) => {
                 <div className="relative">
                   <img src={billImagePreview} alt={t('br_alt_bill')} className="w-full h-16 object-cover rounded-lg border" />
                   <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                    className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
+                    className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
                   <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
                 </div>
               )
@@ -992,7 +992,7 @@ const BillRescue = ({ tool }) => {
               <Section icon="📋" title={t('br_sec_action_plan')} defaultOpen c={c}>
                 <div className="space-y-3">
                   {r.action_steps.map((step, i) => (
-                    <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-l-4 ${c.stepBorderL}`}>
+                    <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-s-4 ${c.stepBorderL}`}>
                       <p className={`text-[10px] font-bold ${c.highlightText} uppercase mb-1`}>{t('br_step')} {i + 1}: {step.title}</p>
                       <p className={`text-sm ${c.textSecondary} mb-2`}>{step.action}</p>
                       {step.script && (
@@ -1738,7 +1738,7 @@ const BillRescue = ({ tool }) => {
               {/* Conversation */}
               <div className={`${c.card} border rounded-lg p-3 space-y-3 max-h-[400px] overflow-y-auto`}>
                 {rhHistory.map((msg, i) => (
-                  <div key={i} className={`text-xs ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  <div key={i} className={`text-xs ${msg.role === 'user' ? 'text-end' : 'text-start'}`}>
                     {msg.role === 'user' ? (
                       <div className="inline-block">
                         <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>{t('br_you')}:</span>
@@ -1750,11 +1750,11 @@ const BillRescue = ({ tool }) => {
                       <div className="space-y-2">
                         <div>
                           <span className={`text-[10px] font-bold ${c.textSecondary} block mb-0.5`}>{t('br_rep')} ({msg.parsed.rep_tone || 'neutral'}):</span>
-                          <div className={`inline-block px-3 py-2 rounded-lg text-left ${c.chatRep}`}>
+                          <div className={`inline-block px-3 py-2 rounded-lg text-start ${c.chatRep}`}>
                             {msg.parsed.rep_response}
                           </div>
                         </div>
-                        <div className={`border-l-2 pl-2 ${c.coachBorder}`}>
+                        <div className={`border-s-2 ps-2 ${c.coachBorder}`}>
                           <span className={`text-[10px] font-bold ${getRatingClass(msg.parsed.coach_rating)}`}>
                             🎯 {t('br_coach')} ({msg.parsed.coach_rating}):
                           </span>
@@ -1842,11 +1842,11 @@ const BillRescue = ({ tool }) => {
               <div className="grid grid-cols-1 gap-1.5">
                 {LETTER_TYPES.map(lt => (
                   <button key={lt.value} onClick={() => setLtType(lt.value)}
-                    className={`text-left px-3 py-2 rounded-lg border text-xs transition-colors min-h-[36px] ${
+                    className={`text-start px-3 py-2 rounded-lg border text-xs transition-colors min-h-[36px] ${
                       ltType === lt.value ? c.pillActive : c.pillInactive
                     }`}>
                     <span className="font-bold">{lt.emoji} {lt.label}</span>
-                    <span className={`ml-1.5 ${c.textMuteded}`}>— {lt.desc}</span>
+                    <span className={`ms-1.5 ${c.textMuteded}`}>— {lt.desc}</span>
                   </button>
                 ))}
               </div>
@@ -2153,7 +2153,7 @@ const BillRescue = ({ tool }) => {
           <div className="flex items-start justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🧾'}</span>{tool?.title ?? t('br_title')}
+                <span className="me-2">{tool?.icon ?? '🧾'}</span>{tool?.title ?? t('br_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('br_tagline')}</p>
               {!results && (
@@ -2218,7 +2218,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>

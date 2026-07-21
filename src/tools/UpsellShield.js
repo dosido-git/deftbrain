@@ -167,7 +167,7 @@ const UpsellShield = ({ tool }) => {
         <div className={`mb-5 pb-4 border-b ${c.border} flex items-start justify-between gap-3`}>
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('us_title')}
+              <span className="me-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('us_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('us_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -285,7 +285,7 @@ const UpsellShield = ({ tool }) => {
           {r.their_playbook?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('playbook')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>🎯</span> {t('us_playbook_title')}
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badge}`}>{t('us_tactics_badge', { count: r.their_playbook.length })}</span>
@@ -321,7 +321,7 @@ const UpsellShield = ({ tool }) => {
           {r.power_questions?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('power')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>💪</span> {t('us_power_title')}</h3>
                 <span className={c.textMuted}>{expandedSections.power ? '▲' : '▼'}</span>
               </button>
@@ -419,7 +419,7 @@ const UpsellShield = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('us_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

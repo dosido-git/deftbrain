@@ -280,7 +280,7 @@ const TheDebrief = ({ tool }) => {
   // ── Shared ──
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
@@ -288,7 +288,7 @@ const TheDebrief = ({ tool }) => {
     const open = expandedSections[sKey] ?? defaultOpen;
     return (
       <div className={c.card + ' border rounded-xl overflow-hidden'}>
-        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-left hover:opacity-80">
+        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
           <div className="flex items-center gap-2">
             <span className="text-base">{emoji}</span>
             <span className={'text-sm font-semibold ' + c.text}>{title}</span>
@@ -308,7 +308,7 @@ const TheDebrief = ({ tool }) => {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={'text-xl font-bold ' + c.text}>
-          <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('td_title')}
+          <span className="me-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('td_title')}
         </h2>
         <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? t('td_tagline')}</p>
         <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -320,7 +320,7 @@ const TheDebrief = ({ tool }) => {
             className={'flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all flex-shrink-0 ' +
               (mode === m.value ? c.pillActive + ' border-2' : c.pillInactive)}>
             <span className="text-lg">{m.emoji}</span>
-            <div className="text-left">
+            <div className="text-start">
               <p className={'text-xs font-bold ' + (mode === m.value ? '' : c.textMuted)}>{t(m.labelKey)}</p>
               <p className={'text-[10px] ' + c.textMuted}>{t(m.descKey)}</p>
             </div>
@@ -408,7 +408,7 @@ const TheDebrief = ({ tool }) => {
         <button onClick={submit} disabled={loading || !canSubmit}
       className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
       {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('td_processing')}</>
-        : mode === 'distill' ? <><span className="mr-1">{tool?.icon ?? '📋'}</span> {t('td_extract')}</>
+        : mode === 'distill' ? <><span className="me-1">{tool?.icon ?? '📋'}</span> {t('td_extract')}</>
         : mode === 'followup' ? <><span>📨</span> {t('td_draft_followups')}</>
         : <><span>🔄</span> {t('td_analyze_series')}</>}
       </button>
@@ -723,7 +723,7 @@ const TheDebrief = ({ tool }) => {
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('td_today') : diff === 1 ? t('td_yesterday') : diff < 7 ? t('td_days_ago', { n: diff }) : d.toLocaleDateString(userLocale || undefined, { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>📋</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('td_past_debriefs')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -762,7 +762,7 @@ const TheDebrief = ({ tool }) => {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={'text-xl font-bold ' + c.text}>
-                  <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('td_title')}
+                  <span className="me-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('td_title')}
                 </h2>
                 <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? t('td_tagline')}</p>
               </div>

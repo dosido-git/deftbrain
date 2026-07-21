@@ -239,7 +239,7 @@ const Bookmark = ({ tool }) => {
   // ══════════════════════════════════════════
   const Section = ({ title: sectionTitle, emoji, open, onToggle, badge, children }) => (
     <div className={c.card + ' ' + c.border + ' border rounded-xl overflow-hidden'}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={'text-base font-semibold ' + c.text}>{sectionTitle}</span>
@@ -261,7 +261,7 @@ const Bookmark = ({ tool }) => {
       {/* Header */}
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={`text-xl font-bold ${c.text}`}>
-          <span className="mr-2">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
+          <span className="me-2">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
         </h2>
         <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bk_tagline')}</p>
         <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -318,7 +318,7 @@ const Bookmark = ({ tool }) => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {SPOILER_LEVELS.map(s => (
             <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
-              className={'p-3 rounded-xl border-2 text-left transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>
+              className={'p-3 rounded-xl border-2 text-start transition-all ' + (spoilerLevel === s.value ? c.pillActive : c.card + ' ' + c.border + ' hover:border-gray-400')}>
               <span className={'text-sm font-medium block ' + (spoilerLevel === s.value ? '' : c.textSecondary)}>{t(s.labelKey)}</span>
               <span className={'text-[10px] ' + c.textMuted}>{t(s.descKey)}</span>
             </button>
@@ -549,7 +549,7 @@ const Bookmark = ({ tool }) => {
     const typeEmoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={'text-base ' + c.histAccent}>🔖</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('bk_past_bookmarks')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -594,7 +594,7 @@ const Bookmark = ({ tool }) => {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
+                  <span className="me-2">{tool?.icon ?? '🔖'}</span>{tool?.title ?? 'Bookmark'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bk_tagline')}</p>
               </div>

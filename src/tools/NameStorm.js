@@ -880,7 +880,7 @@ const NameStorm = ({ tool }) => {
 
         {/* ─── Brand Story ─── */}
         {storyData && (
-          <div className={`mt-3 p-4 rounded-lg border-l-4 ${isDark ? 'border-cyan-500 bg-cyan-900/15' : 'border-cyan-400 bg-cyan-50/50'}`}>
+          <div className={`mt-3 p-4 rounded-lg border-s-4 ${isDark ? 'border-cyan-500 bg-cyan-900/15' : 'border-cyan-400 bg-cyan-50/50'}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📖 {t('ns_brand_story_title')}</p>
             {storyData.origin_story && (
               <p className={`text-sm ${c.text} leading-relaxed`}>{storyData.origin_story}</p>
@@ -1006,7 +1006,7 @@ const NameStorm = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h2 className={`text-2xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('ns_title')}
+                  <span className="me-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('ns_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('ns_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -1083,7 +1083,7 @@ const NameStorm = ({ tool }) => {
               {error && <div className={`p-3 rounded-xl flex items-start gap-2 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
               <button onClick={handleQuick} disabled={loading || !quickWhatIsIt.trim()}
                 className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('ns_naming_it')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('ns_name_it')}</>}
+                {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('ns_naming_it')}</> : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('ns_name_it')}</>}
               </button>
             </div>
           )}
@@ -1127,7 +1127,7 @@ const NameStorm = ({ tool }) => {
               <div className="flex items-center gap-3">
                 <button onClick={() => setPairWithDomains(!pairWithDomains)}
                   className={`relative w-11 h-6 rounded-full transition-all ${pairWithDomains ? (isDark ? 'bg-amber-600' : 'bg-amber-500') : (isDark ? 'bg-zinc-600' : 'bg-gray-300')}`}>
-                  <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${pairWithDomains ? 'left-5.5' : 'left-0.5'}`}
+                  <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${pairWithDomains ? 'start-5.5' : 'start-0.5'}`}
                     style={{ left: pairWithDomains ? '22px' : '2px' }} />
                 </button>
                 <span className={`text-sm ${c.text}`}>{t('ns_pair_domains')}</span>
@@ -1179,7 +1179,7 @@ const NameStorm = ({ tool }) => {
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-1`}>
                 {t('ns_competitors')}
-                <span className={`font-normal text-xs ${c.textMuted} ml-1`}>({t('optional')})</span>
+                <span className={`font-normal text-xs ${c.textMuted} ms-1`}>({t('optional')})</span>
               </label>
               <input type="text" value={competitors} onChange={(e) => setCompetitors(e.target.value)}
                 placeholder={t('ns_competitors_ph')}
@@ -1316,7 +1316,7 @@ const NameStorm = ({ tool }) => {
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
-                : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
+                : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
             </button>
             <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold`}>
               {t('try_example')}
@@ -1423,7 +1423,7 @@ const NameStorm = ({ tool }) => {
 
           {/* Top Picks */}
           {results.top_picks?.length > 0 && !showFavoritesOnly && !showCompare && (
-            <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 <span>⚡</span> {t('ns_top_picks')}
               </h3>
@@ -1439,7 +1439,7 @@ const NameStorm = ({ tool }) => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`font-bold ${c.text}`}>{pick.name}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full border ${chipStyle(false)}`}>{pick.from_category}</span>
-                          <button onClick={() => toggleFavorite(pick.name)} className="ml-auto">
+                          <button onClick={() => toggleFavorite(pick.name)} className="ms-auto">
                             <span className="text-lg">{favorites.includes(pick.name) ? '⭐' : '☆'}</span>
                           </button>
                         </div>

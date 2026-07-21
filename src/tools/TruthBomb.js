@@ -147,7 +147,7 @@ const TruthBomb = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? t('tb_title')}
+                <span className="me-2">{tool?.icon ?? '💣'}</span>{tool?.title ?? t('tb_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('tb_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -207,7 +207,7 @@ const TruthBomb = ({ tool }) => {
               className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input}`} />
           </div>
 
-          {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+          {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
           <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
           className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
@@ -302,7 +302,7 @@ const TruthBomb = ({ tool }) => {
           {/* Timing */}
           {results?.the_timing && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('timing')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
+              <button onClick={() => toggle('timing')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 {t('tb_timing_title')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.timing ? '▲' : '▼'}</span>
               </button>
@@ -325,7 +325,7 @@ const TruthBomb = ({ tool }) => {
           {/* Permission to not say it */}
           {results?.permission_to_not_say_it && (
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('permission')} className="w-full text-left px-5 py-4 flex items-center justify-between min-h-[44px]">
+              <button onClick={() => toggle('permission')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 {t('tb_permission_title')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.permission ? '▲' : '▼'}</span>
               </button>
@@ -377,7 +377,7 @@ const TruthBomb = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('tb_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

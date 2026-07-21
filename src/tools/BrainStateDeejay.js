@@ -559,7 +559,7 @@ const BrainStateDeejay = ({ tool }) => {
           <button key={opt.value}
             onClick={() => setter(opt.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
-            {active && <span className="mr-1">✓</span>}
+            {active && <span className="me-1">✓</span>}
             {t(opt.labelKey)}
           </button>
         );
@@ -585,9 +585,9 @@ const BrainStateDeejay = ({ tool }) => {
           return (
             <button key={preset.labelKey}
               onClick={() => applyPreset(preset)}
-              className={`p-3 rounded-xl text-xs font-semibold text-left border transition-all relative ${c.presetBg} ${isActive ? c.presetRingActive : ''} ${isSuggested && !isActive ? c.presetRingSuggested : ''}`}>
+              className={`p-3 rounded-xl text-xs font-semibold text-start border transition-all relative ${c.presetBg} ${isActive ? c.presetRingActive : ''} ${isSuggested && !isActive ? c.presetRingSuggested : ''}`}>
               {isSuggested && !isActive && (
-                <span className={`absolute -top-1.5 -right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${c.presetNowBadge}`}>
+                <span className={`absolute -top-1.5 -end-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${c.presetNowBadge}`}>
                   {t('bsd_now_badge')}
                 </span>
               )}
@@ -661,7 +661,7 @@ const BrainStateDeejay = ({ tool }) => {
           className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
           <span className="text-xs">{showSensitivities ? '▲' : '▼'}</span>
           {t('bsd_sensitivities')}
-          {sensitivities.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{sensitivities.length}</span>}
+          {sensitivities.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{sensitivities.length}</span>}
         </button>
         <p className={`text-xs ${c.textMuted} mt-1`}>{t('bsd_sensitivities_hint')}</p>
         {showSensitivities && (
@@ -669,7 +669,7 @@ const BrainStateDeejay = ({ tool }) => {
             {SENSITIVITY_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => toggleSensitivity(opt.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${sensitivities.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
-                {sensitivities.includes(opt.value) && <span className="mr-1">✓</span>}
+                {sensitivities.includes(opt.value) && <span className="me-1">✓</span>}
                 {t(opt.labelKey)}
               </button>
             ))}
@@ -686,7 +686,7 @@ const BrainStateDeejay = ({ tool }) => {
           {MUSIC_PROVIDERS.map(p => (
             <button key={p.value} onClick={() => setProvider(p.value)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${provider === p.value ? c.pillActive : c.pillInactive}`}>
-              {provider === p.value && <span className="mr-1">✓</span>}
+              {provider === p.value && <span className="me-1">✓</span>}
               <span>{p.emoji}</span> {p.label}
             </button>
           ))}
@@ -869,7 +869,7 @@ const BrainStateDeejay = ({ tool }) => {
         <div className={`flex rounded-full overflow-hidden h-3 ${c.timelineBg}`}>
           {phases.map((phase, idx) => (
             <div key={idx}
-              className={`h-full ${segColors[idx % segColors.length]} ${idx === 0 ? 'rounded-l-full' : ''} ${idx === lastIdx ? 'rounded-r-full' : ''}`}
+              className={`h-full ${segColors[idx % segColors.length]} ${idx === 0 ? 'rounded-s-full' : ''} ${idx === lastIdx ? 'rounded-e-full' : ''}`}
               style={{ width: `${(durations[idx] / total) * 100}%`, opacity: idx === lastIdx ? 0.5 : 1 }}
               title={`${phase.phase}: ${phase.duration}`}
             />
@@ -1079,7 +1079,7 @@ const BrainStateDeejay = ({ tool }) => {
   const renderAdjustPanel = () => (
     <div className={`p-4 rounded-2xl border ${c.warning}`}>
       <button onClick={() => setShowAdjust(!showAdjust)}
-        className={`flex items-center gap-2 text-xs font-bold  w-full text-left`}>
+        className={`flex items-center gap-2 text-xs font-bold  w-full text-start`}>
         <span>{showAdjust ? '▲' : '▼'}</span>
         <span>{t('bsd_adjust_toggle')}</span>
       </button>
@@ -1146,7 +1146,7 @@ const BrainStateDeejay = ({ tool }) => {
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
         <button onClick={() => setShowHistory(!showHistory)}
-          className="w-full flex items-center gap-2 text-left">
+          className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('bsd_past_playlists')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -1160,7 +1160,7 @@ const BrainStateDeejay = ({ tool }) => {
               return (
                 <div key={entry.id} className={`rounded-xl border ${c.border} ${c.card} overflow-hidden`}>
                   <button onClick={() => setExpandedHistId(isExp ? null : entry.id)}
-                    className="w-full flex items-center gap-3 p-3 text-left">
+                    className="w-full flex items-center gap-3 p-3 text-start">
                     <div className="flex-1 min-w-0">
                       <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.from} → {entry.to}</div>
                       <div className={`text-xs ${c.textMuted} mt-0.5`}>
@@ -1207,7 +1207,7 @@ const BrainStateDeejay = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? t('bsd_title')}
+                <span className="me-2">{tool?.icon ?? '🎧'}</span>{tool?.title ?? t('bsd_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bsd_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

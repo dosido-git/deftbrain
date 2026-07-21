@@ -668,7 +668,7 @@ const MeetingBSDetector = ({ tool }) => {
         <div>
           <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn')}</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn')}</>}
           </button>
         </div>
       </div>
@@ -811,7 +811,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn')}</>}
         </button>
       </div>
 
@@ -908,7 +908,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runLive} disabled={!liveWhat.trim() || loading}
           className={`w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn')}</>}
         </button>
       </div>
 
@@ -1029,7 +1029,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runRecurring} disabled={!recName.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn')}</>}
         </button>
       </div>
 
@@ -1148,7 +1148,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runMessages} disabled={!msgMeeting.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn')}</>}
         </button>
       </div>
 
@@ -1159,7 +1159,7 @@ const MeetingBSDetector = ({ tool }) => {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className={`text-xs font-black ${c.text}`}>{v.label}</span>
-                  <span className={`text-[10px] ${c.textMuteded} ml-2`}>{v.tone}</span>
+                  <span className={`text-[10px] ${c.textMuteded} ms-2`}>{v.tone}</span>
                 </div>
                 <span className={`text-[9px] ${c.textMuteded}`}>{v.best_for}</span>
               </div>
@@ -1234,7 +1234,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runAgenda} disabled={!agTopic.trim() || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn')}</>}
         </button>
       </div>
 
@@ -1339,10 +1339,10 @@ const MeetingBSDetector = ({ tool }) => {
         {/* Score slider */}
         <div className="mb-4">
           <label className={`text-xs font-bold ${c.label} block mb-2`}>
-            {t('mbd_sc_productive_label')} <span className="text-base ml-1">
+            {t('mbd_sc_productive_label')} <span className="text-base ms-1">
               {['😩', '😕', '😐', '🙂', '🤩'][scScore - 1]}
             </span>
-            <span className={`ml-1 ${c.textMuteded} font-normal`}>{t('mbd_sc_productive_value', { score: scScore })}</span>
+            <span className={`ms-1 ${c.textMuteded} font-normal`}>{t('mbd_sc_productive_value', { score: scScore })}</span>
           </label>
           <input type="range" min="1" max="5" value={scScore}
             onChange={e => setScScore(parseInt(e.target.value))}
@@ -1361,7 +1361,7 @@ const MeetingBSDetector = ({ tool }) => {
             { label: t('mbd_sc_toggle_all_needed'), val: scAllNeeded, set: setScAllNeeded, icon: '👥' },
           ].map((toggle, i) => (
             <button key={i} onClick={() => toggle.set(!toggle.val)}
-              className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-medium text-left min-h-[40px] transition-colors ${
+              className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-medium text-start min-h-[40px] transition-colors ${
                 toggle.val ? c.success : `${c.card}`
               }`}>
               <span>{toggle.val ? toggle.icon : '○'}</span>
@@ -1617,7 +1617,7 @@ const MeetingBSDetector = ({ tool }) => {
 
             <button onClick={runReport} disabled={loading}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn')}</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn')}</>}
             </button>
           </>
         )}
@@ -1760,7 +1760,7 @@ const MeetingBSDetector = ({ tool }) => {
             <div className="flex items-center gap-2 mb-2">
               <span className={`text-xs font-bold ${c.textSecondary}`}>#{i + 1}</span>
               {teamMeetings.length > 1 && (
-                <button onClick={() => removeTeamMeeting(i)} className={`ml-auto text-xs ${c.danger} min-h-[24px]`}>✕</button>
+                <button onClick={() => removeTeamMeeting(i)} className={`ms-auto text-xs ${c.danger} min-h-[24px]`}>✕</button>
               )}
             </div>
             <div className="grid grid-cols-2 gap-2 mb-2">
@@ -1796,7 +1796,7 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn_loading')}</> : <><span className="mr-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn')}</>}
+          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn')}</>}
         </button>
       </div>
 
@@ -2029,7 +2029,7 @@ const MeetingBSDetector = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🕵️'}</span>{tool?.title ?? t('mbd_title')}
+                  <span className="me-2">{tool?.icon ?? '🕵️'}</span>{tool?.title ?? t('mbd_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mbd_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('mbd_try_example')}</button>
@@ -2099,7 +2099,7 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>

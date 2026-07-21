@@ -593,7 +593,7 @@ const RentersDepositSaver = ({ tool }) => {
           <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🏦'}</span>{tool?.title ?? t('rds_title')}
+                <span className="me-2">{tool?.icon ?? '🏦'}</span>{tool?.title ?? t('rds_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rds_tagline')}</p>
               <button onClick={loadExample} disabled={loading || streamLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -816,7 +816,7 @@ const RentersDepositSaver = ({ tool }) => {
                     <span className="hidden sm:inline">{roomLabel(room.name)}</span>
                     {room.included && isComplete && <span>✓</span>}
                     {room.included && !isComplete && roomTotal > 0 && (
-                      <span className={`text-[10px] font-bold ml-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-400'}`}>
+                      <span className={`text-[10px] font-bold ms-0.5 ${isDark ? 'text-zinc-400' : 'text-zinc-400'}`}>
                         {roomDone}/{roomTotal}
                       </span>
                     )}
@@ -1072,7 +1072,7 @@ const RentersDepositSaver = ({ tool }) => {
                     {locationValid ? locationString : t('rds_set_location_step1')}
                   </span>
                   {!locationValid && (
-                    <button onClick={() => setStep(1)} className="text-xs font-bold text-cyan-600 hover:underline ml-auto">{t('rds_edit')}</button>
+                    <button onClick={() => setStep(1)} className="text-xs font-bold text-cyan-600 hover:underline ms-auto">{t('rds_edit')}</button>
                   )}
                 </div>
               </div>
@@ -1159,7 +1159,7 @@ const RentersDepositSaver = ({ tool }) => {
           {/* Section tabs — hidden on print so all sections flow cleanly */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-3 flex flex-wrap items-center gap-1.5 print:hidden`}>
             {streamLoading && (
-              <span className={`flex items-center gap-1.5 text-xs font-semibold mr-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+              <span className={`flex items-center gap-1.5 text-xs font-semibold me-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
                 <span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span>
                 {t('rds_generating')}
               </span>
@@ -1323,7 +1323,7 @@ const RentersDepositSaver = ({ tool }) => {
             {sessionHistory.map(h => (
               <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
                 <span className="truncate">{h.preview || t('rds_untitled')}</span>
-                <span className={`ml-3 shrink-0 ${c.textMuted}`}>{formatDate(h.date, userLocale)}</span>
+                <span className={`ms-3 shrink-0 ${c.textMuted}`}>{formatDate(h.date, userLocale)}</span>
               </div>
             ))}
           </div>

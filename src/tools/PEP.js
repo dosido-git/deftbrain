@@ -548,7 +548,7 @@ const PEP = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? t('pep_title')}
+                <span className="me-2">{tool?.icon ?? '✨'}</span>{tool?.title ?? t('pep_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pep_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('pep_try_example')}</button>
@@ -588,7 +588,7 @@ const PEP = ({ tool }) => {
       </div>
 
       {/* Checkin timer + fired */}
-      {checkinTimer && <div className={`${c.timer} border rounded-xl p-4 flex items-center justify-between`}><div><p className={`text-sm font-bold ${c.text}`}>🔔 {t('pep_checkin_scheduled')}</p>{checkinResult?.prep_tip && <p className={`text-xs ${c.textSecondary}`}>💡 {checkinResult.prep_tip}</p>}</div><div className="text-right"><span className={`text-lg font-bold ${c.text}`}>{formatMs(checkinRemaining)}</span><button onClick={() => { setCheckinTimer(null); clearInterval(timerRef.current); }} className={`block text-xs ${c.textMuted} mt-1`}>{t('pep_cancel')}</button></div></div>}
+      {checkinTimer && <div className={`${c.timer} border rounded-xl p-4 flex items-center justify-between`}><div><p className={`text-sm font-bold ${c.text}`}>🔔 {t('pep_checkin_scheduled')}</p>{checkinResult?.prep_tip && <p className={`text-xs ${c.textSecondary}`}>💡 {checkinResult.prep_tip}</p>}</div><div className="text-end"><span className={`text-lg font-bold ${c.text}`}>{formatMs(checkinRemaining)}</span><button onClick={() => { setCheckinTimer(null); clearInterval(timerRef.current); }} className={`block text-xs ${c.textMuted} mt-1`}>{t('pep_cancel')}</button></div></div>}
       {checkinRemaining === 0 && checkinResult && <div className={`${c.success} border-2 rounded-xl p-5 space-y-3`}><h4 className={`font-bold text-lg ${c.text}`}>⏰ {t('pep_time_to_recharge')}</h4><p className="text-sm">{checkinResult.reminder_message}</p>{checkinResult.suggested_activity && <ActivityCard activity={checkinResult.suggested_activity.activity} why={checkinResult.suggested_activity.why} duration={checkinResult.suggested_activity.duration} category="medium_recharge" showAdd showRate />}<button onClick={() => { setCheckinRemaining(null); setCheckinResult(null); }} className={`text-xs ${c.textMuted}`}>{t('pep_dismiss')}</button></div>}
 
       {/* Surprise Me lock */}
@@ -634,7 +634,7 @@ const PEP = ({ tool }) => {
 
       {/* Saved Sequences */}
       {showSavedSeqs && <div className={`${c.timer} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🌙 {t('pep_saved_routines')}</h4><button onClick={() => setShowSavedSeqs(false)} className={`text-xs ${c.textMuted}`}>✕</button></div>
-        {savedSequences.map(seq => <div key={seq.id} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex items-center justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{seq.sequence_name}</span><span className={`text-xs ${c.textMuted} ml-2`}>{seq.total_time} · {seq.arc}</span></div><div className="flex gap-2"><button onClick={() => { setSeqResult(seq); setSeqStep(0); setShowSavedSeqs(false); }} className={`text-xs font-bold px-2 py-1 rounded ${c.btnPrimary}`}>▶ {t('pep_play')}</button><button onClick={() => setSavedSequences(p => p.filter(s => s.id !== seq.id))} className={`text-xs ${c.textMuted}`}>🗑️</button></div></div><div className="flex gap-1 mt-1">{(seq.steps || []).map((s, i) => <span key={i} className={`text-xs ${c.textMuted}`}>{i + 1}. {s.activity.slice(0, 6)}{s.activity.length > 25 ? '...' : ''}</span>)}</div></div>)}
+        {savedSequences.map(seq => <div key={seq.id} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex items-center justify-between"><div><span className={`text-sm font-bold ${c.text}`}>{seq.sequence_name}</span><span className={`text-xs ${c.textMuted} ms-2`}>{seq.total_time} · {seq.arc}</span></div><div className="flex gap-2"><button onClick={() => { setSeqResult(seq); setSeqStep(0); setShowSavedSeqs(false); }} className={`text-xs font-bold px-2 py-1 rounded ${c.btnPrimary}`}>▶ {t('pep_play')}</button><button onClick={() => setSavedSequences(p => p.filter(s => s.id !== seq.id))} className={`text-xs ${c.textMuted}`}>🗑️</button></div></div><div className="flex gap-1 mt-1">{(seq.steps || []).map((s, i) => <span key={i} className={`text-xs ${c.textMuted}`}>{i + 1}. {s.activity.slice(0, 6)}{s.activity.length > 25 ? '...' : ''}</span>)}</div></div>)}
       </div>}
 
       {/* ═══ JUST DO THIS overlay ═══ */}
@@ -642,7 +642,7 @@ const PEP = ({ tool }) => {
         <div className="max-w-md w-full text-center space-y-6">
           <p className={`text-4xl`}>🧊</p>
           <h3 className={`text-xl font-bold ${c.text}`}>{t('pep_just_do_this')}</h3>
-          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'} rounded-xl p-6 text-left space-y-4`}>
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-600' : 'border-emerald-400'} rounded-xl p-6 text-start space-y-4`}>
             <p className={`text-lg font-bold ${c.text}`}>{justDoResult.activity}</p>
             <div className={`${c.success} border rounded-lg p-3`}><p className={`text-sm font-bold ${c.text}`}>→ {justDoResult.first_move}</p></div>
             <p className={`text-xs ${c.textSecondary}`}>{justDoResult.why_this}</p>
@@ -681,7 +681,7 @@ const PEP = ({ tool }) => {
         </div>
 
         <div className="flex gap-3">
-          <button onClick={handleGenerate} disabled={loading} className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_building')}</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>{t('pep_build_menu')}</>}</button>
+          <button onClick={handleGenerate} disabled={loading} className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_building')}</> : <><span className="me-1">{tool?.icon ?? '✨'}</span>{t('pep_build_menu')}</>}</button>
           <button onClick={handleSequence} disabled={seqLoading} className={`px-6 py-4 rounded-xl font-semibold text-sm shadow-lg ${seqLoading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : (isDark ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white')} disabled:opacity-40`}>{seqLoading ? (tool?.icon ?? '✨') : `🎯 ${t('pep_sequence')}`}</button>
         </div>
       </div>}
@@ -770,7 +770,7 @@ const PEP = ({ tool }) => {
             ))}
           </div>
           <button onClick={addBudgetTask} className={`w-full py-2 rounded-lg border-2 border-dashed text-sm font-semibold ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>➕ {t('pep_add_task')}</button>
-          <button onClick={handleBudget} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_budgeting')}</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>{t('pep_budget_my_energy')}</>}</button>
+          <button onClick={handleBudget} disabled={loading} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_budgeting')}</> : <><span className="me-1">{tool?.icon ?? '✨'}</span>{t('pep_budget_my_energy')}</>}</button>
         </div>
 
         {budgetResult && <div className="space-y-4">
@@ -785,7 +785,7 @@ const PEP = ({ tool }) => {
           <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
             <h4 className={`font-bold text-sm ${c.text}`}>📋 {t('pep_your_plan')}</h4>
             {(budgetResult.task_plan || []).sort((a, b) => (a.order || 0) - (b.order || 0)).map((tk, i) => (
-              <div key={i} className={`${c.cardAlt} border-l-4 rounded-r-lg p-3 ${tk.verdict === 'do' ? (isDark ? 'border-emerald-500' : 'border-emerald-400') : tk.verdict === 'defer' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-zinc-600' : 'border-gray-300')}`}>
+              <div key={i} className={`${c.cardAlt} border-s-4 rounded-e-lg p-3 ${tk.verdict === 'do' ? (isDark ? 'border-emerald-500' : 'border-emerald-400') : tk.verdict === 'defer' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-zinc-600' : 'border-gray-300')}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div><span className={`text-sm font-bold ${tk.verdict === 'drop' ? c.textMuted + ' line-through' : c.text}`}>{tk.task}</span><p className={`text-xs ${c.textSecondary} mt-0.5`}>{tk.reason}</p></div>
                   <div className="flex items-center gap-2 flex-shrink-0"><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tk.verdict === 'do' ? c.success : tk.verdict === 'defer' ? c.warning : c.danger} border`}>{tk.verdict}</span><span className={`text-xs ${c.textMuted}`}>{tk.cost} ⚡</span></div>
@@ -841,14 +841,14 @@ const PEP = ({ tool }) => {
                 <div className="flex gap-2 items-center">
                   <span className={`text-xs ${c.textMuted}`}>{t('pep_role')}</span>
                   {[['attending', t('pep_role_attending')], ['hosting', t('pep_role_hosting')], ['presenting', t('pep_role_presenting')]].map(([r, rl]) => <button key={r} onClick={() => updateForecastEvent(i, 'role', r)} className={`px-2 py-1 rounded text-xs border ${chip(ev.role === r)}`}>{rl}</button>)}
-                  <label className={`flex items-center gap-1 text-xs ${c.textSecondary} ml-auto`}><input type="checkbox" checked={ev.canLeave} onChange={e => updateForecastEvent(i, 'canLeave', e.target.checked)} /> {t('pep_can_leave')}</label>
+                  <label className={`flex items-center gap-1 text-xs ${c.textSecondary} ms-auto`}><input type="checkbox" checked={ev.canLeave} onChange={e => updateForecastEvent(i, 'canLeave', e.target.checked)} /> {t('pep_can_leave')}</label>
                 </div>
               </div>
             ))}
             <button onClick={addForecastEvent} className={`w-full py-2 rounded-lg border-2 border-dashed text-sm font-semibold ${isDark ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}>➕ {t('pep_add_event')}</button>
           </div>
 
-          <button onClick={handleForecast} disabled={loading || !forecastEvents.length} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !forecastEvents.length ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_forecasting')}</> : <><span className="mr-1">{tool?.icon ?? '✨'}</span>{t('pep_forecast_my_week')}</>}</button>
+          <button onClick={handleForecast} disabled={loading || !forecastEvents.length} className={`w-full py-4 rounded-xl font-semibold text-lg ${loading || !forecastEvents.length ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_forecasting')}</> : <><span className="me-1">{tool?.icon ?? '✨'}</span>{t('pep_forecast_my_week')}</>}</button>
         </div>
 
         : <div className="space-y-4">
@@ -863,10 +863,10 @@ const PEP = ({ tool }) => {
           <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-3`}>
             <h4 className={`font-bold text-sm ${c.text}`}>📊 {t('pep_event_drain')}</h4>
             {(forecastResult.forecast || []).map((f, i) => (
-              <div key={i} className={`${c.cardAlt} border-l-4 rounded-r-lg p-3 ${f.battery_after < 20 ? (isDark ? 'border-red-500' : 'border-red-400') : f.battery_after < 40 ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-emerald-500' : 'border-emerald-400')}`}>
+              <div key={i} className={`${c.cardAlt} border-s-4 rounded-e-lg p-3 ${f.battery_after < 20 ? (isDark ? 'border-red-500' : 'border-red-400') : f.battery_after < 40 ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-emerald-500' : 'border-emerald-400')}`}>
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{f.event}</span><span className={`text-xs ${c.textMuted} ml-2`}>{f.day}</span><p className={`text-xs ${c.textSecondary} mt-0.5`}>{f.cost_breakdown}</p>{f.recovery_needed && <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-0.5`}>🔌 {f.recovery_needed}</p>}</div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{f.event}</span><span className={`text-xs ${c.textMuted} ms-2`}>{f.day}</span><p className={`text-xs ${c.textSecondary} mt-0.5`}>{f.cost_breakdown}</p>{f.recovery_needed && <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-0.5`}>🔌 {f.recovery_needed}</p>}</div>
+                  <div className="text-end flex-shrink-0">
                     <span className={`text-xs font-bold ${f.energy_cost > 30 ? (isDark ? 'text-red-400' : 'text-red-600') : c.textMuted}`}>-{f.energy_cost}%</span>
                     <div className={`text-lg font-bold ${f.battery_after < 20 ? (isDark ? 'text-red-400' : 'text-red-600') : f.battery_after < 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-emerald-400' : 'text-emerald-600')}`}>{f.battery_after}%</div>
                   </div>

@@ -514,7 +514,7 @@ const PlainTalk = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('plt_title')}
+                <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('plt_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('plt_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -567,7 +567,7 @@ const PlainTalk = ({ tool }) => {
               <span className={`px-3 py-1 rounded-full text-xs font-bold border ${c.warningBox} ${c.accentTxt}`}>
                 {TEXT_TYPES.find(tt => tt.id === result.detected_type)?.emoji || '📄'}{' '}
                 {result.detected_type_label || result.detected_type}
-                {result.confidence && <span className={`ml-1 ${c.textMuteded}`}>· {t('plt_confidence', { level: result.confidence })}</span>}
+                {result.confidence && <span className={`ms-1 ${c.textMuteded}`}>· {t('plt_confidence', { level: result.confidence })}</span>}
               </span>
             </div>
           </div>
@@ -646,7 +646,7 @@ const PlainTalk = ({ tool }) => {
               }`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> {t('plt_analyzing')}</>
-                : <><span className="mr-1">{tool?.icon ?? '🔍'}</span> {t('plt_analyze')}</>}
+                : <><span className="me-1">{tool?.icon ?? '🔍'}</span> {t('plt_analyze')}</>}
             </button>
 
             {/* Pre-result cross-ref */}
@@ -1006,12 +1006,12 @@ const PlainTalk = ({ tool }) => {
                       return (
                         <div key={section.id} className={`rounded-xl border overflow-hidden ${isDark ? imp.dark : imp.light}`}>
                           <button onClick={() => toggleSection(section.id)}
-                            className="w-full flex items-center gap-3 p-3 text-left">
+                            className="w-full flex items-center gap-3 p-3 text-start">
                             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${imp.dot}`} />
                             <div className="flex-1 min-w-0">
                               <p className={`text-sm font-bold ${c.text} truncate`}>
                                 {section.title}
-                                {hasNote && <span className="ml-1">📝</span>}
+                                {hasNote && <span className="ms-1">📝</span>}
                               </p>
                               <p className={`text-xs ${c.textMuteded} truncate`}>{section.purpose}</p>
                             </div>
@@ -1135,17 +1135,17 @@ const PlainTalk = ({ tool }) => {
                       return (
                         <div key={section.id} className={`rounded-xl border overflow-hidden ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
                           <button onClick={() => toggleSection(section.id)}
-                            className={`w-full flex items-center gap-3 p-3 text-left ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
+                            className={`w-full flex items-center gap-3 p-3 text-start ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50'}`}>
                             <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${imp.dot}`} />
                             <p className={`text-sm font-bold ${c.text} flex-1`}>
                               {section.title}
-                              {annotations[section.id] && <span className="ml-1">📝</span>}
+                              {annotations[section.id] && <span className="ms-1">📝</span>}
                             </p>
                             <span className={c.textMuteded}>{isOpen ? '▲' : '▼'}</span>
                           </button>
                           {isOpen && (
                             <div className="grid grid-cols-1 md:grid-cols-2">
-                              <div className={`p-4 ${isDark ? 'bg-zinc-800 border-r border-zinc-700' : 'bg-white border-r border-zinc-200'}`}>
+                              <div className={`p-4 ${isDark ? 'bg-zinc-800 border-e border-zinc-700' : 'bg-white border-e border-zinc-200'}`}>
                                 <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('plt_original')}</p>
                                 <p className={`text-xs leading-relaxed ${c.textSecondary}`}>{section.original}</p>
                               </div>
@@ -1401,7 +1401,7 @@ const PlainTalk = ({ tool }) => {
                       <p className={`text-xs font-bold ${c.accentTxt} mb-2`}>❓ {fu.question}</p>
                       <p className={`text-sm leading-relaxed ${c.text} mb-3`}>{fu.answer}</p>
                       {fu.key_quote && (
-                        <blockquote className={`text-xs italic pl-3 border-l-2 ${isDark ? 'border-cyan-600 text-zinc-400' : 'border-cyan-300 text-zinc-500'}`}>
+                        <blockquote className={`text-xs italic ps-3 border-s-2 ${isDark ? 'border-cyan-600 text-zinc-400' : 'border-cyan-300 text-zinc-500'}`}>
                           "{fu.key_quote}"
                         </blockquote>
                       )}
@@ -1450,7 +1450,7 @@ const PlainTalk = ({ tool }) => {
           </div>
         )}
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('plt_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('plt_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

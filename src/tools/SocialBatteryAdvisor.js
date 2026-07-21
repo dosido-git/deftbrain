@@ -737,7 +737,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                 setInteractions([]);
                 setWeekLabel('');
               }}
-              className={`text-xs font-bold ${c.accentTxt} min-h-[28px] ml-2`}
+              className={`text-xs font-bold ${c.accentTxt} min-h-[28px] ms-2`}
             >
               {t('sea_cancel')}
             </button>
@@ -786,7 +786,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                 >
                   <span>{preset.icon}</span> {t(preset.labelKey)}
                   {count > 0 && (
-                    <span className={`ml-1 text-[9px] font-black px-1.5 py-0.5 rounded-full ${c.pillActive}`}>
+                    <span className={`ms-1 text-[9px] font-black px-1.5 py-0.5 rounded-full ${c.pillActive}`}>
                       {count}
                     </span>
                   )}
@@ -935,7 +935,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_auditing')}</>
               : editingEntryId
                 ? <><span>✏️</span> {t('sea_update_reaudit')}</>
-                : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_run_audit')}</>}
+                : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('sea_run_audit')}</>}
           </button>
         </div>
       </div>
@@ -1166,7 +1166,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
         <button onClick={runPlan} disabled={!upcoming.some(u => u.situation.trim()) || loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_planning')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_predict_week')}</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_planning')}</> : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('sea_predict_week')}</>}
         </button>
       </div>
 
@@ -1281,7 +1281,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
         <button onClick={runRecharge} disabled={loading}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_building_plan')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_get_recharge_plan')}</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_building_plan')}</> : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('sea_get_recharge_plan')}</>}
         </button>
       </div>
 
@@ -1549,7 +1549,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                   }`}>{d.energy}</span>
                   <div className="flex-1 min-w-0">
                     <span className={`text-[10px] font-bold ${c.text}`}>{DAY_LABEL_KEYS[d.day] ? t(DAY_LABEL_KEYS[d.day]) : d.day}</span>
-                    <span className={`text-[10px] ${c.textMuteded} ml-1`}>{new Date(d.date).toLocaleDateString()}</span>
+                    <span className={`text-[10px] ${c.textMuteded} ms-1`}>{new Date(d.date).toLocaleDateString()}</span>
                   </div>
                   {d.biggestDrain && <span className={`text-[9px] ${c.warningTxt} truncate max-w-[80px]`}>🔴 {d.biggestDrain}</span>}
                   {d.biggestRecharge && <span className={`text-[9px] ${c.successTxt} truncate max-w-[80px]`}>🟢 {d.biggestRecharge}</span>}
@@ -1588,7 +1588,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
         <button onClick={runForecast} disabled={loading || (!savedTemplate && !dailyCheckins.length)}
           className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_forecasting')}</> : <><span className="mr-1">{tool?.icon ?? '⚡'}</span> {t('sea_fc_generate')}</>}
+          {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_forecasting')}</> : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('sea_fc_generate')}</>}
         </button>
       </div>
 
@@ -1752,7 +1752,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                 const pct = Math.min(score, 100);
                 return (
                   <div key={entry.id} className="flex items-center gap-2">
-                    <span className={`text-[9px] ${c.textMuteded} w-16 truncate text-right flex-shrink-0`}>{entry.label?.split(' ').slice(-2).join(' ')}</span>
+                    <span className={`text-[9px] ${c.textMuteded} w-16 truncate text-end flex-shrink-0`}>{entry.label?.split(' ').slice(-2).join(' ')}</span>
                     <div className={`flex-1 h-3 rounded-full ${isDark ? 'bg-zinc-500' : 'bg-zinc-500'} overflow-hidden`}>
                       <div
                         className={`h-full rounded-full transition-all ${
@@ -2034,7 +2034,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="text-right">
+                    <div className="text-end">
                       {entry.energyScore && <p className={`text-sm font-black ${c.accentTxt}`}>{entry.energyScore}</p>}
                       {entry.verdict && (
                         <span className={`inline-block text-[8px] font-black px-2 py-0.5 rounded ${verdictColor(entry.verdict)}`}>
@@ -2072,7 +2072,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('sea_title')}
+                <span className="me-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('sea_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sea_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sea_try_example')}</button>
@@ -2108,7 +2108,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
       {view === 'journal' && renderJournal()}
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('sea_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('sea_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('sea_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('sea_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };
@@ -2125,7 +2125,7 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button
         onClick={() => setOpen(p => !p)}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
+        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
       >
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}

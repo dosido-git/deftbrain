@@ -500,7 +500,7 @@ const DifficultTalkCoach = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('dtc_title')}
+              <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('dtc_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dtc_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -727,7 +727,7 @@ const DifficultTalkCoach = ({ tool }) => {
 
               {/* Situation Reading */}
               {results.situation_reading && (
-                <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                   <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
                     <span className="text-lg">👁️</span> {t('dtc_situation_reading')}
                   </h3>
@@ -740,7 +740,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dtc_likely_defenses')}</p>
                       {results.situation_reading.defense_mechanisms?.map((d, i) => (
-                        <span key={i} className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mr-1 mb-1 ${c.warning} border`}>{d}</span>
+                        <span key={i} className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium me-1 mb-1 ${c.warning} border`}>{d}</span>
                       ))}
                     </div>
                     <div className={`p-3 rounded-lg ${c.success} border`}>
@@ -949,7 +949,7 @@ const DifficultTalkCoach = ({ tool }) => {
                 <div className={`${c.card} rounded-xl shadow-sm overflow-hidden`}>
                   <button
                     onClick={() => setExpandedPushback(p => !p)}
-                    className={`w-full p-5 flex items-center justify-between text-left`}
+                    className={`w-full p-5 flex items-center justify-between text-start`}
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-lg">🛡️</span>
@@ -1386,7 +1386,7 @@ const DifficultTalkCoach = ({ tool }) => {
                               </div>
                             </div>
                             {msg.coaching && (
-                              <div className={`ml-4 max-w-[85%] p-2.5 rounded-lg ${c.simCoach} border`}>
+                              <div className={`ms-4 max-w-[85%] p-2.5 rounded-lg ${c.simCoach} border`}>
                                 <p className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-0.5`}>{t('dtc_coach')}</p>
                                 <p className={`text-xs ${c.textSecondary}`}>{msg.coaching}</p>
                                 {msg.suggestion && <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-700'} mt-1`}>{t('dtc_try_inline')} "{msg.suggestion}"</p>}
@@ -1395,7 +1395,7 @@ const DifficultTalkCoach = ({ tool }) => {
                             )}
                             {/* Correction mechanism */}
                             {!msg._corrected && (
-                              <div className="ml-4">
+                              <div className="ms-4">
                                 {showCorrection === idx ? (
                                   <div className={`p-2 rounded-lg ${c.cardAlt} space-y-2`}>
                                     <input type="text" value={correctionText} onChange={e => setCorrectionText(e.target.value)}
@@ -1480,7 +1480,7 @@ const DifficultTalkCoach = ({ tool }) => {
               {practiceSummary && (
                 <div className="space-y-4">
                   {/* Readiness Score */}
-                  <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${
+                  <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${
                     practiceSummary.readiness_score >= 7 ? (isDark ? 'border-green-500' : 'border-green-400')
                       : practiceSummary.readiness_score >= 5 ? (isDark ? 'border-amber-500' : 'border-amber-400')
                       : (isDark ? 'border-red-500' : 'border-red-400')
@@ -1519,7 +1519,7 @@ const DifficultTalkCoach = ({ tool }) => {
                                 score >= 7 ? 'bg-green-500' : score >= 5 ? 'bg-amber-500' : 'bg-red-500'
                               }`} style={{ width: `${score * 10}%` }} />
                             </div>
-                            <span className={`text-xs font-bold w-6 text-right ${
+                            <span className={`text-xs font-bold w-6 text-end ${
                               score >= 7 ? (isDark ? 'text-green-400' : 'text-green-600')
                                 : score >= 5 ? (isDark ? 'text-amber-400' : 'text-amber-600')
                                 : (isDark ? 'text-red-400' : 'text-red-600')
@@ -1782,7 +1782,7 @@ const DifficultTalkCoach = ({ tool }) => {
                 <div className="space-y-4">
 
                   {debriefResults.overall_assessment && (
-                    <div className={`${c.card} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+                    <div className={`${c.card} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
                       <p className={`font-semibold ${c.text}`}>{debriefResults.overall_assessment}</p>
                     </div>
                   )}

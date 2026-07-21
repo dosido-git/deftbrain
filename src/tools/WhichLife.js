@@ -298,7 +298,7 @@ const WhichLife = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? t('cr_title')}
+                <span className="me-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? t('cr_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-0.5`}>
                 {tool?.tagline ?? t('cr_tagline')}
@@ -378,7 +378,7 @@ const WhichLife = ({ tool }) => {
           {/* Timeframe */}
           <div className="space-y-2">
             <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
+              <span className="me-1.5">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
             </label>
             {TIMEFRAME_OPTIONS.map(opt => (
               <button
@@ -524,7 +524,7 @@ const WhichLife = ({ tool }) => {
       {sessionHistory.length > 0 && (
         <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-left flex-1">
+            <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-start flex-1">
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{t('cr_past_decisions')}</span>
               <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -533,7 +533,7 @@ const WhichLife = ({ tool }) => {
             {showHistory && (
               <button
                 onClick={() => { setSessionHistory([]); setShowHistory(false); }}
-                className={`text-xs ${c.deleteTxt} transition-colors ml-2`}>
+                className={`text-xs ${c.deleteTxt} transition-colors ms-2`}>
                 {t('cr_clear_all')}
               </button>
             )}

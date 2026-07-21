@@ -1096,7 +1096,7 @@ async function decrypt(){
   // RENDER HELPERS
   // ══════════════════════════════════════════
   const renderToasts = () => toasts.length > 0 ? (
-    <div className="fixed top-4 right-4 z-50 space-y-2" style={{ maxWidth: '320px' }}>
+    <div className="fixed top-4 end-4 z-50 space-y-2" style={{ maxWidth: '320px' }}>
       {toasts.map(toast => (
         <div key={toast.id} className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? (isDark ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-600 text-white') : toast.type === 'error' ? (isDark ? 'bg-red-800 text-red-100' : 'bg-red-600 text-white') : (isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-zinc-700 text-white')}`}>
           {toast.type === 'success' ? '✅ ' : toast.type === 'error' ? '⚠️ ' : ''}{toast.msg}
@@ -1177,7 +1177,7 @@ async function decrypt(){
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
+            <span className="me-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('fws_try_example')}</button>
@@ -1231,22 +1231,22 @@ async function decrypt(){
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_guide_title')}</span></div>
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_guide_desc')}</p>
         </button>
         <button onClick={() => { setScreen('interview'); askNextQuestion(); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🧠</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_interview_title')}</span></div>
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_interview_desc')}</p>
         </button>
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>✏️</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_know_title')}</span></div>
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_know_desc')}</p>
         </button>
         <button onClick={() => setScreen('emergency')} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-left transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `border-red-300 ${isDark ? 'border-red-700 hover:border-red-500' : 'hover:border-red-400'}` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>🚨</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_emergency_title')}</span></div>
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
@@ -1315,7 +1315,7 @@ async function decrypt(){
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
           <button onClick={submitInterviewAnswer} disabled={loading || !interviewAnswer.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${interviewAnswer.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing_ellipsis')}</> : <><span className="mr-1">{tool?.icon ?? '📜'}</span>{t('fws_answer_continue')}</> }
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📜'}</span> {t('fws_processing_ellipsis')}</> : <><span className="me-1">{tool?.icon ?? '📜'}</span>{t('fws_answer_continue')}</> }
           </button>
           <button onClick={() => { setCurrentInterviewQ(null); askNextQuestion(); }}
             className={`px-4 py-2.5 rounded-xl text-sm font-semibold ${c.btnSecondary}`}>{t('fws_skip')}</button>
@@ -1605,7 +1605,7 @@ async function decrypt(){
           <div className="space-y-3 mb-5">
             {messages.map((msg, i) => (
               <button key={i} onClick={() => { setActiveMessageIndex(i); setMessageStep(msg.hasDraft ? 4 : 1); setEditingDraft(false); }}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${c.envelopeBg} ${c.cardAltHover}`}>
+                className={`w-full p-4 rounded-xl border-2 text-start transition-all ${c.envelopeBg} ${c.cardAltHover}`}>
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{msg.hasDraft ? '✉️' : '📝'}</span>
                   <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{msg.recipientName}</span>
@@ -1896,8 +1896,8 @@ async function decrypt(){
               <div className="relative">
                 <label htmlFor="fw-passphrase" className="sr-only">{t('fws_passphrase_sr_label')} <span className={c.required}>*</span></label>
                 <input id="fw-passphrase" type={showPassphrase ? 'text' : 'password'} value={passphrase} onChange={e => setPassphrase(e.target.value)} placeholder={t('fws_ph_passphrase')}
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pr-12`} />
-                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none pe-12`} />
+                <button onClick={() => setShowPassphrase(!showPassphrase)} className={`absolute end-3 top-1/2 -translate-y-1/2 text-xs ${c.textMuteded}`}>{showPassphrase ? '🙈' : '👁️'}</button>
               </div>
               <input type="text" value={passphraseHint} onChange={e => setPassphraseHint(e.target.value)} placeholder={t('fws_ph_passphrase_hint')}
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
@@ -1931,7 +1931,7 @@ async function decrypt(){
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
             {DELIVERY_LOCATIONS.map(loc => (
               <button key={loc.id} onClick={() => setDeliveryLocation(loc.id)}
-                className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-all ${deliveryLocation === loc.id ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
+                className={`p-2.5 rounded-lg border text-xs font-medium text-start transition-all ${deliveryLocation === loc.id ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : `${c.border} ${c.textMuteded}`}`}>
                 {loc.icon} {t(loc.labelKey)}
               </button>
             ))}
@@ -2050,7 +2050,7 @@ async function decrypt(){
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-1">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
+              <span className="me-1">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
             </h2>
             <p className={`text-xs ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
           </div>

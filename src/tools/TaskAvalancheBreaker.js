@@ -550,14 +550,14 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
       {/* Toast — fixed overlay, does not affect document flow */}
       {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${c.toastBg}`}>
+        <div className={`fixed top-4 start-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${c.toastBg}`}>
           {toast}
         </div>
       )}
 
       {/* Celebration — fixed overlay, does not affect document flow */}
       {showCelebration && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
+        <div className="fixed top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 animate-bounce">
           <div className={`${c.celebrationBg} border-4 rounded-2xl p-8 shadow-2xl`}>
             <div className="text-6xl mb-2">🎉</div>
             <div className="text-2xl font-bold">{t('tab_points_plus')}</div>
@@ -572,7 +572,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '⛏️'}</span>{tool?.title ?? t('tab_title')}
+                  <span className="me-2">{tool?.icon ?? '⛏️'}</span>{tool?.title ?? t('tab_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tab_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -720,7 +720,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
             <button onClick={handleBreakDown} disabled={loading || !canSubmitRef.current}
               className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading ? (<><span className="inline-block animate-spin">{tool?.icon ?? '⛏️'}</span> {t('tab_breaking')}</>)
-                : (<><span className="mr-1">{tool?.icon ?? '⛏️'}</span> {t('tab_break_btn')}</>)}
+                : (<><span className="me-1">{tool?.icon ?? '⛏️'}</span> {t('tab_break_btn')}</>)}
             </button>
           </div>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('tab_ai_disclaimer')}</p>
@@ -829,7 +829,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
       </div>
 
       {/* Supportive Banner */}
-      <div className={`${c.infoBox} border-l-4 rounded-r-lg p-5 transition-colors duration-200`}>
+      <div className={`${c.infoBox} border-s-4 rounded-e-lg p-5 transition-colors duration-200`}>
         <div className="flex items-start gap-3">
           <span className="text-xl flex-shrink-0 mt-0.5">⛰️</span>
           <div>
@@ -858,7 +858,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
           </div>
 
           {/* Project Overview */}
-          <div className={`${c.success} border-l-4 rounded-r-lg p-6`}>
+          <div className={`${c.success} border-s-4 rounded-e-lg p-6`}>
             <h3 className="text-xl font-bold mb-3">✨ {t('tab_overview_title')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -991,7 +991,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
                 {sessionLog.map(s => (
                   <div key={s.id} className="flex items-center justify-between">
                     <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
-                    <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{s.taskCount} {t('tab_tasks_suffix')}</span>
+                    <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{s.taskCount} {t('tab_tasks_suffix')}</span>
                   </div>
                 ))}
               </div>

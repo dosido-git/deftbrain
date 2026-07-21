@@ -349,7 +349,7 @@ const LeaseTrapDetector = ({ tool }) => {
         <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
           <div className="flex-1 min-w-0">
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '🏡'}</span>{tool?.title ?? t('ltd_title')}
+              <span className="me-2">{tool?.icon ?? '🏡'}</span>{tool?.title ?? t('ltd_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('ltd_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -452,11 +452,11 @@ const LeaseTrapDetector = ({ tool }) => {
             </p>
 
             <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
             </button>
             <p className={`text-xs text-center ${c.textMuted}`}>⏱️ {t('ltd_time_notice')}</p>
 
-            {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+            {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
             {sessionHistory.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
@@ -513,10 +513,10 @@ const LeaseTrapDetector = ({ tool }) => {
                     placeholder={t('ltd_missing_concerns_ph')}
                     className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                 </div>
-                {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+                {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
                 <button onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
                   className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
-                  {missingLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
+                  {missingLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
                 </button>
                 <p className={`text-center text-xs ${c.textMuted}`}>{t('ltd_disclaimer_attorney')}</p>
               </div>
@@ -554,7 +554,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     const expanded = expandedSections[`miss-${i}`];
                     return (
                       <div key={i} className={`rounded-xl border overflow-hidden`}>
-                        <button onClick={() => toggle(`miss-${i}`)} className={`w-full p-4 text-left flex items-start justify-between gap-3 ${isDark ? 'bg-zinc-700/40 hover:bg-zinc-700/60' : 'bg-zinc-50 hover:bg-zinc-100'}`}>
+                        <button onClick={() => toggle(`miss-${i}`)} className={`w-full p-4 text-start flex items-start justify-between gap-3 ${isDark ? 'bg-zinc-700/40 hover:bg-zinc-700/60' : 'bg-zinc-50 hover:bg-zinc-100'}`}>
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${riskColor}`}>{p.risk_if_absent === 'high' ? t('ltd_risk_high') : p.risk_if_absent === 'medium' ? t('ltd_risk_medium') : t('ltd_risk_low')}</span>
                             <span className={`text-sm font-bold ${c.text} truncate`}>{p.protection}</span>
@@ -665,9 +665,9 @@ const LeaseTrapDetector = ({ tool }) => {
             {results.overall_assessment && (() => {
               const oa = results.overall_assessment;
               const riskIcon = oa.risk_level === 'high' ? '🚨' : oa.risk_level === 'medium' ? '⚠️' : '✅';
-              const riskBorder = oa.risk_level === 'high' ? 'border-l-red-500' : oa.risk_level === 'medium' ? 'border-l-amber-500' : 'border-l-emerald-500';
+              const riskBorder = oa.risk_level === 'high' ? 'border-s-red-500' : oa.risk_level === 'medium' ? 'border-s-amber-500' : 'border-s-emerald-500';
               return (
-                <div className={`${c.card} border rounded-2xl p-5 border-l-4 ${riskBorder}`}>
+                <div className={`${c.card} border rounded-2xl p-5 border-s-4 ${riskBorder}`}>
                   <div className="flex items-start gap-3">
                     <span className="text-3xl">{riskIcon}</span>
                     <div className="flex-1">
@@ -760,14 +760,14 @@ const LeaseTrapDetector = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('ltd_red_flags')} ({results.red_flags.length})</p>
                 <div className="space-y-5">
                   {results.red_flags.map((flag, idx) => (
-                    <div key={idx} className="border-l-4 border-red-500 pl-4">
+                    <div key={idx} className="border-s-4 border-red-500 ps-4">
                       <div className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-red-900/20' : 'bg-red-50'}`}>
                         <RefBadge reference={flag.lease_reference} color={isDark ? 'bg-red-800/50 text-red-300' : 'bg-red-200 text-red-800'} />
                         <p className={`text-sm font-mono ${c.text}`}>"{flag.clause_text}"</p>
                       </div>
                       <div className="flex items-start justify-between mb-2">
                         <p className={`font-bold ${isDark ? 'text-red-400' : 'text-red-700'}`}>⚠️ {flag.concern}</p>
-                        {flag.negotiability && getNegBadge(flag.negotiability) && <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ml-2 flex-shrink-0 ${getNegBadge(flag.negotiability).cls}`}>{getNegBadge(flag.negotiability).label}</span>}
+                        {flag.negotiability && getNegBadge(flag.negotiability) && <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ms-2 flex-shrink-0 ${getNegBadge(flag.negotiability).cls}`}>{getNegBadge(flag.negotiability).label}</span>}
                       </div>
                       {flag.specific_law && <div className={`p-2 rounded-lg mb-2 ${isDark ? 'bg-zinc-700' : 'bg-zinc-50'}`}><p className={`text-[10px] font-bold ${c.textMuted}`}>{flag.legal_status?.toUpperCase()}: <span className="font-mono">{flag.specific_law}</span></p></div>}
                       <button onClick={() => toggle(`red-${idx}`)} className={`text-xs font-bold ${c.textSecondary} hover:underline`}>{expandedSections[`red-${idx}`] ? t('ltd_hide_scripts') : t('ltd_scripts_rights')}</button>
@@ -793,7 +793,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {expandedSections.yellow && (
                   <div className="mt-4 space-y-4">
                     {results.yellow_flags.map((flag, idx) => (
-                      <div key={idx} className="border-l-4 border-amber-500 pl-4">
+                      <div key={idx} className="border-s-4 border-amber-500 ps-4">
                         <div className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'}`}>
                           <RefBadge reference={flag.lease_reference} color={isDark ? 'bg-amber-800/50 text-amber-300' : 'bg-amber-200 text-amber-800'} />
                           <p className={`text-sm font-mono ${c.text}`}>"{flag.clause_text}"</p>
@@ -822,7 +822,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {expandedSections.unenforceable && (
                   <div className="mt-4 space-y-3">
                     {results.unenforceable_clauses.map((cl, idx) => (
-                      <div key={idx} className={`border-l-4 border-cyan-500 pl-4 p-3 rounded-xl ${c.cardAlt} border`}>
+                      <div key={idx} className={`border-s-4 border-cyan-500 ps-4 p-3 rounded-xl ${c.cardAlt} border`}>
                         <RefBadge reference={cl.lease_reference} color={isDark ? 'bg-cyan-800/50 text-cyan-300' : 'bg-cyan-200 text-cyan-800'} />
                         <p className={`text-sm font-mono ${c.textSecondary} mb-2`}>"{cl.clause_text}"</p>
                         <p className={`text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-700'} mb-1`}>⚖️ {cl.specific_law}</p>
@@ -845,7 +845,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 {expandedSections.green && (
                   <div className="mt-4 space-y-2">
                     {results.green_flags.map((f, i) => (
-                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border border-l-4 border-l-emerald-500`}>
+                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border border-s-4 border-s-emerald-500`}>
                         <p className={`text-sm font-mono ${c.textSecondary} mb-1`}>"{f.clause_text}"</p>
                         <p className={`text-xs ${c.text}`}>✓ {f.why_good}</p>
                       </div>
@@ -909,7 +909,7 @@ const LeaseTrapDetector = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('ltd_renewal_traps')}</p>
-                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{renewalLoading ? <span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> : <span className="mr-1">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? t('ltd_analyzing') : t('ltd_analyze')}</button>}
+                {!renewalTraps && <button onClick={analyzeRenewalTraps} disabled={renewalLoading} className={`text-xs font-bold px-3 py-1.5 rounded-lg ${c.btnPrimary} disabled:opacity-40`}>{renewalLoading ? <span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> : <span className="me-1">{tool?.icon ?? '🏡'}</span>}{renewalLoading ? t('ltd_analyzing') : t('ltd_analyze')}</button>}
               </div>
               {!renewalTraps && !renewalLoading && <p className={`text-xs ${c.textMuted}`}>{t('ltd_renewal_hint')}</p>}
               {renewalTraps && (
@@ -963,7 +963,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
             {/* Negotiation Strategy */}
             {results.negotiation_strategy && (
-              <div className={`${c.card} border rounded-2xl p-5 border-l-4 border-l-cyan-500`}>
+              <div className={`${c.card} border rounded-2xl p-5 border-s-4 border-s-cyan-500`}>
                 <button onClick={() => toggle('negotiation')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_negotiation_strategy')}</p>
                   <span className={`text-xs ${c.textMuted}`}>{expandedSections.negotiation ? '▲' : '▼'}</span>
@@ -1021,7 +1021,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     ))}
                     <input type="text" value={propertyAddress} onChange={e => setPropertyAddress(e.target.value)} placeholder={t('ltd_property_address_ph')} className={`w-full px-3 py-2 rounded-xl border-2 text-base ${c.input}`} />
                     <button onClick={generateAmendment} disabled={amendmentLoading || !amendmentClauses.length} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                      {amendmentLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generating')}</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span>{t('ltd_generate_amendment', { count: amendmentClauses.length })}</>}
+                      {amendmentLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generating')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_generate_amendment', { count: amendmentClauses.length })}</>}
                     </button>
                   </div>
                 )}
@@ -1047,8 +1047,8 @@ const LeaseTrapDetector = ({ tool }) => {
               <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_personalized_checklist')}</p>
               {!checklist && (
                 <div className="flex gap-3">
-                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_in')}</>}</button>
-                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="mr-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_out')}</>}</button>
+                  <button onClick={() => generateChecklist('move_in')} disabled={checklistLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_in' ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_in')}</>}</button>
+                  <button onClick={() => generateChecklist('move_out')} disabled={checklistLoading} className={`flex-1 py-3 rounded-xl font-bold ${c.btnSecondary} disabled:opacity-40`}>{checklistLoading && checklistType === 'move_out' ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_loading_short')}</> : <><span className="me-1">{tool?.icon ?? '🏡'}</span> {t('ltd_move_out')}</>}</button>
                 </div>
               )}
               {checklist && (
@@ -1100,7 +1100,7 @@ const LeaseTrapDetector = ({ tool }) => {
                   <input type="text" value={landlordName} onChange={e => setLandlordName(e.target.value)} placeholder={t('ltd_landlord_name_ph')} className={`w-full px-3 py-2.5 rounded-xl border-2 text-base ${c.input}`} />
                   <input type="text" value={tenantName} onChange={e => setTenantName(e.target.value)} placeholder={t('ltd_tenant_name_ph')} className={`w-full px-3 py-2.5 rounded-xl border-2 text-base ${c.input}`} />
                   <button onClick={generateEmail} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-                    {emailLoading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_drafting')}</> : <><span className="mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generate')}</>}
+                    {emailLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_drafting')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_generate')}</>}
                   </button>
                 </div>
               )}
@@ -1155,12 +1155,12 @@ const LeaseTrapDetector = ({ tool }) => {
                 {!comparison && (
                   <div className="space-y-2">
                     {savedAnalyses.map(sa => (
-                      <button key={sa.id} onClick={() => { setCompareTarget(sa); runComparison(sa); }} disabled={compareLoading} className={`block w-full text-left p-3 rounded-xl ${c.btnSoft} border ${c.border} disabled:opacity-40`}>
+                      <button key={sa.id} onClick={() => { setCompareTarget(sa); runComparison(sa); }} disabled={compareLoading} className={`block w-full text-start p-3 rounded-xl ${c.btnSoft} border ${c.border} disabled:opacity-40`}>
                         <p className={`text-sm font-bold ${c.text}`}>{sa.name}</p>
                         <p className={`text-xs ${c.textMuted}`}>{new Date(sa.date).toLocaleDateString()}</p>
                       </button>
                     ))}
-                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🏡'}</span> {t('ltd_comparing')}</p>}
+                    {compareLoading && <p className={`text-sm text-center ${c.textMuted}`}><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_comparing')}</p>}
                   </div>
                 )}
                 {comparison && (

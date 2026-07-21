@@ -207,7 +207,7 @@ function ContractDecoder({ tool }) {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={`text-xl font-bold ${c.text}`}>
-          <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('cd_title')}
+          <span className="me-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('cd_title')}
         </h2>
         <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cd_tagline')}</p>
         <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -220,7 +220,7 @@ function ContractDecoder({ tool }) {
           {CONTRACT_TYPES.map(ct => (
             <button key={ct.id} onClick={() => setContractType(ct.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${contractType === ct.id ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-1">{ct.icon}</span>{ct.label}
+              <span className="me-1">{ct.icon}</span>{ct.label}
             </button>
           ))}
         </div>
@@ -279,7 +279,7 @@ function ContractDecoder({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('cd_analyzing')}</>
-          : <><span className="mr-1">{tool?.icon ?? '📋'}</span> {t('cd_decode')}</>}
+          : <><span className="me-1">{tool?.icon ?? '📋'}</span> {t('cd_decode')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -420,7 +420,7 @@ function ContractDecoder({ tool }) {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('cd_title')}
+                  <span className="me-2">{tool?.icon ?? '📋'}</span>{tool?.title ?? t('cd_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cd_tagline')}</p>
               </div>
@@ -450,12 +450,12 @@ export default ContractDecoder;
 
 function InlineClause({ clause, isDark, c, t }) {
   const riskCfg = {
-    high:   { border: 'border-l-red-500',     badge: isDark ? 'bg-red-900/40 border-red-700 text-red-300'         : 'bg-red-50 border-red-300 text-red-700',         icon: '🚨' },
-    medium: { border: 'border-l-amber-500',   badge: isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300'   : 'bg-amber-50 border-amber-300 text-amber-700',   icon: '⚠️' },
-    low:    { border: 'border-l-emerald-500', badge: isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-700', icon: '✅' },
-  }[clause?.risk_level] ?? { border: 'border-l-zinc-500', badge: '', icon: '📋' };
+    high:   { border: 'border-s-red-500',     badge: isDark ? 'bg-red-900/40 border-red-700 text-red-300'         : 'bg-red-50 border-red-300 text-red-700',         icon: '🚨' },
+    medium: { border: 'border-s-amber-500',   badge: isDark ? 'bg-amber-900/40 border-amber-700 text-amber-300'   : 'bg-amber-50 border-amber-300 text-amber-700',   icon: '⚠️' },
+    low:    { border: 'border-s-emerald-500', badge: isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-700', icon: '✅' },
+  }[clause?.risk_level] ?? { border: 'border-s-zinc-500', badge: '', icon: '📋' };
 
-  return <div className={`${c.cardAlt} border border-l-4 ${riskCfg.border} ${c.border} rounded-xl p-4 space-y-2`}>
+  return <div className={`${c.cardAlt} border border-s-4 ${riskCfg.border} ${c.border} rounded-xl p-4 space-y-2`}>
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-base">{riskCfg.icon}</span>
         <span className={`font-bold text-sm ${c.text}`}>{clause?.clause_name}</span>

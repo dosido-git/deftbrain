@@ -442,7 +442,7 @@ const GentlePushGenerator = ({ tool }) => {
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
+              <span className="me-2">{tool?.icon ?? '🫸'}</span>{tool?.title ?? t('gpg_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
             {mode === 'setup' && (
@@ -619,7 +619,7 @@ const GentlePushGenerator = ({ tool }) => {
               {growthArea.trim() && (
                 <button onClick={handleLadder} disabled={loading}
                   className={`text-xs px-3 py-1.5 rounded-lg font-medium ${c.tag} disabled:opacity-40`}>
-                  {loading ? <span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🫸'}</span> : <span className='mr-1'>{tool?.icon ?? '🫸'}</span>} {t('gpg_escalation_ladder_btn')}
+                  {loading ? <span className='animate-spin inline-block me-1'>{tool?.icon ?? '🫸'}</span> : <span className='me-1'>{tool?.icon ?? '🫸'}</span>} {t('gpg_escalation_ladder_btn')}
                 </button>
               )}
               <button onClick={() => setView('inventory')}
@@ -738,7 +738,7 @@ const GentlePushGenerator = ({ tool }) => {
           {/* Generate button */}
           <button onClick={handleGenerate} disabled={loading || !growthArea.trim()}
             className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 transition-all shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_generating')}</span> : <span><span className="mr-1">{tool?.icon ?? '🫸'}</span> {t('gpg_generate_3')}</span>}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_generating')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span> {t('gpg_generate_3')}</span>}
           </button>
 
           {/* Pre-result cross-ref */}
@@ -763,7 +763,7 @@ const GentlePushGenerator = ({ tool }) => {
                         <span className="text-xs">{ic.icon}</span>
                         <p className={`text-xs ${c.text} truncate`}>{p.challenge}</p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                      <div className="flex items-center gap-2 flex-shrink-0 ms-2">
                         {p.attempted ? <span className="text-[10px]">✅</span> : <span className="text-[10px]">⏭️</span>}
                         {p.scariness > 0 && <span className={`text-[9px] ${c.textMuted}`}>{p.scariness}/5</span>}
                         <span className={`text-[9px] ${c.textMuted}`}>{new Date(p.date).toLocaleDateString()}</span>
@@ -814,11 +814,11 @@ const GentlePushGenerator = ({ tool }) => {
               const cc = intensityColor(ic.color);
               return (
                 <button key={i} onClick={() => pickPush(push)}
-                  className={`w-full text-left ${cc.bg} border-2 rounded-xl p-5 space-y-2 transition-all hover:ring-2 ${cc.ring} hover:shadow-md`}>
+                  className={`w-full text-start ${cc.bg} border-2 rounded-xl p-5 space-y-2 transition-all hover:ring-2 ${cc.ring} hover:shadow-md`}>
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{ic.icon}</span>
                     <span className={`text-xs font-bold uppercase ${cc.text}`}>{t(ic.labelKey)}</span>
-                    {push.time_frame && <span className={`text-[9px] ${c.textMuted} ml-auto`}>{push.time_frame}</span>}
+                    {push.time_frame && <span className={`text-[9px] ${c.textMuted} ms-auto`}>{push.time_frame}</span>}
                   </div>
                   <p className={`text-base font-semibold ${c.text}`}>{push.challenge}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{push.why_this_size}</p>
@@ -859,7 +859,7 @@ const GentlePushGenerator = ({ tool }) => {
               <div className="flex gap-2">
                 <button onClick={handleRegenerate} disabled={loading || (!feedbackType && !feedbackCustom.trim())}
                   className={`flex-1 py-2.5 rounded-lg font-medium text-sm ${c.btnPrimary} ${c.text} disabled:opacity-40`}>
-                  {loading ? <span className='animate-spin inline-block mr-1'>{tool?.icon ?? '🫸'}</span> : <span className='mr-1'>{tool?.icon ?? '🫸'}</span>} {t('gpg_generate_new')}
+                  {loading ? <span className='animate-spin inline-block me-1'>{tool?.icon ?? '🫸'}</span> : <span className='me-1'>{tool?.icon ?? '🫸'}</span>} {t('gpg_generate_new')}
                 </button>
                 <button onClick={() => { setShowFeedback(false); setFeedbackType(''); setFeedbackCustom(''); }}
                   className={`px-4 py-2.5 rounded-lg text-sm ${c.tag}`}>{t('gpg_cancel')}</button>
@@ -934,7 +934,7 @@ const GentlePushGenerator = ({ tool }) => {
               isDark ? 'bg-gradient-to-r from-orange-900/50 to-red-900/50 border-orange-600 text-orange-200 hover:border-orange-400'
                      : 'bg-gradient-to-r from-orange-50 to-red-50 border-orange-300 text-orange-800 hover:border-orange-500'
             }`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_countdown_preparing')}</span> : <span><span className="mr-1">{tool?.icon ?? '🫸'}</span> {t('gpg_countdown_cta')}</span>}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_countdown_preparing')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span> {t('gpg_countdown_cta')}</span>}
           </button>
 
           {/* Action buttons */}
@@ -1043,7 +1043,7 @@ const GentlePushGenerator = ({ tool }) => {
 
           <button onClick={handleReflect} disabled={loading}
             className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 shadow-lg`}>
-            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_reflecting')}</span> : <span><span className="mr-1">{tool?.icon ?? '🫸'}</span> {t('gpg_get_reflection')}</span>}
+            {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_reflecting')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span> {t('gpg_get_reflection')}</span>}
           </button>
 
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.danger}`}><span>⚠️</span> {error}</p></div>}
@@ -1303,7 +1303,7 @@ const GentlePushGenerator = ({ tool }) => {
                   </p>
                   <p className={`text-[9px] ${c.textMuted}`}>{t('gpg_avg_gap')}</p>
                 </div>
-                <div className={`flex-1 text-left`}>
+                <div className={`flex-1 text-start`}>
                   <p className={`text-xs ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>
                     {predictionGap.overpredict
                       ? t('gpg_overpredict_long', { gap: predictionGap.avgGap })
@@ -1473,14 +1473,14 @@ const GentlePushGenerator = ({ tool }) => {
               const isPast = rung.level < (ld.current_position || 0);
               const scareColors = [
                 '', // 0
-                isDark ? 'border-l-emerald-500' : 'border-l-emerald-400',
-                isDark ? 'border-l-cyan-500' : 'border-l-cyan-400',
-                isDark ? 'border-l-amber-500' : 'border-l-amber-400',
-                isDark ? 'border-l-orange-500' : 'border-l-orange-400',
-                isDark ? 'border-l-red-500' : 'border-l-red-400',
+                isDark ? 'border-s-emerald-500' : 'border-s-emerald-400',
+                isDark ? 'border-s-cyan-500' : 'border-s-cyan-400',
+                isDark ? 'border-s-amber-500' : 'border-s-amber-400',
+                isDark ? 'border-s-orange-500' : 'border-s-orange-400',
+                isDark ? 'border-s-red-500' : 'border-s-red-400',
               ];
               return (
-                <div key={i} className={`p-4 rounded-xl border-l-4 transition-all ${scareColors[rung.estimated_scariness] || ''} ${
+                <div key={i} className={`p-4 rounded-xl border-s-4 transition-all ${scareColors[rung.estimated_scariness] || ''} ${
                   isCurrent ? (isDark ? 'bg-emerald-900/30 border border-emerald-600' : 'bg-emerald-50 border border-emerald-300')
                   : isPast ? (isDark ? 'bg-zinc-700/30 opacity-60' : 'bg-gray-50 opacity-60')
                   : (c.card + ' border')

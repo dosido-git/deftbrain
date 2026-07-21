@@ -683,7 +683,7 @@ const NameAudit = ({ tool }) => {
                 <div className={`w-full rounded-t ${barColor} transition-all`} style={{ height: `${pct}%`, minHeight: '4px' }}></div>
                 <p className={`text-[8px] ${c.textMuteded} truncate max-w-full`}>{entry.name?.slice(0, 6)}</p>
                 {/* Tooltip */}
-                <div className={`absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10 px-2 py-1 rounded text-xs whitespace-nowrap ${isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'}`}>
+                <div className={`absolute bottom-full mb-1 start-1/2 -translate-x-1/2 hidden group-hover:block z-10 px-2 py-1 rounded text-xs whitespace-nowrap ${isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'}`}>
                   {t('nau_evolution_tooltip', { name: entry.name, score: entry.score, grade: entry.grade })}
                 </div>
               </div>
@@ -844,12 +844,12 @@ const NameAudit = ({ tool }) => {
     if (score == null) return null;
     const pct = (score / max) * 100;
     return (
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-2 ms-auto">
         <div className={`w-16 h-1.5 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}>
           <div className={`h-full rounded-full transition-all duration-700 ${scoreBg(score, max)}`}
             style={{ width: `${pct}%` }} />
         </div>
-        <span className={`text-xs font-bold ${scoreColor(score, max)} w-6 text-right`}>{score}/{max}</span>
+        <span className={`text-xs font-bold ${scoreColor(score, max)} w-6 text-end`}>{score}/{max}</span>
       </div>
     );
   };
@@ -1020,7 +1020,7 @@ const NameAudit = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('nau_title')}
+                  <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('nau_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('nau_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('nau_try_example')}</button>
@@ -1138,7 +1138,7 @@ const NameAudit = ({ tool }) => {
             (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
           } disabled:opacity-40`}>
           {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? t('nau_analyzing') : t('nau_comparing')}</>)
-            : (<><span className="mr-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? t('nau_btn_analyze') : t('nau_btn_compare')}</>)}
+            : (<><span className="me-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? t('nau_btn_analyze') : t('nau_btn_compare')}</>)}
           </button>
 
           {/* Audit History */}
@@ -1226,7 +1226,7 @@ const NameAudit = ({ tool }) => {
 
           {/* Winner */}
           {compareResults.winner && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">🏆</span>
                 <h3 className={`text-xl font-bold ${c.text}`}>{compareResults.winner.name}</h3>
@@ -1347,7 +1347,7 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Overall Verdict */}
-          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-l-4 ${
+          <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${
             results.overall_grade === 'STRONG' || results.overall_grade === 'GOOD' ? (isDark ? 'border-green-500' : 'border-green-400')
             : results.overall_grade === 'FAIR' ? (isDark ? 'border-amber-500' : 'border-amber-400')
             : (isDark ? 'border-red-500' : 'border-red-400')
@@ -1593,7 +1593,7 @@ const NameAudit = ({ tool }) => {
                     <span className="flex-shrink-0">{flag.severity === 'problem' ? '❌' : '⚠️'}</span>
                     <div>
                       <span className="font-semibold">{flag.language}:</span>
-                      <span className="ml-1">{flag.issue}</span>
+                      <span className="ms-1">{flag.issue}</span>
                     </div>
                   </div>
                 ))}

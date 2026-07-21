@@ -675,7 +675,7 @@ const SubscriptionTamer = ({ tool }) => {
                       <span className={`text-xs font-bold ${c.textMuted}`}>{currency}</span>
                       <input type="number" value={sub.cost} onChange={e => updateSub(sub.id, 'cost', e.target.value)}
                         placeholder="0.00"
-                        className={`w-20 px-2 py-2 border rounded-lg text-xs text-right ${c.input} outline-none focus:ring-1`} />
+                        className={`w-20 px-2 py-2 border rounded-lg text-xs text-end ${c.input} outline-none focus:ring-1`} />
                     </div>
                     <select value={sub.cycle} onChange={e => updateSub(sub.id, 'cycle', e.target.value)}
                       className={`px-2 py-2 border rounded-lg text-xs ${c.input} outline-none`}>
@@ -720,7 +720,7 @@ const SubscriptionTamer = ({ tool }) => {
         <div className="flex flex-wrap gap-3 mt-5">
           <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
             className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '🧹'}</span> {t('ss_analyze_btn')}</>}
+            {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧹'}</span> {t('ss_analyze_btn')}</>}
           </button>
         </div>
       </div>
@@ -856,7 +856,7 @@ const SubscriptionTamer = ({ tool }) => {
               return (
                 <div key={idx} className={`${c.card} border rounded-xl overflow-hidden`}>
                   <button onClick={() => setExpandedCards(p => ({ ...p, [idx]: !p[idx] }))}
-                    className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                    className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                     <div className="flex items-center gap-3">
                       <span className={`text-[9px] font-black px-2 py-1 rounded ${verdictColor}`}>
                         {sub.verdict === 'keep' ? t('ss_v_keep') : sub.verdict === 'cancel' ? t('ss_v_cut') : t('ss_v_maybe')}
@@ -1518,7 +1518,7 @@ const SubscriptionTamer = ({ tool }) => {
                   <span className={c.textMuted}>{fm(s.prevCost, currency)} → {fm(s.cost, currency)}</span>
                   <span className={`font-black ${c.danger}`}>+{s.pctIncrease}%</span>
                   <button onClick={() => { setNegService(s.name); setNegCost(String(s.cost)); setView('negotiate'); }}
-                    className={`ml-auto text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>
+                    className={`ms-auto text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>
                     {t('ss_radar_negotiate')}
                   </button>
                 </div>
@@ -1580,7 +1580,7 @@ const SubscriptionTamer = ({ tool }) => {
                   <span className={`text-xs ${c.textMuted}`}>{fm(monthlyEquiv(sub.cost, sub.cycle).toFixed(2), currency)}{t('ss_opt_per_mo_short')}</span>
                 </div>
                 {sub.shared && (
-                  <div className="mt-2 ml-6">
+                  <div className="mt-2 ms-6">
                     <div className="flex flex-wrap gap-1 mb-1.5">
                       {(sub.sharedWith || []).map((name, i) => (
                         <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full ${c.badge} font-bold flex items-center gap-1`}>
@@ -1766,7 +1766,7 @@ const SubscriptionTamer = ({ tool }) => {
                       </span>
                     )}
 
-                    <div className="ml-auto flex gap-1">
+                    <div className="ms-auto flex gap-1">
                       {!expired && (
                         <button onClick={() => convertToSub(trial)}
                           className={`text-[10px] font-bold ${c.textSecondary} underline min-h-[24px]`}>{t('ss_trial_keep')}</button>
@@ -1837,7 +1837,7 @@ const SubscriptionTamer = ({ tool }) => {
                       persistBudgets(updated);
                     }}
                       placeholder="—"
-                      className={`w-16 px-1.5 py-1 border rounded text-[10px] text-right ${c.input} outline-none ${
+                      className={`w-16 px-1.5 py-1 border rounded text-[10px] text-end ${c.input} outline-none ${
                         over ? (isDark ? 'border-red-600' : 'border-red-400') : ''
                       }`} />
                   </div>
@@ -1911,7 +1911,7 @@ const SubscriptionTamer = ({ tool }) => {
                   {fm(Object.values(catBudgets).reduce((sum, v) => sum + (Number(v) || 0), 0), currency)}{t('ss_opt_per_mo_short')}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <p className={`text-[10px] font-bold ${c.labelText} uppercase`}>{t('ss_budget_total_spending')}</p>
                 <p className={`text-lg font-black ${totalMonthly > Object.values(catBudgets).reduce((s, v) => s + (Number(v) || 0), 0) ? c.danger : c.success}`}>
                   {fm(totalMonthly.toFixed(2), currency)}{t('ss_opt_per_mo_short')}
@@ -1934,7 +1934,7 @@ const SubscriptionTamer = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚔️'}</span>{tool?.title ?? 'Subscription Tamer'}
+                <span className="me-2">{tool?.icon ?? '⚔️'}</span>{tool?.title ?? 'Subscription Tamer'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ss_tagline')}</p>
               <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -1984,7 +1984,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   const [open, setOpen] = useState(defaultOpen);
   const ui = (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-left min-h-[44px]">
+      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-start min-h-[44px]">
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
         {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}

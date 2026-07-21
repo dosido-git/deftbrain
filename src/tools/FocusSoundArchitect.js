@@ -1382,7 +1382,7 @@ const FocusSoundArchitect = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? t('fsa_title')}
+              <span className="me-2">{tool?.icon ?? ' 🎧'}</span>{tool?.title ?? t('fsa_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fsa_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('fsa_try_example')}</button>
@@ -1408,7 +1408,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {QUICK_PRESETS.map(p => (
                 <button key={p.id} onClick={() => loadPreset(p)}
-                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
+                  className={`p-3 rounded-xl border text-start transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
                   <div className={`text-sm font-bold ${c.text}`}>{t(p.nameKey)}</div>
                   <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(p.descKey)}</div>
                 </button>
@@ -1423,7 +1423,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {SCENE_PRESETS.map(scene => (
                 <button key={scene.id} onClick={() => startScene(scene)}
-                  className={`p-3 rounded-xl border text-left transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
+                  className={`p-3 rounded-xl border text-start transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
                   <div className={`text-sm font-bold ${c.text}`}>{t(scene.nameKey)}</div>
                   <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(scene.descKey)}</div>
                   <div className="flex items-center gap-1 mt-1.5">
@@ -1479,7 +1479,7 @@ const FocusSoundArchitect = ({ tool }) => {
                         ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
                         : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                     } disabled:opacity-40`}>
-                    {aiSceneLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing_scene')}</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_generate_scene', { min: aiSceneDuration })}</>}
+                    {aiSceneLoading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing_scene')}</> : <><span className="me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_generate_scene', { min: aiSceneDuration })}</>}
                   </button>
                   {soundPrefs.length === 0 && (
                     <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>{t('fsa_select_prefs_first')}</p>
@@ -1516,7 +1516,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     <input type="range" min="0" max="100" value={layer.volume}
                       onChange={e => updateManualLayerVolume(layer.type, Number(e.target.value))}
                       className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
-                    <span className={`text-xs font-mono w-6 text-right ${c.textMuted}`}>{layer.volume}</span>
+                    <span className={`text-xs font-mono w-6 text-end ${c.textMuted}`}>{layer.volume}</span>
                   </div>
                 ))}
               </div>
@@ -1724,7 +1724,7 @@ const FocusSoundArchitect = ({ tool }) => {
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
                 : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
             } disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing')}</> : <><span className="mr-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_design_my_soundscape')}</>}
+            {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_design_my_soundscape')}</>}
           </button>
 
           {error && (
@@ -1775,7 +1775,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
                 className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
-              <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{masterVolume}</span>
+              <span className={`text-xs font-mono w-8 text-end ${c.textMuteded}`}>{masterVolume}</span>
             </div>
 
             {/* Adaptive + Share controls */}
@@ -1901,7 +1901,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <span className={`text-sm font-bold ${c.text}`}>{layerLabel(layerDef)}</span>
                         {layerDef.type === 'binaural' && layerDef.hz && (
-                          <span className={`text-xs ml-2 ${c.textMuteded}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
+                          <span className={`text-xs ms-2 ${c.textMuteded}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
                         )}
                       </div>
                     </div>
@@ -1922,7 +1922,7 @@ const FocusSoundArchitect = ({ tool }) => {
                         </button>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`text-xs font-mono w-8 text-right ${c.textMuteded}`}>{vol}</span>
+                        <span className={`text-xs font-mono w-8 text-end ${c.textMuteded}`}>{vol}</span>
                         {(recipe.layers || []).length > 1 && (
                           <button onClick={() => removeLayerFromRecipe(idx)}
                             title={t('fsa_remove_layer')}
@@ -1948,7 +1948,7 @@ const FocusSoundArchitect = ({ tool }) => {
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
                                 className="fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500" />
-                              <span className={`text-[10px] font-mono w-8 text-right ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
+                              <span className={`text-[10px] font-mono w-8 text-end ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
                                 {t('fsa_eq_db', { sign: val > 0 ? '+' : '', val })}
                               </span>
                             </div>
@@ -2071,7 +2071,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <button onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
                 <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> {t('fsa_tips_adjustments')}
-                <span className={`ml-auto transition-transform ${showTips ? 'rotate-180' : ''}`}>▼</span>
+                <span className={`ms-auto transition-transform ${showTips ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showTips && (
                 <div className="mt-4 space-y-3">

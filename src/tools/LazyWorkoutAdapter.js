@@ -260,7 +260,7 @@ const CompleteView = ({ exs, exercisesDone, exercisesSkipped, completeMsg, energ
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_logging')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_log_it')}</>
               )}
             </button>
           </>
@@ -914,7 +914,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🧘'}</span>{tool?.title ?? t('lwa_title')}
+                <span className="me-2">{tool?.icon ?? '🧘'}</span>{tool?.title ?? t('lwa_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lwa_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -1071,7 +1071,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 {loading ? (
                   <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_building')}</>
                 ) : (
-                  <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_workout')}</>
+                  <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_workout')}</>
                 )}
               </button>
               <button
@@ -1207,7 +1207,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_give_2_min')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_give_2_min')}</>
               )}
             </button>
           </div>
@@ -1247,7 +1247,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <button
                   key={b.id}
                   onClick={() => setBodyTarget(b.id)}
-                  className={`p-3 rounded-xl border text-left ${bodyTarget === b.id ? `${c.accBox} border-lime-500` : `${c.cardLime} ${c.borderLine}`}`}
+                  className={`p-3 rounded-xl border text-start ${bodyTarget === b.id ? `${c.accBox} border-lime-500` : `${c.cardLime} ${c.borderLine}`}`}
                 >
                   <span className="text-lg">{b.icon}</span>
                   <p className={`text-xs font-bold ${c.text}`}>{t(b.labelKey)}</p>
@@ -1283,7 +1283,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_relief')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_relief')}</>
               )}
             </button>
           </div>
@@ -1347,7 +1347,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_stack')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_stack')}</>
               )}
             </button>
           </div>
@@ -1430,7 +1430,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_winddown')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_winddown')}</>
               )}
             </button>
           </div>
@@ -1529,7 +1529,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_recovery')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_recovery')}</>
               )}
             </button>
           </div>
@@ -1600,7 +1600,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '🧘'}</span> {t('lwa_plan_week')}</>
+                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_plan_week')}</>
               )}
             </button>
           </div>

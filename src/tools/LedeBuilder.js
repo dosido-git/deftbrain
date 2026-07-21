@@ -169,7 +169,7 @@ Write the lede.`;
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Lede Builder'}
+                <span className="me-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? 'Lede Builder'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Draft the human-feel opening for any SEO guide page'}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>Try example</button>
@@ -249,7 +249,7 @@ Write the lede.`;
         >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '✍️'}</span> Drafting...</>
-            : <><span className="mr-1">{tool?.icon ?? '✍️'}</span> Draft lede</>}
+            : <><span className="me-1">{tool?.icon ?? '✍️'}</span> Draft lede</>}
         </button>
 
         {/* Pre-result cross-ref */}
@@ -327,7 +327,7 @@ Write the lede.`;
               <button
                 key={i}
                 onClick={() => setResults(entry)}
-                className={`w-full text-left ${c.cardAlt} border ${c.border} rounded-lg px-3 py-2 hover:border-cyan-500 transition-colors`}
+                className={`w-full text-start ${c.cardAlt} border ${c.border} rounded-lg px-3 py-2 hover:border-cyan-500 transition-colors`}
               >
                 <p className={`text-xs font-medium ${c.text} truncate`}>{entry.preview}</p>
                 <p className={`text-xs ${c.textMuted} mt-0.5`}>

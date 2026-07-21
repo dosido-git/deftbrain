@@ -297,13 +297,13 @@ const MiseEnPlace = ({ tool }) => {
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
@@ -348,7 +348,7 @@ const MiseEnPlace = ({ tool }) => {
         ) : (
           <div className="relative">
             <img src={imagePreview} alt={t('mep_img_alt')} className={`w-full max-h-48 object-contain rounded-xl border ${c.border}`} />
-            <button onClick={clearImage} className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">✕</button>
+            <button onClick={clearImage} className="absolute top-2 end-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold">✕</button>
           </div>
         )}
       </div>
@@ -378,7 +378,7 @@ const MiseEnPlace = ({ tool }) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {SKILL_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => setSkillLevel(opt.value)}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                className={`p-3 rounded-xl border-2 text-start transition-all ${
                   skillLevel === opt.value ? `${c.pillActive} border-[rgb(74,106,138)]` : `${c.card} hover:border-[rgb(138,130,117)]`
                 }`}>
                 <span className={`text-sm font-medium ${skillLevel === opt.value ? '' : c.textSecondary}`}>{opt.emoji} {t(opt.key)}</span>
@@ -450,13 +450,13 @@ const MiseEnPlace = ({ tool }) => {
 
         <div className="relative">
           {/* Timeline line */}
-          <div className={`absolute left-3 top-3 bottom-3 w-0.5 ${c.timelineLine}`} />
+          <div className={`absolute start-3 top-3 bottom-3 w-0.5 ${c.timelineLine}`} />
 
           <div className="space-y-3">
             {bp.phases.map((phase, idx) => (
-              <div key={idx} className={`relative pl-9 ${phase.critical_timing ? '' : ''}`}>
+              <div key={idx} className={`relative ps-9 ${phase.critical_timing ? '' : ''}`}>
                 {/* Dot */}
-                <div className={`absolute left-1.5 top-3 w-3 h-3 rounded-full ${phase.critical_timing ? 'bg-[rgb(181,74,63)]' : c.timelineDot}`} />
+                <div className={`absolute start-1.5 top-3 w-3 h-3 rounded-full ${phase.critical_timing ? 'bg-[rgb(181,74,63)]' : c.timelineDot}`} />
 
                 <div className={`p-4 rounded-xl border ${phase.critical_timing ? c.criticalBg : c.timelineBg}`}>
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -631,7 +631,7 @@ const MiseEnPlace = ({ tool }) => {
     };
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🍳</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mep_past_plans')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -671,7 +671,7 @@ const MiseEnPlace = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('mep_title')}
+                <span className="me-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('mep_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mep_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

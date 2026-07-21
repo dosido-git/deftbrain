@@ -145,7 +145,7 @@ export function PremiumGate({ feature, label, inline = false, children }) {
     return (
       <div className="relative">
         {children}
-        <div className="absolute -top-2 -right-2 z-10">
+        <div className="absolute -top-2 -end-2 z-10">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-md whitespace-nowrap">
             ✨ Premium · Coming Soon
           </span>
@@ -215,7 +215,7 @@ export function PremiumBadge({ feature }) {
   // preview mode: always show "coming soon" indicator
   if (gateMode === 'preview') {
     return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-violet-500 to-purple-600 text-white ml-1.5 whitespace-nowrap">
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-violet-500 to-purple-600 text-white ms-1.5 whitespace-nowrap">
         ✨ Premium · Coming Soon
       </span>
     );
@@ -225,7 +225,7 @@ export function PremiumBadge({ feature }) {
   if (isUnlocked(feature)) return null;
 
   return (
-    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-amber-400 to-orange-400 text-white ml-1.5">
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-amber-400 to-orange-400 text-white ms-1.5">
       PRO
     </span>
   );

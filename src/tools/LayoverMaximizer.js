@@ -71,7 +71,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className={`${c.card} ${c.border} border rounded-xl overflow-hidden`}>
-      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-left min-h-[44px]">
+      <button onClick={() => setOpen(!open)} className="w-full px-4 py-3 flex items-center gap-2 text-start min-h-[44px]">
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
         {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
@@ -500,7 +500,7 @@ const LayoverMaximizer = ({ tool }) => {
               <input type="checkbox" checked={isLiveMode} onChange={() => setIsLiveMode(!isLiveMode)} className="accent-sky-500" />
               <span className={`text-xs font-bold ${c.text}`}>{t('lmx_live_label')}</span>
               {isLiveMode && (
-                <div className="flex items-center gap-1 ml-auto">
+                <div className="flex items-center gap-1 ms-auto">
                   <span className={`text-[10px] ${c.textMuteded}`}>{t('lmx_live_departure')}</span>
                   <input type="time" value={departureTime} onChange={e => setDepartureTime(e.target.value)}
                     className={`px-2 py-1 border rounded text-xs ${c.input} outline-none`} />
@@ -1057,7 +1057,7 @@ const LayoverMaximizer = ({ tool }) => {
             </label>
             <button onClick={runRisk} disabled={loading || !riskAirport.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_calculating')}</> : <><span className="mr-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_assess_risk')}</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_calculating')}</> : <><span className="me-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_assess_risk')}</>}
             </button>
           </div>
         </div>
@@ -1176,13 +1176,13 @@ const LayoverMaximizer = ({ tool }) => {
               {layoverHistory.map(h => (
                 <button key={h.id}
                   onClick={() => { setAirport(h.airport); setLayoverHours(String(h.hours)); setView('plan'); }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border} text-left min-h-[44px]`}>
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border} text-start min-h-[44px]`}>
                   {h.verdict && (
                     <span className={`text-[9px] font-black px-2 py-0.5 rounded flex-shrink-0 ${VERDICT_PILL[h.verdict] || c.badge}`}>{h.verdict}</span>
                   )}
                   <span className={`text-xs font-bold ${c.text} flex-1`}>{h.airportName || h.airport}</span>
                   <span className={`text-xs ${c.textMuted}`}>{t('lmx_unit_hours_short', { n: h.hours })}</span>
-                  <span className={`text-[10px] ${c.textMuted} ml-1`}>{new Date(h.date).toLocaleDateString()}</span>
+                  <span className={`text-[10px] ${c.textMuted} ms-1`}>{new Date(h.date).toLocaleDateString()}</span>
                 </button>
               ))}
               <button onClick={() => { if (window.confirm(t('lmx_hist_clear_confirm'))) setLayoverHistory([]); }}
@@ -1217,10 +1217,10 @@ const LayoverMaximizer = ({ tool }) => {
                 <div key={lay.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border ${c.card} ${c.border}`}>
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded ${verdictColor}`}>{lay.verdict}</span>
                   <button onClick={() => { setAirport(lay.airport); setLayoverHours(String(lay.hours)); setView('plan'); }}
-                    className={`flex-1 text-left min-h-[28px]`}>
+                    className={`flex-1 text-start min-h-[28px]`}>
                     <span className={`text-xs font-bold ${c.text}`}>{lay.airportName || lay.airport}</span>
-                    <span className={`text-xs ${c.textMuteded} ml-2`}>{t('lmx_unit_hours_short', { n: lay.hours })}</span>
-                    {lay.city && <span className={`text-xs ${c.textMuteded} ml-1`}>• {lay.city}</span>}
+                    <span className={`text-xs ${c.textMuteded} ms-2`}>{t('lmx_unit_hours_short', { n: lay.hours })}</span>
+                    {lay.city && <span className={`text-xs ${c.textMuteded} ms-1`}>• {lay.city}</span>}
                   </button>
                   <span className={`text-[10px] ${c.textMuteded}`}>{new Date(lay.date).toLocaleDateString()}</span>
                   <button onClick={() => removeSaved(lay.id)} className={`text-xs ${c.danger} min-h-[24px]`}>✕</button>
@@ -1277,7 +1277,7 @@ const LayoverMaximizer = ({ tool }) => {
             </div>
             <button onClick={runGateToGate} disabled={loading || !g2gAirport.trim()}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_routing')}</> : <><span className="mr-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_get_directions')}</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_routing')}</> : <><span className="me-1">{tool?.icon ?? '✈️'}</span> {t('lmx_btn_get_directions')}</>}
             </button>
           </div>
         </div>
@@ -1762,7 +1762,7 @@ const LayoverMaximizer = ({ tool }) => {
                     {r.key_phrases.map((p, i) => (
                       <div key={i} className={`${c.quoteBg} rounded px-3 py-1.5 flex items-center justify-between text-xs`}>
                         <span className={c.textMuteded}>{p.english}</span>
-                        <div className="text-right">
+                        <div className="text-end">
                           <span className="font-bold block">{p.local}</span>
                           {p.pronunciation && <span className={`text-[10px] ${c.textMuteded}`}>{p.pronunciation}</span>}
                         </div>
@@ -1796,7 +1796,7 @@ const LayoverMaximizer = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? t('lmx_title')}
+              <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? t('lmx_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lmx_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('lmx_try_example')}</button>

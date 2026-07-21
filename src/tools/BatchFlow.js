@@ -571,7 +571,7 @@ const BatchFlow = ({ tool }) => {
         <div className="flex items-start justify-between gap-3 mb-4 pb-3 border-b border-zinc-500">
           <div className="flex-1 min-w-0">
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('bf_title')}
+              <span className="me-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('bf_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('bf_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -606,7 +606,7 @@ const BatchFlow = ({ tool }) => {
         <button onClick={handleWeeklyRhythm} disabled={weeklyLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={weeklyLoading} icon="📅">{t('bf_weekly_build')}</Spin></button>
         {weeklyResult && <div className="space-y-3"><p className={`text-sm font-bold ${c.text}`}>{weeklyResult.rhythm_name}</p><p className={`text-xs ${c.textSecondary}`}>{weeklyResult.overview}</p>
           {(weeklyResult.days || []).map((d, di) => <div key={di} className={`${c.card} border ${c.border} rounded-lg p-3`}><div className="flex justify-between mb-1"><span className={`text-sm font-bold ${c.text}`}>{d.day}</span><div className="flex gap-1">{d.theme && <span className={`text-xs px-2 py-0.5 rounded-full ${c.success} border`}>{d.theme}</span>}{d.energy_profile && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{d.energy_profile}</span>}</div></div>
-            {(d.batches || []).map((b, bi) => <div key={bi} className={`text-xs ${c.textSecondary} ml-2`}>{modeInfo(b.cognitive_mode).emoji} {b.batch_name} ({b.suggested_time}) — {b.tasks?.join(', ')}</div>)}
+            {(d.batches || []).map((b, bi) => <div key={bi} className={`text-xs ${c.textSecondary} ms-2`}>{modeInfo(b.cognitive_mode).emoji} {b.batch_name} ({b.suggested_time}) — {b.tasks?.join(', ')}</div>)}
             {d.buffer_time && <p className={`text-xs ${c.textMuteded} mt-1`}>⏸ {t('bf_weekly_buffer', { val: d.buffer_time })}</p>}
             {d.day_note && <p className={`text-xs italic ${c.textMuteded} mt-1`}>{d.day_note}</p>}
           </div>)}
@@ -637,11 +637,11 @@ const BatchFlow = ({ tool }) => {
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
                 <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
-                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
               </button>
             ))}
           </div>
@@ -738,7 +738,7 @@ const BatchFlow = ({ tool }) => {
             {locationResult.route_efficiency && <div className="text-center"><div className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{locationResult.route_efficiency}</div><div className={`text-xs ${c.textMuteded}`}>{t('bf_loc_efficiency')}</div></div>}
           </div>
         </div>
-        {(locationResult.location_batches || []).map((b, i) => <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'} space-y-2`}>
+        {(locationResult.location_batches || []).map((b, i) => <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'} space-y-2`}>
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h4 className={`font-bold text-sm ${c.text}`}>📍 {b.batch_name}{b.location ? ` — ${b.location}` : ''}</h4>
             {b.total_time_at_location && <span className={`text-xs ${c.textMuteded}`}>{b.total_time_at_location}</span>}
@@ -798,7 +798,7 @@ const BatchFlow = ({ tool }) => {
         <HourByHourPlan data={results.heatmap} />
 
         {/* Efficiency */}
-        <div className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>⚡ {t('bf_efficiency_title')}</h3>
           <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.overview}</p>
           {results.extraction_note && <p className={`text-xs ${c.textMuteded} italic mb-3`}>🔍 {results.extraction_note}</p>}

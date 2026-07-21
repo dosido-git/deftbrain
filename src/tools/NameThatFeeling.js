@@ -176,7 +176,7 @@ const NameThatFeeling = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ntf_title')}
+              <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ntf_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ntf_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -204,7 +204,7 @@ const NameThatFeeling = ({ tool }) => {
               <button
                 key={i}
                 onClick={() => setDescription(s)}
-                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] text-left`}
+                className={`${c.btnSecondary} px-2.5 py-1.5 rounded-lg text-[11px] font-medium min-h-[28px] text-start`}
               >
                 {s.length > 50 ? s.slice(0, 50) + '...' : s}
               </button>
@@ -231,7 +231,7 @@ const NameThatFeeling = ({ tool }) => {
         >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> {t('ntf_searching')}</>
-            : <><span className="mr-1">{tool?.icon ?? '🎭'}</span> {t('ntf_submit')}</>}
+            : <><span className="me-1">{tool?.icon ?? '🎭'}</span> {t('ntf_submit')}</>}
         </button>
         <p className={`text-xs ${c.textMuted}`}>{t('ntf_xref_pre')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('ntf_spiralstopper')}</a> {t('ntf_xref_post')}</p>
         </div>
@@ -357,7 +357,7 @@ const NameThatFeeling = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>{t('ntf_disclaimer')}</p>
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('ntf_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('ntf_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('ntf_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('ntf_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

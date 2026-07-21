@@ -14,13 +14,13 @@ import { useLocale } from '../hooks/useLocale';
 const LocaleSelectors = ({ dark = false }) => {
   const { language, currency, setLanguage, setCurrency, LANGUAGES, CURRENCIES } = useLocale();
 
-  const pill = `relative inline-flex items-center gap-1.5 pl-2 pr-5 py-1 rounded-lg border text-xs font-medium transition-colors ${
+  const pill = `relative inline-flex items-center gap-1.5 ps-2 pe-5 py-1 rounded-lg border text-xs font-medium transition-colors ${
     dark
       ? 'bg-zinc-800 border-zinc-600 text-zinc-100 hover:border-zinc-400'
       : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400'
   }`;
   const select = `appearance-none bg-transparent outline-none cursor-pointer ${dark ? 'text-zinc-100' : 'text-slate-700'}`;
-  const caret = `pointer-events-none absolute right-1.5 text-[10px] ${dark ? 'text-zinc-400' : 'text-slate-500'}`;
+  const caret = `pointer-events-none absolute end-1.5 text-[10px] ${dark ? 'text-zinc-400' : 'text-slate-500'}`;
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">

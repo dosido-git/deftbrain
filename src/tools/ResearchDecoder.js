@@ -248,7 +248,7 @@ const ResearchDecoder = ({ tool }) => {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '📄'}</span>{tool?.title ?? t('rd_title')}
+                  <span className="me-2">{tool?.icon ?? '📄'}</span>{tool?.title ?? t('rd_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rd_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -261,9 +261,9 @@ const ResearchDecoder = ({ tool }) => {
         </div>
         <div className="px-5 pb-5 pt-3">
           <div className="flex flex-wrap gap-1.5">
-            {MODES.map(m => <button key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="mr-1">{m.icon}</span> {m.label}</button>)}
-            <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showSaved ? c.pillActive : c.pillInactive}`}><span className="mr-1">💾</span> {t('rd_saved')}{savedDigests.length ? ` (${savedDigests.length})` : ''}</button>
-            <button onClick={() => setShowDict(!showDict)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showDict ? c.pillActive : c.pillInactive}`}><span className="mr-1">📖</span> {t('rd_dictionary')}{jargonDict.length ? ` (${jargonDict.length})` : ''}</button>
+            {MODES.map(m => <button key={m.id} onClick={() => { setMode(m.id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}><span className="me-1">{m.icon}</span> {m.label}</button>)}
+            <button onClick={() => setShowSaved(!showSaved)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showSaved ? c.pillActive : c.pillInactive}`}><span className="me-1">💾</span> {t('rd_saved')}{savedDigests.length ? ` (${savedDigests.length})` : ''}</button>
+            <button onClick={() => setShowDict(!showDict)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${showDict ? c.pillActive : c.pillInactive}`}><span className="me-1">📖</span> {t('rd_dictionary')}{jargonDict.length ? ` (${jargonDict.length})` : ''}</button>
           </div>
           <p className={`text-xs ${c.textMuted} mt-2`}>{t('rd_xref_decide_q')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a></p>
         </div>
@@ -272,7 +272,7 @@ const ResearchDecoder = ({ tool }) => {
       {/* ─── Saved Panel ─── */}
       {showSaved && <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 {t('rd_saved_title')}</h3>
-        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('rd_saved_empty')}</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuteded}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-2`}>🗑️</button></div>)}
+        {savedDigests.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('rd_saved_empty')}</p> : savedDigests.map((sd, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between`}><div className="flex-1"><p className={`text-sm font-bold ${c.text}`}>{sd.title}</p><p className={`text-xs ${c.textSecondary}`}>{sd.data.one_sentence}</p><p className={`text-xs ${c.textMuteded}`}>{new Date(sd.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDigests(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ms-2`}>🗑️</button></div>)}
       </div>}
 
       {/* ─── Dictionary Panel ─── */}
@@ -293,11 +293,11 @@ const ResearchDecoder = ({ tool }) => {
             <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('rd_abstract_label')} <span className={c.required}>*</span></label>
             <textarea value={paperText} onChange={e => setPaperText(e.target.value)} placeholder={t('rd_abstract_ph')} rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
-          <div className="flex flex-wrap gap-2">{FIELDS.map(f => <button key={f.id} onClick={() => setField(f.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${field === f.id ? c.pillActive : `${c.pillInactive} ${c.border}`}`}><span className="mr-1">{f.icon}</span> {f.label}</button>)}</div>
+          <div className="flex flex-wrap gap-2">{FIELDS.map(f => <button key={f.id} onClick={() => setField(f.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${field === f.id ? c.pillActive : `${c.pillInactive} ${c.border}`}`}><span className="me-1">{f.icon}</span> {f.label}</button>)}</div>
           <button onClick={handleDigest} disabled={!paperText.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_working')}</>
-            : <><span className="mr-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_paper')}</>}
+            : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_paper')}</>}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_decide_help')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a> {t('rd_decision_coach_help')}</p>
         </div>
@@ -380,7 +380,7 @@ const ResearchDecoder = ({ tool }) => {
           <button onClick={handleMedia} disabled={(!mediaHeadline.trim() && !mediaPaper.trim()) || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_checking')}</>
-              : <><span className="mr-1">{tool?.icon ?? '📄'}</span> {t('rd_check_accuracy')}</>}
+              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_check_accuracy')}</>}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_deeper')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a> {t('rd_decision_coach_next')}</p>
         </div>
@@ -419,7 +419,7 @@ const ResearchDecoder = ({ tool }) => {
           <button onClick={handleCompare} disabled={!paper1.trim() || !paper2.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_comparing')}</>
-              : <><span className="mr-1">{tool?.icon ?? '📄'}</span> {t('rd_compare_papers')}</>}
+              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_compare_papers')}</>}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_jumbled')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('rd_brain_dump')}</a> {t('rd_brain_dump_organize')}</p>
         </div>
@@ -453,7 +453,7 @@ const ResearchDecoder = ({ tool }) => {
           <button onClick={handleRelevance} disabled={(!relSummary.trim() && !relQuestion.trim()) || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_checking')}</>
-              : <><span className="mr-1">{tool?.icon ?? '📄'}</span> {t('rd_check_relevance')}</>}
+              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_check_relevance')}</>}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_stuck')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a> {t('rd_decision_coach_think')}</p>
         </div>
@@ -481,7 +481,7 @@ const ResearchDecoder = ({ tool }) => {
           <button onClick={handleJargon} disabled={!jargonTerms.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_decoding')}</>
-              : <><span className="mr-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_terms')}</>}
+              : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_terms')}</>}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_simplify')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('rd_brain_dump')}</a> {t('rd_brain_dump_complex')}</p>
         </div>
@@ -519,7 +519,7 @@ const ResearchDecoder = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('rd_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

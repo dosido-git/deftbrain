@@ -1079,7 +1079,7 @@ const FocusPocus = ({ tool }) => {
         <span className="flex-shrink-0 mt-0.5">💡</span>
         <span className="flex-1">{children}</span>
         <button onClick={() => setDismissedHints(prev => ({ ...prev, [id]: true }))}
-          className="flex-shrink-0 opacity-50 hover:opacity-100 ml-1">✕</button>
+          className="flex-shrink-0 opacity-50 hover:opacity-100 ms-1">✕</button>
       </div>
     );
   };
@@ -1093,7 +1093,7 @@ const FocusPocus = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎩'}</span>{tool?.title ?? t('fpc_title')}
+                <span className="me-2">{tool?.icon ?? '🎩'}</span>{tool?.title ?? t('fpc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fpc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('fpc_try_example')}</button>
@@ -1286,7 +1286,7 @@ const FocusPocus = ({ tool }) => {
                     <button key={i}
                       onClick={() => { if (sessionActivity.trim()) startChain(ch); }}
                       disabled={!sessionActivity.trim()}
-                      className={`p-3 rounded-xl border text-left transition-all ${
+                      className={`p-3 rounded-xl border text-start transition-all ${
                         isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'
                       } ${!sessionActivity.trim() ? 'opacity-40 cursor-not-allowed' : ''}`}>
                       <div className={`text-sm font-bold ${c.text}`}>{t(ch.labelKey)}</div>
@@ -1335,7 +1335,7 @@ const FocusPocus = ({ tool }) => {
                   {sessionTemplates.map(tpl => (
                     <div key={tpl.id} className={`flex items-center gap-2 p-2.5 rounded-xl transition-colors cursor-pointer group ${isDark ? 'hover:bg-zinc-700/50' : 'hover:bg-zinc-50'}`}>
                       <button onClick={() => { loadTemplate(tpl); }}
-                        className="flex-1 flex items-center gap-2.5 text-left min-w-0">
+                        className="flex-1 flex items-center gap-2.5 text-start min-w-0">
                         <span className="text-lg">⚡</span>
                         <div className="min-w-0">
                           <p className={`text-sm font-bold truncate ${c.text}`}>{tpl.activity}</p>
@@ -1438,7 +1438,7 @@ const FocusPocus = ({ tool }) => {
               <button onClick={() => setShowHistory(!showHistory)}
                 className={`flex items-center gap-2 w-full text-xs font-bold ${c.textMuteded}`}>
                 {t('fpc_recent_count', { count: Math.min(sessionHistory.length, 15) })}
-                <span className={`ml-auto transition-transform ${showHistory ? 'rotate-180' : ''}`}>▼</span>
+                <span className={`ms-auto transition-transform ${showHistory ? 'rotate-180' : ''}`}>▼</span>
               </button>
               {showHistory && (
                 <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
@@ -1544,7 +1544,7 @@ const FocusPocus = ({ tool }) => {
                   <div className="overflow-x-auto">
                     <div className="min-w-[400px]">
                       {/* Hour labels */}
-                      <div className="flex mb-1 ml-10">
+                      <div className="flex mb-1 ms-10">
                         {[0, 6, 12, 18, 23].map(h => (
                           <span key={h} className={`text-[9px] ${c.textMuteded}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
                         ))}
@@ -1554,7 +1554,7 @@ const FocusPocus = ({ tool }) => {
                         const maxVal = Math.max(1, ...chartData.activityHeatmap[dayIdx]);
                         return (
                           <div key={dayKey} className="flex items-center gap-1 mb-0.5">
-                            <span className={`text-[10px] w-8 text-right ${c.textMuteded}`}>{day}</span>
+                            <span className={`text-[10px] w-8 text-end ${c.textMuteded}`}>{day}</span>
                             <div className="flex-1 flex gap-[1px]">
                               {chartData.activityHeatmap[dayIdx].map((count, hourIdx) => {
                                 const intensity = count / maxVal;
@@ -1587,7 +1587,7 @@ const FocusPocus = ({ tool }) => {
                     <p className={`text-[10px] ${c.textMuteded} mb-3`}>{t('fpc_heatmap_distraction_sub')}</p>
                     <div className="overflow-x-auto">
                       <div className="min-w-[400px]">
-                        <div className="flex mb-1 ml-10">
+                        <div className="flex mb-1 ms-10">
                           {[0, 6, 12, 18, 23].map(h => (
                             <span key={h} className={`text-[9px] ${c.textMuteded}`} style={{ position: 'relative', left: `${(h / 24) * 100}%` }}>{h}:00</span>
                           ))}
@@ -1597,7 +1597,7 @@ const FocusPocus = ({ tool }) => {
                           const maxVal = Math.max(1, ...chartData.heatmap[dayIdx]);
                           return (
                             <div key={dayKey} className="flex items-center gap-1 mb-0.5">
-                              <span className={`text-[10px] w-8 text-right ${c.textMuteded}`}>{day}</span>
+                              <span className={`text-[10px] w-8 text-end ${c.textMuteded}`}>{day}</span>
                               <div className="flex-1 flex gap-[1px]">
                                 {chartData.heatmap[dayIdx].map((count, hourIdx) => (
                                   <div key={hourIdx}
@@ -1649,7 +1649,7 @@ const FocusPocus = ({ tool }) => {
                               <span className={`text-xs ${c.textMuteded}`}>📱</span>
                               <span className={`text-xs font-bold ${c.text}`}>{pos.avgDistractions}</span>
                             </div>
-                            <span className={`text-[10px] ${c.textMuteded} ml-auto`}>{pos.count}×</span>
+                            <span className={`text-[10px] ${c.textMuteded} ms-auto`}>{pos.count}×</span>
                           </div>
                         </div>
                       ))}
@@ -1804,7 +1804,7 @@ const FocusPocus = ({ tool }) => {
                         ? isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                         : isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-cyan-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200'
                     } disabled:opacity-40`}>
-                    {aiPatternsLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_analyze_patterns')}</>}
+                    {aiPatternsLoading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_analyze_patterns')}</>}
                   </button>
                 </div>
               ) : (
@@ -1920,7 +1920,7 @@ const FocusPocus = ({ tool }) => {
                     : (isDark ? 'bg-zinc-600' : 'bg-zinc-300')
                   }`} />
                 ))}
-                <span className={`text-xs font-bold ${c.textMuteded} ml-2`}>
+                <span className={`text-xs font-bold ${c.textMuteded} ms-2`}>
                   {t('fpc_chain_progress', { index: chainIndex + 1, total: chainConfig.sessions.length })}
                 </span>
               </div>
@@ -2087,7 +2087,7 @@ const FocusPocus = ({ tool }) => {
                       ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200 dark:shadow-red-900/40 animate-pulse'
                       : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 dark:shadow-emerald-900/40'
                   } disabled:opacity-40`}>
-                  {loading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_generating')}</> : <><span className="mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_take_break')}</>}
+                  {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_generating')}</> : <><span className="me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_take_break')}</>}
                 </button>
                 {snoozeCount < MAX_SNOOZES && (
                   <button onClick={handleSnooze}
@@ -2348,7 +2348,7 @@ const FocusPocus = ({ tool }) => {
                   ))}
                 </div>
                 <button onClick={startBreakTimer}
-                  className={`ml-auto px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-emerald-700 text-emerald-100 hover:bg-emerald-600' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}>
+                  className={`ms-auto px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${isDark ? 'bg-emerald-700 text-emerald-100 hover:bg-emerald-600' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}>
                   {t('fpc_start')}
                 </button>
               </div>
@@ -2377,7 +2377,7 @@ const FocusPocus = ({ tool }) => {
                 <p className={`text-xs ${c.textSecondary} mb-3`}>{t('fpc_break_coach_intro')}</p>
                 <button onClick={handleBreakCoach} disabled={breakCoachLoading}
                   className={`px-5 py-2 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-cyan-900/40 text-cyan-300 hover:bg-cyan-900/60 border border-cyan-700' : 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200'} disabled:opacity-40`}>
-                  {breakCoachLoading ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_coaching')}</> : <><span className="mr-1">{tool?.icon ?? '🎩'}</span>{t('fpc_get_coaching')}</>}
+                  {breakCoachLoading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_coaching')}</> : <><span className="me-1">{tool?.icon ?? '🎩'}</span>{t('fpc_get_coaching')}</>}
                 </button>
               </div>
             ) : (

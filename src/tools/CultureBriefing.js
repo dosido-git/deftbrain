@@ -221,7 +221,7 @@ function CultureBriefing({ tool }) {
           {TRIP_PURPOSES.map(tp => (
             <button key={tp.id} onClick={() => setTripPurpose(tp.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${tripPurpose === tp.id ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-1">{tp.icon}</span>{t(tp.labelKey)}
+              <span className="me-1">{tp.icon}</span>{t(tp.labelKey)}
             </button>
           ))}
         </div>
@@ -279,7 +279,7 @@ function CultureBriefing({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🌍'}</span> {t('cb_building')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🌍'}</span> {t('cb_get_briefing')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🌍'}</span> {t('cb_get_briefing')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -320,7 +320,7 @@ function CultureBriefing({ tool }) {
               <p className={`text-sm ${c.textMuted}`}>
                 {purposeMeta?.icon} {purposeMeta ? t(purposeMeta.labelKey) : ''} {t('cb_briefing_suffix')}
                 {results.risk_level && (
-                  <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full border ${
+                  <span className={`ms-2 text-xs font-bold px-2 py-0.5 rounded-full border ${
                     results.risk_level === 'high' ? c.danger :
                     results.risk_level === 'medium' ? c.warning : c.success
                   }`}>{results.risk_level === 'high' ? t('cb_risk_high') : results.risk_level === 'medium' ? t('cb_risk_medium') : t('cb_risk_low')}</span>
@@ -343,7 +343,7 @@ function CultureBriefing({ tool }) {
               {results.sections.map(sec => (
                 <button key={sec.id} onClick={() => setActiveSection(activeSection === sec.id ? null : sec.id)}
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${activeSection === sec.id ? c.pillActive : c.pillInactive}`}>
-                  <span className="mr-1">{sec.icon}</span>{sec.title}
+                  <span className="me-1">{sec.icon}</span>{sec.title}
                 </button>
               ))}
             </div>
@@ -460,7 +460,7 @@ function CultureBriefing({ tool }) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🌍'}</span>{tool?.title ?? t('cb_title')}
+              <span className="me-2">{tool?.icon ?? '🌍'}</span>{tool?.title ?? t('cb_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cb_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

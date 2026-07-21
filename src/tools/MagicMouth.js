@@ -293,7 +293,7 @@ const MagicMouth = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('mm_title')}
+              <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('mm_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mm_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -326,20 +326,20 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${c.accentTxt}`}>📞 {t('mm_phone_intro')}</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> {t('mm_phone_company_label')} <span className={c.required}>*</span></label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">🏢</span> {t('mm_phone_company_label')} <span className={c.required}>*</span></label>
               <input type="text" value={phoneCompany} onChange={e => setPhoneCompany(e.target.value)}
                 placeholder={t('mm_phone_company_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">⚠️</span> {t('mm_phone_issue_label')} <span className={c.required}>*</span></label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">⚠️</span> {t('mm_phone_issue_label')} <span className={c.required}>*</span></label>
               <textarea value={phoneIssue} onChange={e => setPhoneIssue(e.target.value)}
                 placeholder={t('mm_phone_issue_ph')}
                 rows={2} maxLength={400}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} placeholder:${c.textMuteded} resize-none outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🎯</span> {t('mm_phone_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">🎯</span> {t('mm_phone_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
               <input type="text" value={phoneGoal} onChange={e => setPhoneGoal(e.target.value)}
                 placeholder={t('mm_phone_goal_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
@@ -349,7 +349,7 @@ const MagicMouth = ({ tool }) => {
               className={`w-full py-3 rounded-xl font-semibold disabled:opacity-40 ${c.btnPrimary}`}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_getting_script')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> {t('mm_get_script')}</>}
+              : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_get_script')}</>}
             </button>
           </div>
         )}
@@ -490,7 +490,7 @@ const MagicMouth = ({ tool }) => {
             {/* What you want */}
             <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
-                <span className="mr-1.5">🎯</span> {t('mm_want_label')} <span className={c.required}>*</span>
+                <span className="me-1.5">🎯</span> {t('mm_want_label')} <span className={c.required}>*</span>
               </label>
               <textarea
                 value={whatYouWant}
@@ -505,7 +505,7 @@ const MagicMouth = ({ tool }) => {
             {/* Situation */}
             <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
-                <span className="mr-1.5">📍</span> {t('mm_situation_label')} <span className={`font-normal ${c.textMuteded}`}>{t('mm_situation_hint')}</span>
+                <span className="me-1.5">📍</span> {t('mm_situation_label')} <span className={`font-normal ${c.textMuteded}`}>{t('mm_situation_hint')}</span>
               </label>
               <textarea
                 value={situation}
@@ -521,7 +521,7 @@ const MagicMouth = ({ tool }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">👤</span> {t('mm_who_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
+                  <span className="me-1.5">👤</span> {t('mm_who_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
                 </label>
                 <input
                   type="text"
@@ -534,7 +534,7 @@ const MagicMouth = ({ tool }) => {
               </div>
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">🔄</span> {t('mm_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
+                  <span className="me-1.5">🔄</span> {t('mm_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
                 </label>
                 <input
                   type="text"
@@ -557,7 +557,7 @@ const MagicMouth = ({ tool }) => {
             >
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_finding_angle')}</>
-                : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_angle')}</>}
+                : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_angle')}</>}
             </button>
           </div>
         )}
@@ -747,13 +747,13 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-red-900'}`}>💣 {t('mm_nuclear_intro')}</p>
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🏢</span> {t('mm_nuclear_company_label')} <span className={c.required}>*</span></label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">🏢</span> {t('mm_nuclear_company_label')} <span className={c.required}>*</span></label>
               <input type="text" value={nuclearCompany} onChange={e => setNuclearCompany(e.target.value)}
                 placeholder={t('mm_nuclear_company_ph')}
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             <div className="space-y-2">
-              <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">⚠️</span> {t('mm_nuclear_problem_label')} <span className={c.required}>*</span></label>
+              <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">⚠️</span> {t('mm_nuclear_problem_label')} <span className={c.required}>*</span></label>
               <textarea value={nuclearProblem} onChange={e => setNuclearProblem(e.target.value)}
                 placeholder={t('mm_nuclear_problem_ph')}
                 rows={3} maxLength={600}
@@ -761,13 +761,13 @@ const MagicMouth = ({ tool }) => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🔄</span> {t('mm_nuclear_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">🔄</span> {t('mm_nuclear_tried_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
                 <input type="text" value={nuclearTried} onChange={e => setNuclearTried(e.target.value)}
                   placeholder={t('mm_nuclear_tried_ph')}
                   className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
               </div>
               <div className="space-y-2">
-                <label className={`text-sm font-semibold ${c.text}`}><span className="mr-1.5">🎯</span> {t('mm_nuclear_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
+                <label className={`text-sm font-semibold ${c.text}`}><span className="me-1.5">🎯</span> {t('mm_nuclear_goal_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span></label>
                 <input type="text" value={nuclearGoal} onChange={e => setNuclearGoal(e.target.value)}
                   placeholder={t('mm_nuclear_goal_ph')}
                   className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
@@ -779,7 +779,7 @@ const MagicMouth = ({ tool }) => {
               style={{ background: isDark ? 'linear-gradient(135deg, #8a3028, #b54a3f)' : 'linear-gradient(135deg, #b54a3f, #8a3028)' }}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_mapping')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_nuclear')}</>}
+              : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_nuclear')}</>}
             </button>
             <p className={`text-xs text-center ${c.textMuteded}`}>{t('mm_legal_only')}</p>
           </div>

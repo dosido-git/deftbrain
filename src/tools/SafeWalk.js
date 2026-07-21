@@ -955,7 +955,7 @@ const SafeWalk = ({ tool }) => {
                 <span className={`text-sm font-bold ${c.text} block truncate`}>{ct.name}</span>
                 <span className={`text-xs ${c.textMuted} truncate block`}>
                   {ct.relation}{ct.relation && ct.phone ? ' · ' : ''}{ct.phone}
-                  {ct.isPrimary && <span className={`ml-1.5 ${c.accentTxt} font-bold`}>{t('sw_primary')}</span>}
+                  {ct.isPrimary && <span className={`ms-1.5 ${c.accentTxt} font-bold`}>{t('sw_primary')}</span>}
                 </span>
               </div>
               <button onClick={() => removeContact(ct.id)} className={`p-1.5 rounded-lg ${c.btnSecondary} ${c.deleteHover}`}>
@@ -982,7 +982,7 @@ const SafeWalk = ({ tool }) => {
       const isOpen = expandedSections[key];
       return (
         <div className={`rounded-xl border ${c.border} ${c.card} overflow-hidden mb-3`}>
-          <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-left">
+          <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
             <span>{icon}</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
             {isOpen ? <span className={c.textMuted}>▲</span> : <span className={c.textMuted}>▼</span>}
@@ -1046,7 +1046,7 @@ const SafeWalk = ({ tool }) => {
             <div className="space-y-2">
               {r.checklist.map((item, i) => (
                 <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [i]: !prev[i] }))}
-                  className={`w-full flex items-start gap-3 p-3 rounded-lg border text-left transition-all
+                  className={`w-full flex items-start gap-3 p-3 rounded-lg border text-start transition-all
                     ${checkedItems[i] ? (isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200') : `${c.cardAlt} ${c.border}`}`}>
                   <div className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5
                     ${checkedItems[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>
@@ -1428,12 +1428,12 @@ const SafeWalk = ({ tool }) => {
         <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'Safe Walk'}
+              <span className="me-2">{tool?.icon ?? '🚶'}</span>{tool?.title ?? 'Safe Walk'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Prepare smart, walk safe'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+          <div className="flex items-center gap-2 flex-shrink-0 ms-3">
             {assessResult && (
               <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
                 ↺ {t('start_over')}
@@ -1459,7 +1459,7 @@ const SafeWalk = ({ tool }) => {
                   ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
                 {t(tab.labelKey)}
                 {tab.pulse && (
-                  <span className="relative flex h-2.5 w-2.5 ml-1">
+                  <span className="relative flex h-2.5 w-2.5 ms-1">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
                   </span>
@@ -1498,7 +1498,7 @@ const SafeWalk = ({ tool }) => {
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setAssessResult(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                 <span className={c.textMuted}>
                   {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>

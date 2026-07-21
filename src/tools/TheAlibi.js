@@ -170,7 +170,7 @@ const TheAlibi = ({ tool }) => {
   // ══════════════════════════════════════════
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={c.card + ' border rounded-xl overflow-hidden'}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={'text-base font-semibold ' + c.text}>{title}</span>
@@ -185,7 +185,7 @@ const TheAlibi = ({ tool }) => {
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
@@ -245,7 +245,7 @@ const TheAlibi = ({ tool }) => {
 
       <button onClick={frame} disabled={loading || !situation.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> {t('ta_framing')}</> : <><span className="mr-1">{tool?.icon ?? '🎭'}</span> {t('ta_frame')}</>}
+        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> {t('ta_framing')}</> : <><span className="me-1">{tool?.icon ?? '🎭'}</span> {t('ta_frame')}</>}
       </button>
     </div>
   );
@@ -275,7 +275,7 @@ const TheAlibi = ({ tool }) => {
         {/* Versions */}
         {results?.versions?.map((v, idx) => (
           <div key={idx} className={'p-5 rounded-xl border-2 ' + versionBg(idx)}>
-            <button onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-left">
+            <button onClick={() => setExpandedVersion(expandedVersion === idx ? -1 : idx)} className="w-full text-start">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className={'text-xs font-bold px-2 py-0.5 rounded-full ' + c.badge}>{t('ta_version')} {idx + 1}</span>
@@ -385,7 +385,7 @@ const TheAlibi = ({ tool }) => {
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('ta_today') : diff === 1 ? t('ta_yesterday') : diff < 7 ? t('ta_days_ago', { count: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🎭</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('ta_history_title')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -414,7 +414,7 @@ const TheAlibi = ({ tool }) => {
       <div className="flex items-start justify-between gap-3 mb-5">
         <div>
           <h2 className={'text-2xl font-bold ' + c.text}>
-            <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ta_title')}
+            <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ta_title')}
           </h2>
           <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? t('ta_tagline')}</p>
         </div>

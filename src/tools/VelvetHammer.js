@@ -175,7 +175,7 @@ const VelvetHammer = ({ tool }) => {
         {/* Header inside card */} <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? t('vh_title')} </h2>
+              <span className="me-2">{tool?.icon ?? '🔨'}</span>{tool?.title ?? t('vh_title')} </h2>
             <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? t('vh_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
@@ -194,7 +194,7 @@ const VelvetHammer = ({ tool }) => {
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('vh_recent')}</p>
             {sessionHistory.map(h => (<div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary}`}>
                 <span className="truncate">{h.preview}</span>
-                <span className={`ml-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
+                <span className={`ms-2 shrink-0 ${c.textMuted}`}>{new Date(h.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         )} {/* Rage box */} <div>

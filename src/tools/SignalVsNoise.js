@@ -157,7 +157,7 @@ const SignalVsNoise = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
             <div className="pb-3 border-b border-zinc-500">
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '📡'}</span>{tool?.title ?? t('svn_title')}
+                <span className="me-2">{tool?.icon ?? '📡'}</span>{tool?.title ?? t('svn_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('svn_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -184,7 +184,7 @@ const SignalVsNoise = ({ tool }) => {
                 placeholder={t('svn_context_ph')}
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} `} />
             </div>
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
             <button onClick={handleSubmit} disabled={loading || !topic.trim()}
               className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
               {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📡'}</span>{t('svn_separating')}</> : t('svn_find_signal')}
@@ -227,7 +227,7 @@ const SignalVsNoise = ({ tool }) => {
             {/* THE NOISE */}
             {results?.the_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('noise')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('noise')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                     {t('svn_noise_header_a')} {results?.the_noise?.length} {t('svn_noise_header_b')}
                   </p>
@@ -258,7 +258,7 @@ const SignalVsNoise = ({ tool }) => {
             {/* GENUINELY DEBATED */}
             {results?.genuinely_debated?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('debated')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('debated')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
                     {t('svn_debated_header_a')} {results?.genuinely_debated?.length} {t('svn_debated_header_b')}
                   </p>
@@ -317,7 +317,7 @@ const SignalVsNoise = ({ tool }) => {
             {/* NOISE SOURCES */}
             {results?.sources_of_noise?.length > 0 && (
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
-                <button onClick={() => toggle('sources')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('sources')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_sources_header')}</p>
                   <span className={`text-sm ${c.textMuted}`}>{expanded.sources ? '▲' : '▼'}</span>
                 </button>
@@ -356,7 +356,7 @@ const SignalVsNoise = ({ tool }) => {
         )}
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('svn_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('svn_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('svn_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('svn_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

@@ -567,7 +567,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Header */} <div className="mb-2">
             <h1 className={`text-2xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
+              <span className="me-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
             <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
@@ -596,7 +596,7 @@ const VirtualBodyDouble = ({ tool }) => {
           )} {/* Session Mode selector (v4) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>{t('vbd_session_mode_label')}</label>
             <div className="grid grid-cols-2 gap-2">
-              {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-left transition-all border ${
+              {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-start transition-all border ${
                     sessionMode === m.id
                       ? `${MODE_COLORS[m.id].badge} text-white border-transparent shadow-lg`
                       : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'} ${c.cardHover}`
@@ -631,8 +631,8 @@ const VirtualBodyDouble = ({ tool }) => {
                     <span className={`text-xs font-bold ${c.accentLightText} mt-0.5 w-4`}>{i + 1}</span>
                     <div className="flex-1">
                       <span className={`text-sm ${c.text}`}>{st.label}</span>
-                      <span className={`text-xs ${c.textMuted} ml-2`}>~{st.estimated_minutes}m</span>
-                      {st.bonus && <span className={`text-xs ml-1 px-1 rounded ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>{t('vbd_bonus')}</span>}
+                      <span className={`text-xs ${c.textMuted} ms-2`}>~{st.estimated_minutes}m</span>
+                      {st.bonus && <span className={`text-xs ms-1 px-1 rounded ${isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-gray-200 text-gray-600'}`}>{t('vbd_bonus')}</span>}
                       {st.tip && <p className={`text-xs ${c.textMuted} mt-0.5`}>💡 {st.tip}</p>} </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       st.difficulty === 'easy' ? 'bg-emerald-100 text-emerald-700' :
@@ -717,7 +717,7 @@ const VirtualBodyDouble = ({ tool }) => {
                       <span className={`text-xs ${c.textMuted}`}>
                         {s.minutesWorked}m · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} {s.subTasksCompleted !== undefined ? ` · ${s.subTasksCompleted}/${s.totalSubTasks} ${t('vbd_tasks_suffix')}` : ''} </span>
                     </div>
-                    <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 ms-2 flex-shrink-0">
                       {s.completed && <span className="text-xs">✅</span>} <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors font-medium`} title={t('vbd_repeat_session')}>🔁</button>
                     </div>
                   </div>
@@ -769,7 +769,7 @@ const VirtualBodyDouble = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}>
                 <span>✂️</span> {t('vbd_subtasks_label')} · {subTasksCompleted}/{subTasks.length} </p>
               <div className="space-y-1.5">
-                {subTasks.map((st, i) => (<button key={i} onClick={() => setSubTaskChecked(prev => ({ ...prev, [i]: !prev[i] }))} className={`w-full flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all ${
+                {subTasks.map((st, i) => (<button key={i} onClick={() => setSubTaskChecked(prev => ({ ...prev, [i]: !prev[i] }))} className={`w-full flex items-center gap-2 p-2 rounded-lg text-start text-sm transition-all ${
                       subTaskChecked[i]
                         ? (isDark ? 'bg-emerald-900/30 text-emerald-300 line-through opacity-60' : 'bg-emerald-50 text-emerald-700 line-through opacity-60')
                         : (i === subTasks.findIndex((_, j) => !subTaskChecked[j])
@@ -788,7 +788,7 @@ const VirtualBodyDouble = ({ tool }) => {
                       ? (isDark ? 'bg-cyan-700 text-white' : 'bg-cyan-500 text-white')
                       : `${c.bubbleBg} ${c.bubbleText}`
                   }`}>
-                    {msg.emoji && msg.from === 'buddy' && <span className="mr-1">{msg.emoji}</span>} <span className="text-sm">{msg.message}</span>
+                    {msg.emoji && msg.from === 'buddy' && <span className="me-1">{msg.emoji}</span>} <span className="text-sm">{msg.message}</span>
                     <div className={`text-[10px] mt-1 ${msg.from === 'user' ? 'text-cyan-200' : c.textMuted}`}>{msg.time}</div>
                   </div>
                 </div>

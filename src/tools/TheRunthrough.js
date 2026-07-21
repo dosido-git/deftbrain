@@ -267,9 +267,9 @@ const TheRunthrough = ({ tool }) => {
 
   // ─── Submit button labels ───
   const submitLabels = {
-    cut: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_cut')}</>,
-    anticipate: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_anticipate')}</>,
-    hook: <><span className="mr-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_hook')}</>,
+    cut: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_cut')}</>,
+    anticipate: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_anticipate')}</>,
+    hook: <><span className="me-1">{tool?.icon ?? '🎙️'}</span> {t('trt_submit_hook')}</>,
   };
 
   // ─── Render: Cut Results ───
@@ -397,7 +397,7 @@ const TheRunthrough = ({ tool }) => {
             const diff = DIFFICULTY_COLORS[q.difficulty] || DIFFICULTY_COLORS.hard;
             return (
               <div key={i} className={`${c.card} ${c.border} border rounded-2xl overflow-hidden transition-all`}>
-                <button onClick={() => toggleSection(`q-${i}`)} className="w-full p-4 flex items-start gap-3 text-left">
+                <button onClick={() => toggleSection(`q-${i}`)} className="w-full p-4 flex items-start gap-3 text-start">
                   <span className={`text-sm font-bold ${c.accentTxt} mt-0.5 flex-shrink-0`}>{i + 1}.</span>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-semibold ${c.text} leading-snug`}>{q.question}</p>
@@ -409,7 +409,7 @@ const TheRunthrough = ({ tool }) => {
                   </div>
                 </button>
                 {isOpen && (
-                  <div className={`px-4 pb-4 pt-0 ml-7 space-y-3 border-t ${c.border}`}>
+                  <div className={`px-4 pb-4 pt-0 ms-7 space-y-3 border-t ${c.border}`}>
                     <div className={`${c.success} rounded-xl p-3 mt-3`}>
                       <p className={`text-xs font-semibold uppercase ${isDark ? 'text-emerald-400' : 'text-emerald-700'} mb-1`}>{t('trt_draft_answer')}</p>
                       <p className={`text-sm ${c.text} leading-relaxed`}>{q.draft_answer}</p>
@@ -549,7 +549,7 @@ const TheRunthrough = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? t('trt_title')}
+                  <span className="me-2">{tool?.icon ?? '🎙️'}</span>{tool?.title ?? t('trt_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>
                   {tool?.tagline ?? t('trt_tagline')}
@@ -574,7 +574,7 @@ const TheRunthrough = ({ tool }) => {
               className={`flex-1 py-3 text-center text-sm font-medium transition-all duration-150
                 ${mode === m.id ? c.tabActive : c.tabInactive}`}
             >
-              <span className="mr-1.5">{m.icon}</span>
+              <span className="me-1.5">{m.icon}</span>
               <span>{t(m.labelKey)}</span>
             </button>
           ))}
@@ -596,7 +596,7 @@ const TheRunthrough = ({ tool }) => {
           {/* Content textarea (all modes) */}
           <div className="space-y-2">
             <label className={`text-sm font-semibold ${c.text}`}>
-              <span className="mr-1.5">📝</span> {t('trt_content_label')} <span className={c.required}>*</span>
+              <span className="me-1.5">📝</span> {t('trt_content_label')} <span className={c.required}>*</span>
             </label>
             <textarea
               value={content}
@@ -605,7 +605,7 @@ const TheRunthrough = ({ tool }) => {
               rows={6}
               className={`w-full px-4 py-3 rounded-xl text-base ${c.input} ${c.border} border ${c.text} resize-y outline-none transition-colors`}
             />
-            <p className={`text-xs ${c.textMuted} text-right`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.max(1, Math.round(content.split(/\s+/).filter(Boolean).length / 130)) }) : ''}</p>
+            <p className={`text-xs ${c.textMuted} text-end`}>{content.length > 0 ? t('trt_min_at_pace', { count: Math.max(1, Math.round(content.split(/\s+/).filter(Boolean).length / 130)) }) : ''}</p>
           </div>
 
           {/* Mode-specific inputs */}
@@ -613,7 +613,7 @@ const TheRunthrough = ({ tool }) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">⏱️</span> {t('trt_time_label')}
+                  <span className="me-1.5">⏱️</span> {t('trt_time_label')}
                 </label>
                 <div className="flex items-center gap-3">
                   <input
@@ -629,7 +629,7 @@ const TheRunthrough = ({ tool }) => {
               </div>
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">💡</span> {t('trt_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
+                  <span className="me-1.5">💡</span> {t('trt_context_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
                 <input
                   type="text"
@@ -646,7 +646,7 @@ const TheRunthrough = ({ tool }) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">👥</span> {t('trt_audience_label')}
+                  <span className="me-1.5">👥</span> {t('trt_audience_label')}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {AUDIENCE_OPTIONS.map(a => (
@@ -663,7 +663,7 @@ const TheRunthrough = ({ tool }) => {
               </div>
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">🔥</span> {t('trt_stakes_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
+                  <span className="me-1.5">🔥</span> {t('trt_stakes_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
                 <input
                   type="text"
@@ -680,14 +680,14 @@ const TheRunthrough = ({ tool }) => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">🎭</span> {t('trt_tone_label')}
+                  <span className="me-1.5">🎭</span> {t('trt_tone_label')}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {TONE_OPTIONS.map(to => (
                     <button
                       key={to.id}
                       onClick={() => setTone(to.id)}
-                      className={`${tone === to.id ? c.chipActive : c.chipInactive} border rounded-xl px-3 py-2.5 text-left transition-all duration-150`}
+                      className={`${tone === to.id ? c.chipActive : c.chipInactive} border rounded-xl px-3 py-2.5 text-start transition-all duration-150`}
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{to.icon}</span>
@@ -702,7 +702,7 @@ const TheRunthrough = ({ tool }) => {
               </div>
               <div className="space-y-2">
                 <label className={`text-sm font-semibold ${c.text}`}>
-                  <span className="mr-1.5">🎯</span> {t('trt_goal_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
+                  <span className="me-1.5">🎯</span> {t('trt_goal_label')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
                 </label>
                 <input
                   type="text"
@@ -773,7 +773,7 @@ const TheRunthrough = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
-                <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{s.mode}</span>
+                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{s.mode}</span>
               </div>
             ))}
           </div>

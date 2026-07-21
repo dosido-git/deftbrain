@@ -78,7 +78,7 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   return (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
       <button onClick={toggle}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
@@ -1075,7 +1075,7 @@ const RecipeChaosSolver = ({ tool }) => {
               <div className="relative inline-block">
                 <img src={recipeImagePreview} alt={t('rcs_alt_recipe')} className="max-h-48 rounded-xl border-2" />
                 <button onClick={() => clearImage('recipe')}
-                  className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg text-xs">✕</button>
+                  className="absolute -top-2 -end-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg text-xs">✕</button>
                 <p className={`text-xs ${c.successTxt} mt-1`}>{t('rcs_image_ready')}</p>
               </div>
             ) : (
@@ -1115,7 +1115,7 @@ const RecipeChaosSolver = ({ tool }) => {
               <div className="relative flex-shrink-0">
                 <img src={pantryImagePreview} alt={t('rcs_alt_pantry')} className="w-24 h-24 object-cover rounded-lg border-2" />
                 <button onClick={() => clearImage('pantry')}
-                  className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
+                  className="absolute -top-1 -end-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
               </div>
               <div className={`${c.success} border rounded-lg p-2 flex-1`}>
                 <p className="text-xs font-bold">{t('rcs_pantry_image_ready')}</p>
@@ -1127,7 +1127,7 @@ const RecipeChaosSolver = ({ tool }) => {
               onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'pantry')}
               className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${c.dropzone}`}>
               <span className="text-lg">📷</span>
-              <span className={`text-xs font-medium ${c.text} ml-2`}>{t('rcs_upload_pantry')}</span>
+              <span className={`text-xs font-medium ${c.text} ms-2`}>{t('rcs_upload_pantry')}</span>
             </div>
           )}
           <input ref={pantryPhotoRef} type="file" accept="image/*"
@@ -1149,7 +1149,7 @@ const RecipeChaosSolver = ({ tool }) => {
               <div className="relative flex-shrink-0">
                 <img src={disasterImagePreview} alt={t('rcs_alt_problem')} className="w-24 h-24 object-cover rounded-lg border-2" />
                 <button onClick={() => clearImage('disaster')}
-                  className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
+                  className="absolute -top-1 -end-1 p-1 bg-red-500 text-white rounded-full text-[9px]">✕</button>
               </div>
               <div className={`${c.danger} border rounded-lg p-2 flex-1`}>
                 <p className="text-xs font-bold">{t('rcs_disaster_photo_ready')}</p>
@@ -1161,7 +1161,7 @@ const RecipeChaosSolver = ({ tool }) => {
               onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, 'disaster')}
               className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${c.dropzone}`}>
               <span className="text-lg">🔍</span>
-              <span className={`text-xs font-medium ${c.text} ml-2`}>{t('rcs_whats_wrong_photo')}</span>
+              <span className={`text-xs font-medium ${c.text} ms-2`}>{t('rcs_whats_wrong_photo')}</span>
             </div>
           )}
           <input ref={disasterPhotoRef} type="file" accept="image/*"
@@ -1240,7 +1240,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
         {/* Chaos toggle */}
         <button onClick={() => setEmbraceChaos(!embraceChaos)}
-          className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left min-h-[44px] mb-4 ${
+          className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-start min-h-[44px] mb-4 ${
             embraceChaos ? c.chaos : `${c.card}`
           }`}>
           <div className={`w-9 h-5 rounded-full transition-all flex items-center px-0.5 ${
@@ -1250,7 +1250,7 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
           <div>
             <span className={`text-xs font-bold ${c.text}`}>{t('rcs_chaos_title')}</span>
-            <span className={`text-[10px] ${c.textMuteded} ml-2`}>{t('rcs_chaos_desc')}</span>
+            <span className={`text-[10px] ${c.textMuteded} ms-2`}>{t('rcs_chaos_desc')}</span>
           </div>
         </button>
 
@@ -1417,7 +1417,7 @@ const RecipeChaosSolver = ({ tool }) => {
                     return (
                       <div key={sIdx} className={`rounded-lg border transition-all ${done ? c.stepDone : c.stepPending}`}>
                         <button onClick={() => toggleStep(idx, sIdx)}
-                          className={`w-full flex items-start gap-2.5 p-2.5 text-left min-h-[36px]`}>
+                          className={`w-full flex items-start gap-2.5 p-2.5 text-start min-h-[36px]`}>
                           <div className={`flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${
                             done ? 'bg-emerald-500 text-white' : (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-500')
                           }`}>{done ? '✓' : sIdx + 1}</div>
@@ -1433,7 +1433,7 @@ const RecipeChaosSolver = ({ tool }) => {
                                     timer.done ? 'bg-red-500 animate-pulse' : timer.remaining < 30 ? 'bg-amber-500' : 'bg-emerald-500'
                                   }`} style={{ width: `${timer.total > 0 ? ((timer.total - timer.remaining) / timer.total) * 100 : 0}%` }} />
                                 </div>
-                                <span className={`text-xs font-black min-w-[40px] text-right ${
+                                <span className={`text-xs font-black min-w-[40px] text-end ${
                                   timer.done ? c.warningTxt : timer.remaining < 30 ? c.warningTxt : c.successTxt
                                 }`}>
                                   {timer.done ? t('rcs_timer_done') : formatTimer(timer.remaining)}
@@ -2188,12 +2188,12 @@ const RecipeChaosSolver = ({ tool }) => {
                     <div className="flex-1 min-w-0">
                       <span className={`text-xs font-bold ${c.text}`}>{ing.ingredient}</span>
                       {ing.critical && ing.status === 'missing' && (
-                        <span className={`text-[9px] font-black ml-1.5 ${c.warningTxt}`}>{t('rcs_pf_critical')}</span>
+                        <span className={`text-[9px] font-black ms-1.5 ${c.warningTxt}`}>{t('rcs_pf_critical')}</span>
                       )}
                       {ing.substitute && (
                         <p className={`text-[10px] ${c.accentTxt}`}>
                           → {ing.substitute}{ing.sub_ratio ? ` (${ing.sub_ratio})` : ''}
-                          {ing.from_saved && <span className={`text-[9px] ${c.successTxt} ml-1`}>{t('rcs_pf_from_saved')}</span>}
+                          {ing.from_saved && <span className={`text-[9px] ${c.successTxt} ms-1`}>{t('rcs_pf_from_saved')}</span>}
                         </p>
                       )}
                     </div>
@@ -2440,7 +2440,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <div className="mb-4">
           <label className={`text-xs font-bold ${c.label} block mb-1`}>
-            {t('rcs_wins_how_well')} <span className="text-base ml-1">{['😐', '🙂', '😊', '😄', '🤩'][winRating - 1]}</span>
+            {t('rcs_wins_how_well')} <span className="text-base ms-1">{['😐', '🙂', '😊', '😄', '🤩'][winRating - 1]}</span>
           </label>
           <input type="range" min="1" max="5" value={winRating}
             onChange={e => setWinRating(parseInt(e.target.value))}
@@ -2883,7 +2883,7 @@ const RecipeChaosSolver = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('rcs_title')}
+                <span className="me-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('rcs_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rcs_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('rcs_try_example')}</button>

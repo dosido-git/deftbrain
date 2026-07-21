@@ -40,7 +40,7 @@ function computeAggregateStats(reviews){const t=reviews.length,sd={1:0,2:0,3:0,4
 // ════════════════════════════════════════════════════════════
 const trustColor = s => s>=76?{bg:'rgb(16,185,129)',ring:'rgb(16,185,129)'}:s>=51?{bg:'rgb(132,204,22)',ring:'rgb(132,204,22)'}:s>=26?{bg:'rgb(245,158,11)',ring:'rgb(245,158,11)'}:{bg:'rgb(239,68,68)',ring:'rgb(239,68,68)'};
 const verdictLabel = (s, t) => s>=76?t('frd_vl_genuine'):s>=51?t('frd_vl_trustworthy'):s>=26?t('frd_vl_caution'):t('frd_vl_manipulated');
-const edgeColor = s => s>=60?'border-l-emerald-500':s>=40?'border-l-amber-500':'border-l-red-500';
+const edgeColor = s => s>=60?'border-s-emerald-500':s>=40?'border-s-amber-500':'border-s-red-500';
 const clusterRange = (cl, t) => cl.daysAgoStart === cl.daysAgoEnd ? t('frd_days_ago', { count: cl.daysAgoStart }) : t('frd_days_range', { from: cl.daysAgoStart, to: cl.daysAgoEnd });
 const badgeBg = s => s>=60?'bg-emerald-500 text-white':s>=40?'bg-amber-500 text-white':'bg-red-500 text-white';
 // Returns translation keys + count so callers resolve via t() (sample-size confidence).
@@ -84,8 +84,8 @@ function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup, t }) {
   const hl = useMemo(() => expanded ? highlightText(review.rawText, c, t) : null, [expanded, review.rawText, c, t]);
 
   return (
-    <div className={`${c.card} border rounded-xl border-l-4 ${edgeColor(score)} overflow-hidden`}>
-      <button onClick={onToggle} className="w-full p-4 text-left">
+    <div className={`${c.card} border rounded-xl border-s-4 ${edgeColor(score)} overflow-hidden`}>
+      <button onClick={onToggle} className="w-full p-4 text-start">
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -446,7 +446,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
           <div className="flex-1">
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('frd_title')}
+              <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('frd_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('frd_tagline')}</p>
             <button onClick={loadExample} disabled={isRunning} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -483,8 +483,8 @@ const FakeReviewDetective = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-sm font-bold ${c.text}`}>{t('frd_import_title')}</h3><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
         <div className="flex gap-2">
-          <div className="relative flex-1"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
-            <input type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full pl-9 pr-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
+          <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
+            <input type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
           <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> ...</> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
         </div>
         <p className={`text-[11px] ${c.textMuteded} mt-1.5`}>{t('frd_url_note')}</p>
@@ -552,7 +552,7 @@ const FakeReviewDetective = ({ tool }) => {
             <StatCard label={t('frd_stat_clusters')} value={stats.hasTimingCluster ? stats.dateClusters.length : t('frd_stat_none')} color={stats.hasTimingCluster ? 'red' : 'green'} c={c} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {stats.ratedCount > 0 && <div><p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('frd_stars')}</p><div className="space-y-1.5">{[5,4,3,2,1].map(s => { const cnt = stats.starDistribution[s]||0, mx = Math.max(...Object.values(stats.starDistribution),1); return <div key={s} className="flex items-center gap-2"><span className={`w-8 text-xs text-right font-semibold ${c.textSecondary}`}>{s}★</span><div className={`flex-1 h-5 rounded-sm overflow-hidden ${c.barBg}`}><div className={`h-full rounded-sm ${s>=4?'bg-emerald-500':s===3?'bg-amber-500':'bg-red-500'}`} style={{width:`${(cnt/mx)*100}%`,transition:'width 0.4s ease'}}/></div><span className={`w-6 text-xs text-right font-semibold ${c.textMuteded}`}>{cnt}</span></div>; })}</div></div>}
+            {stats.ratedCount > 0 && <div><p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('frd_stars')}</p><div className="space-y-1.5">{[5,4,3,2,1].map(s => { const cnt = stats.starDistribution[s]||0, mx = Math.max(...Object.values(stats.starDistribution),1); return <div key={s} className="flex items-center gap-2"><span className={`w-8 text-xs text-end font-semibold ${c.textSecondary}`}>{s}★</span><div className={`flex-1 h-5 rounded-sm overflow-hidden ${c.barBg}`}><div className={`h-full rounded-sm ${s>=4?'bg-emerald-500':s===3?'bg-amber-500':'bg-red-500'}`} style={{width:`${(cnt/mx)*100}%`,transition:'width 0.4s ease'}}/></div><span className={`w-6 text-xs text-end font-semibold ${c.textMuteded}`}>{cnt}</span></div>; })}</div></div>}
             <div className="space-y-2">
               {stats.hasTimingCluster && stats.dateClusters.map((cl, i) => <div key={i} className={`${c.danger} border rounded-lg p-3 flex items-start gap-2`}><span>🕐</span><p className="text-xs"><span className="font-bold">{cl.count} {t('frd_reviews_word')}</span> {t('frd_cluster_within')} ({clusterRange(cl, t)})</p></div>)}
               {stats.verifiedPercent < 40 && stats.totalReviews >= 3 && <div className={`${c.warning} border rounded-lg p-3 flex items-start gap-2`}><span>⚠️</span><p className="text-xs">{t('frd_only_verified_a')} <span className="font-bold">{stats.verifiedPercent}%</span> {t('frd_only_verified_b')}</p></div>}
@@ -577,7 +577,7 @@ const FakeReviewDetective = ({ tool }) => {
               <text x="45" y="42" textAnchor="middle" className="text-xl font-black" fill={trustColor(analysis.quick_verdict.trust_score).ring}>{analysis.quick_verdict.trust_score}</text>
               <text x="45" y="56" textAnchor="middle" className="text-[9px] font-bold" fill={isDark ? '#9ca3af' : '#64748b'}>/ 100</text>
             </svg>
-            <div className="flex-1 min-w-0 text-center sm:text-left">
+            <div className="flex-1 min-w-0 text-center sm:text-start">
               <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('frd_trust_score')} {currentSource && `· ${srcLabel(currentSource)}`}</p>
               {productName && <p className={`text-xs font-semibold ${c.text} mb-1 leading-snug`}>{productName}</p>}
               <h3 className={`text-xl font-black ${c.text} mb-1`}>{analysis.quick_verdict.label || verdictLabel(analysis.quick_verdict.trust_score, t)}</h3>
@@ -596,7 +596,7 @@ const FakeReviewDetective = ({ tool }) => {
       {/* FEATURE 2: FORENSICS TIMELINE */}
       {reviewScores && parsedReviews.filter(r => r.daysAgo !== null).length >= 2 && (
         <div className={`${c.card} border rounded-xl p-5`}>
-          <button onClick={() => setShowTimeline(!showTimeline)} className={`flex items-center gap-2 w-full text-left`}>
+          <button onClick={() => setShowTimeline(!showTimeline)} className={`flex items-center gap-2 w-full text-start`}>
             <span>🕵️</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_timeline_title')}</h3><span className={c.textMuteded}>{showTimeline ? '▲' : '▼'}</span>
           </button>
           {showTimeline && <div className="mt-3">
@@ -621,9 +621,9 @@ const FakeReviewDetective = ({ tool }) => {
       {/* FEATURE 3: FINGERPRINT */}
       {reviewScores && parsedReviews.length >= 3 && (
         <div className={`${c.card} border rounded-xl p-5`}>
-          <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-left">
+          <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-start">
             <span>🔬</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_fingerprint_title')}</h3>
-            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-40`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>{t('frd_analyze')}</>}</button>}
+            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-40`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="me-1">{tool?.icon ?? '🔍'}</span>{t('frd_analyze')}</>}</button>}
             <span className={c.textMuteded}>{showFingerprint ? '▲' : '▼'}</span>
           </button>
           {showFingerprint && (fingerprint ? (
@@ -652,7 +652,7 @@ const FakeReviewDetective = ({ tool }) => {
           {analysis.manipulation_detected && analysis.manipulation_detected.type !== 'none' && (
             <div className={`${c.danger} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">🎯</span><div>
               <h4 className="text-sm font-bold mb-1">{analysis.manipulation_detected.type === 'positive_campaign' ? t('frd_manip_positive') : analysis.manipulation_detected.type === 'negative_bombing' ? t('frd_manip_negative') : t('frd_manip_mixed')} {t('frd_manip_detected_suffix')}
-                {analysis.manipulation_detected.confidence && <span className={`ml-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${analysis.manipulation_detected.confidence === 'high' ? (isDark ? 'bg-red-800 text-red-200' : 'bg-red-200 text-red-800') : (isDark ? 'bg-amber-800 text-amber-200' : 'bg-amber-200 text-amber-800')}`}>{analysis.manipulation_detected.confidence}</span>}
+                {analysis.manipulation_detected.confidence && <span className={`ms-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${analysis.manipulation_detected.confidence === 'high' ? (isDark ? 'bg-red-800 text-red-200' : 'bg-red-200 text-red-800') : (isDark ? 'bg-amber-800 text-amber-200' : 'bg-amber-200 text-amber-800')}`}>{analysis.manipulation_detected.confidence}</span>}
               </h4>
               {analysis.manipulation_detected.description && <p className="text-sm mb-2">{analysis.manipulation_detected.description}</p>}
               {analysis.manipulation_detected.evidence?.map((e, i) => <p key={i} className="text-xs">• {e}</p>)}
@@ -704,7 +704,7 @@ const FakeReviewDetective = ({ tool }) => {
           {/* FEATURE 6: PLAYBOOK */}
           {analysis.playbook?.tactics_detected?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
-              <button onClick={() => setShowPlaybook(!showPlaybook)} className="flex items-center gap-2 w-full text-left">
+              <button onClick={() => setShowPlaybook(!showPlaybook)} className="flex items-center gap-2 w-full text-start">
                 <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_playbook_title')}</h3><span className={`text-[10px] ${c.textMuteded}`}>{t('frd_playbook_sub')}</span><span className={c.textMuteded}>{showPlaybook ? '▲' : '▼'}</span>
               </button>
               {showPlaybook && <div className="mt-3 space-y-3">
@@ -740,7 +740,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🌐</span> {t('frd_synth_title', { count: sourceAnalyses.length })}</h3>
-            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>{synthesisLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span>{synthesis ? t('frd_refresh') : t('frd_synthesize')}</>}</button>
+            <button onClick={runSynthesis} disabled={synthesisLoading} className={`${c.btnPrimary} text-xs px-3 py-1.5 rounded-lg disabled:opacity-40`}>{synthesisLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="me-1">{tool?.icon ?? '🔍'}</span>{synthesis ? t('frd_refresh') : t('frd_synthesize')}</>}</button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
             {sourceAnalyses.slice(0, 6).map(sa => (
@@ -776,7 +776,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className={`${c.card} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⚖️</span> {t('frd_compare')}</h3><button onClick={() => setShowCompare(!showCompare)} className={`text-xs ${c.textSecondary} font-semibold`}>{showCompare ? t('frd_hide') : t('frd_show')}</button></div>
           {showCompare && <div>
-            <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">{savedAnalyses.slice(1).map(sa => <button key={sa.id} onClick={() => setCompareSlot(sa)} className={`w-full text-left ${compareSlot?.id === sa.id ? c.highlight : c.cardAlt} border rounded-lg p-3 transition-colors`}><div className="flex items-center justify-between"><span className={`text-sm font-semibold ${c.text}`}>{sa.source ? srcLabel(sa.source) : catLabel(sa.category)} · {sa.reviewCount}{t('frd_r_suffix')}</span><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</span></div><p className={`text-xs ${c.textMuteded} truncate`}>{sa.summary || sa.date}</p></button>)}</div>
+            <div className="space-y-2 mb-4 max-h-40 overflow-y-auto">{savedAnalyses.slice(1).map(sa => <button key={sa.id} onClick={() => setCompareSlot(sa)} className={`w-full text-start ${compareSlot?.id === sa.id ? c.highlight : c.cardAlt} border rounded-lg p-3 transition-colors`}><div className="flex items-center justify-between"><span className={`text-sm font-semibold ${c.text}`}>{sa.source ? srcLabel(sa.source) : catLabel(sa.category)} · {sa.reviewCount}{t('frd_r_suffix')}</span><span className={`text-lg font-black ${sa.trustScore >= 60 ? c.success : sa.trustScore >= 40 ? c.warning : c.danger}`}>{sa.trustScore ?? '?'}</span></div><p className={`text-xs ${c.textMuteded} truncate`}>{sa.summary || sa.date}</p></button>)}</div>
             {compareSlot && <div className="grid grid-cols-2 gap-3">
               <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuteded} mb-1`}>{t('frd_current')} {currentSource && `(${srcLabel(currentSource)})`}</p><p className={`text-3xl font-black ${analysis.quick_verdict?.trust_score >= 60 ? c.success : analysis.quick_verdict?.trust_score >= 40 ? c.warning : c.danger}`}>{analysis.quick_verdict?.trust_score ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${analysis.purchase_recommendation?.verdict === 'buy' ? c.success : analysis.purchase_recommendation?.verdict === 'skip' ? c.danger : c.warning}`}>{analysis.purchase_recommendation?.verdict || '—'}</p></div>
               <div className={`${c.card} border rounded-lg p-4 text-center`}><p className={`text-xs ${c.textMuteded} mb-1`}>{t('frd_previous')} {compareSlot.source && `(${srcLabel(compareSlot.source)})`}</p><p className={`text-3xl font-black ${compareSlot.trustScore >= 60 ? c.success : compareSlot.trustScore >= 40 ? c.warning : c.danger}`}>{compareSlot.trustScore ?? '?'}</p><p className={`text-xs font-bold mt-1 uppercase ${compareSlot.verdict === 'buy' ? c.success : compareSlot.verdict === 'skip' ? c.danger : c.warning}`}>{compareSlot.verdict || '—'}</p></div>

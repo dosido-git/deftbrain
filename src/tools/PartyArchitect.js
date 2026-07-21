@@ -179,7 +179,7 @@ const PartyArchitect = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? t('pa_title')}
+                <span className="me-2">{tool?.icon ?? '🎪'}</span>{tool?.title ?? t('pa_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pa_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -272,7 +272,7 @@ const PartyArchitect = ({ tool }) => {
           className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎪'}</span> {t('pa_designing')}</>
-            : <><span className="mr-1">{tool?.icon ?? '🎪'}</span> {t('pa_design_btn')}</>}
+            : <><span className="me-1">{tool?.icon ?? '🎪'}</span> {t('pa_design_btn')}</>}
           </button>
         </div>
 
@@ -310,7 +310,7 @@ const PartyArchitect = ({ tool }) => {
           {r.timeline?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('timeline')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⏱️</span> {t('pa_timeline')}</h3>
                 <span className={c.textMuted}>{expandedSections.timeline ? '▲' : '▼'}</span>
               </button>
@@ -320,7 +320,7 @@ const PartyArchitect = ({ tool }) => {
                     <div key={i} className="flex gap-3">
                       <div className="flex flex-col items-center flex-shrink-0">
                         <span className="text-lg">{phaseEmoji(item.phase)}</span>
-                        {i < r.timeline.length - 1 && <div className={`w-0.5 flex-1 mt-1 border-l ${c.border}`} />}
+                        {i < r.timeline.length - 1 && <div className={`w-0.5 flex-1 mt-1 border-s ${c.border}`} />}
                       </div>
                       <div className={`flex-1 ${c.cardAlt} rounded-lg p-3`}>
                         <div className="flex items-center gap-2 mb-1">
@@ -341,7 +341,7 @@ const PartyArchitect = ({ tool }) => {
           {r.mixing_strategies?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('mixing')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🤝</span> {t('pa_mixing')}</h3>
                 <span className={c.textMuted}>{expandedSections.mixing ? '▲' : '▼'}</span>
               </button>

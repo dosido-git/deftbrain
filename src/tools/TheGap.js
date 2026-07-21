@@ -206,7 +206,7 @@ const TheGap = ({ tool }) => {
 
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
@@ -217,7 +217,7 @@ const TheGap = ({ tool }) => {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={'text-xl font-bold ' + c.text}>
-          <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('tg_title')}
+          <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('tg_title')}
         </h2>
         <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? t('tg_tagline')}</p>
       </div>
@@ -273,7 +273,7 @@ const TheGap = ({ tool }) => {
 
       <button onClick={trace} disabled={loading || !concept.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !concept.trim() ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> {t('tg_tracing')}</> : <><span className="mr-1">{tool?.icon ?? '🔍'}</span> {t('tg_find_gap')}</>}
+        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> {t('tg_tracing')}</> : <><span className="me-1">{tool?.icon ?? '🔍'}</span> {t('tg_find_gap')}</>}
       </button>
       <p className={'text-xs text-center ' + c.textMuted}>{t('tg_ai_disclaimer')}</p>
       <p className={'text-xs ' + c.textMuted}>
@@ -316,7 +316,7 @@ const TheGap = ({ tool }) => {
             const expanded = expandedNodes[idx];
             return (
               <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + gs.bg}>
-                <button onClick={() => toggleNode(idx)} className="w-full text-left p-4">
+                <button onClick={() => toggleNode(idx)} className="w-full text-start p-4">
                   <div className="flex items-center gap-3">
                     <div className="flex flex-col items-center">
                       <span className="text-base">{gs.emoji}</span>
@@ -562,7 +562,7 @@ const TheGap = ({ tool }) => {
     const formatDate = (iso) => { try { const d = new Date(iso); const diff = Math.floor((new Date() - d) / 86400000); return diff === 0 ? t('tg_today') : diff === 1 ? t('tg_yesterday') : diff < 7 ? t('tg_days_ago', { count: diff }) : d.toLocaleDateString(userLocale || 'en-US', { month: 'short', day: 'numeric' }); } catch { return ''; } };
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.histBg}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>📝</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tg_past_gaps')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -593,7 +593,7 @@ const TheGap = ({ tool }) => {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={'text-xl font-bold ' + c.text}>
-                  <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('tg_title')}
+                  <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('tg_title')}
                 </h2>
                 <p className={'text-sm ' + c.textSecondary}>{tool?.tagline ?? t('tg_tagline')}</p>
               </div>

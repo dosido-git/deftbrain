@@ -393,7 +393,7 @@ const SkillGapMap = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Skill Gap Map'}
+                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Skill Gap Map'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sgm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -518,7 +518,7 @@ const SkillGapMap = ({ tool }) => {
               </button>
               {expandedSections.saved && savedMaps.map((s, i) => (
                 <button key={i} onClick={() => { setCurrentRole(s.from); setTargetRole(s.to); setMode('map'); }}
-                  className={`w-full text-left p-2 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-colors flex items-center justify-between mt-1`}>
+                  className={`w-full text-start p-2 rounded-lg text-xs ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-colors flex items-center justify-between mt-1`}>
                   <span className={c.text}>{s.from} → {s.to}</span>
                   <span className={c.textMuteded}>{s.readiness}% · {new Date(s.date).toLocaleDateString()}</span>
                 </button>
@@ -540,7 +540,7 @@ const SkillGapMap = ({ tool }) => {
 
           <div className="space-y-3">
             {exploreData.paths?.map((path, i) => (
-              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${DIFF_COLORS[path.difficulty] === 'success' ? (isDark ? 'border-green-500' : 'border-green-400') : DIFF_COLORS[path.difficulty] === 'warning' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-red-500' : 'border-red-400')}`}>
+              <div key={i} className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${DIFF_COLORS[path.difficulty] === 'success' ? (isDark ? 'border-green-500' : 'border-green-400') : DIFF_COLORS[path.difficulty] === 'warning' ? (isDark ? 'border-amber-500' : 'border-amber-400') : (isDark ? 'border-red-500' : 'border-red-400')}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <h4 className={`text-lg font-bold ${c.text}`}>{path.target_role}</h4>
@@ -646,7 +646,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── ECONOMICS ─── */}
           {economicsData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>💰</span> {t('sgm_econ_title')}</h4>
               </div>
@@ -698,7 +698,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── COMPANY FIT ─── */}
           {companyData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🏢</span> {t('sgm_company_title')}</h4>
               </div>
@@ -740,7 +740,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── INTERVIEW PREP ─── */}
           {interviewData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🎤</span> {t('sgm_interview_title')}</h4>
               </div>
@@ -916,15 +916,15 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── TIMELINE ─── */}
           {timelineData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-sky-500' : 'border-sky-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-sky-500' : 'border-sky-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-sky-900/20' : 'bg-sky-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text}`}>{t('sgm_timeline_title', { weeks: timelineData.total_weeks, hours: timelineData.hours_per_week })}</h4>
               </div>
               <div className="p-5 space-y-4">
                 {timelineData.phases?.map((phase, pi) => (
-                  <div key={pi} className={`border-l-2 ${isDark ? 'border-sky-700' : 'border-sky-200'} pl-4`}>
+                  <div key={pi} className={`border-s-2 ${isDark ? 'border-sky-700' : 'border-sky-200'} ps-4`}>
                     <span className={`text-xs font-black ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{t('sgm_timeline_weeks', { weeks: phase.weeks })}</span>
-                    <span className={`text-xs font-bold ${c.text} ml-2`}>{phase.name}</span>
+                    <span className={`text-xs font-bold ${c.text} ms-2`}>{phase.name}</span>
                     <p className={`text-xs ${c.textSecondary} mb-2`}>{phase.focus}</p>
                     {phase.milestones?.map((ms, mi) => (
                       <div key={mi} className={`p-2 rounded-lg ${c.cardAlt} mb-1.5`}>
@@ -943,7 +943,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── PROOF ─── */}
           {proofData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${c.proofBg} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_proof_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {proofData.proof_plans?.map((pp, i) => (
@@ -964,7 +964,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── NETWORK ─── */}
           {networkData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${c.networkBg} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_network_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {networkData.network_gaps?.map((ng, i) => (
@@ -982,7 +982,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── RESUME AUDIT ─── */}
           {showResume && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_resume_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!resumeData && (
@@ -997,7 +997,7 @@ const SkillGapMap = ({ tool }) => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className={`text-2xl font-black ${resumeData.overall_score >= 60 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>{t('sgm_resume_score', { score: resumeData.overall_score })}</span>
-                      <p className={`text-sm ${c.text} flex-1 ml-3`}>{resumeData.verdict}</p>
+                      <p className={`text-sm ${c.text} flex-1 ms-3`}>{resumeData.verdict}</p>
                     </div>
                     <ScoreBar score={resumeData.overall_score} />
                     {resumeData.strengths?.length > 0 && (
@@ -1058,7 +1058,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── REFRAME ─── */}
           {showReframe && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className={`p-5 ${c.warning} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_reframe_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!reframeData && (
@@ -1123,7 +1123,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── CALIBRATE ─── */}
           {showCalibrate && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-zinc-500' : 'border-zinc-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-zinc-500' : 'border-zinc-400'}`}>
               <div className={`p-5 ${c.cardAlt} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_calibrate_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!calibrateData && (
@@ -1176,7 +1176,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── PROGRESS CHECK ─── */}
           {showProgress && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-emerald-500' : 'border-emerald-400'}`}>
               <div className={`p-5 ${c.warningBox} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_progress_title', { count: completedCount })}</h4></div>
               <div className="p-5 space-y-3">
                 {!progressData && (
@@ -1212,7 +1212,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── DAY IN THE LIFE ─── */}
           {daylifeData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🪞</span> {t('sgm_daylife_title', { role: targetRole })}</h4>
                 {daylifeData.role_reality?.one_sentence && <p className={`text-xs ${c.textSecondary} mt-1 italic`}>"{daylifeData.role_reality.one_sentence}"</p>}
@@ -1266,7 +1266,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── MARKET PULSE ─── */}
           {marketData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>📊</span> {t('sgm_market_title')}</h4>
                 <div className="flex items-center gap-2 mt-1">
@@ -1297,7 +1297,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── SKILL ADJACENCY ─── */}
           {adjacencyData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-sky-500' : 'border-sky-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-sky-500' : 'border-sky-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-sky-900/20' : 'bg-sky-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🧠</span> {t('sgm_adjacency_title')}</h4>
               </div>
@@ -1354,7 +1354,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── MENTOR ─── */}
           {mentorData && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-amber-500' : 'border-amber-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-amber-900/15' : 'bg-amber-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🤝</span> {t('sgm_mentor_title')}</h4>
               </div>
@@ -1391,7 +1391,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── JOB POSTING DECODER ─── */}
           {showDecode && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_decode_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!decodeData && (
@@ -1441,7 +1441,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── OUTREACH DRAFTER ─── */}
           {showOutreach && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-cyan-500' : 'border-cyan-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-cyan-900/15' : 'bg-cyan-50'} border-b ${c.border}`}><h4 className={`font-bold ${c.text}`}>{t('sgm_outreach_title')}</h4></div>
               <div className="p-5 space-y-3">
                 {!outreachData && (
@@ -1475,7 +1475,7 @@ const SkillGapMap = ({ tool }) => {
 
           {/* ─── MOCK INTERVIEW ─── */}
           {showMock && (
-            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-l-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
+            <div className={`${c.card} rounded-xl shadow-sm overflow-hidden border-s-4 ${isDark ? 'border-red-500' : 'border-red-400'}`}>
               <div className={`p-5 ${isDark ? 'bg-red-900/20' : 'bg-red-50'} border-b ${c.border}`}>
                 <h4 className={`font-bold ${c.text} flex items-center gap-2`}><span>🗣️</span> {t('sgm_mock_title', { count: mockHistory.length })}</h4>
               </div>

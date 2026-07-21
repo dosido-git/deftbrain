@@ -472,7 +472,7 @@ const SixDegreesOfMe = ({ tool }) => {
     return (
       <div className={`rounded-2xl border overflow-hidden ${c.card}`}>
         {/* Header */}
-        <button onClick={toggle} className={`w-full flex items-center justify-between p-4 text-left ${toggle ? 'cursor-pointer' : 'cursor-default'}`}>
+        <button onClick={toggle} className={`w-full flex items-center justify-between p-4 text-start ${toggle ? 'cursor-pointer' : 'cursor-default'}`}>
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <span className="text-lg">🪪</span>
             <div className="flex-1 min-w-0">
@@ -494,14 +494,14 @@ const SixDegreesOfMe = ({ tool }) => {
               return (
                 <div key={cat.id}>
                   <button onClick={() => { setEditCat(isEditing ? null : cat.id); setCatInput(''); }}
-                    className={`w-full flex items-center gap-2 py-1.5 text-left ${c.textSecondary}`}>
+                    className={`w-full flex items-center gap-2 py-1.5 text-start ${c.textSecondary}`}>
                     <span className="text-sm">{cat.emoji}</span>
                     <span className={`text-xs font-semibold flex-1 ${c.text}`}>{t(cat.labelKey)}</span>
                     {catItems.length > 0 && <span className={`text-[10px] font-bold ${c.profileFilled}`}>✓ {catItems.length}</span>}
                     <span className="text-[10px]">{isEditing ? '▲' : '▼'}</span>
                   </button>
                   {isEditing && (
-                    <div className="ml-6 mt-1 space-y-2">
+                    <div className="ms-6 mt-1 space-y-2">
                       <p className={`text-[10px] ${c.textMuted}`}>{t(cat.hintKey)}</p>
                       <div className="flex gap-2">
                         <input type="text" value={catInput} onChange={e => setCatInput(e.target.value)}
@@ -656,7 +656,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-bold ${c.text}`}>
                     <span className={c.accentTxt}>{step.from}</span>
-                    {tag && <span className="text-[9px] ml-1 opacity-60" style={{ color: TAG_COLORS[tag.tag] }}>({tag.tag})</span>}
+                    {tag && <span className="text-[9px] ms-1 opacity-60" style={{ color: TAG_COLORS[tag.tag] }}>({tag.tag})</span>}
                     {' → '}
                     <span className={c.accentTxt}>{step.to}</span>
                   </p>
@@ -963,7 +963,7 @@ const SixDegreesOfMe = ({ tool }) => {
             { id: 'shared', labelKey: 'sdm_between_mode_shared_label', descKey: 'sdm_between_mode_shared_desc' },
           ].map(m => (
             <button key={m.id} onClick={() => setBetweenMode(m.id)}
-              className={`flex-1 p-3 rounded-xl border text-left transition-all ${
+              className={`flex-1 p-3 rounded-xl border text-start transition-all ${
                 betweenMode === m.id ? c.pillActive : c.pillInactive}`}>
               <p className={`text-xs font-bold ${c.text}`}>{t(m.labelKey)}</p>
               <p className={`text-[10px] ${c.textMuted}`}>{t(m.descKey)}</p>
@@ -1009,7 +1009,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-bold ${c.text}`}>
                       <span className={c.accentTxt}>{step.from}</span> → <span className={c.accentTxt}>{step.to}</span>
-                      {step.person && <span className={`text-[9px] ml-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || t('sdm_copy_you') : step.person === 'B' ? betweenNameB || t('sdm_copy_them') : t('sdm_between_shared_label')})</span>}
+                      {step.person && <span className={`text-[9px] ms-1 ${c.textMuted}`}>({step.person === 'A' ? betweenNameA || t('sdm_copy_you') : step.person === 'B' ? betweenNameB || t('sdm_copy_them') : t('sdm_between_shared_label')})</span>}
                     </p>
                     <p className={`text-xs ${c.chainConnText}`}>{step.connection}</p>
                   </div>
@@ -1081,14 +1081,14 @@ const SixDegreesOfMe = ({ tool }) => {
             return (
               <div key={i} className={`rounded-xl border overflow-hidden ${c.card}`}>
                 <button onClick={() => setExpandedHistoryIdx(isExp ? null : i)}
-                  className={`w-full text-left p-4 transition-colors ${c.historyCard}`}>
+                  className={`w-full text-start p-4 transition-colors ${c.historyCard}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-sm">{isExp ? '▲' : '▼'}</span>
                       <p className={`text-sm font-bold ${c.text} truncate`}>"{h.thingA}" → "{h.thingB}"</p>
                       {h.constraint && <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${c.infoBox}`}>{h.constraint}</span>}
                     </div>
-                    <span className={`text-[10px] flex-shrink-0 ml-2 ${c.textMuted}`}>{new Date(h.createdAt).toLocaleDateString()}</span>
+                    <span className={`text-[10px] flex-shrink-0 ms-2 ${c.textMuted}`}>{new Date(h.createdAt).toLocaleDateString()}</span>
                   </div>
                   {!isExp && h.insight?.title && <p className={`text-xs ${c.textMuted} mt-1 truncate`}>💡 {h.insight.title}</p>}
                 </button>
@@ -1147,7 +1147,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
+                <span className="me-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -1277,7 +1277,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <div className="space-y-2">
                 {surprisePairs.map((pair, i) => (
                   <button key={i} onClick={() => selectSurprisePair(pair)}
-                    className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${c.surprisePill}`}>
+                    className={`w-full text-start flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${c.surprisePill}`}>
                     <span className={c.accentTxt}>🔗</span>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-bold ${c.text}`}>"{pair.thingA}" → "{pair.thingB}"</p>

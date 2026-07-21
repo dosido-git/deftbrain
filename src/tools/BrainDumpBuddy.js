@@ -512,7 +512,7 @@ const BrainDumpBuddy = ({ tool }) => {
 
     return (
       <div key={key} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-        <button onClick={() => toggleSection(key)} className="w-full p-4 flex items-center justify-between text-left">
+        <button onClick={() => toggleSection(key)} className="w-full p-4 flex items-center justify-between text-start">
           <div className="flex items-center gap-2.5">
             <span>{config.icon}</span>
             <h3 className={`text-sm font-bold ${c.text}`}>{t(config.labelKey)}</h3>
@@ -636,7 +636,7 @@ const BrainDumpBuddy = ({ tool }) => {
             <div className={`pb-3 mb-4 border-b border-zinc-500`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
+                  <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
                   <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? t('bdb_tagline')}</p>
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
                 </div>
@@ -662,7 +662,7 @@ const BrainDumpBuddy = ({ tool }) => {
                   <span className={`text-sm font-medium ${c.text}`}>
                     <span>📊</span> {t('bdb_status_dumps', { count: dumpLog.length })}
                     {dumpLog.length >= 3 && (
-                      <span className={`text-xs ${c.textMuted} ml-1`}>
+                      <span className={`text-xs ${c.textMuted} ms-1`}>
                         {' '}{t('bdb_status_avg', { avg: Math.round(dumpLog.reduce((s, d) => s + (d.realTasks || 0), 0) / dumpLog.length) })}
                       </span>
                     )}
@@ -817,7 +817,7 @@ const BrainDumpBuddy = ({ tool }) => {
               {isListening && voiceInterim && (
                 <div className={`${c.accentLight} border rounded-lg p-3`}>
                   <p className={`text-xs ${c.accentLightText} italic`}>
-                    <span className="inline-block animate-pulse mr-1">🔴</span> ...{voiceInterim}
+                    <span className="inline-block animate-pulse me-1">🔴</span> ...{voiceInterim}
                   </p>
                 </div>
               )}
@@ -874,12 +874,12 @@ const BrainDumpBuddy = ({ tool }) => {
                     <div key={d.id} className={`rounded-lg ${c.blockBg} overflow-hidden`}>
                       {/* Summary row — tap to expand */}
                       <button onClick={() => setExpandedDumpId(isExpanded ? null : d.id)}
-                        className="w-full flex items-center justify-between p-2.5 text-left">
+                        className="w-full flex items-center justify-between p-2.5 text-start">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="text-xs flex-shrink-0">{CONTEXTS.find(ct => ct.value === d.context)?.icon || '🧠'}</span>
                           <span className={`text-sm font-medium ${c.text} truncate`}>{t('bdb_dump_to_tasks', { count: d.thoughtsCount, unit: t(d.thoughtsLabel === 'thoughts' ? 'bdb_thoughts_unit' : 'bdb_words_unit'), tasks: d.realTasks })}</span>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                        <div className="flex items-center gap-2 flex-shrink-0 ms-2">
                           <span className={`text-xs ${c.textMuted}`}>{new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                           <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '▲' : '▼'}</span>
                         </div>
@@ -938,7 +938,7 @@ const BrainDumpBuddy = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-5`}>
             <div className="pb-3 mb-4 border-b border-zinc-500">
               <div className="flex items-center justify-between">
-                <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
+                <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🧠'}</span>{tool?.title ?? t('bdb_title')}</h2>
                 <div className="flex items-center gap-2">
                   {contextInfo && (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${c.btnSecondary}`}>

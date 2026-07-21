@@ -610,7 +610,7 @@ const ApologyCalibrator = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // Shared UI pieces
   // ════════════════════════════════════════════════════════════
-  const Spinner = () => <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span>;
+  const Spinner = () => <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span>;
 
   const ErrorBanner = () => error ? (
     <div className={`mt-4 p-4 rounded-lg border flex items-start gap-3 ${c.danger}`}>
@@ -636,7 +636,7 @@ const ApologyCalibrator = ({ tool }) => {
   const SectionCard = ({ title, icon, children, accent }) => (
     <div className={`rounded-xl p-5 ${accent || c.card}`}>
       <h3 className={`text-lg font-bold mb-3 ${accent ? '' : c.text}`}>
-        {icon && <span className="mr-2">{icon}</span>}{title}
+        {icon && <span className="me-2">{icon}</span>}{title}
       </h3>
       {children}
     </div>
@@ -815,7 +815,7 @@ const ApologyCalibrator = ({ tool }) => {
                     </div>
                     <p className={`italic ${c.text}`}>"{tpl.option}"</p>
                     {tpl.when_to_use && <p className={`text-sm mt-2 ${c.textMuteded}`}>{tpl.when_to_use}</p>}
-                    {tpl.strength && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="mr-1">💪</span>{tpl.strength}</p>}
+                    {tpl.strength && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="me-1">💪</span>{tpl.strength}</p>}
                   </div>
                 ))}
               </div>
@@ -844,7 +844,7 @@ const ApologyCalibrator = ({ tool }) => {
           {calResults.if_youre_over_apologizing?.applies !== false && calResults.if_youre_over_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.overApology}`}>
               <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>
-                <span className="mr-2">💙</span>{t('apc_cal_over_heading')}
+                <span className="me-2">💙</span>{t('apc_cal_over_heading')}
               </h3>
               {calResults.if_youre_over_apologizing.reality_check && (
                 <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{calResults.if_youre_over_apologizing.reality_check}</p>
@@ -868,7 +868,7 @@ const ApologyCalibrator = ({ tool }) => {
           {calResults.if_youre_under_apologizing?.applies !== false && calResults.if_youre_under_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.underApology}`}>
               <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-orange-200' : 'text-orange-900'}`}>
-                <span className="mr-2">🔶</span>{t('apc_cal_under_heading')}
+                <span className="me-2">🔶</span>{t('apc_cal_under_heading')}
               </h3>
               {calResults.if_youre_under_apologizing.reality_check && (
                 <p className={isDark ? 'text-orange-300' : 'text-orange-800'}>{calResults.if_youre_under_apologizing.reality_check}</p>
@@ -934,11 +934,11 @@ const ApologyCalibrator = ({ tool }) => {
             {calHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setCalResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
                 <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
-                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
               </button>
             ))}
           </div>
@@ -953,7 +953,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDetect = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔍</span>{t('apc_det_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🔍</span>{t('apc_det_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_det_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_det_draft_label')} <span className={c.required}>*</span></label>
@@ -1039,13 +1039,13 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>{t('apc_det_rewritten')}
+                  <span className="me-2">✨</span>{t('apc_det_rewritten')}
                 </h3>
               </div>
               <p className={`leading-relaxed ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>{detectResults.rewritten}</p>
               {detectResults.delivery_note && (
                 <p className={`text-sm mt-3 ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                  <span className="mr-1">💡</span>{detectResults.delivery_note}
+                  <span className="me-1">💡</span>{detectResults.delivery_note}
                 </p>
               )}
               <button onClick={() => { setDelForm({ whatHappened: detectForm.context || 'Apology situation', relationship: '', apologyText: detectResults.rewritten }); setView('delivery'); }}
@@ -1068,7 +1068,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDelivery = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎯</span>{t('apc_del_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🎯</span>{t('apc_del_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_del_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
@@ -1121,7 +1121,7 @@ const ApologyCalibrator = ({ tool }) => {
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{delResults.how.why_this_medium}</p>
               </div>
               {delResults.how.avoid_medium && (
-                <p className={`text-sm mt-3 ${isDark ? 'text-red-400' : 'text-red-600'}`}><span className="mr-1">🚫</span>{delResults.how.avoid_medium}</p>
+                <p className={`text-sm mt-3 ${isDark ? 'text-red-400' : 'text-red-600'}`}><span className="me-1">🚫</span>{delResults.how.avoid_medium}</p>
               )}
             </SectionCard>
           )}
@@ -1131,7 +1131,7 @@ const ApologyCalibrator = ({ tool }) => {
             <SectionCard title={t('apc_del_section_where')} icon="📍">
               <p className={c.textSecondary}><strong className={c.text}>{t('apc_del_location')}</strong> {delResults.setting.where}</p>
               {delResults.setting.private_vs_public && <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.setting.private_vs_public}</p>}
-              {delResults.setting.tip && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="mr-1">💡</span>{delResults.setting.tip}</p>}
+              {delResults.setting.tip && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="me-1">💡</span>{delResults.setting.tip}</p>}
             </SectionCard>
           )}
 
@@ -1141,7 +1141,7 @@ const ApologyCalibrator = ({ tool }) => {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                    <span className="mr-2">🎤</span>{t('apc_del_opening_line')}
+                    <span className="me-2">🎤</span>{t('apc_del_opening_line')}
                   </h3>
                   <p className={`text-lg mt-2 italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>"{delResults.opening_line}"</p>
                 </div>
@@ -1189,19 +1189,19 @@ const ApologyCalibrator = ({ tool }) => {
               <div className="space-y-3">
                 {delResults.after_the_apology.next_24_hours && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">⏰</span>{t('apc_del_next_24')}</p>
+                    <p className={`font-medium ${c.text}`}><span className="me-1">⏰</span>{t('apc_del_next_24')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.next_24_hours}</p>
                   </div>
                 )}
                 {delResults.after_the_apology.next_week && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">📅</span>{t('apc_del_next_week')}</p>
+                    <p className={`font-medium ${c.text}`}><span className="me-1">📅</span>{t('apc_del_next_week')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.next_week}</p>
                   </div>
                 )}
                 {delResults.after_the_apology.long_term && (
                   <div className={`rounded-lg p-3 border ${c.cardInner}`}>
-                    <p className={`font-medium ${c.text}`}><span className="mr-1">🎯</span>{t('apc_del_long_term')}</p>
+                    <p className={`font-medium ${c.text}`}><span className="me-1">🎯</span>{t('apc_del_long_term')}</p>
                     <p className={`text-sm mt-1 ${c.textMuteded}`}>{delResults.after_the_apology.long_term}</p>
                   </div>
                 )}
@@ -1212,7 +1212,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Common mistake */}
           {delResults.common_mistake && (
             <div className={`rounded-xl p-4 border-2 ${c.flagBg}`}>
-              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="mr-2">⚠️</span><strong>{t('apc_del_common_mistake')}</strong> {delResults.common_mistake}</p>
+              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="me-2">⚠️</span><strong>{t('apc_del_common_mistake')}</strong> {delResults.common_mistake}</p>
             </div>
           )}
 
@@ -1229,7 +1229,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderAudit = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">📊</span>{t('apc_aud_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">📊</span>{t('apc_aud_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_aud_subtitle')}</p>
 
         {/* Add situation */}
@@ -1359,7 +1359,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Deeper insight */}
           {auditResults.deeper_insight && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">💙</span>{t('apc_aud_deeper_insight')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="me-2">💙</span>{t('apc_aud_deeper_insight')}</h3>
               <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{auditResults.deeper_insight}</p>
             </div>
           )}
@@ -1367,7 +1367,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* One thing to practice */}
           {auditResults.one_thing_to_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🎯</span>{t('apc_aud_challenge')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="me-2">🎯</span>{t('apc_aud_challenge')}</h3>
               <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{auditResults.one_thing_to_practice}</p>
             </div>
           )}
@@ -1385,7 +1385,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderCultural = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🌍</span>{t('apc_cul_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🌍</span>{t('apc_cul_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_cul_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
@@ -1429,7 +1429,7 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="space-y-4">
           {/* Culture context */}
           <div className={`border-4 rounded-xl p-6 ${c.level2}`}>
-            <h2 className="text-2xl font-bold"><span className="mr-2">🌍</span>{culResults.culture_context}</h2>
+            <h2 className="text-2xl font-bold"><span className="me-2">🌍</span>{culResults.culture_context}</h2>
             {culResults.what_this_culture_expects && <p className="text-lg mt-2 opacity-90">{culResults.what_this_culture_expects}</p>}
           </div>
 
@@ -1449,7 +1449,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Surprise */}
           {culResults.what_might_surprise_you && (
             <div className={`rounded-xl p-5 border-2 ${c.overApology}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="mr-2">😮</span>{t('apc_cul_surprise')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}><span className="me-2">😮</span>{t('apc_cul_surprise')}</h3>
               <p className={isDark ? 'text-sky-300' : 'text-sky-800'}>{culResults.what_might_surprise_you}</p>
             </div>
           )}
@@ -1459,7 +1459,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>{t('apc_cul_adapted')}
+                  <span className="me-2">✨</span>{t('apc_cul_adapted')}
                 </h3>
               </div>
               {culResults.adapted_apology.words && (
@@ -1521,7 +1521,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderDecode = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🧐</span>{t('apc_dec_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🧐</span>{t('apc_dec_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_dec_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_dec_words_label')} <span className={c.required}>*</span></label>
@@ -1607,7 +1607,7 @@ const ApologyCalibrator = ({ tool }) => {
             <div className={`rounded-xl p-5 border-2 ${c.rewriteBg}`}>
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                  <span className="mr-2">✨</span>{t('apc_dec_real_sound')}
+                  <span className="me-2">✨</span>{t('apc_dec_real_sound')}
                 </h3>
               </div>
               <p className={`text-lg italic ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
@@ -1636,14 +1636,14 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Pattern warning */}
           {decodeResults.pattern_warning && (
             <div className={`rounded-xl p-4 border-2 ${c.flagBg}`}>
-              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="mr-2">⚠️</span>{decodeResults.pattern_warning}</p>
+              <p className={isDark ? 'text-red-300' : 'text-red-800'}><span className="me-2">⚠️</span>{decodeResults.pattern_warning}</p>
             </div>
           )}
 
           {/* Emotional validation */}
           {decodeResults.emotional_validation && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>{t('apc_dec_validation')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">💜</span>{t('apc_dec_validation')}</h3>
               <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{decodeResults.emotional_validation}</p>
             </div>
           )}
@@ -1669,7 +1669,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderPractice = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🎭</span>{t('apc_prac_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🎭</span>{t('apc_prac_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_prac_subtitle')}</p>
 
         {!practiceStarted ? (
@@ -1691,7 +1691,7 @@ const ApologyCalibrator = ({ tool }) => {
                   { id: 'hard', labelKey: 'apc_prac_hard', descKey: 'apc_prac_hard_desc' },
                 ].map(m => (
                   <button key={m.id} onClick={() => setPracticeForm(p => ({ ...p, mode: m.id }))}
-                    className={`flex-1 rounded-lg p-3 text-left border transition-colors ${practiceForm.mode === m.id ? c.tabActive : c.tabInactive}`}>
+                    className={`flex-1 rounded-lg p-3 text-start border transition-colors ${practiceForm.mode === m.id ? c.tabActive : c.tabInactive}`}>
                     <p className="font-medium text-sm">{t(m.labelKey)}</p>
                     <p className={`text-xs mt-0.5 ${practiceForm.mode === m.id ? 'opacity-80' : c.textMuteded}`}>{t(m.descKey)}</p>
                   </button>
@@ -1730,8 +1730,8 @@ const ApologyCalibrator = ({ tool }) => {
               {/* History */}
               {practiceHistory.map((h, i) => (
                 <div key={i} className={`rounded-lg p-4 ${h.role === 'user'
-                  ? (isDark ? 'bg-emerald-900/30 border border-emerald-700 ml-8' : 'bg-emerald-50 border border-emerald-200 ml-8')
-                  : (isDark ? 'bg-zinc-700 mr-8' : 'bg-gray-100 mr-8')}`}>
+                  ? (isDark ? 'bg-emerald-900/30 border border-emerald-700 ms-8' : 'bg-emerald-50 border border-emerald-200 ms-8')
+                  : (isDark ? 'bg-zinc-700 me-8' : 'bg-gray-100 me-8')}`}>
                   <p className={`text-xs font-medium mb-1 ${c.textMuteded}`}>{h.role === 'user' ? t('apc_prac_you') : t('apc_prac_them')}</p>
                   <p className={c.text}>{h.text}</p>
                 </div>
@@ -1739,7 +1739,7 @@ const ApologyCalibrator = ({ tool }) => {
 
               {/* Latest AI response (if conversation continued) */}
               {practiceResults && practiceHistory.length > 0 && !practiceResults.scene_setting && (
-                <div className={`rounded-lg p-4 ${isDark ? 'bg-zinc-700 mr-8' : 'bg-gray-100 mr-8'}`}>
+                <div className={`rounded-lg p-4 ${isDark ? 'bg-zinc-700 me-8' : 'bg-gray-100 me-8'}`}>
                   <div className="flex items-center gap-2 mb-2">
                     <span>{practiceResults.emotion_emoji || '😐'}</span>
                     <span className={`text-xs font-medium ${c.textMuteded}`}>{practiceResults.body_language}</span>
@@ -1817,7 +1817,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderForgive = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">💜</span>{t('apc_for_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">💜</span>{t('apc_for_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_for_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_for_what_label')} <span className={c.required}>*</span></label>
@@ -1942,7 +1942,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* If not ready */}
           {forgiveResults.if_youre_not_ready && (
             <div className={`rounded-xl p-5 border-2 ${c.cardAlt}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">💜</span>{t('apc_for_not_ready')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">💜</span>{t('apc_for_not_ready')}</h3>
               <p className={isDark ? 'text-cyan-300' : 'text-cyan-800'}>{forgiveResults.if_youre_not_ready}</p>
             </div>
           )}
@@ -1950,7 +1950,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Reflection */}
           {forgiveResults.one_thing_to_sit_with && (
             <div className={`rounded-xl p-5 border-2 ${c.cyanBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="mr-2">🪷</span>{t('apc_for_sit_with')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-cyan-200' : 'text-cyan-900'}`}><span className="me-2">🪷</span>{t('apc_for_sit_with')}</h3>
               <p className={`italic ${isDark ? 'text-cyan-300' : 'text-cyan-800'}`}>{forgiveResults.one_thing_to_sit_with}</p>
             </div>
           )}
@@ -1968,7 +1968,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderRoadmap = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🗺️</span>{t('apc_road_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🗺️</span>{t('apc_road_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_road_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
@@ -2011,7 +2011,7 @@ const ApologyCalibrator = ({ tool }) => {
               </h2>
               <p className="text-lg mt-1 opacity-90">{roadmapResults.damage_assessment.what_was_broken}</p>
               {roadmapResults.damage_assessment.realistic_timeline && (
-                <p className="mt-2 opacity-80"><span className="mr-1">🕐</span>{t('apc_road_timeline', { val: roadmapResults.damage_assessment.realistic_timeline })}</p>
+                <p className="mt-2 opacity-80"><span className="me-1">🕐</span>{t('apc_road_timeline', { val: roadmapResults.damage_assessment.realistic_timeline })}</p>
               )}
               {roadmapResults.damage_assessment.can_this_be_fully_repaired && (
                 <p className="mt-1 opacity-80">{roadmapResults.damage_assessment.can_this_be_fully_repaired}</p>
@@ -2039,8 +2039,8 @@ const ApologyCalibrator = ({ tool }) => {
             <SectionCard title={t('apc_road_section_roadmap')} icon="🗺️">
               <div className="space-y-4">
                 {roadmapResults.roadmap.map((phase, i) => (
-                  <div key={i} className={`rounded-lg border-l-4 ${
-                    i === 0 ? 'border-l-emerald-500' : i === 1 ? 'border-l-cyan-500' : i === 2 ? 'border-l-cyan-500' : i === 3 ? 'border-l-orange-500' : 'border-l-red-500'
+                  <div key={i} className={`rounded-lg border-s-4 ${
+                    i === 0 ? 'border-s-emerald-500' : i === 1 ? 'border-s-cyan-500' : i === 2 ? 'border-s-cyan-500' : i === 3 ? 'border-s-orange-500' : 'border-s-red-500'
                   } ${c.cardInner} p-4`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`text-xs font-bold px-2 py-1 rounded ${c.badge}`}>{phase.phase}</span>
@@ -2105,7 +2105,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Hardest truth */}
           {roadmapResults.hardest_truth && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">💛</span>{t('apc_road_hard_truth')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="me-2">💛</span>{t('apc_road_hard_truth')}</h3>
               <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{roadmapResults.hardest_truth}</p>
             </div>
           )}
@@ -2113,7 +2113,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Daily practice */}
           {roadmapResults.daily_practice && (
             <div className={`rounded-xl p-5 border-2 ${c.success}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="mr-2">🌅</span>{t('apc_road_daily_practice')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-emerald-200' : 'text-emerald-900'}`}><span className="me-2">🌅</span>{t('apc_road_daily_practice')}</h3>
               <p className={isDark ? 'text-emerald-300' : 'text-emerald-800'}>{roadmapResults.daily_practice}</p>
             </div>
           )}
@@ -2141,7 +2141,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderLetter = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">✉️</span>{t('apc_let_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">✉️</span>{t('apc_let_heading')}</h2>
         <p className={`text-sm mb-4 ${c.textMuteded}`}>{t('apc_let_subtitle')}</p>
 
         <label className={`block text-sm font-medium mb-2 ${c.textSecondary}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
@@ -2251,7 +2251,7 @@ const ApologyCalibrator = ({ tool }) => {
           {/* Final check */}
           {letterResults.final_check && (
             <div className={`rounded-xl p-5 border-2 ${c.amberBg}`}>
-              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="mr-2">✋</span>{t('apc_let_before_send')}</h3>
+              <h3 className={`font-bold mb-2 ${isDark ? 'text-amber-200' : 'text-amber-900'}`}><span className="me-2">✋</span>{t('apc_let_before_send')}</h3>
               <p className={isDark ? 'text-amber-300' : 'text-amber-800'}>{letterResults.final_check}</p>
             </div>
           )}
@@ -2301,7 +2301,7 @@ const ApologyCalibrator = ({ tool }) => {
   const renderFix = () => (
     <div className="space-y-6">
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="mr-2">🔁</span>{t('apc_fix_heading')}</h2>
+        <h2 className={`text-xl font-bold mb-1 ${c.text}`}><span className="me-2">🔁</span>{t('apc_fix_heading')}</h2>
         <p className={`text-sm mb-5 ${c.textMuteded}`}>{t('apc_fix_subtitle')}</p>
 
         <div className="space-y-4">
@@ -2333,10 +2333,10 @@ const ApologyCalibrator = ({ tool }) => {
                 className={`w-full p-2 border rounded-lg outline-none text-sm ${c.input} ${c.input}`} />
             </div>
           </div>
-          {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+          {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
           <button onClick={handleFix} disabled={loading || !fixForm.whatYouSaid.trim() || !fixForm.theirReaction.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
-            {loading ? <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚖️'}</span> : <span className="mr-2">🔁</span>}
+            {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">🔁</span>}
             {t('apc_fix_btn')}
           </button>
         </div>
@@ -2346,7 +2346,7 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="space-y-4">
           {/* Diagnosis */}
           <div className={`rounded-xl p-6 ${c.card}`}>
-            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">🔬</span>{t('apc_fix_section_diagnosis')}</h3>
+            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="me-2">🔬</span>{t('apc_fix_section_diagnosis')}</h3>
             <p className={`text-base font-medium mb-4 ${isDark ? 'text-red-300' : 'text-red-700'}`}>{fixResults.diagnosis?.summary}</p>
 
             <div className="space-y-3 mb-4">
@@ -2377,7 +2377,7 @@ const ApologyCalibrator = ({ tool }) => {
 
           {/* The Fix */}
           <div className={`rounded-xl p-6 ${c.card}`}>
-            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="mr-2">✅</span>{t('apc_fix_section_the_fix')}</h3>
+            <h3 className={`text-lg font-bold mb-1 ${c.text}`}><span className="me-2">✅</span>{t('apc_fix_section_the_fix')}</h3>
             <p className={`text-sm mb-4 ${c.textMuteded}`}>{fixResults.the_fix?.approach}</p>
 
             <div className={`rounded-lg p-4 border ${c.goodBg} mb-4`}>
@@ -2446,7 +2446,7 @@ const ApologyCalibrator = ({ tool }) => {
       <div className={`rounded-xl p-6 ${c.card}`}>
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
-            <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">🔧</span>{t('apc_rep_heading')}</h2>
+            <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">🔧</span>{t('apc_rep_heading')}</h2>
             <p className={`text-sm ${c.textMuteded}`}>{t('apc_rep_subtitle')}</p>
           </div>
           <button onClick={() => setShowRepairForm(!showRepairForm)}
@@ -2584,7 +2584,7 @@ const ApologyCalibrator = ({ tool }) => {
           <div className="flex items-start justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('apc_title')}
+                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('apc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('apc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('apc_try_example')}</button>

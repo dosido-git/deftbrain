@@ -561,7 +561,7 @@ const BragSheetBuilder = ({ tool }) => {
     const h = size === 'sm' ? 'h-1.5' : 'h-2.5';
     return (
       <div className="flex items-center gap-2 w-full">
-        {label && <span className={`text-[10px] font-bold ${c.textMuteded} w-28 text-right flex-shrink-0`}>{label}</span>}
+        {label && <span className={`text-[10px] font-bold ${c.textMuteded} w-28 text-end flex-shrink-0`}>{label}</span>}
         <div className={`flex-1 ${c.scoreBg} rounded-full ${h} overflow-hidden`}>
           <div className={`${color} ${h} rounded-full transition-all`} style={{ width: `${Math.min(100, Math.max(0, score))}%` }} />
         </div>
@@ -579,7 +579,7 @@ const BragSheetBuilder = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? t('bsb_title')}
+                <span className="me-2">{tool?.icon ?? '🏆'}</span>{tool?.title ?? t('bsb_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('bsb_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -629,7 +629,7 @@ const BragSheetBuilder = ({ tool }) => {
 
       {/* ═══════════════ JOURNAL PANEL ═══════════════ */}
       {showJournal && !results && (
-        <div className={`${c.card} rounded-xl shadow-sm p-5 mb-5 border-l-4 ${c.journalBorder}`}>
+        <div className={`${c.card} rounded-xl shadow-sm p-5 mb-5 border-s-4 ${c.journalBorder}`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🗓️</span> {t('bsb_journal_title')}</h3>
             <button onClick={() => setShowJournal(false)} className={`text-sm ${c.textMuteded}`}>✕</button>
@@ -741,16 +741,16 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className="space-y-3">
                   {excavatorData.categories.map((cat, ci) => (
                     <div key={ci}>
-                      <button onClick={() => toggleSection(`exc-${ci}`)} className={`flex items-center gap-1.5 w-full text-left mb-1.5`}>
+                      <button onClick={() => toggleSection(`exc-${ci}`)} className={`flex items-center gap-1.5 w-full text-start mb-1.5`}>
                         <span>{cat.icon}</span>
                         <span className={`text-xs font-bold ${c.text}`}>{cat.name}</span>
-                        <span className={`text-[10px] ${c.textMuteded} ml-auto`}>{expandedSections[`exc-${ci}`] === false ? '▼' : '▲'}</span>
+                        <span className={`text-[10px] ${c.textMuteded} ms-auto`}>{expandedSections[`exc-${ci}`] === false ? '▼' : '▲'}</span>
                       </button>
                       {expandedSections[`exc-${ci}`] !== false && (
-                        <div className="space-y-1.5 ml-5">
+                        <div className="space-y-1.5 ms-5">
                           {cat.questions.map((q, qi) => (
                             <button key={qi} onClick={() => { setCurrentEntry(q.exampleAccomplishment || ''); entryRef.current?.focus(); }}
-                              className={`w-full text-left p-2 rounded-lg text-xs ${c.hoverBg} transition-colors`}>
+                              className={`w-full text-start p-2 rounded-lg text-xs ${c.hoverBg} transition-colors`}>
                               <p className={`font-medium ${c.text}`}>{q.text}</p>
                               {q.exampleAccomplishment && <p className={`${c.textMuteded} mt-0.5 italic`}>{t('bsb_eg_quote', { example: q.exampleAccomplishment })}</p>}
                             </button>
@@ -811,12 +811,12 @@ const BragSheetBuilder = ({ tool }) => {
                 {sessionHistory.map(entry => (
                   <button key={entry.id}
                     onClick={() => { if (entry.result) { setResults(entry.result); setActiveTab('transform'); } }}
-                    className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
+                    className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}>
                     <span className={c.textMuteded}>
                       {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                     </span>
-                    <span className={`ml-2 ${c.text}`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
-                    <span className={`ml-1.5 ${c.textMuteded}`}>({entry.count} {entry.count !== 1 ? t('bsb_item_many') : t('bsb_item_one')})</span>
+                    <span className={`ms-2 ${c.text}`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
+                    <span className={`ms-1.5 ${c.textMuteded}`}>({entry.count} {entry.count !== 1 ? t('bsb_item_many') : t('bsb_item_one')})</span>
                   </button>
                 ))}
               </div>
@@ -847,7 +847,7 @@ const BragSheetBuilder = ({ tool }) => {
 
           {/* Add One More */}
           {addingMore && (
-            <div className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${c.addMoreBorder}`}>
+            <div className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${c.addMoreBorder}`}>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>➕ {t('bsb_add_another')}</p>
               <input type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSingle(); } }}
@@ -1019,7 +1019,7 @@ const BragSheetBuilder = ({ tool }) => {
                           <span className="text-sm">{dim.icon}</span>
                           <ScoreBar score={dim.score} label={dim.name} />
                         </div>
-                        {dim.gap_suggestion && <p className={`text-[10px] ${c.highlightText} ml-10`}>💡 {dim.gap_suggestion}</p>}
+                        {dim.gap_suggestion && <p className={`text-[10px] ${c.highlightText} ms-10`}>💡 {dim.gap_suggestion}</p>}
                       </div>
                     ))}
                   </div>

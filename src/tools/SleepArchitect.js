@@ -226,7 +226,7 @@ function SleepArchitect({ tool }) {
           {SLEEP_GOALS.map(g => (
             <button key={g.id} onClick={() => toggleGoal(g.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${goals.includes(g.id) ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-1">{g.icon}</span>{t(g.labelKey)}
+              <span className="me-1">{g.icon}</span>{t(g.labelKey)}
             </button>
           ))}
         </div>
@@ -288,7 +288,7 @@ function SleepArchitect({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '😴'}</span> {t('sa_building')}</>
-          : <><span className="mr-1">{tool?.icon ?? '😴'}</span> {t('sa_build_btn')}</>}
+          : <><span className="me-1">{tool?.icon ?? '😴'}</span> {t('sa_build_btn')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -448,7 +448,7 @@ function SleepArchitect({ tool }) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '😴'}</span>{tool?.title ?? t('sa_title')}
+              <span className="me-2">{tool?.icon ?? '😴'}</span>{tool?.title ?? t('sa_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sa_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

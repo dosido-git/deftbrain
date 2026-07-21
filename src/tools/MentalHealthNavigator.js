@@ -223,7 +223,7 @@ function MentalHealthNavigator({ tool }) {
           {SITUATION_AREAS.map(s => (
             <button key={s.id} onClick={() => toggle(setSituationAreas)(s.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${situationAreas.includes(s.id) ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-1">{s.icon}</span>{t(s.labelKey)}
+              <span className="me-1">{s.icon}</span>{t(s.labelKey)}
             </button>
           ))}
         </div>
@@ -286,7 +286,7 @@ function MentalHealthNavigator({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🧭'}</span> {t('mhn_finding')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🧭'}</span> {t('mhn_find')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🧭'}</span> {t('mhn_find')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -339,7 +339,7 @@ function MentalHealthNavigator({ tool }) {
           <div className="space-y-3">
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide px-1`}>💙 {t('mhn_recommended')}</p>
             {results?.recommended_support.map((s, i) => (
-              <div key={i} className={`${c.card} border-l-4 ${i === 0 ? 'border-l-cyan-500' : `border-l-zinc-400`} border ${c.border} rounded-xl p-4 space-y-2`}>
+              <div key={i} className={`${c.card} border-s-4 ${i === 0 ? 'border-s-cyan-500' : `border-s-zinc-400`} border ${c.border} rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`font-bold text-sm ${c.text}`}>{s.type_name}</span>
                   {i === 0 && <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.infoBox} border`}>{t('mhn_best_fit')}</span>}
@@ -422,7 +422,7 @@ function MentalHealthNavigator({ tool }) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🧭'}</span>{tool?.title ?? t('mhn_title')}
+              <span className="me-2">{tool?.icon ?? '🧭'}</span>{tool?.title ?? t('mhn_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mhn_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

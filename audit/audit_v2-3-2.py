@@ -377,7 +377,8 @@ for name, fpath in tools:
         if bare_h:
             fails.append(f'S0: hardcoded text in h1/h2 (must use {{tool?.title}}): {bare_h[:2]}')
     # Check 2: mr-2 + tool?.icon must both exist somewhere in the file (multiline headers)
-    if 'mr-2' not in content or 'tool?.icon' not in content:
+    # me-2 is the RTL-logical equivalent of mr-2 (2026-07-21 logical-props migration)
+    if ('mr-2' not in content and 'me-2' not in content) or 'tool?.icon' not in content:
         fails.append('S0: header missing icon pattern — use <span className="mr-2">{tool?.icon ?? fallback}</span>{tool?.title}')
     # Check 3: tool?.icon must appear at least twice (header + submit button)
     icon_count = content.count('tool?.icon')

@@ -239,7 +239,7 @@ const PronounceItRight = ({ tool }) => {
 
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick} className={'px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ' + (active ? c.pillActive : c.pillInactive)}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
@@ -247,7 +247,7 @@ const PronounceItRight = ({ tool }) => {
     const open = expandedSections[sKey] ?? defaultOpen;
     return (
       <div className={c.card + ' border rounded-xl overflow-hidden'}>
-        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-left hover:opacity-80">
+        <button onClick={() => toggleSection(sKey)} className="w-full flex items-center justify-between p-4 text-start hover:opacity-80">
           <div className="flex items-center gap-2">
             <span className="text-base">{emoji}</span>
             <span className={'text-sm font-semibold ' + c.text}>{title}</span>
@@ -353,7 +353,7 @@ const PronounceItRight = ({ tool }) => {
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' +
           c.btnPrimary}>
         {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('pir_looking_up')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🗣️'}</span> {t('pir_cta')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_cta')}</>}
       </button>
     </div>
   );
@@ -380,7 +380,7 @@ const PronounceItRight = ({ tool }) => {
               <button onClick={fetchAudio} disabled={audioLoading}
                 className={'text-sm font-bold px-4 py-2 rounded-xl border disabled:opacity-40 ' + c.btnSecondary}>
                 {audioLoading
-                  ? <><span className="inline-block animate-spin mr-1">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
+                  ? <><span className="inline-block animate-spin me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_loading')}</>
                   : <>🔊 {t('pir_hear_it')}</>}
               </button>
             ) : (
@@ -587,7 +587,7 @@ const PronounceItRight = ({ tool }) => {
     if (sessionHistory.length === 0) return null;
     return (
       <div className={'mt-6 p-4 rounded-2xl border ' + c.cardAlt}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span>🗣️</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('pir_words_looked_up')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
@@ -600,7 +600,7 @@ const PronounceItRight = ({ tool }) => {
                 onClick={() => { setWord(entry.word); setCategory(entry.category); setResults(null); setBatchResults(null); setBatchMode(false); }}
                 className={'px-3 py-1.5 rounded-lg border text-xs font-semibold ' + c.pillInactive}>
                 {entry.emoji} {entry.word}
-                {entry.phonetic && <span className={'ml-1.5 ' + c.textMuted}>({entry.phonetic})</span>}
+                {entry.phonetic && <span className={'ms-1.5 ' + c.textMuted}>({entry.phonetic})</span>}
               </button>
             ))}
           </div>
@@ -618,7 +618,7 @@ const PronounceItRight = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('pir_title')}
+              <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('pir_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pir_tagline')}</p>
           </div>

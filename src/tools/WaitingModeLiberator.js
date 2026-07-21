@@ -598,7 +598,7 @@ const WaitingModeLiberator = ({ tool }) => {
           {/* Header */} <div className="pt-2 pb-1">
             <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
+                <span className="me-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
               <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
@@ -664,14 +664,14 @@ const WaitingModeLiberator = ({ tool }) => {
                         <div className="flex-1 min-w-0">
                           <span className={`text-sm font-semibold ${c.text}`}>
                             {ev.name || typeLabel || t('wml_appointment')} </span>
-                          {(() => { const dOff = parsedDayOffset(parseTimeInput(ev.time, ev.dayOffset)); return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ml-1.5 ${c.badge}`}>
+                          {(() => { const dOff = parsedDayOffset(parseTimeInput(ev.time, ev.dayOffset)); return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ms-1.5 ${c.badge}`}>
                               {dOff === 1 ? t('wml_tomorrow') : t('wml_plus_days', { n: dOff })} </span>
-                          ); })()} <span className={`text-xs ${c.textMuted} ml-1.5`}>· {ev.time}</span>
-                          <span className={`text-xs ${c.textMuted} ml-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
+                          ); })()} <span className={`text-xs ${c.textMuted} ms-1.5`}>· {ev.time}</span>
+                          <span className={`text-xs ${c.textMuted} ms-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
                         </div>
                         <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
                         <button
-                          onClick={e => { e.stopPropagation(); removeEvent(ev.id); if (expandedEventId === ev.id) setExpandedEventId(null); }} className={`text-sm ${c.textGhostDel} transition-colors ml-1 flex-shrink-0`} title={t('wml_remove')}
+                          onClick={e => { e.stopPropagation(); removeEvent(ev.id); if (expandedEventId === ev.id) setExpandedEventId(null); }} className={`text-sm ${c.textGhostDel} transition-colors ms-1 flex-shrink-0`} title={t('wml_remove')}
                         >✕</button>
                       </div>
 
@@ -741,9 +741,9 @@ const WaitingModeLiberator = ({ tool }) => {
             <button
               onClick={() => setContextOpen(o => !o)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold ${c.text}`} >
               <span>
-                <span className="mr-2">⚙️</span>
+                <span className="me-2">⚙️</span>
                 {t('wml_context_header')}
-                {!contextOpen && <span className={`ml-2 text-xs font-normal ${c.textMuted}`}>({t(ENERGY_LEVELS.find(e => e.id === energy)?.labelKey)}, {anxietyBefore}/10)</span>} </span>
+                {!contextOpen && <span className={`ms-2 text-xs font-normal ${c.textMuted}`}>({t(ENERGY_LEVELS.find(e => e.id === energy)?.labelKey)}, {anxietyBefore}/10)</span>} </span>
               <span className={`text-xs ${c.textMuted}`}>{contextOpen ? '▲' : '▼'}</span>
             </button>
 
@@ -819,7 +819,7 @@ const WaitingModeLiberator = ({ tool }) => {
                         <span className={`text-xs ${c.textMuted}`}>
                           {t('wml_blocks_meta', { free: s.freeMinutes, done: s.blocksCompleted, total: s.totalBlocks })} · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'} {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''} · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} </span>
                       </div>
-                      <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 ms-2 flex-shrink-0">
                         {s.blocksCompleted > 0 && <span className="text-xs">✅</span>} <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} font-medium`} title={t('wml_repeat')}>🔁</button>
                       </div>
                     </div>
@@ -923,13 +923,13 @@ const WaitingModeLiberator = ({ tool }) => {
               <div className="space-y-2">
                 {results.events_summary.map((ev, i) => (<div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg ${c.blockBg}`}>
                     <span className="text-sm">{APPT_TYPES.find(a => a.id === ev.type)?.icon || '📌'}</span>
-                    <div className="flex-1"><span className={`text-sm font-medium ${c.text}`}>{ev.time}</span><span className={`text-xs ${c.textMuted} ml-2`}>{ev.type || t('wml_event')}</span></div>
+                    <div className="flex-1"><span className={`text-sm font-medium ${c.text}`}>{ev.time}</span><span className={`text-xs ${c.textMuted} ms-2`}>{ev.type || t('wml_event')}</span></div>
                     <span className={`text-xs ${c.textMuted}`}>{t('wml_prep_at', { time: ev.prep_alarm })}</span>
                   </div>
                 ))} </div>
             </div>
           )} {/* Permission */} {results.permission && (<div className={`${c.accentLight} border rounded-xl p-5`}>
-              <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg mr-1">🔓</span> {results.permission}</p>
+              <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg me-1">🔓</span> {results.permission}</p>
             </div>
           )} {/* Reframe */} {results.reframe && !reframes && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-sm ${c.textSecondary} italic`}>💡 {results.reframe}</p>
@@ -1148,7 +1148,7 @@ const WaitingModeLiberator = ({ tool }) => {
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wml_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         </div>

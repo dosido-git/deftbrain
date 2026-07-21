@@ -476,7 +476,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
   // ═══════════════════════════════════════════
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {toast && <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200'}`}>{toast}</div>}
+      {toast && <div className={`fixed top-4 start-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${isDark ? 'bg-zinc-700 text-zinc-50 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200'}`}>{toast}</div>}
 
       {/* ═══ INPUT FORM — h2 first in-flow element ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
@@ -484,7 +484,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🐾'}</span>{tool?.title ?? t('pwd_title')}
+                <span className="me-2">{tool?.icon ?? '🐾'}</span>{tool?.title ?? t('pwd_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pwd_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -524,7 +524,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
                   <div className="flex items-center gap-2"><span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${e.urgency === 'not_urgent' ? 'bg-emerald-100 text-emerald-700' : e.urgency === 'monitor' ? 'bg-sky-100 text-sky-700' : e.urgency === 'vet_soon' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{getUrgencyLabel(e.urgency)}</span><span className={`text-xs ${c.textMuted}`}>{e.petName} · {new Date(e.date).toLocaleDateString(userLocale)}</span></div>
                   <p className={`text-sm truncate ${c.text}`}>{e.behavior}</p>
                 </div>
-                <button onClick={() => handleLoadBehaviorEntry(e)} className={`${c.btnSecondary} px-2 py-1 rounded text-xs ml-2`}>{t('pwd_load')}</button>
+                <button onClick={() => handleLoadBehaviorEntry(e)} className={`${c.btnSecondary} px-2 py-1 rounded text-xs ms-2`}>{t('pwd_load')}</button>
               </div>
             ))}</div> : <p className={`text-sm ${c.textMuted}`}>{t('pwd_no_past_analyses')}</p>}
           </div>
@@ -618,7 +618,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
               className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '🐾'}</span> {t('pwd_analyzing')}</>
-                : <><span className="mr-1">{tool?.icon ?? '🐾'}</span> {t('pwd_decode')}</>}
+                : <><span className="me-1">{tool?.icon ?? '🐾'}</span> {t('pwd_decode')}</>}
             </button>
           </div>
 
@@ -649,7 +649,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
       </div>
 
       {/* Disclaimer */}
-      <div className={`${c.warning} border-l-4 rounded-r-lg p-4`}>
+      <div className={`${c.warning} border-s-4 rounded-e-lg p-4`}>
         <div className="flex items-start gap-3"><span>⚠️</span><p className={`text-sm ${c.textSecondary}`}><strong>{t('pwd_disclaimer_label')}</strong> {t('pwd_disclaimer_body')}</p></div>
       </div>
 
@@ -663,7 +663,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
       {/* Seasonal Warning */}
       {(() => { const s = getSeasonalWarnings(); return s && s.warnings.length > 0 ? (
-        <div className={`${c.cardAlt} border ${c.border} border-l-4 rounded-r-lg p-4`}>
+        <div className={`${c.cardAlt} border ${c.border} border-s-4 rounded-e-lg p-4`}>
           <div className="flex items-center justify-between">
             <h3 className={`font-bold flex items-center gap-2 ${c.text}`}><span>{s.icon}</span> {t(s.labelKey)} {t('pwd_season_watch')} — {petTypeLabel(petType)}</h3>
             <button onClick={() => setShowSeasonalDetail(!showSeasonalDetail)} className={`text-xs ${c.textSecondary} hover:underline`}>{showSeasonalDetail ? t('pwd_hide') : t('pwd_details')}</button>
@@ -703,7 +703,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
           {/* Urgency + Emergency Vet */}
           {results?.behavior_analysis && (
-            <div className={`${getUrgencyColor(results?.behavior_analysis?.urgency_level)} border-l-4 rounded-r-lg p-6 shadow-lg`}>
+            <div className={`${getUrgencyColor(results?.behavior_analysis?.urgency_level)} border-s-4 rounded-e-lg p-6 shadow-lg`}>
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex items-center gap-3">
                   <span className="text-4xl">{results?.behavior_analysis?.urgency_emoji}</span>
@@ -728,7 +728,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
           {/* Breed-Specific */}
           {results?.breed_specific_info && (
-            <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.cardAlt} border-s-4 rounded-e-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>🧬</span> {t('pwd_breed_intel')}</h3>
               {results?.breed_specific_info?.is_breed_typical && <p className={`text-sm mb-2 ${c.text}`}><strong>{t('pwd_typical_for', { breed: breed || petTypeLabel(petType) })}</strong> {results?.breed_specific_info?.breed_explanation}</p>}
               {results?.breed_specific_info?.genetic_predispositions?.length > 0 && <div className="mb-2"><p className="text-sm font-semibold">{t('pwd_predispositions')}</p><ul className="text-sm space-y-1">{results?.breed_specific_info?.genetic_predispositions.map((g, i) => <li key={i}>• {g}</li>)}</ul></div>}
@@ -738,7 +738,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
           {/* Life Stage */}
           {results?.life_stage_context && (
-            <div className={`${c.success} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.success} border-s-4 rounded-e-lg p-5`}>
               <h3 className="font-bold mb-2 flex items-center gap-2"><span>🕐</span> {t('pwd_life_stage')}</h3>
               <p className={`text-sm font-semibold ${c.text}`}>{results?.life_stage_context?.life_stage} ({age}y)</p>
               <p className="text-sm">{results?.life_stage_context?.stage_explanation}</p>
@@ -767,7 +767,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
           )}
 
           {/* When to Worry */}
-          {results?.when_to_worry && <div className={`${c.danger} border-l-4 rounded-r-lg p-5`}><h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> {t('pwd_when_to_worry')}</h3>{results?.when_to_worry?.red_flags?.length > 0 && <ul className="text-sm space-y-2 font-semibold mb-3">{results?.when_to_worry?.red_flags.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">🚨</span> {f}</li>)}</ul>}{results?.when_to_worry?.timeline && <div className={`p-2 rounded ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}><p className="text-sm"><strong>⏰</strong> {results?.when_to_worry?.timeline}</p></div>}</div>}
+          {results?.when_to_worry && <div className={`${c.danger} border-s-4 rounded-e-lg p-5`}><h3 className="font-bold mb-2 flex items-center gap-2"><span>⚠️</span> {t('pwd_when_to_worry')}</h3>{results?.when_to_worry?.red_flags?.length > 0 && <ul className="text-sm space-y-2 font-semibold mb-3">{results?.when_to_worry?.red_flags.map((f, i) => <li key={i} className="flex items-start gap-2"><span className="text-red-500">🚨</span> {f}</li>)}</ul>}{results?.when_to_worry?.timeline && <div className={`p-2 rounded ${isDark ? 'bg-red-900/30' : 'bg-red-100'}`}><p className="text-sm"><strong>⏰</strong> {results?.when_to_worry?.timeline}</p></div>}</div>}
 
           {/* Quirky */}
           {results?.if_its_just_quirky && results?.behavior_analysis?.urgency_level === 'not_urgent' && (
@@ -786,7 +786,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
           {results?.behavioral_modification?.length > 0 && <div className={`${c.card} border rounded-xl p-5`}><h3 className={`font-bold ${c.text} mb-3`}>📈 {t('pwd_change_this')}</h3>{results?.behavioral_modification?.map((m, i) => <div key={i} className="space-y-2">{m.if_you_want_to_change_it && <p className={`text-sm ${c.textSecondary}`}>{m.if_you_want_to_change_it}</p>}{m.how && <p className={`text-sm ${c.textSecondary}`}><strong>{t('pwd_how')}</strong> {m.how}</p>}{m.patience_required && <p className={`text-sm ${c.textMuteded}`}>⏰ {m.patience_required}</p>}</div>)}</div>}
 
           {/* Stories */}
-          {results?.similar_pet_stories && <div className={`${c.cardAlt} border-l-4 rounded-r-lg p-4`}><h3 className="font-bold mb-1 flex items-center gap-2"><span>📖</span> {t('pwd_community')}</h3><p className="text-sm">{results?.similar_pet_stories}</p></div>}
+          {results?.similar_pet_stories && <div className={`${c.cardAlt} border-s-4 rounded-e-lg p-4`}><h3 className="font-bold mb-1 flex items-center gap-2"><span>📖</span> {t('pwd_community')}</h3><p className="text-sm">{results?.similar_pet_stories}</p></div>}
 
           {/* Follow-up Q&A */}
           <div className={`${c.card} border rounded-xl p-5`}>

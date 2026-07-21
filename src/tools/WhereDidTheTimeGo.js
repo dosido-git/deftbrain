@@ -197,7 +197,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
         {/* Input */} {!results && (<div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm space-y-5`}>
 
             {/* Header */} <div className={`mb-4 pb-3 border-b ${c.border}`}>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
+              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('wdttg_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
@@ -213,7 +213,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
 
             {/* Day description */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
-                <span className="mr-1.5">📋</span> {t('wdttg_day_q', { tf: timeframeLabel(timeframe) })} <span className={c.required}>*</span>
+                <span className="me-1.5">📋</span> {t('wdttg_day_q', { tf: timeframeLabel(timeframe) })} <span className={c.required}>*</span>
               </label>
               <textarea
                 value={dayDescription} onChange={(e) => setDayDescription(e.target.value)} placeholder={t('wdttg_day_ph')} rows={5} maxLength={1000} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
@@ -221,7 +221,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
 
             {/* Perceived breakdown */} <div className="space-y-2">
               <label className={`text-sm font-semibold ${c.text}`}>
-                <span className="mr-1.5">🤔</span> {t('wdttg_perceived_q')} <span className={`font-normal ${c.textMuted}`}>{t('wdttg_perceived_hint')}</span>
+                <span className="me-1.5">🤔</span> {t('wdttg_perceived_q')} <span className={`font-normal ${c.textMuted}`}>{t('wdttg_perceived_hint')}</span>
               </label>
               <textarea
                 value={perceivedBreakdown} onChange={(e) => setPerceivedBreakdown(e.target.value)} placeholder={t('wdttg_perceived_ph')}
@@ -252,7 +252,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
             <div className={`pb-3 border-b ${c.border}`}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
+                  <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
                   <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('wdttg_tagline')}</p>
                 </div>
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -265,7 +265,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
 
         {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
 
-            {/* Validation first */} {results?.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-l-4 rounded-2xl p-5`}>
+            {/* Validation first */} {results?.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-s-4 rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>
                   <span>✅</span> {t('wdttg_actually_did')}
                 </p>
@@ -295,7 +295,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
                         </div>
                       </div>
                       <p className={`text-xs ${c.textMuted} italic`}>
-                        <span className="mr-1">👻</span> {a.hidden_overhead} </p>
+                        <span className="me-1">👻</span> {a.hidden_overhead} </p>
                     </div>
                   ))} </div>
               </div>
@@ -373,7 +373,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
             <div className="space-y-1">
               {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                   <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wdttg_session')}</span>
-                  <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                  <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
                 </div>
               ))} </div>
           </div>

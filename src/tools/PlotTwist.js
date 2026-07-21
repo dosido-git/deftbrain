@@ -228,13 +228,13 @@ const PlotTwist = ({ tool }) => {
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
   const Collapsible = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
@@ -463,9 +463,9 @@ const PlotTwist = ({ tool }) => {
               <table className="w-full text-xs">
                 <thead>
                   <tr>
-                    <th className={`p-2 text-left rounded-tl-lg ${c.matrixHead}`}>{t('ptw_matrix_dimension')}</th>
+                    <th className={`p-2 text-start rounded-ss-lg ${c.matrixHead}`}>{t('ptw_matrix_dimension')}</th>
                     {(results?.comparison_matrix?.scores || []).map((s, i) => (
-                      <th key={i} className={`p-2 text-center ${c.matrixHead} ${i === results?.comparison_matrix?.scores.length - 1 ? 'rounded-tr-lg' : ''}`}>
+                      <th key={i} className={`p-2 text-center ${c.matrixHead} ${i === results?.comparison_matrix?.scores.length - 1 ? 'rounded-se-lg' : ''}`}>
                         {s.option?.slice(0, 20)}
                       </th>
                     ))}
@@ -554,7 +554,7 @@ const PlotTwist = ({ tool }) => {
     };
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🔀</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ptw_history_title')}</span>
           <span className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}</span>
@@ -590,7 +590,7 @@ const PlotTwist = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🔀'}</span>{tool?.title ?? t('ptw_title')}
+                  <span className="me-2">{tool?.icon ?? '🔀'}</span>{tool?.title ?? t('ptw_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ptw_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

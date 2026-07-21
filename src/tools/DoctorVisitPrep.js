@@ -49,7 +49,7 @@ const BiText = ({ text, c }) => {
 function Sec({ icon, title, badge, open, onToggle, children, c }) {
   return (
     <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-      <button onClick={onToggle} className="flex items-center gap-2 w-full text-left">
+      <button onClick={onToggle} className="flex items-center gap-2 w-full text-start">
         <span className="text-lg">{icon}</span>
         <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
         {badge != null && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
@@ -361,7 +361,7 @@ const DoctorVisitPrep = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-2">
           <div className="flex-1">
             <h2 className={`text-xl font-bold ${c.text} flex items-center`}>
-              <span className="mr-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? t('dvp_title')}
+              <span className="me-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? t('dvp_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dvp_tagline')}</p>
           </div>
@@ -380,7 +380,7 @@ const DoctorVisitPrep = ({ tool }) => {
       {/* INPUT CARD */}
       <div className={`${c.card} rounded-xl shadow-sm border ${c.border} p-6 space-y-5`}>
         {/* Disclaimer */}
-        <div className={`${c.warning} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}>
+        <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
           <span>⚠️</span>
           <div>
             <h4 className="font-bold text-sm mb-0.5">{t('dvp_disclaimer_title')}</h4>
@@ -416,7 +416,7 @@ const DoctorVisitPrep = ({ tool }) => {
         <div>
           <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
             {t('dvp_chief_concern')} <span className={c.required}>*</span>
-            <span className={`ml-1 text-[10px] font-normal ${c.textMuted}`}>{t('dvp_chief_concern_hint')}</span>
+            <span className={`ms-1 text-[10px] font-normal ${c.textMuted}`}>{t('dvp_chief_concern_hint')}</span>
           </label>
           <textarea
             value={chiefConcern}
@@ -643,10 +643,10 @@ const DoctorVisitPrep = ({ tool }) => {
                       )}
                     </div>
                     {q.why_this_matters && (
-                      <p className={`text-xs ${c.textMuted} ml-7`}>{t('dvp_why')} {q.why_this_matters}</p>
+                      <p className={`text-xs ${c.textMuted} ms-7`}>{t('dvp_why')} {q.why_this_matters}</p>
                     )}
                     {q.category && (
-                      <p className={`text-[10px] ${c.textMuted} ml-7 mt-1 uppercase tracking-wide`}>{q.category}</p>
+                      <p className={`text-[10px] ${c.textMuted} ms-7 mt-1 uppercase tracking-wide`}>{q.category}</p>
                     )}
                   </div>
                 ))}
@@ -743,7 +743,7 @@ const DoctorVisitPrep = ({ tool }) => {
             </Sec>
           )}
 
-          <div className={`${c.warning} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}>
+          <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
             <span>⚠️</span>
             <p className="text-xs">
               <strong>{t('dvp_remember_label')}</strong> {t('dvp_remember_body')}

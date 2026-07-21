@@ -198,7 +198,7 @@ const AlternatePath = ({ tool }) => {
         <div className="flex items-start justify-between gap-3 pb-4 border-b border-zinc-500">
           <div className="flex-1 min-w-0">
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? t('ap_title')}
+              <span className="me-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? t('ap_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('ap_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -333,7 +333,7 @@ const AlternatePath = ({ tool }) => {
               <h3 className={`text-sm font-bold ${c.text} mb-3 uppercase tracking-wider`}>📅 {t('ap_timeline')}</h3>
               <div className="space-y-2">
                 {results?.timeline?.map((row, i) => (
-                  <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-l-4 border-cyan-500`}>
+                  <div key={i} className={`${c.cardAlt} rounded-lg p-3 border-s-4 border-cyan-500`}>
                     <div className="flex items-start gap-2">
                       <span className={`text-xs font-black ${c.accentTxt} whitespace-nowrap`}>{row.year_range}</span>
                       <div className="flex-1 min-w-0">
@@ -411,7 +411,7 @@ const AlternatePath = ({ tool }) => {
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                 <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>

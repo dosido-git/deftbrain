@@ -783,7 +783,7 @@ const CrisisPrioritizer = ({ tool }) => {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cp_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
         </div>
@@ -809,7 +809,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <p className="text-5xl mb-4">🎯</p>
           <p className={`text-xs uppercase tracking-widest font-bold mb-2 ${c.textMuted}`}>{t('cp_one_thing_label')}</p>
           <h3 className={`text-xl font-bold mb-4 ${c.text}`}>{oneThingResult.the_one_thing}</h3>
-          <div className={`${c.cardAlt} rounded-xl p-4 mb-4 text-left border ${c.border}`}>
+          <div className={`${c.cardAlt} rounded-xl p-4 mb-4 text-start border ${c.border}`}>
             <p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>{t('cp_first_physical_action')}</p>
             <p className={`text-sm font-semibold ${c.text}`}>{oneThingResult.first_physical_action}</p>
           </div>
@@ -922,7 +922,7 @@ const CrisisPrioritizer = ({ tool }) => {
         <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.journalText}`}>{t('cp_jnl_title')}</h4><button onClick={() => setShowJournal(false)} className={`text-xs ${c.textMuted}`}>✕</button></div>
         {journal.map(e => <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
           <div className="flex justify-between items-center">
-            <div><span className={`text-xs font-bold ${c.text}`}>{fmtDate(e.date, t)}</span><span className={`text-xs ${c.textMuted} ml-2`}>{t('cp_jnl_meta', { tasks: e.taskCount, urgent: e.actuallyUrgent, emotional: e.emotional })}</span></div>
+            <div><span className={`text-xs font-bold ${c.text}`}>{fmtDate(e.date, t)}</span><span className={`text-xs ${c.textMuted} ms-2`}>{t('cp_jnl_meta', { tasks: e.taskCount, urgent: e.actuallyUrgent, emotional: e.emotional })}</span></div>
             <div className="flex gap-2">
               {e.followUp && <span className={`text-xs ${c.success}`}>{t('cp_jnl_reviewed')}</span>}
               <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuted}`}>🗑️</button>
@@ -963,7 +963,7 @@ const CrisisPrioritizer = ({ tool }) => {
         {/* Quick Templates */}
         <div className={`${c.card} rounded-xl shadow-sm p-4`}>
           <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('cp_quick_start')}</p>
-          <div className="grid grid-cols-2 gap-2">{QUICK_TEMPLATES.map(tpl => <button key={tpl.id} onClick={() => applyTemplate(tpl)} className={`px-3 py-2.5 rounded-lg border text-xs font-semibold text-left ${c.chip(false)} hover:border-red-400 transition-all`}><span className="block text-base mb-0.5">{tpl.emoji}</span>{t(tpl.lKey)}</button>)}</div>
+          <div className="grid grid-cols-2 gap-2">{QUICK_TEMPLATES.map(tpl => <button key={tpl.id} onClick={() => applyTemplate(tpl)} className={`px-3 py-2.5 rounded-lg border text-xs font-semibold text-start ${c.chip(false)} hover:border-red-400 transition-all`}><span className="block text-base mb-0.5">{tpl.emoji}</span>{t(tpl.lKey)}</button>)}</div>
         </div>
 
         {/* Panic Button — Just One Thing */}
@@ -1115,7 +1115,7 @@ const CrisisPrioritizer = ({ tool }) => {
               <div className="text-center"><p className={`text-sm font-bold ${c.success}`}>{timeBlockResult.total_break_time}m</p><p className={`text-xs ${c.textMuted}`}>{t('cp_tb_breaks')}</p></div>
             </div>
             {(timeBlockResult.blocks || []).map((block, i) => <div key={i} className={`flex items-stretch gap-3 ${block.type === 'break' ? 'opacity-75' : ''}`}>
-              <div className="w-20 flex-shrink-0 text-right pr-2 pt-2"><p className={`text-xs font-mono font-bold ${c.text}`}>{block.start}</p><p className={`text-xs font-mono ${c.textMuted}`}>{block.end}</p></div>
+              <div className="w-20 flex-shrink-0 text-end pe-2 pt-2"><p className={`text-xs font-mono font-bold ${c.text}`}>{block.start}</p><p className={`text-xs font-mono ${c.textMuted}`}>{block.end}</p></div>
               <div className={`w-1 flex-shrink-0 rounded-full ${block.type === 'break' ? c.timelineBreak : block.urgency === 'critical' ? 'bg-red-500' : block.urgency === 'important' ? 'bg-amber-500' : c.cardAlt}`} />
               <div className={`flex-1 p-3 rounded-lg border ${block.type === 'break' ? c.tbreakBg : c.tblock}`}>
                 <div className="flex items-center gap-2 mb-1">
@@ -1133,7 +1133,7 @@ const CrisisPrioritizer = ({ tool }) => {
         </Section>}
 
         {/* Reality Check */}
-        {results.reality_check && <div className={`${c.card} rounded-xl shadow-sm p-5 border-l-4 ${c.realityBorder}`}>
+        {results.reality_check && <div className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${c.realityBorder}`}>
           <h3 className={`text-base font-bold mb-3 ${c.text}`}>{t('cp_reality_title')}</h3>
           <p className={`text-sm ${c.textSecondary} leading-relaxed mb-4`}>{results.reality_check}</p>
           <div className="flex flex-wrap gap-4">
@@ -1251,7 +1251,7 @@ const CrisisPrioritizer = ({ tool }) => {
           <div className="space-y-5">{results.multi_week_plan.map((week, wi) => <div key={wi} className={`p-5 rounded-xl border-2 ${c.card} ${c.border}`}>
             <div className="flex items-center justify-between mb-3"><h4 className={`font-bold ${c.text}`}>{week.week_label}</h4>{week.focus && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning} border font-semibold`}>{week.focus}</span>}</div>
             {week.must_dos?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>{t('cp_mw_mustdos')}</p><ul className="space-y-1">{week.must_dos.map((mt, ti) => <li key={ti} className="flex items-center gap-2"><input type="checkbox" checked={!!checked[`mw${wi}-${ti}`]} onChange={() => toggleCheck(`mw${wi}-${ti}`)} className="w-4 h-4 rounded accent-cyan-600 flex-shrink-0" /><span className={`text-sm ${checked[`mw${wi}-${ti}`] ? 'line-through opacity-60' : ''} ${c.textSecondary}`}>{mt}</span></li>)}</ul></div>}
-            {week.delegate?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>{t('cp_mw_delegate')}</p><ul className="space-y-1">{week.delegate.map((dt, ti) => <li key={ti} className={`text-sm ${c.textSecondary} flex items-start gap-2`}><span>→</span><span>{dt}</span><button onClick={() => { setDelegateTask(dt); setDelegateResult(null); }} className={`text-xs ${c.textMuted} ml-1`}>📨</button></li>)}</ul></div>}
+            {week.delegate?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>{t('cp_mw_delegate')}</p><ul className="space-y-1">{week.delegate.map((dt, ti) => <li key={ti} className={`text-sm ${c.textSecondary} flex items-start gap-2`}><span>→</span><span>{dt}</span><button onClick={() => { setDelegateTask(dt); setDelegateResult(null); }} className={`text-xs ${c.textMuted} ms-1`}>📨</button></li>)}</ul></div>}
             {week.delete?.length > 0 && <div className="mb-3"><p className={`text-xs font-bold uppercase ${c.textMuted} mb-1`}>{t('cp_mw_drop')}</p><ul className="space-y-1">{week.delete.map((xt, ti) => <li key={ti} className={`text-sm ${c.textSecondary} flex items-start gap-2 opacity-60`}><span>✕</span><span className="line-through">{xt}</span></li>)}</ul></div>}
             {week.self_care && <p className={`text-xs ${c.patternText} mt-2`}>💜 {week.self_care}</p>}
           </div>)}</div>

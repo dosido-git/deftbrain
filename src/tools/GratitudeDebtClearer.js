@@ -687,7 +687,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         <div className="pb-3 mb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '💝'}</span>{tool?.title ?? t('gdc_title')}</h2>
+              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '💝'}</span>{tool?.title ?? t('gdc_title')}</h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gdc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
@@ -726,7 +726,7 @@ const GratitudeDebtClearer = ({ tool }) => {
               <span>📖</span>
               <span className="hidden sm:inline">{t('gdc_debt_ledger')}</span>
               {ledger.filter(i => !i.done).length > 0 && (
-                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white'}`}>
+                <span className={`ms-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-600 text-white'}`}>
                   {ledger.filter(i => !i.done).length}
                 </span>
               )}
@@ -792,7 +792,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                     <div key={entry.id} className={`flex items-center justify-between px-3 py-2 rounded-lg border ${c.cardAlt} ${c.border}`}>
                       <div>
                         <span className={`text-sm font-medium ${c.text}`}>{entry.name}</span>
-                        {entry.gift && <span className={`text-xs ${c.textMuteded} ml-2`}>— {entry.gift}</span>}
+                        {entry.gift && <span className={`text-xs ${c.textMuteded} ms-2`}>— {entry.gift}</span>}
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={() => {
@@ -885,17 +885,17 @@ const GratitudeDebtClearer = ({ tool }) => {
                   </button>
                   <button
                     onClick={() => !item.done && loadFromLedger(item)}
-                    className={`flex-1 text-left ${item.done ? 'cursor-default' : 'cursor-pointer'}`}
+                    className={`flex-1 text-start ${item.done ? 'cursor-default' : 'cursor-pointer'}`}
                     disabled={item.done}
                   >
                     <span className={`text-sm font-medium ${item.done ? 'line-through' : ''} ${c.text}`}>
                       {item.name}
                     </span>
                     {item.reason && (
-                      <span className={`text-xs ${c.textMuteded} ml-2`}>— {item.reason}</span>
+                      <span className={`text-xs ${c.textMuteded} ms-2`}>— {item.reason}</span>
                     )}
                     {item.done && item.completedAt && (
-                      <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'} ml-2`}>
+                      <span className={`text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-600'} ms-2`}>
                         ✅ {new Date(item.completedAt).toLocaleDateString()}
                         {item.sentVersion ? ` · ${item.sentVersion}` : ''}
                       </span>
@@ -1119,10 +1119,10 @@ const GratitudeDebtClearer = ({ tool }) => {
                 <div className={`absolute z-20 w-full mt-1 border rounded-xl shadow-sm overflow-hidden ${c.card} ${c.border}`}>
                   {recipientSuggestions.map(p => (
                     <button key={p.name} onClick={() => selectRecipient(p)}
-                      className={`w-full text-left px-4 py-3 flex items-center justify-between transition-colors ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-emerald-50'}`}>
+                      className={`w-full text-start px-4 py-3 flex items-center justify-between transition-colors ${isDark ? 'hover:bg-zinc-700' : 'hover:bg-emerald-50'}`}>
                       <div>
                         <span className={`text-sm font-bold ${c.text}`}>{p.name}</span>
-                        <span className={`text-xs ${c.textMuteded} ml-2`}>{p.relationship} · {p.tone}</span>
+                        <span className={`text-xs ${c.textMuteded} ms-2`}>{p.relationship} · {p.tone}</span>
                       </div>
                       <span className={`text-[10px] ${c.textMuteded}`}>{t('gdc_thanked_before', { count: p.thankCount, date: new Date(p.lastThanked).toLocaleDateString() })}</span>
                     </button>
@@ -1136,10 +1136,10 @@ const GratitudeDebtClearer = ({ tool }) => {
               return recHist.length > 0 ? (
                 <div className={`mt-2 p-2.5 rounded-lg border text-xs ${c.highlight}`}>
                   <span className="font-bold">💡 {t(recHist.length > 1 ? 'gdc_thanked_n_times_plural' : 'gdc_thanked_n_times', { name: recipientName.trim(), count: recHist.length })}</span>
-                  <span className={`${isDark ? 'text-cyan-300' : 'text-cyan-700'} ml-1`}>
+                  <span className={`${isDark ? 'text-cyan-300' : 'text-cyan-700'} ms-1`}>
                     {t('gdc_last_thanked', { date: new Date(recHist[0].sentAt).toLocaleDateString(), context: recHist[0].context })}
                   </span>
-                  <span className={`ml-1 ${c.textMuteded}`}>{t('gdc_varied_note')}</span>
+                  <span className={`ms-1 ${c.textMuteded}`}>{t('gdc_varied_note')}</span>
                 </div>
               ) : null;
             })()}
@@ -1433,7 +1433,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                   {t('gdc_crafting')}
                 </>
               ) : (
-                <><span className="mr-1">{tool?.icon ?? '💝'}</span>{t('gdc_generate_messages')}</>
+                <><span className="me-1">{tool?.icon ?? '💝'}</span>{t('gdc_generate_messages')}</>
               )}
             </button>
           </div>
@@ -1527,7 +1527,7 @@ const GratitudeDebtClearer = ({ tool }) => {
               {/* ── COMPARISON VIEW ── */}
               {showComparison && results.thank_you_messages?.length > 1 ? (
                 <div className={`border-2 rounded-xl overflow-hidden ${c.card} ${c.border}`}>
-                  <div className={`grid grid-cols-${Math.min(results.thank_you_messages.length, 3)} divide-x ${isDark ? 'divide-zinc-700' : 'divide-slate-200'}`}>
+                  <div className={`grid grid-cols-${Math.min(results.thank_you_messages.length, 3)} divide-x rtl:divide-x-reverse ${isDark ? 'divide-zinc-700' : 'divide-slate-200'}`}>
                     {results.thank_you_messages.map((msg, i) => (
                       <div key={i} className="p-4">
                         <div className="flex items-center justify-between mb-2">
@@ -1577,7 +1577,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                     </div>
 
                     {/* Why This Works */}
-                    <div className={`border-l-4 rounded-r-lg p-3 mb-4 ${c.highlight}`}>
+                    <div className={`border-s-4 rounded-e-lg p-3 mb-4 ${c.highlight}`}>
                       <p className="text-sm">
                         <strong>{t('gdc_why_works')}</strong> {message.why_this_works}
                       </p>
@@ -1661,7 +1661,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
                     {/* Delivery shortcuts */}
                     <div className={`flex flex-wrap gap-1.5 mt-2 pt-2 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
-                      <span className={`text-[10px] ${c.textMuteded} self-center mr-1`}>{t('gdc_send_via')}</span>
+                      <span className={`text-[10px] ${c.textMuteded} self-center me-1`}>{t('gdc_send_via')}</span>
                       <a href={buildMailtoLink(messageText)}
                         className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${c.btnSecondary}`}>
                         <span>📧</span> {t('gdc_email')}
@@ -1690,7 +1690,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                     {t('gdc_delivery_suggestions')}
                   </h3>
                 </div>
-                <div className={`space-y-2 ml-8 ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
+                <div className={`space-y-2 ms-8 ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
                   <p>
                     <strong>{t('gdc_method')}</strong> {results.delivery_suggestions.method}
                   </p>
@@ -1720,7 +1720,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                     {t('gdc_make_more_personal')}
                   </h3>
                 </div>
-                <ul className={`space-y-2 ml-8 list-disc ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>
+                <ul className={`space-y-2 ms-8 list-disc ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>
                   {results.personalization_tips.map((tip, index) => (
                     <li key={index}>{tip}</li>
                   ))}

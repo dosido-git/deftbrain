@@ -213,7 +213,7 @@ const ComebackCooker = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('cc_title')}
+                <span className="me-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('cc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -240,7 +240,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Situation */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="mr-1.5">📍</span>{t('cc_q_label')} <span className={c.required}>*</span>
+              <span className="me-1.5">📍</span>{t('cc_q_label')} <span className={c.required}>*</span>
             </label>
             <textarea
               value={situation}
@@ -256,7 +256,7 @@ const ComebackCooker = ({ tool }) => {
           {/* What they said */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="mr-1.5">💬</span>{t('cc_said_label')}{' '}
+              <span className="me-1.5">💬</span>{t('cc_said_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('cc_said_hint')}</span>
             </label>
             <input
@@ -272,7 +272,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Relationship */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="mr-1.5">👤</span>{t('cc_rel_label')}{' '}
+              <span className="me-1.5">👤</span>{t('cc_rel_label')}{' '}
               <span className={`font-normal ${c.textMuted}`}>{t('cc_rel_hint')}</span>
             </label>
             <input
@@ -288,7 +288,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Mood */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-2`}>
-              <span className="mr-1.5">🎭</span>{t('cc_mood_label')}
+              <span className="me-1.5">🎭</span>{t('cc_mood_label')}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {MOOD_OPTIONS.map(m => (
@@ -332,12 +332,12 @@ const ComebackCooker = ({ tool }) => {
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
               >
                 <span className={c.textMuted}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
-                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
               </button>
             ))}
           </div>
@@ -380,7 +380,7 @@ const ComebackCooker = ({ tool }) => {
                 const emoji = TECHNIQUE_EMOJIS[cb.technique?.toLowerCase()] || '💬';
                 return (
                   <div key={i} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-                    <button onClick={() => toggleCard(i)} className="w-full p-5 text-left">
+                    <button onClick={() => toggleCard(i)} className="w-full p-5 text-start">
                       <div className="flex items-start gap-3">
                         <span className={`text-lg font-bold ${c.textMuted} flex-shrink-0`}>{i + 1}.</span>
                         <div className="flex-1 min-w-0">
@@ -400,7 +400,7 @@ const ComebackCooker = ({ tool }) => {
                     </button>
 
                     {isOpen && (
-                      <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ml-8`}>
+                      <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ms-8`}>
                         <div>
                           <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>{t('cc_why_it_works')}</p>
                           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{cb.why_it_works}</p>

@@ -400,7 +400,7 @@ const EmailUrgencyTriager = ({ tool }) => {
               </p>
             )}
           </div>
-          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+          <div className="flex items-center gap-1 ms-2 flex-shrink-0">
             {tier !== 'optional' && <button onClick={() => markHandled(key, email)} className={`text-sm p-1 rounded ${status === 'done' ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} title={t('eut_done_title')}>✅</button>}
             {tier !== 'optional' && <button onClick={() => openComposer(email)} className={`text-sm p-1 rounded opacity-40 hover:opacity-100`} title={t('eut_compose_title')}>✍️</button>}
             <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSecondary} text-xs`}>{isExp ? '▲' : '▼'}</button>
@@ -459,7 +459,7 @@ const EmailUrgencyTriager = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
+            <span className="me-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('eut_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -484,7 +484,7 @@ const EmailUrgencyTriager = ({ tool }) => {
         }} className={`text-xs px-2 py-1 rounded-lg border ${c.pillGray} border hover:opacity-80`}>➕</button>
         {profiles.length > 1 && activeProfileId !== 'work' && (
           <button onClick={() => { if (window.confirm(t('eut_confirm_delete_profile', { name: activeProfile.name }))) { setProfiles(p => p.filter(pr => pr.id !== activeProfileId)); setActiveProfileId('work'); } }}
-            className={`text-[10px] ${c.textMuted} hover:opacity-80 ml-auto`}>{t('eut_delete')}</button>
+            className={`text-[10px] ${c.textMuted} hover:opacity-80 ms-auto`}>{t('eut_delete')}</button>
         )}
       </div>
 
@@ -512,9 +512,9 @@ const EmailUrgencyTriager = ({ tool }) => {
       {mode === 'input' && (
         <div className="space-y-4">
           {senderStats.total > 0 && (
-            <div className={`${c.highlight} border-l-4 rounded-r-lg p-3 flex items-center gap-2`}>
+            <div className={`${c.highlight} border-s-4 rounded-e-lg p-3 flex items-center gap-2`}>
               <span>📈</span><span className="text-xs font-semibold">{t('eut_senders_tracked', { count: senderStats.total })}{senderStats.vips > 0 ? ` · ${senderStats.vips} ⭐` : ''}{senderStats.wolves > 0 ? ` · ${senderStats.wolves} 🐺` : ''}</span>
-              {profileRules.length > 0 && <span className={`${c.pillCyan} border text-[9px] px-1.5 py-0.5 rounded ml-auto`}>{t('eut_rules_active', { count: profileRules.length })}</span>}
+              {profileRules.length > 0 && <span className={`${c.pillCyan} border text-[9px] px-1.5 py-0.5 rounded ms-auto`}>{t('eut_rules_active', { count: profileRules.length })}</span>}
             </div>
           )}
           <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
@@ -527,7 +527,7 @@ const EmailUrgencyTriager = ({ tool }) => {
             </div>
             <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>{t('eut_analyze_urgency')}</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '📬'}</span>{t('eut_analyze_urgency')}</>}
             </button>
             {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
@@ -568,11 +568,11 @@ const EmailUrgencyTriager = ({ tool }) => {
           )}
 
           {results.batch_insights?.time_block_suggestion && (
-            <div className={`${c.highlight} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}><span>⚡</span><div><p className="text-sm font-bold">{t('eut_time_block')}</p><p className="text-xs">{results.batch_insights.time_block_suggestion}</p>{results.summary?.total_estimated_minutes > 0 && <p className="text-xs mt-1 font-semibold">{t('eut_min_total', { min: results.summary.total_estimated_minutes })}</p>}</div></div>
+            <div className={`${c.highlight} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}><span>⚡</span><div><p className="text-sm font-bold">{t('eut_time_block')}</p><p className="text-xs">{results.batch_insights.time_block_suggestion}</p>{results.summary?.total_estimated_minutes > 0 && <p className="text-xs mt-1 font-semibold">{t('eut_min_total', { min: results.summary.total_estimated_minutes })}</p>}</div></div>
           )}
 
           {results.anxiety_relief && (
-            <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">{t('eut_permission_breathe')}</h4>
+            <div className={`${c.success} border-s-4 rounded-e-lg p-4`}><h4 className="font-bold text-sm mb-1">{t('eut_permission_breathe')}</h4>
               {results.anxiety_relief.permission_to_wait && <p className="text-xs mb-1">{results.anxiety_relief.permission_to_wait}</p>}
               {results.anxiety_relief.what_to_ignore && <p className="text-xs mb-1"><strong>{t('eut_ignore')}</strong> {results.anxiety_relief.what_to_ignore}</p>}
               {results.anxiety_relief.batch_processing_tip && <p className="text-xs">💡 {results.anxiety_relief.batch_processing_tip}</p>}
@@ -580,7 +580,7 @@ const EmailUrgencyTriager = ({ tool }) => {
           )}
 
           {results.recurring_patterns?.unsubscribe_candidates?.length > 0 && (
-            <div className={`${c.highlight} border-l-4 rounded-r-lg p-4`}><h4 className="font-bold text-sm mb-1">{t('eut_patterns')}</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
+            <div className={`${c.highlight} border-s-4 rounded-e-lg p-4`}><h4 className="font-bold text-sm mb-1">{t('eut_patterns')}</h4>{results.recurring_patterns.unsubscribe_candidates.map((u, i) => <p key={i} className="text-xs mb-0.5">📬 {u}</p>)}{results.recurring_patterns.volume_observation && <p className="text-xs mt-1">{results.recurring_patterns.volume_observation}</p>}</div>
           )}
           {(results.recurring_patterns?.always_urgent_senders?.length > 0 || results.recurring_patterns?.always_optional_senders?.length > 0) && (
             <div className={`${c.cardAlt} border rounded-lg p-4 space-y-2`}>
@@ -659,7 +659,7 @@ const EmailUrgencyTriager = ({ tool }) => {
                     className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} />
                 </div>
                 <button onClick={handleCompose} disabled={loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
-                  {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_composing')}</> : <><span className="mr-1">{tool?.icon ?? '📬'}</span>{composeDraft.trim() ? t('eut_refine_reply') : t('eut_compose_reply')}</>}
+                  {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_composing')}</> : <><span className="me-1">{tool?.icon ?? '📬'}</span>{composeDraft.trim() ? t('eut_refine_reply') : t('eut_compose_reply')}</>}
                 </button>
               </div>
             </div>
@@ -754,7 +754,7 @@ const EmailUrgencyTriager = ({ tool }) => {
                     const total = entry.summary?.total_emails || 0;
                     const urgent = entry.summary?.urgent_count || 0;
                     const max = Math.max(...profileTriages.slice(0, 6).map(e => e.summary?.total_emails || 1));
-                    return (<div key={entry.id} className="flex items-center gap-2"><span className={`w-16 text-[10px] ${c.textMuted}`}>{entry.date}</span><div className={`flex-1 h-4 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'} flex`}><div className="h-full bg-red-500 rounded-l-full" style={{ width: `${(urgent / max) * 100}%` }} /><div className="h-full bg-emerald-500" style={{ width: `${((total - urgent) / max) * 100}%` }} /></div><span className={`w-8 text-right text-[10px] font-bold ${c.textMuted}`}>{total}</span></div>);
+                    return (<div key={entry.id} className="flex items-center gap-2"><span className={`w-16 text-[10px] ${c.textMuted}`}>{entry.date}</span><div className={`flex-1 h-4 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'} flex`}><div className="h-full bg-red-500 rounded-s-full" style={{ width: `${(urgent / max) * 100}%` }} /><div className="h-full bg-emerald-500" style={{ width: `${((total - urgent) / max) * 100}%` }} /></div><span className={`w-8 text-end text-[10px] font-bold ${c.textMuted}`}>{total}</span></div>);
                   })}</div>
                   <div className="flex items-center gap-3 mt-2"><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-red-500" /><span className={`text-[9px] ${c.textMuted}`}>{t('eut_legend_urgent')}</span></div><div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-500" /><span className={`text-[9px] ${c.textMuted}`}>{t('eut_legend_other')}</span></div></div>
                 </div>
@@ -781,7 +781,7 @@ const EmailUrgencyTriager = ({ tool }) => {
               {Object.entries(slaMetrics.byTier).map(([tier, items]) => (
                 <div key={tier} className="flex items-center gap-2 mt-2"><span className={`w-20 text-[10px] font-bold ${c.textMuted}`}>{TIER_CFG[tier]?.icon || '📧'} {TIER_CFG[tier]?.lk ? t(TIER_CFG[tier].lk) : tier}</span>
                   <div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(items.length / slaMetrics.total) * 100}%` }} /></div>
-                  <span className={`w-6 text-right text-[10px] font-bold ${c.textMuted}`}>{items.length}</span></div>
+                  <span className={`w-6 text-end text-[10px] font-bold ${c.textMuted}`}>{items.length}</span></div>
               ))}
             </div>
           )}
@@ -842,7 +842,7 @@ const EmailUrgencyTriager = ({ tool }) => {
                 {rule.pattern && <span className={`text-xs ${c.text}`}>"{rule.pattern}"</span>}
                 <span className="text-xs">→</span>
                 <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{TIER_CFG[rule.tier]?.icon} {TIER_CFG[rule.tier]?.lk ? t(TIER_CFG[rule.tier].lk) : rule.tier}</span>
-                <button onClick={() => setRules(p => p.filter(r => r.id !== rule.id))} className={`text-[10px] ${c.textMuted} hover:opacity-80 ml-auto`}>✕</button>
+                <button onClick={() => setRules(p => p.filter(r => r.id !== rule.id))} className={`text-[10px] ${c.textMuted} hover:opacity-80 ms-auto`}>✕</button>
               </div>
             ))}</div>}
           </div>
@@ -889,7 +889,7 @@ const EmailUrgencyTriager = ({ tool }) => {
               <div className={`${c.card} border rounded-xl p-5`}><h3 className={`text-sm font-bold ${c.text} mb-3`}>{t('eut_categories')}</h3>
                 <div className="space-y-1.5">{Object.entries(allCats).sort((a, b) => b[1] - a[1]).map(([cat, count]) => {
                   const info = getCat(cat);
-                  return (<div key={cat} className="flex items-center gap-2"><span className={`text-xs font-semibold ${c.text} w-32`}>{info.icon} {cat}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className={`h-full rounded-full ${info.bg}`} style={{ width: `${(count / total) * 100}%` }} /></div><span className={`w-8 text-right text-[10px] font-bold ${c.textMuted}`}>{count}</span></div>);
+                  return (<div key={cat} className="flex items-center gap-2"><span className={`text-xs font-semibold ${c.text} w-32`}>{info.icon} {cat}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-700' : 'bg-emerald-100'}`}><div className={`h-full rounded-full ${info.bg}`} style={{ width: `${(count / total) * 100}%` }} /></div><span className={`w-8 text-end text-[10px] font-bold ${c.textMuted}`}>{count}</span></div>);
                 })}</div>
               </div>
             );

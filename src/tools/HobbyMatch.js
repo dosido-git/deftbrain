@@ -180,7 +180,7 @@ const HobbyMatch = ({ tool }) => {
         <div className="mb-5 pb-4 border-b border-zinc-500">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🧭 '}</span>{tool?.title || 'HobbyMatch'}</h2>
               <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('hm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
@@ -297,7 +297,7 @@ const HobbyMatch = ({ tool }) => {
             {loading ? (
               <><span className="animate-spin inline-block">{tool?.icon ?? '🧭 '}</span> {t('hm_matching')}</>
             ) : (
-              <><span className="mr-1">{tool?.icon ?? '🧭 '}</span> {t('hm_find')}</>
+              <><span className="me-1">{tool?.icon ?? '🧭 '}</span> {t('hm_find')}</>
             )}
           </button>
         </div>
@@ -334,7 +334,7 @@ const HobbyMatch = ({ tool }) => {
                     {/* Header — always visible */}
                     <button
                       onClick={() => setExpandedHobby(isExpanded ? null : idx)}
-                      className="w-full p-5 text-left"
+                      className="w-full p-5 text-start"
                     >
                       <div className="flex items-start gap-3">
                         <span className="text-2xl flex-shrink-0">{hobby.icon || '🎯'}</span>
@@ -435,7 +435,7 @@ const HobbyMatch = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hm_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

@@ -392,7 +392,7 @@ const ConflictCoach = ({ tool }) => {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${c.toast}`}>
+        <div className={`fixed top-4 start-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-sm font-medium max-w-md text-center ${c.toast}`}>
           {toast}
         </div>
       )}
@@ -404,7 +404,7 @@ const ConflictCoach = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '📱'}</span>{tool?.title ?? t('cc_title')}
+                <span className="me-2">{tool?.icon ?? '📱'}</span>{tool?.title ?? t('cc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -423,7 +423,7 @@ const ConflictCoach = ({ tool }) => {
         </div>
 
         {/* Warning notice */}
-        <div className={`${c.warning} border-l-4 rounded-r-lg p-4 mb-4`}>
+        <div className={`${c.warning} border-s-4 rounded-e-lg p-4 mb-4`}>
           <p className={`text-sm font-semibold ${c.text}`}>⚠️ {t('cc_warn_title')}</p>
           <p className={`text-xs ${c.textSecondary} mt-1`}>{t('cc_warn_body')}</p>
         </div>
@@ -673,7 +673,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Goal Reality Check */}
           {results.goal_reality_check && (
-            <div className={`${c.highlight} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.highlight} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>🎯 {t('cc_reality_title')}</h3>
               {actualGoal && <p className={`text-sm mb-2 ${c.text}`}><strong>{t('cc_reality_youwant')}:</strong> "{actualGoal}"</p>}
               <p className={`text-sm ${c.text}`}>{results.goal_reality_check.assessment}</p>
@@ -688,7 +688,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Triggers */}
           {results.message_analysis?.triggers_identified?.length > 0 && (
-            <div className={`${tempColor(results.message_analysis.emotional_temperature)} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${tempColor(results.message_analysis.emotional_temperature)} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-3 ${c.text}`}>{tempEmoji(results.message_analysis.emotional_temperature)} {t('cc_triggers_title')}</h3>
               <ul className={`text-sm space-y-1 ${c.text}`}>{results.message_analysis.triggers_identified.map((trig, i) => <li key={i}>• "{trig}"</li>)}</ul>
               {results.message_analysis.communication_style && <p className={`text-sm mt-2 ${c.textMuteded}`}>{t('cc_triggers_style')}: {results.message_analysis.communication_style}</p>}
@@ -796,7 +796,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Apology Assessment */}
           {results.apology_assessment && (
-            <div className={`${c.highlight} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.highlight} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>🙏 {t('cc_apology_title')}</h3>
               <p className={`text-sm ${c.text}`}><strong>{results.apology_assessment.is_apology_appropriate ? t('cc_yes') : t('cc_no')}</strong> — {results.apology_assessment.reasoning}</p>
               {results.apology_assessment.is_apology_appropriate && results.apology_assessment.suggested_apology && (
@@ -841,7 +841,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* If They Escalate */}
           {results.if_they_continue_escalating && (
-            <div className={`${c.warning} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>⚠️ {t('cc_escalate_title')}</h3>
               <div className={`p-3 rounded border-2 ${c.border} mb-2 ${c.escalationScript}`}>
                 <p className={`${c.text} font-medium`}>"{results.if_they_continue_escalating.script}"</p>
@@ -852,7 +852,7 @@ const ConflictCoach = ({ tool }) => {
 
           {/* Repair Strategy */}
           {results.repair_strategy_later && (
-            <div className={`${c.success} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.success} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-1 ${c.text}`}>💚 {t('cc_repair_title')}</h3>
               <p className={`text-sm ${c.text}`}>{results.repair_strategy_later}</p>
             </div>

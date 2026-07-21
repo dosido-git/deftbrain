@@ -178,7 +178,7 @@ const WrongAnswersOnly = ({ tool }) => {
   return (<div className={`space-y-4 ${c.text}`}>
       {/* Input */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-500' : 'border-zinc-500'}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+          <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
         </div>
@@ -211,7 +211,7 @@ const WrongAnswersOnly = ({ tool }) => {
               {CATEGORIES.map(cat => (<button key={cat.value} onClick={() => setCategory(cat.value)} className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors min-h-[30px] ${
                     category === cat.value ? c.pillActive : c.pillInactive
                   }`}>
-                  <span className="mr-1">{cat.icon}</span>{cat.label} </button>
+                  <span className="me-1">{cat.icon}</span>{cat.label} </button>
               ))} </div>
           </div>
           <div>
@@ -307,7 +307,7 @@ const WrongAnswersOnly = ({ tool }) => {
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wao_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         </div>

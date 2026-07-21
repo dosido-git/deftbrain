@@ -496,7 +496,7 @@ const DateNight = ({ tool }) => {
           <div className="flex justify-between"><h4 className="font-bold text-sm">📋 {t('dn_checklist_title')}</h4><button onClick={() => setChecklist(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
           {(checklist.checklist || []).map((item, i) => (
             <button key={i} onClick={() => setChecklistChecked(p => ({ ...p, [i]: !p[i] }))}
-              className={`flex items-center gap-2 w-full text-left text-xs ${checklistChecked[i] ? 'line-through opacity-50' : ''}`}>
+              className={`flex items-center gap-2 w-full text-start text-xs ${checklistChecked[i] ? 'line-through opacity-50' : ''}`}>
               <span className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 text-[10px] ${checklistChecked[i] ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>{checklistChecked[i] ? '✓' : ''}</span>
               <span className="flex-1">{item.item}</span>
               <span className={c.textMuteded}>{item.timing}</span>
@@ -532,7 +532,7 @@ const DateNight = ({ tool }) => {
         <div className={`w-full h-3 rounded-full ${c.budgetBar} overflow-hidden`}>
           <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${spentPct}%` }} />
         </div>
-        {bufferAmt > 0 && <p className={`text-[10px] font-bold ${c.bufferText} mt-1 text-right`}>{t('dn_buffer', { amount: `~${fm(bufferAmt)}` })}</p>}
+        {bufferAmt > 0 && <p className={`text-[10px] font-bold ${c.bufferText} mt-1 text-end`}>{t('dn_buffer', { amount: `~${fm(bufferAmt)}` })}</p>}
       </div>
 
       {/* Milestone gesture */}
@@ -545,7 +545,7 @@ const DateNight = ({ tool }) => {
 
       {/* Timeline */}
       <div className="relative">
-        <div className={`absolute left-[19px] top-6 bottom-6 w-px ${c.timelineLine}`} />
+        <div className={`absolute start-[19px] top-6 bottom-6 w-px ${c.timelineLine}`} />
         {stops.map((stop, idx) => {
           const isSwap = swapping === (stop.stop_number || idx + 1);
           return (
@@ -602,7 +602,7 @@ const DateNight = ({ tool }) => {
       {/* Conversation starters / nostalgia */}
       {(results.conversation_starters || results.nostalgia_prompts) && (
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-          <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-left">
+          <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-start">
             <span className={`text-sm font-bold ${c.text}`}>{results.nostalgia_prompts ? <>💭 {t('dn_reflection_prompts')}</> : <>💬 {t('dn_conversation_starters')}</>}</span>
             <span className={`text-xs ${c.textMuteded}`}>{expandedConvo ? '▲' : '▼'}</span>
           </button>
@@ -621,7 +621,7 @@ const DateNight = ({ tool }) => {
       {/* Plan B + Tips */}
       {results.plan_b && (
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-          <button onClick={() => setExpandedPlanB(!expandedPlanB)} className="w-full p-4 flex justify-between text-left">
+          <button onClick={() => setExpandedPlanB(!expandedPlanB)} className="w-full p-4 flex justify-between text-start">
             <span className={`text-sm font-bold ${c.text}`}>🔄 {t('dn_plan_b')}</span>
             <span className={`text-xs ${c.textMuteded}`}>{expandedPlanB ? '▲' : '▼'}</span>
           </button>
@@ -668,7 +668,7 @@ const DateNight = ({ tool }) => {
           </div>
           <textarea value={rateNotes} onChange={e => setRateNotes(e.target.value)} placeholder={t('dn_rate_notes_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>{t('dn_saving')}</> : <>⭐ {t('dn_submit_rating')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_saving')}</> : <>⭐ {t('dn_submit_rating')}</>}
           </button>
           {rateResult && (
             <div className={`${c.success} border rounded-xl p-4 space-y-2`}>
@@ -712,14 +712,14 @@ const DateNight = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '💘'}</span>{tool?.title ?? t('dn_title')}
+                <span className="me-2">{tool?.icon ?? '💘'}</span>{tool?.title ?? t('dn_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dn_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {results && !showInputs && (
               <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }}
-                className={`ml-4 mt-0.5 px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${c.btnSecondary}`}>
+                className={`ms-4 mt-0.5 px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${c.btnSecondary}`}>
                 ↩ {t('start_over')}
               </button>
             )}
@@ -806,7 +806,7 @@ const DateNight = ({ tool }) => {
             <button
               key={i}
               onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
+              className={`w-full text-start px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
             >
               {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
             </button>
@@ -825,7 +825,7 @@ const DateNight = ({ tool }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DATE_TYPES.map(dt => (
                 <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)}
-                  className={`p-3 rounded-lg border text-left ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
+                  className={`p-3 rounded-lg border text-start ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
                   <span className="text-xs font-bold">{t(dt.lk)}</span>
                   <p className={`text-[10px] mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{t(dt.dk)}</p>
                 </button>
@@ -848,11 +848,11 @@ const DateNight = ({ tool }) => {
               </select>
             </div>
             <div className="relative w-full h-6 flex items-center">
-              <div className={`absolute left-0 right-0 h-2 rounded-full ${c.budgetBar}`}>
+              <div className={`absolute start-0 end-0 h-2 rounded-full ${c.budgetBar}`}>
                 <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${((budget - br.min) / (br.max - br.min)) * 100}%` }} />
               </div>
               <input type="range" min={br.min} max={br.max} step={br.step} value={budget} onChange={e => setBudget(Number(e.target.value))}
-                className="absolute left-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
+                className="absolute start-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
               <div className="absolute h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
             </div>
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -960,12 +960,12 @@ const DateNight = ({ tool }) => {
           <button onClick={generate} disabled={loading || !location.trim() || !dateType}
           className={`flex-1 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
           {loading
-            ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
+            ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
             : isAnni
-              ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_anniversary', { years: yearsTogether })}{isFuture ? ` · ${plannedDateLabel}` : ''}</>
+              ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_anniversary', { years: yearsTogether })}{isFuture ? ` · ${plannedDateLabel}` : ''}</>
               : isFuture
-                ? <><span className="mr-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
-                : <><span className="mr-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
+                ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
+                : <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
           </button>
           <p className={`text-xs text-center ${c.textMuteded}`}>{t('dn_cmd_enter')}</p>
         </div>
@@ -1032,7 +1032,7 @@ const DateNight = ({ tool }) => {
             {/* Swap mid-date */}
             <button onClick={() => swapStop(cur.stop_number || liveStep + 1)} disabled={swapping === (cur.stop_number || liveStep + 1) || loading}
               className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-              {swapping ? <><span className="animate-spin inline-block mr-1">{tool?.icon ?? '💘'}</span>{t('dn_finding_replacement')}</> : <>🔄 {t('dn_swap_not_working')}</>}
+              {swapping ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💘'}</span>{t('dn_finding_replacement')}</> : <>🔄 {t('dn_swap_not_working')}</>}
             </button>
 
             {/* Next stop preview */}

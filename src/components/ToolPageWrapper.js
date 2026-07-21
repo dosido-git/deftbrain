@@ -199,7 +199,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         {/* Locale controls — top-right of the working area, off the brand bar.
             Absolute on desktop so the tool content fills from the top; a normal
             right-aligned row on mobile. */}
-        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:absolute lg:top-3 lg:right-4 lg:z-10">
+        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:absolute lg:top-3 lg:end-4 lg:z-10">
           <LocaleSelectors dark={isDark} />
         </div>
         
@@ -259,7 +259,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               <span className="text-xs font-medium">Bookmark</span>
             </button>
             {showBookmarkToast && (
-              <div className={`absolute left-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
+              <div className={`absolute start-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
                 isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-white border-stone-200 text-stone-800'
               }`}>
                 Press <kbd className={`px-1.5 py-0.5 rounded text-xs font-bold border ${

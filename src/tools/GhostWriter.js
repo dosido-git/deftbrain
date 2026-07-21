@@ -297,13 +297,13 @@ const GhostWriter = ({ tool }) => {
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={`${c.card} ${c.border} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
@@ -443,7 +443,7 @@ const GhostWriter = ({ tool }) => {
                   {isRefined && (
                     <div className={`text-xs font-medium mb-2 flex items-center gap-1 ${c.tipText}`}>
                       <span>✏️</span> {t('ghw_refined_version')}
-                      <button onClick={() => revertRefinement(v.style)} className="ml-2 underline hover:no-underline">{t('ghw_revert')}</button>
+                      <button onClick={() => revertRefinement(v.style)} className="ms-2 underline hover:no-underline">{t('ghw_revert')}</button>
                     </div>
                   )}
                   {isRefined && refinementChanges[v.style] && (
@@ -555,7 +555,7 @@ const GhostWriter = ({ tool }) => {
     };
     return (
       <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>✍️</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ghw_past_letters')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -592,7 +592,7 @@ const GhostWriter = ({ tool }) => {
         <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
           <div>
             <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="mr-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? t('ghw_title')}
+              <span className="me-2">{tool?.icon ?? '✍️'}</span>{tool?.title ?? t('ghw_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ghw_tagline')}</p>
           </div>

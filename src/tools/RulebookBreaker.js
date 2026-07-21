@@ -198,7 +198,7 @@ const RulebookBreaker = ({ tool }) => {
           {/* Header */}
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? t('rb_title')}
+              <span className="me-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? t('rb_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rb_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -246,7 +246,7 @@ const RulebookBreaker = ({ tool }) => {
 
           {error && (
             <div className={`p-3 rounded-xl border text-sm ${c.danger}`}>
-              <span className="mr-1">⚠️</span>{error}
+              <span className="me-1">⚠️</span>{error}
             </div>
           )}
 
@@ -283,7 +283,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? t('rb_title')}
+                  <span className="me-2">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.title ?? t('rb_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rb_tagline')}</p>
               </div>
@@ -340,7 +340,7 @@ const RulebookBreaker = ({ tool }) => {
                     <div className={`px-5 py-3 flex items-center gap-3 ${rungHeaderBg}`}>
                       <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 ${rungNumBg}`}>{rung.rung}</span>
                       <p className={`font-bold text-sm ${c.text}`}>{rung.title}</p>
-                      {rung.time_to_try && <span className={`text-xs ml-auto flex-shrink-0 ${c.textMuted}`}>{rung.time_to_try}</span>}
+                      {rung.time_to_try && <span className={`text-xs ms-auto flex-shrink-0 ${c.textMuted}`}>{rung.time_to_try}</span>}
                     </div>
                     <div className="px-5 py-4 space-y-2">
                       <p className={`text-sm ${c.textSecondary}`}>{rung.action}</p>
@@ -369,7 +369,7 @@ const RulebookBreaker = ({ tool }) => {
           {/* Loopholes */}
           {results?.the_loopholes?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('loopholes')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('loopholes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕳️ {t('rb_loopholes')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.loopholes ? '▲' : '▼'}</span>
               </button>
@@ -390,7 +390,7 @@ const RulebookBreaker = ({ tool }) => {
           {/* Magic phrases */}
           {results?.magic_phrases?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('phrases')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('phrases')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✨ {t('rb_magic_phrases')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.phrases ? '▲' : '▼'}</span>
               </button>
@@ -411,7 +411,7 @@ const RulebookBreaker = ({ tool }) => {
           {/* Regulatory angle */}
           {results?.the_regulatory_angle && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('regulatory')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('regulatory')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🏛️ {t('rb_regulatory')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.regulatory ? '▲' : '▼'}</span>
               </button>
@@ -434,7 +434,7 @@ const RulebookBreaker = ({ tool }) => {
           {/* Nuclear options */}
           {results?.the_nuclear_options?.length > 0 && (
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-              <button onClick={() => toggle('nuclear')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('nuclear')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>💣 {t('rb_nuclear')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.nuclear ? '▲' : '▼'}</span>
               </button>

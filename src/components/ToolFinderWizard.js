@@ -70,7 +70,7 @@ function ScenarioPill({ scenario, active, onPick }) {
         cursor: 'pointer',
         transition: 'all 0.14s',
         lineHeight: 1.3,
-        textAlign: 'left',
+        textAlign: 'start',
       }}
     >
       <span style={{ fontSize: 13 }}>{scenario.emoji}</span>
@@ -253,7 +253,7 @@ export default function ToolFinderWizard() {
         fontWeight: 600,
         color: CLR.warm700,
         cursor: 'pointer',
-        textAlign: 'left',
+        textAlign: 'start',
         transition: 'all 0.15s',
       }}
       onMouseEnter={e => {
@@ -266,7 +266,7 @@ export default function ToolFinderWizard() {
       }}
     >
       <span>🔍 {t('wizard_intro')}</span>
-      <span style={{ fontSize: 10, marginLeft: 8 }}>{isOpen ? '▲' : '▼'}</span>
+      <span style={{ fontSize: 10, marginInlineStart: 8 }}>{isOpen ? '▲' : '▼'}</span>
     </button>
   );
 
@@ -369,7 +369,7 @@ export default function ToolFinderWizard() {
             >▲</button>
           </div>
 
-          {/* Example pills — button is last child, right-aligned via marginLeft: auto */}
+          {/* Example pills — button is last child, right-aligned via marginInlineStart: auto */}
           <p style={{
             fontSize: 10.5,
             fontWeight: 700,
@@ -397,7 +397,7 @@ export default function ToolFinderWizard() {
               onClick={handleSubmit}
               disabled={!canSubmit}
               style={{
-                marginLeft: 'auto',
+                marginInlineStart: 'auto',
                 background: canSubmit ? CLR.navy500 : CLR.sand200,
                 color: canSubmit ? '#fff' : CLR.warm400,
                 border: 'none',
@@ -480,7 +480,7 @@ export default function ToolFinderWizard() {
               color: CLR.warm700,
               lineHeight: 1.6,
               margin: '0 0 12px',
-              paddingLeft: 12,
+              paddingInlineStart: 12,
               borderLeft: `3px solid ${CLR.sand300}`,
             }}>
               {results.understanding}
@@ -579,7 +579,7 @@ export default function ToolFinderWizard() {
                 fontWeight: 600,
                 color: CLR.navy400,
                 textDecoration: 'underline',
-                marginLeft: 'auto',
+                marginInlineStart: 'auto',
               }}
             >
               {t('open_full_toolfinder')}

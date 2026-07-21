@@ -217,7 +217,7 @@ function ScamRadar({ tool }) {
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <h2 className={`text-xl font-bold ${c.text}`}>
-          <span className="mr-2">{tool?.icon ?? '🎣'}</span>{tool?.title ?? t('scam_title')}
+          <span className="me-2">{tool?.icon ?? '🎣'}</span>{tool?.title ?? t('scam_title')}
         </h2>
         <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('scam_tagline')}</p>
         <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('scam_try_example')}</button>
@@ -233,7 +233,7 @@ function ScamRadar({ tool }) {
               onClick={() => setMessageType(mt.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${messageType === mt.id ? c.pillActive : c.pillInactive}`}
             >
-              <span className="mr-1">{mt.icon}</span>{t(mt.labelKey)}
+              <span className="me-1">{mt.icon}</span>{t(mt.labelKey)}
             </button>
           ))}
         </div>
@@ -279,7 +279,7 @@ function ScamRadar({ tool }) {
       >
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎣'}</span> {t('scam_scanning')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🎣'}</span> {t('scam_scan_btn')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🎣'}</span> {t('scam_scan_btn')}</>}
       </button>
 
       {/* History panel */}
@@ -338,7 +338,7 @@ function ScamRadar({ tool }) {
                 <span className="text-3xl">{verdictConfig.icon}</span>
                 <div>
                   <span className={`text-2xl font-black tracking-tight ${verdictConfig.txt}`}>{results.verdict}</span>
-                  <span className={`ml-3 text-sm font-bold ${verdictConfig.txt} opacity-70`}>{t('scam_confidence', { count: results.confidence })}</span>
+                  <span className={`ms-3 text-sm font-bold ${verdictConfig.txt} opacity-70`}>{t('scam_confidence', { count: results.confidence })}</span>
                 </div>
               </div>
               {results.one_liner && <p className={`text-sm font-medium ${verdictConfig.txt}`}>{results.one_liner}</p>}
@@ -452,7 +452,7 @@ function ScamRadar({ tool }) {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🎣'}</span>{tool?.title ?? t('scam_title')}
+                  <span className="me-2">{tool?.icon ?? '🎣'}</span>{tool?.title ?? t('scam_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('scam_tagline')}</p>
               </div>

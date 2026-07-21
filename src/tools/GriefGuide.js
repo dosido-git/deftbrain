@@ -210,10 +210,10 @@ function GriefGuide({ tool }) {
         <div className="space-y-2">
           {GRIEF_MODES.map(m => (
             <button key={m.id} onClick={() => setMode(m.id)}
-              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-2">{m.icon}</span>
+              className={`w-full text-start px-4 py-3 rounded-xl border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}>
+              <span className="me-2">{m.icon}</span>
               <span className="font-medium text-sm">{t(m.labelKey)}</span>
-              <span className={`ml-2 text-xs ${c.textMuted}`}>{t(m.descKey)}</span>
+              <span className={`ms-2 text-xs ${c.textMuted}`}>{t(m.descKey)}</span>
             </button>
           ))}
         </div>
@@ -276,7 +276,7 @@ function GriefGuide({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '💙'}</span> {t('gg_finding')}</>
-          : <><span className="mr-1">{tool?.icon ?? '💙'}</span> {t('gg_get_guidance')}</>}
+          : <><span className="me-1">{tool?.icon ?? '💙'}</span> {t('gg_get_guidance')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -430,7 +430,7 @@ function GriefGuide({ tool }) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '💙'}</span>{tool?.title ?? t('gg_title')}
+              <span className="me-2">{tool?.icon ?? '💙'}</span>{tool?.title ?? t('gg_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gg_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

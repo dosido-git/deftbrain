@@ -780,7 +780,7 @@ const TheFinalWord = ({ tool }) => {
       optionStyle = isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-400 bg-cyan-50';
     }
     return (
-      <button key={idx} onClick={onClick} disabled={disabled} className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all flex items-center gap-3 ${optionStyle}`}>
+      <button key={idx} onClick={onClick} disabled={disabled} className={`w-full text-start px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all flex items-center gap-3 ${optionStyle}`}>
         <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 ${revealed && isCorrect ? 'bg-emerald-500 text-white' : revealed && isSelected && !isCorrect ? 'bg-red-500 text-white' : isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>
           {revealed && isCorrect ? '✓' : revealed && isSelected ? '✗' : String.fromCharCode(65 + idx)}
         </span>
@@ -803,7 +803,7 @@ const TheFinalWord = ({ tool }) => {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
+                  <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tfw_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -953,7 +953,7 @@ const TheFinalWord = ({ tool }) => {
                 const isActive = mode === m.id;
                 return (
                   <button key={m.id} onClick={() => { setMode(m.id); setError(''); setResult(null); setDevilsAdvocate(false); setDaResult(null); }}
-                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${isActive ? isDark ? 'border-amber-500 bg-amber-900/10 shadow-sm' : 'border-amber-400 bg-amber-50 shadow-sm' : isDark ? 'border-zinc-700 hover:border-zinc-500 bg-zinc-800' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
+                    className={`relative p-4 rounded-xl border-2 text-start transition-all ${isActive ? isDark ? 'border-amber-500 bg-amber-900/10 shadow-sm' : 'border-amber-400 bg-amber-50 shadow-sm' : isDark ? 'border-zinc-700 hover:border-zinc-500 bg-zinc-800' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
                     <span className="text-xl mb-2 block">{m.icon}</span>
                     <div className={`text-sm font-bold ${isActive ? c.text : c.textSecondary}`}>{t(m.labelKey)}</div>
                     <div className={`text-xs mt-0.5 ${c.textMuted}`}>{t(m.descKey)}</div>
@@ -1001,7 +1001,7 @@ const TheFinalWord = ({ tool }) => {
                     onClick={() => setDevilsAdvocate(!devilsAdvocate)}
                     className={`w-12 h-6 rounded-full transition-all relative ${devilsAdvocate ? 'bg-amber-500' : isDark ? 'bg-zinc-600' : 'bg-slate-300'}`}
                   >
-                    <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${devilsAdvocate ? 'left-6' : 'left-0.5'}`} />
+                    <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${devilsAdvocate ? 'start-6' : 'start-0.5'}`} />
                   </button>
                 </div>
 
@@ -1219,7 +1219,7 @@ const TheFinalWord = ({ tool }) => {
                   <div key={p.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${c.cardAlt} border`}>
                     <span className="text-sm">{p.isHost ? '👑' : '🎮'}</span>
                     <span className={`text-sm font-semibold ${c.text}`}>{p.name}</span>
-                    {p.isHost && <span className={`text-xs ml-auto ${c.textMuted}`}>{t('tfw_mp_host_badge')}</span>}
+                    {p.isHost && <span className={`text-xs ms-auto ${c.textMuted}`}>{t('tfw_mp_host_badge')}</span>}
                   </div>
                 ))}
               </div>
@@ -1237,7 +1237,7 @@ const TheFinalWord = ({ tool }) => {
               </button>
             ) : (
               <div className={`text-center py-4`}>
-                <span className="inline-block animate-spin mr-2">{tool?.icon ?? '⚖️'}</span>
+                <span className="inline-block animate-spin me-2">{tool?.icon ?? '⚖️'}</span>
                 <span className={`text-sm ${c.textSecondary}`}>{t('tfw_mp_waiting')}</span>
               </div>
             )}
@@ -1361,7 +1361,7 @@ const TheFinalWord = ({ tool }) => {
           <div className={`rounded-2xl overflow-hidden border-2 shadow-lg ${isDark ? 'border-amber-700/50 bg-zinc-800' : 'border-amber-300 bg-white'}`}>
             <div className={`px-6 py-4 ${isDark ? 'bg-amber-900/20' : 'bg-amber-50'} border-b ${c.border}`}>
               <div className="flex items-center gap-2"><span>⚖️</span><span className={`text-xs font-black uppercase tracking-widest ${c.accentTxt}`}>{t('tfw_result_final_word')}</span>
-                {result.category && <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{result.category}</span>}
+                {result.category && <span className={`ms-auto text-xs font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'}`}>{result.category}</span>}
               </div>
             </div>
             <div className="px-6 py-5">
@@ -1390,7 +1390,7 @@ const TheFinalWord = ({ tool }) => {
                 {[result.score.person_a, result.score.person_b].map((person, i) => {
                   const isWinner = result.winner_name === person?.name;
                   return (
-                    <div key={i} className={`p-4 ${i === 0 ? `border-r ${c.border}` : ''} ${isWinner ? isDark ? 'bg-emerald-900/10' : 'bg-green-50/50' : ''}`}>
+                    <div key={i} className={`p-4 ${i === 0 ? `border-e ${c.border}` : ''} ${isWinner ? isDark ? 'bg-emerald-900/10' : 'bg-green-50/50' : ''}`}>
                       <div className="flex items-center gap-2 mb-2">{isWinner && <span>🏆</span>}<p className={`text-sm font-bold ${c.text}`}>{person?.name}</p></div>
                       <div className={`text-3xl font-black mb-2 ${(person?.accuracy || 0) >= 70 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (person?.accuracy || 0) >= 40 ? (isDark ? 'text-amber-400' : 'text-amber-600') : (isDark ? 'text-red-400' : 'text-red-500')}`}>{person?.accuracy ?? '?'}%</div>
                       {person?.what_they_got_right && <p className={`text-xs mb-1 ${c.textSecondary}`}><span className={c.success}>✓</span> {person.what_they_got_right}</p>}
@@ -1433,7 +1433,7 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.accentTxt}`}>{t('tfw_related_claims')}</p>
                   <div className="space-y-2">
                     {result.related_claims.map((rc, i) => (
-                      <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700'}`}>
+                      <button key={i} onClick={() => handleCheckRelatedClaim(rc)} className={`w-full text-start px-3 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-2 ${isDark ? 'border-zinc-600 hover:border-amber-500 hover:bg-amber-900/10 text-zinc-200' : 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-700'}`}>
                         <span className="flex-shrink-0">🛡️</span>
                         <span className="flex-1">{rc}</span>
                         <span className={`text-xs ${c.textMuted}`}>{t('tfw_check_arrow')}</span>
@@ -1474,13 +1474,13 @@ const TheFinalWord = ({ tool }) => {
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('tfw_dissect_breaking_down')}</p>
                   {dissectResult.components.map((comp, i) => {
                     const verdictColors = {
-                      true:            isDark ? 'border-l-emerald-500 bg-emerald-900/10' : 'border-l-emerald-500 bg-emerald-50',
-                      false:           isDark ? 'border-l-red-500 bg-red-900/10'         : 'border-l-red-500 bg-red-50',
-                      misleading:      isDark ? 'border-l-amber-500 bg-amber-900/10'     : 'border-l-amber-500 bg-amber-50',
-                      missing_context: isDark ? 'border-l-sky-500 bg-sky-900/10'       : 'border-l-sky-500 bg-sky-50',
-                      exaggerated:     isDark ? 'border-l-orange-500 bg-amber-900/10'   : 'border-l-orange-500 bg-orange-50',
-                      unverifiable:    isDark ? 'border-l-zinc-500 bg-zinc-700/30'       : 'border-l-slate-400 bg-slate-50',
-                      opinion:         isDark ? 'border-l-cyan-500 bg-cyan-900/10'   : 'border-l-cyan-500 bg-cyan-50',
+                      true:            isDark ? 'border-s-emerald-500 bg-emerald-900/10' : 'border-s-emerald-500 bg-emerald-50',
+                      false:           isDark ? 'border-s-red-500 bg-red-900/10'         : 'border-s-red-500 bg-red-50',
+                      misleading:      isDark ? 'border-s-amber-500 bg-amber-900/10'     : 'border-s-amber-500 bg-amber-50',
+                      missing_context: isDark ? 'border-s-sky-500 bg-sky-900/10'       : 'border-s-sky-500 bg-sky-50',
+                      exaggerated:     isDark ? 'border-s-orange-500 bg-amber-900/10'   : 'border-s-orange-500 bg-orange-50',
+                      unverifiable:    isDark ? 'border-s-zinc-500 bg-zinc-700/30'       : 'border-s-slate-400 bg-slate-50',
+                      opinion:         isDark ? 'border-s-cyan-500 bg-cyan-900/10'   : 'border-s-cyan-500 bg-cyan-50',
                     };
                     const labelColors = {
                       true:            isDark ? 'text-emerald-400' : 'text-emerald-700',
@@ -1494,7 +1494,7 @@ const TheFinalWord = ({ tool }) => {
                     const colorClass = verdictColors[comp.verdict] || verdictColors.unverifiable;
                     const labelClass = labelColors[comp.verdict] || labelColors.unverifiable;
                     return (
-                      <div key={i} className={`border-l-4 pl-4 pr-3 py-3 rounded-r-xl ${colorClass}`}>
+                      <div key={i} className={`border-s-4 ps-4 pe-3 py-3 rounded-e-xl ${colorClass}`}>
                         <div className="flex items-start justify-between gap-2 mb-1 flex-wrap">
                           <p className={`text-xs font-black uppercase tracking-wide ${labelClass}`}>{comp.verdict_label}</p>
                         </div>
@@ -1573,7 +1573,7 @@ const TheFinalWord = ({ tool }) => {
 
             {/* Scores */}
             <div className="grid grid-cols-2 gap-0 border-b" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
-              <div className={`p-4 border-r ${c.border}`}>
+              <div className={`p-4 border-e ${c.border}`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.textMuted}`}>{t('tfw_da_your_position')}</p>
                 <div className={`text-3xl font-black mb-2 ${(daResult.user_score?.accuracy || 0) >= 60 ? c.success : c.danger}`}>{daResult.user_score?.accuracy}%</div>
                 <p className={`text-xs mb-0.5 ${c.textSecondary}`}><span className={c.success}>✓</span> {daResult.user_score?.strengths}</p>
@@ -1614,7 +1614,7 @@ const TheFinalWord = ({ tool }) => {
                 <div className="h-full rounded-full bg-cyan-500 transition-all duration-500" style={{ width: `${(questionCount / roundLimit) * 100}%` }} />
               </div>
               {teams.length > 1 && <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg mt-2 ${isDark ? 'bg-cyan-900/30' : 'bg-cyan-100'}`}><span>👥</span><span className={`text-sm font-bold ${isDark ? 'text-cyan-200' : 'text-cyan-800'}`}>{t('tfw_trivia_turn', { name: teams[activeTeamIdx]?.name })}</span></div>}
-              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak, t); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{fb.text}</span><span className={`ml-auto text-xs font-bold ${c.accentTxt}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
+              {teams.length === 1 && questionCount > 0 && (() => { const fb = getSoloFeedback(teams[0].score, questionCount, teams[0].streak, t); return <div className={`flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}><span>{fb.emoji}</span><span className={`text-xs font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{fb.text}</span><span className={`ms-auto text-xs font-bold ${c.accentTxt}`}>{teams[0].score}/{questionCount} ({Math.round((teams[0].score / questionCount) * 100)}%)</span></div>; })()}
             </div>
             {teams.length > 1 && <div className={`px-6 py-2 border-b ${c.border} flex gap-2 overflow-x-auto`}>{teams.map((team, idx) => <div key={idx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${idx === activeTeamIdx && !triviaRevealed ? isDark ? 'bg-cyan-900/20 border border-cyan-700 text-cyan-300' : 'bg-cyan-50 border border-cyan-300 text-cyan-700' : isDark ? 'bg-zinc-700/50 text-zinc-300' : 'bg-slate-50 text-slate-600'}`}><span>{team.name}</span><span className={`font-black ${c.accentTxt}`}>{team.score}</span>{team.streak >= 3 && <span>🔥{team.streak}</span>}</div>)}</div>}
             <div className="px-6 py-5">

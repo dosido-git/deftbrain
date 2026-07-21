@@ -255,7 +255,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
       <div className={`flex items-start gap-2 px-3 py-2 mt-2 rounded-lg text-xs ${c.hintStyle}`}>
         <span className="flex-shrink-0 mt-0.5">💡</span>
         <span className="flex-1">{children}</span>
-        <button onClick={() => setDismissedHints(prev => ({ ...prev, [id]: true }))} className="flex-shrink-0 opacity-50 hover:opacity-100 ml-1">✕</button>
+        <button onClick={() => setDismissedHints(prev => ({ ...prev, [id]: true }))} className="flex-shrink-0 opacity-50 hover:opacity-100 ms-1">✕</button>
       </div>
     );
   };
@@ -726,7 +726,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '📧'}</span>{tool?.title ?? t('cew_title')}
+                <span className="me-2">{tool?.icon ?? '📧'}</span>{tool?.title ?? t('cew_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cew_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('cew_try_example')}</button>
@@ -794,7 +794,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                             </div>
                           );
                         })}
-                        <span className={`text-xs ${c.textMuted} ml-1`}>
+                        <span className={`text-xs ${c.textMuted} ms-1`}>
                           {Object.values(progress).filter(s => s.outcome === 'resolved').length > 0 ? `✅ ${t('cew_resolved_short')}` :
                            Object.values(progress).filter(s => s.outcome === 'pending').length > 0 ? t('cew_in_progress') :
                            t('cew_stages_count', { done: Object.keys(progress).length })}
@@ -894,7 +894,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {tones.map(toneOpt => (
                 <button key={toneOpt.id} onClick={() => setTone(toneOpt.id)}
-                  className={`p-3 rounded-xl border text-left transition-all ${tone === toneOpt.id ? c.toneActive : c.toneInactive}`}>
+                  className={`p-3 rounded-xl border text-start transition-all ${tone === toneOpt.id ? c.toneActive : c.toneInactive}`}>
                   <p className={`text-sm font-bold ${c.text}`}>{toneOpt.label}</p>
                   <p className={`text-xs ${c.textMuteded} mt-0.5`}>{toneOpt.desc}</p>
                 </button>
@@ -945,7 +945,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {results?.situation_assessment && (() => {
             const sev = severityConfig[results?.situation_assessment?.severity] || severityConfig.medium;
             return (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-l-4 ${c[sev.borderKey]}`}>
+              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${c[sev.borderKey]}`}>
                 <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
                   <div className="flex gap-3 text-sm">
@@ -1038,7 +1038,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold whitespace-nowrap border transition-all relative ${isActive ? sc : c.stageTabInactive}`}>
                     <span>{stage.icon}</span>
                     <span className="hidden sm:inline">{stage.num}.</span> {stage.label}
-                    {status && <span className={`w-2 h-2 rounded-full absolute -top-0.5 -right-0.5 ${status.outcome === 'resolved' ? 'bg-green-500' : status.outcome === 'failed' ? 'bg-red-500' : 'bg-amber-500'}`} />}
+                    {status && <span className={`w-2 h-2 rounded-full absolute -top-0.5 -end-0.5 ${status.outcome === 'resolved' ? 'bg-green-500' : status.outcome === 'failed' ? 'bg-red-500' : 'bg-amber-500'}`} />}
                   </button>
                 );
               })}
@@ -1094,7 +1094,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {(s.send_to || []).map((r, i) => (
                         <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{r.role}</span> — {r.how_to_find}
-                          {r.email_pattern && <span className={`ml-1 ${c.textMuteded}`}>({r.email_pattern})</span>}
+                          {r.email_pattern && <span className={`ms-1 ${c.textMuteded}`}>({r.email_pattern})</span>}
                         </div>
                       ))}
                     </div>
@@ -1215,7 +1215,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                       {(s.target_contacts || []).map((tc, i) => (
                         <div key={i} className={`text-sm ${c.textSecondary} mb-2`}>
                           <span className={`font-semibold ${c.text}`}>{tc.title}</span>
-                          {tc.email_pattern && <span className={`ml-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
+                          {tc.email_pattern && <span className={`ms-2 font-mono text-xs ${c.textMuteded}`}>{tc.email_pattern}</span>}
                           {tc.why && <p className={`text-xs ${c.textMuteded} mt-0.5`}>{tc.why}</p>}
                         </div>
                       ))}
@@ -1349,11 +1349,11 @@ const ComplaintEscalationWriter = ({ tool }) => {
           {results?.timeline && (
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⏰</span> {t('cew_campaign_timeline')}</h3>
-              <div className="relative pl-6">
-                <div className={`absolute left-2 top-0 bottom-0 w-0.5 ${c.timelineLine}`} />
+              <div className="relative ps-6">
+                <div className={`absolute start-2 top-0 bottom-0 w-0.5 ${c.timelineLine}`} />
                 {Object.entries(results?.timeline).map(([key, value], idx) => (
                   <div key={key} className="relative mb-4 last:mb-0">
-                    <div className={`absolute -left-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
+                    <div className={`absolute -start-4 top-1 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-green-500 border-green-300' : c.timelineDotRest}`} />
                     <p className={`text-xs font-bold uppercase tracking-wide ${idx === 0 ? c.resolvedText : c.textMuteded} mb-0.5`}>{key.replace(/_/g, ' ')}</p>
                     <p className={`text-sm ${c.textSecondary}`}>{typeof value === 'string' ? value : Array.isArray(value?.actions) ? value.actions.join(' ') : Array.isArray(value) ? value.join(' ') : String(value ?? '')}</p>
                   </div>

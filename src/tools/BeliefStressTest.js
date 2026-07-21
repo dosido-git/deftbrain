@@ -163,7 +163,7 @@ const BeliefStressTest = ({ tool }) => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('bst_title')}
+              <span className="me-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('bst_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bst_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -183,11 +183,11 @@ const BeliefStressTest = ({ tool }) => {
             {sessionHistory.map(entry => (
               <button key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
                 <span className={c.textMuteded}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
-                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
               </button>
             ))}
           </div>
@@ -223,7 +223,7 @@ const BeliefStressTest = ({ tool }) => {
                 className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} focus:outline-none focus:ring-2`} />
             </div>
 
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
             <p className={`text-xs text-center ${c.textMuteded}`}>
               {t('bst_pre_xref')}{' '}
@@ -232,7 +232,7 @@ const BeliefStressTest = ({ tool }) => {
 
             <button onClick={handleSubmit} disabled={loading || !belief.trim()}
               className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="mr-2">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
+              {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="me-2">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
             </button>
           </div>
         )}
@@ -274,7 +274,7 @@ const BeliefStressTest = ({ tool }) => {
             {/* Stress tests */}
             {results.stress_tests?.length > 0 && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
-                <button onClick={() => toggle('tests')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('tests')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                     🔬 {t('bst_stress_tests')} ({results.stress_tests.length})
                   </p>
@@ -303,7 +303,7 @@ const BeliefStressTest = ({ tool }) => {
             {/* Hidden structure */}
             {results.the_hidden_structure && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
-                <button onClick={() => toggle('hidden')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('hidden')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🔦 {t('bst_hidden_structure')}</p>
                   <span className={`text-sm ${c.textMuteded}`}>{expanded.hidden ? '▲' : '▼'}</span>
                 </button>

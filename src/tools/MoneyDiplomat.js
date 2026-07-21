@@ -445,7 +445,7 @@ const MoneyDiplomat = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
+              <span className="me-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The right number for every money moment'}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -572,7 +572,7 @@ const MoneyDiplomat = ({ tool }) => {
           <div className="flex items-center gap-2 mb-3">
             <span className="text-lg">🔥</span>
             <p className={`text-sm font-bold ${c.text}`}>{t('md_quick_title')}</p>
-            <div className="flex gap-1 ml-auto">
+            <div className="flex gap-1 ms-auto">
               {[{ id: 'tip', labelKey: 'md_quick_tab_tip' }, { id: 'split', labelKey: 'md_quick_tab_split' }].map(tab => (
                 <button key={tab.id} onClick={() => setQuickCalc(p => ({ ...p, type: tab.id }))}
                   className={`text-[10px] px-2 py-0.5 rounded-full ${quickCalc.type === tab.id ? (isDark ? 'bg-sky-600 text-white' : 'bg-sky-500 text-white') : `${c.cardAlt} ${c.text}`}`}>{t(tab.labelKey)}</button>
@@ -721,7 +721,7 @@ const MoneyDiplomat = ({ tool }) => {
                 <div className={`h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} flex-1 overflow-hidden`}>
                   <div className="h-2 rounded-full bg-cyan-500" style={{ width: `${(count / trends.typeCounts[0][1]) * 100}%` }} />
                 </div>
-                <span className={`text-xs font-bold ${c.text} w-6 text-right`}>{count}</span>
+                <span className={`text-xs font-bold ${c.text} w-6 text-end`}>{count}</span>
               </div>
             ))}
           </div>
@@ -733,7 +733,7 @@ const MoneyDiplomat = ({ tool }) => {
                 {t('md_recap_generate')}
               </button>
             ) : (
-              <div className="text-left space-y-3">
+              <div className="text-start space-y-3">
                 <p className={`text-lg font-black ${c.text} text-center`}>{recapData.headline}</p>
                 {recapData.stats && (
                   <div className={`${c.cardAlt} rounded-lg p-3 grid grid-cols-2 gap-2`}>
@@ -1643,7 +1643,7 @@ const MoneyDiplomat = ({ tool }) => {
               {results?.tourist_traps?.map((trap, i) => (
                 <div key={i} className={`text-xs ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                   <p>🚩 {trap.trap}: {trap.what_to_do}</p>
-                  {trap.how_to_spot && <p className={`text-[10px] ${c.textMuteded} ml-4`}>{t('md_res_trav_spot_it', { how: trap.how_to_spot })}</p>}
+                  {trap.how_to_spot && <p className={`text-[10px] ${c.textMuteded} ms-4`}>{t('md_res_trav_spot_it', { how: trap.how_to_spot })}</p>}
                 </div>
               ))}
               {results?.quick_reference && (

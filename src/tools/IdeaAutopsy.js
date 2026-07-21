@@ -217,7 +217,7 @@ function IdeaAutopsy({ tool }) {
           {IDEA_STAGES.map(s => (
             <button key={s.id} onClick={() => setIdeaStage(s.id)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${ideaStage === s.id ? c.pillActive : c.pillInactive}`}>
-              <span className="mr-1">{s.icon}</span>{t(s.labelKey)}
+              <span className="me-1">{s.icon}</span>{t(s.labelKey)}
             </button>
           ))}
         </div>
@@ -276,7 +276,7 @@ function IdeaAutopsy({ tool }) {
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔬'}</span> {t('ia_running')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🔬'}</span> {t('ia_run')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🔬'}</span> {t('ia_run')}</>}
       </button>
 
       {sessionHistory.length > 0 && (
@@ -411,7 +411,7 @@ function IdeaAutopsy({ tool }) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('ia_title')}
+              <span className="me-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('ia_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ia_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

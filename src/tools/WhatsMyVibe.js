@@ -170,7 +170,7 @@ const WhatsMyVibe = ({ tool }) => {
   return (<div className={`space-y-4 ${c.text}`}>
       {/* ── Input ── */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon}</span>{tool?.title}</h2>
+          <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('wmv_try_example')}</button>
         </div>
@@ -291,7 +291,7 @@ const WhatsMyVibe = ({ tool }) => {
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wmv_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
         </div>

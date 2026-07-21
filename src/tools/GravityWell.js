@@ -157,7 +157,7 @@ const GravityWell = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? t('gw_title')}
+              <span className="me-2">{tool?.icon ?? '🌀'}</span>{tool?.title ?? t('gw_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gw_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -208,11 +208,11 @@ const GravityWell = ({ tool }) => {
               </div>
             </div>
 
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
           <button onClick={handleSubmit} disabled={loading || !targetDescription.trim()}
             className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '🌀'}</span>{t('gw_designing')}</> : <><span className="mr-1">{tool?.icon ?? '🌀'}</span>{t('gw_build')}</>}
+            {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🌀'}</span>{t('gw_designing')}</> : <><span className="me-1">{tool?.icon ?? '🌀'}</span>{t('gw_build')}</>}
             </button>
 
             <p className={`text-xs text-center ${c.textMuteded}`}>{t('gw_subtext')}</p>
@@ -236,10 +236,10 @@ const GravityWell = ({ tool }) => {
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <div className="flex items-center justify-between mb-3">
                   <p className={`text-xs font-black uppercase tracking-widest ${c.textMuteded}`}>{t('gw_score_current')}</p>
-                  <div className="text-right">
+                  <div className="text-end">
                     <span className={`text-3xl font-black ${isDark ? 'text-red-300' : 'text-red-700'}`}>{results.your_gravity_score.current}</span>
                     {results.gravity_score_target && (
-                      <span className={`text-lg font-bold ml-2 ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>→ {results.gravity_score_target}</span>
+                      <span className={`text-lg font-bold ms-2 ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>→ {results.gravity_score_target}</span>
                     )}
                   </div>
                 </div>
@@ -256,7 +256,7 @@ const GravityWell = ({ tool }) => {
             {/* Target profile */}
             {results.target_profile && (
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                <button onClick={() => toggle('profile')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button onClick={() => toggle('profile')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('gw_profile_title')}</p>
                   <span className={`text-sm ${c.textMuteded}`}>{expanded.profile ? '▲' : '▼'}</span>
                 </button>
@@ -326,7 +326,7 @@ const GravityWell = ({ tool }) => {
             {/* Value offer */}
             {results.the_value_offer && (
               <div onClick={() => toggle('value')} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
-                <button className="w-full text-left px-5 py-4 flex items-center justify-between">
+                <button className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('gw_value_title')}</p>
                   <span className={`text-sm ${c.textMuteded}`}>{expanded.value ? '▲' : '▼'}</span>
                 </button>
@@ -378,7 +378,7 @@ const GravityWell = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('gw_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

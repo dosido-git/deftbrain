@@ -356,7 +356,7 @@ const PlantRescue = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🪴'}</span>{tool?.title ?? t('pr_title')}
+                  <span className="me-2">{tool?.icon ?? '🪴'}</span>{tool?.title ?? t('pr_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pr_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -430,7 +430,7 @@ const PlantRescue = ({ tool }) => {
               <div className="relative">
                 <img src={imagePreview} alt={t('pr_alt_plant')} className="w-full max-h-48 object-contain rounded-lg border" />
                 <button onClick={handleRemoveImage}
-                  className={`absolute top-2 right-2 ${c.btnDanger} w-7 h-7 rounded-full flex items-center justify-center text-xs`}>✕</button>
+                  className={`absolute top-2 end-2 ${c.btnDanger} w-7 h-7 rounded-full flex items-center justify-center text-xs`}>✕</button>
               </div>
             )}
           </div>
@@ -452,7 +452,7 @@ const PlantRescue = ({ tool }) => {
                     <div className="relative">
                       <img src={extraPreviews[idx]} alt={t('pr_alt_extra', { n: idx + 1 })} className="w-full h-24 object-cover rounded-lg border" />
                       <button onClick={() => handleRemoveExtra(idx)}
-                        className={`absolute top-1 right-1 ${c.btnDanger} w-5 h-5 rounded-full flex items-center justify-center text-xs`}>✕</button>
+                        className={`absolute top-1 end-1 ${c.btnDanger} w-5 h-5 rounded-full flex items-center justify-center text-xs`}>✕</button>
                     </div>
                   )}
                 </div>
@@ -721,7 +721,7 @@ const PlantRescue = ({ tool }) => {
 
           {/* Care Schedule */}
           {results?.care_schedule && (
-            <div className={`${c.card} ${c.success} border border-l-4 rounded-xl p-6`}>
+            <div className={`${c.card} ${c.success} border border-s-4 rounded-xl p-6`}>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{t('pr_care_schedule')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {results?.care_schedule?.watering    && <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'}`}><p className="text-xs font-bold mb-1">{t('pr_cs_watering')}</p><p className={`text-sm ${c.text}`}>{results?.care_schedule?.watering}</p></div>}
@@ -756,7 +756,7 @@ const PlantRescue = ({ tool }) => {
 
           {/* Diagnosis */}
           {mode === 'rescue' && results?.diagnosis && (
-            <div className={`${getSeverityStyles(results?.diagnosis?.severity)} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${getSeverityStyles(results?.diagnosis?.severity)} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-2 ${c.text}`}>{getSeverityEmoji(results?.diagnosis?.severity)} {t('pr_diagnosis')}</h3>
               <p className={`text-sm ${c.text}`}><strong>{t('pr_primary_strong')}</strong> {results?.diagnosis?.primary_problem}</p>
               {results?.diagnosis?.secondary_issues?.length > 0 && (
@@ -775,7 +775,7 @@ const PlantRescue = ({ tool }) => {
               <div className="space-y-3">
                 {results?.action_plan?.map((a, idx) => (
                   <div key={idx}
-                    className={`border-l-4 ${a.priority === 1 ? 'border-red-500' : a.priority === 2 ? 'border-amber-500' : 'border-sky-500'} ${c.cardAlt} border rounded-r-lg p-4`}>
+                    className={`border-s-4 ${a.priority === 1 ? 'border-red-500' : a.priority === 2 ? 'border-amber-500' : 'border-sky-500'} ${c.cardAlt} border rounded-e-lg p-4`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${a.priority === 1 ? c.critical : a.priority === 2 ? c.concerning : c.minor}`}>P{a.priority}</span>
                       <span className={`text-xs ${c.textMuted}`}>🕐 {a.timing}</span>
@@ -843,14 +843,14 @@ const PlantRescue = ({ tool }) => {
           )}
 
           {results?.prevention_tips?.length > 0 && (
-            <div className={`${c.card} ${c.success} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${c.card} ${c.success} border-s-4 rounded-e-lg p-5`}>
               <h3 className="font-bold mb-2">{t('pr_prevention')}</h3>
               <ul className="text-sm space-y-1">{results?.prevention_tips?.map((tip, i) => <li key={i}>• {tip}</li>)}</ul>
             </div>
           )}
 
           {results?.climate_recommendations && (
-            <div className={`${isDark ? 'bg-zinc-800 border-sky-700' : 'bg-white border-sky-300'} border-l-4 rounded-r-lg p-5`}>
+            <div className={`${isDark ? 'bg-zinc-800 border-sky-700' : 'bg-white border-sky-300'} border-s-4 rounded-e-lg p-5`}>
               <h3 className={`font-bold mb-2 ${isDark ? 'text-sky-200' : 'text-sky-900'}`}>{t('pr_climate_section')}</h3>
               {results?.climate_recommendations?.seasonal_note && <p className="text-sm">{results?.climate_recommendations?.seasonal_note}</p>}
               {results?.climate_recommendations?.regional_tips?.length > 0 && (
@@ -893,8 +893,8 @@ const PlantRescue = ({ tool }) => {
           {/* Follow-up */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <h3 className={`font-bold mb-2 ${c.text}`}>{t('pr_followup')}</h3>
-            <label htmlFor="pr-followup-q" className="sr-only">{t('pr_ask_followup_label')}</label>
-            <input id="pr-followup-q" type="text" value={followUpQuestion} onChange={e => setFollowUpQuestion(e.target.value)}
+            <label htmlFor="pe-followup-q" className="sr-only">{t('pr_ask_followup_label')}</label>
+            <input id="pe-followup-q" type="text" value={followUpQuestion} onChange={e => setFollowUpQuestion(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleFollowUp()}
               placeholder={t('pr_ask_anything_ph')}
               className={`flex-1 p-3 border rounded-lg ${c.input} outline-none focus:ring-2`} />
@@ -930,7 +930,7 @@ const PlantRescue = ({ tool }) => {
             {sessionHistory.map(h => (
               <div key={h.id} className={`flex items-center justify-between text-xs ${c.textSecondary} ${c.cardAlt} px-3 py-2 rounded-lg`}>
                 <span className="truncate">{h.preview || t('pr_no_description')}</span>
-                <span className={`${c.textMuted} flex-shrink-0 ml-2`}>{new Date(h.date).toLocaleDateString()}</span>
+                <span className={`${c.textMuted} flex-shrink-0 ms-2`}>{new Date(h.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

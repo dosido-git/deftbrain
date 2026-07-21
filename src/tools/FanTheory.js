@@ -240,7 +240,7 @@ const FanTheory = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="mr-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? t('ft_title')}
+            <span className="me-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? t('ft_title')}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ft_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -271,7 +271,7 @@ const FanTheory = ({ tool }) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DIRECTIONS.map(d => (
                 <button key={d.value} onClick={() => setDirection(d.value)}
-                  className={`py-2 px-3 rounded-xl border text-left min-h-[48px] transition-colors ${
+                  className={`py-2 px-3 rounded-xl border text-start min-h-[48px] transition-colors ${
                     direction === d.value ? c.pillActive : c.pillInactive}`}>
                   <span className="text-sm">{d.icon} {t(d.labelKey)}</span>
                   <span className={`text-[9px] block ${direction === d.value ? 'opacity-80' : c.textMuted}`}>{t(d.descKey)}</span>
@@ -283,7 +283,7 @@ const FanTheory = ({ tool }) => {
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_theorizing')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🧵'}</span>{t('ft_generate')}</>}
+              : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_generate')}</>}
           </button>
 
           {/* Pre-result cross-ref */}
@@ -300,7 +300,7 @@ const FanTheory = ({ tool }) => {
           {theoryHistory.map(saved => (
             <div key={saved.id} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => setExpandedSaved(expandedSaved === saved.id ? null : saved.id)}
-                className={`w-full flex items-center justify-between gap-3 p-3 text-left hover:${c.cardAlt} transition-colors`}>
+                className={`w-full flex items-center justify-between gap-3 p-3 text-start hover:${c.cardAlt} transition-colors`}>
                 <div className="min-w-0">
                   <p className={`text-xs font-bold ${c.text} truncate`}>🧵 {saved.data.theory_name}</p>
                   <p className={`text-[11px] ${c.textMuted} truncate`}>{saved.title} · {saved.data.one_line}</p>
@@ -398,7 +398,7 @@ const FanTheory = ({ tool }) => {
           <div className="flex gap-2">
             <button onClick={() => runGenerate(true)} disabled={loading}
               className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
-              <span className="mr-1">{tool?.icon ?? '🧵'}</span>{t('ft_different_theory')}
+              <span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_different_theory')}
             </button>
             <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setTheoryHistory([]); }}
               className={`px-5 py-3 rounded-lg font-bold text-sm min-h-[44px] ${c.btnSecondary}`}>
@@ -430,7 +430,7 @@ const FanTheory = ({ tool }) => {
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 min-h-[44px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_grading')}</>
-                : <><span className="mr-1">{tool?.icon ?? '🧵'}</span>{t('ft_grade_theory')}</>}
+                : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_grade_theory')}</>}
             </button>
           </div>
 

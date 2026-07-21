@@ -450,8 +450,8 @@ const MicroAdventureMapper = ({ tool }) => {
           <button key={opt.value}
             onClick={() => multi ? setter(opt.value) : setter(opt.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
-            {active && !multi && <span className="inline mr-1">✓</span>}
-            {active && multi && <span className="inline mr-1">✓</span>}
+            {active && !multi && <span className="inline me-1">✓</span>}
+            {active && multi && <span className="inline me-1">✓</span>}
             {opt.range ? `${sym}${opt.range}` : t(opt.labelKey)}
           </button>
         );
@@ -519,14 +519,14 @@ const MicroAdventureMapper = ({ tool }) => {
           className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
           {showAccessibility ? <span>▾</span> : <span>▸</span>}
           {t('mam_acc_label')}
-          {accessibility.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{accessibility.length}</span>}
+          {accessibility.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{accessibility.length}</span>}
         </button>
         {showAccessibility && (
           <div className="flex flex-wrap gap-2 mt-3">
             {ACCESSIBILITY_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => toggleAccessibility(opt.value)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${accessibility.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
-                {accessibility.includes(opt.value) && <span className="inline mr-1">✓</span>}
+                {accessibility.includes(opt.value) && <span className="inline me-1">✓</span>}
                 {t(opt.labelKey)}
               </button>
             ))}
@@ -540,7 +540,7 @@ const MicroAdventureMapper = ({ tool }) => {
         className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('mam_planning')}</>
-          : <><span className="mr-1">{tool?.icon ?? '🗺️'}</span> {t('mam_map_btn')}</>}
+          : <><span className="me-1">{tool?.icon ?? '🗺️'}</span> {t('mam_map_btn')}</>}
       </button>
 
       {/* Pre-result cross-ref */}
@@ -593,7 +593,7 @@ const MicroAdventureMapper = ({ tool }) => {
                     {stop.number || idx + 1}
                   </div>
                   {idx < stops.length - 1 && (
-                    <div className={`flex-1 w-0 border-l-2 ${c.timeline}`} style={{ minHeight: '100%' }} />
+                    <div className={`flex-1 w-0 border-s-2 ${c.timeline}`} style={{ minHeight: '100%' }} />
                   )}
                 </div>
 
@@ -635,7 +635,7 @@ const MicroAdventureMapper = ({ tool }) => {
               {transit && idx < stops.length - 1 && (
                 <div className="flex gap-4 mb-2">
                   <div className="flex flex-col items-center flex-shrink-0" style={{ width: '28px' }}>
-                    <div className={`flex-1 w-0 border-l-2 border-dashed ${c.timeline}`} />
+                    <div className={`flex-1 w-0 border-s-2 border-dashed ${c.timeline}`} />
                   </div>
                   <div className={`flex items-center gap-2 py-1.5 px-3 rounded-lg text-xs ${c.transitText}`}>
                     
@@ -664,7 +664,7 @@ const MicroAdventureMapper = ({ tool }) => {
               const done = checkedItems[`bring-${i}`];
               return (
                 <button key={i} onClick={() => setCheckedItems(prev => ({ ...prev, [`bring-${i}`]: !prev[`bring-${i}`] }))}
-                  className={`flex items-center gap-2.5 w-full text-left text-sm ${done ? c.textMuted : c.text}`}>
+                  className={`flex items-center gap-2.5 w-full text-start text-sm ${done ? c.textMuted : c.text}`}>
                   <div className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-all
                     ${done ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>
                     {done && <span>✓</span>}
@@ -796,7 +796,7 @@ const MicroAdventureMapper = ({ tool }) => {
         <div key={entry.id} className={`rounded-xl border ${c.journalCard} overflow-hidden mb-2`}>
           {/* Summary row */}
           <button onClick={() => setExpandedJournalId(isExpanded ? null : entry.id)}
-            className={`w-full flex items-center gap-3 p-3 text-left`}>
+            className={`w-full flex items-center gap-3 p-3 text-start`}>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-semibold ${c.text} truncate`}>{adv.name || t('mam_journal_adventure')}</span>
@@ -823,7 +823,7 @@ const MicroAdventureMapper = ({ tool }) => {
                     <span className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-black text-white ${isDark ? 'bg-zinc-600' : 'bg-zinc-400'}`}>{s.number || i + 1}</span>
                     <div className="min-w-0">
                       <span className="font-semibold">{s.name}</span>
-                      {s.location && <span className={`${c.textMuted} ml-1`}>— {s.location}</span>}
+                      {s.location && <span className={`${c.textMuted} ms-1`}>— {s.location}</span>}
                     </div>
                   </div>
                 ))}
@@ -850,7 +850,7 @@ const MicroAdventureMapper = ({ tool }) => {
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.journalBg}`}>
         <button onClick={() => setShowJournal(!showJournal)}
-          className={`w-full flex items-center gap-2 text-left`}>
+          className={`w-full flex items-center gap-2 text-start`}>
           <span className={`${c.journalAccent}`}>📖</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mam_journal_title')}</span>
           <span className={`text-xs ${c.textMuted}`}>{t('mam_journal_past', { n: pastAdventures.length })}</span>
@@ -908,7 +908,7 @@ const MicroAdventureMapper = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? t('mam_title')}
+                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? t('mam_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mam_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

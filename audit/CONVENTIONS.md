@@ -151,7 +151,7 @@ grep -n "border-b border-zinc-500" ComponentName.js
 <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
   <div className="pb-3 border-b border-zinc-500">
     <h2 className={`text-xl font-bold ${c.text}`}>
-      <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback Title'}
+      <span className="me-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback Title'}
     </h2>
     <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
   </div>
@@ -1643,3 +1643,8 @@ On conflict: check the audit script's constant arrays as the tiebreaker. Whateve
 ---
 
 *Addendum prepared 2026-04-18, merged into CONVENTIONS.md (v1.1, 2026-04-24). The script formerly named `audit_v2-3.py` is now `audit_v2-3-2.py`.*
+
+
+## RTL / logical properties (2026-07-21)
+
+All direction-dependent Tailwind utilities use LOGICAL variants so Arabic mirrors automatically: `ms-`/`me-` (not `ml-`/`mr-`), `ps-`/`pe-`, `text-start`/`text-end`, `start-`/`end-` (positioning), `border-s`/`border-e`, `rounded-s/e/ss/se/es/ee`. Inline styles use `marginInlineStart` etc. In LTR these are pixel-identical to the physical classes. Never introduce new `ml-`/`mr-`/`pl-`/`pr-`/`text-left`/`text-right`/`left-N`/`right-N` classes in tool UI.

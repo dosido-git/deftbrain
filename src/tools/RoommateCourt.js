@@ -414,7 +414,7 @@ const RoommateCourt = ({ tool }) => {
     const isOpen = expandedSections[key];
     return (
       <div className={`rounded-xl border ${c.border} ${c.cardAltCard} overflow-hidden mb-3`}>
-        <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-left">
+        <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
           <span>{icon}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
           <span>{isOpen ? '▲' : '▼'}</span>
@@ -488,8 +488,8 @@ const RoommateCourt = ({ tool }) => {
                 <span className={`text-xs font-semibold ${c.textSecondary}`}>{t('rc_them_pct')}: {theirPct}%</span>
               </div>
               <div className={`h-3 rounded-full overflow-hidden flex ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`}>
-                <div className="bg-amber-500 h-full rounded-l-full transition-all" style={{ width: `${yourPct}%` }} />
-                <div className="bg-sky-500 h-full rounded-r-full transition-all" style={{ width: `${theirPct}%` }} />
+                <div className="bg-amber-500 h-full rounded-s-full transition-all" style={{ width: `${yourPct}%` }} />
+                <div className="bg-sky-500 h-full rounded-e-full transition-all" style={{ width: `${theirPct}%` }} />
               </div>
             </div>
           </div>
@@ -665,7 +665,7 @@ const RoommateCourt = ({ tool }) => {
                 {a.roommate.charAt(0).toUpperCase()}
               </span>
               <span className={`text-sm font-bold ${c.text}`}>{a.roommate}</span>
-              <span className={`text-xs ${c.textMuted} ml-auto`}>{a.chores.reduce((s, ch) => s + ch.effort, 0)} {t('rc_pts')}</span>
+              <span className={`text-xs ${c.textMuted} ms-auto`}>{a.chores.reduce((s, ch) => s + ch.effort, 0)} {t('rc_pts')}</span>
             </div>
             <div className="space-y-1.5">
               {a.chores.map(ch => {
@@ -673,7 +673,7 @@ const RoommateCourt = ({ tool }) => {
                 const done = currentRound?.completed?.[key];
                 return (
                   <button key={ch.name} onClick={() => toggleChoreComplete(a.roommate, ch.name)}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-lg border text-left transition-all
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-lg border text-start transition-all
                       ${done
                         ? (isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200')
                         : `${c.cardAltInset} ${c.border}`}`}>
@@ -767,7 +767,7 @@ const RoommateCourt = ({ tool }) => {
     if (assignHistory.length === 0) return null;
     return (
       <div className={`mt-5 rounded-xl border ${c.border} ${c.cardAltCard} overflow-hidden`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
           <span className={`text-sm font-bold ${c.text} flex-1`}>📋 {t('rc_history')}</span>
           <span className={`text-xs ${c.textMuted}`}>{t('rc_rounds', { count: assignHistory.length })}</span>
           <span>{showHistory ? '▲' : '▼'}</span>
@@ -849,7 +849,7 @@ const RoommateCourt = ({ tool }) => {
                     {name.charAt(0).toUpperCase()}
                   </span>
                   {name}
-                  <button onClick={() => removeRoommate(name)} className={`ml-0.5 ${c.deleteHover}`}><span>✕</span></button>
+                  <button onClick={() => removeRoommate(name)} className={`ms-0.5 ${c.deleteHover}`}><span>✕</span></button>
                 </span>
               ))}
             </div>
@@ -886,7 +886,7 @@ const RoommateCourt = ({ tool }) => {
                 return (
                   <span key={ch} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold ${c.pillActive}`}>
                     {common ? t(common.labelKey) : ch}
-                    <button onClick={() => removeChore(ch)} className={`ml-0.5 ${c.deleteHover}`}><span>✕</span></button>
+                    <button onClick={() => removeChore(ch)} className={`ms-0.5 ${c.deleteHover}`}><span>✕</span></button>
                   </span>
                 );
               })}
@@ -939,7 +939,7 @@ const RoommateCourt = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('rc_title')}
+                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('rc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -963,7 +963,7 @@ const RoommateCourt = ({ tool }) => {
                 ${activeTab === tab.id ? c.tabActive : `${c.tabInactive}`}`}>
               {tab.label}
               {tab.badge > 0 && (
-                <span className={`ml-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
+                <span className={`ms-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
                   ${activeTab === tab.id ? 'bg-white/20 text-white' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
                   {tab.badge}
                 </span>

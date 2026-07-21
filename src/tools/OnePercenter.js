@@ -151,7 +151,7 @@ const OnePercenter = ({ tool }) => {
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h1 className={`text-2xl font-black tracking-tight ${c.text} flex items-center`}><span className="mr-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('op_title')}</h1>
+              <h1 className={`text-2xl font-black tracking-tight ${c.text} flex items-center`}><span className="me-2">{tool?.icon ?? '⚡'}</span>{tool?.title ?? t('op_title')}</h1>
               <p className={`text-sm ${c.textMuteded} mt-1`}>{t('op_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
@@ -194,7 +194,7 @@ const OnePercenter = ({ tool }) => {
               </div>
             </div>
 
-            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="mr-1">⚠️</span>{error}</div>}
+            {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
             <div>
               <button onClick={handleSubmit} disabled={loading || !routine.trim()}
@@ -306,7 +306,7 @@ const OnePercenter = ({ tool }) => {
       </div>
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('op_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('op_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('op_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('op_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
     </div>
   );
 };

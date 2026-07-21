@@ -230,7 +230,7 @@ const DecoderRing = ({ tool }) => {
   const Pill = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
-      {active && <span className="mr-1">✓</span>}
+      {active && <span className="me-1">✓</span>}
       {children}
     </button>
   );
@@ -238,7 +238,7 @@ const DecoderRing = ({ tool }) => {
   // Collapsible
   const Section = ({ title, emoji, open, onToggle, badge, children }) => (
     <div className={`${c.card} border rounded-xl overflow-hidden`}>
-      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-left hover:opacity-80 transition-opacity">
+      <button onClick={onToggle} className="w-full flex items-center justify-between p-5 text-start hover:opacity-80 transition-opacity">
         <div className="flex items-center gap-3">
           <span className="text-lg">{emoji}</span>
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
@@ -260,7 +260,7 @@ const DecoderRing = ({ tool }) => {
           <div className={`h-2 rounded-full transition-all duration-500 ${barColor}`}
             style={{ width: `${(value / max) * 100}%` }} />
         </div>
-        <span className={`text-xs font-mono ${c.textMuted} w-6 text-right`}>{value}</span>
+        <span className={`text-xs font-mono ${c.textMuted} w-6 text-end`}>{value}</span>
       </div>
     );
   };
@@ -538,7 +538,7 @@ const DecoderRing = ({ tool }) => {
 
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.histAccent}`}>🔍</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('dr_history_title')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -577,7 +577,7 @@ const DecoderRing = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('dr_title')}
+                <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('dr_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dr_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

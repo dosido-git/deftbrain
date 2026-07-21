@@ -138,7 +138,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
     if (l === 'intense') return isDark ? 'bg-red-900/40 text-red-300 border-red-700' : 'bg-red-100 text-red-700 border-red-300';
     return isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-zinc-100 text-gray-600';
   };
-  const concernColor = (level) => { const l = (level || '').toLowerCase(); if (l === 'low') return 'border-l-emerald-500'; if (l === 'medium') return 'border-l-amber-500'; if (l === 'high') return 'border-l-red-500'; return 'border-l-zinc-500'; };
+  const concernColor = (level) => { const l = (level || '').toLowerCase(); if (l === 'low') return 'border-s-emerald-500'; if (l === 'medium') return 'border-s-amber-500'; if (l === 'high') return 'border-s-red-500'; return 'border-s-zinc-500'; };
   const energyColor = (e) => { const l = (e || '').toLowerCase(); if (l === 'fresh') return isDark ? 'text-emerald-400' : 'text-emerald-700'; if (l === 'fine') return isDark ? 'text-cyan-400' : 'text-cyan-700'; if (l === 'draining') return isDark ? 'text-amber-400' : 'text-amber-700'; return isDark ? 'text-red-400' : 'text-red-700'; };
 
   const pastVisitsHere = useMemo(() => visitHistory.filter(v => v.location.toLowerCase().includes(location.toLowerCase().slice(0, 6)) && location.length > 3), [visitHistory, location]);
@@ -405,7 +405,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
+                <span className="me-2">{tool?.icon ?? '🗺️'}</span>{tool?.title ?? 'Sensory Minefield Mapper'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Preview any place before you go'}</p>
               <button onClick={loadExample} disabled={analysisLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('smm_try_example')}</button>
@@ -420,7 +420,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
       </div>
 
       <div className="max-w-3xl mx-auto">
-        {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="mr-1">⚠️</span> {error}</div>}
+        {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
         {/* ════════ HOME ════════ */}
         {view === 'home' && (
@@ -493,7 +493,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 <div className="space-y-1.5">
                   {visitHistory.slice(0, 5).map(v => (
                     <button key={v.id} onClick={() => { setLocation(v.location); setPlaceType(v.placeType); setView('form'); }}
-                      className={`w-full text-left p-2.5 rounded-xl ${c.cardAlt} border`}>
+                      className={`w-full text-start p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
                         <p className={`text-xs font-bold ${c.text}`}>{ptIcon(v.placeType)} {v.location}</p>
                         <div className="flex items-center gap-1.5">
@@ -582,7 +582,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
               <div className="flex gap-2">
                 <button onClick={analyzeLocation} disabled={analysisLoading} className={`flex-1 py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
-                  {analysisLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="mr-2">🔍</span>}
+                  {analysisLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🔍</span>}
                   {analysisLoading ? t('smm_scouting') : t('smm_scout_location')}
                 </button>
               </div>
@@ -674,7 +674,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 {(expandedSections.factors !== false) && (
                   <div className="space-y-3 mt-4">
                     {results.factors.map((f, i) => (
-                      <div key={i} className={`${c.cardAlt} border border-l-4 ${concernColor(f.concern_level)} rounded-xl p-4`}>
+                      <div key={i} className={`${c.cardAlt} border border-s-4 ${concernColor(f.concern_level)} rounded-xl p-4`}>
                         <div className="flex items-start justify-between mb-2">
                           <h3 className={`text-sm font-black ${c.text}`}>{f.factor}</h3>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${intensityColor(f.concern_level)}`}>{f.concern_level}</span>
@@ -947,7 +947,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
                       const checkKey = `${group.key}-${i}`;
                       return (
                         <button key={i} onClick={() => setKitChecked(prev => ({ ...prev, [checkKey]: !prev[checkKey] }))}
-                          className={`w-full text-left flex items-center gap-2.5 p-2 rounded-lg mb-1 transition-all ${kitChecked[checkKey] ? (isDark ? 'bg-emerald-900/20' : 'bg-emerald-50') : ''}`}>
+                          className={`w-full text-start flex items-center gap-2.5 p-2 rounded-lg mb-1 transition-all ${kitChecked[checkKey] ? (isDark ? 'bg-emerald-900/20' : 'bg-emerald-50') : ''}`}>
                           <span className={`text-sm ${kitChecked[checkKey] ? '' : 'opacity-30'}`}>{kitChecked[checkKey] ? '✅' : '⬜'}</span>
                           <div className="flex-1 min-w-0">
                             <p className={`text-xs font-bold ${kitChecked[checkKey] ? (isDark ? 'text-emerald-400 line-through' : 'text-emerald-700 line-through') : c.text}`}>{item.item}</p>
@@ -1052,7 +1052,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               )}
 
               <button onClick={planRoute} disabled={routeLoading} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
-                {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="mr-2">🗺️</span>}
+                {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
                 {routeLoading ? t('smm_planning') : t('smm_plan_route_btn')}
               </button>
             </div>
@@ -1176,7 +1176,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
         )}
 
       {/* eslint-disable-next-line no-restricted-globals */}
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('smm_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('smm_session')}</span><span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('smm_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview||t('smm_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
       <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('smm_related_tools')}</p>
         <div className="flex flex-wrap gap-3">

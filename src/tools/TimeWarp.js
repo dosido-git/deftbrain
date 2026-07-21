@@ -173,7 +173,7 @@ const TimeWarp = ({ tool }) => {
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b border-zinc-500`}>
           <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="mr-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? t('tw_title')}
+            <span className="me-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? t('tw_title')}
           </h2>
           <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tw_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -221,7 +221,7 @@ const TimeWarp = ({ tool }) => {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {FORMATS.map(f => (
               <button key={f.value} onClick={() => setFormat(f.value)}
-                className={`py-2.5 px-3 rounded-xl border text-left transition-colors min-h-[52px] ${
+                className={`py-2.5 px-3 rounded-xl border text-start transition-colors min-h-[52px] ${
                   format === f.value ? c.pillActive : c.pillInactive
                 }`}>
                 <span className="text-sm block">{f.icon} {t(f.labelKey)}</span>
@@ -324,7 +324,7 @@ const TimeWarp = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview}</span>
-                <span className={`text-xs ${c.textMuted} ml-2 shrink-0`}>{s.format}</span>
+                <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{s.format}</span>
               </div>
             ))}
           </div>

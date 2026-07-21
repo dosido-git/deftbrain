@@ -85,7 +85,7 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
     <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
       <button
         onClick={toggleOpen}
-        className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
+        className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
       >
         <div className="flex items-center gap-2.5">
           {icon && <span className="text-sm">{icon}</span>}
@@ -739,13 +739,13 @@ const BuyWise = ({ tool }) => {
       <div className="mb-4">
         <label className={`text-sm font-bold ${c.textSecondary} block mb-1.5`}>{t('bw_q_buying')} <span className={c.required}>*</span></label>
         <div className="relative">
-          <span className={`absolute left-3 top-1/2 -translate-y-1/2 text-sm`}>🛒</span>
+          <span className={`absolute start-3 top-1/2 -translate-y-1/2 text-sm`}>🛒</span>
           <input
             type="text"
             value={product}
             onChange={e => setProduct(e.target.value)}
             placeholder={t('bw_ph_buying')}
-            className={`w-full pl-9 pr-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+            className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
             onKeyDown={e => e.key === 'Enter' && canAnalyze && analyze()}
           />
         </div>
@@ -809,7 +809,7 @@ const BuyWise = ({ tool }) => {
         {/* Impulse */}
         <button
           onClick={() => setIsImpulse(p => !p)}
-          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-left min-h-[44px] ${
+          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-start min-h-[44px] ${
             isImpulse ? c.warning : `${c.card} border ${c.border}`
           }`}
         >
@@ -827,7 +827,7 @@ const BuyWise = ({ tool }) => {
         {/* Gift */}
         <button
           onClick={() => setIsGift(p => !p)}
-          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-left min-h-[44px] ${
+          className={`flex items-center gap-3 cursor-pointer p-3 rounded-lg border transition-colors text-start min-h-[44px] ${
             isGift ? c.highlightBg : `${c.card} border ${c.border}`
           }`}
         >
@@ -1314,7 +1314,7 @@ const BuyWise = ({ tool }) => {
                     key={i}
                     onClick={() => askFollowup(q)}
                     disabled={followupLoading}
-                    className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-left min-h-[36px] disabled:opacity-40`}
+                    className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-start min-h-[36px] disabled:opacity-40`}
                   >
                     {q}
                   </button>
@@ -1366,7 +1366,7 @@ const BuyWise = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
             <button
               onClick={() => setShowPpu(p => !p)}
-              className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
+              className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
             >
               <div className="flex items-center gap-2.5">
                 <span className="text-sm">📐</span>
@@ -1428,7 +1428,7 @@ const BuyWise = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
             <button
               onClick={() => setShowVerdictCard(p => !p)}
-              className="w-full p-4 flex items-center justify-between text-left min-h-[44px]"
+              className="w-full p-4 flex items-center justify-between text-start min-h-[44px]"
             >
               <div className="flex items-center gap-2.5">
                 <span className="text-sm">🃏</span>
@@ -1649,7 +1649,7 @@ const BuyWise = ({ tool }) => {
           <div className="flex items-center gap-2 mb-4">
             <span className="text-lg">{currentSection.icon}</span>
             <h3 className={`text-base font-bold ${c.text}`}>{currentSection.title}</h3>
-            <span className={`text-[10px] ${c.textMuteded} ml-auto`}>{walkStep + 1}/{walkSections.length}</span>
+            <span className={`text-[10px] ${c.textMuteded} ms-auto`}>{walkStep + 1}/{walkSections.length}</span>
           </div>
           {renderWalkContent(currentSection.key)}
         </div>
@@ -2721,7 +2721,7 @@ const BuyWise = ({ tool }) => {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '💲'}</span>{tool?.title ?? t('bw_title')}
+                <span className="me-2">{tool?.icon ?? '💲'}</span>{tool?.title ?? t('bw_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bw_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -2742,13 +2742,13 @@ const BuyWise = ({ tool }) => {
               {t('bw_q_buying')} <span className={c.required}>*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm">🛒</span>
+              <span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🛒</span>
               <input
                 type="text"
                 value={product}
                 onChange={e => setProduct(e.target.value)}
                 placeholder={t('bw_ph_buying')}
-                className={`w-full pl-9 pr-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+                className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
               />
             </div>
           </div>

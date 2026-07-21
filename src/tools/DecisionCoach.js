@@ -428,7 +428,7 @@ const DecisionCoach = ({ tool }) => {
     <div className="flex flex-wrap gap-1.5">
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
-        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="mr-1">✅</span>}{t(opt.k)}</button>);
+        return (<button key={opt.value} onClick={() => setter(opt.value)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>{active && <span className="me-1">✅</span>}{t(opt.k)}</button>);
       })}
     </div>
   );
@@ -465,7 +465,7 @@ const DecisionCoach = ({ tool }) => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {[{ id:'standard',l:t('dc_mode_standard_l'),d:t('dc_mode_standard_d') },{ id:'proscons',l:t('dc_mode_proscons_l'),d:t('dc_mode_proscons_d') },{ id:'devils',l:t('dc_mode_devils_l'),d:t('dc_mode_devils_d') },{ id:'chain',l:t('dc_mode_chain_l'),d:t('dc_mode_chain_d') }].map(m => (
           <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
-            className={`p-3 rounded-xl border text-left transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
+            className={`p-3 rounded-xl border text-start transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
             <p className={`text-xs font-bold ${c.text}`}>{m.l}</p><p className={`text-[10px] ${c.textMuteded}`}>{m.d}</p>
           </button>
         ))}
@@ -789,7 +789,7 @@ const DecisionCoach = ({ tool }) => {
               </div>
             </div>
             {dnaResult.stated_vs_real && (<div className={`p-4 rounded-xl border ${c.patternHighlight}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_say_vs_do')}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>{t('dc_say')}</strong> {dnaResult.stated_vs_real.stated}</p><p className={`text-xs ${c.textSecondary} mb-1`}><strong>{t('dc_do')}</strong> {dnaResult.stated_vs_real.real}</p><p className={`text-xs font-semibold ${c.dnaAccent} mt-1`}>{dnaResult.stated_vs_real.gap_insight}</p></div>)}
-            {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_speed_domain')}</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMuteded} w-20 text-right`}>{d.verdict}</span></div>))}</div>)}
+            {dnaResult.domain_velocity?.length > 0 && (<div className={`p-4 rounded-xl border ${c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-2`}>{t('dc_speed_domain')}</p>{dnaResult.domain_velocity.map((d,i)=>(<div key={i} className="flex items-center gap-2 mb-1.5"><span className={`text-xs font-bold w-14 ${c.text}`}>{d.domain}</span><div className={`flex-1 h-2 rounded-full ${c.prosBarBg}`}><div className={`h-full rounded-full ${d.avg_rejections<=1.5?'bg-emerald-500':d.avg_rejections<=3?c.prosBar:'bg-red-400'}`} style={{width:`${Math.min((d.avg_rejections/8)*100,100)}%`}} /></div><span className={`text-[10px] ${c.textMuteded} w-20 text-end`}>{d.verdict}</span></div>))}</div>)}
             {dnaResult.growth && (<div className={`p-4 rounded-xl border ${dnaResult.growth.trajectory==='improving'?c.prosWinner:c.card}`}><p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('dc_growth')}</p><div className="flex items-center gap-3"><span className={`text-sm font-bold ${c.textMuteded}`}>{dnaResult.growth.early_avg_rejections}</span><span>→</span><span className={`text-sm font-bold ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.text}`}>{dnaResult.growth.recent_avg_rejections}</span><span className={`text-xs ${dnaResult.growth.trajectory==='improving'?c.prosWinText:c.textMuteded}`}>{dnaResult.growth.trajectory==='improving'?t('dc_more_decisive'):dnaResult.growth.trajectory==='declining'?'📉':t('dc_stable')}</span></div><p className={`text-xs ${c.textSecondary} mt-1`}>{dnaResult.growth.insight}</p></div>)}
             {dnaResult.core_blocker && <div className={`p-4 rounded-xl border ${c.warning}`}><p className={`text-xs font-bold ${c.warnTitle} mb-1`}>{t('dc_core_blocker')}</p><p className={`text-xs ${c.warnText}`}>{dnaResult.core_blocker}</p></div>}
             {dnaResult.prescription && <div className={`p-4 rounded-xl border ${c.welcomeBg}`}><p className={`text-xs font-bold ${c.welcomeText} mb-1`}>{t('dc_prescription')}</p><p className={`text-xs ${c.welcomeText} opacity-80`}>{dnaResult.prescription}</p></div>}
@@ -863,7 +863,7 @@ const DecisionCoach = ({ tool }) => {
           const hasFU = !!entry.followUp;
           return (
             <div key={entry.id} className={`rounded-xl border ${c.card} overflow-hidden`}>
-              <button onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-left ${c.card}`}>
+              <button onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-start ${c.card}`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.question}</div>
                   <div className={`text-xs ${c.textMuteded} mt-0.5 flex items-center gap-2 flex-wrap`}>
@@ -981,7 +981,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Header + streak */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="mr-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
+          <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
           <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? t('dc_tagline')}</p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (

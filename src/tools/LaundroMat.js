@@ -771,7 +771,7 @@ const LaundroMat = ({ tool }) => {
               ${activeTab === tab.id ? c.tabActive : `${c.tabInactive} border`}`}>
             {t(tab.labelKey)}
             {tab.badge > 0 && (
-              <span className={`ml-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
+              <span className={`ms-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black
                 ${activeTab === tab.id ? 'bg-white/20' : (isDark ? 'bg-amber-500/30 text-amber-300' : 'bg-amber-100 text-amber-700')}`}>
                 {tab.badge}
               </span>
@@ -933,7 +933,7 @@ const LaundroMat = ({ tool }) => {
         {/* ── Custom Timer (collapsible) ── */}
         <div className={`rounded-2xl border ${c.border} ${c.card} mb-5 overflow-hidden`}>
           <button onClick={() => setShowCustomTimer(!showCustomTimer)}
-            className={`w-full flex items-center gap-2 p-4 text-left`}>
+            className={`w-full flex items-center gap-2 p-4 text-start`}>
             <span>⏱️</span>
             <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide flex-1`}>{t('lmt_custom_timer')}</span>
             {showCustomTimer ? <span>▴</span> : <span>▾</span>}
@@ -1218,7 +1218,7 @@ const LaundroMat = ({ tool }) => {
           <button onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me')}</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me')}</>}
           </button>
         </div>
 
@@ -1266,7 +1266,7 @@ const LaundroMat = ({ tool }) => {
                   const done = checkedSteps[i];
                   return (
                     <button key={i} onClick={() => setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))}
-                      className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-all
+                      className={`w-full flex items-start gap-3 p-3 rounded-xl border text-start transition-all
                         ${done ? (isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-300') : `${c.cardAlt} ${c.border}`}`}>
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5
                         ${done ? 'bg-emerald-500 border-emerald-500 text-white' : c.border}`}>
@@ -1387,7 +1387,7 @@ const LaundroMat = ({ tool }) => {
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="mr-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help')}</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help')}</>}
           </button>
         </div>
 
@@ -1491,7 +1491,7 @@ const LaundroMat = ({ tool }) => {
                   <div className="relative inline-block">
                     <img src={rescuePreview} alt={t('lmt_rescue_title')} className="h-24 rounded-lg object-cover border" />
                     <button onClick={() => { setRescueImage(null); setRescuePreview(null); }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">✕</button>
+                      className="absolute -top-2 -end-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">✕</button>
                   </div>
                 ) : (
                   <button onClick={() => rescuePhotoRef.current?.click()}
@@ -1645,7 +1645,7 @@ const LaundroMat = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? t('lmt_title')}
+                <span className="me-2">{tool?.icon ?? '🧺'}</span>{tool?.title ?? t('lmt_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lmt_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('lmt_try_example')}</button>

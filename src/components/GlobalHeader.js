@@ -55,22 +55,22 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
         <div className={`flex items-end gap-2 pb-1 transition-all duration-300 ${
           scrolled ? 'flex-row items-center gap-4 pb-0' : 'flex-col items-end'
         }`}>
-          <p className={`text-slate-500 leading-snug text-right transition-all duration-300 ${
+          <p className={`text-slate-500 leading-snug text-end transition-all duration-300 ${
             scrolled ? 'text-[10px] hidden sm:block' : 'text-[11px]'
           }`}>
             <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
           </p>
           <div className={`relative transition-all duration-300 ${scrolled ? 'w-52' : 'w-64'}`}>
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>
+            <span className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs">🔍</span>
             <input
               ref={searchRef}
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={`Search ${toolCount || ''} tools...`}
-              className="w-full pl-9 pr-14 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-blue-400 focus:ring-3 focus:ring-blue-50 transition-all"
+              className="w-full ps-9 pe-14 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-blue-400 focus:ring-3 focus:ring-blue-50 transition-all"
             />
-            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+            <div className="absolute end-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
               {searchTerm && (
                 <button onClick={() => setSearchTerm('')} className="p-0.5 rounded hover:bg-slate-200 transition-colors">
                   <span className="w-3.5 h-3.5 text-slate-400 flex items-center justify-center text-xs">✕</span>

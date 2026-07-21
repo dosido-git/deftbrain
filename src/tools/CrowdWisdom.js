@@ -174,7 +174,7 @@ const CrowdWisdom = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
+                  <span className="me-2">{tool?.icon ?? '👥'}</span>{tool?.title ?? 'Crowd Wisdom'}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cw_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -234,7 +234,7 @@ const CrowdWisdom = ({ tool }) => {
 
         {error && (
           <div className={`p-3 rounded-xl border text-sm ${c.danger}`}>
-            <span className="mr-1">⚠️</span>{error}
+            <span className="me-1">⚠️</span>{error}
           </div>
         )}
 
@@ -245,8 +245,8 @@ const CrowdWisdom = ({ tool }) => {
             className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}
           >
             {loading
-              ? <><span className="animate-spin inline-block mr-2">{tool?.icon ?? '👥'}</span>{t('cw_gathering')}</>
-              : <><span className="mr-1">{tool?.icon ?? '👥'}</span>{t('cw_ask')}</>}
+              ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '👥'}</span>{t('cw_gathering')}</>
+              : <><span className="me-1">{tool?.icon ?? '👥'}</span>{t('cw_ask')}</>}
           </button>
         </div>
         <p className={`text-xs text-center ${c.textMuted}`}>{t('cw_submit_hint')}</p>
@@ -260,7 +260,7 @@ const CrowdWisdom = ({ tool }) => {
             <button
               key={i}
               onClick={() => { setQuestion(h.question); setContext(h.context); setResults(h.result); setExpanded({}); setError(''); }}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
+              className={`w-full text-start px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
             >
               {h.preview}{h.preview?.length >= 40 ? '…' : ''}
             </button>
@@ -289,7 +289,7 @@ const CrowdWisdom = ({ tool }) => {
             const cardKey = ARCHETYPE_KEY[voice.emoji] || 'archetypeContrarian';
             return (
               <div key={i} className={`rounded-xl overflow-hidden border ${c[cardKey]}`}>
-                <button onClick={() => toggle(i)} className="w-full text-left p-5">
+                <button onClick={() => toggle(i)} className="w-full text-start p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{voice.emoji}</span>

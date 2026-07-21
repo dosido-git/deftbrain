@@ -203,7 +203,7 @@ const ProcedureProbe = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('pp_title')}
+                <span className="me-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('pp_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pp_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -368,7 +368,7 @@ const ProcedureProbe = ({ tool }) => {
           {r.questions_to_ask?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('questions')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>❓</span> {t('pp_questions_title')}
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.warning}`}>{r.questions_to_ask.length}</span>
@@ -416,7 +416,7 @@ const ProcedureProbe = ({ tool }) => {
           {r.what_to_expect && (
             <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
               <button onClick={() => toggleSection('expect')}
-                className="w-full p-4 flex items-center justify-between text-left min-h-[44px]">
+                className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('pp_expect_title')}</h3>
                 <span className={c.textMuted}>{expandedSections.expect ? '▲' : '▼'}</span>
               </button>
@@ -493,7 +493,7 @@ const ProcedureProbe = ({ tool }) => {
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button key={entry.id} onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                 <span className={c.textMuted}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>

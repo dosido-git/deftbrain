@@ -94,7 +94,7 @@ const TileGrid = ({ items, selected, onSelect, c, t }) => (
       <button key={item.id} onClick={() => onSelect(item.id === selected ? '' : item.id)}
         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
           ${selected === item.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-        {item.icon && <span className="mr-1">{item.icon}</span>}{item.labelKey ? t(item.labelKey) : item.label}
+        {item.icon && <span className="me-1">{item.icon}</span>}{item.labelKey ? t(item.labelKey) : item.label}
       </button>
     ))}
   </div>
@@ -689,7 +689,7 @@ const RoomReader = ({ tool }) => {
           <div className="flex items-start justify-between pb-3 border-b border-zinc-500">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Room Reader'}
+                <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? 'Room Reader'}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rr_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -707,7 +707,7 @@ const RoomReader = ({ tool }) => {
             <button key={m.id} onClick={() => { setMode(m.id); setError(''); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
                 ${mode === m.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-              <span className="mr-1">{m.icon}</span>{t(m.labelKey)}
+              <span className="me-1">{m.icon}</span>{t(m.labelKey)}
             </button>
           ))}
           {[
@@ -717,7 +717,7 @@ const RoomReader = ({ tool }) => {
             <button key={k} onClick={() => fn(!val)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border
                 ${val ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-              <span className="mr-1">{ico}</span>{lbl}
+              <span className="me-1">{ico}</span>{lbl}
             </button>
           ))}
         </div>
@@ -812,7 +812,7 @@ const RoomReader = ({ tool }) => {
                 {COMFORT.map(cl => (
                   <button key={cl.id} onClick={() => setComfort(cl.id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${comfort === cl.id ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-                    <span className="mr-1">{cl.icon}</span>{t(cl.labelKey)}
+                    <span className="me-1">{cl.icon}</span>{t(cl.labelKey)}
                   </button>
                 ))}
               </div>
@@ -1400,8 +1400,8 @@ const RoomReader = ({ tool }) => {
                 )}
                 {r.conversation && (
                   <SectionBlock id="cultureconv" title={t('rr_culture_conversation')} {...sp}>
-                    {r.conversation.safe_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full mr-1 mb-1 ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'}`}>✅ {topic}</span>)}
-                    {r.conversation.dangerous_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full mr-1 mb-1 ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}>❌ {topic}</span>)}
+                    {r.conversation.safe_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full me-1 mb-1 ${isDark ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'}`}>✅ {topic}</span>)}
+                    {r.conversation.dangerous_topics?.map((topic, i) => <span key={i} className={`inline-block text-xs px-2 py-0.5 rounded-full me-1 mb-1 ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-100 text-red-700'}`}>❌ {topic}</span>)}
                     <p className={`text-sm ${c.textSecondary} mt-2`}>😄 {r.conversation.humor}</p>
                   </SectionBlock>
                 )}
@@ -1523,7 +1523,7 @@ const RoomReader = ({ tool }) => {
               {[['great','🎉','rr_feeling_great'],['good','😊','rr_feeling_good'],['mixed','😐','rr_feeling_mixed'],['rough','😓','rr_feeling_rough']].map(([v,ico,lbl]) => (
                 <button key={v} onClick={() => setDebriefFeeling(v)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${debriefFeeling === v ? c.btnActive : `${c.btnInactive} ${c.border}`}`}>
-                  <span className="mr-1">{ico}</span>{t(lbl)}
+                  <span className="me-1">{ico}</span>{t(lbl)}
                 </button>
               ))}
             </div>

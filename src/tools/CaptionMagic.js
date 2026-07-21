@@ -448,7 +448,7 @@ const CaptionMagic = ({ tool }) => {
         return (
           <button key={opt.value} onClick={() => setter(opt.value)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
-            {active && <span className="mr-1">✓</span>}
+            {active && <span className="me-1">✓</span>}
             {opt.label ?? t(opt.labelKey)}
           </button>
         );
@@ -486,7 +486,7 @@ const CaptionMagic = ({ tool }) => {
       ) : (
         <div className="relative">
           <img src={imagePreview} alt={t('cm_preview_alt')} className={`w-full max-h-72 object-contain rounded-xl border ${c.border}`} />
-          <button onClick={clearImage} className={`absolute top-2 right-2 ${c.btnDelete} px-2 py-1 rounded-lg text-xs font-bold`}>✕</button>
+          <button onClick={clearImage} className={`absolute top-2 end-2 ${c.btnDelete} px-2 py-1 rounded-lg text-xs font-bold`}>✕</button>
         </div>
       )}
       <div className="mt-3">
@@ -604,7 +604,7 @@ const CaptionMagic = ({ tool }) => {
               const pillClass = cat === 'trending' ? c.htTrending : cat === 'niche' ? c.htNiche : cat === 'branded' ? c.htBranded : c.pillInactive;
               return (
                 <div key={cat} className="flex flex-wrap gap-1.5 items-center">
-                  {meta && <span className={`text-[10px] font-bold ${c.textMuted} mr-1`}>{meta.emoji} {t(meta.labelKey)}</span>}
+                  {meta && <span className={`text-[10px] font-bold ${c.textMuted} me-1`}>{meta.emoji} {t(meta.labelKey)}</span>}
                   {tags.map((tag, i) => (
                     <span key={i} className={`px-2 py-0.5 rounded text-xs font-medium border ${pillClass}`}>#{tag}</span>
                   ))}
@@ -679,7 +679,7 @@ const CaptionMagic = ({ tool }) => {
     return (
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowRemix(!showRemix)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-left`}>
+          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-start`}>
           <span>{showRemix ? '▲' : '▼'}</span>
           <span>{t('cm_remix_captions')}</span>
         </button>
@@ -691,7 +691,7 @@ const CaptionMagic = ({ tool }) => {
                 className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                   remixSelections.includes(idx) ? c.pillActive : c.pillInactive
                 }`}>
-                {remixSelections.includes(idx) && <span className="mr-1">✓</span>}
+                {remixSelections.includes(idx) && <span className="me-1">✓</span>}
                 {t('cm_option_n', { n: idx + 1 })}
               </button>
             ))}
@@ -898,7 +898,7 @@ const CaptionMagic = ({ tool }) => {
 
     return (
       <div className={`mt-6 p-4 rounded-2xl border ${c.histBg}`}>
-        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-left">
+        <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 text-start">
           <span className={`text-base ${c.textCyan}`}>✨</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('cm_past_captions')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -937,7 +937,7 @@ const CaptionMagic = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? t('cm_title')}
+                <span className="me-2">{tool?.icon ?? '📸'}</span>{tool?.title ?? t('cm_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>

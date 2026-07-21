@@ -92,7 +92,7 @@ function Section({ icon, title, badge, open, onToggle, children, c, actions }) {
   return (
     <div className={`${c.card} border rounded-xl p-5`}>
       <div className="flex items-center gap-2 w-full">
-        <button onClick={onToggle} className="flex items-center gap-2 flex-1 text-left">
+        <button onClick={onToggle} className="flex items-center gap-2 flex-1 text-start">
           <span className="text-lg">{icon}</span>
           <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
           {badge && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
@@ -271,7 +271,7 @@ function FacilitatorMode({ results, participants, c, isDark, onEnd, hourlyRate, 
             const isActive = activeSpeaker === p.name;
             return (
               <button key={p.name} onClick={() => toggleSpeaker(p.name)}
-                className={`p-3 border-2 rounded-lg text-left transition-all ${isActive ? 'border-emerald-500 bg-emerald-900/20 ring-2 ring-emerald-500/30' : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-sky-200 hover:border-sky-300')}`}>
+                className={`p-3 border-2 rounded-lg text-start transition-all ${isActive ? 'border-emerald-500 bg-emerald-900/20 ring-2 ring-emerald-500/30' : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-sky-200 hover:border-sky-300')}`}>
                 <div className="flex items-center justify-between">
                   <span className={`text-sm font-semibold ${c.text}`}>{p.name}</span>
                   {isActive && <span className="text-xs animate-pulse">🔴</span>}
@@ -653,7 +653,7 @@ const MeetingHijackPreventer = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('mhp_title')}
+              <span className="me-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('mhp_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mhp_tagline')}</p>
           </div>
@@ -716,7 +716,7 @@ const MeetingHijackPreventer = ({ tool }) => {
       {/* ══════════ SETUP MODE ══════════ */}
       {mode === 'setup' && (
         <div className={`${c.card} border rounded-xl p-6 space-y-5`}>
-          <div className={`${c.infoBox} border-l-4 rounded-r-lg p-4 flex items-start gap-2`}>
+          <div className={`${c.infoBox} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
             <span>🎯</span>
             <div><h4 className="font-bold text-sm mb-0.5">{t('mhp_how_it_works')}</h4><p className={`text-xs ${c.textSecondary}`}>{t('mhp_how_body')}</p></div>
           </div>
@@ -726,7 +726,7 @@ const MeetingHijackPreventer = ({ tool }) => {
             <label className={`text-sm font-semibold ${c.labelText} block mb-2`}>{t('mhp_template')} <span className={`text-[10px] ${c.textMuted}`}>{t('mhp_optional_paren')}</span></label>
             <div className="grid grid-cols-3 gap-2">{TEMPLATES.map(tpl => (
               <button key={tpl.id} onClick={() => handleTemplateSelect(tpl.id)}
-                className={`p-3 border-2 rounded-lg text-left transition-colors ${selectedTemplate === tpl.id ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-sky-200 hover:border-sky-300')}`}>
+                className={`p-3 border-2 rounded-lg text-start transition-colors ${selectedTemplate === tpl.id ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700 hover:border-zinc-600' : 'border-sky-200 hover:border-sky-300')}`}>
                 <p className={`text-sm font-semibold ${c.text}`}>{t(tpl.nameKey)}</p>
                 <p className={`text-[10px] ${c.textMuted}`}>{mtLabel(tpl.type)} · {tpl.dur}m</p>
               </button>
@@ -763,7 +763,7 @@ const MeetingHijackPreventer = ({ tool }) => {
           <div><label className={`text-sm font-semibold ${c.labelText} block mb-2`}>{t('mhp_known_challenges')}</label>
             <div className="grid grid-cols-2 gap-2">{CHALLENGE_OPTS.map(ch => (
               <button key={ch.key} onClick={() => setChallenges(p => ({ ...p, [ch.key]: !p[ch.key] }))}
-                className={`flex items-center gap-2 p-2.5 border-2 rounded-lg text-left text-sm transition-colors ${challenges[ch.key] ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{ch.icon}</span><span>{t(ch.labelKey)}</span></button>
+                className={`flex items-center gap-2 p-2.5 border-2 rounded-lg text-start text-sm transition-colors ${challenges[ch.key] ? (isDark ? 'border-sky-500 bg-sky-900/20' : 'border-sky-500 bg-sky-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{ch.icon}</span><span>{t(ch.labelKey)}</span></button>
             ))}</div></div>
 
           {/* Participants */}
@@ -791,7 +791,7 @@ const MeetingHijackPreventer = ({ tool }) => {
           <button onClick={handleGenerate} disabled={loading || (!meetingGoal.trim() && !useTemplate)} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
             {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> {t('mhp_generating')}</>
-            : <><span className="mr-1">{tool?.icon ?? '🛡️'}</span> {t('mhp_generate')}</>}</button>
+            : <><span className="me-1">{tool?.icon ?? '🛡️'}</span> {t('mhp_generate')}</>}</button>
 
           {/* Try Example */}
           <div className="flex justify-center">
@@ -832,10 +832,10 @@ const MeetingHijackPreventer = ({ tool }) => {
                   <div className="flex items-center gap-2"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold bg-sky-600 text-white">{idx + 1}</span><h4 className={`font-bold ${c.text}`}>{item.topic}</h4></div>
                   <span className={`${c.pillSky} border text-xs font-bold px-2 py-0.5 rounded`}>⏱️ {item.time_allocated}m</span>
                 </div>
-                <p className={`text-sm ${c.textSecondary} ml-8 mb-2`}>{item.objective}</p>
-                <div className={`ml-8 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} border ${c.border}`}><p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>{t('mhp_facilitator_caps')}</p><p className={`text-xs ${c.textSecondary}`}>{item.facilitator_role}</p></div>
-                {item.speaker_order?.length > 0 && <div className="ml-8 mt-2"><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('mhp_speakers_caps')}</p><div className="flex flex-wrap gap-1">{item.speaker_order.map((s, i) => <span key={i} className={`${c.pillSky} border text-[10px] px-1.5 py-0.5 rounded`}>{i + 1}. {s}</span>)}</div></div>}
-                {item.time_warning && <div className={`${c.warning} border rounded-lg p-2 ml-8 mt-2`}><p className="text-[10px]">⏰ "{item.time_warning}"</p></div>}
+                <p className={`text-sm ${c.textSecondary} ms-8 mb-2`}>{item.objective}</p>
+                <div className={`ms-8 p-2.5 rounded-lg ${isDark ? 'bg-zinc-800' : 'bg-white'} border ${c.border}`}><p className={`text-[10px] font-bold ${c.textMuted} mb-0.5`}>{t('mhp_facilitator_caps')}</p><p className={`text-xs ${c.textSecondary}`}>{item.facilitator_role}</p></div>
+                {item.speaker_order?.length > 0 && <div className="ms-8 mt-2"><p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('mhp_speakers_caps')}</p><div className="flex flex-wrap gap-1">{item.speaker_order.map((s, i) => <span key={i} className={`${c.pillSky} border text-[10px] px-1.5 py-0.5 rounded`}>{i + 1}. {s}</span>)}</div></div>}
+                {item.time_warning && <div className={`${c.warning} border rounded-lg p-2 ms-8 mt-2`}><p className="text-[10px]">⏰ "{item.time_warning}"</p></div>}
               </div>
             ))}</div>
             {results?.meeting_structure?.parking_lot_instructions && <div className={`${c.badge} border-2 rounded-lg p-4 mt-4`}><p className="text-sm font-bold mb-1">🅿️ {t('mhp_parking_lot')}</p><p className="text-xs">{results?.meeting_structure?.parking_lot_instructions}</p></div>}
@@ -878,7 +878,7 @@ const MeetingHijackPreventer = ({ tool }) => {
               {results?.meeting_artifacts?.decision_log && <div className={`${c.cardAlt} border rounded-lg p-4`}><div className="flex items-start justify-between mb-2"><h4 className={`font-semibold text-sm ${c.text}`}>🗳️ {t('mhp_decision_log')}</h4></div><pre className={`text-[10px] ${c.textSecondary} whitespace-pre-wrap font-mono ${isDark ? 'bg-zinc-900' : 'bg-white'} p-2 rounded border ${c.border}`}>{results?.meeting_artifacts?.decision_log}</pre></div>}
             </div></Section>}
 
-          {results?.success_metrics && <div className={`${c.success} border-l-4 rounded-r-lg p-4`}><p className="text-sm">📊 {results?.success_metrics}</p></div>}
+          {results?.success_metrics && <div className={`${c.success} border-s-4 rounded-e-lg p-4`}><p className="text-sm">📊 {results?.success_metrics}</p></div>}
           <button onClick={handleReset} className={`${c.btnSecondary} w-full py-2 rounded-lg text-sm`}>✨ {t('mhp_new_meeting')}</button>
 
           {/* Post-result cross-refs */}
@@ -908,7 +908,7 @@ const MeetingHijackPreventer = ({ tool }) => {
                 return <div key={name} className="flex items-center gap-2">
                   <span className="w-20 text-xs truncate font-semibold">{name}</span>
                   <div className={`flex-1 h-4 rounded-sm overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-sky-100'}`}><div className={`h-full rounded-sm ${data.turns === 0 ? 'bg-red-400' : pct > 60 ? 'bg-amber-500' : 'bg-sky-500'}`} style={{ width: `${Math.max(pct, 2)}%` }} /></div>
-                  <span className={`w-16 text-right text-[10px] ${c.textMuted}`}>{data.turns}t / {Math.round(data.totalSec / 60)}m</span>
+                  <span className={`w-16 text-end text-[10px] ${c.textMuted}`}>{data.turns}t / {Math.round(data.totalSec / 60)}m</span>
                 </div>;
               })}</div>
               {meetingStats.totalCost && hourlyRate > 0 && <p className={`text-xs ${c.accentTxt} text-center mt-3`}>💰 {t('mhp_meeting_cost', { sym, cost: meetingStats.totalCost })}</p>}
@@ -937,7 +937,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
           <div className={`${c.card} border rounded-xl p-5`}>
             <h3 className={`text-sm font-bold ${c.text} mb-3`}>📊 {t('mhp_effectiveness')}</h3>
-            <div className="space-y-2">{EFFECTIVENESS_QS.map(q => <button key={q.id} onClick={() => setEffectiveness(p => ({ ...p, [q.id]: !p[q.id] }))} className={`w-full flex items-center gap-3 p-3 border-2 rounded-lg text-left transition-colors ${effectiveness[q.id] ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{effectiveness[q.id] ? '✅' : '⬜'}</span><span className="text-sm">{q.icon} {t(q.qKey)}</span></button>)}</div>
+            <div className="space-y-2">{EFFECTIVENESS_QS.map(q => <button key={q.id} onClick={() => setEffectiveness(p => ({ ...p, [q.id]: !p[q.id] }))} className={`w-full flex items-center gap-3 p-3 border-2 rounded-lg text-start transition-colors ${effectiveness[q.id] ? (isDark ? 'border-emerald-500 bg-emerald-900/20' : 'border-emerald-500 bg-emerald-50') : (isDark ? 'border-zinc-700' : 'border-sky-200')}`}><span>{effectiveness[q.id] ? '✅' : '⬜'}</span><span className="text-sm">{q.icon} {t(q.qKey)}</span></button>)}</div>
             <p className={`text-xs ${c.textMuted} text-center mt-2`}>{t('mhp_score', { score: Object.values(effectiveness).filter(Boolean).length })}</p>
           </div>
 
@@ -976,7 +976,7 @@ const MeetingHijackPreventer = ({ tool }) => {
                         <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{t('mhp_from_date', { date: a.meetingDate })}</span>
                       </div>
                     </div>
-                    <button onClick={() => deleteAction(a.id)} className={`text-xs ${c.textMuted} hover:text-gray-600 ml-2`}>🗑️</button>
+                    <button onClick={() => deleteAction(a.id)} className={`text-xs ${c.textMuted} hover:text-gray-600 ms-2`}>🗑️</button>
                   </div>
                   <div className="flex gap-1.5 mt-2">{['not_started','in_progress','done'].map(s => (
                     <button key={s} onClick={() => updateActionStatus(a.id, s)} className={`text-[10px] px-2 py-1 rounded border transition-colors ${a.status === s ? (s === 'done' ? 'bg-emerald-600 text-white border-emerald-600' : s === 'in_progress' ? 'bg-sky-600 text-white border-sky-600' : `${c.pillGray} border font-bold`) : `${c.pillGray} border hover:border-sky-400`}`}>
@@ -1035,7 +1035,7 @@ const MeetingHijackPreventer = ({ tool }) => {
             <div className="space-y-1">{EFFECTIVENESS_QS.map(q => {
               const data = effStats.breakdown[q.id]; if (!data || data.total === 0) return null;
               const pct = Math.round(data.yes / data.total * 100);
-              return <div key={q.id} className="flex items-center gap-2"><span className="w-4 text-center text-sm">{q.icon}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-sky-100'}`}><div className={`h-full rounded-full ${pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} /></div><span className={`w-10 text-right text-[10px] font-bold ${c.textMuted}`}>{pct}%</span></div>;
+              return <div key={q.id} className="flex items-center gap-2"><span className="w-4 text-center text-sm">{q.icon}</span><div className={`flex-1 h-3 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-sky-100'}`}><div className={`h-full rounded-full ${pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${pct}%` }} /></div><span className={`w-10 text-end text-[10px] font-bold ${c.textMuted}`}>{pct}%</span></div>;
             })}</div>
           </div>}
 

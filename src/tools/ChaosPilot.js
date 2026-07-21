@@ -189,7 +189,7 @@ const ChaosPilot = ({ tool }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🎰'}</span>{tool?.title ?? t('chp_title')}
+                <span className="me-2">{tool?.icon ?? '🎰'}</span>{tool?.title ?? t('chp_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('chp_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -253,7 +253,7 @@ const ChaosPilot = ({ tool }) => {
 
           {error && (
             <div className={`p-3 rounded-xl border text-sm ${c.danger}`}>
-              <span className="mr-1">⚠️</span>{error}
+              <span className="me-1">⚠️</span>{error}
             </div>
           )}
 
@@ -284,12 +284,12 @@ const ChaosPilot = ({ tool }) => {
               <button
                 key={entry.id}
                 onClick={() => setResults(entry.result)}
-                className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
+                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs`}
               >
                 <span className={c.textMuted}>
                   {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
-                <span className={`ml-2 ${c.text}`}>{entry.preview}…</span>
+                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
               </button>
             ))}
           </div>

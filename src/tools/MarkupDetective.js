@@ -190,7 +190,7 @@ const MarkupDetective = ({ tool }) => {
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="mr-2">{tool?.icon ?? '🏷️'}</span>{tool?.title ?? t('md_title')}
+                <span className="me-2">{tool?.icon ?? '🏷️'}</span>{tool?.title ?? t('md_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('md_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -219,9 +219,9 @@ const MarkupDetective = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('md_recent_lookups')}</p>
               {sessionHistory.map(h => (
                 <button key={h.id} onClick={() => { setProduct(h.preview); setShowHistory(false); }}
-                  className={`w-full text-left flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
+                  className={`w-full text-start flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
                   <span className={`text-sm ${c.textSecondary} truncate`}>{h.preview}</span>
-                  {h.markup && <span className={`text-xs font-bold ml-2 shrink-0 ${markupColor(h.markup)}`}>{h.markup}x</span>}
+                  {h.markup && <span className={`text-xs font-bold ms-2 shrink-0 ${markupColor(h.markup)}`}>{h.markup}x</span>}
                 </button>
               ))}
             </div>
@@ -266,7 +266,7 @@ const MarkupDetective = ({ tool }) => {
             className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏷️'}</span> {t('md_investigating')}</>
-              : <><span className="mr-1">{tool?.icon ?? '🏷️'}</span> {t('md_investigate')}</>}
+              : <><span className="me-1">{tool?.icon ?? '🏷️'}</span> {t('md_investigate')}</>}
           </button>
 
           <p className={`text-xs text-center ${c.textMuted}`}>{t('md_disclaimer')}</p>
@@ -293,7 +293,7 @@ const MarkupDetective = ({ tool }) => {
                   {results?.markup_multiplier}x
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 {results?.price_paid && (
                   <div className="mb-1">
                     <p className={`text-xs ${c.textMuted}`}>{t('md_you_pay')}</p>

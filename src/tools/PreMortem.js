@@ -176,7 +176,7 @@ const PreMortem = ({ tool }) => {
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
             <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="mr-2">{tool?.icon ?? '💀'}</span>{tool?.title ?? t('pm_title')}
+              <span className="me-2">{tool?.icon ?? '💀'}</span>{tool?.title ?? t('pm_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('pm_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -238,7 +238,7 @@ const PreMortem = ({ tool }) => {
 
             {error && (
               <div className={`p-3 rounded-xl border text-sm ${c.danger}`}>
-                <span className="mr-1">⚠️</span>{error}
+                <span className="me-1">⚠️</span>{error}
               </div>
             )}
 
@@ -286,7 +286,7 @@ const PreMortem = ({ tool }) => {
           {/* Warning signs */}
           {pm?.warning_signs_ignored?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('warnings')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('warnings')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
                   ⚠️ {t('pm_warning_signs')}
                 </p>
@@ -329,7 +329,7 @@ const PreMortem = ({ tool }) => {
           {/* Failure modes */}
           {results.failure_modes?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('modes')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('modes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🎲 {t('pm_failure_modes')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.modes ? '▲' : '▼'}</span>
               </button>
@@ -369,7 +369,7 @@ const PreMortem = ({ tool }) => {
           {/* Assumptions autopsy */}
           {results.assumptions_autopsy?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
-              <button onClick={() => toggle('assumptions')} className="w-full text-left px-5 py-4 flex items-center justify-between">
+              <button onClick={() => toggle('assumptions')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔬 {t('pm_assumptions_autopsy')}</p>
                 <span className={`text-sm ${c.textMuted}`}>{expanded.assumptions ? '▲' : '▼'}</span>
               </button>
@@ -423,7 +423,7 @@ const PreMortem = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('pm_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

@@ -225,7 +225,7 @@ const ContextCollapse = ({ tool }) => {
     <button
       onClick={onClick}
       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${active ? c.pillActive : c.pillInactive}`}>
-      {active && <span className="mr-1">✓</span>}{children}
+      {active && <span className="me-1">✓</span>}{children}
     </button>
   );
 
@@ -243,7 +243,7 @@ const ContextCollapse = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '📢'}</span>{tool?.title ?? t('ctc_title')}
+                <span className="me-2">{tool?.icon ?? '📢'}</span>{tool?.title ?? t('ctc_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary} mt-0.5`}>{tool?.tagline ?? t('ctc_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -515,7 +515,7 @@ const ContextCollapse = ({ tool }) => {
       {sessionHistory.length > 0 && (
         <div className={`mt-2 p-4 rounded-2xl border ${c.histBg}`}>
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-left flex-1">
+            <button onClick={() => setShowHistory(!showHistory)} className="flex items-center gap-2 text-start flex-1">
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ctc_past_analyses')}</span>
               <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
@@ -524,7 +524,7 @@ const ContextCollapse = ({ tool }) => {
             {showHistory && (
               <button
                 onClick={() => { setSessionHistory([]); setShowHistory(false); }}
-                className={`text-xs ${c.deleteTxt} transition-colors ml-2`}>
+                className={`text-xs ${c.deleteTxt} transition-colors ms-2`}>
                 {t('ctc_clear_all')}
               </button>
             )}

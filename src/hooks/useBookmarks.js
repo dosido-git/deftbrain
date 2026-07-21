@@ -114,7 +114,7 @@ export function BookmarkButton({ toolId, isDark, size = 'md', className = '' }) 
       </button>
       {/* Toast */}
       {showToast && (
-        <div className={`absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shadow-lg z-50 ${
+        <div className={`absolute -top-10 start-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shadow-lg z-50 ${
           isDark ? 'bg-zinc-700 text-zinc-100' : 'bg-gray-800 text-white'
         }`}>
           ✓ Bookmarked!

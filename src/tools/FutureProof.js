@@ -235,7 +235,7 @@ const FutureProof = ({ tool }) => {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="mr-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? t('fp_title')}
+                <span className="me-2">{tool?.icon ?? '🔮'}</span>{tool?.title ?? t('fp_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fp_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -530,7 +530,7 @@ const FutureProof = ({ tool }) => {
               const ts = trajStyle(entry.trajectory);
               return (
                 <button key={entry.id} onClick={() => setResults(entry.result)}
-                  className={`w-full text-left px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                  className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
                   <span>{ts.dot}</span>
                   <span className={`${c.text} flex-1 truncate`}>{entry.subject}</span>
                   <span className={c.textMuted}>

@@ -197,7 +197,7 @@ const PlotHole = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? t('plh_title')}
+                  <span className="me-2">{tool?.icon ?? '🕳️'}</span>{tool?.title ?? t('plh_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('plh_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -234,7 +234,7 @@ const PlotHole = ({ tool }) => {
                 <button key={m.value} onClick={() => setMediaType(m.value)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${
                     mediaType === m.value ? c.pillActive : c.pillInactive}`}>
-                  <span className="mr-1">{m.icon}</span>{m.label}
+                  <span className="me-1">{m.icon}</span>{m.label}
                 </button>
               ))}
             </div>
@@ -443,7 +443,7 @@ const PlotHole = ({ tool }) => {
             {sessionHistory.map(s => (
               <div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('plh_session')}</span>
-                <span className={`text-xs ${c.textMuted} ml-2`}>{new Date(s.date).toLocaleDateString()}</span>
+                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))}
           </div>

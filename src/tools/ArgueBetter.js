@@ -411,7 +411,7 @@ const ArgueBetter = ({ tool }) => {
           <span className="text-sm">{isU ? '🗣️' : '🥊'}</span>
           <span className={`text-xs font-bold ${c.text}`}>{isU ? t('dm_you') : t('dm_opponent')}</span>
           <span className={`text-xs ${c.textMuteded}`}>— {turn.side}</span>
-          {time && <span className={`text-xs ${c.textMuteded} ml-auto`}>{time}</span>}
+          {time && <span className={`text-xs ${c.textMuteded} ms-auto`}>{time}</span>}
           {turn.meta?.isConcession && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.greenBadge}`}>🤝</span>}
         </div>
         <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
@@ -433,19 +433,19 @@ const ArgueBetter = ({ tool }) => {
       <p className="text-xs font-bold">{label}</p>
       <p className={`text-sm font-medium ${c.text}`}>{tree.main_claim}</p>
       {tree.branches?.map((b, i) => (
-        <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-1 ml-3 border-l-2 ${b.status === 'defended' ? 'border-green-500' : b.status === 'abandoned' ? 'border-red-400' : b.status === 'strengthened' ? 'border-sky-500' : 'border-amber-400'}`}>
+        <div key={i} className={`${c.cardAlt} rounded-lg p-3 space-y-1 ms-3 border-s-2 ${b.status === 'defended' ? 'border-green-500' : b.status === 'abandoned' ? 'border-red-400' : b.status === 'strengthened' ? 'border-sky-500' : 'border-amber-400'}`}>
           <div className="flex items-center gap-2"><span className={`text-xs font-bold px-1.5 py-0.5 rounded ${b.status === 'defended' ? c.greenBadge : b.status === 'abandoned' ? c.redBadge : c.amberBadge}`}>{statusLabel(b.status)}</span></div>
           <p className={`text-sm ${c.text}`}>{b.argument}</p>
           {b.evidence && b.evidence !== 'none' && <p className={`text-xs ${c.textSecondary}`}>📊 {b.evidence}</p>}
           {b.attacked_by && <p className={`text-xs ${c.textMuteded}`}>⚔️ {b.attacked_by}</p>}
-          {b.sub_branches?.map((sb, j) => <p key={j} className={`text-xs ${c.textSecondary} ml-3`}>↳ {sb.argument} <span className={`font-bold ${sb.status === 'defended' ? 'text-green-500' : 'text-amber-500'}`}>({statusLabel(sb.status)})</span></p>)}
+          {b.sub_branches?.map((sb, j) => <p key={j} className={`text-xs ${c.textSecondary} ms-3`}>↳ {sb.argument} <span className={`font-bold ${sb.status === 'defended' ? 'text-green-500' : 'text-amber-500'}`}>({statusLabel(sb.status)})</span></p>)}
         </div>
       ))}
     </div>
   ));
 
   // ═══ TAB BUTTON ═══
-  const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === id ? c.on : c.off}`}><span className="mr-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
+  const Tab = ({ id, icon, label, count }) => <button onClick={() => { setMode(id); setError(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === id ? c.on : c.off}`}><span className="me-1">{icon}</span> {label}{count ? ` (${count})` : ''}</button>;
 
   // ═══ RESULTS (scorecard) ═══
   const renderResults = () => {
@@ -519,7 +519,7 @@ const ArgueBetter = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="mr-2">{tool?.icon ?? '🥊'}</span>{tool?.title ?? t('dm_title')}
+                  <span className="me-2">{tool?.icon ?? '🥊'}</span>{tool?.title ?? t('dm_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dm_tagline')}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
@@ -550,12 +550,12 @@ const ArgueBetter = ({ tool }) => {
           <textarea value={position} onChange={e => setPosition(e.target.value)} placeholder={t('dm_position_ph')} rows={3} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
         </div>
         <div><button onClick={() => setShowStarters(!showStarters)} className={`text-xs font-bold ${c.orangeText}`}>{showStarters ? t('dm_hide') : t('dm_try_these')}</button>
-          {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(t(s.key)); setShowStarters(false); }} className={`text-left p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-amber-400`}>{s.cat} {t(s.key)}</button>)}</div>}
+          {showStarters && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">{STARTERS.map((s, i) => <button key={i} onClick={() => { setPosition(t(s.key)); setShowStarters(false); }} className={`text-start p-2 rounded-lg text-xs ${c.cardAlt} border ${c.border} hover:border-amber-400`}>{s.cat} {t(s.key)}</button>)}</div>}
         </div>
         <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={t('dm_topic_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_category')}</p><div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat.id} onClick={() => setCategory(cat.id === category ? '' : cat.id)} className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border ${category === cat.id ? c.on : `${c.off} ${c.border}`}`}>{cat.icon} {t(cat.labelKey)}</button>)}</div></div>
         <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_format')}</p><div className="grid grid-cols-2 sm:grid-cols-5 gap-2">{FORMATS.map(f => <button key={f.id} onClick={() => setFormat(f.id)} className={`p-2 rounded-xl border text-center ${format === f.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{f.icon}</span><p className={`text-xs font-bold ${c.text} mt-0.5`}>{t(f.labelKey)}</p><p className={`text-xs ${c.textMuteded}`}>{t(f.descKey)}</p></button>)}</div></div>
-        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_challenge')}</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-left ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(lv.labelKey)}</span><p className={`text-xs ${c.textMuteded}`}>{t(lv.descKey)}</p></button>)}</div></div>
+        <div><p className={`text-xs font-bold ${c.formLabel} mb-2`}>{t('dm_challenge')}</p><div className="grid grid-cols-1 sm:grid-cols-3 gap-2">{LEVELS.map(lv => <button key={lv.id} onClick={() => setLevel(lv.id)} className={`p-2.5 rounded-xl border text-start ${level === lv.id ? `${c.accentCard} border-amber-500` : `${c.cardAlt} ${c.border}`}`}><span className="text-lg">{lv.icon}</span> <span className={`text-sm font-bold ${c.text}`}>{t(lv.labelKey)}</span><p className={`text-xs ${c.textMuteded}`}>{t(lv.descKey)}</p></button>)}</div></div>
         <button onClick={handleOpen} disabled={loading} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_preparing')}</> : <><span>{tool?.icon ?? '🥊'}</span> {t('dm_start_debate')}</>}</button>
         <p className={`text-xs ${c.textMuted}`}>
           {t('dm_setup_xref')}{' '}<a href="/BeliefStressTest" className={linkStyle}>🧪 {t('dm_belief_stress_test')}</a>{' '}
@@ -587,7 +587,7 @@ const ArgueBetter = ({ tool }) => {
 
         {/* Coach */}
         {showCoach && coachData && <div className={`${c.coachBub} border rounded-xl p-4 space-y-3`}>
-          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>{t('dm_coach')}</span><button onClick={() => setShowCoach(false)} className={`text-xs ${c.textMuteded} ml-auto`}>✕</button></div>
+          <div className="flex items-center gap-2"><span>🧑‍🏫</span><span className={`text-xs font-bold ${c.coachLabel}`}>{t('dm_coach')}</span><button onClick={() => setShowCoach(false)} className={`text-xs ${c.textMuteded} ms-auto`}>✕</button></div>
           {coachData.encouragement && <p className={`text-sm ${c.textSecondary} italic`}>{coachData.encouragement}</p>}
           {coachData.angles?.map((a, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3`}><p className={`text-sm font-medium ${c.text}`}>→ {a.approach}</p><p className={`text-xs ${c.textSecondary}`}>{a.why_effective}</p><p className={`text-xs ${c.orangeText} italic`}>{t('dm_coach_start')} "{a.example_opener}..."</p></div>)}
           {coachData.opponent_weakness && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs">🎯 <strong>{t('dm_coach_weakness')}</strong> {coachData.opponent_weakness}</p></div>}
@@ -615,7 +615,7 @@ const ArgueBetter = ({ tool }) => {
 
         {/* Input */}
         <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
-          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={t('dm_response_ph')} rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 right-2 text-xs ${c.textMuteded}`}>{wc}{t('dm_word_suffix')}</span>}</div>
+          <div className="relative"><textarea value={userInput} onChange={e => setUserInput(e.target.value)} placeholder={t('dm_response_ph')} rows={4} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleRespond(); }} />{userInput.trim() && <span className={`absolute bottom-2 end-2 text-xs ${c.textMuteded}`}>{wc}{t('dm_word_suffix')}</span>}</div>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={handleRespond} disabled={loading || !userInput.trim()} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span> {t('dm_responding')}</> : `💬 ${t('dm_respond')}`}</button>
             <button onClick={handleConcede} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🤝 {t('dm_concede')}</button>
@@ -743,7 +743,7 @@ const ArgueBetter = ({ tool }) => {
           {highlightData.debater_type && <div className={`${c.accentCard} border rounded-xl p-4`}><p className={`text-lg font-bold ${c.orangeText}`}>{highlightData.debater_type.label}</p><p className={`text-sm ${c.textSecondary}`}>{highlightData.debater_type.description}</p></div>}
           {highlightData.overall_profile && <p className={`text-sm ${c.textSecondary}`}>{highlightData.overall_profile}</p>}
           {highlightData.biggest_blind_spot && <div className={`${c.warning} border rounded-xl p-4`}><p className="text-sm font-bold">🎯 {t('dm_biggest_blind_spot')}</p><p className="text-sm mt-1">{highlightData.biggest_blind_spot}</p></div>}
-          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}{s.evidence ? <span className={`block text-xs ${c.textMuteded} ml-3`}>{s.evidence}</span> : null}</p>)}</div>}
+          {highlightData.top_strengths?.length > 0 && <div className={`${c.success} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">💪 {t('dm_patterns')}</h3>{highlightData.top_strengths.map((s, i) => <p key={i} className="text-sm">• {s.pattern}{s.evidence ? <span className={`block text-xs ${c.textMuteded} ms-3`}>{s.evidence}</span> : null}</p>)}</div>}
           {highlightData.persistent_weaknesses?.length > 0 && <div className={`${c.warning} border rounded-xl p-4 space-y-2`}><h3 className="font-bold text-sm">🔍 {t('dm_persistent_weaknesses')}</h3>{highlightData.persistent_weaknesses.map((w, i) => <div key={i}><p className="text-sm">• {w.pattern} ({w.frequency})</p><p className={`text-xs ${c.amberText}`}>{t('dm_rx')} {w.prescription}</p></div>)}</div>}
           {highlightData.fallacy_profile?.most_common && <div className={`${c.danger} border rounded-xl p-4`}><p className="text-sm font-bold">⚠️ {t('dm_goto_fallacy', { fallacy: highlightData.fallacy_profile.most_common })}</p><p className="text-xs mt-1">{highlightData.fallacy_profile.pattern}</p><p className={`text-xs ${c.orangeText}`}>{t('dm_exercise')} {highlightData.fallacy_profile.exercise}</p></div>}
           {highlightData.growth_trajectory && <div className={`${c.infoCard} border rounded-xl p-4`}><p className="text-sm font-bold">{highlightData.growth_trajectory.direction === 'improving' ? '📈' : '📊'} {highlightData.growth_trajectory.direction}</p><p className="text-xs mt-1">{highlightData.growth_trajectory.insight}</p></div>}
@@ -775,7 +775,7 @@ const ArgueBetter = ({ tool }) => {
                   <span className={`text-xs ${c.textMuteded}`}>{new Date(d.timestamp).toLocaleDateString()}</span>
                   {d.history && <button onClick={() => { setReplayIndex(i); setMode('replay'); }} className={`text-xs ${c.orangeText} font-bold`}>📖 {t('dm_replay')}</button>}
                   <button onClick={() => handleRematch(d)} disabled={loading} className={`text-xs ${c.orangeText} font-bold disabled:opacity-40`}>🔁 {t('dm_rematch')}</button>
-                  <button onClick={() => setSessionHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ml-auto`}>🗑️</button>
+                  <button onClick={() => setSessionHistory(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded} ms-auto`}>🗑️</button>
                 </div>
               </div>
             ))}
