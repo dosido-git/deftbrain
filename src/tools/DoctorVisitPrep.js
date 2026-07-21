@@ -364,6 +364,7 @@ const DoctorVisitPrep = ({ tool }) => {
               <span className="me-2">{tool?.icon ?? '👨🏻'}</span>{tool?.title ?? t('dvp_title')}
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dvp_tagline')}</p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`} title={t('dvp_try_example_title')}>{t('try_example')}</button>
           </div>
           {hasResetableState && (
             <button
@@ -390,10 +391,7 @@ const DoctorVisitPrep = ({ tool }) => {
 
         {/* Appointment type + Try Example */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className={`text-sm font-semibold ${c.textSecondary}`}>{t('dvp_appt_type')}</label>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`} title={t('dvp_try_example_title')}>{t('try_example')}</button>
-          </div>
+          <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvp_appt_type')}</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             {APPT_TYPES.map(at => (
               <button
