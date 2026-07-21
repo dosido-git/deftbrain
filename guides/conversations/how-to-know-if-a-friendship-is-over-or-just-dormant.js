@@ -12,7 +12,7 @@ module.exports = {
     `You have not heard from them in a year. Maybe more. They liked one of your posts six months ago, which felt like nothing and also somehow significant. You do not know whether to send a message, or whether sending one would be embarrassing because the friendship is clearly over and you are the only one not getting the memo. You think about it on and off for weeks and never do anything.
 
 Dormant and over look identical from the outside — the same silence, the same absence — but they behave very differently when you reach out. The way to tell the difference is not by analyzing the silence. It is by sending one carefully calibrated message and reading what comes back.`,
-    `What follows: how to design the test message and how to read the reply. Then a tool that helps you compose it.`,
+    `What follows: how to design the test message and how to read the reply. Then a tool that keeps the friendships that pass the test from fading again.`,
   ],
   steps: [
     { name: 'Stop trying to read the silence', body: 'You will not figure this out by replaying old conversations or analyzing whether they unfollowed you on Instagram. Silence has too many causes — depression, kids, work, divorce, drift — and almost none of them mean what you fear they mean. Sitting with the silence and trying to interpret it will give you wrong answers and waste months. The only useful information will come from an actual reach-out.' },
@@ -23,8 +23,8 @@ Dormant and over look identical from the outside — the same silence, the same 
   ],
   cta: {
     glyph:    '💔',
-    headline: "Never lose touch by accident again.",
-    body:     "Add the people who matter, set how often you want to reach out, and the tool tracks who is overdue. When it is time, it gives you a message to send.",
+    headline: "If the test comes back warm, never let it fade silently again.",
+    body:     "This friendship went dormant because nobody was watching it. After you reconnect, add them to Friendship Fade Alerter, set how often you actually want to be in touch, and it flags them before the silence creeps back — with a conversation starter ready when it is time.",
     features: [
       "Color-coded overdue dashboard",
       "Personalized conversation starters",

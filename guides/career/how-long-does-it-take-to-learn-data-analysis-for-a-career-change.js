@@ -42,7 +42,7 @@ module.exports = {
     },
     {
       name: "Plan for a 6-month interview ramp",
-      body: "Even after the skills and portfolio are in place, the job hunt itself takes time. Plan for three to six months of interviewing — most career switchers underestimate this final stretch. The total honest timeline is therefore: tools (2-3 months), portfolio (2 months), portfolio depth and projects (2-3 months), interview process (3-6 months). Twelve months from decision to landed offer is realistic. Six months is the floor; eighteen is the ceiling for most. The variance is why the plan matters.",
+      body: "Even after the skills and portfolio are in place, the job hunt itself takes time. Plan for three to six months of interviewing — most career switchers underestimate this final stretch. The total honest timeline is therefore: tools (2-3 months), portfolio (2 months, overlapping the tail of tool-learning), deeper projects (2-3 months, with applications going out alongside), interview process (3-6 months, running in parallel with the later project work). Because the phases overlap rather than stack end-to-end, twelve months from decision to landed offer is realistic. Six months is the floor — and only for people with a real head start who run every track in parallel; eighteen is the ceiling for most. The variance is why the plan matters.",
     },
   ],
 

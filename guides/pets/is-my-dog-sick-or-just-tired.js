@@ -32,8 +32,8 @@ module.exports = {
       body: "A tired dog is still your dog. Their eyes track you when you walk in. They lift their head when you say their name. The tail thumps even if they don't get up. A sick dog goes flat — eyes unfocused, no response to triggers that usually work, indifference that feels different from sleepiness. The activity level can look identical (lying down, not playing). The engagement level is what separates them. If your dog is still in there — still aware, still acknowledging you — they're probably just tired. If your dog has checked out, that's the part to take seriously.",
     },
     {
-      name: "Read the appetite, not just one missed meal",
-      body: "Dogs skip meals all the time and it's almost always nothing — too many treats earlier, food too hot, hot weather, a hormonal phase. The high-value treat test is more diagnostic than the meal-skip: offer something they always take (chicken, cheese, a favorite biscuit) from your hand. A tired dog still takes it, even if they're not hungry for kibble. A sick dog refuses it. Sustained refusal across 24 hours, or refusing food they normally never turn down, is the version to act on. One missed meal in an otherwise-engaged dog is just one missed meal.",
+      name: "Read the appetite through the tired-versus-sick lens",
+      body: "Tiredness dulls enthusiasm; sickness switches off interest. A dog who is merely wiped out will still amble over for dinner — maybe eat slower, maybe leave some behind — because being tired doesn't turn off hunger. A dog who ignores the bowl entirely, or sniffs it and walks away, is telling you something different. Weigh it against the day, too: a long hike, a hot afternoon, or a stressful outing can flatten a single meal without meaning anything. In a dog who's just tired, it's the next meal that decides — appetite comes back with the energy. If the energy returns and the appetite doesn't, stop filing it under tired.",
     },
     {
       name: "Check the recovery overnight",
@@ -44,8 +44,8 @@ module.exports = {
       body: "One weird thing in isolation usually isn't worth worrying about. Two or three together usually is. A dog who's lying around but eating, drinking, peeing, and engaging normally is almost always fine. A dog who's lying around AND off their food AND drinking more (or less) than usual AND vomited once is a different conversation, even if each individual symptom seems mild on its own. Illness shows up as a pattern, not a single signal. Count the things that are different from baseline. One — probably nothing. Three — vet conversation today.",
     },
     {
-      name: "Know the emergencies that don't wait",
-      body: "Some signs aren't 'tired or sick' questions at all — they're emergencies. Pale, white, blue, or brick-red gums (press your finger; color should return in under two seconds). Collapse or sudden inability to stand. A bloated, hard belly with unproductive retching — that's bloat, and it kills dogs in hours. Severe breathing distress, blue tongue, seizure, suspected toxin ingestion, sudden disorientation, repeated bloody vomiting. These aren't on the same scale as the rest of this guide. ER visits, not vet appointments. Not watch-and-wait. If any of these are happening, the rest of this guide doesn't apply — go now.",
+      name: "Know when the question stops being tired-or-sick",
+      body: "A handful of signs take the tired-or-sick question off the table entirely: gums that aren't their normal pink, collapse, a hard swollen belly with retching that produces nothing, labored breathing at rest, a seizure, or anything after possible toxin exposure. Those are emergency-room-now situations — no overnight test, no cluster-counting. Our companion guide, 'How Do I Know If My Dog Is Sick,' walks through each emergency sign and the at-home physical checks in detail. For this guide, the rule is simpler: everything above assumes what you're seeing is subtle. The moment it's dramatic instead of subtle, you're not choosing between tired and sick anymore. Go.",
     },
   ],
 

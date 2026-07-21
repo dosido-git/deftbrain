@@ -22,13 +22,13 @@ module.exports = {
   cta: {
     glyph:    '🌙',
     headline: "Find out who they actually represent",
-    body:     "Dream Pattern Spotter maps the trait, the period, and the unfinished business — and shows you what your unconscious is using them as a stand-in for.",
+    body:     "Describe the dream — who appeared, what happened, how it felt — and Dream Pattern Spotter analyzes it with Jungian, Freudian, and neuroscience lenses to surface what the person is standing in for. Log a few more dreams and pattern mode finds what keeps coming back.",
     features: [
-      "Trait extraction",
-      "Period mapping",
-      "Unfinished-business detection",
-      "Current-life translation",
-      "Outreach-test"
+      "Single-dream deep analysis with themes and symbols",
+      "Pattern mode: analyze 2-6 dreams for recurring threads",
+      "Emotional-signature mapping across dreams",
+      "Life-context field ties dreams to what's happening now",
+      "Reflection questions that connect it to waking life"
     ],
     toolId:   'DreamPatternSpotter',
     toolName: 'Dream Pattern Spotter',

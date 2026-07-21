@@ -23,13 +23,13 @@ There is a real difference between airports that work for sleeping and airports 
   ],
   cta: {
     glyph:    '✈️',
-    headline: "Know if you'll make it before you book.",
-    body:     "Enter the airport, your terminals, and your passport situation. Get a YES/NO/RISKY verdict with the actual time math, gate-to-gate directions, and a plan for the time you have.",
+    headline: "Scope the overnight before you claim a bench.",
+    body:     "Tell Layover Maximizer your airport and your hours and it builds a stay-in-the-terminal plan ranked by what's actually worth your window — plus which lounges your cards unlock (some with recliners and showers) and a screenshot-ready survival kit with the WiFi password and outlet intel before you lose signal.",
     features: [
-      "YES/NO/RISKY verdict with math",
-      "Gate-to-gate directions",
-      "Lounge finder matched to your cards",
-      "Worst-case risk analysis"
+      "Airside stay plan built for your specific window",
+      "Lounge finder matched to your credit cards",
+      "Offline survival kit — WiFi, outlets, key phrases",
+      "Delay tracker recalculates the plan if your flight slips"
     ],
     toolId:   'LayoverMaximizer',
     toolName: 'Layover Maximizer',

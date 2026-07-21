@@ -23,7 +23,7 @@ module.exports = {
     },
     {
       name: "Fill out and return the move-in inspection form within 48 hours",
-      body: "The lease usually came with a move-in inspection form, or one was given to you with the keys. Note every imperfection. Sign and date it. Email or hand-deliver it to the landlord within 48 hours, keeping a copy for yourself. If no form was provided, create one — a typed list of pre-existing conditions, your signature, the date. Any condition not noted within the inspection window can be charged to you later. Any condition noted cannot. This is a 30-minute task that protects 200-2000 dollars depending on your deposit. The math is favorable.",
+      body: "The lease usually came with a move-in inspection form, or one was given to you with the keys. Note every imperfection. Sign and date it. Email or hand-deliver it to the landlord within 48 hours, keeping a copy for yourself. If no form was provided, create one — a typed list of pre-existing conditions, your signature, the date. In most states and under most leases, a condition not noted within the inspection window can be charged to you later, while a documented one is far harder to pin on you — the exact rules vary, so check your lease and your state's landlord-tenant law. This is a 30-minute task that protects 200-2000 dollars depending on your deposit. The math is favorable.",
     },
     {
       name: "Test the systems and report what doesn't work, in writing",

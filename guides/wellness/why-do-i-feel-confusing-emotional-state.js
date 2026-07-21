@@ -29,8 +29,8 @@ module.exports = {
       body: "A grandparent dies after a long illness. The sadness is real; the relief is also real. Both are responses to actual features of the situation — the loss of a loved person and the end of their suffering. There's no contradiction; the situation contains both, and your nervous system is correctly registering both. The pressure to pick one is cultural, not psychological. Mixed feelings are usually a sign you're paying attention.",
     },
     {
-      name: "The Germans named one of these: glücksschauer",
-      body: "German did its usual job and came up with a word: glücksschauer — the moment of pure joy that contains a shiver of recognition that this moment will end. There are dozens like it across languages. Saudade in Portuguese, sehnsucht in German, mono no aware in Japanese — all words for specific mixtures of joy and sadness, presence and loss, that English doesn't have single names for. The English impoverishment is partly why we treat mixed feelings as confusion instead of as normal complex states.",
+      name: "The Germans named one of these: Wehmut",
+      body: "German did its usual job and came up with a word: Wehmut — a bittersweet, wistful melancholy, joy shadowed by the awareness that the moment is passing. There are dozens like it across languages. Saudade in Portuguese, sehnsucht in German, mono no aware in Japanese — all words for specific mixtures of joy and sadness, presence and loss, that English doesn't have single names for. The English impoverishment is partly why we treat mixed feelings as confusion instead of as normal complex states.",
     },
     {
       name: "Stop trying to name it as one thing",

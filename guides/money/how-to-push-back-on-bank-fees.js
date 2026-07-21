@@ -13,7 +13,7 @@ module.exports = {
 
   ledes: [
     `It's $35 for the overdraft. Or $25 for the wire transfer that you didn't realize had a fee. Or $12 for the monthly maintenance charge that's been quietly recurring for two years. The amount feels small enough to ignore but specific enough to be annoying — and you're not sure whether banks actually refund things like this or whether complaining about a thirty-five dollar fee makes you the customer everyone in the call center groans about.`,
-    `Banks refund fees routinely. The refund rate on most common fees is much higher than people think — somewhere between 60% and 90% on first request, depending on the fee type and your account history. They don't volunteer this. They don't advertise it. But the script is short, the conversation is brief, and the only thing standing between most people and their refund is the assumption that asking won't work.`,
+    `Banks refund fees routinely — and they frequently waive the first fee if you simply ask directly, especially with a clean account history. They don't volunteer this. They don't advertise it. But the script is short, the conversation is brief, and the only thing standing between most people and their refund is the assumption that asking won't work.`,
   ],
 
   steps: [
@@ -46,18 +46,18 @@ module.exports = {
   },
 
   cta: {
-    glyph:    '🛡️',
+    glyph:    '🗣️',
     headline: "Get the script that actually works on the phone",
-    body:     "UpsellShield gives you the specific phrases that bank phone agents are trained to respond to — the courtesy-refund opener, the fee-type-specific scripts, the supervisor-escalation language, and the line that closes the call.",
+    body:     "Tell Magic Mouth you want this fee waived and describe the situation. It reads the dynamics, picks your strongest angle, and writes the exact script — the opener, the ask, what to say if the agent hesitates, and a graceful exit — plus delivery coaching and a backup angle in case the first approach stalls.",
     features: [
-      "Fee-type-specific refund scripts",
-      "Courtesy refund language",
-      "Supervisor escalation phrases",
-      "Account-history framing",
-      "Multi-fee call sequencing",
+      "Finds your strongest angle for this specific fee",
+      "Full script: opener, ask, hesitation response, exit",
+      "Delivery coaching — tone and the mistakes that kill the ask",
+      "Backup angle if the first answer is no",
+      "'Already tried' field sharpens the strategy after a refusal",
     ],
-    toolId:   'UpsellShield',
-    toolName: 'UpsellShield',
+    toolId:   'MagicMouth',
+    toolName: 'Magic Mouth',
   },
 
   published: '2026-04-27',
