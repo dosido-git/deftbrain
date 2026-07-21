@@ -2,6 +2,9 @@ module.exports = {
   slug:          'how-to-write-self-review-bullets-that-get-you-the-raise',
   category:      'workplace',
   categoryLabel: 'Workplace',
+
+  // Twin of the primary copy — canonical consolidates the duplicate URL.
+  canonicalOverride: 'https://deftbrain.com/guides/career/how-to-write-self-review-bullets-that-get-you-the-raise',
   title:         "How to Write Self-Review Bullets That Get You the Raise",
   titleHtml:     "How to Write Self-Review Bullets That <em>Get You the Raise</em>",
   shortTitle:    "Self-Review Bullets That Land",

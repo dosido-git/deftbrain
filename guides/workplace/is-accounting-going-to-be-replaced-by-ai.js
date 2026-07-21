@@ -2,6 +2,9 @@ module.exports = {
   slug:          'is-accounting-going-to-be-replaced-by-ai',
   category:      'workplace',
   categoryLabel: 'Workplace',
+
+  // Twin of the primary copy — canonical consolidates the duplicate URL.
+  canonicalOverride: 'https://deftbrain.com/guides/career/is-accounting-going-to-be-replaced-by-ai',
   title:         "Is accounting going to be replaced by AI?",
   titleHtml:     "Is accounting <em>going to be replaced by AI?</em>",
   shortTitle:    "Is accounting safe from AI",

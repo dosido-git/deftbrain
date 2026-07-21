@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Face the strongest version of the opposing case",
-    body:     "Debate Me generates the steelman against any position you state — multi-turn, in five debate formats, with fallacy flags and Rematch mode that targets the blind spots from your previous debates.",
+    body:     "Argue Better generates the steelman against any position you state — multi-turn, in five debate formats, with fallacy flags and a Rematch mode that targets the documented blind spots from your previous debates.",
     features: [
       "Steelman opposing case",
       "Five debate formats",
-      "Rematch on blind spots",
+      "Rematch on your documented blind spots",
       "Real-time fallacy flags",
-      "Strategic concession coaching",
+      "Devil's Advocate Prep for real-world stakes",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

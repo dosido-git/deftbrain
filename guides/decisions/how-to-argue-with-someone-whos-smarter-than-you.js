@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice against an opponent who won't go easy",
-    body:     "Debate Me generates the strongest opposing case at full intellectual capacity — no softening, no holding back. Practice the asymmetric argument before the real one, with fallacy flags and strategic concession coaching.",
+    body:     "Argue Better generates the strongest opposing case at the challenge level you choose — up to no-mercy, no softening. Practice the asymmetric argument before the real one, with fallacy flags, coaching angles, and strategic concession.",
     features: [
       "Steelman at full strength",
+      "Three challenge levels up to no-mercy",
       "Real-time fallacy flags",
+      "Coaching angles when you're stuck",
       "Strategic concession coaching",
-      "Five debate formats",
-      "Multi-turn practice",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

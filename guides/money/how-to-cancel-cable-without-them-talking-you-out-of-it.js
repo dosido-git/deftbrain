@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Walk into the call with the script already written",
-    body:     "Subscription Guilt Trip rates each subscription's cancellation difficulty, gives you the specific scripts retention specialists are trained to respond to, and helps you decide if the discount they'll inevitably offer is actually worth taking.",
+    body:     "Subscription Tamer's Negotiate view scripts the retention call service by service — the step-by-step dialogue and the magic phrases that keep it on track — while cost-per-use math tells you whether the discount they'll inevitably offer is actually worth taking.",
     features: [
       "Service-specific retention scripts",
-      "Broken-record cancellation lines",
-      "Discount-acceptance decision frame",
-      "Written-confirmation templates",
-      "Stay-vs-leave analysis",
+      "Step-by-step call dialogue with magic phrases",
+      "Cost-per-use math to judge the counter-offer",
+      "Honest keep/cancel verdict before you dial",
+      "Savings tracker once you cancel",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

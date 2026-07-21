@@ -2,6 +2,9 @@ module.exports = {
   slug:          'the-difference-between-an-apology-and-an-explanation',
   category:      'conversations',
   categoryLabel: 'Conversations',
+
+  // Twin of the primary copy — canonical consolidates the duplicate URL.
+  canonicalOverride: 'https://deftbrain.com/guides/apologies/the-difference-between-an-apology-and-an-explanation',
   title:         "The Difference Between an Apology and an Explanation",
   titleHtml:     "The Difference Between <em>an Apology and an Explanation</em>",
   shortTitle:    "Apology vs Explanation",

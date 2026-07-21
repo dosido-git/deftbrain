@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Get the script before you make the call",
-    body:     "Subscription Guilt Trip rates each subscription's retention pressure, predicts the specific tactics each company's retention team will use, and gives you the verbatim scripts that close the call cleanly.",
+    body:     "Subscription Tamer's Negotiate view arms you with a service-specific retention script — step-by-step dialogue and the magic phrases that close the call cleanly — whether you want out entirely or just a better price.",
     features: [
-      "Retention-pressure rating by service",
-      "Tactic-prediction by company",
-      "Verbatim no-engagement scripts",
-      "Real-vs-theatrical offer detection",
-      "Confirmation-number capture checklist",
+      "Service-specific retention scripts",
+      "Step-by-step dialogue with magic phrases",
+      "Works for a discount or a clean exit",
+      "Price-hike alerts with one-click negotiate links",
+      "Cancellation tracking with running savings",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

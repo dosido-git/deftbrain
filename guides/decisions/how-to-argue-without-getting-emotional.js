@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice arguing under pressure without the cost",
-    body:     "Debate Me lets you practice high-stakes arguments — multi-turn, with the strongest opposing case — at the temperature you control. Stress-test your composure on a steelman before stress-testing it in real life.",
+    body:     "Argue Better lets you practice high-stakes arguments — multi-turn, against the strongest opposing case — at a temperature you control, with three challenge levels from curious to no-mercy. Stress-test your composure on a steelman before stress-testing it in real life.",
     features: [
       "Steelman opposing case",
+      "Challenge level you control",
       "Five debate formats",
-      "Real-time fallacy flags",
       "Multi-turn practice",
       "Strategic concession coaching",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

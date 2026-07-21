@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Get the script that actually closes the account",
-    body:     "Subscription Guilt Trip rates cancellation difficulty for any subscription, gives you the specific scripts retention specialists are trained to respond to, and tells you when the company's flow is actually violating click-to-cancel laws.",
+    body:     "Subscription Tamer's Negotiate view gives you a service-specific retention script — step-by-step dialogue with the magic phrases that get past the runaround — plus per-subscription cancellation steps, and a tracker that logs your savings once the account is finally dead.",
     features: [
-      "Cancellation-difficulty rating",
-      "Retention-call scripts",
-      "Click-to-cancel law citations",
-      "Chargeback-as-escalation guidance",
-      "Written-confirmation templates",
+      "Service-specific retention scripts",
+      "Step-by-step dialogue with magic phrases",
+      "Cancellation steps per subscription",
+      "Status tracking: active, cancelling, paused, cancelled",
+      "Running savings since cancellation",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

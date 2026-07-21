@@ -2,6 +2,9 @@ module.exports = {
   slug:          'how-to-apologize-for-ghosting-someone',
   category:      'conversations',
   categoryLabel: 'Conversations',
+
+  // Twin of the primary copy — canonical consolidates the duplicate URL.
+  canonicalOverride: 'https://deftbrain.com/guides/apologies/how-to-apologize-for-ghosting-someone',
   title:         "How to Apologize for Ghosting Someone",
   titleHtml:     "How to Apologize for <em>Ghosting Someone</em>",
   shortTitle:    "Apologize for Ghosting",

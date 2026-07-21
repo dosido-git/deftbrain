@@ -127,6 +127,11 @@ function main() {
     if (!loc) { problems.push(`${rel}: missing <link rel="canonical">`); continue; }
     if (!lastmod) { problems.push(`${rel}: missing article:modified_time`); continue; }
 
+    // A twin page whose canonical points at another URL (canonicalOverride)
+    // must not appear in the sitemap — only self-canonical pages are listed.
+    const selfUrl = `https://deftbrain.com/guides/${rel.replace(/\.html$/, '')}`;
+    if (loc !== selfUrl) { consolidated++; continue; }
+
     const m = loc.match(/\/guides\/([a-z-]+)\/([a-z0-9-]+)$/);
     if (m && !keepSet.has(`${m[1]}/${m[2]}`)) { consolidated++; continue; }
 

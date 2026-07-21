@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Run the audit before the next billing cycle",
-    body:     "Subscription Guilt Trip audits all your subscriptions by actual usage versus cost — calculates cost-per-use, flags duplicates, rates cancellation difficulty, and gives you scripts to overcome retention tactics. Guilt-free permission to cancel.",
+    body:     "Subscription Tamer audits every subscription by actual usage versus cost — real cost-per-use math, an honest keep-or-cancel verdict for each one, and retention scripts for the cancellations that fight back. Guilt-free permission to cancel.",
     features: [
       "Cost-per-use calculation",
-      "Duplicate-subscription detection",
-      "Cancellation-difficulty rating",
-      "Retention-tactic scripts",
-      "Pause-vs-cancel decision frame",
+      "Honest keep/cancel verdicts",
+      "Price-hike detection with history",
+      "Plan optimization: annual, family, and student deals",
+      "Retention scripts for cancellations that fight back",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

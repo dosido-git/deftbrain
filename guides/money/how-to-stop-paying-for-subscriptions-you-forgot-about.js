@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Find every subscription you're paying for",
-    body:     "Subscription Guilt Trip audits all your subscriptions across cards and platforms, calculates cost-per-use, identifies duplicates, and gives you the cancellation script for each one — guilt-free.",
+    body:     "Subscription Tamer's Sweep scans a statement or takes your list, then hands each subscription an honest keep-or-cancel verdict with real cost-per-use math and step-by-step cancellation instructions. Radar then watches your renewals so nothing slips through again.",
     features: [
-      "Multi-platform subscription discovery",
-      "Cost-per-use calculation",
-      "Duplicate-service detection",
-      "Cancellation-difficulty rating",
-      "Six-month review scheduling",
+      "Statement scan finds recurring charges",
+      "Cost-per-use math per subscription",
+      "Honest keep/cancel verdicts",
+      "Step-by-step cancellation instructions",
+      "Renewal alerts before the next charge",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

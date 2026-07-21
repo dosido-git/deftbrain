@@ -10,7 +10,7 @@ module.exports = {
   deck:          "You know the question that will tank you. You also know you have not answered it yet. Here is how to actually be ready, instead of hoping nobody asks.",
   ledes: [
     `It is Tuesday night. The meeting is Thursday. You have built the deck, you have rehearsed the opener, you know the room. You also know exactly which question is going to get asked, and you know you have not figured out how to answer it. The CFO is going to ask about the cost projections. Your skeptical peer is going to ask why you did not consider the alternative. Your boss's boss is going to ask the question that always sounds simple and is actually the whole ballgame: "have we tried just doing the cheaper version of this."<br/><br/>You have two more days. The temptation is to keep polishing the deck. That is not the prep you need. The prep you need is the meeting itself, run in advance, with someone playing the role of the person you are most afraid of, asking the questions you most do not want to answer, while you are still in a room where being wrong is free.`,
-    `Here is how to do that prep properly, and how Debate Me's Devil's Advocate mode runs the dress rehearsal for you when you cannot get a willing human to do it.`,
+    `Here is how to do that prep properly, and how Argue Better's Devil's Advocate Prep runs the dress rehearsal for you when you cannot get a willing human to do it.`,
   ],
   steps: [
     { name: 'Write down the actual decision being made, not the topic of the meeting', body: 'The "topic" of the meeting is "Q3 marketing budget." The actual decision is "do we double down on paid social or pull back." If you only prep around the topic, you will get blindsided by questions about the decision. Write the real decision in one sentence at the top of your notes. Every question you anticipate should be a question someone would ask before saying yes or no to that exact thing. This shift alone will reframe half your prep.' },
@@ -22,16 +22,16 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Face the strongest version of the other side, before you have to face the real one.",
-    body:     "Debate Me is the intellectual sparring partner that will not let you off easy. State your position, pick a format, and get hit with the steelman — the strongest possible counter-argument from a thoughtful opponent who actually disagrees. Devil's Advocate Prep drills you on the five hardest questions before your real meeting. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots.",
+    body:     "Argue Better is the intellectual sparring partner that will not let you off easy. State your position, pick a format, and get hit with the steelman — the strongest possible counter-argument from a thoughtful opponent who actually disagrees. Devil's Advocate Prep drills you on the five hardest questions before your real meeting — audience, context, and stakes included. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots.",
     features: [
       "Devil's Advocate Prep: the 5 hardest questions you will get, with angles and landmines",
       "Five debate formats including Socratic, Lincoln-Douglas, and Oxford",
-      "Fallacy detection mid-debate with explanation, not just a flag",
+      "Fallacy flags mid-debate, plus a full fallacy analysis on your scorecard",
       "Source check any claim while you argue — yours or theirs",
       "Highlight Reel: cross-debate analysis of your habitual blind spots"
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

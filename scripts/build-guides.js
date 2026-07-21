@@ -109,7 +109,10 @@ const TITLE_SUFFIX  = ' | DeftBrain'; // 12 chars
 const MAX_TITLE_LEN = 70;
 
 function renderGuide(spec, siblings) {
-  const canonical = `https://deftbrain.com/guides/${spec.category}/${spec.slug}`;
+  // canonicalOverride: for a guide that exists at two URLs (same slug filed in
+  // two categories) the twin points its canonical at the primary — Google
+  // consolidates instead of seeing duplicate content.
+  const canonical = spec.canonicalOverride || `https://deftbrain.com/guides/${spec.category}/${spec.slug}`;
   const ogImage   = `https://deftbrain.com/og/guides/${spec.slug}.png`;
   // Allow titleHtml for <em> styling in h1; fall back to plain escaped title.
   const h1Html    = spec.titleHtml || esc(spec.title);

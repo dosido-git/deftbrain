@@ -22,15 +22,15 @@ module.exports = {
   cta: {
     glyph:    '🔮',
     headline: "See the road not taken.",
-    body:     "What If? doesn't list pros and cons — it writes a vivid 'day in the life' for each path you're weighing, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
+    body:     "Which Life? doesn't list pros and cons — describe the life where you said yes and the one where you said no, and it writes a vivid 'day in the life' for each, a plausible Tuesday set in each future, so your gut reacts before your brain does.",
     features: [
-      "Pick a timeframe from 1 month to 5 years",
-      "Get scenes with what's better and what it costs at each milestone",
-      "Run it on the option you're NOT leaning toward — that's the one you can't see clearly",
-      "Use the simulation to surface buried preferences, not predict the future"
+      "Pick a timeframe: 1, 2, 5, or 10 years out",
+      "Each narrative includes a best moment, the honest cost, and the pull of that life",
+      "Ends with what the AI noticed: what you're trading, and the real question underneath",
+      "Run it on the option you're NOT leaning toward — that's the one you can't see clearly"
     ],
-    toolId:   'WhatIf',
-    toolName: 'What If?',
+    toolId:   'WhichLife',
+    toolName: 'Which Life?',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

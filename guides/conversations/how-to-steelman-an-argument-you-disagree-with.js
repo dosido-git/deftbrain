@@ -10,7 +10,7 @@ module.exports = {
   deck:          "You can demolish their dumbest version. Anyone can. Here is how to find and engage with the strongest version of the position you think is wrong.",
   ledes: [
     `You are mid-conversation, mid-rant, or mid-essay, and you are crushing it. The other side's argument falls apart so cleanly that you start to wonder why anyone holds it at all. They must be uninformed. Or biased. Or operating in bad faith. Otherwise how could they possibly believe something this easy to refute? You feel sharp and right and a little bit smug, which is usually the moment to be suspicious of yourself.<br/><br/>The thing you are demolishing is almost certainly not the strongest version of the position you disagree with. It is the version that is easiest for you to argue against, which means it is the version you have been arguing against for a while, which means you have probably never engaged with the version that the smartest person on the other side actually holds. Steelmanning is the opposite move: you build the most defensible possible version of their case, in their words, on its strongest ground, before you say a word about why you still disagree.`,
-    `Here is how to steelman properly, instead of just stamping a "good faith" label on a strawman, and how Debate Me forces you to face the real version of the other side.`,
+    `Here is how to steelman properly, instead of just stamping a "good faith" label on a strawman, and how Argue Better forces you to face the real version of the other side.`,
   ],
   steps: [
     { name: `Find the version of their argument that THEY think is the best one`, body: `Do not Google "arguments against X" and skim the takedowns. Find the people who hold the position you disagree with, and read or listen to them telling other people who agree with them why they hold it. The internal version of any argument is almost always more sophisticated than the version that gets aimed outward. If you cannot summarize their case in a way that they would nod at and say "yes, that is what I actually think," you have not steelmanned it yet — you have steelmanned a costume of it.` },
@@ -22,16 +22,16 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Face the strongest version of the other side, before you have to face the real one.",
-    body:     "Debate Me is the intellectual sparring partner that will not let you off easy. State your position, pick a format, and get hit with the steelman — the strongest possible counter-argument from a thoughtful opponent who actually disagrees. Devil's Advocate Prep drills you on the five hardest questions before your real meeting. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots.",
+    body:     "Argue Better is the intellectual sparring partner that will not let you off easy. State your position and get hit with the steelman — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Switch sides mid-debate to argue the other case yourself, or concede strategically when a point lands.",
     features: [
-      "Devil's Advocate Prep: the 5 hardest questions you will get, with angles and landmines",
+      "A real steelman of any position you state — never a strawman",
+      "Switch sides mid-debate and argue the other case yourself",
       "Five debate formats including Socratic, Lincoln-Douglas, and Oxford",
-      "Fallacy detection mid-debate with explanation, not just a flag",
       "Source check any claim while you argue — yours or theirs",
-      "Highlight Reel: cross-debate analysis of your habitual blind spots"
+      "Strategic concession — practice acknowledging points that land"
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

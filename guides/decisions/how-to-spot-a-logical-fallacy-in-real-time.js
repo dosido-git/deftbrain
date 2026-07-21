@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Train fallacy detection until it's automatic",
-    body:     "Debate Me's Fallacy Gym drills you on real-time fallacy recognition — pattern-matching across hundreds of examples until you catch the moves as they happen, not three hours later in the shower.",
+    body:     "Argue Better's Fallacy Gym drills real-time fallacy recognition — spot the fallacy at easy, medium, or hard difficulty, build a streak, and get specific feedback on why you were right or wrong. Then test the skill in a live debate with fallacy flags.",
     features: [
       "Fallacy Gym training mode",
-      "Real-time fallacy flags",
-      "Pattern-recognition drills",
-      "Five debate formats",
-      "Multi-turn practice",
+      "Three difficulty levels with streak tracking",
+      "Specific feedback on every call",
+      "Fallacy flags in live debates",
+      "Post-debate fallacy analysis on your scorecard",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

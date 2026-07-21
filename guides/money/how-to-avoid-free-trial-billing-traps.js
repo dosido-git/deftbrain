@@ -40,18 +40,18 @@ module.exports = {
   ],
 
   cta: {
-    glyph:    '💳',
+    glyph:    '⚔️',
     headline: "Track every trial — and every silent renewal",
-    body:     "Subscription Guilt Trip audits all your subscriptions including trials about to convert, flags upcoming auto-renewals, and gives you the cancellation script for each one before the charge hits.",
+    body:     "Subscription Tamer's trial tracker logs every free trial with its end date and a usage counter, then hands down a cost-per-use verdict before the trial converts — cancel now, or convert on purpose. Radar shows every renewal coming in the next week, month, and 90 days.",
     features: [
-      "Auto-renewal date tracking",
-      "Trial-to-paid conversion alerts",
-      "Cancellation-difficulty rating",
-      "Pre-trial signup checklist",
-      "Virtual card recommendation by service",
+      "Free-trial tracking with end dates",
+      "Usage counters and cost-per-use verdicts",
+      "Convert-or-cancel call before the trial ends",
+      "Renewal radar: this week, this month, 90 days",
+      "Price-hike alerts on converted subscriptions",
     ],
-    toolId:   'SubscriptionGuiltTrip',
-    toolName: 'Subscription Guilt Trip',
+    toolId:   'SubscriptionTamer',
+    toolName: 'Subscription Tamer',
   },
 
   published: '2026-04-27',

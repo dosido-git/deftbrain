@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Prep for any debate against the steelman",
-    body:     "Debate Me's Devil's Advocate Prep mode drills you on your position by generating the strongest possible objections — exactly the predictive prep work competitive debaters do, automated for any topic in any format.",
+    body:     "Argue Better's Devil's Advocate Prep mode drills your position by generating the five hardest questions you'll face — with angles, landmines to avoid, and openers — then lets you jump straight into a full practice debate in any of five formats.",
     features: [
       "Devil's Advocate Prep mode",
       "Steelman objection generation",
       "Five debate formats",
-      "Real-time fallacy flags",
-      "Multi-turn rehearsal",
+      "Fallacy flags mid-debate",
+      "Multi-turn rehearsal at three challenge levels",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

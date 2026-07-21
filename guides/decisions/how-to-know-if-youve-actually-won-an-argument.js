@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Pressure-test your wins before declaring victory",
-    body:     "Debate Me's Highlight Reel analyzes patterns across all your debates and identifies real wins versus rhetorical ones — including the blind spots and Debater Type that show up across your argumentation history.",
+    body:     "Argue Better's post-debate scorecard scores your sharpness and names your blind spots, and an Audience Verdict judges who was actually more persuasive to an undecided observer — not who talked loudest. The Highlight Reel then finds the patterns across all your debates, including your Debater Type.",
     features: [
+      "Sharpness score + blind spots after every debate",
+      "Audience Verdict: who really persuaded an undecided observer",
+      "Argument Map of defended vs abandoned claims",
       "Highlight Reel pattern analysis",
       "Debater Type classification",
-      "Blind-spot identification",
-      "Multi-turn debate review",
-      "Real-time fallacy flags",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };

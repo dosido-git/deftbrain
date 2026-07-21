@@ -49,15 +49,15 @@ module.exports = {
   cta: {
     glyph:    '🥊',
     headline: "Practice arguing better against the strongest opposition",
-    body:     "Debate Me lets you state any position and face the steelman version of the opposing case — multi-turn, with fallacy flags, strategic concession, and five debate formats from Socratic to Lincoln-Douglas.",
+    body:     "Argue Better lets you state any position and face the steelman version of the opposing case — multi-turn, with fallacy flags, coaching angles, strategic concession, and five debate formats from Socratic to Lincoln-Douglas.",
     features: [
       "Steelman opposing case",
       "Real-time fallacy flags",
       "Five debate formats",
-      "Strategic concession coaching",
-      "Blind-spot tracking",
+      "Strategic concession + coaching angles",
+      "Blind-spot tracking across debates",
     ],
-    toolId:   'DebateMe',
-    toolName: 'Debate Me',
+    toolId:   'ArgueBetter',
+    toolName: 'Argue Better',
   },
 };
