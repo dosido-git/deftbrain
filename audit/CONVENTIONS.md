@@ -10,6 +10,14 @@
 > **Read this file before writing or editing any tool component.**
 > Copy snippets verbatim. Do not reconstruct from memory.
 
+> **`TOOL-ANATOMY.md` is the structural map** — what every tool is made of, each
+> component's placement + rendering params, in one table. Read it first for
+> *where things go*. **This file is the rulebook** — the PF-*/S7-* rules, scan
+> commands, and rationale behind each component. On a **structural** conflict
+> (placement, which component exists), TOOL-ANATOMY wins; on a **rule detail**
+> (exact scan, banned key), this file + the audit script win (see precedence
+> at the bottom).
+
 ---
 For deferred infrastructure and architecture decisions, see docs/deferred-decisions.md
 ---
@@ -18,10 +26,10 @@ For deferred infrastructure and architecture decisions, see docs/deferred-decisi
 
 Before writing the first line of any new tool component, or making structural changes to an existing one, complete ALL of the following steps in order. Do not skip or abbreviate.
 
-1. **Read this entire file** (CONVENTIONS.md). Do not reconstruct patterns from memory.
+1. **Read `TOOL-ANATOMY.md`** (the component map), then **this entire file** (the rules). Do not reconstruct patterns from memory.
 2. **State the header pattern** you will use: persistent `<h2>` + tagline, inset `border-b`, inside padded wrapper.
 3. **State the c block source**: copied verbatim from PF-2, not reconstructed.
-4. **State the hook order**: useClaudeAPI → useTheme → c block → linkStyle → useState → useRef → usePersistentState → handlers → buildFullText → useRegisterActions → useEffect scroll → useEffect keyboard → render helpers → return.
+4. **State the hook order**: useClaudeAPI → useTheme → c block → linkStyle → useState → usePersistentState/useRef (either order) → handlers → buildFullText → useRegisterActions → useEffect scroll → useEffect keyboard → render helpers → return (only the enforced invariants are binding: useState before usePersistentState; all state/refs before the first useEffect).
 5. **Confirm cross-refs are present**: 1–3 links from `cross-reference-map.md`, emoji before name, `/PascalCase` hrefs, no `target="_blank"`. Zero cross-refs is a violation.
 6. **Confirm the root div** is `<div className={\`space-y-4 \${c.text}\`}>` with no background color.
 
@@ -83,7 +91,7 @@ const c = {
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
   text:          isDark ? 'text-zinc-50' : 'text-gray-900',
   textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
-  textMuted:     isDark ? 'text-zinc-500' : 'text-gray-400',
+  textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
   labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
   accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
   btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
@@ -107,7 +115,7 @@ const c = {
                         : 'border-cyan-600 bg-cyan-100 text-cyan-900',
   pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                         : 'border-gray-300 text-gray-500 hover:border-gray-400',
-  required:      isDark ? 'text-amber-400' : 'text-amber-500',
+  required:      isDark ? 'text-amber-400' : 'text-amber-700',
 };
 // Always include these two alias lines immediately after the closing brace:
 c.textMuteded = c.textMuted;
@@ -115,7 +123,7 @@ c.label = c.labelText;
 
 const linkStyle = isDark
   ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-  : 'text-cyan-600 hover:text-cyan-700 underline underline-offset-2';
+  : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 ```
 
 **Undefined key scan — run before and after every edit:**
@@ -124,6 +132,8 @@ grep -oP 'c\.[a-zA-Z]+' ComponentName.js | sed 's/c\.//' | sort -u > /tmp/c_used
 grep -oP '[a-zA-Z]+(?=:\s+isDark)' ComponentName.js | sort -u > /tmp/c_defined.txt
 comm -23 /tmp/c_used.txt /tmp/c_defined.txt
 # Must return zero lines
+# NOTE: `c.label` and `c.textMuteded` are defined via `=` aliases, not `: isDark` —
+# exempt them from this scan (the real gate handles aliases; see Clarification 1).
 ```
 
 ---
@@ -241,7 +251,7 @@ This passes the gradient-blocking scan (because `<h2>` IS inside a `c.card`) but
 >   <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
 >     <div className="pb-3 border-b border-zinc-500">
 >       <h2 className={`text-xl font-bold ${c.text}`}>
->         <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+>         <span className="me-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
 >       </h2>
 >       <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
 >     </div>
@@ -261,7 +271,7 @@ This passes the gradient-blocking scan (because `<h2>` IS inside a `c.card`) but
 >           <div className="flex items-start justify-between">
 >             <div>
 >               <h2 className={`text-xl font-bold ${c.text}`}>
->                 <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+>                 <span className="me-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
 >               </h2>
 >               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
 >             </div>
@@ -538,8 +548,7 @@ echo "Last state: $LAST_STATE | First effect: $FIRST_EFFECT"
 1. `useClaudeAPI()` + `useTheme()`
 2. `const c = { ... }` + aliases + `linkStyle`
 3. All `useState` declarations
-4. All `useRef` declarations
-5. All `usePersistentState` declarations
+4. `useRef` and `usePersistentState` (either order — the reference declares persistent state before refs; the gate only requires useState-before-usePersistentState and all state/refs before the first useEffect)
 6. Handler functions
 7. `const buildFullText = ...`
 8. `useRegisterActions(...)`
@@ -613,17 +622,17 @@ grep -n "⏳" ComponentName.js
 >
   {loading
     ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚙️'}</span> Working...</>
-    : <><span className="mr-1">{tool?.icon ?? '❓'}</span> Submit Label</>}
+    : <><span className="me-1">{tool?.icon ?? '❓'}</span> Submit Label</>}
 </button>
 ```
 
 **Multi-mode exception:** In tools with multiple functional modes (tabs, views, or sub-tools) where each mode has its own submit button with a distinct semantic purpose, each mode's **idle-state** icon may use a topical emoji matching that mode's action (e.g., ⚖️ Calibrate, 🔁 Fix, 🔎 Detect, 💬 Decode). The **loading-state** icon must still spin `tool?.icon` in every mode — that consistency is what tells users "this is still the same tool, just working." The shared `<Spinner />` helper is the canonical way to enforce this:
 
 ```jsx
-const Spinner = () => <span className="animate-spin inline-block mr-2">{tool?.icon ?? '⚙️'}</span>;
+const Spinner = () => <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚙️'}</span>;
 // …
 <button onClick={handleFix} disabled={…} className={`... ${c.btnPrimary}`}>
-  {loading ? <><Spinner />Fixing...</> : <><span className="mr-2">🔁</span> Diagnose & Fix</>}
+  {loading ? <><Spinner />Fixing...</> : <><span className="me-2">🔁</span> Diagnose & Fix</>}
 </button>
 ```
 
@@ -641,7 +650,7 @@ Asterisks on required fields are **mandatory**. Every required input must have a
 ```bash
 # Confirm c.required is defined in the c block:
 grep -n "required:" ComponentName.js | head -3
-# Must show: required: isDark ? 'text-amber-400' : 'text-amber-500'
+# Must show: required: isDark ? 'text-amber-400' : 'text-amber-700'
 
 # Confirm c.required is used:
 grep -n "c\.required" ComponentName.js
@@ -668,7 +677,7 @@ grep -n "<label" ComponentName.js | grep -v "\*" | head -20
 | Rule | Detail |
 |------|--------|
 | Asterisk is mandatory | Every required field must have one — no exceptions (see exemption below) |
-| Color | `c.required` only — `text-amber-400` dark / `text-amber-500` light |
+| Color | `c.required` only — `text-amber-400` dark / `text-amber-700` light |
 | Never `c.textMuted` | Muted asterisks are invisible and therefore useless |
 | Never `text-red-500` | Red belongs to the error/danger semantic — not form marking |
 | Placement | Inside the `<label>`, after the label text, in a `<span className={c.required}>*</span>` |
@@ -707,7 +716,7 @@ Every tool has exactly **one** reset control. It lives in the top-right corner o
 **Scan:**
 ```bash
 grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | grep -i "button\|btn"
-# Must return exactly 1 result
+# Must return exactly 1 result (multi-view tools legitimately show N — see PF-16 EXCEPTION below)
 # More than 1 = duplicate reset buttons — FAIL
 # Zero = no reset button — FAIL
 ```
@@ -718,15 +727,15 @@ grep -n "handleReset\|onClick.*reset\|Start Over\|startOver" ComponentName.js | 
   <div className="flex items-center justify-between">
     <div>
       <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-        <span className="mr-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
+        <span className="me-2">{tool?.icon ?? '❓'}</span>{tool?.title ?? 'Fallback'}
       </h2>
       <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Fallback tagline'}</p>
     </div>
-    {(results || input.trim()) && (
+    {(results || input.trim()) ? (
       <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
         ↺ Start Over
       </button>
-    )}
+    ) : null}
   </div>
 </div>
 ```
@@ -882,6 +891,28 @@ render a picker of multiple example chips.
 *Added v4.38 (Try Example), Session 101, April 2026. Placement standardized to
 the header pill (no variants) 2026-07-21 — the old "alongside submit" spec never
 matched practice; DVP/DVT/GhostWriter/MHP/TheGap/TheAlibi/TipOfTongue normalized.*
+
+---
+
+## Additional gated rules (enforced by `audit_v2-3-2.py`, no long-form section here)
+
+These fail a push but don't need their own prose — the one-liner + the audit
+script's check is the spec. `python3 scripts/diff-audit.py <file>` reports them.
+
+| Rule | Fails when |
+|---|---|
+| PF-12b | a state var is named `history` (or other built-in shadow) — breaks React Router |
+| PF-17b | Try Example isn't the standard header pill / uses a multi-example chip picker (see PF-17) |
+| PF-18a–d | an ActionButton import, React hook, `BRAND`, `CROSS_REFS`, or `linkStyle` is declared but never used |
+| PF-18e | an `<a>` has an empty/fragment-only href (use a `<button>` styled as a link) |
+| PF-19 | a growable input list doesn't auto-focus the newly added field |
+| PF-20 | `setError()` is called but `error` is never rendered, or `error.message` is rendered raw |
+| PF-21 | chained `results.x.y` access in JSX without optional chaining |
+| PF-22 | an inline `<CopyBtn>` in JSX (use the shared ActionButtons) |
+| PF-24 | `useTheme()` destructured as `{ theme }` instead of `{ isDark }` |
+| PF-25 | a history cap > 6 without a documented exception comment |
+| PF-26 | `useRegisterActions` passed a function reference instead of the built result |
+| PF-27 / PF-28 | the reset / Try-Example button exists only inside a render helper, never in the main return |
 
 ---
 
@@ -1147,7 +1178,7 @@ The authoritative list of **banned** Tailwind color families:
 
 **Approved** families: `zinc`, `slate`, `cyan`, `emerald`, `amber`, `red`, `sky`, `green`, `gray`.
 
-**`required` color specifically:** per PF-15, `c.required` must always use `text-amber-400` (dark) / `text-amber-500` (light). Not `rose`. Not `red`. Not `textMuted`.
+**`required` color specifically:** per PF-15, `c.required` must always use `text-amber-400` (dark) / `text-amber-700` (light). Not `rose`. Not `red`. Not `textMuted`.
 
 **Enforcement:** `audit_v2-3-2.py` (v4.40+) catches all banned families including `rose`/`pink`/`border-*` variants. v4.39 and earlier missed these.
 
@@ -1226,7 +1257,7 @@ The component's fallback values for `tool?.icon ?? '...'` and `tool?.title ?? '.
 { id: "BeliefStressTest", icon: "🔬", title: "Belief Stress Test", ... }
 
 // Component — MUST match:
-<span className="mr-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Belief Stress Test'}
+<span className="me-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? 'Belief Stress Test'}
 ```
 
 **Enforcement:** `audit_v2-3-2.py` (v4.40+) `S0f` — compares every `tool?.icon ??` and `tool?.title ??` fallback in the component against `tools.js` metadata for that tool's id.
@@ -1479,7 +1510,7 @@ These are used in JSX wherever Claude returns a structured numeric or date value
 
 ---
 
-### Scope: 12 supported locales
+### Scope: 13 supported languages
 
 The localization context applies to all 13 supported languages (English + 12 non-English). The `userRegion` → `userCurrency` default mapping covers all 13. Tools that are currency-aware inject `withLocaleContext`; tools that are purely text-based inject only `withLanguage` (as today).
 
@@ -1518,7 +1549,7 @@ router.post('/stream', rateLimit(), handler);
 router.post('/', rateLimit(), handler);
 ```
 
-**Audit check: S7.8** — flags `'/'`, `'/stream'`, `'/generate'`, `'/analyze'`, `'/submit'` paths.
+**Guideline (not gated at the path level)** — give the route a descriptive path; auto-discovery mounts any `.js` in routes/. The backend audit checks import/return/guard conventions (S7.1–S7.7, S7.12–S7.13), not the path string.
 
 ---
 
@@ -1546,7 +1577,7 @@ const raw = cleanJsonResponse(result);   // ← result is already a parsed objec
 const parsed = JSON.parse(raw);          // ← double-parsing
 ```
 
-**Audit check: S7.9** — flags `cleanJsonResponse()` or `JSON.parse()` in files using `callClaudeWithRetry`.
+**Guideline** — `callClaudeWithRetry` already returns parsed JSON; don't re-parse. (The gated check is S7.4a: where you DO call `JSON.parse` on raw model text, wrap it in `cleanJsonResponse` first.)
 
 ---
 
@@ -1567,9 +1598,17 @@ Overshooting causes verbose responses that hit the limit mid-JSON → parse fail
 - Count fields in the schema × average field length
 - Language scans: flag issues only (caution/problem) — don't scan all languages and return neutral entries
 
-**Audit check: S7.10** — warns when `max_tokens > 3500` on a non-streaming route.
+**Guideline (not gated)** — size `max_tokens` to the schema; the backend audit checks presence/parity, not the value. Bound big schemas rather than inflating tokens.
 
 ---
+
+### S7.12  `callClaudeWithRetry` calling convention  *(gated)*
+
+Two call shapes. Full-request: `callClaudeWithRetry({ model, max_tokens, messages }, { label })`. Simple-string: `callClaudeWithRetry(promptString, { label, system, model })` — the string form honors `options.system`/`options.model`. The audit flags a bare string passed without the options object, and mismatched shapes.
+
+### S7.13  Response-guard field must be a top-level, always-present schema key  *(gated)*
+
+The `if (!parsed.X)` guard after the call must key on a field that is (a) **top-level** in the JSON schema and (b) **always present** (never nullable/conditional). Guarding on a nested (`parsed.verdict.label`) or optional field returns 500 on every call. The audit cross-checks the guard field against the route's schema keys. This is the single highest-frequency backend outage class ("500-every-use").
 
 ### S7.D  Variable naming after `Promise.all`
 
@@ -1631,12 +1670,12 @@ Before submitting a new backend route file:
 
 When documentation conflicts:
 
-1. **`CONVENTIONS.md`** — authoritative canonical spec
-2. **`audit_v2-3-2.py` source** — source of truth for automated enforcement (especially `BANNED_KEYS`, `BANNED_COLORS`, `REQUIRED_KEYS` constants at the top)
-3. **`tool-audit-checklist-v4_39.md`** — manual checklist; portions may be stale
-4. **`CONVENTIONS.md § S7`** — backend route conventions (S7.8–S7.10 audit checks)
+1. **`audit_v2-3-2.py` / `backend_audit_v1_7.py` source** — the machine truth for anything gated (`BANNED_KEYS`, `BANNED_COLORS`, `REQUIRED_KEYS`, PF-*/S7-* checks). Whatever the script enforces is the working rule.
+2. **`TOOL-ANATOMY.md`** — authoritative for tool *structure*: which components exist and where they go.
+3. **`CONVENTIONS.md`** (this file) — authoritative for rule *detail*, scan commands, and rationale.
+4. **`tool-audit-checklist-v4_39.md`** — legacy manual checklist; portions are stale — defer to 1–3.
 
-On conflict: check the audit script's constant arrays as the tiebreaker. Whatever the script actually enforces is the working rule.
+On conflict: the audit script's constant arrays are the ultimate tiebreaker for anything enforced; TOOL-ANATOMY for placement; this file for the "why".
 
 ---
 
