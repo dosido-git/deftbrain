@@ -5353,6 +5353,37 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
+  modified: "2026-07-21",
+  id: "PaperworkPath",
+  seoDescription: "Handling a move, new baby, new job, marriage, divorce, or loss? Get the exact documents you need and the right order to handle them — so nothing falls through the cracks. Free, no signup.",
+  seoTitle: "Life Admin Checklist: What Paperwork & In What Order",
+  title: "Paperwork Path",
+  tagline: "The documents you need — and the order to handle them",
+  tags: ['paperwork', 'life admin', 'checklist', 'moving', 'new baby', 'new job', 'marriage', 'divorce', 'estate', 'documents', 'life event', 'to-do', 'order of operations', 'bureaucracy'],
+  icon: "🗂️",
+  categories: ['The Grind'],
+  headerColor: "#c9d6e5",
+  crossRefs: ['RentersDepositSaver', 'BillRescue', 'FinalWish'],
+  description: "Pick a life event — moving, a new baby, a new job, marriage, divorce, a loss, buying a home, retiring — and Paperwork Path gives you the documents to gather, why each matters and where to get it, plus the order to handle everything so a later step never gets blocked by one you skipped. Requirements vary by location, so it flags what to confirm for your jurisdiction.",
+  guide: {
+    overview: "Big life events come with a pile of paperwork and a hidden dependency order — you can't change your address everywhere until you have the new one, can't update benefits until HR has your details, can't settle an estate until you have the death certificate. Paperwork Path lays out the typical document checklist for your event and, more importantly, the sequence to do it in, so you're not redoing steps or discovering a missing prerequisite halfway through.",
+    steps: [
+      "Pick the life event you're handling.",
+      "Optionally add your location and anything specific about your situation.",
+      "Get a prioritized document checklist plus the dependency-ordered steps.",
+      "Confirm the jurisdiction-specific details it flags before you rely on them."
+    ]
+  },
+  faq: [
+    { q: "What documents do I need when I move?",
+      a: "Typically a change-of-address with the postal service, updates to your license/ID and voter registration, utility transfers, and address updates with your bank, employer, and insurers. Paperwork Path builds the full checklist for your situation and the order to do it in." },
+    { q: "What paperwork do I need after a death in the family?",
+      a: "Usually multiple certified copies of the death certificate first (almost everything else depends on it), then notifying Social Security/pensions, banks, and insurers, and locating the will or estate documents. Paperwork Path sequences these so you don't get stuck waiting on a prerequisite." },
+    { q: "Does the order really matter?",
+      a: "Often yes — many steps depend on an earlier one (you need the new address before you can update it everywhere; the death certificate before you can close accounts). Paperwork Path orders steps by dependency, not alphabetically." }
+  ],
+},
+{
   modified: "2026-07-15",
   id: "QuoteCheck",
   seoDescription: "Paste your appliance or car repair quote and find out if you're being overcharged. Get a fairness verdict, red flags, itemization check, and an exact negotiation script. Free, no signup.",

@@ -1,0 +1,83 @@
+const express = require('express');
+const router = express.Router();
+const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { MODELS } = require('../lib/models');
+const { rateLimit } = require('../lib/rateLimiter');
+
+// ════════════════════════════════════════════════════════════
+// POST /paperwork-path — document checklist + the order to handle it
+// for a life event (move, baby, job change, marriage, death, …)
+// ════════════════════════════════════════════════════════════
+router.post('/paperwork-path', rateLimit(), async (req, res) => {
+  try {
+    const { lifeEvent, situation, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+    if (!lifeEvent?.trim()) {
+      return res.status(400).json({ error: 'Pick the life event you\'re handling' });
+    }
+
+    const situationText = (situation || '').toString().slice(0, 4000);
+    const locationText = (location || '').toString().slice(0, 200);
+
+    const prompt = withLanguage(`You are a calm, organized life-admin expert who helps people handle the paperwork around a major life event without missing anything or doing it in the wrong order.
+
+LIFE EVENT: ${lifeEvent}
+${locationText ? `LOCATION: ${locationText}` : 'LOCATION: not specified'}
+${situationText ? `THEIR SITUATION: ${situationText}` : ''}
+
+Produce a document checklist AND the order to handle it. Requirements vary by country/state/employer — give the TYPICAL set and sequence, and tell the person to confirm specifics for their jurisdiction. Never state a jurisdiction-specific deadline or form number as universal fact.
+
+Return ONLY valid JSON:
+
+{
+  "situation_summary": "One sentence restating what they're handling, grounded in their inputs",
+  "document_checklist": [
+    {
+      "document": "Name of the document/task (e.g. 'Change address with USPS')",
+      "why": "Why it matters — one sentence",
+      "where_to_get": "Where/how to obtain or file it — one sentence",
+      "priority": "critical | important | optional"
+    }
+  ],
+  "ordered_steps": [
+    {
+      "order": 1,
+      "action": "The concrete step to do",
+      "timing": "When to do it (e.g. 'first', 'within 2 weeks', 'after you have X')",
+      "why_first": "Why it comes at this point in the order — often because a later step depends on it. One sentence."
+    }
+  ],
+  "watch_outs": [
+    "A common mistake or thing people forget for THIS event — one sentence"
+  ],
+  "verify_note": "A one-sentence reminder that requirements vary by location/employer and where to confirm the specifics"
+}
+
+RULES:
+- ALL five top-level keys must be present.
+- document_checklist: 5-12 items, most impactful first, priority set honestly.
+- ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically.
+- watch_outs: 2-4 items.
+- Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
+- Be specific to the life event; generic "make a checklist" advice is a failure.
+
+Return ONLY the JSON object.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 3500,
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'paperwork-path' });
+
+    if (!parsed.document_checklist || !parsed.ordered_steps) {
+      return res.status(500).json({ error: 'Could not build your checklist. Please try again.' });
+    }
+
+    res.json(parsed);
+  } catch (error) {
+    console.error('[PaperworkPath]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+module.exports = router;

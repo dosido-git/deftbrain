@@ -135,6 +135,7 @@ import { meetingBsDetector } from './tools/meeting-bs-detector';
 import { nameAudit } from './tools/name-audit';
 import { socialEnergyAudit } from './tools/social-energy-audit';
 import { quoteCheck } from './tools/quote-check';
+import { paperworkPath } from './tools/paperwork-path';
 
 // Every tool's i18n block, merged on top of the base chrome keys. A block
 // with only an 'en' key (not yet fully localized) is safe here — missing
@@ -263,6 +264,7 @@ const TOOL_BLOCKS = [
   nameAudit,
   socialEnergyAudit,
   quoteCheck,
+  paperworkPath,
 ];
 
 const LANGS = Object.keys(base);

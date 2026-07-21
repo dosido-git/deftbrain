@@ -22,7 +22,7 @@ push blocks; ⚠️ = convention, not gated (reviewer-checked).
 
 | Layer | File | Purpose |
 |---|---|---|
-| Frontend component | `src/tools/<PascalCase>.js` | UI, inputs, results render, copy/print |
+| Frontend component | `src/tools/<PascalCase>.js` | UI, inputs, results render, copy/print. **Auto-loads by id** (`import('../tools/<id>.js')`) — no manual component registry to wire |
 | Backend route | `backend/routes/<kebab-case>.js` | prompt, Claude call, JSON response (auto-mounted) |
 | Catalog + i18n | `src/data/tools.js` entry + `src/i18n/locales/tools/<kebab>.js` | title/tagline/icon/category/color; all `t()` keys |
 
@@ -91,7 +91,7 @@ background/frame div (PF-11) — the wrapper provides it. Order top-to-bottom:
 | 12 | **Results scroll** | When results land below the fold | `useEffect` scrolls to results; every `setTimeout` has a `clearTimeout` return | PF-7 | ⚠️ |
 | 13 | **Copy / Print / Share** | Results action row | Shared `CopyBtn`/`PrintBtn`/`ShareBtn`/`ActionBar` from `../components/ActionButtons` — never inline copy logic, never a local `CopyBtn`, never `copiedField` state (PF-5, PF-22) | PF-5, PF-22 | ✅ |
 | 14 | **`buildFullText` + ActionBar reg** | After result state, before render | `useRegisterActions(buildFullText(), tool?.title || 'Name')` **after** `buildFullText` (TDZ — PF-8/PF-26); `buildFullText` includes **every** result variable and appends `BRAND` (PF-8, PF-18b) | PF-8, PF-26, PF-18b | ✅ |
-| 15 | **Cross-references** | Sidebar/footer | ≥1 `/PascalCase` link, emoji-prefixed, no `target="_blank"`, ≤3 per cluster; if `CROSS_REFS` const defined it must render (PF-18c) | PF-9, PF-18c | ✅ |
+| 15 | **Cross-references** | **TWO places:** one link in the input card *before* the submit button (S5.5 — visible pre-result), plus a related-links block in the results | ≥1 `/PascalCase` link each, emoji-prefixed, no `target="_blank"`, ≤3 per cluster; if `CROSS_REFS` const defined it must render (PF-18c) | PF-9, PF-18c, S5.5 | ✅ |
 | 16 | **Keyboard handler** | `useEffect` | ⌘/Ctrl+Enter submits via `handleXxxRef.current?.()`; guards on `SELECT` only; every submit-capable view wired (Clar. 7) | PF-6 | ⚠️ |
 | 17 | **History** (optional) | If the tool keeps a session list | `usePersistentState`; cap ≤ 6 (higher needs a documented exception — PF-25); preview ≈ 40 chars (Clar. 6); never name the state `history` (shadows router — PF-12b) | PF-25, PF-12b | ✅ |
 
@@ -111,6 +111,24 @@ tools need frontend `stripCitesDeep` — Clarification 10. RTL: use logical Tail
 props (`ms-`/`me-`/`ps-`/`pe-`/`text-start`) — CONVENTIONS RTL section.
 
 ---
+
+## 5b. SEO — data-driven slots (no per-page code)
+
+`scripts/prerender.js` builds each tool's static page (meta, canonical, OG,
+FAQPage JSON-LD) **from the `tools.js` entry**. Fill these slots and the page
+indexes cleanly — nothing to hand-code:
+
+| Slot (tools.js) | Feeds |
+|---|---|
+| `seoTitle` / `seoDescription` | `<title>` + meta description |
+| `title` / `tagline` / `description` | OG/Twitter cards + on-page copy |
+| `tags[]` | keyword signals |
+| `guide.overview` / `guide.steps` | the guide aside + HowTo content |
+| `faq[]` (`{q,a}`) | on-page FAQ + FAQPage structured data |
+| `categories` / `headerColor` / `icon` | catalog placement + theming |
+
+Guides (separate ranking content in `guides/`) are their own system — not part
+of the tool component.
 
 ## 6. Backend — route anatomy (S7)
 
@@ -163,9 +181,10 @@ strip). See CONVENTIONS + SECURITY-REVIEW.
 1. `src/tools/<PascalCase>.js` — copy MarkupDetective; keep the import block (§2),
    `c` block (§3), and render order (§4).
 2. `backend/routes/<kebab>.js` — copy the §6 skeleton.
-3. `src/data/tools.js` — add `{ id, title, tagline, icon (emoji), category, headerColor, … }`.
-4. `src/i18n/locales/tools/<kebab>.js` — `xx_title/xx_tagline/…` for all 13 langs; merge into `RESOURCES`.
-5. Run the 5 gates (CLAUDE.md); add to `LOCALIZED_TOOLS` when fully localized; golden-lock.
+3. `src/data/tools.js` — add the catalog entry: `{ id, title, tagline, icon (emoji), categories, headerColor, tags, crossRefs, seoTitle, seoDescription, description, guide, faq }` (the SEO fields feed prerender — §5b).
+4. `src/i18n/locales/tools/<kebab>.js` — `xx_*` keys; **import + add to `TOOL_BLOCKS` in `src/i18n/locales/index.js`**. English-only is fine at launch (other langs fall back); add to `LOCALIZED_TOOLS` only when fully localized.
+5. `backend/server.js` — append the `id` to the `TOOL_IDS` array (prod case-redirect + slug routing).
+6. Run the 5 gates (CLAUDE.md); golden-lock.
 
 ---
 

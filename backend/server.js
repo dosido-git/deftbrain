@@ -147,7 +147,7 @@ const TOOL_IDS = [
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
-  'OnePercenter','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
+  'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
  'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
