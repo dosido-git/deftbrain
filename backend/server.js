@@ -17,6 +17,13 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 // a wrong hop count is caught immediately.
 app.set('trust proxy', 1);
 
+const crypto = require('crypto');
+function keyMatchesHdr(provided, expected) {
+  if (!expected || typeof provided !== 'string') return false;
+  const a = Buffer.from(provided), b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
 // ── Health check — FIRST, before every other middleware ──
 // Railway's deploy healthcheck (and uptime monitors) hit this. It MUST run
 // before the canonical http/www→https redirect: Railway's internal probe
@@ -367,7 +374,7 @@ app.use('/api', routes);
 app.get('/api/endpoints', (req, res, next) => {
   if (IS_PRODUCTION) {
     const KEY = process.env.METRICS_KEY;
-    if (!KEY || req.query.key !== KEY) return res.status(404).end();
+    if (!keyMatchesHdr(req.get('x-metrics-key'), KEY)) return res.status(404).end();
   }
   next();
 }, (req, res) => {
