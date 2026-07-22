@@ -305,55 +305,67 @@ const PaperworkPath = ({ tool }) => {
           {/* Ordered steps — undated calendar grid (numbered chips) + keyed list */}
           {results?.ordered_steps?.length > 0 && (() => {
             const steps = results.ordered_steps;
-            // Clamp/normalize each step's week; default to its order if the model omits it.
-            const weekOf = (s, i) => Math.max(1, Math.min(16, parseInt(s.week, 10) || (i + 1)));
-            const eventWeek = Math.max(1, Math.min(16, parseInt(results.event_week, 10) || 0));
-            const maxWeek = steps.reduce((m, s, i) => Math.max(m, weekOf(s, i)), Math.max(1, eventWeek));
-            const months = Math.max(3, Math.ceil(maxWeek / 4)); // ≥3 months
-            const stepsInWeek = (wk) => steps.filter((s, i) => weekOf(s, i) === wk);
+            const clamp = (n) => Math.max(-12, Math.min(24, n));
+            // Each step's window is RELATIVE to the event (week 0). Fall back
+            // sensibly if the model omits a bound.
+            const startOf = (s, i) => clamp(Number.isFinite(+s.week_start) ? +s.week_start : (Number.isFinite(+s.week_end) ? +s.week_end : i));
+            const endOf   = (s, i) => { const st = startOf(s, i); const e = Number.isFinite(+s.week_end) ? +s.week_end : st; return clamp(Math.max(st, e)); };
+            // Axis spans every step's range, always including the event (0).
+            const minW = Math.min(0, ...steps.map(startOf));
+            const maxW = Math.max(0, ...steps.map(endOf));
+            const cols = []; for (let w = minW; w <= maxW; w++) cols.push(w);
+            const colOf = (w) => w - minW;                 // 0-based column index
+            const totalCols = cols.length;
+            // A small palette so bars are distinguishable (bar bg / number text).
+            const BARS = [
+              isDark ? 'bg-cyan-600'    : 'bg-cyan-500',
+              isDark ? 'bg-emerald-600' : 'bg-emerald-500',
+              isDark ? 'bg-amber-600'   : 'bg-amber-500',
+              isDark ? 'bg-sky-600'     : 'bg-sky-500',
+              isDark ? 'bg-orange-600'  : 'bg-orange-500',
+              isDark ? 'bg-lime-600'    : 'bg-lime-500',
+            ];
+            const weekLabel = (w) => w === 0 ? (results.event_label || t('pp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
             return (
               <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
                 <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pp_order_title')}</h3>
-                <p className={`text-xs ${c.textMuted} mb-4`}>
-                  {eventWeek > 0
-                    ? t('pp_cal_note_anchored', { label: results.event_label || t('pp_cal_event'), week: eventWeek })
-                    : t('pp_cal_note')}
-                </p>
+                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pp_cal_note_rel', { label: results.event_label || t('pp_cal_event') })}</p>
 
-                {/* Calendar: one block per month, 4 week-cells each */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-                  {Array.from({ length: months }, (_, mi) => (
-                    <div key={mi} className={`${c.cardAlt} border ${c.border} rounded-lg p-2`}>
-                      <p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted} mb-2 text-center`}>{t('pp_cal_month')} {mi + 1}</p>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {Array.from({ length: 4 }, (_, wi) => {
-                          const wk = mi * 4 + wi + 1;
-                          const here = stepsInWeek(wk);
-                          const isEvent = eventWeek === wk;
-                          return (
-                            <div key={wi} className={`rounded-md p-1.5 min-h-[46px] border ${isEvent ? c.warning : `${c.card} ${c.border}`}`}>
-                              <p className={`text-[9px] mb-1 ${isEvent ? `font-bold ${c.warningTxt}` : c.textMuted}`}>{t('pp_cal_week')} {wk}</p>
-                              {isEvent && (
-                                <p className={`text-[9px] font-bold leading-tight mb-1 ${c.warningTxt}`}>📍 {results.event_label || t('pp_cal_event')}</p>
-                              )}
-                              <div className="flex flex-wrap gap-1">
-                                {here.map(s => (
-                                  <span key={s.order} className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold ${c.pillActive}`}>{s.order}</span>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                {/* Relative-week timeline (Gantt). Scrolls sideways on small screens. */}
+                <div className="overflow-x-auto -mx-1 px-1 mb-5">
+                  <div style={{ minWidth: `${totalCols * 46}px` }}>
+                    {/* Week axis */}
+                    <div className="grid mb-1.5" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
+                      {cols.map((w) => (
+                        <div key={w} className={`text-center text-[10px] font-bold pb-1 ${w === 0 ? c.warningTxt : c.textMuted} ${w === 0 ? 'border-b-2 ' + (isDark ? 'border-amber-500' : 'border-amber-400') : ''}`}>
+                          {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `wk ${weekLabel(w)}`}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                    {/* One bar row per step */}
+                    <div className="space-y-1.5">
+                      {steps.map((s, i) => {
+                        const st = startOf(s, i), en = endOf(s, i);
+                        return (
+                          <div key={i} className="grid items-center" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
+                            {/* event gridline behind the bar */}
+                            <div className={`h-6 rounded-md flex items-center px-1.5 text-white text-[11px] font-bold ${BARS[i % BARS.length]}`}
+                              style={{ gridColumn: `${colOf(st) + 1} / ${colOf(en) + 2}` }}
+                              title={`${s.action} — ${s.timing}`}>
+                              {s.order}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Keyed legend — number → what to do */}
                 <div className="space-y-2.5">
                   {steps.map((s, i) => (
                     <div key={i} className="flex items-start gap-3">
-                      <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-bold ${c.pillActive}`}>{s.order}</span>
+                      <span className={`shrink-0 w-6 h-6 flex items-center justify-center rounded-md text-white text-[11px] font-bold ${BARS[i % BARS.length]}`}>{s.order}</span>
                       <div>
                         <p className={`text-sm font-medium ${c.text}`}>{s.action}</p>
                         <p className={`text-xs ${c.accentTxt}`}>{s.timing}</p>

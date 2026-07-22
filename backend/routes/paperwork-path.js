@@ -35,7 +35,6 @@ Return ONLY valid JSON:
 
 {
   "situation_summary": "One sentence restating what they're handling, grounded in their inputs",
-  "event_week": 3,
   "event_label": "Move day",
   "document_checklist": [
     {
@@ -49,7 +48,8 @@ Return ONLY valid JSON:
     {
       "order": 1,
       "action": "The concrete step to do",
-      "week": 1,
+      "week_start": -4,
+      "week_end": -2,
       "timing": "When to do it (e.g. 'first', 'within 2 weeks', 'after you have X')",
       "why_first": "Why it comes at this point in the order — often because a later step depends on it. One sentence."
     }
@@ -63,8 +63,8 @@ Return ONLY valid JSON:
 RULES:
 - ALL five top-level keys must be present.
 - document_checklist: 5-12 items, most impactful first, priority set honestly.
-- TIMELINE ANCHOR: "event_week" is the week the life event ITSELF happens on this timeline (move day, baby's arrival, first day of work, wedding, date of passing). "event_label" is a 1-3 word name for it. Anchor the whole plan to it: preparation steps happen BEFORE the event (week LESS than event_week); follow-up steps happen AFTER (week GREATER than event_week). A step described as "2 weeks before the move" MUST have week = event_week − 2; "within 30 days of arriving" MUST have week > event_week. If the event has already occurred when someone would use this (e.g. a death, where handling starts after), set event_week to 1 and put everything at week 1 or later. Give enough lead time before the event for the prep steps (so event_week is usually 2-4, not 1, when there is real preparation).
-- ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically. "week" is a small integer (1-16), RELATIVE TO event_week per the anchor rule above (its recommended target week, not its final deadline). Steps can share a week. Keep the whole plan realistic (usually spanning ~12 weeks).
+- TIMELINE ANCHOR (relative weeks): the life event ITSELF is WEEK 0. "event_label" is a 1-3 word name for it (e.g. "Move day", "Baby arrives", "First day", "Date of passing"). Every step's week_start/week_end are integers RELATIVE to that: NEGATIVE = weeks BEFORE the event (preparation), 0 = the event week, POSITIVE = weeks AFTER (follow-up). Examples: "2 to 4 weeks before the move" → week_start -4, week_end -2; "the week before" → -1, -1; "the week of / on the day" → 0, 0; "within the 2nd–3rd week after" → +2, +3. A single-week step has week_start == week_end; a windowed step spans it with week_start ≤ week_end. If the event has already occurred when someone uses this (e.g. a death, where handling begins after), keep event at 0 and put every step at 0 or positive.
+- ordered_steps: 4-8 steps; the ORDER is the whole value — sequence by dependency (what must exist before the next step), not alphabetically. week_start/week_end are RELATIVE to week 0 (the event) per the anchor rule above — they are the recommended window, not a legal deadline. Keep the whole plan realistic (typically about -4 to +8 weeks).
 - watch_outs: 2-4 items.
 - Keep every field to one tight sentence. Never put a double-quote (") inside a JSON string value.
 - Be specific to the life event; generic "make a checklist" advice is a failure.
