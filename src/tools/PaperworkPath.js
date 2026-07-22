@@ -326,7 +326,6 @@ const PaperworkPath = ({ tool }) => {
               isDark ? 'bg-orange-600'  : 'bg-orange-500',
             ];
             const eventLeftPct = (colOf(0) / totalCols) * 100;
-            const colPct = 100 / totalCols;
             const weekLabel = (w) => w === 0 ? (results.event_label || t('pp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
             return (
               <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
@@ -336,9 +335,10 @@ const PaperworkPath = ({ tool }) => {
                 {/* Relative-week timeline (Gantt). Scrolls sideways on small screens. */}
                 <div className="overflow-x-auto -mx-1 px-1 mb-5">
                   <div className="relative" style={{ minWidth: `${totalCols * 46}px` }}>
-                    {/* Week-0 anchor band — highlights the event column through the whole chart */}
-                    <div className={`absolute inset-y-0 z-0 rounded ${isDark ? 'bg-amber-400/10 border-amber-400/40' : 'bg-amber-400/20 border-amber-400/60'} border-x`}
-                      style={{ left: `${eventLeftPct}%`, width: `${colPct}%` }} />
+                    {/* Event anchor — a thin marker line (the event is a point in time,
+                        not a week-long span), at the start of week 0 (the event day). */}
+                    <div className={`absolute inset-y-0 z-0 w-0.5 ${isDark ? 'bg-amber-400' : 'bg-amber-500'}`}
+                      style={{ left: `${eventLeftPct}%` }} />
                     <div className="relative z-10">
                     {/* Week axis */}
                     <div className="grid mb-1.5" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
