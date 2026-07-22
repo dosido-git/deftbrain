@@ -207,6 +207,87 @@ function barRow(label, value, max, extra) {
   return `<tr><td>${escH(label)}</td><td style="width:50%"><div style="background:#2c4a6e;height:12px;width:${w}%;border-radius:2px"></div></td><td>${value}</td><td>${extra || ''}</td></tr>`;
 }
 
+// ════════════════════════════════════════════════════════════
+// GET /api/metrics — the clickable dashboard shell.
+//
+// A tiny PUBLIC page (it holds NO data — the report fetch below is still
+// key-gated). It has a key field; the key is kept in THIS browser's
+// localStorage, never in a URL or referrer. Because the page is same-origin
+// with /api/metrics/report, its fetch() can set the x-metrics-key header —
+// which a plain browser navigation cannot. The report renders inside an
+// iframe (srcdoc) so its styles stay isolated.
+//
+// Visit: https://deftbrain.com/api/metrics
+// ════════════════════════════════════════════════════════════
+router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => {
+  res.type('html').send(`<!DOCTYPE html><html><head><meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>DeftBrain metrics</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,sans-serif;background:#f8f7f4;color:#222}
+    header{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:#1a2e44;color:#fff;position:sticky;top:0;z-index:2}
+    header b{font-size:14px;margin-right:6px}
+    input[type=password]{padding:6px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;min-width:220px}
+    button{padding:6px 12px;border:0;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:#c8872e;color:#fff}
+    button.ghost{background:transparent;color:#cbd5e1;font-weight:400}
+    label{font-size:12px;color:#cbd5e1;display:flex;gap:4px;align-items:center;cursor:pointer}
+    #msg{font-size:12px;margin-left:auto;color:#cbd5e1}
+    iframe{width:100%;border:0;display:block;height:calc(100vh - 52px)}
+    #login{padding:48px 16px;text-align:center;color:#666;font-size:14px}
+  </style></head><body>
+  <header>
+    <b>📊 DeftBrain metrics</b>
+    <input id="key" type="password" placeholder="metrics key" autocomplete="off" spellcheck="false">
+    <label><input id="remember" type="checkbox" checked> remember</label>
+    <button onclick="load()">Load</button>
+    <button class="ghost" onclick="reset()">reset baseline</button>
+    <button class="ghost" onclick="forget()">forget key</button>
+    <span id="msg"></span>
+  </header>
+  <div id="login">Enter your metrics key above and click <b>Load</b>.</div>
+  <iframe id="report" title="metrics report" style="display:none"></iframe>
+  <script>
+    var K='dbMetricsKey';
+    var keyEl=document.getElementById('key');
+    var rem=document.getElementById('remember');
+    var msg=document.getElementById('msg');
+    var frame=document.getElementById('report');
+    var login=document.getElementById('login');
+    function say(t,ok){msg.style.color=ok?'#86efac':'#fca5a5';msg.textContent=t;}
+    function forget(){localStorage.removeItem(K);keyEl.value='';frame.style.display='none';login.style.display='block';login.textContent='Key forgotten. Enter it again to view.';msg.textContent='';}
+    function load(){
+      var k=keyEl.value.trim();
+      if(!k){say('enter a key');return;}
+      msg.style.color='#cbd5e1';msg.textContent='loading\\u2026';
+      fetch('/api/metrics/report',{headers:{'x-metrics-key':k}}).then(function(r){
+        if(r.status===200)return r.text();
+        if(r.status===404)throw new Error('key rejected');
+        throw new Error('error '+r.status);
+      }).then(function(html){
+        if(rem.checked)localStorage.setItem(K,k);else localStorage.removeItem(K);
+        frame.srcdoc=html;frame.style.display='block';login.style.display='none';say('loaded',true);
+      }).catch(function(e){
+        frame.style.display='none';login.style.display='block';login.textContent='Could not load: '+e.message;say(e.message);
+      });
+    }
+    function reset(){
+      var k=keyEl.value.trim();
+      if(!k){say('enter a key');return;}
+      if(!confirm('Archive current data and start a fresh baseline? Nothing is deleted \\u2014 the old data is kept as an archive file.'))return;
+      fetch('/api/metrics/reset',{method:'POST',headers:{'x-metrics-key':k}}).then(function(r){
+        if(r.status===404)throw new Error('key rejected');
+        return r.json();
+      }).then(function(j){say(j.ok?'baseline reset':'reset failed',!!j.ok);if(j.ok)load();}).catch(function(e){say(e.message);});
+    }
+    keyEl.addEventListener('keydown',function(e){if(e.key==='Enter')load();});
+    var saved=localStorage.getItem(K);
+    if(saved){keyEl.value=saved;load();}
+  </script>
+  </body></html>`);
+});
+
 router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req, res) => {
   const KEY = process.env.METRICS_KEY;
   if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
