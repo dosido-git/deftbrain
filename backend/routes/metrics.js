@@ -385,7 +385,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     };
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
-    const toolOf = r => (r.props && r.props.tool) || (r.path || '').split('/')[1] || '?';
+    // Canonical per-tool key = the frontend tool id from the page path
+    // (PascalCase, e.g. /TheCrux → "TheCrux"), so runs/completes/errors line up
+    // with views on ONE row — and multi-endpoint calls (the-crux/study-guide…)
+    // fold into their parent tool. Fall back to the backend endpoint string
+    // (props.tool) only when the path isn't a tool page.
+    const toolOf = r => {
+      const seg = (r.path || '').split('/')[1];
+      if (seg && /^[A-Z]/.test(seg)) return seg;
+      return (r.props && r.props.tool) || seg || '?';
+    };
 
     // Sink health — logMetric's file writes are deliberately silent-on-error
     // (logging must never break a request), so surface here whether the sink
