@@ -5,6 +5,7 @@ const fs = require('fs');
 const nodePath = require('path');
 const geoip = require('geoip-lite');
 const crypto = require('crypto');
+const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacenterIp');
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -47,14 +48,15 @@ const EXCLUDED_IPS = (process.env.METRICS_EXCLUDE_IPS || '')
 const BOT_UA = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|pinterest|redditbot|whatsapp|telegrambot|discordbot|semrush|ahrefs|mj12|dotbot|petalbot|dataforseo|headlesschrome|python-requests|curl|wget|go-http|axios|node-fetch|uptime|monitor|pingdom|statuscake|gtmetrix|lighthouse|inspectiontool/i;
 
 function isExcluded(req) {
-  // Bot / crawler / monitor traffic — never counts.
+  // Bot / crawler / monitor traffic by UA — never counts.
   const ua = req.headers['user-agent'] || '';
   if (!ua || BOT_UA.test(ua)) return true;
-  // Self-exclusion by IP (METRICS_EXCLUDE_IPS).
-  if (EXCLUDED_IPS.length) {
-    const ip = requestIp(req);
-    if (ip && EXCLUDED_IPS.includes(ip)) return true;
-  }
+  const ip = requestIp(req);
+  // Cloud/datacenter IPs (AWS/GCP/Oracle/DO) — bots wearing a browser UA that
+  // the UA filter can't catch. See lib/datacenterIp + build-datacenter-ranges.
+  if (ip && isDatacenterIp(ip)) return true;
+  // Operator self-exclusion by IP (METRICS_EXCLUDE_IPS).
+  if (EXCLUDED_IPS.length && ip && EXCLUDED_IPS.includes(ip)) return true;
   return false;
 }
 
@@ -316,6 +318,34 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const cutoffISO = rangeDays ? new Date(Date.now() - rangeDays * 86400000).toISOString() : null;
     const rows = cutoffISO ? allRows.filter(r => (r.at || '') >= cutoffISO) : allRows;
     const events = rows.filter(r => r.kind === 'event');
+
+    // ── previous equal-length window (for Δ). Only defined for a bounded range;
+    // 'all time' has no prior window, so deltas are suppressed there. ──
+    const prevCutoffISO = rangeDays ? new Date(Date.now() - 2 * rangeDays * 86400000).toISOString() : null;
+    const prevRows = (rangeDays && cutoffISO)
+      ? allRows.filter(r => { const t = r.at || ''; return t >= prevCutoffISO && t < cutoffISO; })
+      : null;
+    const prevMetrics = prevRows ? (() => {
+      const ev = prevRows.filter(r => r.kind === 'event');
+      const ppv = ev.filter(e => e.event === 'page_view');
+      const psess = ppv.filter(e => e.props && e.props.newSession);
+      return {
+        pv: ppv.length,
+        sessions: psess.length,
+        returning: psess.filter(e => e.props.returning).length,
+        runs: ev.filter(e => e.event === 'tool_run').length,
+        taken: ev.filter(e => ['print', 'copy', 'share'].includes(e.event)).length,
+        events: ev.length,
+      };
+    })() : null;
+    // Small colored ▲/▼ badge vs the prior window; '' when there's no prior window.
+    const deltaHtml = (cur, prev) => {
+      if (prev == null) return '';
+      const d = cur - prev;
+      if (d === 0) return '<span style="font-size:12px;color:#999;font-weight:400"> ±0</span>';
+      const up = d > 0;
+      return `<span style="font-size:12px;font-weight:600;color:${up ? '#15803d' : '#b91c1c'}"> ${up ? '▲' : '▼'} ${up ? '+' : '−'}${Math.abs(d)}</span>`;
+    };
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
     const toolOf = r => (r.props && r.props.tool) || (r.path || '').split('/')[1] || '?';
@@ -403,7 +433,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const fbRows = feedback.slice(-25).reverse().map(f =>
       `<tr><td>${escH(f.tool || '?')}</td><td>${f.helpful ? '👍' : '👎'}</td><td>${escH(f.comment || '')}</td><td style="white-space:nowrap">${escH((f.at || '').slice(0, 10))}</td></tr>`).join('');
 
-    const card = (label, value, sub) => `<div style="background:#fff;border:1px solid #e5e2da;border-radius:10px;padding:14px 18px;min-width:130px"><div style="font-size:26px;font-weight:700;color:#1a2e44">${value}</div><div style="font-size:12px;color:#666">${label}${sub ? `<br><span style="color:#999">${sub}</span>` : ''}</div></div>`;
+    const card = (label, value, sub, delta) => `<div style="background:#fff;border:1px solid #e5e2da;border-radius:10px;padding:14px 18px;min-width:130px"><div style="font-size:26px;font-weight:700;color:#1a2e44">${value}${delta || ''}</div><div style="font-size:12px;color:#666">${label}${sub ? `<br><span style="color:#999">${sub}</span>` : ''}</div></div>`;
 
     res.type('html').send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>DeftBrain metrics</title>
     <meta name="robots" content="noindex,nofollow">
@@ -414,15 +444,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
     <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${rows.length ? ' · ' + escH((rows[0].at || '').slice(0, 10)) + ' → today' : ' · no data in this range'}</span></h1>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
-    <p style="font-size:11px;color:#888;margin:2px 0 0">self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s) excluded — your own visits aren't counted` : 'none set — set METRICS_EXCLUDE_IPS to stop counting your own visits'}</p>
+    <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <div class="cards">
-      ${card('page views', pv.length)}
-      ${card('sessions', sessions.length)}
-      ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions')}
-      ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete')}
-      ${card('took it with them', taken.length, 'print + copy + share')}
+      ${card('page views', pv.length, null, deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
+      ${card('sessions', sessions.length, null, deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
+      ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
+      ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete', deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
+      ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
+    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace('past ', ''))} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
