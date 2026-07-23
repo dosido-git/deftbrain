@@ -107,9 +107,31 @@ function pageView() {
   track('page_view', visitContext());
 }
 
+// ── Human-session signal: fire `interact` ONCE per session on the first real
+// user gesture (click/tap/keypress/scroll). Page-loaders that never interact —
+// headless bots with browser UAs, prefetches, link-preview renderers — never
+// send it, so "interactive sessions" on the dashboard ≈ sessions with a human
+// behind them. Behavioral, so it catches what UA and IP filters can't. ──
+function armInteractSignal() {
+  try {
+    if (sessionStorage.getItem('db-int')) return;
+  } catch (_) { return; }
+  const fire = () => {
+    try {
+      if (sessionStorage.getItem('db-int')) return;
+      sessionStorage.setItem('db-int', '1');
+    } catch (_) { return; }
+    ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(t => window.removeEventListener(t, fire));
+    track('interact');
+  };
+  ['pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(t =>
+    window.addEventListener(t, fire, { passive: true }));
+}
+
 if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   window.__dbAnalyticsInit = true;
   pageView();
+  armInteractSignal();
   const wrap = (method) => {
     const orig = window.history[method];
     window.history[method] = function () {

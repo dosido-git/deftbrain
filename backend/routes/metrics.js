@@ -370,6 +370,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         pv: ppv.length,
         sessions: psess.length,
         returning: psess.filter(e => e.props.returning).length,
+        interactive: ev.filter(e => e.event === 'interact').length,
         runs: ev.filter(e => e.event === 'tool_run').length,
         taken: ev.filter(e => ['print', 'copy', 'share'].includes(e.event)).length,
         events: ev.length,
@@ -428,6 +429,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const pv = events.filter(e => e.event === 'page_view');
     const sessions = pv.filter(e => e.props && e.props.newSession);
     const returningSessions = sessions.filter(e => e.props.returning);
+    // Sessions that produced a real user gesture (see analytics.js interact
+    // beacon) — page-loads with no interaction are bots/prefetch, not people.
+    const interactiveSessions = events.filter(e => e.event === 'interact').length;
     const runs = events.filter(e => e.event === 'tool_run');
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
@@ -494,6 +498,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <div class="cards">
       ${card('page views', pv.length, null, deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
       ${card('sessions', sessions.length, null, deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
+      ${card('interactive', interactiveSessions, pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human', deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
       ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
       ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete', deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
       ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}

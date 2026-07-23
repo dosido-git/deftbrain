@@ -21,6 +21,11 @@ const SOURCES = {
   gcp: 'https://www.gstatic.com/ipranges/cloud.json',
   oci: 'https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json',
   do:  'https://www.digitalocean.com/geo/google.csv',
+  // Azure's JSON lives at a rotating download URL — discovered from the details
+  // page at fetch time (see readSource). Offline builds use a saved azure.json.
+  azure: 'https://www.microsoft.com/en-us/download/details.aspx?id=56519',
+  linode: 'https://geoip.linode.com/',
+  vultr: 'https://geofeed.constant.com/?json',
 };
 
 function ipv4ToInt(ip) {
@@ -45,9 +50,17 @@ function cidrToRange(cidr) {
 }
 
 async function readSource(name, srcDir) {
-  const file = { aws: 'aws.json', gcp: 'gcp.json', oci: 'oci.json', do: 'do.csv' }[name];
+  const file = { aws: 'aws.json', gcp: 'gcp.json', oci: 'oci.json', do: 'do.csv', azure: 'azure.json', linode: 'linode.csv', vultr: 'vultr.json' }[name];
   if (srcDir) return fs.readFileSync(nodePath.join(srcDir, file), 'utf8');
-  const res = await fetch(SOURCES[name]);
+  let url = SOURCES[name];
+  if (name === 'azure') {
+    // Resolve the rotating ServiceTags_Public_<date>.json link from the details page.
+    const page = await (await fetch(url)).text();
+    const m = page.match(/https:\/\/download\.microsoft\.com\/download\/[^"]+\.json/);
+    if (!m) throw new Error('azure: could not discover ServiceTags download URL');
+    url = m[0];
+  }
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`${name}: HTTP ${res.status}`);
   return res.text();
 }
@@ -63,10 +76,26 @@ function parseDo(txt) {
   // CSV: network,country,region,city,postal — first column is the CIDR.
   return txt.split('\n').map(l => l.split(',')[0].trim()).filter(Boolean);
 }
+function parseAzure(txt) {
+  // ServiceTags JSON: values[].properties.addressPrefixes (mixed v4/v6; v6 skipped downstream)
+  const out = [];
+  for (const v of (JSON.parse(txt).values || [])) {
+    for (const p of ((v.properties && v.properties.addressPrefixes) || [])) out.push(p);
+  }
+  return out;
+}
+function parseLinode(txt) {
+  // Geofeed CSV (RFC 8805): CIDR,country,region,city — comment lines start with #
+  return txt.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(l => l.split(',')[0].trim()).filter(Boolean);
+}
+function parseVultr(txt) {
+  // {subnets:[{ip_prefix:"x.x.x.x/nn"},…]}
+  return (JSON.parse(txt).subnets || []).map(s => s.ip_prefix).filter(Boolean);
+}
 
 (async () => {
   const srcDir = process.argv[2] || null;
-  const parsers = { aws: parseAws, gcp: parseGcp, oci: parseOci, do: parseDo };
+  const parsers = { aws: parseAws, gcp: parseGcp, oci: parseOci, do: parseDo, azure: parseAzure, linode: parseLinode, vultr: parseVultr };
   const perSource = {};
   let ranges = [];
 
