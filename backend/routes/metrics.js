@@ -49,9 +49,20 @@ const EXCLUDED_IPS = (process.env.METRICS_EXCLUDE_IPS || '')
 // METRICS_EXCLUDE_IPS entry silently fails to match.
 function stripMapped(ip) { return ip && ip.startsWith('::ffff:') ? ip.slice(7) : ip; }
 const EXCLUDED_IPS_NORM = EXCLUDED_IPS.map(stripMapped);
-function ipExcludedByList(ip) {
-  if (!ip || !EXCLUDED_IPS_NORM.length) return false;
-  return EXCLUDED_IPS_NORM.includes(stripMapped(ip));
+// All candidate IPs for THIS request: req.ip plus every hop in X-Forwarded-For,
+// normalized. Behind a multi-hop proxy the last hop (req.ip) can rotate across a
+// pool, but the operator's stable origin IP still appears in the forwarded chain
+// — so match the exclude list against the WHOLE chain. Metrics-only: the rate
+// limiter still keys on req.ip alone, so this can't be abused to evade limits
+// (worst case a client spoofs XFF to exclude ITSELF from analytics — harmless).
+function candidateIps(req) {
+  const xff = (req.headers['x-forwarded-for'] || '').split(',').map(s => stripMapped(s.trim())).filter(Boolean);
+  const ip = stripMapped(requestIp(req));
+  return ip ? xff.concat(ip) : xff;
+}
+function reqExcludedByList(req) {
+  if (!EXCLUDED_IPS_NORM.length) return false;
+  return candidateIps(req).some(ip => EXCLUDED_IPS_NORM.includes(ip));
 }
 
 // Known bots / crawlers / uptime monitors — their hits are noise, not users.
@@ -65,8 +76,9 @@ function isExcluded(req) {
   // Cloud/datacenter IPs (AWS/GCP/Oracle/DO) — bots wearing a browser UA that
   // the UA filter can't catch. See lib/datacenterIp + build-datacenter-ranges.
   if (ip && isDatacenterIp(ip)) return true;
-  // Operator self-exclusion by IP (METRICS_EXCLUDE_IPS), mapped-form tolerant.
-  if (ipExcludedByList(ip)) return true;
+  // Operator self-exclusion (METRICS_EXCLUDE_IPS) — matches any hop in the chain,
+  // mapped-form tolerant, so a rotating last hop doesn't defeat it.
+  if (reqExcludedByList(req)) return true;
   return false;
 }
 
@@ -519,7 +531,9 @@ router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req,
   const normalized = stripMapped(ip);
   const botUA = !ua || BOT_UA.test(ua);
   const datacenter = ip ? isDatacenterIp(ip) : false;
-  const inExcludeList = ipExcludedByList(ip);
+  const candidates = candidateIps(req);
+  const matched = candidates.find(c => EXCLUDED_IPS_NORM.includes(c)) || null;
+  const inExcludeList = !!matched;
   const excluded = botUA || datacenter || inExcludeList;
   res.json({
     req_ip: ip,
@@ -527,11 +541,13 @@ router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req,
     is_ipv6: !!(ip && ip.includes(':') && !ip.startsWith('::ffff:')),
     x_forwarded_for: req.headers['x-forwarded-for'] || null,
     trust_proxy_setting: req.app.get('trust proxy'),
+    candidate_ips: candidates, // every hop we match the exclude list against
+    matched_exclude_ip: matched, // which candidate matched, if any
     would_be_counted: !excluded,
     reason: botUA ? 'EXCLUDED: bot user-agent'
       : datacenter ? 'EXCLUDED: datacenter IP'
-      : inExcludeList ? 'EXCLUDED: matches METRICS_EXCLUDE_IPS'
-      : 'COUNTED: req.ip does NOT match METRICS_EXCLUDE_IPS — this visit is being logged',
+      : inExcludeList ? `EXCLUDED: ${matched} matches METRICS_EXCLUDE_IPS`
+      : 'COUNTED: no IP in the forwarded chain matches METRICS_EXCLUDE_IPS — this visit is being logged',
     exclude_list_size: EXCLUDED_IPS.length,
   });
 });
