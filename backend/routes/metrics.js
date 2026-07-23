@@ -232,6 +232,7 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     input[type=password]{padding:6px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;min-width:220px}
     button{padding:6px 12px;border:0;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;background:#c8872e;color:#fff}
     button.ghost{background:transparent;color:#cbd5e1;font-weight:400}
+    select{padding:6px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;background:#fff;color:#222;cursor:pointer}
     label{font-size:12px;color:#cbd5e1;display:flex;gap:4px;align-items:center;cursor:pointer}
     #msg{font-size:12px;margin-left:auto;color:#cbd5e1}
     iframe{width:100%;border:0;display:block;height:calc(100vh - 52px)}
@@ -241,6 +242,13 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     <b>📊 DeftBrain metrics</b>
     <input id="key" type="password" placeholder="metrics key" autocomplete="off" spellcheck="false">
     <label><input id="remember" type="checkbox" checked> remember</label>
+    <select id="range" onchange="onRange()">
+      <option value="7d">Past week</option>
+      <option value="14d">Past 2 weeks</option>
+      <option value="30d" selected>Past month</option>
+      <option value="90d">Past 3 months</option>
+      <option value="all">All time</option>
+    </select>
     <button onclick="load()">Load</button>
     <button class="ghost" onclick="reset()">reset baseline</button>
     <button class="ghost" onclick="forget()">forget key</button>
@@ -249,19 +257,22 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
   <div id="login">Enter your metrics key above and click <b>Load</b>.</div>
   <iframe id="report" title="metrics report" style="display:none"></iframe>
   <script>
-    var K='dbMetricsKey';
+    var K='dbMetricsKey', RK='dbMetricsRange';
     var keyEl=document.getElementById('key');
     var rem=document.getElementById('remember');
+    var rangeEl=document.getElementById('range');
     var msg=document.getElementById('msg');
     var frame=document.getElementById('report');
     var login=document.getElementById('login');
     function say(t,ok){msg.style.color=ok?'#86efac':'#fca5a5';msg.textContent=t;}
+    function onRange(){localStorage.setItem(RK,rangeEl.value);if(keyEl.value.trim())load();}
     function forget(){localStorage.removeItem(K);keyEl.value='';frame.style.display='none';login.style.display='block';login.textContent='Key forgotten. Enter it again to view.';msg.textContent='';}
     function load(){
       var k=keyEl.value.trim();
       if(!k){say('enter a key');return;}
       msg.style.color='#cbd5e1';msg.textContent='loading\\u2026';
-      fetch('/api/metrics/report',{headers:{'x-metrics-key':k}}).then(function(r){
+      localStorage.setItem(RK,rangeEl.value);
+      fetch('/api/metrics/report?range='+encodeURIComponent(rangeEl.value),{headers:{'x-metrics-key':k}}).then(function(r){
         if(r.status===200)return r.text();
         if(r.status===404)throw new Error('key rejected');
         throw new Error('error '+r.status);
@@ -282,6 +293,8 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
       }).then(function(j){say(j.ok?'baseline reset':'reset failed',!!j.ok);if(j.ok)load();}).catch(function(e){say(e.message);});
     }
     keyEl.addEventListener('keydown',function(e){if(e.key==='Enter')load();});
+    var savedR=localStorage.getItem(RK);
+    if(savedR)rangeEl.value=savedR;
     var saved=localStorage.getItem(K);
     if(saved){keyEl.value=saved;load();}
   </script>
@@ -292,8 +305,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
   const KEY = process.env.METRICS_KEY;
   if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
   try {
+    // ── time-range filter (query param; key stays in the header) ──
+    const RANGE_DAYS = { '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
+    const rangeParam = RANGE_DAYS[req.query.range] ? String(req.query.range)
+      : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
+    const rangeDays = RANGE_DAYS[rangeParam] || null;
+    const rangeText = { '7d': 'past week', '14d': 'past 2 weeks', '30d': 'past month', '90d': 'past 3 months', all: 'all time' }[rangeParam];
 
-    const rows = readMetrics();
+    const allRows = readMetrics();
+    const cutoffISO = rangeDays ? new Date(Date.now() - rangeDays * 86400000).toISOString() : null;
+    const rows = cutoffISO ? allRows.filter(r => (r.at || '') >= cutoffISO) : allRows;
     const events = rows.filter(r => r.kind === 'event');
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
@@ -310,7 +331,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       sinkStatus = {
         ok: true,
         detail: st
-          ? `writable · ${Math.max(1, Math.round(st.size / 1024))} KB · oldest record ${((rows[0] && rows[0].at) || '').slice(0, 10) || '—'}`
+          ? `writable · ${Math.max(1, Math.round(st.size / 1024))} KB · oldest record ${((allRows[0] && allRows[0].at) || '').slice(0, 10) || '—'}`
           : 'writable · file not created yet (no events since this deploy)',
       };
     } catch (_) {
@@ -325,7 +346,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       if (e.event === 'page_view') { byDay[day].views++; if (e.props && e.props.newSession) byDay[day].sessions++; }
       if (e.event === 'tool_run') byDay[day].runs++;
     }
-    const days = Object.values(byDay).sort((a, b) => a.day.localeCompare(b.day)).slice(-30);
+    const days = Object.values(byDay).sort((a, b) => a.day.localeCompare(b.day)).slice(-90);
 
     // ── headline ──
     const pv = events.filter(e => e.event === 'page_view');
@@ -391,7 +412,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e2da;border-radius:8px;font-size:13px}
     th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #f0ede6} th{background:#faf8f5;font-weight:600}
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
-    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${rows.length ? escH((rows[0].at || '').slice(0, 10)) + ' → today' : 'no data yet'}</span></h1>
+    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${rows.length ? ' · ' + escH((rows[0].at || '').slice(0, 10)) + ' → today' : ' · no data in this range'}</span></h1>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s) excluded — your own visits aren't counted` : 'none set — set METRICS_EXCLUDE_IPS to stop counting your own visits'}</p>
     <div class="cards">
@@ -402,7 +423,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('took it with them', taken.length, 'print + copy + share')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
-    <h2>Daily trend (last 30 days)</h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
+    <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
