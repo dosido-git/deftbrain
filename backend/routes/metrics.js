@@ -252,6 +252,7 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
       <option value="all">All time</option>
     </select>
     <button onclick="load()">Load</button>
+    <button class="ghost" onclick="openReport()">open report ↗</button>
     <button class="ghost" onclick="reset()">reset baseline</button>
     <button class="ghost" onclick="forget()">forget key</button>
     <span id="msg"></span>
@@ -284,6 +285,20 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
       }).catch(function(e){
         frame.style.display='none';login.style.display='block';login.textContent='Could not load: '+e.message;say(e.message);
       });
+    }
+    function openReport(){
+      var k=keyEl.value.trim();
+      if(!k){say('enter a key');return;}
+      say('opening\\u2026');
+      fetch('/api/metrics/report?range='+encodeURIComponent(rangeEl.value),{headers:{'x-metrics-key':k}}).then(function(r){
+        if(r.status===404)throw new Error('key rejected');
+        if(r.status!==200)throw new Error('error '+r.status);
+        return r.text();
+      }).then(function(html){
+        var w=window.open('','_blank');
+        if(w){ w.document.open();w.document.write(html);w.document.close();say('opened — use ⌘P to print',true); }
+        else { document.open();document.write(html);document.close(); } // popup blocked → replace this tab (reload to return)
+      }).catch(function(e){say(e.message);});
     }
     function reset(){
       var k=keyEl.value.trim();
