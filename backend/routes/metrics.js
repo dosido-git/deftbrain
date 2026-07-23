@@ -43,6 +43,16 @@ function locationOf(req) {
 // (not just hidden in the report).
 const EXCLUDED_IPS = (process.env.METRICS_EXCLUDE_IPS || '')
   .split(',').map(s => s.trim()).filter(Boolean);
+// Normalize IPv4-mapped IPv6 (::ffff:1.2.3.4 → 1.2.3.4) so an exact-string match
+// doesn't miss just because the proxy hands us the mapped form (or vice versa).
+// req.ip is frequently ::ffff-mapped behind a proxy — the #1 reason a correct
+// METRICS_EXCLUDE_IPS entry silently fails to match.
+function stripMapped(ip) { return ip && ip.startsWith('::ffff:') ? ip.slice(7) : ip; }
+const EXCLUDED_IPS_NORM = EXCLUDED_IPS.map(stripMapped);
+function ipExcludedByList(ip) {
+  if (!ip || !EXCLUDED_IPS_NORM.length) return false;
+  return EXCLUDED_IPS_NORM.includes(stripMapped(ip));
+}
 
 // Known bots / crawlers / uptime monitors — their hits are noise, not users.
 const BOT_UA = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link preview|pinterest|redditbot|whatsapp|telegrambot|discordbot|semrush|ahrefs|mj12|dotbot|petalbot|dataforseo|headlesschrome|python-requests|curl|wget|go-http|axios|node-fetch|uptime|monitor|pingdom|statuscake|gtmetrix|lighthouse|inspectiontool/i;
@@ -55,8 +65,8 @@ function isExcluded(req) {
   // Cloud/datacenter IPs (AWS/GCP/Oracle/DO) — bots wearing a browser UA that
   // the UA filter can't catch. See lib/datacenterIp + build-datacenter-ranges.
   if (ip && isDatacenterIp(ip)) return true;
-  // Operator self-exclusion by IP (METRICS_EXCLUDE_IPS).
-  if (EXCLUDED_IPS.length && ip && EXCLUDED_IPS.includes(ip)) return true;
+  // Operator self-exclusion by IP (METRICS_EXCLUDE_IPS), mapped-form tolerant.
+  if (ipExcludedByList(ip)) return true;
   return false;
 }
 
@@ -494,6 +504,36 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     console.error('metrics report failed:', err.message);
     return res.status(500).send('Report generation failed.');
   }
+});
+
+// GET /api/metrics/whoami — diagnostic: what IP does the server see for THIS
+// request, and would this visit be counted or excluded? Use it to debug why
+// self-exclusion isn't catching your own traffic (trust-proxy hop count, IPv6
+// vs IPv4 / ::ffff-mapped form, stale IP, or unset METRICS_EXCLUDE_IPS). Does
+// NOT reveal the excluded IPs themselves — only whether YOUR req.ip matches.
+router.get('/metrics/whoami', rateLimit(METRIC_LIMITS, 'metrics-whoami:'), (req, res) => {
+  const KEY = process.env.METRICS_KEY;
+  if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
+  const ua = req.headers['user-agent'] || '';
+  const ip = requestIp(req);
+  const normalized = stripMapped(ip);
+  const botUA = !ua || BOT_UA.test(ua);
+  const datacenter = ip ? isDatacenterIp(ip) : false;
+  const inExcludeList = ipExcludedByList(ip);
+  const excluded = botUA || datacenter || inExcludeList;
+  res.json({
+    req_ip: ip,
+    normalized_ip: normalized,
+    is_ipv6: !!(ip && ip.includes(':') && !ip.startsWith('::ffff:')),
+    x_forwarded_for: req.headers['x-forwarded-for'] || null,
+    trust_proxy_setting: req.app.get('trust proxy'),
+    would_be_counted: !excluded,
+    reason: botUA ? 'EXCLUDED: bot user-agent'
+      : datacenter ? 'EXCLUDED: datacenter IP'
+      : inExcludeList ? 'EXCLUDED: matches METRICS_EXCLUDE_IPS'
+      : 'COUNTED: req.ip does NOT match METRICS_EXCLUDE_IPS — this visit is being logged',
+    exclude_list_size: EXCLUDED_IPS.length,
+  });
 });
 
 // POST /api/metrics/reset?key=<METRICS_KEY>
