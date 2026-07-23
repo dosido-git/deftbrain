@@ -10,9 +10,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const PERSONALITY = `Study coach and memory expert. Build understanding, not just memorization. Find connections, build mental models, give exam strategy based on how professors actually test. The goal is walking into the exam confident.`
 
 // ════════════════════════════════════════════════════════════
-// POST /recall — Distill: transcript → key bullet points
+// POST /the-crux — Distill: transcript → key bullet points
 // ════════════════════════════════════════════════════════════
-router.post('/recall', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/the-crux', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, bulletCount, priority, userLanguage } = req.body;
 
@@ -80,22 +80,22 @@ LIMITS (keep the response compact so it never gets cut off): vocabulary AT MOST 
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'recall' });
+    }, { label: 'the-crux' });
     if (!parsed.lecture_summary) {
-      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+      return res.status(500).json({ error: 'Could not process this. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
-    console.error('Recall distill error:', error);
+    console.error('TheCrux distill error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /recall/study-guide — Structured study guide
+// POST /the-crux/study-guide — Structured study guide
 // ════════════════════════════════════════════════════════════
-router.post('/recall/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/the-crux/study-guide', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, examFormat, userLanguage } = req.body;
 
@@ -172,22 +172,22 @@ LIMITS (keep the response compact so it never gets cut off): concepts_to_know AT
       max_tokens: 6000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'recall-2' });
+    }, { label: 'the-crux-2' });
     if (!parsed.title) {
-      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+      return res.status(500).json({ error: 'Could not process this. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
-    console.error('Recall study guide error:', error);
+    console.error('TheCrux study guide error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /recall/test-prep — Generate practice exam questions
+// POST /the-crux/test-prep — Generate practice exam questions
 // ════════════════════════════════════════════════════════════
-router.post('/recall/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/the-crux/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { transcript, subject, lectureTitle, questionTypes, difficulty, questionCount, userLanguage } = req.body;
 
@@ -242,22 +242,22 @@ LIMITS: study_tips AT MOST 5. Keep every field to one concise sentence. Never pl
       max_tokens: 5000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'recall-3' });
+    }, { label: 'the-crux-3' });
     if (!parsed.questions) {
-      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+      return res.status(500).json({ error: 'Could not process this. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
-    console.error('Recall test prep error:', error);
+    console.error('TheCrux test prep error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
 // ════════════════════════════════════════════════════════════
-// POST /recall/connect — Compare 2+ lectures, find themes
+// POST /the-crux/connect — Compare 2+ lectures, find themes
 // ════════════════════════════════════════════════════════════
-router.post('/recall/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/the-crux/connect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { lectures, subject, userLanguage } = req.body;
 
@@ -326,14 +326,14 @@ LIMITS (keep the response compact so it never gets cut off): recurring_themes AT
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'recall-4' });
+    }, { label: 'the-crux-4' });
     if (!parsed.course_narrative) {
-      return res.status(500).json({ error: 'Could not recall this. Please try again.' });
+      return res.status(500).json({ error: 'Could not process this. Please try again.' });
     }
     res.json(parsed);
 
   } catch (error) {
-    console.error('Recall connect error:', error);
+    console.error('TheCrux connect error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

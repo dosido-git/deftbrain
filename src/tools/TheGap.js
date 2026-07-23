@@ -598,7 +598,7 @@ const TheGap = ({ tool }) => {
       {results && (
         <div className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('tg_related_tools')}</p>
-          <p className={'text-xs ' + c.textSecondary}>{t('tg_related_text')} <a href="/Recall" className={linkStyle}>🧠 {t('tg_recall_link')}</a> {t('tg_related_rest')}</p>
+          <p className={'text-xs ' + c.textSecondary}>{t('tg_related_text')} <a href="/TheCrux" className={linkStyle}>🧠 {t('tg_recall_link')}</a> {t('tg_related_rest')}</p>
         </div>
       )}
       {error && (

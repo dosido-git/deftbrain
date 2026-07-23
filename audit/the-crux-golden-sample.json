@@ -9,7 +9,7 @@
   "cases": [
     {
       "name": "de-testprep-was-DOWN",
-      "endpoint": "/api/recall/test-prep",
+      "endpoint": "/api/the-crux/test-prep",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -217,7 +217,7 @@
     },
     {
       "name": "de-connect-truncation",
-      "endpoint": "/api/recall/connect",
+      "endpoint": "/api/the-crux/connect",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { tools } from '../data/tools';
 import ToolPageWrapper from './ToolPageWrapper';
 import NotFound from './NotFound';
@@ -7,11 +7,19 @@ import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useDocumentHead } from '../hooks/useDocumentHead';
 import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 
+// Renamed tools keep their old URL alive: old id → current id. A client-side
+// 301-equivalent so existing links, bookmarks, and search results don't break.
+const TOOL_ALIASES = {
+  Recall: 'TheCrux', // renamed 2026-07-22 (broadened beyond lectures)
+};
+
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
-
+  const aliasTarget = TOOL_ALIASES[toolId];
   const toolData = tools.find(i => i.id === toolId);
 
+  // Hooks must run before any conditional return (react-hooks/rules-of-hooks),
+  // so compute the head unconditionally, then redirect a renamed tool's old URL.
   useDocumentHead({
     // Title leads with the distinctive tool NAME (so tabs/history/bookmarks and
     // branded search keep it), then the keyword phrase: "Name — seoTitle" (or
@@ -25,7 +33,9 @@ const ToolRenderer = ({ college }) => {
     ogImageSlug: TOOL_OG_SLUGS[toolId],
   });
 
-  const ToolComponent = lazy(() => 
+  if (aliasTarget) return <Navigate to={`/${aliasTarget}`} replace />;
+
+  const ToolComponent = lazy(() =>
     import(`../tools/${toolId}.js`).catch(() => ({
       default: () => (
         <div className="p-20 text-center text-slate-500 italic font-mono uppercase tracking-widest">

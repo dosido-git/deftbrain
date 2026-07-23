@@ -1,9 +1,15 @@
-# Recall — architecture & lock notes (`recall-v1`)
+# The Crux — architecture & lock notes (`the-crux-v1`)
 
-Study/memory tool — distill a transcript to key points, build a study guide, generate practice
-questions, and connect multiple lectures. **Frontend:** `src/tools/Recall.js`. **Backend:**
-`backend/routes/recall.js` (4 endpoints, `MODELS.SMART`). **Golden:** `audit/recall-golden-sample.json`
-(2 DE cases). Verify: `npm run check:golden recall`.
+> **Renamed 2026-07-22:** `Recall` → **The Crux** (id `TheCrux`, route `/the-crux`). Broadened
+> positioning beyond students/lectures to any talk or long read (TED talks, keynotes, sermons,
+> podcasts, articles). Old `/Recall` URL redirects via `TOOL_ALIASES` in `ToolRenderer.js`. i18n
+> keys keep the `rec_*` prefix (naming-consistency rule: rename route/id, never churn i18n keys).
+> Added non-interactive scope chips under the tagline (`rec_scope_label`/`rec_scope_items`, 13 langs).
+
+Distill a transcript to key points, build a study guide, generate practice questions, and connect
+multiple sources. **Frontend:** `src/tools/TheCrux.js`. **Backend:** `backend/routes/the-crux.js`
+(4 endpoints, `MODELS.SMART`). **Golden:** `audit/the-crux-golden-sample.json` (2 DE cases).
+Verify: `npm run check:golden the-crux`.
 
 ## Endpoints
 `/recall` (distill, 6000, guard `!lecture_summary`), `/recall/study-guide` (6000, `!title`),

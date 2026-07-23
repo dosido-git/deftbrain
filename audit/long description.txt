@@ -1,0 +1,11 @@
+Personal AI problem solvers for moments too specific or personal for search engines.
+
+Most AI tools are generic chatbots trying to do everything. DeftBrain is the opposite: small, focused AI tools, each built for a specific, real problem — not "write me an email," but "how do I get my full security deposit back" or "is this lease going to screw me."
+
+Some tools help you understand something confusing: what your doctor actually said, what a contract actually commits you to, whether a product review is real.
+
+Others help you say or write something difficult: an apology that doesn't make things worse, a complaint that actually gets a response, a way to explain a resume gap, a recommendation letter you're writing for yourself.
+
+A few tools solve uncommon, specific problems nothing else covers: what the word on the tip of your tongue is called, what to do during a long airport layover, how to get a fee waived.
+
+Every tool is free, no signup required. Paste your situation, get a specific, real answer — not the one your neighbor got.

@@ -16,7 +16,7 @@ const MODE_EMOJI = { distill: '🎯', study_guide: '📝', test_prep: '🧪', co
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const Recall = ({ tool }) => {
+const TheCrux = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -154,21 +154,21 @@ const Recall = ({ tool }) => {
       let data;
       if (mode === 'distill') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
-        data = await callToolEndpoint('recall', {
+        data = await callToolEndpoint('the-crux', {
           transcript: transcript.trim(), subject: subject.trim() || null,
           lectureTitle: lectureTitle.trim() || null, bulletCount, priority,
           userLocale, userCurrency, userRegion,
         });
       } else if (mode === 'study_guide') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
-        data = await callToolEndpoint('recall/study-guide', {
+        data = await callToolEndpoint('the-crux/study-guide', {
           transcript: transcript.trim(), subject: subject.trim() || null,
           lectureTitle: lectureTitle.trim() || null, examFormat,
           userLocale, userCurrency, userRegion,
         });
       } else if (mode === 'test_prep') {
         if (!transcript.trim()) { setError(t('rec_err_paste')); return; }
-        data = await callToolEndpoint('recall/test-prep', {
+        data = await callToolEndpoint('the-crux/test-prep', {
           transcript: transcript.trim(), subject: subject.trim() || null,
           lectureTitle: lectureTitle.trim() || null, questionTypes, difficulty, questionCount,
           userLocale, userCurrency, userRegion,
@@ -176,7 +176,7 @@ const Recall = ({ tool }) => {
       } else if (mode === 'connect') {
         const valid = lectures.filter(l => l.transcript?.trim());
         if (valid.length < 2) { setError(t('rec_err_two_lectures')); return; }
-        data = await callToolEndpoint('recall/connect', {
+        data = await callToolEndpoint('the-crux/connect', {
           lectures: valid.map(l => ({ title: l.title.trim() || null, transcript: l.transcript.trim() })),
           subject: subject.trim() || null,
           userLocale, userCurrency, userRegion,
@@ -245,7 +245,7 @@ const Recall = ({ tool }) => {
   submitRef.current    = submit;
   canSubmitRef.current = canSubmit;
 
-  useRegisterActions(buildFullText(), tool?.title || 'Recall');
+  useRegisterActions(buildFullText(), tool?.title || 'The Crux');
 
   // Scroll to results
   useEffect(() => {
@@ -795,6 +795,13 @@ const Recall = ({ tool }) => {
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rec_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            {/* Scope chips — signal the breadth of accepted inputs (non-interactive) */}
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className={`text-xs ${c.textMuted}`}>{t('rec_scope_label')}</span>
+              {t('rec_scope_items').split(' · ').map((item) => (
+                <span key={item} className={`px-2 py-0.5 rounded-full text-xs ${c.badge}`}>{item}</span>
+              ))}
+            </div>
           </div>
           {renderInput()}
         </div>
@@ -857,5 +864,5 @@ const Recall = ({ tool }) => {
   );
 };
 
-Recall.displayName = 'Recall';
-export default Recall;
+TheCrux.displayName = 'TheCrux';
+export default TheCrux;

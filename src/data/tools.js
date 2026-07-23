@@ -1875,7 +1875,7 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "Paste any meeting transcript and get decisions, action items with owners and deadlines, follow-up drafts, and cross-meeting pattern analysis — without digging through the notes yourself.",
   guide: {
-    overview: "The Debrief is Recall's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of lectures. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
+    overview: "The Debrief is The Crux's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of talks and long reads. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
     howToUse: [
       "Pick a mode: Distill (decisions & actions), Follow Up (draft messages), or Series (cross-meeting patterns)",
       "Paste your transcript — from Zoom captions, Teams, Otter.ai, Google Meet, or typed notes",
@@ -1901,36 +1901,36 @@ export const tools = [
 
 {
   modified: "",
-  id: "Recall",
-  seoDescription: "Paste a lecture transcript from Zoom, Teams, or your notes and get the 20% that's actually testable. Distill, study guide, test prep, and connect modes. Free.",
-  seoTitle: "Lecture Transcript Summarizer & Study Guide AI",
-  title: "Recall",
-  tagline: "Paste a lecture transcript — get the signal without the noise",
-  tags: ['memory', 'remember', 'study', 'review', 'retention', 'lecture', 'transcript', 'notes', 'exam', 'flashcards', 'class'],
+  id: "TheCrux",
+  seoDescription: "Paste any talk, lecture, podcast, or long article and get the 20% that actually matters — the signal without the noise. Distill, study guide, test prep, and connect modes. Free.",
+  seoTitle: "Summarize Any Talk, Lecture or Long Read — AI",
+  title: "The Crux",
+  tagline: "Paste any talk or long read — get the signal without the noise",
+  tags: ['summarize', 'distill', 'ted talk', 'talk', 'lecture', 'keynote', 'podcast', 'sermon', 'transcript', 'notes', 'study', 'exam', 'article', 'key points'],
   icon: "🧠",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Paste a lecture transcript from Zoom, Teams, Otter.ai, or your own notes and get the 20% that matters. Four modes: Distill, Study Guide, Test Prep and Connect.", 
+  description: "Paste any talk or long read — a TED talk, lecture, keynote, sermon, podcast, or article — and get the 20% that matters. Four modes: Distill, Study Guide, Test Prep and Connect.",
     guide: {
-    overview: "Recall solves the core lecture problem: 90 minutes of content where maybe 15 minutes is testable. Professors repeat the important stuff, signal it with emphasis phrases, and bury it in tangents and anecdotes. Recall detects those signals and extracts the material you'd highlight if you had perfect attention for the whole session. Four modes cover different study needs — from quick-reference bullets to full practice exams.",
+    overview: "The Crux solves a problem every long talk or article has: an hour of content where maybe ten minutes truly matters. Speakers and writers repeat the important points, flag them with emphasis, and bury them in tangents, stories, and setup. The Crux detects those signals and extracts what you'd highlight if you had perfect attention the whole way through — whether it's a TED talk, a university lecture, a conference keynote, a sermon, a podcast, or a long read. Four modes cover different needs, from quick-reference bullets to full practice exams.",
     howToUse: [
-      "Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (practice questions), or Connect (cross-lecture themes)",
-      "Paste your transcript — from Zoom captions, Otter.ai, Google Meet, or your own typed notes",
-      "Optionally add subject and lecture topic for better context",
+      "Pick a mode: Distill (bullet points), Study Guide (structured review), Test Prep (practice questions), or Connect (cross-source themes)",
+      "Paste your content — a talk or podcast transcript, a YouTube caption dump, lecture notes, or the text of a long article",
+      "Optionally add the subject and topic for sharper context",
       "Set mode-specific options: bullet count, priority type, exam format, question types, difficulty",
-      "Review results — each mode produces different output optimized for its study use case"
+      "Review results — each mode produces output optimized for its use case"
     ],
     example: {
-      scenario: "You have a 45-minute Biology lecture transcript on mitosis and meiosis from Zoom auto-captions. Midterm is next week.",
-      action: "Paste transcript, enter 'Biology 101' as subject and 'Mitosis & Meiosis' as topic. Start with Distill (10 bullets, balanced priority) for a quick overview, then switch to Test Prep (10 questions, multiple choice + short answer, mixed difficulty) to practice.",
-      result: "Distill produces 10 ranked points — #1 is the key difference between mitosis and meiosis (tagged as 'comparison, testable'), with professor signals flagging that the professor said 'make sure you know this' about chromosome pairing. Test Prep generates 10 questions including a tricky MC question where two answers sound similar but differ on haploid vs diploid, with a full explanation of why the wrong answers are wrong."
+      scenario: "You just watched a 20-minute TED talk on behavioral economics and want the core ideas without rewatching it.",
+      action: "Paste the transcript, enter 'Behavioral economics' as the subject, and run Distill (8 bullets, balanced priority) for the key ideas.",
+      result: "Distill produces 8 ranked points — #1 is the talk's central claim (tagged 'framework, memorable'), flagging the line the speaker repeated three times and the story used to anchor it. Each point notes how to remember it, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that span them."
     },
     tips: [
-      "Auto-captions are fine — Recall handles imperfect transcription (typos, missed words) well",
-      "The 'Professor Signals' section catches phrases like 'this will be on the test', 'make sure you understand', or concepts repeated 3+ times",
-      "Distill bullet types (definition, process, cause/effect, etc.) tell you HOW to study each point",
+      "Auto-captions are fine — The Crux handles imperfect transcription (typos, missed words) well",
+      "The emphasis-signals section catches phrases like 'the key point here', 'make sure you remember', or ideas repeated 3+ times",
+      "Distill bullet types (definition, process, cause/effect, etc.) tell you HOW to hold on to each point",
       "Test Prep's 'why wrong' explanations for multiple choice are often more educational than the right answer",
-      "Connect mode is powerful before cumulative exams — paste 3-5 lecture transcripts and it finds the themes that span all of them",
+      "Connect mode shines across sources — paste 3-5 transcripts (talks, lectures, or articles) and it finds the themes that span all of them",
       "Study Guide mnemonics won't always be clever, but they're personalized to the actual content"
     ]
   }

@@ -155,7 +155,7 @@ const TOOL_IDS = [
   'MeetingBSDetector','MeetingHijackPreventer','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
-  'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','Recall',
+  'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
  'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
