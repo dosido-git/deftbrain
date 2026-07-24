@@ -113,9 +113,10 @@ function ToolCard({ rec, rank }) {
         gap: 12,
         background: hovered ? CLR.sand100 : '#fff',
         border: `1.5px solid ${hovered ? accentColor : CLR.sand200}`,
-        borderLeft: `4px solid ${accentColor}`,
+        borderInlineStart: `4px solid ${accentColor}`,
         borderRadius: 12,
-        padding: '11px 14px 11px 12px',
+        padding: '11px 14px',
+        paddingInlineStart: 12,
         textDecoration: 'none',
         transition: 'all 0.14s',
         position: 'relative',
@@ -125,7 +126,7 @@ function ToolCard({ rec, rank }) {
       {rank === 1 && (
         <span style={{
           position: 'absolute',
-          top: -7, left: 10,
+          top: -7, insetInlineStart: 10,
           background: CLR.gold500,
           color: '#fff',
           fontSize: 9,
@@ -481,7 +482,7 @@ export default function ToolFinderWizard() {
               lineHeight: 1.6,
               margin: '0 0 12px',
               paddingInlineStart: 12,
-              borderLeft: `3px solid ${CLR.sand300}`,
+              borderInlineStart: `3px solid ${CLR.sand300}`,
             }}>
               {results.understanding}
             </p>

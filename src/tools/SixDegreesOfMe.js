@@ -830,7 +830,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => b.count - a.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}
-                    style={n.tag ? { borderLeft: `3px solid ${TAG_COLORS[n.tag]}` } : undefined}>
+                    style={n.tag ? { borderInlineStart: `3px solid ${TAG_COLORS[n.tag]}` } : undefined}>
                     {n.id} ({n.count})
                   </span>
                 ))}
