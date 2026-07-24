@@ -110,5 +110,20 @@ Every outage reduces to two known bug classes:
 
 ## Re-verification (post-fix, same payloads that failed)
 
-See verify_results in session scratchpad; all five previously-dead paths re-run
-after the fixes — results recorded in the commit message of the fix push.
+All five previously-dead paths re-run after the fixes: lease ar 200/199s,
+bill ar 200/163s, jargon de 200/71s, contract ar 200/354s, compare ar 200/77s —
+complete, correctly-shaped JSON each. Goldens 10/10 tools green.
+
+## DE gap closure (same day, follow-up agent)
+
+The three safety tools got their missing German datapoint + fix regression test:
+- grief-guide GOOD — crisis path → Telefonseelsorge 0800 111 0 111 in 3 fields,
+  no US numbers; 8/8 recall.
+- drive-home GOOD — NO_QUOTE_RULE holds on quote-heavy input; risk=high with
+  sleep-first advice; real A3 Rastplätze.
+- safe-walk MINOR — parses clean (previous ~50% fail class gone); reminders now
+  condensed; BUT battery concern still in 4 fields (2-cap only partially honored;
+  competes with rule 3 "reference throughout" — logged, not re-patched), and one
+  hallucinated-precision transit fact ("eine Station" that is 3 stops on the U7)
+  → DIRECTIONS rule extended to ban unverified stop counts / park-border streets
+  (safe-walk.js:29, pushed same day).

@@ -26,7 +26,7 @@ CRITICAL RULES:
 
 FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only. Never place a double-quote (") character inside any JSON string value — quoted advice or dialogue must be written plainly or with single quotes, or it breaks the JSON.
 
-DIRECTIONS: when suggesting routes, name street pairings and landmarks (toward X, along Y, to the Z station) — do NOT state compass directions (north/east) or turn-by-turn bearings unless verified from search results; a wrong bearing sends someone the wrong way at night.
+DIRECTIONS: when suggesting routes, name street pairings and landmarks (toward X, along Y, to the Z station) — do NOT state compass directions (north/east), turn-by-turn bearings, transit stop counts ("one station to X"), or which street borders a park/landmark unless verified from search results; say "take the U7 toward X" without counting stops. A wrong bearing or stop count sends someone the wrong way at night.
 
 Return ONLY valid JSON.`;
 
