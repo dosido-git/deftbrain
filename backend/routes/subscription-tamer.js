@@ -4,6 +4,11 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+// 2026-07-24 staleness probe: the tool cited the right statute but hedged it
+// into uselessness ("könnte unwirksam sein") and strategized as if the user
+// were bound — pin the settled post-2022 German rule; ban invented specifics.
+const CONTRACT_LAW_NOTE = ` LEGAL CURRENCY: for consumer contracts under German law concluded on/after 2022-03-01, auto-renewal beyond the minimum term is monthly-cancellable with at most one month's notice (§ 309 Nr. 9 lit. b BGB) — state this as settled law, not a mere possibility; the online cancellation-button duty (§ 312k BGB) applies since July 2022. For other jurisdictions, cite cancellation rules only with their effective date, or advise verifying. NEVER invent phone numbers, court case citations, or company contact details — name only what you are certain exists, otherwise say how to find it.`;
+
 router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
@@ -68,7 +73,7 @@ Return ONLY valid JSON:
           return `${i + 1}. ${s.name} — ${sym}${s.cost || 0}/${s.cycle || 'monthly'} (${sym}${monthlyCost.toFixed(2)}/mo) — Usage: ${s.usage || 'unknown'}`;
         }).join('\n');
 
-        const systemPrompt = `You are a subscription audit expert. You help people identify waste, calculate real costs, and take action. Be brutally honest but not judgmental — people feel shame about forgotten subscriptions, so normalize it. Give them permission to cancel.`;
+        const systemPrompt = `You are a subscription audit expert. You help people identify waste, calculate real costs, and take action. Be brutally honest but not judgmental — people feel shame about forgotten subscriptions, so normalize it. Give them permission to cancel.${CONTRACT_LAW_NOTE}`;
 
         const userPrompt = `SUBSCRIPTION AUDIT
 Currency: ${sym}
@@ -205,7 +210,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.${CONTRACT_LAW_NOTE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
           messages: [{
             role: 'user',
             content: `RETENTION NEGOTIATION SCRIPT for: ${serviceName}

@@ -3,6 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted clause text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
 
@@ -21,35 +22,27 @@ function handleAiError(res, error, longDocMessage) {
 // MAIN ANALYSIS ENDPOINT
 // ═══════════════════════════════════════════════════════════════
 
-// Grounded facts PRE-PASS (BuyWise pattern): one small web-search call
-// verifies the volatile jurisdiction figures so the big main call can stay
-// ungrounded. A single search+7000-token generation held the connection open
-// past the API limit ("Connection error"); split this way grounding costs a
-// bounded ~7-20s. Best-effort — returns '' on any failure and the main
-// prompt's hedge rule takes over.
-async function groundTenantLawFacts({ location, userLanguage }) {
-  try {
-    const facts = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-      system: withLanguage('You verify current landlord-tenant law figures with web search. Prefer official sources (legislature, AG, courts). Return ONLY valid JSON.', userLanguage),
-      messages: [{ role: 'user', content: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
+// Grounded facts PRE-PASS — shared implementation with a jurisdiction-keyed
+// TTL cache; see lib/groundedFacts.js for the pattern rationale. Best-effort:
+// returns '' on any failure and the main prompt's hedge rule takes over.
+async function groundTenantLawFacts({ location }) {
+  return groundedFacts({
+    cacheKey: `tenant-law:${normalizeKeyPart(location)}`,
+    label: 'lease-trap-detector-facts',
+    userPrompt: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
 
 Cover ONLY: (1) security deposit maximum, (2) deposit return deadline, (3) late fee limits, (4) landlord entry notice requirement, (5) repair-and-deduct rights waivability. Skip any you cannot verify.
 
 Return ONLY valid JSON:
-{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }` }]
-    }, { label: 'lease-trap-detector-facts' });
-    const cleanFacts = stripCites(facts);
-    if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-      return `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
-        cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
-    }
-  } catch (factsErr) {
-    console.error('[lease-trap-detector-facts] pre-pass failed, proceeding unverified:', factsErr.message);
-  }
-  return '';
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | late_fees | entry_notice | repair_rights", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }`,
+    render: (cleanFacts) => {
+      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+        return `\n\nVERIFIED CURRENT TENANT LAW (web-checked today for ${cleanFacts.jurisdiction || location}):\n` +
+          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+      }
+      return '';
+    },
+  });
 }
 
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -97,7 +90,7 @@ ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
-- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags ≤ 2, unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
+- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags 1-2 (even in a trap-heavy lease, name at least one genuinely standard/fair clause if any exists), unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:

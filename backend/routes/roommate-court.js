@@ -21,6 +21,7 @@ RULES:
 
 FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
 
+LEGAL CURRENCY: when a ruling leans on tenancy or deposit law, laws change — cite a statute or numeric limit only with its effective date if you know it changed since ~2023, and when unsure whether a figure is current, advise the parties to verify it rather than asserting it.
 CRITICAL: "whos_right" MUST be EXACTLY one of the English keys you|them|both|neither regardless of the response language (it is a code value the UI switches on, not display text). Provide AT MOST 3 items each in immediate_actions, boundaries, and escalation_options. Never place a double-quote (") character inside any JSON string value — write the conversation_script dialogue with the You:/Them: prefixes but no quote marks around speech; a literal " breaks the JSON.
 
 Return ONLY valid JSON.`;

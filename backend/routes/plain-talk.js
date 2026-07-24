@@ -3,10 +3,37 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS — plain-English translation + structural X-ray
 // ═══════════════════════════════════════════════════════════════
+
+// Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache), run
+// only for legal-ish documents: the 2026-07-23 audit caught the main endpoint
+// confidently stating pre-2022 German auto-renewal law (§ 309 Nr. 9 reform)
+// as binding. Consumer-contract law is the volatile domain here.
+async function groundConsumerContractFacts({ region }) {
+  return groundedFacts({
+    cacheKey: `consumer-contract-law:${normalizeKeyPart(region)}`,
+    label: 'plain-talk-facts',
+    userPrompt: `Verify with web_search the CURRENT consumer-contract rules (as of today) in: ${region}.
+
+Cover ONLY: (1) auto-renewal / evergreen clause limits for consumer contracts, (2) cancellation notice-period limits and any required cancellation mechanisms (e.g. mandatory online cancellation buttons), (3) cooling-off / withdrawal rights, (4) any major consumer-contract reform effective since 2022 — INCLUDING rules that were repealed or vacated (note that explicitly). Skip anything you cannot verify.
+
+Return ONLY valid JSON:
+{ "jurisdiction": "Country/region these rules apply to", "verified": [{ "topic": "auto_renewal | cancellation | cooling_off | reform", "rule": "The current rule in one sentence", "statute": "Statute/rule name", "effective": "Effective date, or 'vacated/repealed <date>'", "source": "Domain verified against" }] }`,
+    render: (cleanFacts) => {
+      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+        return `\n\nVERIFIED CURRENT CONSUMER-CONTRACT LAW (web-checked today for ${cleanFacts.jurisdiction || region}) — these rules OVERRIDE your training knowledge; use them verbatim:\n` +
+          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n');
+      }
+      return '';
+    },
+  });
+}
+
+const LEGALISH = /contract|agreement|terms|lease|policy|warranty|vertrag|klausel|kündig|renew|verlänger|abo|subscription|miet|employ|arbeitsvertrag|合同|租赁|عقد|إيجار/i;
 
 router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
@@ -20,13 +47,21 @@ router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
     const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
 
+    const isLegalish = LEGALISH.test(textType || '') || LEGALISH.test(trimmed.slice(0, 4000));
+    const factsBlock = isLegalish
+      ? await groundConsumerContractFacts({ region: req.body.userRegion || req.body.userLocale || 'US' })
+      : '';
+    const legalHint = isLegalish
+      ? `\n${factsBlock}\nLEGAL CURRENCY: contract law changed in several jurisdictions after 2022 (auto-renewal, cancellation rights). For any legal claim not covered by a VERIFIED block above, state the rule's effective date if you know it, or advise the reader to verify the current rule — never present remembered law as settled.`
+      : '';
+
     const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
 ---
 ${trimmed}
 ---
-${typeHint}${focusHint}
+${typeHint}${focusHint}${legalHint}
 
 INSTRUCTIONS:
 
@@ -118,7 +153,7 @@ CRITICAL RULES:
     if (!parsed.detected_type) {
       return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
     }
-    res.json(parsed);
+    res.json(stripCites(parsed));
 
   } catch (error) {
     console.error('[PlainTalk] Error:', error);

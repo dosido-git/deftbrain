@@ -4,6 +4,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
 
 const CONTRACT_TYPE_LABELS = {
   employment:  'Employment contract',
@@ -33,10 +34,29 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     userLanguage
   );
 
+  // Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache):
+  // the 2026-07-23 audit showed the hedge alone misses changed law (a planted
+  // illegal Probezeit clause survived) — verify the volatile limits up front.
+  const verifiedLawBlock = await groundedFacts({
+    cacheKey: `contract-law:${normalizeKeyPart(userRegion || userLocale || 'US')}:${normalizeKeyPart(contractType || 'general')}`,
+    label: 'contract-decoder-facts',
+    userPrompt: `Verify with web_search the 3-5 statutory limits most relevant to ${typeName} contracts in ${userRegion || userLocale || 'the US'} that a SIGNER should know (as of today) — prioritize rules that changed or took effect since 2022, plus long-standing floors. As applicable to this contract type: notice-period floors, auto-renewal limits, non-compete enforceability, probation rules, fee/deposit/penalty caps. Skip anything you cannot verify.
+
+Return ONLY valid JSON:
+{ "jurisdiction": "Country/region", "verified": [{ "topic": "short slug", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain verified against" }] }`,
+    render: (cleanFacts) => {
+      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+        return `\nVERIFIED CURRENT LAW (web-checked today for ${cleanFacts.jurisdiction || userRegion || 'the stated region'}) — these figures OVERRIDE your training knowledge; use them verbatim and check every clause against them:\n` +
+          cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n') + '\n';
+      }
+      return '';
+    },
+  });
+
   const prompt = `Review this ${typeName} and identify clauses the signer should know about.
 
 LEGAL FIGURES: laws change and your knowledge may be stale — when citing a statute or numeric legal limit, note its effective date if known and advise the signer to verify current law; never present a remembered figure as a verified hard limit.
-${context ? `\nSigner's situation: ${context}` : ''}${focusList}
+${verifiedLawBlock}${context ? `\nSigner's situation: ${context}` : ''}${focusList}
 
 Contract text:
 ---

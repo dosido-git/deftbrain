@@ -37,6 +37,8 @@ HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
 TONE: ${toneInstructions[tone] || toneInstructions.firm}
 
+REGULATORY CURRENCY: regulations change and get struck down — a letter citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
+
 Build the complete 5-stage escalation ladder for THIS situation. Every letter body stays 2-4 sentences, ready to send verbatim.
 
 {
@@ -98,6 +100,8 @@ AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
 TONE: ${toneInstructions[tone] || toneInstructions.firm}
+
+REGULATORY CURRENCY: regulations change and get struck down — leverage citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
 
 Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_leverage entries, 4 evidence_checklist items, and 3 quick_tips — include ONLY the most impactful. Your response MUST contain ALL SIX top-level keys — situation_assessment, legal_leverage, evidence_checklist, timeline, quick_tips, call_script — never omit any of them. Every timeline value MUST be ONE plain string (a short action sentence) — never a nested object or array; use the exact keys shown (today, day_1, day_14, day_21, day_30, day_45).
 

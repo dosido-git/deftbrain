@@ -3,6 +3,7 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
 
 // ════════════════════════════════════════════════════════════
 // SHARED: Bill-type-specific knowledge injections
@@ -100,28 +101,23 @@ async function createParseRetry(params, attempts = 3) {
 // rationale): verify billing-rights law + real assistance programs for the
 // user's region in one small bounded web-search call, so the main call can
 // stay ungrounded. Best-effort — returns '' on any failure.
-async function groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType }) {
-  try {
-    const facts = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 1500,
-      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-      system: withLanguage('You verify current patient-billing law and assistance programs with web search. Prefer official sources. Return ONLY valid JSON.', userLanguage),
-      messages: [{ role: 'user', content: `Verify with web_search, as of today, for region "${userRegion || userLocale || 'US'}" and bill type "${billType}":
+async function groundBillRescueFacts({ userRegion, userLocale, billType }) {
+  return groundedFacts({
+    cacheKey: `bill-facts:${normalizeKeyPart(userRegion || userLocale || 'US')}:${normalizeKeyPart(billType)}`,
+    label: 'bill-rescue-facts',
+    userPrompt: `Verify with web_search, as of today, for region "${userRegion || userLocale || 'US'}" and bill type "${billType}":
 (1) the key consumer/patient billing-protection law (name + what it guarantees), (2) one or two REAL assistance programs (official name + how to reach them — only if you can verify they exist and serve this region). Skip anything you cannot verify.
 
 Return ONLY valid JSON:
-{ "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "Domain verified against" }] }` }]
-    }, { label: 'bill-rescue-facts' });
-    const cleanFacts = stripCites(facts);
-    if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-      return `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
-        cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
-    }
-  } catch (factsErr) {
-    console.error('[bill-rescue-facts] pre-pass failed, proceeding unverified:', factsErr.message);
-  }
-  return '';
+{ "verified": [{ "kind": "law | program", "name": "Official name", "detail": "What it protects or offers — one sentence", "source": "Domain verified against" }] }`,
+    render: (cleanFacts) => {
+      if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
+        return `\n\nVERIFIED CURRENT FACTS (web-checked today):\n` +
+          cleanFacts.verified.map(f => `- [${f.kind}] ${f.name}: ${f.detail} (source: ${f.source})`).join('\n');
+      }
+      return '';
+    },
+  });
 }
 
 router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {

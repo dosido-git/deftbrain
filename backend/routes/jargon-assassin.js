@@ -68,6 +68,7 @@ ${docBlock}
 RULES:
 - Flag important sections, decisions, red flags, and deadlines.
 - For clauses that are commonly unenforceable or unusually aggressive, note this.
+- LEGAL CURRENCY: laws change — when an enforceability_note cites a statute or rule, include its effective date if you know it changed since ~2022; if unsure the rule is current, write 'commonly challenged — verify current law' rather than asserting it.
 
 Return ONLY valid JSON:
 {
