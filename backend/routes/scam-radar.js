@@ -52,7 +52,7 @@ Return ONLY valid JSON with this exact structure (no markdown, no backticks, no 
 
 Be precise. Cite actual phrases, domains, or patterns you observed. Do not add fields beyond those listed.
 
-CRITICAL: "verdict" MUST be EXACTLY one of the English tokens SCAM, SUSPICIOUS, or LIKELY SAFE, and the "scam_type" and "techniques_used" values MUST be the exact English strings from the lists above — do NOT translate these code values even when the rest of the response is written in another language (only the prose fields like one_liner, red_flags, what_to_do are localized). Keep techniques_used to at most 6. Never place a double-quote (") character inside any JSON string value — paraphrase any cited phrase instead of wrapping it in quote marks; a literal " breaks the JSON.`;
+CRITICAL: "verdict" MUST be EXACTLY one of the English tokens SCAM, SUSPICIOUS, or LIKELY SAFE, and the "scam_type" and "techniques_used" values MUST be the exact English strings from the lists above — do NOT translate these code values even when the rest of the response is written in another language (only the prose fields like one_liner, red_flags, what_to_do are localized). Keep techniques_used to at most 6. When advising how to report the scam, NEVER state a specific reporting email address, app name, or hotline you are not certain exists — name the institution's official website/app or the national fraud-reporting channel generically instead. Never place a double-quote (") character inside any JSON string value — paraphrase any cited phrase instead of wrapping it in quote marks; a literal " breaks the JSON.`;
 
   try {
     const parsed = await callClaudeWithRetry({

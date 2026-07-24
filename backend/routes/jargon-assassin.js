@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted document text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
+
 const LEVEL_GUIDE = {
   'eli5': 'Explain like I\'m 5. Simplest words. Short sentences. Child-friendly analogies.',
   '5th-grade': '5th-grade reading level. Simple words, short sentences. Define technical terms in parentheses.',
@@ -82,13 +84,15 @@ LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 8000,
-        system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Warm, clear, protective. Return ONLY valid JSON. No markdown.', userLanguage) + localeCtx,
+        system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Warm, clear, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
         messages: [{ role: 'user', content: contentBlocks(translatePrompt) }]
       }, { label: 'jargon-assassin-translate' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage('Document risk analyst. Extract flagged sections, glossary, and risk level from complex docs. Note potentially unenforceable clauses. Precise, protective. Return ONLY valid JSON. No markdown.', userLanguage) + localeCtx,
+        // 4000 truncated on every non-English call (key_sections echo verbatim
+        // source text) — 2026-07-23 audit, DE/AR/ZH all down.
+        max_tokens: 6000,
+        system: withLanguage('Document risk analyst. Extract flagged sections, glossary, and risk level from complex docs. Note potentially unenforceable clauses. Precise, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
         messages: [{ role: 'user', content: contentBlocks(extractPrompt) }]
       }, { label: 'jargon-assassin-extract' })
     ]);
@@ -135,7 +139,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Plain language Q&A expert. Direct, warm, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-2' });
     if (!parsed.answer) {
@@ -175,7 +179,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Document comparison expert. Find meaningful changes, explain in plain language. Protective of reader. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-3' });
     if (!parsed.summary) {
@@ -212,7 +216,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Section analyst. Every clause, every hidden implication. Protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-4' });
     if (!parsed.section_summary) {
@@ -249,7 +253,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Protective document advisor. Generate questions readers should ask. Like a knowledgeable friend. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-5' });
     if (!parsed.must_ask) {
@@ -300,7 +304,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Communication reframer. Tailor complex information for specific audiences. Empathetic, practical, warm. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-6' });
     if (!parsed.explanation) {
@@ -356,7 +360,7 @@ LIMITS: redlines AT MOST 8 (the highest-priority ones), add_these AT MOST 5, rem
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
-      system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Protective document advocate generating red-line edits. Specific, actionable, strategic. Not legal advice — educational guidance. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-7' });
     if (!parsed.overview && !parsed.redlines) {
@@ -410,7 +414,7 @@ LIMITS: comparisons AT MOST 8, missing_protections AT MOST 6, unusually_good AT 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Document standards expert. Compare against typical documents of this type. Give readers a baseline. Fair, specific, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-8' });
     if (!parsed.overall_assessment && !parsed.comparisons) {
@@ -463,7 +467,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Action plan generator. Turn document understanding into specific ordered steps. Practical, clear, deadline-aware. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-9' });
     if (!parsed.summary) {
@@ -507,7 +511,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Multi-document cross-reference analyst. Find conflicts, gaps, dependencies. Protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-10' });
     if (!parsed.relationship) {
@@ -553,7 +557,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Professional letter writer. Draft responses to documents that are clear, firm, and reference specifics. Protective of the reader. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-11' });
     if (!parsed.letter) {
@@ -597,7 +601,7 @@ LIMITS: watch_outs AT MOST 6, already_covered AT MOST 4, questions_for_your_situ
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Personal risk analyst. Cross-reference document terms against a reader\'s stated real-life situation to find specific gaps and specific fixes — never generic advice. Precise, concrete, protective. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Personal risk analyst. Cross-reference document terms against a reader\'s stated real-life situation to find specific gaps and specific fixes — never generic advice. Precise, concrete, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'jargon-assassin-12' });
     if (!parsed.fit_assessment) {

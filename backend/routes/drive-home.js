@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -23,7 +23,7 @@ CRITICAL RULES:
 10. If web search results are available about the specific route or current conditions, reference them specifically. If not, work from stated conditions and general knowledge of driving safety.
 11. Do NOT mention psychological conditions or diagnoses. Use plain language: "tired" not "fatigued driver syndrome."
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only. Never place a double-quote (") character inside any JSON string value — quoted advice or dialogue must be written plainly or with single quotes, or it breaks the JSON.
 
 Return ONLY valid JSON.`;
 
@@ -88,7 +88,7 @@ Return ONLY valid JSON.`;
       const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage),
+        system: withLanguage(SYSTEM_PROMPT, req.body.userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{ role: 'user', content: prompt }],
       }, { label: 'drive-home' });

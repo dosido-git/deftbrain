@@ -67,7 +67,7 @@ ${context}
 
 Return ONLY valid JSON with this exact structure:
 {
-  "crisis_support": <If what they shared hints at ANY suicidal thoughts, wanting to die or "not be here", self-harm, or immediate danger — a warm, non-judgmental 2-3 sentence message that gently but clearly urges them to reach out for support RIGHT NOW, naming concrete crisis help: the US & Canada 988 Suicide & Crisis Lifeline (call or text 988), the UK & Ireland Samaritans (116 123), or their country's crisis line / the local emergency number (112 in Europe, 911 in the US/Canada). ONLY null when there is genuinely no hint of acute risk.>,
+  "crisis_support": <If what they shared hints at ANY suicidal thoughts, wanting to die or "not be here", self-harm, or immediate danger — a warm, non-judgmental 2-3 sentence message that gently but clearly urges them to reach out for support RIGHT NOW, naming concrete crisis help FOR THE USER'S OWN COUNTRY: their national suicide/crisis hotline and local emergency number (e.g. US/Canada 988, UK/Ireland Samaritans 116 123, Germany Telefonseelsorge 0800 111 0 111, mainland China 12356, Saudi Arabia 920033360 — pick what matches their country; if unsure of the exact national line, name the local emergency number and say to search for the national crisis line). NEVER give a US number to a non-US user. ONLY null when there is genuinely no hint of acute risk.>,
   "opening": <2-3 sentence warm, empathetic acknowledgment of what they've shared — reflect what they said, don't project emotions they didn't mention>,
   "what_is_normal": [<specific experience that is normal to grieve this way — grounded in what they described if possible — max 5>],
   "guidance": [
@@ -80,7 +80,7 @@ Return ONLY valid JSON with this exact structure:
   ${isHelping ? `"what_to_say": [<specific phrase or sentence to say to the grieving person — warm, genuine, not clichéd — max 4>],
   "what_not_to_say": [<common phrase to avoid and brief note why — e.g. "Everything happens for a reason — this dismisses their pain" — max 4>],` : '"what_to_say": [], "what_not_to_say": [],'}
   "when_to_seek_help": <1-2 sentences on signs that talking to a professional might help — non-alarmist, normalizing>,
-  "support_resources": [<specific, real resource relevant to their country and type of loss if known — e.g. "The National Alliance for Eating Disorders" is NOT a grief resource — only include if genuinely applicable — max 3 — empty array if unsure>]
+  "support_resources": [<specific, real resource relevant to their country and type of loss if known — e.g. "The National Alliance for Eating Disorders" is NOT a grief resource — only include if genuinely applicable — max 3 — empty array if unsure. NEVER state a URL or phone number you are not certain is real: name the organization and how to find it instead>]
 }
 
 Guidelines:

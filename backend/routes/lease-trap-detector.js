@@ -31,7 +31,7 @@ async function groundTenantLawFacts({ location, userLanguage }) {
   try {
     const facts = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 1500,
+      max_tokens: 2500,
       tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
       system: withLanguage('You verify current landlord-tenant law figures with web search. Prefer official sources (legislature, AG, courts). Return ONLY valid JSON.', userLanguage),
       messages: [{ role: 'user', content: `Verify with web_search the CURRENT rules (as of today) for residential tenants in: ${location || "the tenant's stated location"}.
@@ -97,7 +97,7 @@ ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
-- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 5, yellow_flags ≤ 4, green_flags ≤ 3, unenforceable_clauses ≤ 4, missing_protections ≤ 5, unusual_fees ≤ 4, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 4, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
+- Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags ≤ 2, unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
 LEGAL RESEARCH REQUIREMENTS:
@@ -267,7 +267,9 @@ CRITICAL RULES:
     try {
       parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 7000,
+        // 7000 truncated on EVERY non-Latin-script call (DE borderline, AR/ZH 100%
+        // fail — 2026-07-23 audit): the schema caps were sized for English tokens.
+        max_tokens: 10000,
         // contentBlocks is an array (PDF document block + text block). withLanguage does
         // string interpolation, which would stringify the array and destroy the PDF for
         // non-English users. The output-language directive already lives in `system` above.
@@ -275,7 +277,7 @@ CRITICAL RULES:
         messages: [{ role: 'user', content: contentBlocks }],
       }, { label: 'lease-trap-detector' });
     } catch (err) {
-      return handleAiError(res, err, 'This lease is too long to analyze in one pass. Try pasting the sections you care about most.');
+      return handleAiError(res, err, 'The analysis came out too detailed to complete in one pass. Try again — or paste just the sections you care about most.');
     }
 
     if (!parsed.overall_assessment) {

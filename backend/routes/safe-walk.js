@@ -24,7 +24,7 @@ CRITICAL RULES:
 11. Risk level should be honest but not alarmist. Most walks are low-to-moderate risk. Reserve "high" for genuinely concerning combinations.
 12. ALWAYS return the JSON schema — even when the route is vague, minimal, or you'd like more detail. NEVER reply in plain prose or ask a clarifying question outside the JSON. If you need more specifics, still fill the schema and put your request for detail inside safety_overview.summary (e.g. "Tell me the specific streets and I can be more precise — in the meantime, here's general awareness for this kind of walk").
 
-FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only.
+FORMAT: Respond in valid JSON matching the schema exactly. No markdown fences, no preamble. Pure JSON only. Never place a double-quote (") character inside any JSON string value — quoted advice or dialogue must be written plainly or with single quotes, or it breaks the JSON.
 
 DIRECTIONS: when suggesting routes, name street pairings and landmarks (toward X, along Y, to the Z station) — do NOT state compass directions (north/east) or turn-by-turn bearings unless verified from search results; a wrong bearing sends someone the wrong way at night.
 
@@ -95,7 +95,7 @@ Return this exact JSON structure:
   }
 }
 
-Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reference specific location names throughout. Even if the route is vague, return the full JSON schema — never reply in prose.
+Generate 3-5 watch_for items, 4-6 checklist items, 1-3 route_suggestions, and 2-4 reminders. Reminders must NOT repeat checklist or watch_for items — each reminder is a new or condensed critical point, and no single concern (e.g. phone battery) may appear in more than two fields total. Reference specific location names throughout. Even if the route is vague, return the full JSON schema — never reply in prose.
 
 Return ONLY valid JSON.`;
 
@@ -110,12 +110,13 @@ Return ONLY valid JSON.`;
         }, { label: 'safe-walk' });
       } catch (retryErr) {
         // Truncation is a real reliability bug (schema/budget mismatch) — let
-        // it fall through to the generic 500 below. Anything else that
-        // survives all retries is almost always the model answering in prose
-        // (e.g. asking for detail on a vague route, despite rule 12) — that's
-        // deterministic, a retry storm won't fix it, so surface a helpful 422
-        // instead of a generic 500.
-        if (!/truncated at max_tokens/.test(retryErr.message)) {
+        // it fall through to the generic 500 below. A SyntaxError that survives
+        // all retries is a parse failure on OUR side (e.g. unescaped quotes),
+        // not the user's fault — that must 500 honestly, never blame the input.
+        // Anything else is almost always the model answering in prose (asking
+        // for detail on a vague route, despite rule 12) — deterministic, so
+        // surface a helpful 422 instead of a generic 500.
+        if (!/truncated at max_tokens/.test(retryErr.message) && !(retryErr instanceof SyntaxError)) {
           return res.status(422).json({ error: 'Add a bit more detail about your route (nearby streets, neighborhood, or a landmark) and try again.' });
         }
         throw retryErr;

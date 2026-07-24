@@ -262,7 +262,14 @@ Return ONLY valid JSON with ALL applicable sections:
   },
 
   "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation."
-}`;
+}
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, know_your_rights ≤ 4, action_steps ≤ 5, escalation_ladder ≤ 4, what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, key_phrases ≤ 5, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
+
+CONSISTENCY RULES (recompute before writing — numbers must reconcile):
+- total_potential_savings MUST equal the sum of the flagged_charges amounts.
+- In payment_plan, the monthly amount × number of months you state MUST equal the balance you state; if you mention a fee waiver, the arithmetic must include it.
+- NEVER state a company phone number or email address that is not in the VERIFIED CURRENT FACTS block or the user's own bill — tell them to use the number printed on the bill instead.`;
 
     userContent.push({ type: 'text', text: userPrompt });
 
@@ -278,7 +285,9 @@ Return ONLY valid JSON with ALL applicable sections:
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
+      // 6000 truncated every Arabic paste-bill call (all conditional sections
+      // stack on the flagship input shape) — 2026-07-23 audit; DE passed at 161s.
+      max_tokens: 8000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userContent }],
     }, { label: 'bill-rescue' });

@@ -73,3 +73,19 @@ Optionally run ONE tool per wave with userLanguage:"de" as a localization spot c
 - FAST/haiku tools fabricate specifics; SMART tools drift on arithmetic/consistency.
 - Latency cliffs: single mega-schema calls; the parallel-split pattern is the fix.
 - Hero stats: model-computed counts should be code-computed from array lengths.
+
+## Added 2026-07-23 (first multi-language round — see QUALITY-AUDIT-2026-07-23.md)
+
+- **Language-aware token budgets:** any max_tokens sized on English (or even the
+  German fix) is suspect for Arabic/Chinese (~1.3-1.5× needed). A "German
+  truncation" fix is not closed until re-verified in Arabic.
+- **NO_QUOTE_RULE coverage is binary:** `grep -c "double-quote" backend/routes/<f>.js`
+  = 0 perfectly predicted every parse-fail outage across 3 languages. Sweep it.
+- **Native-orthography drift:** long German outputs degrade to ASCII (ae/oe/ue)
+  in later fields — hits copy-paste deliverables; invisible to all gates.
+- **422-blames-user catches:** retry-exhaustion handlers that map SyntaxError to
+  "improve your input" messages gaslight users — check catch blocks.
+- **Wave logistics:** give each parallel agent its OWN scratchpad subdirectory —
+  shared payload filenames collided and silently swapped one agent's language.
+- Run at least one non-English wave per quarter; crisis-resource localization and
+  enum integrity held everywhere in this round, but truncation budgets did not.

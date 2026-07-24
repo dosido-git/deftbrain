@@ -100,6 +100,7 @@ CRITICAL RULES:
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
 - Be thorough but never pad — only include what's genuinely useful
 - LIMITS: at most 12 sections and at most 15 jargon_glossary terms. Keep short fields to one concise sentence; section "original" and "translation" are the exception — they carry the actual document and must stay complete.
+- Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
 - Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
@@ -167,7 +168,7 @@ Return ONLY valid JSON:
   "follow_up_suggestions": ["Another question they might want to ask", "Another angle to explore"]
 }
 
-Never place a double-quote (") character inside any JSON string value (paraphrase the key_quote rather than wrapping it in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Never place a double-quote (") character inside any JSON string value (paraphrase the key_quote rather than wrapping it in quote marks) — a literal " breaks the JSON. Write the response language with its full native orthography to the last field (for German: real umlauts/ß, never ae/oe/ue).`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -249,12 +250,15 @@ CRITICAL:
 - "hidden_changes" is the most valuable section — find anything that was subtly reworded to change meaning
 - Be specific about who benefits from each change
 - The recommendation should be actionable
-- LIMITS: at most 15 changes. Keep every field concise (plain_explanation may be 1-2 sentences).
+- LIMITS: at most 8 changes (the most consequential — merge duplicate entries about the same clause into one). Keep every field concise (plain_explanation may be 1-2 sentences).
+- Recompute any sum, total, or percentage you state from its parts before writing it — stated numbers must reconcile with each other.
 - Never place a double-quote (") character inside any JSON string value (paraphrase the verbatim excerpts rather than wrapping them in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      // 4000 truncated every DE/AR compare call (15 changes × verbatim
+      // text_a/text_b excerpts) — 2026-07-23 audit.
+      max_tokens: 6000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'plain-talk-3' });
     if (!parsed.summary) {

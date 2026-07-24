@@ -75,7 +75,7 @@ ${isCar ? '- For vehicles, mention that a dedicated repair-estimate comparison s
 - If a second quote price was provided, directly compare the two and say what the gap implies.
 ${fileBlock ? '- The user also attached a photo or PDF of the actual quote/invoice. Read it carefully — it is the ground truth. If it shows different numbers, line items, or wording than what the user typed below, trust the document and note the discrepancy in your analysis.' : ''}
 
-${NO_QUOTE_RULE} Return ONLY valid JSON, no markdown, no code fences, no text outside the JSON object.`;
+${NO_QUOTE_RULE} Write the response language with its full native orthography from the first field to the last — for German that means real umlauts and ß (ä/ö/ü, never ae/oe/ue transliteration); never let spelling degrade toward ASCII late in the response. Return ONLY valid JSON, no markdown, no code fences, no text outside the JSON object.`;
 
     const prompt = `REPAIR TYPE: ${typeName}
 ITEM: ${itemDescription.trim()}

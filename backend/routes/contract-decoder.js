@@ -29,7 +29,7 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     : '';
 
   const systemPrompt = withLanguage(
-    `You are an expert contract attorney reviewing documents on behalf of the signing party — not the party that drafted the contract. Your goal is to protect the signer by identifying clauses that are unfair, unusual, high-risk, or commonly negotiated. You are precise and specific: you quote actual clause text, cite specific problems, and give concrete negotiation asks. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object.`,
+    `You are an expert contract attorney reviewing documents on behalf of the signing party — not the party that drafted the contract. Your goal is to protect the signer by identifying clauses that are unfair, unusual, high-risk, or commonly negotiated. You are precise and specific: you quote actual clause text, cite specific problems, and give concrete negotiation asks. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object. Never place a double-quote (") character inside any JSON string value — in the quote field and everywhere else, replace inner quote marks with single quotes, or the JSON breaks.`,
     userLanguage
   );
 
@@ -63,12 +63,14 @@ Return ONLY valid JSON with this exact structure:
   "before_you_sign": [<concrete action to take before signing — max 5 items>]
 }
 
-Order clauses by risk_level descending (high first). Include at most 10 clauses (the most important — skip genuinely boilerplate, fair clauses) and at most 6 missing_protections. Be specific — quote actual text, cite actual problems. Return ONLY the JSON object.`;
+Order clauses by risk_level descending (high first). Include at most 8 clauses (the most important — skip genuinely boilerplate, fair clauses) and at most 6 missing_protections. Be specific — quote actual text (with inner quote marks replaced by single quotes), cite actual problems. Return ONLY the JSON object.`;
 
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 6000,
+      // 6000 (the German-era fix) truncated every Arabic call; verbatim quote
+      // excerpts × non-Latin scripts need more headroom — 2026-07-23 audit.
+      max_tokens: 9000,
       system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'contract-decoder' });
