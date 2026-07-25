@@ -76,7 +76,7 @@ const NotFound = ({
           </a>
           {/* Demand capture — they expected something at this URL; full card (not
               compact) so the ask is prominent */}
-          <IdeaPrompt source="404" className="mt-4 border-2" />
+          <IdeaPrompt source="404" accent className="mt-4 border-2" />
         </div>
       </div>
     </div>

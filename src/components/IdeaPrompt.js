@@ -20,7 +20,7 @@ import { useTheme } from '../hooks/useTheme';
  *
  * App-chrome component: English by design (like FeedbackTap / DashBoard copy).
  */
-export default function IdeaPrompt({ source = 'unknown', query = '', compact = false, className = '' }) {
+export default function IdeaPrompt({ source = 'unknown', query = '', compact = false, accent = false, className = '' }) {
   const { isDark } = useTheme();
   const [open, setOpen] = useState(!compact);
   const [problem, setProblem] = useState(query);
@@ -48,7 +48,10 @@ export default function IdeaPrompt({ source = 'unknown', query = '', compact = f
   }, [problem, sending, source, query]);
 
   const c = {
-    wrap:  isDark ? 'border-zinc-700' : 'border-gray-200',
+    // accent: promoted placement (404) — brand-gold frame + faint warm tint
+    wrap:  accent
+      ? (isDark ? 'border-orange-400/80 bg-orange-400/5' : 'border-[#c8872e] bg-[#c8872e]/5')
+      : (isDark ? 'border-zinc-700' : 'border-gray-200'),
     title: isDark ? 'text-zinc-100' : 'text-gray-900',
     body:  isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400',
