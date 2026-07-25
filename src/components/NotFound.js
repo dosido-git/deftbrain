@@ -56,16 +56,16 @@ const NotFound = ({
 
         <div className="space-y-3 pt-1">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/ToolFinder')}
             className={`w-full py-3.5 ${c.primary} rounded-xl font-semibold transition-colors`}
           >
-            Browse all tools
+            🔎 Use the ToolFinder
           </button>
           <button
-            onClick={() => navigate('/ToolFinder')}
+            onClick={() => navigate('/')}
             className={`w-full py-3 ${c.secondary} border rounded-xl font-semibold transition-colors`}
           >
-            🔎 Describe your problem, we&apos;ll find the tool
+            Browse all tools
           </button>
           {/* Anchor (not navigate) — /guides is server-rendered, not a React route */}
           <a
@@ -74,8 +74,9 @@ const NotFound = ({
           >
             Read the guides
           </a>
-          {/* Demand capture — they expected something at this URL */}
-          <IdeaPrompt source="404" compact className="pt-1" />
+          {/* Demand capture — they expected something at this URL; full card (not
+              compact) so the ask is prominent */}
+          <IdeaPrompt source="404" className="mt-4" />
         </div>
       </div>
     </div>
