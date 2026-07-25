@@ -6,6 +6,15 @@ const { MODELS, ALL_MODELS } = require('./models');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  // SDK default is 10 MINUTES — a stalled request silently hangs the endpoint
+  // (observed 2026-07-25: argue-better-open stuck ~7 min with zero log output).
+  // 300s bounds the stall to one retryable failure; slowest legitimate calls
+  // (10k-token non-English generations) run ~150-250s, so this stays clear.
+  timeout: 300 * 1000,
+  // SDK-internal retries stack multiplicatively with callClaudeWithRetry's own
+  // loop (default 2 → up to 3×300s inside ONE wrapper attempt). The wrapper
+  // owns retry policy; keep just one fast SDK retry for transient socket drops.
+  maxRetries: 1,
 });
 
 // ──────────────────────────────────────────────────────────────────────
