@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write task names or quoted phrases plainly or with single quotes, or it breaks the JSON.';
+
 const SYSTEM_PROMPT = `You are a productivity expert specializing in task batching and cognitive flow. Context switching costs 15-25 minutes of focus recovery. Grouping tasks by cognitive mode dramatically reduces mental friction.`;
 
 function buildTaskLines(tasks) {
@@ -85,7 +87,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 6000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowGenerate' });
       if (!parsed.batches && !parsed.schedule) {
@@ -123,7 +125,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowDump' });
       if (!parsed.batches && !parsed.schedule) {
@@ -143,7 +145,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowRebatch' });
       if (!parsed.batches && !parsed.schedule) {
@@ -162,7 +164,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Execution planning specialist. Concrete first actions. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowExpand' });
       if (!parsed.execution_plan) {
@@ -182,7 +184,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowProgress' });
       if (!parsed.acknowledgment) {
@@ -201,7 +203,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1500,
-      system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Accountability messaging expert. Confident tone. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowShare' });
       if (!parsed.message) {
@@ -220,7 +222,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1200,
-      system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Productivity template designer. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowTemplate' });
       if (!parsed.template_batches) {
@@ -239,7 +241,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1200,
-      system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Productivity pattern analyst. Warm, actionable. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowInsights' });
       if (!parsed.pattern_summary) {
@@ -292,7 +294,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowAB' });
       if (!parsed.sprint) {
@@ -332,7 +334,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Weekly productivity architect. Sustainable batch rhythms. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowWeekly' });
       if (!parsed.days) {
@@ -364,7 +366,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Task resistance analyst. Diagnose avoidance, offer fixes. Honest but kind. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowResistance' });
       if (!parsed.tasks) {
@@ -395,7 +397,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Time estimation analyst. Find patterns in duration misjudgment. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowCalibrate' });
       if (!parsed.mode_breakdown) {
@@ -433,7 +435,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Errand optimization expert. Efficient routes. Return ONLY valid JSON.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BatchFlowLocation' });
       if (!parsed.location_batches) {

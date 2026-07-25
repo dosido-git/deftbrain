@@ -49,9 +49,13 @@ function buildContextBlocks(body) {
 // ════════════════════════════════════════════════════════════
 // SHARED: Personality & analysis principles
 // ════════════════════════════════════════════════════════════
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted notes or phrases plainly or with single quotes, or it breaks the JSON.';
+
 const PERSONALITY = `Burnout prediction and recovery specialist. Identify the early warning signs of cognitive and physical overload before the crash happens.
 
-Be specific about patterns, not generic about rest. Give the intervention that actually prevents the crash, not just permission to slow down.`;
+Be specific about patterns, not generic about rest. Give the intervention that actually prevents the crash, not just permission to slow down.
+
+${NO_QUOTE_RULE}`;
 
 const ANALYSIS_PRINCIPLES = `ANALYSIS PRINCIPLES:
 
@@ -421,7 +425,7 @@ Be SPECIFIC with numbers and dates. Don't speculate — only report patterns sup
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5000,
-      system: withLanguage('You are a data analyst specializing in personal health pattern recognition.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a data analyst specializing in personal health pattern recognition. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }]
     }, { label: 'crash-predictor-patterns' });
 

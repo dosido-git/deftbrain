@@ -5,6 +5,8 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted statute names or checklist notes must be written plainly or with single quotes, or it breaks the JSON.';
+
 // Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache):
 // deposit law is exactly the volatile-figure domain where training knowledge
 // goes stale (2026-07-23 probe: /stream confidently called an illegal CA
@@ -18,7 +20,9 @@ async function groundDepositLawFacts({ location }) {
 Cover ONLY: (1) maximum deposit amount, (2) return deadline after move-out, (3) itemization requirement, (4) interest on deposit, (5) penalties for landlord non-compliance. Skip any you cannot verify. Note the effective date of any rule that changed since 2023.
 
 Return ONLY valid JSON:
-{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | itemization | interest | penalties", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }`,
+{ "jurisdiction": "State/region these rules apply to", "verified": [{ "topic": "deposit_cap | return_deadline | itemization | interest | penalties", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain of the source you verified against" }] }
+
+${NO_QUOTE_RULE}`,
     render: (cleanFacts) => {
       if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
         return `\n\nVERIFIED CURRENT DEPOSIT LAW (web-checked today for ${cleanFacts.jurisdiction || location}) — these figures OVERRIDE your training knowledge; use them verbatim:\n` +
@@ -78,7 +82,7 @@ router.post('/renters-deposit-saver/rights', rateLimit(DEFAULT_LIMITS), async (r
   if (!location?.trim()) return res.status(400).json({ error: 'Location is required for deposit law lookup' });
 
   try {
-    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage)
+    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage)
                  + withLocaleContext(userLocale, userCurrency, userRegion);
 
     const prompt = `You are an expert tenant rights advocate. Summarize security deposit rights for a renter in ${location}.
@@ -152,7 +156,7 @@ router.post('/renters-deposit-saver/stream', rateLimit(DEFAULT_LIMITS), async (r
     const staleness = 'DEPOSIT LAW CURRENCY: deposit caps and deadlines changed in several jurisdictions after 2023 — state a cap or deadline only together with its effective date; if you are not certain a figure is current, advise the tenant to verify it rather than presenting it as the legal maximum.';
 
     const ctx = `Address: ${fullAddress}\nMove-In Date: ${moveInDate}\nLocation/Jurisdiction: ${location}\nSecurity Deposit: ${depositLine}\nLandlord: ${landlordLine}${depositLawBlock}\n\n${staleness}`;
-    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON.', userLanguage)
+    const system = withLanguage('You are a JSON API. Respond with ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage)
                  + withLocaleContext(userLocale, userCurrency, userRegion);
 
     // Single-section-group helper: call Claude, repair, return parsed object.

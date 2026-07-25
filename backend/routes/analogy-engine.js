@@ -61,7 +61,7 @@ Generate ${depth === 'quick_grasp' ? '2-3' : depth === 'deep_understanding' ? '5
       // sentences) fills ~78% of 2500 in English but truncates → 500 in verbose
       // languages like German. The schema is already bounded; this is headroom.
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or examples plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'analogy-engine' });
     if (!parsed.concept_name) {

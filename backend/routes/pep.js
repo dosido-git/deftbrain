@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases or example wording must be written plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // DOPAMINE MENU BUILDER — v6 (18 routes)
 // v5: recharge menu, just-do-this, build-menu, swap,
@@ -66,7 +68,9 @@ Return ONLY valid JSON:
     "deep_resets": [{ "activity": "...", "why": "...", "duration": "...", "effort": "...", "category": "deep_reset" }],
     "avoid_right_now": [{ "activity": "...", "why": "..." }]
   }
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -103,7 +107,9 @@ Return ONLY valid JSON:
   "done_signal": "How they know they're done.",
   "after": "What they'll feel after. Specific.",
   "category": "quick_hit|medium_recharge|deep_reset"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -136,7 +142,9 @@ Return ONLY valid JSON:
   "suggestions": [
     { "activity": "...", "why_add": "Why this belongs on their menu.", "category": "quick_hit|medium_recharge|deep_reset|social|physical|creative|sensory", "effort": "low|medium|high", "duration": "...", "energy_min": 1, "energy_max": 10, "environments": ["home", "office", "outdoors", "commuting", "in_bed"] }
   ]
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -167,7 +175,7 @@ Return ONLY valid JSON:
   "wildcard": { "activity": "Something unexpected.", "why": "..." }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -200,7 +208,9 @@ Return ONLY valid JSON:
   "reflection": "1-2 sentences specific to their experience.",
   "anchor_suggestion": "If they provided a sensory anchor, reinforce it. If not, suggest one. null if not relevant.",
   "pattern_hint": "If history reveals a pattern, mention it. null otherwise."
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -232,7 +242,7 @@ Return ONLY valid JSON:
   "gap_note": "Is their menu missing something for this state? Brief note or null."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -264,7 +274,7 @@ Return ONLY valid JSON:
   "best_insight": "The single most useful pattern observation."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -288,7 +298,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 { "message": "The invitation message." }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -320,7 +330,9 @@ Return ONLY valid JSON:
   "trend": "improving|stable|declining",
   "trend_detail": "What's happening over time.",
   "recommendation": "One specific actionable suggestion."
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -354,7 +366,9 @@ Return ONLY valid JSON:
     { "step": 1, "activity": "...", "duration": "...", "effort": "low|medium", "transition_from_previous": "How to move from last step to this one." }
   ],
   "completion_feeling": "How they'll feel when done."
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -382,7 +396,7 @@ Return ONLY valid JSON:
   "suggested_activity": { "activity": "...", "why": "...", "duration": "..." }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -416,7 +430,7 @@ Return ONLY valid JSON:
   "first_step": "The literal next thing to do."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -473,7 +487,7 @@ Return ONLY valid JSON:
   "tomorrow_note": "What deferred tasks mean for tomorrow. Brief."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -545,7 +559,7 @@ Return ONLY valid JSON:
   "capacity_note": "If over-committed: what to cut. If fine: what's still available."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -574,7 +588,7 @@ Return ONLY valid JSON:
   "alternative_offer": "A smaller alternative to suggest, or null."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -627,7 +641,7 @@ Return ONLY valid JSON:
   "encouragement": "Brief, genuine encouragement. Not generic positivity — specific to what you see."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -679,7 +693,7 @@ Return ONLY valid JSON:
   "reality_check": "The honest overall picture in 2-3 sentences."
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -734,7 +748,7 @@ Return ONLY valid JSON:
   "reality_check": "Honest, warm reassurance. 'You're not failing — your routine is disrupted and you're adapting. That's strength.'"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

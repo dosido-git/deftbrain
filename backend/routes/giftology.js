@@ -77,7 +77,7 @@ price_range values must be in the user's local currency (never assume US dollars
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted card messages or phrases plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'giftology' });
     if (!parsed.perfect_picks && !parsed.gifts) {

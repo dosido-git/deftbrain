@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = '\n\nNever place a double-quote (") character inside any JSON string value — quoted phrases, task names, and example lines must be written plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // WAITING MODE LIBERATOR — v4 (6 routes)
 // v3: multi-event, energy-aware, one-thing, reframes
@@ -84,7 +86,7 @@ Return ONLY valid JSON:
   "reframe": "Cognitive reframe for their situation — one sentence",
   "prep_plans": [{ "event_time": "2:00 PM", "alarm_time": "1:25 PM (echo the precomputed prep alarm)", "steps": ["Step 1", "Step 2"] }],
   "worst_case": "Safety net advice — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -140,7 +142,7 @@ Return ONLY valid JSON:
   "mid_check": "Brief halfway message (e.g., 'You're actually doing it. Keep going.') — one sentence",
   "block_done": "Celebration when block timer ends — one sentence",
   "next_nudge": "Gentle suggestion for what to do after this block (or permission to stop) — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -179,7 +181,7 @@ Return ONLY valid JSON:
   "escape_hatch": "Permission to stop — one sentence",
   "why_this_one": "Brief reason — one sentence",
   "momentum_hook": "What they'll probably do next (no pressure) — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -212,7 +214,7 @@ Return ONLY valid JSON:
 {
   "reframes": [{ "angle": "Name", "text": "The reframe — one sentence", "emoji": "One emoji (one emoji)" }],
   "truth_bomb": "One blunt honest sentence — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -267,7 +269,7 @@ Return ONLY valid JSON:
   },
   "takeaway": "One concrete thing to try next time — one sentence",
   "encouragement": "Genuine specific praise — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -330,7 +332,7 @@ Return ONLY valid JSON:
   },
   "recommendations": [{ "insight": "What data shows — one sentence", "suggestion": "What to try — one sentence" }],
   "encouragement": "Genuine specific observation — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

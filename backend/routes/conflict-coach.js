@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted dialogue or phrases plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════════════════
 // MAIN ANALYSIS
 // ═══════════════════════════════════════════════════════════════
@@ -20,7 +22,7 @@ router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const emotionsText = emotionalState?.length > 0 ? emotionalState.join(', ') : 'not specified';
     const goalsText = goals?.length > 0 ? goals.map(g => g.replace(/_/g, ' ')).join(', ') : 'respond thoughtfully';
 
-    const systemPrompt = 'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. CRITICAL: Return ONLY valid JSON.';
+    const systemPrompt = 'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. CRITICAL: Return ONLY valid JSON. ' + NO_QUOTE_RULE;
 
     const prompt = `Expert conflict resolution coach. Analyze this ${isThread ? 'conversation thread' : 'message'} and prevent reactive texting.
 
@@ -166,7 +168,9 @@ Answer the follow-up based on full context. Be specific, practical, warm but hon
 - If they're spiraling, help ground them.
 - Keep to 2-4 paragraphs. Stay de-escalating.
 
-CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}`;
+CRITICAL: Return ONLY valid JSON: {"answer": "Your full coaching response here"}
+
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -215,7 +219,9 @@ CRITICAL: Return ONLY valid JSON:
 {
   "adjusted_text": "The rewritten response",
   "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
-}`;
+}
+
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

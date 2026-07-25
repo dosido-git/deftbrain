@@ -151,7 +151,9 @@ IMPORTANT RULES:
 - Adapt language to skill_level: beginners need more detail ("dice means cut into 1/4 inch cubes"), advanced can handle shorthand.
 - If the ingredients are sparse, be creative but honest: "This is a stretch, but..."
 
-Return ONLY the JSON object. No markdown fences, no preamble.`;
+Return ONLY the JSON object. No markdown fences, no preamble.
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases or cooking cues plainly or with single quotes, or it breaks the JSON.`;
 
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
 

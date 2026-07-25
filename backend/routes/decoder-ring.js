@@ -100,7 +100,8 @@ IMPORTANT RULES:
 - decoded_layers should have 2-6 entries depending on message complexity.
 - response_strategies should have exactly 3 entries with genuinely different approaches.
 
-Return ONLY the JSON object. No markdown fences, no preamble.`;
+Return ONLY the JSON object. No markdown fences, no preamble.
+Never place a double-quote (") character inside any JSON string value — write quoted phrases from the message and example responses plainly or with single quotes, or it breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
 model: MODELS.SMART,

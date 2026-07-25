@@ -4,9 +4,13 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted speech or phrases plainly or with single quotes, or it breaks the JSON.';
+
 const PERSONALITY = `Apology calibration expert — part therapist, part communication coach. Full spectrum from 'you're over-apologizing' to 'this needs serious repair.' Warm but direct. Never shame — most people were never taught how to apologize well.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${NO_QUOTE_RULE}`
 
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator — Main calibration

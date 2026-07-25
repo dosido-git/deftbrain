@@ -38,7 +38,7 @@ Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: MODELS.FAST,
           max_tokens: 1500,
-          system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          system: withLanguage(`You are an emergency conversation rescue bot. Give ONE natural conversation line for an awkward silence, then show exactly how the next 2 exchanges will flow. Not cheesy, not forced — something a real person would actually say.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted speech or lines plainly or with single quotes, or it breaks the JSON.',
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'awkward-silence-filler/panic' });
         if (!parsed.line) {
@@ -100,7 +100,7 @@ Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be
         const parsed = await callClaudeWithRetry({
           model: MODELS.FAST,
           max_tokens: 4000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted speech or lines plainly or with single quotes, or it breaks the JSON.',
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'awkward-silence-filler' });
         if (!parsed.conversation_chains && !parsed.silence_reframe) {

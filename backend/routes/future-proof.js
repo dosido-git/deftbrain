@@ -85,7 +85,7 @@ LIMITS: tailwinds and headwinds AT MOST 4 each; the_pivot.adjacent_moves AT MOST
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or names plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'future-proof' });
     if (!parsed.subject_as_understood) {

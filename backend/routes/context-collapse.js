@@ -40,6 +40,8 @@ KEY PRINCIPLES:
 5. When suggesting rewrites, preserve their voice — don't make them sound like a corporate PR department.
 6. Be honest about risks. If a message is genuinely problematic for an audience, say so clearly.
 
+Never place a double-quote (") character inside any JSON string value — write quoted phrases from the message plainly or with single quotes, or it breaks the JSON.
+
 Return only valid JSON.`,
       userLanguage
     ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);

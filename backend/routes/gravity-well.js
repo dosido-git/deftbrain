@@ -97,7 +97,7 @@ RULES: your_gravity_score.current and gravity_score_target must each be a BARE p
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or message templates plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'gravity-well' });
     if (!parsed.target_profile) {

@@ -4,6 +4,8 @@ const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write historical quotes or quoted phrases plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Find structural historical parallels
 // ═══════════════════════════════════════════════════
@@ -31,7 +33,9 @@ YOUR PRINCIPLES:
 
 REALITY & RELEVANCE CHECK (do this FIRST, before finding any parallels):
 - Assess the input's factual premise. If it states something FALSE or inverts a documented fact (e.g. claims a living person died, denies a well-documented event, or asserts a conspiracy), do NOT treat it as a real event or a neutral "counterfactual" — plainly state what is actually true and that the claim is false or unverifiable. If the input is not a current event, trend, or controversy, note that.
-- You may still surface structural parallels, but when the premise is false you are analyzing the PHENOMENON of the false belief (how and why such claims spread and persist), never validating the claim as if it happened. Lead with the correction; never lend it false authority.`, userLanguage);
+- You may still surface structural parallels, but when the premise is false you are analyzing the PHENOMENON of the false belief (how and why such claims spread and persist), never validating the claim as if it happened. Lead with the correction; never lend it false authority.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
     const prompt = withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}
@@ -196,7 +200,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 3500,
-      system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a narrative historian who brings the past to life with specificity and honesty. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-deeper' });
 
@@ -260,7 +264,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 2500,
-      system: withLanguage('You are a structural historian focused on why similar conditions sometimes produce different outcomes. Return ONLY valid JSON. No markdown.', userLanguage),
+      system: withLanguage('You are a structural historian focused on why similar conditions sometimes produce different outcomes. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'history-today-counter' });
 

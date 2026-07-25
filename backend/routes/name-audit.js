@@ -5,6 +5,8 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted names or phrases must be written plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // HELPER: Check domain availability via DNS
 // ═══════════════════════════════════════════════════
@@ -144,7 +146,8 @@ Return ONLY this JSON (no markdown, no preamble):
   "suggestions": { "to_strengthen": "One sentence", "alternatives_direction": "One sentence" }
 }
 
-global_language_flags: ONLY include languages where there is a caution or problem. Omit neutral/positive findings entirely. Most names will have 0-3 flags.`;
+global_language_flags: ONLY include languages where there is a caution or problem. Omit neutral/positive findings entirely. Most names will have 0-3 flags.
+${NO_QUOTE_RULE}`;
 
         return await callClaudeWithRetry({
           model: MODELS.SMART,
@@ -243,6 +246,7 @@ Return ONLY this JSON:
 }
 
 Be honest and decisive. The client needs clarity, not diplomacy. Return ONLY JSON.
+${NO_QUOTE_RULE}
 ${langDirective ? `\n${langDirective}` : ''}`;
 
     const parsed = await callClaudeWithRetry({
@@ -343,7 +347,8 @@ IMPORTANT:
 - Be honest about tradeoffs — every name change involves compromise
 - Estimated scores should be realistic, not inflated
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON.
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -414,7 +419,8 @@ Return ONLY this JSON:
   "consensus": "1-2 sentence summary of the overall audience sentiment. Where do most personas agree? What's the pattern?"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON.
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -516,7 +522,8 @@ Return ONLY this JSON:
   "verdict": "1-2 sentence overall deep dive verdict — does the context-specific analysis change the overall assessment?"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON.
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -591,7 +598,8 @@ Return ONLY this JSON:
   "confidence_verdict": "How confident should you be in the overall assessment? e.g., 'High confidence — both analyses converge on the same grade.' or 'Mixed signals — the disagreements suggest this name is more polarizing than the score suggests.' — one sentence"
 }
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON.
+${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

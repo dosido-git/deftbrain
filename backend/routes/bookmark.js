@@ -238,7 +238,9 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
 
 Remind them why they cared, who the key players are, where the tension sits, and what to watch for next. Calibrate depth to how long they've been away.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+Never place a double-quote (") character inside any JSON string value — write quoted dialogue, titles, or nicknames plainly or with single quotes, or it breaks the JSON.`;
 
     const data = await callClaudeWithRetry({
 model: MODELS.SMART,

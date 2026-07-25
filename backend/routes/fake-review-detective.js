@@ -31,6 +31,8 @@ const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = requ
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted review phrases plainly or with single quotes, or it breaks the JSON.';
+
 router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { action } = req.body;
 
@@ -47,7 +49,7 @@ router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res
           return res.status(400).json({ error: 'No reviews provided' });
         }
 
-        const systemPrompt = `You are a fake review detection expert. You will receive a batch of product reviews with pre-computed statistics. Your job is to score EACH review individually for authenticity.`;
+        const systemPrompt = `You are a fake review detection expert. You will receive a batch of product reviews with pre-computed statistics. Your job is to score EACH review individually for authenticity. ${NO_QUOTE_RULE}`;
 
         const reviewList = reviews.map(r => {
           return `[Review #${r.index}]
@@ -112,7 +114,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
           return res.status(400).json({ error: 'Reviews and scores are required' });
         }
 
-        const systemPrompt = `You are a review fraud analyst. You've received individual review scores and pre-computed statistics. Your job is to analyze PATTERNS across reviews and deliver a final assessment.`;
+        const systemPrompt = `You are a review fraud analyst. You've received individual review scores and pre-computed statistics. Your job is to analyze PATTERNS across reviews and deliver a final assessment. ${NO_QUOTE_RULE}`;
 
         const scoreSummary = scores.map(s =>
           `Review #${s.index}: score=${s.authenticity_score}, verdict=${s.verdict}, flags=[${(s.red_flags || []).join('; ')}]`
@@ -215,7 +217,7 @@ Limit playbook.tactics_detected to the 3-5 most relevant tactics. Keep every str
           return res.status(400).json({ error: 'Need at least 3 reviews for fingerprinting' });
         }
 
-        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template.`;
+        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template. ${NO_QUOTE_RULE}`;
 
         const reviewTexts = reviews.map(r => {
           const sc = scores?.find(s => s.index === r.index);
@@ -270,7 +272,7 @@ Return ONLY valid JSON:
           return res.status(400).json({ error: 'Need at least 2 sources to synthesize' });
         }
 
-        const systemPrompt = `You are a cross-platform review analyst. You've received review analysis results from MULTIPLE sources (e.g., Amazon, Best Buy, Reddit, etc.) for the SAME or similar products. Your job is to synthesize them into a unified truth.`;
+        const systemPrompt = `You are a cross-platform review analyst. You've received review analysis results from MULTIPLE sources (e.g., Amazon, Best Buy, Reddit, etc.) for the SAME or similar products. Your job is to synthesize them into a unified truth. ${NO_QUOTE_RULE}`;
 
         const sourceSummaries = sources.map((s, i) => `
 [SOURCE ${i + 1}: ${s.sourceName || 'Unknown'}]

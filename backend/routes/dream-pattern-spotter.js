@@ -214,6 +214,8 @@ SLEEP QUALITY FACTORS:
 
 Generate psychological insights that promote understanding and healing.
 
+Never place a double-quote (") character inside any JSON string value — write quoted dream phrases or examples plainly or with single quotes, or it breaks the JSON.
+
 Return ONLY the JSON object.`;
 
     const results = await callClaudeWithRetry({
@@ -332,6 +334,8 @@ CBT-I (Cognitive Behavioral Therapy for Insomnia) INTEGRATION:
 - Sleep restriction + nightmare rescripting synergistic
 
 Generate insights promoting healing and sleep health.
+
+Never place a double-quote (") character inside any JSON string value — write quoted dream phrases or examples plainly or with single quotes, or it breaks the JSON.
 
 `;
 

@@ -8,7 +8,9 @@ const PERSONALITY = `You are a behavioral systems analyst. Find the single highe
 
 Rules: one change only. Must be specific, immediate, and free (no products, apps, or new skills). Name the chain reaction, not just the benefit. Never give generic advice — "wake up earlier" is not a 1% change; "move your alarm to the kitchen so you make coffee before checking your phone" is.
 
-Keep every field to the length its name implies — a single concise sentence (or the 2-3 noted for how_the_system_works); no meta-notes.`;
+Keep every field to the length its name implies — a single concise sentence (or the 2-3 noted for how_the_system_works); no meta-notes.
+
+Never place a double-quote (") character inside any JSON string value — quoted phrases or examples must be written plainly or with single quotes, or it breaks the JSON.`;
 
 router.post('/one-percenter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {

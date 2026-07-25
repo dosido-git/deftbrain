@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or dialogue plainly or with single quotes, or it breaks the JSON.';
+
 const LEVEL_GUIDE = {
   curious: 'Warm, conversational pushback. Concede easily. Think: smart friend at dinner.',
   rigorous: 'Structured opposition. Press weak points. Demand evidence. Think: practice debate partner.',
@@ -62,7 +64,7 @@ Return ONLY valid JSON:
       max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Intellectually honest, real evidence, genuine respect. Coach not adversary. ${challengeLevel === 'no-mercy' ? 'Intellectually relentless.' : ''} ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY — never make statements or assertions.' : ''} Return ONLY valid JSON. No markdown.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterOpen' });
     if (!parsed.opening && !parsed.response) {
@@ -117,7 +119,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2000,
       system: withLanguage(`Steelman debate partner. Concede strong points. Flag fallacies. Press forward. ${format === 'socratic' || format === 'cross-exam' ? 'QUESTIONS ONLY.' : ''} Return ONLY valid JSON. No markdown.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterRespond' });
     if (!parsed.opening && !parsed.response) {
@@ -156,7 +158,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterSwitch' });
     if (!parsed.switch_opening) {
@@ -202,7 +204,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterScorecard' });
     if (!parsed.overall) {
@@ -235,7 +237,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterQuick' });
     if (!parsed.counter) {
@@ -277,7 +279,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterCoach' });
     if (!parsed.encouragement) {
@@ -336,7 +338,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterAudienceJudge' });
     if (!parsed.verdict) {
@@ -402,7 +404,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterArgumentMap' });
     if (!parsed.user_tree) {
@@ -459,7 +461,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3500,
-      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterPrep' });
     if (!parsed.audience_profile) {
@@ -515,7 +517,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterFallacyTrain' });
 
@@ -570,7 +572,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterSourceCheck' });
     if (!parsed.claim_type) {
@@ -617,7 +619,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterRematch' });
     if (!parsed.opening && !parsed.response) {
@@ -672,7 +674,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'ArgueBetterHighlightReel' });
     if (!parsed.overall_profile) {

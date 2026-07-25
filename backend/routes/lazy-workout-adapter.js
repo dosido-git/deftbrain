@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or cues plainly or with single quotes, or it breaks the JSON.';
+
 const BODY_AREAS = {
   'stiff-neck': 'Stiff/tight neck and shoulders',
   'sore-back': 'Sore or tight lower back',
@@ -79,7 +81,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter' });
     if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
@@ -115,7 +117,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-micro' });
     if (!parsed.session_name) {
@@ -150,7 +152,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-week' });
     if (!parsed.plan_name) {
@@ -178,7 +180,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-swap' });
     if (!parsed.replacement) {
@@ -208,7 +210,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-body' });
     if (!parsed.session_name) {
@@ -232,7 +234,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-complete' });
     if (!parsed.message) {
@@ -263,7 +265,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-insights' });
     if (!parsed.summary) {
@@ -297,7 +299,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-stack' });
     if (!parsed.stack_name) {
@@ -331,7 +333,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-sleep' });
     if (!parsed.session_name) {
@@ -369,7 +371,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-recovery' });
     if (!parsed.protocol_name) {
@@ -404,7 +406,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-prove' });
     if (!parsed.headline) {
@@ -430,7 +432,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-nudge' });
     if (!parsed.nudge) {

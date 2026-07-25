@@ -63,7 +63,7 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
         model: MODELS.SMART,
         max_tokens: maxTokens,
         tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-        system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON.',
+        system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
         messages: [{ role: 'user', content: userPrompt }],
       }, { label });
       const block = render(stripCites(facts)) || '';

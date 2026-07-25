@@ -8,7 +8,11 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════
 
-const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location. Keep every field concise — one short sentence; outputs render in compact cards, so long text overflows the layout and the response budget.`;
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write venue names, invite text, or any quoted phrases plainly or with single quotes, or it breaks the JSON.';
+
+const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location. Keep every field concise — one short sentence; outputs render in compact cards, so long text overflows the layout and the response budget.
+
+${NO_QUOTE_RULE}`;
 
 // ═══════════════════════════════════════════
 // HELPERS
@@ -263,7 +267,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
-      system: withLanguage('Date feedback analyst. Warm, encouraging. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(`Date feedback analyst. Warm, encouraging. Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRate' });
       if (!parsed.summary) {
@@ -309,7 +313,7 @@ Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
-      system: withLanguage('Charming friend who creates excitement about mystery dates. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(`Charming friend who creates excitement about mystery dates. Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightSurprise' });
         return res.json({ ...parsed, isSurprise: true });
@@ -329,7 +333,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 1500,
-      system: withLanguage('Charming invite writer. Match tone to date type. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(`Charming invite writer. Match tone to date type. Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightShare' });
       if (!parsed.message) {
@@ -496,7 +500,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
-      system: withLanguage('Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(`Relationship pattern analyst. Encouraging, not judgmental. Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightRutDetect' });
       if (!parsed.pattern_summary) {
@@ -540,7 +544,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
-      system: withLanguage('Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage(`Pre-date preparation expert. Practical + thoughtful. Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'DateNightChecklist' });
       if (!parsed.checklist) {

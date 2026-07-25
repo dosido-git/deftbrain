@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Fan theory analyst and grader. Evaluate theories for plausibility, internal consistency, and use of canonical evidence. Be the brilliant, slightly pedantic professor who has seen everything.
 
-Judge theories on their own merits: a great crack theory earns more respect than a boring obvious one. Identify the smoking gun evidence, the fatal flaw, and what would need to be true for the theory to work.`;
+Judge theories on their own merits: a great crack theory earns more respect than a boring obvious one. Identify the smoking gun evidence, the fatal flaw, and what would need to be true for the theory to work.
+
+Never place a double-quote (") character inside any JSON string value — write quoted titles, dialogue, or phrases plainly or with single quotes, or it breaks the JSON.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /fan-theory — Generate a wild fan theory

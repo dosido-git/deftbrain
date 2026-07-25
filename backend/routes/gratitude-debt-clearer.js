@@ -7,6 +7,8 @@ const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 // NOTE: no router.use(rateLimit(...)) — see name-storm.js: router-level
 // middleware leaks onto every /api request. Per-route limits below.
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or message text plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN GENERATION — Thank-you messages
 // ═══════════════════════════════════════════════════
@@ -67,6 +69,8 @@ OUTPUT (JSON only):
 }
 
 DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`;
     } else {
@@ -183,6 +187,8 @@ OUTPUT (JSON only):
 
 Generate 2-3 message versions with different approaches. Keep every metadata field (version, tone, why_this_works, best_for, delivery/tips) to ONE short phrase or sentence — only message_text follows the LENGTH PREFERENCE. DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
 
+${NO_QUOTE_RULE}
+
 Return ONLY valid JSON.`;
     }
 
@@ -252,6 +258,7 @@ RULES:
 - 2-3 questions max. Make them feel like a friend asking, not an interview.
 - Questions should be answerable in 5-15 words.
 - Focus on: what specifically happened, how it made them feel, what would have happened without this person.
+- ${NO_QUOTE_RULE}
 - Return ONLY JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
@@ -330,6 +337,8 @@ OUTPUT (JSON only):
 }
 
 DIRECTION: The user RECEIVED the gift/favor/kindness and is the one saying thank you — never write as if the user gave it.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 

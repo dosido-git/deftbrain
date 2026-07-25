@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or notes plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════════════════
 // POST /focus-pocus — Generate AI break plan (v1)
 // ═══════════════════════════════════════════════════════════════
@@ -84,7 +86,9 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
   "next_session": "suggested next session duration and advice — one sentence"
 }
 
-CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.`, userLanguage);
+CRITICAL: Be specific to their activity. Do NOT give generic advice. Reference what they were actually doing.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -176,6 +180,7 @@ RULES:
 - Don't make up data points. If something isn't clear from the data, say so.
 - Be honest about weaknesses — these people want to improve, not be coddled.
 - The share_snippet should be playful and specific, not generic.
+- ${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -244,7 +249,9 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
   "resume_tip": "How to pick back up smoothly when they return. If they left a session note, reference it. Include a specific re-entry technique. — one sentence"
 }
 
-CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.`, userLanguage);
+CRITICAL: Be specific to their activity and session. Generic advice is useless. Reference what they were actually doing.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,

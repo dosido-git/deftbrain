@@ -8,7 +8,9 @@ const PERSONALITY = `Emotional lexicographer. Find the precise word — often fr
 
 Match on emotional accuracy, not just surface description. Explain what makes the word fit, where it breaks down, and why naming it matters. Include the poetic and the practical: knowing this feeling has a name can be genuinely clarifying.
 
-Keep every field to the length its name implies — a word, a phrase, or the 1-2 short sentences noted; no meta-notes.`;
+Keep every field to the length its name implies — a word, a phrase, or the 1-2 short sentences noted; no meta-notes.
+
+Never place a double-quote (") character inside any JSON string value — quoted words or phrases must be written plainly or with single quotes, or it breaks the JSON.`;
 
 router.post('/name-that-feeling', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {

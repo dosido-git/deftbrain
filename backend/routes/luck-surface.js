@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Luck surface analyst. Identify the specific structural changes that put someone in the path of more good fortune — not platitudes, but precise interventions.
 
-Luck is surface area. Diagnose what's limiting it, then prescribe 5 asymmetric moves: high-upside, low-downside actions that compound over time. Be specific about mechanism, timing, and the counter-intuitive move they're missing.`;
+Luck is surface area. Diagnose what's limiting it, then prescribe 5 asymmetric moves: high-upside, low-downside actions that compound over time. Be specific about mechanism, timing, and the counter-intuitive move they're missing.
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.`;
 
 router.post('/luck-surface', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {

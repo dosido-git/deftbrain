@@ -10,6 +10,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // v3: dna, devils-advocate, batch, chain
 // ════════════════════════════════════════════════════════════
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted choices or phrases plainly or with single quotes, or it breaks the JSON.';
+
 const CAPACITY = {
   overwhelmed: 'The user is TOTALLY STUCK. Simplest possible answer, minimal steps. No choices — just tell them what to do.',
   low: 'The user has LOW ENERGY. Low-effort, comfort-first. Steps require minimal willpower.',
@@ -58,7 +60,7 @@ OUTPUT (JSON only):
   "no_second_guessing": "Firm, encouraging message to stop deliberating"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
@@ -111,7 +113,7 @@ OUTPUT (JSON only):
   "no_second_guessing": "Firm message about why the winner is right"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach2' }));
   } catch (e) { console.error('DecisionCoach pros-cons:', e); res.status(500).json({ error: 'Failed to compare' }); }
@@ -147,7 +149,7 @@ OUTPUT (JSON only):
   "no_second_guessing": "One confident sentence"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach3' }));
   } catch (e) { console.error('DecisionCoach quick:', e); res.status(500).json({ error: 'Quick decide failed' }); }
@@ -204,7 +206,7 @@ OUTPUT (JSON only):
   "share_snippet": "One punchy shareable sentence"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach4' }));
   } catch (e) { console.error('DecisionCoach patterns:', e); res.status(500).json({ error: 'Pattern analysis failed' }); }
@@ -260,7 +262,7 @@ OUTPUT (JSON only):
   "no_second_guessing": "Firm message to the group"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach5' }));
   } catch (e) { console.error('DecisionCoach group:', e); res.status(500).json({ error: 'Group decide failed' }); }
@@ -309,7 +311,7 @@ OUTPUT (JSON only):
   "encouragement": "One sentence for next time"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 800, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach6' }));
   } catch (e) { console.error('DecisionCoach followup:', e); res.status(500).json({ error: 'Follow-up failed' }); }
@@ -392,7 +394,7 @@ OUTPUT (JSON only):
   "share_snippet": "One punchy sentence about their Decision DNA"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach7' }));
   } catch (e) { console.error('DecisionCoach DNA:', e); res.status(500).json({ error: 'DNA analysis failed' }); }
@@ -434,7 +436,7 @@ OUTPUT (JSON only):
   "execution_instructions": ["Step 1: ...", "Step 2: ..."]
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach8' }));
   } catch (e) { console.error('DecisionCoach devils-advocate:', e); res.status(500).json({ error: "Devil's advocate failed" }); }
@@ -476,7 +478,7 @@ OUTPUT (JSON only):
   "variety_note": "One sentence about the variety mix"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach9' }));
   } catch (e) { console.error('DecisionCoach batch:', e); res.status(500).json({ error: 'Batch decide failed' }); }
@@ -524,7 +526,7 @@ OUTPUT (JSON only):
   "no_second_guessing": "Firm message about trusting the whole chain"
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach10' }));
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }

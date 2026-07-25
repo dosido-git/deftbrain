@@ -77,7 +77,9 @@ Return ONLY valid JSON:
 
   "the_tension": "One sentence naming the real tension between these perspectives — what they're all circling around",
   "the_question_nobody_asked": "The more important adjacent question this crowd would tell them to ask themselves"
-}`;
+}
+
+Never place a double-quote (") character inside any JSON string value — write each voice's speech and any quoted phrases plainly or with single quotes, or it breaks the JSON.`;
 
     const prompt = withLanguage(`${PERSONALITY}\n\n---\n\n${userPrompt}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const parsed = await callClaudeWithRetry({

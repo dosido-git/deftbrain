@@ -128,6 +128,7 @@ IMPORTANT RULES:
 - Each version should feel genuinely different in structure and tone, not just reworded.
 - customize_prompts should be specific: "Add the name of the client they impressed" not "add more detail."
 - LIMITS: writing_tips AT MOST 4, power_phrases AT MOST 5, placeholders_to_fill AT MOST 5; strengths and customize_prompts AT MOST 3 per version. Keep tips/phrases/prompts terse (one line each) — the letters themselves carry the length.
+- Never place a double-quote (") character inside any JSON string value — write quoted phrases or letter text plainly or with single quotes, or it breaks the JSON.
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
@@ -177,6 +178,8 @@ OUTPUT (JSON only):
   "word_count": 350,
   "what_changed": "1-sentence summary of the revision"
 }
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases or letter text plainly or with single quotes, or it breaks the JSON.
 
 Return ONLY valid JSON.`;
 

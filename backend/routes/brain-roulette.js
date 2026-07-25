@@ -6,6 +6,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // Rate limiting handled globally in server.js
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or titles plainly or with single quotes, or it breaks the JSON.';
+
 // ── Main spin ──
 router.post('/brain-roulette', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const { interests, depth, seenTopics, isSurprise, customTopic, audienceLevel, userLanguage } = req.body;
@@ -64,6 +66,8 @@ Respond ONLY with valid JSON in this exact format:
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
+${NO_QUOTE_RULE}
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -113,6 +117,8 @@ Respond ONLY with valid JSON:
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
+${NO_QUOTE_RULE}
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -161,6 +167,8 @@ Respond ONLY with valid JSON:
 }
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -218,6 +226,8 @@ Respond ONLY with valid JSON:
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
+${NO_QUOTE_RULE}
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -273,6 +283,8 @@ Respond ONLY with valid JSON:
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
 
+${NO_QUOTE_RULE}
+
 Return ONLY valid JSON.`, userLanguage);
 
   try {
@@ -323,6 +335,8 @@ Respond ONLY with valid JSON:
 }
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -382,6 +396,8 @@ Respond ONLY with valid JSON:
 }
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage);
 
@@ -460,6 +476,8 @@ Respond ONLY with valid JSON:
 }
 
 HONESTY: Never invent precise statistics, percentages, study citations, or named research from memory — use hedged phrasing ('roughly', 'research suggests') unless the figure is genuinely common knowledge.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`, userLanguage);
 

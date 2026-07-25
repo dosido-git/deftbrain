@@ -3,6 +3,8 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
 // ════════════════════════════════════════════════════════════
 // SIX DEGREES OF ME v2 — Backend
 // v1: chain, flip, surprise, profile-prompt
@@ -49,7 +51,7 @@ Respond ONLY with valid JSON:
   "insight": {"title":"Punchy (4-8 words)","body":"2-4 sentences naming the pattern.","through_line":"5-10 word through-line"},
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees' });
     if (!data.chain) return res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -72,7 +74,7 @@ PROFILE: ${buildProfileContext(profile)}
 Respond ONLY with valid JSON:
 {"chain":[{"step":1,"from":"...","to":"...","connection":"...","emoji":"..."}],"insight":{"title":"...","body":"...","through_line":"..."}}
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-flip' });
     if (!data.chain) return res.status(500).json({ error: "Couldn't flip." });
@@ -96,7 +98,7 @@ Each pair from DIFFERENT domains. Include one wild card. Use specific profile de
 Respond ONLY with valid JSON:
 {"pairs":[{"thingA":"...","thingB":"...","tease": "Why interesting"}]}
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-surprise' });
     if (!data.pairs) return res.status(500).json({ error: "Couldn't suggest." });
@@ -118,7 +120,7 @@ Questions: specific, drawing on what's shared, about turning points/surprises, c
 
 Respond ONLY with valid JSON:
 {"questions":["Q1?","Q2?","Q3?"]}
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-profile-prompt' });
     if (!data.questions) return res.status(500).json({ error: "Couldn't generate." });
@@ -161,7 +163,7 @@ Respond ONLY with valid JSON:
   "difficulty": "easy" | "medium" | "hard" | "impossible",
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-challenge' });
     if (!data.chain) return res.status(500).json({ error: 'Challenge failed.' });
@@ -200,7 +202,7 @@ Respond ONLY with valid JSON:
   "linchpin_explanation": "1-2 sentences on why this link was/wasn't critical",
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-what-if' });
     if (!data.chain) return res.status(500).json({ error: "Couldn't explore what-if." });
@@ -249,7 +251,7 @@ Respond ONLY with valid JSON:
   "prediction": "One sentence prediction about their next connection",
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-story' });
     if (!data.title) return res.status(500).json({ error: "Couldn't write your story." });
@@ -276,7 +278,7 @@ Respond ONLY with valid JSON. For each node, "node" MUST be the exact node text 
   "tagged": [{"node": "exact node text, copied verbatim","tag": "one of the category tokens above"}],
 }
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-tag-nodes' });
     if (!data.tagged) return res.status(500).json({ error: "Couldn't tag." });
@@ -325,7 +327,7 @@ Respond with valid JSON:
   "insight": {"title":"...","body": "What connects these two lives. — 2-4 sentences","through_line":"..."},
 }`}
 
-CRITICAL: Return ONLY valid JSON.${lang}`;
+CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
     const data = await callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { label: 'six-degrees-chain-between' });
     if (!data.chain && !data.chainA) return res.status(500).json({ error: "Couldn't find the connection." });

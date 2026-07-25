@@ -115,6 +115,8 @@ OUTPUT (JSON only):
 
 CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
 
+Never place a double-quote (") character inside any JSON string value — write track or album titles plainly or with single quotes, or it breaks the JSON.
+
 Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 
   try {
@@ -162,6 +164,8 @@ USER FEEDBACK ON PREVIOUS PLAYLIST: "${feedback}"
 Based on this feedback, generate an adjusted playlist that addresses the issue. Keep what was working; fix what wasn't.
 
 Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
+
+Never place a double-quote (") character inside any JSON string value — write track or album titles plainly or with single quotes, or it breaks the JSON.
 
 Return ONLY valid JSON. No preamble, no markdown.`, userLanguage);
 

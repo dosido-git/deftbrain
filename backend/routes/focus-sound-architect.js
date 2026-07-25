@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
+
 // Sudden-sound sensitivity: rain and fire have sharp transients — the prompt asks
 // the model to avoid them, but enforce it in code too.
 const hasSuddenSensitivity = (sensitivities) => {
@@ -96,7 +98,8 @@ CRITICAL:
 - The total shouldn't be overwhelming — if using 4+ layers, keep individual volumes lower
 - For binaural type, ALWAYS include "hz" (beat frequency 1-30) and "base_hz" (carrier 150-300)
 - Be specific in "why" — reference the user's actual task and preferences
-- Keep it practical — this will be synthesized and played immediately`, userLanguage);
+- Keep it practical — this will be synthesized and played immediately
+- ${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -189,7 +192,8 @@ CRITICAL:
 - Volumes 0-100 (realistic, not all at 100)
 - For binaural, ALWAYS include "hz" and "base_hz"
 - 2-4 phases, each with 2-5 layers
-- Be specific in "why" — reference the user's actual task and preferences`, userLanguage);
+- Be specific in "why" — reference the user's actual task and preferences
+- ${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
@@ -269,7 +273,8 @@ CRITICAL:
 - If feedback is "too busy", lower busier layers (cafe, rain) and keep foundation (brown_noise)
 - If "too sparse", boost variety layers or suggest adding one
 - If "too harsh", reduce white_noise/high-frequency layers, boost brown_noise
-- Keep the total soundscape balanced`, userLanguage);
+- Keep the total soundscape balanced
+- ${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,

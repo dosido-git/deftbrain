@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext} = require('../lib/
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted accomplishments or phrases plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN — Build Brag Sheet
 // ═══════════════════════════════════════════════════
@@ -154,7 +156,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'BragSheetBuilder' });
 
@@ -256,7 +258,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are an expert career coach upgrading accomplishment statements with real metrics. Return ONLY valid JSON. No markdown, no preamble.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetRefine' });
 
@@ -324,7 +326,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a professional accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetTweak' });
 
@@ -403,7 +405,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are an expert accomplishment translator. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetAddSingle' });
 
@@ -464,7 +466,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are an expert interview coach. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetStar' });
 
@@ -553,7 +555,7 @@ Generate exactly 3 questions per category. Make them SPECIFIC to this person's r
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a career coach who specializes in helping people uncover hidden accomplishments. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetExcavate' });
 
@@ -656,7 +658,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are an expert resume strategist and ATS optimization specialist. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetTailor' });
 
@@ -737,7 +739,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a career assessment expert. Be honest — a 60 is not a bad score, it means there is room to improve. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetRadar' });
 
@@ -826,7 +828,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4500,
-      system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a senior interview coach at a top career consulting firm. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetInterviewMatrix' });
 
@@ -912,7 +914,7 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage('You are a ghostwriter who specializes in matching someone\'s natural voice while keeping professional accomplishment statements powerful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'BragSheetVoiceMatch' });
 

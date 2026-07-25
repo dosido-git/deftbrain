@@ -9,6 +9,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 const PERSONALITY = `Social energy analyst. Map what drains vs replenishes and build a sustainable social calendar. Be honest about reciprocity and the real cost of over-commitment. Give permission to protect energy alongside specific strategies for maintaining relationships that matter.`
 
+const NO_QUOTE_RULE = `Never place a double-quote (") character inside any JSON string value — quoted phrases, decline scripts, and situation names must be written plainly or with single quotes, or it breaks the JSON.`
+
 // ════════════════════════════════════════════════════════════
 // POST /social-energy-audit — Main analysis
 // ════════════════════════════════════════════════════════════
@@ -30,7 +32,7 @@ Analyze this person's social/professional interactions for energy patterns. Asse
 
 CONSISTENT NUMBERS: weekly_budget.spent must equal energy_score.total_energy_spent, and weekly_budget.remaining must equal total_capacity minus spent. net_energy_change must reflect the actual before/after totals. Keep every figure reconciled. EVERY logged interaction must appear in exactly one of drains or rechargers (zero-change ones go to whichever is closer with a note) — never drop one.
 
-SHORT VALUES vs PROSE: fields described as "just the number" or "short" must contain ONLY that value (e.g. "47/100", "-10", "6/10") — no explanation. The dedicated prose fields (one_liner, verdict, why_costly, why_good) carry the reasoning. Return ONLY valid JSON.`;
+SHORT VALUES vs PROSE: fields described as "just the number" or "short" must contain ONLY that value (e.g. "47/100", "-10", "6/10") — no explanation. The dedicated prose fields (one_liner, verdict, why_costly, why_good) carry the reasoning. ${NO_QUOTE_RULE} Return ONLY valid JSON.`;
 
     const userPrompt = `ENERGY AUDIT for ${weekLabel || 'this week'}:
 
@@ -143,7 +145,7 @@ router.post('/social-energy-audit/plan', rateLimit(DEFAULT_LIMITS), async (req, 
 
 You are helping someone plan their upcoming week by predicting energy costs and suggesting schedule optimizations. ${pastPatterns ? `They have past energy data you can reference for accuracy.` : 'No past data available — use reasonable estimates based on the situation types.'}
 
-Return ONLY valid JSON.`;
+${NO_QUOTE_RULE} Return ONLY valid JSON.`;
 
     const userPrompt = `WEEK PLAN — Upcoming commitments:
 
@@ -204,7 +206,7 @@ router.post('/social-energy-audit/recharge', rateLimit(DEFAULT_LIMITS), async (r
 
 You are creating a personalized recharge plan. The person is drained and needs specific, actionable recovery suggestions — not generic "take a bath" advice. Tailor everything to what specifically drained them and what they enjoy.
 
-CRITICAL: drains and preferences are OPTIONAL. If they are missing, infer reasonable, specific recovery advice from the energy level alone — do the best you can with what you have. NEVER ask for more information, NEVER reply with a question or any prose. Your entire response must be the JSON object below and nothing else.`;
+CRITICAL: drains and preferences are OPTIONAL. If they are missing, infer reasonable, specific recovery advice from the energy level alone — do the best you can with what you have. NEVER ask for more information, NEVER reply with a question or any prose. Your entire response must be the JSON object below and nothing else. ${NO_QUOTE_RULE}`;
 
     const userPrompt = `RECHARGE PLAN:
 Current energy level: ${currentEnergy}/10
@@ -265,7 +267,7 @@ router.post('/social-energy-audit/quick-check', rateLimit(DEFAULT_LIMITS), async
 
 You are giving a quick, decisive answer about whether someone should say yes to a social or professional commitment. They need an answer in 3 seconds, not a therapy session. Be direct. Consider their current energy level, what they've already done this week, and what's still ahead today.
 
-Return ONLY valid JSON.`;
+${NO_QUOTE_RULE} Return ONLY valid JSON.`;
 
     const userPrompt = `QUICK CHECK — Should I say yes?
 
@@ -319,7 +321,7 @@ router.post('/social-energy-audit/forecast', rateLimit(DEFAULT_LIMITS), async (r
 
 You are generating an energy forecast for someone's week. If they have a typical week template, predict the energy curve. If they have daily check-in logs, show reality vs. prediction and warn about upcoming danger zones.
 
-Return ONLY valid JSON.`;
+${NO_QUOTE_RULE} Return ONLY valid JSON.`;
 
     const templateStr = template ? template.map((t, i) =>
       `${i + 1}. "${t.situation}" [${t.category}] perf: ${t.performance}/10${t.duration ? `, ${t.duration}` : ''}`
@@ -386,7 +388,7 @@ router.post('/social-energy-audit/ideal-week', rateLimit(DEFAULT_LIMITS), async 
 
 You are designing someone's ideal week structure based on their actual energy data. Not a fantasy schedule — a realistic rearrangement of their real commitments that distributes energy costs more evenly and places rechargers strategically. Think of it as energy-aware scheduling.
 
-Return ONLY valid JSON.`;
+${NO_QUOTE_RULE} Return ONLY valid JSON.`;
 
     const summaryStr = weekSummaries.map((w, i) =>
       `Week ${i + 1} (${w.label}): ${w.interactionCount} interactions, score ${w.energyScore}, verdict: ${w.verdict}\n  Interactions: ${w.interactions?.map(int => `${int.situation} [perf ${int.performance}, ${int.energyBefore}→${int.energyAfter}]`).join(', ') || 'no detail'}`

@@ -13,6 +13,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 //     +emergency mode on structure
 // ═══════════════════════════════════════════════════
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted speech or phrases plainly or with single quotes, or it breaks the JSON.';
+
 const CONTEXT_GUIDANCE = {
   work_overwhelm: 'This person is overwhelmed by work. Prioritize ruthlessly. Identify what can wait until next week, what can be delegated, and what actually needs them specifically. Many "urgent" work items are less urgent than they feel.',
   life_chaos: 'Life is chaotic — multiple domains colliding. Separate work from personal from household. Identify which category is actually on fire vs. which just feels loud.',
@@ -75,7 +77,9 @@ Return ONLY valid JSON:
     "permission": "One sentence giving explicit permission to drop it."
   },
   "one_truth": "One honest, warm sentence about their situation. Not a platitude — something specific to what they dumped. — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+}
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
           const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
@@ -150,7 +154,9 @@ Return ONLY valid JSON:
   "closing": "One warm, specific sentence. — one sentence"
 }
 
-CONSISTENT NUMBERS: the [X]/[Y]/[Z]/[W] figures in overwhelm_meter.summary MUST equal the actual lengths of the arrays you return (Y = actions, Z = decisions, W = worries + feelings). Do not estimate — count your own output.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+CONSISTENT NUMBERS: the [X]/[Y]/[Z]/[W] figures in overwhelm_meter.summary MUST equal the actual lengths of the arrays you return (Y = actions, Z = decisions, W = worries + feelings). Do not estimate — count your own output.
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -205,7 +211,9 @@ Return ONLY valid JSON:
   "one_thing": "Single most helpful thing to do about this worry right now. — one sentence"
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
         const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

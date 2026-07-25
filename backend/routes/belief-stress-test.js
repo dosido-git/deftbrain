@@ -67,7 +67,7 @@ Generate 3-6 stress tests, ordered by severity (fatal first).`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or restated beliefs plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'belief-stress-test' });
     if (!parsed.belief_as_understood) {

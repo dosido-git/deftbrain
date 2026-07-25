@@ -7,6 +7,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // 2026-07-24 staleness probe: the tool cited the right statute but hedged it
 // into uselessness ("könnte unwirksam sein") and strategized as if the user
 // were bound — pin the settled post-2022 German rule; ban invented specifics.
+const NO_QUOTE_RULE = ' Never place a double-quote (") character inside any JSON string value — cancellation scripts, negotiation lines, and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
+
 const CONTRACT_LAW_NOTE = ` LEGAL CURRENCY: for consumer contracts under German law concluded on/after 2022-03-01, auto-renewal beyond the minimum term is monthly-cancellable with at most one month's notice (§ 309 Nr. 9 lit. b BGB) — state this as settled law, not a mere possibility; the online cancellation-button duty (§ 312k BGB) applies since July 2022. For other jurisdictions, cite cancellation rules only with their effective date, or advise verifying. NEVER invent phone numbers, court case citations, or company contact details — name only what you are certain exists, otherwise say how to find it.`;
 
 router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
@@ -27,7 +29,7 @@ router.post('/subscription-tamer', rateLimit(DEFAULT_LIMITS), async (req, res) =
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          system: withLanguage(`You are a financial data parser. Extract recurring subscription charges from bank/credit card statement text. Identify subscriptions even when merchant names are cryptic (e.g., "AMZN*Prime" = Amazon Prime, "GOOGLE *YouTubePrem" = YouTube Premium, "MSFT*Store" = Microsoft 365).`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
           messages: [{
             role: 'user',
             content: `Parse this statement and identify RECURRING SUBSCRIPTION charges. Ignore one-time purchases, groceries, gas, etc. Currency: ${currency || '$'}
@@ -122,7 +124,7 @@ Analyze every subscription. Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'SubscriptionTamerAnalyze' });
         if (!parsed.verdict && !parsed.subscriptions && !parsed.analysis) {
@@ -148,7 +150,7 @@ Analyze every subscription. Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          system: withLanguage(`You are a subscription optimization expert. You know current pricing tiers, family/duo plans, student discounts, annual vs monthly pricing, and bundle deals for popular services. Be specific with real numbers. All amounts in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
           messages: [{
             role: 'user',
             content: `OPTIMIZE THESE SUBSCRIPTIONS:
@@ -210,7 +212,7 @@ For each subscription, check for savings opportunities. Return ONLY valid JSON:
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
           max_tokens: 4000,
-          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.${CONTRACT_LAW_NOTE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          system: withLanguage(`You are an expert in subscription retention negotiations. You know exactly what tactics each company uses to keep customers, what discounts they can offer, and the magic phrases that trigger better deals. Be specific — use real department names, real discount amounts, and real processes. All amounts in ${sym}.${CONTRACT_LAW_NOTE}`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
           messages: [{
             role: 'user',
             content: `RETENTION NEGOTIATION SCRIPT for: ${serviceName}

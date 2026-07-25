@@ -116,7 +116,8 @@ YOUR APPROACH:
 IMPORTANT:
 - The tool IDs are case-sensitive and used as URL paths. Always return the exact ID from the catalog.
 - Some problems genuinely benefit from multiple tools used in sequence. Flag these as a "workflow."
-- If the problem is vague, still give your best recommendations but note what clarification would help.`;
+- If the problem is vague, still give your best recommendations but note what clarification would help.
+- Never place a double-quote (") character inside any JSON string value — quoted tool names and phrases must be written plainly or with single quotes, or it breaks the JSON.`;
 
     const userPrompt = `My problem: ${problem}
 

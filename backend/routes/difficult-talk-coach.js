@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted dialogue, scripts, and phrases plainly or with single quotes, or it breaks the JSON.';
+
 // ═══════════════════════════════════════════════════
 // ROUTE 1: MAIN REHEARSAL — Strategy & Scripts
 // ═══════════════════════════════════════════════════
@@ -297,7 +299,7 @@ Return ONLY the JSON object with EXACTLY the keys shown above. No markdown, no p
 
 
     const systemPrompt = withLanguage(
-      'You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items.',
+      `You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items. ${NO_QUOTE_RULE}`,
       userLanguage
     );
 
@@ -420,7 +422,8 @@ RULES:
 - The coaching note should be honest but constructive — don't sugarcoat but don't be harsh.
 - Return ONLY JSON.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -531,7 +534,7 @@ Return ONLY JSON. No markdown, no preamble.`, userLanguage) + withLocaleContext(
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 3000,
-      system: 'You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble.',
+      system: `You are a compassionate communication coach. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. ${NO_QUOTE_RULE}`,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkDebrief' });
 
@@ -671,7 +674,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage('You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(`You are an expert communication coach. Return ONLY valid JSON. No markdown, no preamble. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'DifficultTalkPracticeSummary' });
 

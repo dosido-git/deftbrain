@@ -18,6 +18,8 @@ function parseDataUrl(dataUrl) {
   return { media_type: match[1], data };
 }
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases in caption text plainly or with single quotes, or it breaks the JSON.';
+
 // ── Platform character limits ──
 const PLATFORM_LIMITS = {
   instagram: 2200,
@@ -131,6 +133,8 @@ OUTPUT (JSON only):
   "avoid": ["thing to avoid 1", "thing to avoid 2"]
 }
 
+${NO_QUOTE_RULE}
+
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
@@ -187,6 +191,8 @@ Return ONLY a JSON object:
   "char_count": 123,
   "what_changed": "1-sentence summary of the revision"
 }
+
+${NO_QUOTE_RULE}
 
 CRITICAL: Return ONLY valid JSON.`;
 
@@ -257,6 +263,8 @@ OUTPUT (JSON only):
   ]
 }
 
+${NO_QUOTE_RULE}
+
 CRITICAL: Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
@@ -316,6 +324,8 @@ OUTPUT (JSON only):
     "remix_explanation": "what was taken from each option and why it works together"
   }
 }
+
+${NO_QUOTE_RULE}
 
 CRITICAL: Return ONLY valid JSON.`;
 

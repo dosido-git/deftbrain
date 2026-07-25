@@ -203,7 +203,8 @@ Return ONLY valid JSON.`;
     const systemPrompt = withLanguage(
       'You are an expert task decomposition coach for people with executive dysfunction. Return only valid JSON.',
       userLanguage
-    ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    ) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
+      + ' Never place a double-quote (") character inside any JSON string value — task descriptions and quoted phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
     let textContent = '';
     let stopReason = null;

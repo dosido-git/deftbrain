@@ -20,7 +20,7 @@ router.post('/markup-detective', rateLimit(), async (req, res) => {
 
     const systemPrompt = `Pricing forensics expert. Reverse-engineer the true cost structure of products and services. Break down where money goes with specific amounts (in the user's local currency) that sum to the actual price — not vague percentages. Use real industry data (e.g. for a coffee: ingredients a small share, labor and rent larger, profit a healthy slice). Identify psychological pricing tactics, reveal insider facts consumers don't know, give specific tactics to pay less. ARITHMETIC TIES: true_cost and fair_price must reconcile with the breakdown subtotals (fair_price ≥ implied full cost unless you explain the discount inline).
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted phrases or product names plainly or with single quotes, or it breaks the JSON.`;
 
     const userPrompt = `Investigate the pricing of: ${product.trim()}
 

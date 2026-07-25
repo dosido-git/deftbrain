@@ -10,6 +10,8 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // Supports optional photo attachment for visual diagnosis
 // ════════════════════════════════════════════════════════════
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or part names plainly or with single quotes, or it breaks the JSON.';
+
 const MECHANIC_PERSONA = `Expert bicycle mechanic — diagnostic first, prescriptive second. Identify what's wrong before recommending what to do.
 
 Be specific about cause, not just symptom. Give the fix steps in order, flag the safety-critical issues first, and be honest about when it needs a shop.`;
@@ -78,7 +80,7 @@ Generate 6-10 tasks, ordered by priority. Be specific to the bike and season. Th
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: seasonalUserPrompt }],
     }, { label: 'bike-medic/seasonal' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
@@ -133,7 +135,7 @@ Generate 5-10 tasks, ordered by priority. Be specific to the situation and the b
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: customUserPrompt }],
     }, { label: 'bike-medic/custom_check' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
@@ -169,7 +171,7 @@ Return ONLY valid JSON:
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage),
+      system: withLanguage(MECHANIC_PERSONA, req.body.userLanguage) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: routeUserPrompt }],
     }, { label: 'bike-medic/route' });
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
@@ -271,6 +273,8 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     // Cost estimates follow the rider's region/currency, not USD. Appended to the
     // prompt (Types 1 & 2 have no separate system field) so parts_cost is localized.
     prompt += withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    // Types 1 & 2 have no system field — the no-quote rule rides on the user prompt.
+    prompt += '\n\n' + NO_QUOTE_RULE;
 
     // ── Types 1 & 2: Freeform Diagnosis + Post-Fix Follow-up ──
     // NOTE: These use anthropic.messages.create directly (not callClaudeWithRetry) because

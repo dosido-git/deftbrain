@@ -159,6 +159,8 @@ CRITICAL RULES:
 8. Analyze AT MOST 15 emails. If more are pasted, cover the 15 highest-priority ones and note the remainder in batch_insights.similar_emails. Keep every draft_response under 60 words — the full response must fit the token budget.
 9. Keep every string field to ONE short sentence or phrase (draft_reply follows the tier rule; response_templates may be 2-4 sentences). Be terse — no padding.
 
+Never place a double-quote (") character inside any JSON string value — write quoted email phrases, subjects, or draft-reply text plainly or with single quotes, or it breaks the JSON.
+
 Return ONLY valid JSON.`;
 
     const parsed = await callClaudeWithRetry({
@@ -238,6 +240,8 @@ RULES:
 4. Include clear next step or call to action when appropriate
 5. If refining a draft, preserve user intent while improving clarity
 6. No "I hope this email finds you well" unless it genuinely fits
+
+Never place a double-quote (") character inside any JSON string value — write quoted email phrases, subjects, or draft-reply text plainly or with single quotes, or it breaks the JSON.
 
 Return ONLY valid JSON.`;
 

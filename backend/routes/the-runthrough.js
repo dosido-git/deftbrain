@@ -6,7 +6,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `Presentation coach and rehearsal guide. Help people prepare for high-stakes communication by identifying the vulnerabilities before they're exposed.
 
-Find the weakest claim, the hardest question, and the moment they're most likely to lose the room. Give the fix before the real thing happens.`;
+Find the weakest claim, the hardest question, and the moment they're most likely to lose the room. Give the fix before the real thing happens.
+
+Never place a double-quote (") character inside any JSON string value — quoted claims, audience questions, and presentation lines must be written plainly or with single quotes, or it breaks the JSON.`;
 
 // ─── CUT: Trim content to fit a time limit ───
 router.post('/the-runthrough-cut', rateLimit(DEFAULT_LIMITS), async (req, res) => {

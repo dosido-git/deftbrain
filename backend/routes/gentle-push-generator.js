@@ -4,6 +4,8 @@ const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted challenges or phrases plainly or with single quotes, or it breaks the JSON.';
+
 // ════════════════════════════════════════════════════════════
 // GENTLE PUSH GENERATOR
 // Dispatches to action handlers based on req.body.action
@@ -105,6 +107,7 @@ RULES:
 - The "bold" option should still be achievable — not terrifying, just a bigger step
 - If capacity is LOW, even the "bold" option should be small by normal standards
 - what_counts must make attempting easier than not — lower the bar
+- ${NO_QUOTE_RULE}
 - Return ONLY the JSON object`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
@@ -143,7 +146,9 @@ Return ONLY valid JSON:
     "what_counts": "What counts as success — one sentence",
     "if_too_much": "A smaller fallback if needed — one sentence"
   }
-}`, userLanguage);
+}
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -183,7 +188,9 @@ Return ONLY valid JSON:
   "scariness_note": ${scariness ? '"1 sentence calibration note about their scariness rating"' : 'null'},
   "prediction_insight": ${predictedScariness && scariness ? '"1 sentence insight about the gap between predicted and actual scariness"' : 'null'},
   "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it — one sentence"
-}`, userLanguage);
+}
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -257,7 +264,9 @@ Return ONLY valid JSON:
   "next_recommendation": "1 specific suggestion for their next push based on patterns — one sentence"
 }
 
-Only include domains in domain_breakdown that appear in their history.`, userLanguage);
+Only include domains in domain_breakdown that appear in their history.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -297,7 +306,9 @@ Return ONLY valid JSON:
   "panic_plan": "If they freeze: 1 sentence on the smallest possible version of the action they can take right now — one sentence"
 }
 
-Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.`, userLanguage);
+Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -354,7 +365,9 @@ Return ONLY valid JSON:
 }
 
 Set current_position to the rung that matches their current capacity and comfort zone.
-estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).`, userLanguage);
+estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -457,7 +470,9 @@ Return ONLY valid JSON:
   "domain_scores": ${JSON.stringify(domainScores)}
 }
 
-Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.`, userLanguage);
+Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.
+
+${NO_QUOTE_RULE}`, userLanguage);
 
   const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

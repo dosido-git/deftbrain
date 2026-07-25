@@ -162,7 +162,7 @@ Rules:
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 5000,
-      system: withLanguage('You are a cultural intelligence expert. Return only valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: withLanguage('You are a cultural intelligence expert. Return only valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted phrases or local-language terms plainly or with single quotes, or it breaks the JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'culture-briefing' });
 

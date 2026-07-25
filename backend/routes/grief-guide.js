@@ -97,7 +97,7 @@ Guidelines:
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 5500,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
+      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or things-to-say plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'grief-guide' });
 

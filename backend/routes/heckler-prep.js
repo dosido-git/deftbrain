@@ -58,7 +58,7 @@ Generate exactly ${questionCount} questions, escalating difficulty. At least ${b
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: maxTokensByStakes[stakes] || 2000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted questions or phrases plainly or with single quotes, or it breaks the JSON.',
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'heckler-prep' });
 

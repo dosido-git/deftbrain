@@ -5,6 +5,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted names or phrases must be written plainly or with single quotes, or it breaks the JSON.';
+
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
 // NOTE: never use router.use(rateLimit(...)) here — routers all mount at '/',
 // so router-level middleware runs for EVERY /api request passing through the
@@ -185,7 +187,8 @@ RULES:
 4. Be honest about .com competition and TLD confusion risk.
 5. TLD CONFUSION IS MANDATORY for novel TLDs: Any TLD other than .com, .org, .net, .app, .io, .co, or .me MUST get a tld_confusion problem flag (severity "caution" minimum). Most people default to .com — TLDs like .now, .tips, .guide, .tools, .today, .space, .how, .fyi are still uncommon and WILL cause confusion. Never skip this flag just because the domain sounds good.
 6. Check name parts against major languages for unintended meanings.
-7. Return ONLY valid JSON.`;
+7. Return ONLY valid JSON.
+8. ${NO_QUOTE_RULE}`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -233,7 +236,7 @@ Return ONLY this JSON:
   ]
 }
 
-RULES: problems must be an array ([] if clean). Check names for language conflicts. Return ONLY valid JSON.`;
+RULES: problems must be an array ([] if clean). Check names for language conflicts. Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 }
 
 // ═══════════════════════════════════════════════════
@@ -357,7 +360,7 @@ PRIMARY AUDIENCE LANGUAGE: ${primaryLanguage}. Names should feel natural and res
 STYLE CATEGORIES:
 ${CATEGORY_LIST_TEXT}
 
-Pick the 5 MOST RELEVANT categories for this brief. Do not force categories that do not fit. Return ONLY valid JSON: {"categories": ["exact category name before the dash", "...", "...", "...", "..."]}` }],
+Pick the 5 MOST RELEVANT categories for this brief. Do not force categories that do not fit. Return ONLY valid JSON: {"categories": ["exact category name before the dash", "...", "...", "...", "..."]} ${NO_QUOTE_RULE}` }],
       }, { label: 'NameStorm-pick' });
       cats = (Array.isArray(pick.categories) ? pick.categories : [])
         .map(c => String(c).split('—')[0].trim())
@@ -415,7 +418,8 @@ CRITICAL RULES:
 4. RESPECT CONSTRAINTS strictly.
 5. "problems" MUST always be an array — [] when clean, never null or a string.
 6. BE CONCISE: every field a phrase or single sentence — no meta-notes.
-7. Return ONLY the JSON. No markdown, no preamble.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+7. Return ONLY the JSON. No markdown, no preamble.
+8. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const [genA, genB] = await Promise.all([
       callClaudeWithRetry({
@@ -462,7 +466,7 @@ Curate them. Return ONLY valid JSON:
   "naming_notes": "Additional strategic observations about this naming space — one or two sentences"
 }
 
-RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe-match, absence of problems${category === 'Business' || category === 'Product' ? ', brandability and domain potential' : ''}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''} say_it_out_loud lists only names with genuine spoken-aloud issues (may be empty). Use ONLY names from the candidate list, spelled exactly. Return ONLY the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe-match, absence of problems${category === 'Business' || category === 'Product' ? ', brandability and domain potential' : ''}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''} say_it_out_loud lists only names with genuine spoken-aloud issues (may be empty). Use ONLY names from the candidate list, spelled exactly. Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'NameStorm-curate' });
 
     const parsed = normalizeProblems({
@@ -556,7 +560,7 @@ Return ONLY this JSON:
   ]
 }
 
-Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Keep every field to a phrase or single sentence. Return ONLY JSON.`;
+Same rules: check every name for problems in major languages, phonetic issues, brand conflicts. Be creative — don't just add prefixes/suffixes to the original. Keep every field to a phrase or single sentence. Return ONLY JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -709,7 +713,8 @@ RULES:
 6. USE ALL 6 STRATEGIES with 3 names each (18 total). The advanced strategies (Nested Words, Multi-Source, Phonetic-First) produce the most original results — invest extra creative effort there.
 7. PHONETIC-FIRST IS SOUND-FIRST: For strategy 6, do NOT start with source words and modify them. Start by imagining what the perfect name SOUNDS like for this vibe, then find the source fragments inside that sound. The result should feel like a discovered word, not a constructed one.
 8. BE CONCISE: keep blend_components, why_it_works, and every string field to a phrase or single sentence — no length annotations.
-9. Return ONLY valid JSON.`;
+9. Return ONLY valid JSON.
+10. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -804,7 +809,7 @@ For "problems", flag issues like the original tool does:
 - Check: unintended meanings in other languages, phonetic issues, brand conflicts, awkward abbreviations
 - "clean" = true means no problems found
 
-Keep every field to a phrase or single sentence — no length annotations. Return ONLY valid JSON.`;
+Keep every field to a phrase or single sentence — no length annotations. Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -876,7 +881,7 @@ The story should:
 - Be specific enough to use immediately, generic enough to not box them in
 - Make the listener think "that's a great name" even if they didn't before
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -909,7 +914,9 @@ Your philosophy:
 - The best names make people smile or say "that's perfect"
 - Consider: wordplay, portmanteaus, obscure references, unexpected juxtapositions, phonetic appeal, cultural resonance
 - Flag any names that have accidental meanings, awkward acronyms, or pronunciation problems
-- For informal naming (pets, WiFi, group chats, boats) — fun and personality beat brandability`;
+- For informal naming (pets, WiFi, group chats, boats) — fun and personality beat brandability
+
+${NO_QUOTE_RULE}`;
 
     const userPrompt = `THING NAMER — FAST NAMING
 

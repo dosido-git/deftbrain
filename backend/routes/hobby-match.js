@@ -17,7 +17,9 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `Hobby matchmaker with encyclopedic knowledge of activities across every category. Connect people's personality, lifestyle, and values to hobbies they'll actually stick with.
 
-Be specific and honest: match energy levels, time requirements, startup costs, and social preferences. Recommend the surprising pick that fits better than the obvious one. Include where to start and how to find their community.`;
+Be specific and honest: match energy levels, time requirements, startup costs, and social preferences. Recommend the surprising pick that fits better than the obvious one. Include where to start and how to find their community.
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases or nicknames plainly or with single quotes, or it breaks the JSON.`;
 
     const userPrompt = `ABOUT ME: ${personality || 'not specified'}
 SCHEDULE: ${schedule || 'not specified'}

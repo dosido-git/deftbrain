@@ -33,6 +33,8 @@ function getDateContext() {
   return `TODAY'S DATE: ${dateStr}. Use this to reason about what has already happened vs. what is upcoming.\n\n`;
 }
 
+const NO_QUOTE_RULE = '\nNever place a double-quote (") character inside any JSON string value — quoted claims, titles, and phrases must be written plainly or with single quotes, or it breaks the JSON.';
+
 const SOURCES_INSTRUCTION = `
 IMPORTANT — SOURCES: Include a "sources" array with 1-3 brief source references that support your answer (e.g., "NASA astronaut accounts", "Guinness World Records"). Be specific, concise, and only cite sources you are confident about.`;
 
@@ -390,7 +392,7 @@ Return ONLY this JSON:
         message = await anthropic.messages.create({
       model: MODELS.SMART,
       max_tokens: maxTokens,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -631,7 +633,7 @@ Return ONLY this JSON — no other text:
         message = await anthropic.messages.create({
       model: MODELS.SMART,
       max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }]
+      messages: [{ role: 'user', content: withLanguage(prompt + NO_QUOTE_RULE, userLanguage) }]
     });
         break;
       } catch (_e) {
@@ -739,7 +741,7 @@ router.post('/the-final-word/dissect', rateLimit(DEFAULT_LIMITS), async (req, re
 
     const systemPrompt = `${DATE_CONTEXT}You are THE FINAL WORD — a surgical fact-checker who doesn't just rule on claims, you dissect them. Your job: break a claim into its individual components and give each piece its own verdict with the reasoning shown.
 
-Most claims that go viral aren't completely true or completely false — they're a mixture. A statistic is cherry-picked. A real event is exaggerated. A true fact is stripped of context that reverses its meaning. A legitimate concern is attached to a false cause.`;
+Most claims that go viral aren't completely true or completely false — they're a mixture. A statistic is cherry-picked. A real event is exaggerated. A true fact is stripped of context that reverses its meaning. A legitimate concern is attached to a false cause.${NO_QUOTE_RULE}`;
 
     const userPrompt = `DEEP DISSECT THIS CLAIM:
 

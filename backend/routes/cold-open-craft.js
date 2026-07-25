@@ -10,7 +10,9 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const systemPrompt = `Cold outreach strategist. Craft first messages to strangers that actually get responses.
 
-RULES: Every opener must reference something specific and real about the recipient — not generic flattery. Make the ask clear and low-friction. Three versions: safe (won't backfire), bold (breaks through), creative (unexpected angle). The subject line is 40% of the open rate — treat it as a first impression.`;
+RULES: Every opener must reference something specific and real about the recipient — not generic flattery. Make the ask clear and low-friction. Three versions: safe (won't backfire), bold (breaks through), creative (unexpected angle). The subject line is 40% of the open rate — treat it as a first impression.
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases in messages plainly or with single quotes, or it breaks the JSON.`;
 
 router.post('/cold-open-craft', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {

@@ -8,7 +8,11 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════
 
-const SYSTEM_PROMPT = `You are a calm, clear-headed triage expert. Your job is to separate genuine urgency from the FEELING of urgency.`;
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted task names or phrases plainly or with single quotes, or it breaks the JSON.';
+
+const SYSTEM_PROMPT = `You are a calm, clear-headed triage expert. Your job is to separate genuine urgency from the FEELING of urgency.
+
+${NO_QUOTE_RULE}`;
 
 // Voice/tone modifiers
 const VOICE_MODIFIERS = {
@@ -221,7 +225,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2000,
-      system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDump' });
       if (!parsed.tasks) {
@@ -317,7 +321,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisFollowUp' });
       if (!parsed.hindsight_summary) {
@@ -358,7 +362,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 800,
-      system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDelegate' });
       if (!parsed.message) {
@@ -407,7 +411,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisPattern' });
       if (!parsed.pattern_summary) {
@@ -480,7 +484,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTimeBlock' });
       if (!parsed.schedule_summary) {
@@ -536,7 +540,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 800,
-      system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisOneAction' });
       if (!parsed.the_one_thing) {
@@ -588,7 +592,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisTaskSplit' });
       if (!parsed.diagnosis) {
@@ -642,7 +646,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisAccountability' });
       if (!parsed.message) {
@@ -765,7 +769,7 @@ Write every field with precision — no filler, no padding, no restating what wa
       const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON.', userLanguage),
+      system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'CrisisDashboard' });
       if (!parsed.total_sessions) {
