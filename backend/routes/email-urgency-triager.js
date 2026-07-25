@@ -38,7 +38,10 @@ router.post('/email-urgency-triager', rateLimit(DEFAULT_LIMITS), async (req, res
       ? `\n\nPREVIOUS TRIAGE PATTERNS (from ${triageHistory.length} past sessions):\n${triageHistory.slice(0, 5).map(t => `${t.date}: ${t.summary?.total_emails || 0} emails (${t.summary?.urgent_count || 0} urgent, ${t.summary?.optional_count || 0} optional)`).join('\n')}\nUse this to detect recurring senders the user always ignores or always treats as urgent.`
       : '';
 
-    const prompt = `You are an advanced email urgency analyzer with AI learning capabilities. Analyze emails with:
+    // Shared context block — identical for both parallel calls (input tokens are
+    // cheap; output tokens generate serially, so the schema is split across two
+    // parallel calls with disjoint top-level keys and merged before responding).
+    const sharedContext = `You are an advanced email urgency analyzer with AI learning capabilities. Analyze emails with:
 1. **Thread intelligence** - detect escalation patterns
 2. **Sender profiling** - use historical patterns to detect "cry wolf" senders
 3. **Auto-categorization** - FYI vs Action Required vs Response Expected
@@ -86,7 +89,13 @@ For "now" and "this_week" emails needing response:
 URGENCY TIERS:
 - **NOW** = reply today (24h deadline, business-critical, 3+ follow-ups, blocking, VIP+deadline)
 - **THIS_WEEK** = reply within 3-5 days (week deadline, important not blocking, routine, single follow-up)
-- **OPTIONAL** = no response (FYI, newsletters, automated, CC-only, no ask)
+- **OPTIONAL** = no response (FYI, newsletters, automated, CC-only, no ask)`;
+
+    const NO_QUOTE_RULE = `Never place a double-quote (") character inside any JSON string value — write quoted email phrases, subjects, or draft-reply text plainly or with single quotes, or it breaks the JSON.`;
+
+    // Call A: per-email triage array + summary (summary counts depend on the
+    // array's tier assignments, so it must stay in the same call).
+    const analysisPrompt = `${sharedContext}
 
 OUTPUT (JSON only):
 {
@@ -123,7 +132,32 @@ OUTPUT (JSON only):
     "optional_count": 0,
     "total_estimated_minutes": 0,
     "delegation_count": 0
-  },
+  }
+}
+
+CRITICAL RULES:
+1. 3+ follow-ups = NOW
+2. High cry wolf score = downgrade
+3. High actual urgency rate = upgrade (VIP)
+4. CC = lower than TO
+5. Unsubscribe link = OPTIONAL
+6. Draft replies MUST reference actual email content
+7. estimated_minutes must be a number
+8. Analyze AT MOST 15 emails. If more are pasted, cover the 15 highest-priority ones. Keep every draft_response under 60 words — the full response must fit the token budget.
+9. Keep every string field to ONE short sentence or phrase (draft_reply follows the tier rule). Be terse — no padding.
+
+Your response MUST contain ALL 2 top-level keys: urgency_analysis, summary.
+
+${NO_QUOTE_RULE}
+
+Return ONLY valid JSON.`;
+
+    // Call B: cross-email insights (prose sections derived from the same email
+    // paste — disjoint top-level keys from call A).
+    const insightsPrompt = `${sharedContext}
+
+OUTPUT (JSON only):
+{
   "batch_insights": {
     "similar_emails": ["Batch description"],
     "delegation_opportunities": "Summary",
@@ -154,20 +188,30 @@ CRITICAL RULES:
 3. High actual urgency rate = upgrade (VIP)
 4. CC = lower than TO
 5. Unsubscribe link = OPTIONAL
-6. Draft replies MUST reference actual email content
-7. estimated_minutes must be a number
-8. Analyze AT MOST 15 emails. If more are pasted, cover the 15 highest-priority ones and note the remainder in batch_insights.similar_emails. Keep every draft_response under 60 words — the full response must fit the token budget.
-9. Keep every string field to ONE short sentence or phrase (draft_reply follows the tier rule; response_templates may be 2-4 sentences). Be terse — no padding.
+6. Consider AT MOST 15 emails. If more are pasted, cover the 15 highest-priority ones and note the remainder in batch_insights.similar_emails.
+7. Keep every string field to ONE short sentence or phrase (response_templates may be 2-4 sentences). Be terse — no padding.
 
-Never place a double-quote (") character inside any JSON string value — write quoted email phrases, subjects, or draft-reply text plainly or with single quotes, or it breaks the JSON.
+Your response MUST contain ALL 4 top-level keys: batch_insights, anxiety_relief, recurring_patterns, response_templates.
+
+${NO_QUOTE_RULE}
 
 Return ONLY valid JSON.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 8000,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
-    }, { label: 'email-urgency-triage' });
+    const [analysisPart, insightsPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 6500,
+        messages: [{ role: 'user', content: withLanguage(analysisPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
+      }, { label: 'email-urgency-triage-analysis' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: withLanguage(insightsPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }]
+      }, { label: 'email-urgency-triage-insights' })
+    ]);
+
+    // Merge: disjoint top-level keys; original response shape preserved.
+    const parsed = { ...insightsPart, ...analysisPart };
 
     if (!Array.isArray(parsed.urgency_analysis)) {
       return res.status(500).json({ error: 'Could not analyze your emails. Please try again.' });

@@ -21,7 +21,8 @@ router.post('/history-today', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? `\nUSER'S SPECIFIC ANGLE: "${context}" — weight your parallel selection toward this framing.`
       : '';
 
-    const systemPrompt = withLanguage(`You are a structural historian. You find deep parallels between current events and historical ones — NOT surface-level analogies ("it's like Rome falling"), but structurally specific matches based on power dynamics, institutional behavior, public sentiment, economic pressures, and how similar situations actually played out.
+    // Shared system core — each call wraps its OWN withLanguage(...) around this.
+    const SYSTEM_CORE = `You are a structural historian. You find deep parallels between current events and historical ones — NOT surface-level analogies ("it's like Rome falling"), but structurally specific matches based on power dynamics, institutional behavior, public sentiment, economic pressures, and how similar situations actually played out.
 
 YOUR PRINCIPLES:
 - Structural similarity matters more than surface similarity. A trade war might parallel a 17th-century guild dispute better than another trade war.
@@ -35,27 +36,13 @@ REALITY & RELEVANCE CHECK (do this FIRST, before finding any parallels):
 - Assess the input's factual premise. If it states something FALSE or inverts a documented fact (e.g. claims a living person died, denies a well-documented event, or asserts a conspiracy), do NOT treat it as a real event or a neutral "counterfactual" — plainly state what is actually true and that the claim is false or unverifiable. If the input is not a current event, trend, or controversy, note that.
 - You may still surface structural parallels, but when the premise is false you are analyzing the PHENOMENON of the false belief (how and why such claims spread and persist), never validating the claim as if it happened. Lead with the correction; never lend it false authority.
 
-${NO_QUOTE_RULE}`, userLanguage);
+${NO_QUOTE_RULE}`;
 
-    const prompt = withLanguage(`CURRENT EVENT:
+    // ── Stage 1: PICK — reality check + select the 2 strongest parallels (small, fast) ──
+    const pickPrompt = withLanguage(`CURRENT EVENT:
 "${event.trim()}"${contextNote}
 
-Find the 2 strongest structural historical parallels. For each:
-1. Explain the historical situation with enough detail that someone unfamiliar would understand it
-2. Map the structural similarities explicitly (not just "this is similar" but "the mechanism is the same because...")
-3. Explain how contemporaries understood it at the time — and how they were wrong
-4. Explain what eventually happened
-5. Identify specifically where the analogy breaks down and why
-
-Then synthesize: what do these parallels collectively suggest?
-
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
-- Provide exactly 2 parallels — the two strongest structural matches (do not add a third).
-- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
-- At most 2 further_reading entries.
-- Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
-
-FURTHER READING: each title must be ONE exact real book title (with its real author) — never blend two titles; omit an entry rather than approximate.
+SELECTION STEP ONLY — the full analysis happens in a later step. Perform the reality & relevance check, then identify the 2 strongest structural historical parallels (ranked strongest first). Do NOT analyze them yet.
 
 Return ONLY valid JSON:
 {
@@ -64,8 +51,44 @@ Return ONLY valid JSON:
     "status": "one of: sound | false_premise | unverifiable | not_current_event",
     "assessment": "If status is NOT 'sound': plainly state what is actually true and correct the false/unverifiable claim, or note it is not a current event — 1-2 sentences. If status is 'sound': empty string."
   },
-  "parallels": [
+  "picks": [
     {
+      "title": "Short evocative title — e.g., 'The South Sea Bubble (1720)' — 3-6 words",
+      "period": "Specific date range — one sentence",
+      "why": "The shared structural mechanism that makes this the match — one sentence"
+    }
+  ]
+}
+Your response MUST contain ALL 3 keys: event_summary, premise_check, picks. Provide exactly 2 picks — the two strongest structural matches (do not add a third).`, userLanguage);
+
+    const pick = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 700,
+      system: withLanguage(SYSTEM_CORE, userLanguage),
+      messages: [{ role: 'user', content: pickPrompt }],
+    }, { label: 'history-today-pick' });
+
+    if (!pick.event_summary || !Array.isArray(pick.picks) || pick.picks.length < 2) {
+      return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });
+    }
+
+    const premiseNote = pick.premise_check?.status && pick.premise_check.status !== 'sound'
+      ? `\nPREMISE CHECK RESULT (from the selection step): status=${pick.premise_check.status} — ${pick.premise_check.assessment} Analyze the PHENOMENON of the false/unverifiable belief per your principles; lead with the correction, never validate the claim.`
+      : '';
+
+    const picksBlock = `A selection step has already chosen the 2 strongest structural historical parallels for this event:
+1. ${pick.picks[0].title} (${pick.picks[0].period}) — ${pick.picks[0].why}
+2. ${pick.picks[1].title} (${pick.picks[1].period}) — ${pick.picks[1].why}${premiseNote}`;
+
+    const taskBlock = (n) => `YOUR TASK: fully analyze PARALLEL #${n} ONLY — ${pick.picks[n - 1].title}. Do NOT analyze the other parallel. For it:
+1. Explain the historical situation with enough detail that someone unfamiliar would understand it
+2. Map the structural similarities explicitly (not just "this is similar" but "the mechanism is the same because...")
+3. Explain how contemporaries understood it at the time — and how they were wrong
+4. Explain what eventually happened
+5. Identify specifically where the analogy breaks down and why`;
+
+    // Exact parallel-object sub-schema from the original prompt (byte-identical fields).
+    const PARALLEL_SCHEMA = `{
       "title": "Short evocative title — e.g., 'The South Sea Bubble (1720)' — 3-6 words",
       "period": "Specific date range — one sentence",
       "region": "Where this happened — one sentence",
@@ -91,14 +114,28 @@ Return ONLY valid JSON:
         }
       ],
       "surprise_insight": "The one thing most people would NOT expect from this parallel — one sentence"
-    }
-  ],
-  "synthesis": {
-    "collective_pattern": "What do these parallels collectively suggest about how this is likely to unfold? — one sentence",
-    "consensus_prediction": "If history rhymes, the most likely trajectory is... — one sentence",
-    "wildcard": "The thing that could make this time genuinely different — one sentence",
-    "confidence_note": "Honest assessment of how strong these parallels actually are — one sentence"
-  },
+    }`;
+
+    // ── Stage 2: two parallel expansion calls (disjoint keys, merged into original shape) ──
+    const promptA = withLanguage(`CURRENT EVENT:
+"${event.trim()}"${contextNote}
+
+${picksBlock}
+
+${taskBlock(1)}
+
+Also provide further_reading for the event and both chosen parallels.
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
+- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
+- At most 2 further_reading entries.
+- Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
+
+FURTHER READING: each title must be ONE exact real book title (with its real author) — never blend two titles; omit an entry rather than approximate.
+
+Return ONLY valid JSON:
+{
+  "parallel": ${PARALLEL_SCHEMA},
   "further_reading": [
     {
       "title": "Book or article title — 3-6 words",
@@ -106,14 +143,57 @@ Return ONLY valid JSON:
       "why": "Why this is the right thing to read next — one sentence"
     }
   ]
-}`, userLanguage);
+}
+Your response MUST contain ALL 2 keys: parallel, further_reading.`, userLanguage);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 8000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'history-today' });
+    const promptB = withLanguage(`CURRENT EVENT:
+"${event.trim()}"${contextNote}
+
+${picksBlock}
+
+${taskBlock(2)}
+
+Then synthesize: considering BOTH chosen parallels together, what do they collectively suggest?
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
+- Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
+- Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
+
+Return ONLY valid JSON:
+{
+  "parallel": ${PARALLEL_SCHEMA},
+  "synthesis": {
+    "collective_pattern": "What do these parallels collectively suggest about how this is likely to unfold? — one sentence",
+    "consensus_prediction": "If history rhymes, the most likely trajectory is... — one sentence",
+    "wildcard": "The thing that could make this time genuinely different — one sentence",
+    "confidence_note": "Honest assessment of how strong these parallels actually are — one sentence"
+  }
+}
+Your response MUST contain ALL 2 keys: parallel, synthesis.`, userLanguage);
+
+    const [a, b] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3600,
+        system: withLanguage(SYSTEM_CORE, userLanguage),
+        messages: [{ role: 'user', content: promptA }],
+      }, { label: 'history-today-p1' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3600,
+        system: withLanguage(SYSTEM_CORE, userLanguage),
+        messages: [{ role: 'user', content: promptB }],
+      }, { label: 'history-today-p2' }),
+    ]);
+
+    // Merge back into the ORIGINAL response shape — frontend unchanged.
+    const parsed = {
+      event_summary: pick.event_summary,
+      premise_check: pick.premise_check,
+      parallels: [a.parallel, b.parallel].filter(Boolean),
+      synthesis: b.synthesis,
+      further_reading: a.further_reading,
+    };
 
     if (!parsed.event_summary) {
       return res.status(500).json({ error: 'Could not find historical parallels. Please try again.' });

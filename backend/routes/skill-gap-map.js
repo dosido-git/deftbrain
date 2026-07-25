@@ -25,12 +25,23 @@ router.post('/skill-gap-map', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? `\nAVAILABLE HOURS PER WEEK FOR LEARNING: ${hoursPerWeek}`
       : '';
 
-    const prompt = withLanguage(`Map the complete skill gap between these two roles. Be ruthlessly specific — not "learn leadership" but "learn to run a sprint retrospective and synthesize team feedback into actionable changes."
+    // Parallel split (2 calls, disjoint top-level keys): skill_gaps[] (~10 fields ×
+    // 8-12 gaps) is by far the largest section; the remaining five sections are roughly
+    // a third of the output. Output tokens generate serially, so two part-size
+    // generations in parallel cut wall-clock; merged response keeps the original shape —
+    // frontend needs zero changes.
+    const sharedIntro = `Map the complete skill gap between these two roles. Be ruthlessly specific — not "learn leadership" but "learn to run a sprint retrospective and synthesize team feedback into actionable changes."
 
 CURRENT ROLE: "${currentRole.trim()}"
 TARGET ROLE: "${targetRole.trim()}"
 ${skillsCtx}
-${hoursCtx}
+${hoursCtx}`;
+
+    const sharedTail = `Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+NUMBERS: restate the user's own figures VERBATIM. If you derive a new number from theirs (a percentage change, a ratio), show the inputs inline — e.g. "churn 14%→9% (a ~36% relative drop)" — and double-check the arithmetic; a resume line with a wrong derived number is worse than none.`;
+
+    const gapsPrompt = withLanguage(`${sharedIntro}
 
 INSTRUCTIONS:
 1. Identify 8-12 specific skill gaps between these roles
@@ -40,15 +51,8 @@ INSTRUCTIONS:
 5. Be specific to THIS transition, not generic career advice
 6. Account for skills the user likely already has from their current role
 
-Return ONLY valid JSON:
+Return ONLY valid JSON. Your response MUST contain ALL 1 top-level key: skill_gaps.
 {
-  "transition_summary": {
-    "from": "${currentRole.trim()}",
-    "to": "${targetRole.trim()}",
-    "difficulty": "Lateral move|Moderate stretch|Significant pivot|Major career change",
-    "estimated_months": 6,
-    "core_challenge": "The single biggest obstacle in this specific transition — 1 sentence"
-  },
   "skill_gaps": [
     {
       "id": "gap_1",
@@ -67,7 +71,27 @@ Return ONLY valid JSON:
       "resource_detail": "Specific search term or resource description — never a URL, always a findable reference — one sentence",
       "free_or_paid": "free | cheap | moderate | expensive (rough cost tier, not a currency figure)"
     }
-  ],
+  ]
+}
+
+${sharedTail}`, userLanguage);
+
+    const contextPrompt = withLanguage(`${sharedIntro}
+
+INSTRUCTIONS:
+1. Assess this transition's overall difficulty, readiness, transferable skills, and hidden requirements
+2. Be specific to THIS transition, not generic career advice
+3. Account for skills the user likely already has from their current role
+
+Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys: transition_summary, transferable_skills, hidden_requirements, quick_wins, overall_readiness.
+{
+  "transition_summary": {
+    "from": "${currentRole.trim()}",
+    "to": "${targetRole.trim()}",
+    "difficulty": "Lateral move|Moderate stretch|Significant pivot|Major career change",
+    "estimated_months": 6,
+    "core_challenge": "The single biggest obstacle in this specific transition — 1 sentence"
+  },
   "transferable_skills": [
     {
       "current_name": "What the user calls this skill in their current role — 3-6 words",
@@ -93,20 +117,34 @@ Return ONLY valid JSON:
   }
 }
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+${sharedTail}`, userLanguage);
 
-NUMBERS: restate the user's own figures VERBATIM. If you derive a new number from theirs (a percentage change, a ratio), show the inputs inline — e.g. "churn 14%→9% (a ~36% relative drop)" — and double-check the arithmetic; a resume line with a wrong derived number is worse than none.`, userLanguage);
+    const [gapsPart, contextPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        // skill_gaps[] (~10 fields × 6-10 gaps) is the largest schema here. 3000 truncated
+        // mid-array → parse-fail → 500; 5000 (with the other five sections in the same call)
+        // was still too tight (the golden marketing-to-PM case truncated at ~4800 tokens →
+        // retry loop → timeout — caught by check:golden 2026-06-28). Post-split this call
+        // emits ONLY skill_gaps (measured ~13k chars ≈ 4.4k tokens in German), so 5000
+        // keeps real headroom for the array alone.
+        max_tokens: 5000,
+        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
+        messages: [{ role: 'user', content: gapsPrompt }]
+      }, { label: 'SkillGapMap:gaps' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        // Summary + transferables + hidden + quick_wins + readiness — measured ~9k chars
+        // (≈2.5k tokens EN, ≈2.7k DE); 2400 truncated a live EN probe → 3000 restores
+        // headroom (split total 8000 never exceeds the original 8000 budget).
+        max_tokens: 3000,
+        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
+        messages: [{ role: 'user', content: contextPrompt }]
+      }, { label: 'SkillGapMap:context' })
+    ]);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // skill_gaps[] (~10 fields × 6-10 gaps) + transferable_skills + readiness is the
-      // largest schema here. 3000 truncated mid-array → parse-fail → 500; 5000 was still
-      // too tight (the golden marketing-to-PM case truncated at ~4800 tokens → retry loop →
-      // timeout — caught by check:golden 2026-06-28). 8000 gives real headroom (reframe = 7500).
-      max_tokens: 8000,
-      system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'SkillGapMap' });
+    // Disjoint keys — gaps half wins on any accidental overlap since the guard reads it.
+    const parsed = { ...contextPart, ...gapsPart };
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });

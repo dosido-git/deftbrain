@@ -163,19 +163,27 @@ Include your findings in the bill_autopsy section.` : ''}
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`;
 
-    let userContent = [];
+    // Parallel split (proven pattern — see jargon-assassin et al.): the single
+    // mega-schema call generated up to 8000 output tokens serially (~119s cold /
+    // ~99s warm probe). Two half-schema calls with DISJOINT top-level keys run
+    // in parallel and merge back into the ORIGINAL shape — frontend unchanged.
+    // Consistency pairs stay inside ONE half by design:
+    //   - total_potential_savings ↔ flagged_charges: both inside bill_autopsy (call A)
+    //   - payment_plan arithmetic: entirely inside payment_plan (call A)
 
-    // Add bill image if provided
+    // Add bill image if provided — shared by BOTH split calls (bill_autopsy
+    // lives in call A; input tokens are cheap, identical context keeps halves coherent).
+    const imageBlocks = [];
     if (hasBillImage) {
       const mediaType = billImageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
       const base64Data = billImageBase64.replace(/^data:image\/\w+;base64,/, '');
-      userContent.push({
+      imageBlocks.push({
         type: 'image',
         source: { type: 'base64', media_type: mediaType, data: base64Data },
       });
     }
 
-    const userPrompt = `BILL SITUATION:
+    const situationBlock = `BILL SITUATION:
 Type: ${billType}
 ${hasAmount ? `Amount: ${sym}${amount}` : 'Amount: Not specified'}
 How late: ${overdueStatus || 'unknown'}
@@ -183,7 +191,22 @@ Why it's hard: ${reason || 'not specified'}
 ${hasAfford ? `Can afford monthly: ${sym}${canAffordMonthly}` : 'Monthly budget: Not specified'}
 ${details ? `Additional context: ${details}` : ''}
 ${hasBillText ? `\nPASTED BILL TEXT (analyze for overcharges):\n${pastedBill.substring(0, 2000)}` : ''}
-${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and suspicious items.' : ''}
+${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and suspicious items.' : ''}`;
+
+    const keysA = [
+      'shame_to_action',
+      ...(hasBillText || hasBillImage ? ['bill_autopsy'] : []),
+      'know_your_rights', 'action_steps', 'phone_script',
+      ...(hasAfford || hasAmount ? ['payment_plan'] : []),
+      'escalation_ladder',
+    ];
+    const keysB = [
+      ...(isCollections ? ['collections_defense'] : []),
+      'hardship_letter', 'what_they_wont_tell_you', 'assistance_programs',
+      'worst_case', 'worst_case_reassurance', 'follow_up', 'permission',
+    ];
+
+    const userPromptA = `${situationBlock}
 
 Return ONLY valid JSON with ALL applicable sections:
 {
@@ -231,15 +254,29 @@ Return ONLY valid JSON with ALL applicable sections:
 
   "escalation_ladder": [
     {"who": "Level title and role", "what_to_say": "Exact phrase at this level"}
-  ]${isCollections ? `,
+  ]
+}
 
+Your response MUST contain ALL ${keysA.length} top-level keys — ${keysA.join(', ')} — and NO other keys.
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, know_your_rights ≤ 4, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
+
+CONSISTENCY RULES (recompute before writing — numbers must reconcile):
+- total_potential_savings MUST equal the sum of the flagged_charges amounts.
+- In payment_plan, the monthly amount × number of months you state MUST equal the balance you state; if you mention a fee waiver, the arithmetic must include it.
+- NEVER state a company phone number or email address that is not in the VERIFIED CURRENT FACTS block or the user's own bill — tell them to use the number printed on the bill instead.`;
+
+    const userPromptB = `${situationBlock}
+
+Return ONLY valid JSON with ALL applicable sections:
+{${isCollections ? `
   "collections_defense": {
     "overview": "Key rights with debt collectors. — 1-2 sentences",
     "validation_letter": "Complete debt validation letter. Date, placeholders for collector name/address, account ref, FDCPA Section 809(b) language. Ready to send. — 2-4 sentences",
     "what_to_say_on_phone": "Exact sentence if collector calls. Short, firm, legally protective.",
     "never_do": ["3-4 things to NEVER do with collectors"]
-  }` : ''},
-
+  },
+` : ''}
   "hardship_letter": "COMPLETE letter ready to send. 150-250 words. Date, 'To Whom It May Concern', situation (${reason}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
 
   "what_they_wont_tell_you": ["3-5 insider facts for this bill type. Game-changers billing depts won't volunteer."],
@@ -260,33 +297,47 @@ Return ONLY valid JSON with ALL applicable sections:
   "permission": "One warm sentence giving permission to deal with this imperfectly. Specific to their situation."
 }
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, know_your_rights ≤ 4, action_steps ≤ 5, escalation_ladder ≤ 4, what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, key_phrases ≤ 5, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
+Your response MUST contain ALL ${keysB.length} top-level keys — ${keysB.join(', ')} — and NO other keys.
+
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
-- total_potential_savings MUST equal the sum of the flagged_charges amounts.
-- In payment_plan, the monthly amount × number of months you state MUST equal the balance you state; if you mention a fee waiver, the arithmetic must include it.
 - NEVER state a company phone number or email address that is not in the VERIFIED CURRENT FACTS block or the user's own bill — tell them to use the number printed on the bill instead.`;
-
-    userContent.push({ type: 'text', text: userPrompt });
 
     // Migrated to callClaudeWithRetry (full-request mode supports multipart
     // content arrays — the old string-only limitation is gone) so web_search
     // grounding works: the shared helper joins ALL text blocks, which search
     // responses interleave; the old local createParseRetry read only the first.
+    // The grounded VERIFIED CURRENT FACTS block (+ its override rule in the
+    // shared PERSONALITY system text) must reach BOTH split calls.
     const verifiedFactsBlock = await groundBillRescueFacts({ userRegion, userLocale, userLanguage, billType });
-    if (verifiedFactsBlock) {
-      const li = userContent.length - 1;
-      userContent[li] = { type: 'text', text: userContent[li].text + verifiedFactsBlock };
-    }
+    const contentFor = (promptText) => [
+      ...imageBlocks,
+      { type: 'text', text: promptText + (verifiedFactsBlock || '') },
+    ];
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // 6000 truncated every Arabic paste-bill call (all conditional sections
-      // stack on the flagship input shape) — 2026-07-23 audit; DE passed at 161s.
-      max_tokens: 8000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userContent }],
-    }, { label: 'bill-rescue' });
+    // max_tokens: was 8000 on the single call (6000 truncated every Arabic
+    // paste-bill call — 2026-07-23 audit; DE passed at 161s). Split 4500 (core:
+    // autopsy + steps + scripts + payment plan) + 3500 (support: letters +
+    // programs + worst case) — sum unchanged, each half has generous headroom.
+    const [coreHalf, supportHalf] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: contentFor(userPromptA) }],
+      }, { label: 'bill-rescue-core' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: contentFor(userPromptB) }],
+      }, { label: 'bill-rescue-support' }),
+    ]);
+
+    // Merge in ORIGINAL shape; core half wins any (unexpected) key overlap so
+    // the guard field below always comes from the call that owns it.
+    const parsed = { ...supportHalf, ...coreHalf };
     if (!parsed.shame_to_action) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }

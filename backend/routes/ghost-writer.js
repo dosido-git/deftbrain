@@ -34,7 +34,10 @@ router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? anecdotes.map((a, i) => `  ${i + 1}. ${a}`).join('\n')
       : 'None provided — generate plausible-sounding generalizations the writer can customize';
 
-    const basePrompt = `You are a professional writer who specializes in compelling recommendation letters. Your job is to take rough bullet points and turn them into polished, persuasive letters that sound like the RECOMMENDER wrote them thoughtfully — not like AI generated them.
+    // Shared context block — identical in both parallel calls (input tokens are
+    // cheap; output tokens generate serially, so the 3 letters are split across
+    // two parallel calls to cut wall-clock latency).
+    const sharedContext = `You are a professional writer who specializes in compelling recommendation letters. Your job is to take rough bullet points and turn them into polished, persuasive letters that sound like the RECOMMENDER wrote them thoughtfully — not like AI generated them.
 
 PERSON BEING RECOMMENDED: ${recipientName}
 YOUR RELATIONSHIP: ${yourRelationship} (e.g., "their manager for 2 years", "college professor", "coworker")
@@ -52,16 +55,9 @@ ${anecdotesList}
 ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 
 WRITING INSTRUCTIONS:
+`;
 
-1. Generate 3 VERSIONS of the letter, each with a different structure and emphasis:
-
-   VERSION 1 — NARRATIVE: Opens with a specific anecdote or moment, then builds the case through storytelling. Most personal and memorable. Best for competitive applications where the letter needs to stand out.
-
-   VERSION 2 — STRUCTURED: Clear thesis statement, organized sections covering different qualities, specific examples for each. Most comprehensive. Best for formal applications (grad school, senior positions).
-
-   VERSION 3 — CONCISE: Gets to the point quickly. Strong opening endorsement, 2-3 key points with brief evidence, decisive close. Best for LinkedIn recommendations, brief references, or when you know the reader has limited time.
-
-2. For each version:
+    const perVersionInstructions = `2. For each version:
    - Open with how you know the person and for how long
    - Include at least one specific example (from their anecdotes or plausibly constructed)
    - Show, don't tell: "I watched Sarah reorganize our entire filing system in a weekend" > "Sarah is organized"
@@ -69,7 +65,27 @@ WRITING INSTRUCTIONS:
    - Close with a clear, confident endorsement
    - If anecdotes are vague, flesh them out into compelling mini-stories
 
-3. FLAG any placeholders where the writer needs to fill in specific details they'd know but you don't.
+3. FLAG any placeholders where the writer needs to fill in specific details they'd know but you don't.`;
+
+    const sharedRules = `- The letters must sound like a HUMAN wrote them, not AI. Vary sentence length. Include natural transitions. Avoid clichés like "I wholeheartedly recommend" or "I cannot recommend them highly enough."
+- Use the writer's perspective ("In my X years of managing teams..." or "As their professor for...").
+- Placeholders should be in [BRACKETS] and clearly labeled.
+- If no anecdotes were provided, create plausible-sounding scenarios marked with [CUSTOMIZE: replace with a real example] so the writer knows to swap them.
+- Match formality: LinkedIn = conversational, grad school = formal, job reference = professional.
+- Each version should feel genuinely different in structure and tone, not just reworded.
+- customize_prompts should be specific: "Add the name of the client they impressed" not "add more detail."`;
+
+    const noQuoteRule = `- Never place a double-quote (") character inside any JSON string value — write quoted phrases or letter text plainly or with single quotes, or it breaks the JSON.`;
+
+    // Call A: narrative + concise letters.
+    const promptA = `${sharedContext}
+1. Generate 2 VERSIONS of the letter, each with a different structure and emphasis:
+
+   VERSION 1 — NARRATIVE: Opens with a specific anecdote or moment, then builds the case through storytelling. Most personal and memorable. Best for competitive applications where the letter needs to stand out.
+
+   VERSION 2 — CONCISE: Gets to the point quickly. Strong opening endorsement, 2-3 key points with brief evidence, decisive close. Best for LinkedIn recommendations, brief references, or when you know the reader has limited time.
+
+${perVersionInstructions}
 
 OUTPUT FORMAT — Return ONLY valid JSON:
 {
@@ -84,19 +100,41 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "customize_prompts": ["specific things the writer should personalize"]
     },
     {
-      "style": "structured",
-      "label": "Structured — Comprehensive & Formal",
-      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
-      "word_count": 450,
-      "best_for": "When this version works best",
-      "strengths": ["what this version does well"],
-      "customize_prompts": ["specific things the writer should personalize"]
-    },
-    {
       "style": "concise",
       "label": "Concise — Quick & Powerful",
       "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 200,
+      "best_for": "When this version works best",
+      "strengths": ["what this version does well"],
+      "customize_prompts": ["specific things the writer should personalize"]
+    }
+  ]
+}
+
+IMPORTANT RULES:
+${sharedRules}
+- LIMITS: strengths and customize_prompts AT MOST 3 per version. Keep them terse (one line each) — the letters themselves carry the length.
+- Your response MUST contain the top-level key "versions" with BOTH versions, styles exactly "narrative" and "concise" in that order.
+${noQuoteRule}
+
+Return ONLY the JSON object. No markdown fences, no preamble.`;
+
+    // Call B: structured letter + the cross-cutting extras.
+    const promptB = `${sharedContext}
+1. Generate 1 VERSION of the letter:
+
+   VERSION 1 — STRUCTURED: Clear thesis statement, organized sections covering different qualities, specific examples for each. Most comprehensive. Best for formal applications (grad school, senior positions).
+
+${perVersionInstructions}
+
+OUTPUT FORMAT — Return ONLY valid JSON:
+{
+  "versions": [
+    {
+      "style": "structured",
+      "label": "Structured — Comprehensive & Formal",
+      "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
+      "word_count": 450,
       "best_for": "When this version works best",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
@@ -120,24 +158,35 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 }
 
 IMPORTANT RULES:
-- The letters must sound like a HUMAN wrote them, not AI. Vary sentence length. Include natural transitions. Avoid clichés like "I wholeheartedly recommend" or "I cannot recommend them highly enough."
-- Use the writer's perspective ("In my X years of managing teams..." or "As their professor for...").
-- Placeholders should be in [BRACKETS] and clearly labeled.
-- If no anecdotes were provided, create plausible-sounding scenarios marked with [CUSTOMIZE: replace with a real example] so the writer knows to swap them.
-- Match formality: LinkedIn = conversational, grad school = formal, job reference = professional.
-- Each version should feel genuinely different in structure and tone, not just reworded.
-- customize_prompts should be specific: "Add the name of the client they impressed" not "add more detail."
+${sharedRules}
 - LIMITS: writing_tips AT MOST 4, power_phrases AT MOST 5, placeholders_to_fill AT MOST 5; strengths and customize_prompts AT MOST 3 per version. Keep tips/phrases/prompts terse (one line each) — the letters themselves carry the length.
-- Never place a double-quote (") character inside any JSON string value — write quoted phrases or letter text plainly or with single quotes, or it breaks the JSON.
+- Your response MUST contain ALL 4 top-level keys: versions, writing_tips, placeholders_to_fill, power_phrases.
+${noQuoteRule}
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 7000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'ghost-writer' });
-    if (!parsed.versions) {
+    const localeSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [a, b] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3800,
+        messages: [{ role: 'user', content: withLanguage(promptA, userLanguage) + localeSuffix }],
+      }, { label: 'ghost-writer' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3200,
+        messages: [{ role: 'user', content: withLanguage(promptB, userLanguage) + localeSuffix }],
+      }, { label: 'ghost-writer-b' }),
+    ]);
+
+    // Merge back into the ORIGINAL response shape (narrative, structured, concise).
+    const styleOrder = ['narrative', 'structured', 'concise'];
+    const versions = [
+      ...(Array.isArray(a.versions) ? a.versions : []),
+      ...(Array.isArray(b.versions) ? b.versions : []),
+    ].sort((x, y) => styleOrder.indexOf(x && x.style) - styleOrder.indexOf(y && y.style));
+    const parsed = { ...b, ...a, versions };
+    if (!parsed.versions || parsed.versions.length === 0) {
       return res.status(500).json({ error: 'Could not generate content. Please try again.' });
     }
     res.json(parsed);
