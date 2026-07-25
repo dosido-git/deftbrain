@@ -28,11 +28,11 @@ const NotFound = ({
   return (
     <div className={`min-h-screen ${c.bg} flex items-center justify-center p-6`}>
       <div className={`text-center space-y-5 ${c.card} border p-10 sm:p-12 rounded-2xl shadow-sm max-w-md w-full`}>
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2 animate-[brand-spin-rest_3s_infinite] motion-reduce:animate-none">
           <img
             src="/pBrain-l.png"
             alt="DeftBrain"
-            className="h-16 w-auto object-contain animate-[spin_1s_linear_infinite] motion-reduce:animate-none"
+            className="h-16 w-auto object-contain"
           />
           <span
             className="text-2xl font-extrabold leading-none tracking-tight"
@@ -43,7 +43,7 @@ const NotFound = ({
           </span>
         </div>
         <div>
-          <h1 className={`text-6xl font-bold tracking-tight inline-block animate-[spin_1s_linear_infinite] motion-reduce:animate-none ${c.heading}`}>
+          <h1 className={`text-6xl font-bold tracking-tight ${c.heading}`}>
             4<span className={c.accent}>0</span>4
           </h1>
           <p className={`text-sm font-medium mt-3 ${c.heading}`}>

@@ -110,3 +110,10 @@ span[class*="emoji"] {
     overflow-wrap: break-word;
   }
 }
+/* 404 brand lockup: one full turn, then rest, repeat (NotFound.js).
+   Rotation occupies the first 40% of the cycle; the rest is the pause. */
+@keyframes brand-spin-rest {
+  0%   { transform: rotate(0deg); animation-timing-function: ease-in-out; }
+  40%  { transform: rotate(360deg); }
+  100% { transform: rotate(360deg); }
+}
