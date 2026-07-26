@@ -62,7 +62,6 @@ const CATEGORY_META = [
   { name: 'Energy',        emoji: '⚡', tag: 'focus', sub: 'focus · stamina · regulation'  },
   { name: 'Body',          emoji: '💪', tag: 'health', sub: 'health · exercise · medical'   },
   { name: 'Discourse',     emoji: '🗣️ ', tag: 'speaking', sub: 'say it well!'           },
-  { name: 'Read the Room', emoji: '👁️',  tag: 'subtext', sub: 'subtext · tone · decoding'    },
   { name: 'Go Deep!',      emoji: '🔬', tag: 'learning', sub: 'research · learning · knowledge'},
   { name: 'Diversions',   emoji: '🧩', tag: 'curiosity', sub: 'curiosity · play · intellect'  },
   { name: 'Me',            emoji: '🪞', tag: 'self', sub: 'self · reflection · growth'    },
@@ -104,6 +103,9 @@ const LEGACY_MAP = {
   'Brain Games':           ['Diversions'],
   'wellness':              ['Energy'],
   'Intercourse':           ['Discourse'],
+  // Category deleted 2026-07-26 (all members held another home) — resolve any
+  // straggler string so a stale reference can't render an unmapped group.
+  'Read the Room':         ['Humans'],
 };
 
 // Resolve tool.categories (array) or tool.category (legacy string) → string[]
