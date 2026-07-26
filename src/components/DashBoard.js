@@ -8,6 +8,18 @@ import LocaleSelectors from './LocaleSelectors';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 import IdeaPrompt from './IdeaPrompt';
+import keepList from '../data/tools-keep-list.json';
+
+// ISO-week tag (e.g. "2026-30") — the Spotlight band rotates on this, so the
+// pick is deterministic: stable all week, same for every visitor, no backend.
+function isoWeekTag() {
+  const d = new Date();
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return `${t.getUTCFullYear()}-${Math.ceil(((t - yearStart) / 86400000 + 1) / 7)}`;
+}
 
 // ════════════════════════════════════════════════════════════
 // BRAND COLORS — Navy / Gold / Sand
@@ -176,6 +188,29 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     return freq;
   }, [recents]);
 
+  // ── Spotlight: 6 under-discovered tools (not on the SEO keep-list = the
+  // buried 85), rotated weekly + deterministically. Validation instrument:
+  // surfaces tools we have no demand signal for. ──
+  const spotlightTools = useMemo(() => {
+    const indexable = new Set([...(keepList.focus || []), ...(keepList.keepers || [])]);
+    const pool = (allTools || []).filter(t => t.id && !indexable.has(t.id));
+    const week = isoWeekTag();
+    const score = (id) => {
+      let h = 0;
+      const s = `${week}:${id}`;
+      for (let i = 0; i < s.length; i++) h = ((h * 31) + s.charCodeAt(i)) >>> 0;
+      return h;
+    };
+    return [...pool].sort((a, b) => score(a.id) - score(b.id)).slice(0, 6);
+  }, [allTools]);
+
+  // ── Recents band: pick up where you left off (already tracked for sorting) ──
+  const recentTools = useMemo(() =>
+    recents.slice(0, 4)
+      .map(id => (allTools || []).find(t => t.id === id))
+      .filter(Boolean),
+  [recents, allTools]);
+
   // Augment tools with resolved categories array
   const toolsWithCategories = useMemo(() =>
     (allTools || []).map(tool => ({
@@ -338,6 +373,39 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
       {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
+
+      {/* ═══════════ RECENTS + SPOTLIGHT BANDS ═══════════ */}
+      {!isSearching && activeCategory === 'All' && (
+        <>
+          {recentTools.length > 0 && (
+            <div className="mt-5">
+              <div className="flex items-center gap-2 mb-1" style={{ paddingInlineStart: 12 }}>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>↩️</span>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+                   style={{ color: CLR.navy500 }}>Pick up where you left off</p>
+                <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
+              </div>
+              <ToolColumns tools={recentTools} favorites={favorites}
+                onToggleFavorite={toggleFavorite} onNavigate={recordRecent} showCategory={true} />
+            </div>
+          )}
+          {spotlightTools.length > 0 && (
+            <div className="mt-5">
+              <div className="flex items-center gap-2 mb-1" style={{ paddingInlineStart: 12 }}>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>🔦</span>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+                   style={{ color: CLR.navy500 }}>Spotlight</p>
+                <span style={{ fontSize: 11, color: CLR.warm500, opacity: 0.7 }}>
+                  Underrated this week — give one a spin
+                </span>
+                <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
+              </div>
+              <ToolColumns tools={spotlightTools} favorites={favorites}
+                onToggleFavorite={toggleFavorite} onNavigate={recordRecent} showCategory={true} />
+            </div>
+          )}
+        </>
+      )}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
       <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingInlineStart: 12, scrollMarginTop: 12 }}>

@@ -54,7 +54,11 @@ def run_audit(script, filepath):
     for line in proc.stdout.splitlines():
         m = ISSUE_RE.match(line)
         if m:
-            issues[m.group(1)] += 1
+            # Normalize positional references: an insertion higher in the file
+            # shifts every pre-existing issue's reported line, which would make
+            # it read as NEW+FIXED. Counter multiplicity still catches a
+            # genuinely new duplicate of an existing issue text.
+            issues[re.sub(r'\b(at )?line \d+', r'\1line N', m.group(1))] += 1
     return issues
 
 
