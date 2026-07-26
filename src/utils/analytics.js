@@ -66,7 +66,26 @@ function sessionContext() {
   return ctx;
 }
 
+// ── Operator self-exclusion (browser-level, network-independent). ──
+// IP-based exclusion (METRICS_EXCLUDE_IPS) silently fails behind WARP/iCloud
+// Private Relay: requests egress from rotating Cloudflare IPs, so the
+// operator's home IP never appears in any hop. This flag lives in the browser
+// instead: visit any page with ?operator=1 once (per browser/profile) and
+// every beacon from it no-ops forever; ?operator=0 re-enables.
+function operatorFlagFromUrl() {
+  try {
+    const v = new URLSearchParams(window.location.search).get('operator');
+    if (v === '1') localStorage.setItem('db-operator', '1');
+    else if (v === '0') localStorage.removeItem('db-operator');
+    if (v === '1') console.info('[DeftBrain] operator mode ON — this browser sends no metrics (?operator=0 to undo)');
+  } catch (_) {}
+}
+function isOperator() {
+  try { return localStorage.getItem('db-operator') === '1'; } catch (_) { return false; }
+}
+
 function send(payload) {
+  if (isOperator()) return;
   try {
     const body = JSON.stringify({
       ...sessionContext(),
@@ -130,6 +149,7 @@ function armInteractSignal() {
 
 if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   window.__dbAnalyticsInit = true;
+  operatorFlagFromUrl();
   pageView();
   armInteractSignal();
   const wrap = (method) => {
