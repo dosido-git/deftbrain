@@ -191,7 +191,7 @@ const Req = ({ c }) => <span className={c.required}>*</span>;
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const RoomReader = ({ tool }) => {
+const ReadTheRoom = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -1633,5 +1633,5 @@ const RoomReader = ({ tool }) => {
   );
 };
 
-RoomReader.displayName = 'RoomReader';
-export default RoomReader;
+ReadTheRoom.displayName = 'ReadTheRoom';
+export default ReadTheRoom;

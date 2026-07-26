@@ -2565,10 +2565,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "RoomReader",
+  id: "ReadTheRoom",
   seoDescription: "Read the room before you walk in. Free social coach for every stage — prep conversations, recover from awkward moments, and debrief afterward. No signup needed.",
   seoTitle: "Social Situation Coach & Conversation Prep",
-  title: "Room Reader",
+  title: "Read the Room",
   tagline: "Read the room before you walk in",
   tags: ['social', 'conversation', 'read the room', 'networking', 'awkward', 'small talk', 'people'],
   icon: "🎭",
@@ -2576,7 +2576,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   headerColor: "#e0b8b8",
   description: "A 12-mode social coach for every stage of a social situation — prep, navigate, recover, and debrief. Modes include event prep, quick tap-and-go lines, conversation recovery, person and group prep, energy matching, small talk depth, culture decoding, signal decoding, follow-up drafting, and post-event analysis. Builds a persistent Playbook from your wins and tracks recurring people over time.",
   guide: {
-      overview: "Room Reader is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
+      overview: "Read the Room is your social intelligence coach — the clever friend who preps you before the party, rescues you mid-conversation, and debriefs you afterward. Every mode builds your persistent Playbook, which shapes future suggestions. Track recurring people across interactions. Save Game Plans to pull up on your phone at the event. The tool gets smarter the more you use it.",
 
       howToUse: [
         "Pre-Game: Pick an event, add details, get conversation starters, people map, body language, exits, and a pep talk. Save the plan to reference at the event",

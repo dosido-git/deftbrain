@@ -315,7 +315,7 @@ const EXAMPLE_BUCKETS = {
         'The catastrophizing is a sign you care, not a sign you\u2019ll fail. Reframe it: you\u2019re having a conversation where both sides are figuring out fit, not walking into a test. Do one thing tonight: write down three specific things you\u2019ve done that you\u2019re genuinely proud of. Read them before you go in. Concrete evidence beats abstract reassurance.',
     },
     {
-      id: 'RoomReader',
+      id: 'ReadTheRoom',
       title: 'Room Reader',
       icon: '👀',
       tagline: 'Read any room, any situation, any dynamic',

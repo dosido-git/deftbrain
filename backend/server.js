@@ -156,7 +156,7 @@ const TOOL_IDS = [
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
-'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','RoomReader','RoommateCourt',
+'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt',
  'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
@@ -202,6 +202,7 @@ const LEGACY_REDIRECTS = {
   '/DopamineMenuBuilder':               '/PEP',
   '/MoneyMoves':                 '/MoneyDiplomat',
   '/NoiseCanceler':              '/CutToTheChase',
+  '/RoomReader':                 '/ReadTheRoom',
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
   '/BillGuiltEraser':            '/BillRescue',

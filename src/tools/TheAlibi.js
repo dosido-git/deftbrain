@@ -419,7 +419,7 @@ const TheAlibi = ({ tool }) => {
       </div>
       {!results && (
         <p className={'text-xs ' + c.textMuted + ' mb-3'}>
-          {t('ta_xref_intro')} <a href="/RoomReader" className={linkStyle}>🎭 {t('ta_xref_roomreader')}</a> {t('ta_xref_roomreader_after')}
+          {t('ta_xref_intro')} <a href="/ReadTheRoom" className={linkStyle}>🎭 {t('ta_xref_roomreader')}</a> {t('ta_xref_roomreader_after')}
         </p>
       )}
       {!results && renderInput()}

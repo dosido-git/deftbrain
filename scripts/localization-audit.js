@@ -155,7 +155,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/BrainRoulette.js',
   'src/tools/SixDegreesOfMe.js',
   'src/tools/FriendshipFadeAlerter.js',
-  'src/tools/RoomReader.js',
+  'src/tools/ReadTheRoom.js',
   'src/tools/SkillGapMap.js',
   'src/tools/TheFinalWord.js',
   'src/tools/MoneyDiplomat.js',

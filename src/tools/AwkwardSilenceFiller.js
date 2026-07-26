@@ -656,7 +656,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               <a href="/DateNight" className={`text-xs ${linkStyle}`}>💘 {t('asf_xref_datenight')}</a>
               <a href="/PronounceItRight" className={`text-xs ${linkStyle}`}>🗣️ {t('asf_xref_pronounce')}</a>
-              <a href="/RoomReader" className={`text-xs ${linkStyle}`}>👀 {t('asf_xref_roomreader')}</a>
+              <a href="/ReadTheRoom" className={`text-xs ${linkStyle}`}>👀 {t('asf_xref_roomreader')}</a>
             </div>
           </div>
         </div>
