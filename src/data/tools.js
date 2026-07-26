@@ -51,7 +51,7 @@ export const tools = [
   tagline: "Find the right support for what you're going through",
   tags: ['mental health', 'therapy', 'therapist', 'counseling', 'psychiatrist', 'anxiety', 'depression', 'stress', 'support', 'help', 'burnout', 'grief', 'trauma', 'wellbeing', 'professional help', 'finding a therapist', 'mental health resources'],
   icon: "🧭",
-  categories: ['Energy', 'Body'],
+  categories: ['Energy'],
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
   guide: {
@@ -165,7 +165,7 @@ export const tools = [
   tagline: "A personalized sleep improvement protocol built around your habits",
   tags: ['sleep', 'insomnia', 'bedtime', 'rest', 'tired', 'fatigue', 'wake up', 'energy', 'schedule', 'circadian', 'routine', 'CBT-I', 'stress', 'anxiety', 'night', 'melatonin', 'sleep hygiene'],
   icon: "😴",
-  categories: ['Energy', 'Body'],
+  categories: ['Energy'],
   headerColor: "#c8c0e8",
   description: "Tell us about your sleep situation — goals, schedule, disruptors, what a typical night looks like. Get a scored assessment, quick wins you can try tonight, and a phased improvement protocol grounded in sleep science.",
   guide: {
@@ -335,7 +335,7 @@ export const tools = [
   tagline: "Walk in prepared — so you don't waste the visit",
   tags: ['doctor', 'appointment', 'prep', 'questions', 'symptoms', 'health', 'medical', 'visit', 'preparation'],
   icon: "👨🏻",
-  categories: ['Body'],
+  categories: ['The Grind'],
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",
   guide: {
@@ -1012,7 +1012,7 @@ export const tools = [
   tagline: "Discover hobbies you didn't know existed.",
   tags: ['hobby', 'interest', 'bored', 'activity', 'passion', 'discover', 'pastime'],
   icon: "🧭 ",
-  categories: ['Out & About', 'Detour'],
+  categories: ['Out & About'],
   headerColor: "#ccdfc4",
   description: "Bored of the usual suggestions? Describe your personality, schedule, budget, and physical situation, and HobbyMatch recommends 5-6 hobbies you've genuinely never considered — with the hook that makes each one addictive, the absolute lowest-barrier first step you can take today, startup costs, and where to find your people.",
   guide: {
@@ -1066,7 +1066,7 @@ export const tools = [
   tagline: "Be an informed patient before you say yes.",
   tags: ['doctor', 'dentist', 'procedure', 'medical', 'appointment', 'health', 'informed patient', 'surgery', 'root canal', 'insurance', 'second opinion', 'cost', 'questions to ask'],
   icon: "🔬",
-  categories: ['Loot', 'Body'],
+  categories: ['The Grind', 'Loot'],
   headerColor: "#ccdfc4",
   description: "A doctor or dentist just recommended a procedure. Before you schedule, get the briefing: is this standard for your situation? What questions should you ask? What does it typically cost, and what does insurance cover? What are the red flags? What's recovery really like? Empowers you to be an informed patient — not medical advice, but medical literacy.",
   guide: {
@@ -1346,7 +1346,7 @@ export const tools = [
   tagline: "Describe it from memory — I'll figure out what it is.",
   tags: ['remember', 'forgot', 'what is it called', 'tip of tongue', 'word', 'memory', 'describe'],
   icon: "💭",
-  categories: ['Diversions', 'Detour'],
+  categories: ['Diversions'],
   headerColor: "#d4dde8",
   description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever fragment you remember and AI cross-references sensory details, context, and vibes to identify it. Works for food, music, films, products, scents, colors, places, fabrics, and anything else. Refine mode narrows results based on your feedback.",
   guide: {
@@ -1416,7 +1416,7 @@ export const tools = [
   tagline: "There's a word for that. Let's find it.",
   tags: ['emotion', 'game', 'feelings', 'quiz', 'mood', 'fun'],
   icon: "🎭",
-  categories: ['Energy', 'Me', 'Detour'],
+  categories: ['Energy', 'Me'],
   headerColor: "#e0b8b8",
   description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
   guide: {
@@ -1556,7 +1556,7 @@ export const tools = [
   tagline: "The perfect response you thought of 3 hours too late.",
   tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse', 'roast', 'cathartic', 'insult', 'bully', 'revenge', 'conflict', 'clap back', 'petty'],
   icon: "🍳",
-  categories: ['Humans', 'Discourse', 'Detour'],
+  categories: ['Humans', 'Discourse', 'Diversions'],
   headerColor: "#e0b8b8",
   description: "Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.",
   guide: {
@@ -1591,7 +1591,7 @@ export const tools = [
   tagline: "What if history went differently?",
   tags: ['history', 'what if', 'alternate timeline', 'counterfactual', 'historical', 'thought experiment'],
   icon: "🌀",
-  categories: ['What If?', 'Detour'],
+  categories: ['What If?'],
   headerColor: "#b8dcd8",
   description: "Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.",
   guide: {
@@ -1627,7 +1627,7 @@ export const tools = [
   tagline: "Find where the logic breaks in any movie, show, book, or game",
   tags: ['plot', 'hole', 'movie', 'show', 'logic', 'mistake', 'continuity', 'film', 'fun'],
   icon: "🕳️",
-  categories: ['Diversions', 'Detour'],
+  categories: ['Diversions'],
   headerColor: "#b8dcd8",
   description: "Name any movie, show, book, or game — AI finds the logical inconsistencies, timeline problems, 'why didn't they just...' moments, and character decisions that make no sense. Each hole is rated by severity (Nitpick to Universe-Breaking) with a fan defense and a Reddit-style one-liner. Swiss Cheese Rating scores overall plot integrity. Two modes: Find Holes (full analysis) and Defend a Hole (build the strongest possible defense of a specific plot hole, courtroom-style).",
   guide: {
@@ -1661,7 +1661,7 @@ export const tools = [
   tagline: "Wild but defensible fan theories about anything",
   tags: ['theory', 'fan', 'conspiracy', 'movie', 'show', 'plot', 'twist', 'evidence', 'fun'],
   icon: "🧵",
-  categories: ['What If?', 'Detour'],
+  categories: ['What If?'],
   headerColor: "#b8dcd8",
   description: "Name any movie, show, book, or game — AI generates a wild but internally-consistent fan theory with cited evidence. Six theory directions: Surprise Me, Secret Villain, Shared Universe, Timeline Twist, Dead or Alive, and It's a Simulation. Each theory comes with evidence rated from Compelling to Pure Delusion, a Smoking Gun, counterarguments, and plausibility/mind-blown ratings. Second mode: Grade My Theory — paste your own fan theory and get an academic grade with strengths, weaknesses, and a Reddit performance prediction.",
   guide: {
@@ -1694,7 +1694,7 @@ export const tools = [
   tagline: "Paste anything — get a personalized comedy roast",
   tags: ['roast', 'funny', 'comedy', 'humor', 'joke', 'resume', 'dating', 'linkedin', 'burn', 'fun'],
   icon: "🔥",
-  categories: ['Diversions', 'Detour'],
+  categories: ['Diversions'],
   headerColor: "#ccdfc4",
   description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched Earth. Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.",
   guide: {
@@ -1728,7 +1728,7 @@ export const tools = [
   tagline: "Collide anything modern with any historical period",
   tags: ['history', 'time', 'historical', 'modern', 'funny', 'ancient', 'medieval', 'comedy', 'fun'],
   icon: "⏰",
-  categories: ['Diversions', 'What If?', 'Detour'],
+  categories: ['Diversions', 'What If?'],
   headerColor: "#b8dcd8",
   description: "Pick any modern concept and any historical period — AI generates the collision. Six formats: Explain It, Review, News Report, Letter, Debate, and Ad. Every piece is historically accurate AND funny — includes real historical footnotes so you learn something while laughing.",
   guide: {
@@ -1761,7 +1761,7 @@ export const tools = [
   tagline: "Ask anything — get a confidently, beautifully wrong answer",
   tags: ['wrong', 'funny', 'trivia', 'quiz', 'comedy', 'fake', 'humor', 'absurd', 'fun'],
   icon: "🙃",
-  categories: ['What If?', 'Detour'],
+  categories: ['What If?'],
   headerColor: "#b8dcd8",
   description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes real answer toggle for when you want to actually learn something.",
   guide: {
@@ -2067,7 +2067,7 @@ export const tools = [
   tagline: "Pick up where you left off — without spoilers",
   tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
-  categories: ['Diversions', 'Detour'],
+  categories: ['Diversions'],
   headerColor: "#ccdfc4",
   description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped — character refreshers, active plot threads, vibe checks, and must-watch game flags.",
   guide: {
@@ -2394,7 +2394,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tagline: "Low-barrier movement that meets you where you are",
   tags: ['exercise', 'workout', 'lazy', 'fitness', 'motivation', 'gym'],
   icon: "🧘",
-  categories: ['Energy', 'Body'],
+  categories: ['Energy'],
   headerColor: "#ccdfc4",
   description: "For the days you don't want to move. The inputs — your energy, what hurts, and what actually happened today (bad sleep, long meeting, emotional day) — change the routine itself, not just the duration. Modes scale from a 2-minute floor to a weekly menu, with targeted body relief, sleep wind-downs, and recovery protocols for life events. History tracks how movement shifts your energy; Prove It shows whether it's actually helping you — in your own numbers.",
   guide: {
@@ -3381,7 +3381,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tagline: 'Personalized rabbit holes you can\'t resist',
   tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
-  categories: ['Diversions', 'Detour'],
+  categories: ['Diversions'],
   headerColor: "#b8dcd8",
   description: 'Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can\'t stop thinking about.',
   guide: {
@@ -3997,7 +3997,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tagline: "Turn medical jargon into plain English",
   tags: ['doctor', 'medical', 'jargon', 'health', 'appointment', 'diagnosis', 'plain language', 'prescription', 'lab results'],
   icon: "👨🏻",
-  categories: ['Body'],
+  categories: ['The Grind'],
   headerColor: "#ccdfc4",
   description: "Paste any medical document — visit notes, lab results, prescription labels, or billing statements — and get a plain-English summary, prioritized action checklist, medication explanations, and questions to ask at your next appointment.",
   guide: {
@@ -4232,7 +4232,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     'sensitive', 'anxiety', 'temperature', 'place', 'before you go', 'overload'
   ],
   icon: "🗺️",
-  categories: ['Out & About', 'Body', 'Me'],
+  categories: ['Out & About', 'Energy', 'Me'],
   headerColor: "#2a3820",
   description: "Scout any location before you go — predict crowd density, noise, lighting, temperature, and sensory intensity by time of day. Get a tailored game plan, layout intel, accommodation scripts, comfort kit, and live rescan if conditions shift once you're there.",
   guide: {
@@ -4576,7 +4576,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tagline: "Mini-adventures near you, under $20, in 2-4 hours",
   tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
-  categories: ['Out & About', 'Detour'],
+  categories: ['Out & About'],
   headerColor: "#ccdfc4",
   description: "Plans accessible mini-adventures: 2-4 hours, under $20, in/near your city. Detailed itineraries for urban exploration, nature, culture, social experiences. Creates novelty within ordinary constraints. Removes 'need full day/lots of money' barrier to adventure.",
   guide: {
