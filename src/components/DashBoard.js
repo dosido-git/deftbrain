@@ -378,8 +378,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {!isSearching && activeCategory === 'All' && (
         <>
           {recentTools.length > 0 && (
-            <div className="mt-5">
-              <div className="flex items-center gap-2 mb-1" style={{ paddingInlineStart: 12 }}>
+            <div className="mt-5" style={{
+              border: `1.5px solid ${CLR.sand300}`,
+              background: '#ffffff',
+              borderRadius: 14,
+              padding: '12px 14px 8px',
+            }}>
+              <div className="flex items-center gap-2 mb-1">
                 <span style={{ fontSize: 14, lineHeight: 1 }}>↩️</span>
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
                    style={{ color: CLR.navy500 }}>Pick up where you left off</p>
@@ -390,8 +395,15 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             </div>
           )}
           {spotlightTools.length > 0 && (
-            <div className="mt-5">
-              <div className="flex items-center gap-2 mb-1" style={{ paddingInlineStart: 12 }}>
+            /* Accent card — same treatment as the 404 IdeaPrompt: brand-gold
+               border + faint warm tint (see IdeaPrompt `accent` prop). */
+            <div className="mt-5" style={{
+              border: `2px solid ${CLR.gold500}`,
+              background: 'rgba(200, 135, 46, 0.05)',
+              borderRadius: 14,
+              padding: '12px 14px 8px',
+            }}>
+              <div className="flex items-center gap-2 mb-1">
                 <span style={{ fontSize: 14, lineHeight: 1 }}>🔦</span>
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
                    style={{ color: CLR.navy500 }}>Spotlight</p>
