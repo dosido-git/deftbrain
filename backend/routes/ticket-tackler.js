@@ -78,6 +78,7 @@ SHARED RULES:
 - You help the user WRITE THEIR OWN appeal. Never promise or predict an outcome ("you will win"); frame strengths honestly. If the case is weak, say so plainly — recommending paying is a valid, respectful answer.
 - PROCESS FACTS: when a VERIFIED APPEAL PROCESS block is present above, use its deadlines/methods verbatim. For anything NOT covered by it, NEVER invent a portal name, URL, address, phone number, or deadline — describe generically how to find the official channel (e.g. the payment/appeal address printed on the ticket itself, or the city authority's official website).
 - Engage the user's SPECIFIC details (signage, timing, dates, the exact wording on the ticket) — no generic advice that fits any ticket.
+- Cite a specific statute/ordinance section number ONLY when certain it is exactly right; otherwise describe the rule without a section number — a correct principle beats a slightly-wrong citation.
 - Keep every string field to ONE concise sentence unless the schema says otherwise. Never restate the same point across fields. A focused, fully-closed response beats a long truncated one.
 - ${NO_QUOTE_RULE}`;
 
@@ -100,7 +101,7 @@ Return ONLY valid JSON:
   ]
 }
 
-Your response MUST contain ALL 3 top-level keys: case_assessment, defense_angles, evidence_checklist. "verdict" MUST be EXACTLY one of the English tokens FIGHT, BORDERLINE, or JUST PAY and "strength"/"urgency" MUST be the exact English tokens shown — they are code values the UI switches on; never translate them (all prose fields ARE in the user's language). "fight_worthiness" is a bare integer. LIMITS: defense_angles ≤ 5 (strongest first), evidence_checklist ≤ 6.`;
+Your response MUST contain ALL 3 top-level keys: case_assessment, defense_angles, evidence_checklist. "verdict" MUST be EXACTLY one of the English tokens FIGHT, BORDERLINE, or JUST PAY and "strength"/"urgency" MUST be the exact English tokens shown — they are code values the UI switches on; never translate them (all prose fields ARE in the user's language). "fight_worthiness" is a bare integer. LIMITS: defense_angles ≤ 5 (strongest first), evidence_checklist ≤ 6. Include ONLY defense angles grounded in the user's own account — never list hypothetical statutory defenses (e.g. stolen or leased vehicle) the user has not claimed.`;
 
     const appealSchema = `Draft the appeal package for this ${typeLabel}.
 
@@ -112,12 +113,12 @@ Return ONLY valid JSON:
   "how_to_file": {
     "where": "Where to submit — verified channel if known, otherwise how to find the official one (one sentence)",
     "method_tips": "Practical filing tips for this jurisdiction/type — 1-2 sentences",
-    "deadline_note": "The deadline if verified or user-provided, else a warning to check the date printed on the ticket — one sentence"
+    "deadline_note": "The deadline if verified or user-provided, else a warning to check the date printed on the ticket — one sentence. Never state a specific number of days unless it appears in the VERIFIED block or was user-provided"
   },
   "decision_math": {
     "cost_of_paying": "The fine plus any knock-on costs, in the user's currency — one sentence",
     "cost_of_fighting": "Realistic time/effort (and any hearing cost) — one sentence",
-    "bottom_line": "Honest recommendation weighing the two, consistent with the strength of the case — 1-2 sentences"
+    "bottom_line": "Honest recommendation weighing the two — 1-2 sentences. If the user's own account leaves no legally recognized defense, recommend paying; never suggest filing merely because it is low-effort"
   },
   "dont_say": [ "A thing people say that hurts their appeal, and why — one sentence" ]
 }

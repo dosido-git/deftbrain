@@ -309,7 +309,7 @@ const TicketTackler = ({ tool }) => {
           </div>
 
           <p className={`text-xs ${c.textMuted}`}>
-            {t('tt_xref_pre')} <a href="/BillRescue" className={linkStyle}>💸 BillRescue</a>
+            {t('tt_xref_pre')} <a href="/BillRescue" className={linkStyle}>💸 {t('tt_billrescue')}</a>
           </p>
 
           <button onClick={handleSubmit}
@@ -450,9 +450,9 @@ const TicketTackler = ({ tool }) => {
 
           {/* Cross-references */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            <a href="/BillRescue" className={linkStyle}>💸 BillRescue</a>
+            <a href="/BillRescue" className={linkStyle}>💸 {t('tt_billrescue')}</a>
             <span className="mx-2">·</span>
-            <a href="/ComplaintEscalationWriter" className={linkStyle}>📣 ComplaintEscalationWriter</a>
+            <a href="/ComplaintEscalationWriter" className={linkStyle}>📣 {t('tt_cew')}</a>
           </p>
         </div>
       )}
