@@ -44,6 +44,13 @@ const ACKNOWLEDGED_NEWER = [
   // max-schema tools + re-verify all goldens + weigh cost/latency), not an env
   // flip. Remove this line when that migration is done.
   'claude-sonnet-5',
+  // Evaluated 2026-07-26 (released 07-24): staying on claude-opus-4-8 for now.
+  // Opus 5 is live but more verbose at our tuned budgets — golden comparison
+  // truncated markup-detective (2500) and two buy-wise legs (4000/5000);
+  // markup-detective+dvt pass cleanly on 4-8. Adopting it = deliberate
+  // migration (re-budget the 3 DEEP routes, re-verify goldens, re-check the
+  // <60s latency bar). Remove this line when that migration is done.
+  'claude-opus-5',
 ];
 
 module.exports = { MODELS, ALL_MODELS, ACKNOWLEDGED_NEWER };
