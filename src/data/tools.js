@@ -5434,6 +5434,40 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     },
   },
 },
+{
+  id: "TicketTackler",
+  seoTitle: "Fight a Parking or Camera Ticket: Free Appeal Builder",
+  seoDescription: "Contest a parking or red-light camera ticket with a free AI appeal builder — honest case assessment, defense angles, evidence checklist, and a ready-to-send appeal letter.",
+  title: "Ticket Tackler",
+  tagline: "Got a ticket? Build your appeal — or find out it's not worth fighting.",
+  tags: ['parking ticket', 'traffic ticket', 'red light camera', 'speed camera', 'contest ticket', 'appeal ticket', 'fight ticket', 'dispute parking fine', 'citation', 'appeal letter', 'parking fine', 'ticket dismissal'],
+  icon: "🎫",
+  categories: ['Money'],
+  headerColor: "#d9a04e",
+  description: "Turns a parking or camera ticket into an honest case assessment and a complete appeal package: your strongest defense angles ranked by strength, an evidence checklist of what to photograph today, a ready-to-send appeal letter, and straight decision math — including 'just pay it' when fighting isn't worth your time.",
+  guide: {
+    overview: "Most people either pay tickets they could have beaten or waste hours fighting tickets they can't. Ticket Tackler starts with the honest question — is this worth contesting? — then builds everything you need if it is: defense angles based on your actual circumstances, the evidence to collect before it disappears, a factual appeal letter in the tone hearing officers respond to, and where to file it. If your case is weak, it says so and does the math on paying.",
+    howToUse: [
+      "Pick the ticket type — parking or automated camera",
+      "Enter your city — appeal processes are local, and the tool checks the current process where it can verify it",
+      "Paste the ticket text or upload a photo of it",
+      "Describe what happened in your own words — the specifics are where defenses live",
+      "Add the fine amount and deadline if you have them",
+      "Click 'Build my appeal' and start with the verdict before reading anything else",
+    ],
+    tips: [
+      "Photograph everything today — signage, curb markings, your parked position, meter screens. Evidence disappears fast and it's the #1 thing that wins appeals",
+      "The exact wording on the sign matters more than what you remember it meaning — a photo of the sign beats a description of it",
+      "Never argue you 'didn't know the rule' — the tool's don't-say list exists because some honest sentences lose winnable cases",
+      "A BORDERLINE verdict usually means the evidence you collect in the next hour decides it",
+      "Watch the deadline printed on the ticket — a perfect appeal filed late is worth nothing",
+    ],
+    example: {
+      scenario: "A parking ticket in Seattle for parking in a passenger load zone at 6:40 pm. The sign said the load-zone restriction ends at 6 pm, but it was partially bent behind a tree branch. Fine: $47, deadline in 15 days.",
+      result: "Verdict: FIGHT (7/10). Strongest angle: the restriction had ended at the time of citation per the posted sign — photograph the sign showing the 6 pm end time and your citation time of 6:40 pm. Second angle: sign obscured by foliage (moderate — photograph from the driver's approach angle). Evidence checklist: sign close-up, sign from approach, curb color, citation front/back. Appeal letter: factual 150-word draft citing the posted hours. Decision math: $47 fine vs ~30 minutes to file online with photos — worth it."
+    },
+  },
+},
 
 ];
 export const getToolById = (id) => {

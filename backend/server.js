@@ -163,7 +163,7 @@ const TOOL_IDS = [
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
   'ToolFinder','TruthBomb','UpsellShield','VelvetHammer','VirtualBodyDouble',
   'WaitingModeLiberator','WardrobeChaosHelper','WhichLife','WhatsMyVibe',
-  'WhereDidTheTimeGo','WrongAnswersOnly',
+  'WhereDidTheTimeGo','WrongAnswersOnly','TicketTackler',
 ];
 const toolIdMap = {};
 TOOL_IDS.forEach(id => { toolIdMap[id.toLowerCase()] = id; });

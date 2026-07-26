@@ -13,6 +13,7 @@
 
 import { base } from './base';
 import { markupDetective } from './tools/markup-detective';
+import { ticketTackler } from './tools/ticket-tackler';
 import { subSweep } from './tools/sub-sweep';
 import { billRescue } from './tools/bill-rescue';
 import { buyWise } from './tools/buy-wise';
@@ -141,6 +142,7 @@ import { paperworkPath } from './tools/paperwork-path';
 // with only an 'en' key (not yet fully localized) is safe here — missing
 // languages fall back to 'en' automatically (see src/i18n/index.js).
 const TOOL_BLOCKS = [
+  ticketTackler,
   markupDetective,
   subSweep,
   billRescue,
