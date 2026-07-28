@@ -89,3 +89,4 @@ Optionally run ONE tool per wave with userLanguage:"de" as a localization spot c
   shared payload filenames collided and silently swapped one agent's language.
 - Run at least one non-English wave per quarter; crisis-resource localization and
   enum integrity held everywhere in this round, but truncation budgets did not.
+- **Silent dead-end**: a screen whose only continue-path is disabled with no required-field marker and no unlock hint (FinalWish intro, 2026-07-27 — mode cards gated on an unmarked field read as "no submit button"). Check every gated CTA explains itself.
