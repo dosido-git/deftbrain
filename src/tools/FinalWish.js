@@ -1209,7 +1209,7 @@ async function decrypt(){
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
         </div>
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_primary_person')}</label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('fws_label_primary_person')} <span className={c.required}>*</span></label>
           <input type="text" value={primaryPerson?.name || ''} onChange={e => updateTrustedPerson(primaryPerson?.id, 'name', e.target.value)}
             placeholder={t('fws_ph_primary_person')}
             className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none transition-colors`} />
@@ -1251,6 +1251,9 @@ async function decrypt(){
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
       </div>
+      {!trustedPerson.trim() ? (
+        <p className={`text-xs text-center mb-4 ${c.required}`}>☝️ {t('fws_unlock_hint')}</p>
+      ) : null}
 
       <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between">
