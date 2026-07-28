@@ -53,6 +53,16 @@ function createNoiseLayer(ctx, noiseGenerator, filterOptions, initialGain = 0) {
   const buffer = ctx.createBuffer(2, bufferSize, sr);
   const dataL = noiseGenerator(bufferSize);
   const dataR = noiseGenerator(bufferSize);
+  // Crossfade the loop seam (~100ms of the tail blended into the head) —
+  // without it the raw wrap discontinuity clicks once per loop, which reads
+  // as a periodic mechanical tick, worst on brown noise (random DC drift).
+  const fade = Math.min(Math.floor(sr * 0.1), bufferSize >> 2);
+  for (const data of [dataL, dataR]) {
+    for (let i = 0; i < fade; i++) {
+      const w = i / fade;
+      data[bufferSize - fade + i] = data[bufferSize - fade + i] * (1 - w) + data[i] * w;
+    }
+  }
   buffer.copyToChannel(dataL, 0);
   buffer.copyToChannel(dataR, 1);
   const source = ctx.createBufferSource();
@@ -1777,6 +1787,14 @@ const FocusSoundArchitect = ({ tool }) => {
                 className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
               <span className={`text-xs font-mono w-8 text-end ${c.textMuteded}`}>{masterVolume}</span>
             </div>
+
+            {/* Binaural layers only work as intended per-ear; on speakers the two
+                tones mix acoustically into a real amplitude beat (pulsing hum). */}
+            {(recipe?.layers || []).some(l => l.type === 'binaural') && (
+              <div className={`${c.warning} border rounded-lg px-3 py-2 mt-3 text-xs`}>
+                🎧 {t('fsa_headphones_hint')}
+              </div>
+            )}
 
             {/* Adaptive + Share controls */}
             <div className="flex items-center gap-2 mt-3 pt-3 border-t" style={{ borderColor: isDark ? '#3f3f46' : '#e7e5e4' }}>
