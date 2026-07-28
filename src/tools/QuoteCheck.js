@@ -16,7 +16,7 @@ const EXAMPLE = {
   whatTheyToldYou: 'qc_example_told',
   quotedPrice: '450',
   quotedBreakdown: 'qc_example_breakdown',
-  itemAge: '6 years',
+  itemAge: 'qc_example_age',
 };
 
 function QuoteCheck({ tool }) {
@@ -134,7 +134,7 @@ function QuoteCheck({ tool }) {
     setWhatTheyToldYou(t(EXAMPLE.whatTheyToldYou));
     setQuotedPrice(EXAMPLE.quotedPrice);
     setQuotedBreakdown(t(EXAMPLE.quotedBreakdown));
-    setItemAge(EXAMPLE.itemAge);
+    setItemAge(t(EXAMPLE.itemAge));
     setResults(null);
     setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -332,7 +332,7 @@ function QuoteCheck({ tool }) {
               <span className="text-xl">{uploadedFile.type === 'application/pdf' ? '📄' : '🖼️'}</span>
               <div>
                 <p className={`text-sm font-semibold ${c.text}`}>{uploadedFile.name}</p>
-                <p className={`text-xs ${c.textMuted}`}>{(uploadedFile.size / 1024).toFixed(1)} KB</p>
+                <p className={`text-xs ${c.textMuted}`}>{(uploadedFile.size / 1024).toFixed(1)} {t('qc_kb')}</p>
               </div>
             </div>
             <button onClick={removeFile} className={`text-sm ${c.textMuted}`}>✕</button>
@@ -403,7 +403,7 @@ function QuoteCheck({ tool }) {
                 <li key={i} className={`text-xs ${c.textSecondary} flex items-start gap-2`}>
                   <span className="flex-shrink-0">{vIcon}</span>
                   <span>
-                    <span className={`font-bold ${vColor}`}>{h.verdict?.replace(/_/g, ' ').toUpperCase()}</span>
+                    <span className={`font-bold ${vColor}`}>{['likely_fair', 'somewhat_high', 'overpriced', 'cant_tell'].includes(h.verdict) ? t(`qc_verdict_${h.verdict}`) : h.verdict?.replace(/_/g, ' ').toUpperCase()}</span>
                     <span className={`block ${c.textMuted} mt-0.5`}>{h.preview}</span>
                   </span>
                 </li>

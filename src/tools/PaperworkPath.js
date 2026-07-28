@@ -344,7 +344,7 @@ const PaperworkPath = ({ tool }) => {
                     <div className="grid mb-1.5" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
                       {cols.map((w) => (
                         <div key={w} className={`text-center text-[10px] font-bold pb-1 ${w === 0 ? c.warningTxt : c.textMuted} ${w === 0 ? 'border-b-2 ' + (isDark ? 'border-amber-500' : 'border-amber-400') : ''}`}>
-                          {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `wk ${weekLabel(w)}`}
+                          {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `${t('pp_cal_week')} ${weekLabel(w)}`}
                         </div>
                       ))}
                     </div>

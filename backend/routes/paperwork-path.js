@@ -27,9 +27,9 @@ ${situationText ? `THEIR SITUATION: ${situationText}` : ''}
 
 Produce a document checklist AND the order to handle it. Requirements vary by country/state/employer — give the TYPICAL set and sequence.
 
-BE SPECIFIC, then hedge — do not be vague. When a deadline or figure is well-established for the stated location (e.g. a state's new-resident vehicle-registration or driver-license grace period, a benefits enrollment window), state the actual number (e.g. "within 30 days", "90-day window") and note it should be confirmed as current. Only avoid inventing a precise figure you are not confident is commonly correct — in that case say the rule exists and point the person to where to confirm it, rather than stating a made-up number. The verify_note covers the blanket "confirm for your jurisdiction" caveat, so individual fields can carry the specific figure.
+BE SPECIFIC, then hedge — do not be vague. When a deadline or figure is well-established for the stated location (e.g. a region's new-resident vehicle-registration or driver-license grace period, a benefits enrollment window), state the actual number (e.g. "within 30 days", "90-day window") and note it should be confirmed as current. Only avoid inventing a precise figure you are not confident is commonly correct — in that case say the rule exists and point the person to where to confirm it, rather than stating a made-up number. The verify_note covers the blanket "confirm for your jurisdiction" caveat, so individual fields can carry the specific figure.
 
-FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one item's window for a different one (e.g. a state's driver-license grace period and its vehicle-registration grace period are usually DIFFERENT numbers; don't apply one to both). If unsure whether two items share a window, hedge that specific figure rather than guessing.
+FIGURE DISCIPLINE: each deadline belongs to ITS OWN item — never reuse one item's window for a different one (e.g. a region's driver-license grace period and its vehicle-registration grace period are usually DIFFERENT numbers; don't apply one to both). If unsure whether two items share a window, hedge that specific figure rather than guessing.
 
 Return ONLY valid JSON:
 
@@ -38,7 +38,7 @@ Return ONLY valid JSON:
   "event_label": "Move day",
   "document_checklist": [
     {
-      "document": "Name of the document/task (e.g. 'Change address with USPS')",
+      "document": "Name of the document/task (e.g. 'File a change of address with the postal service')",
       "why": "Why it matters — one sentence",
       "where_to_get": "Where/how to obtain or file it — one sentence",
       "priority": "critical | important | optional"

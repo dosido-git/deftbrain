@@ -171,9 +171,9 @@ const LOCALIZED_TOOLS = [
   'src/tools/MeetingBSDetector.js',
   'src/tools/NameAudit.js',
   'src/tools/SocialBatteryAdvisor.js',
+  'src/tools/PaperworkPath.js',
+  'src/tools/QuoteCheck.js',
 ];
-
-const CATALOG_PATH = 'src/i18n/locales/index.js';
 
 // Common currency symbols. `$` included — but only matched against AST cooked
 // text / string literals, never against `${}` template syntax (which the parser
@@ -200,7 +200,7 @@ function walk(node, cb) {
 // ── load the bundled catalog by evaluating it as CommonJS ──
 // locales/index.js is an ES module; transform the two `export const` lines and
 // compile in an isolated Module so spreads in RESOURCES resolve naturally.
-function loadCatalog(root) {
+function loadCatalog(_root) {
   // Catalog is assembled from self-contained data files (base.js + tools/*.js);
   // index.js uses ES imports and can't be eval'd here. The shared loader reads
   // and merges the data files the same way index.js does at build time.
