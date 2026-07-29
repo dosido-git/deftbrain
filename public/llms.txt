@@ -1,0 +1,178 @@
+# DeftBrain
+
+> DeftBrain (https://deftbrain.com) is a free collection of 120+ single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. Each tool is a plain form, not a chatbox: fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+
+## Start here
+
+- [All tools](https://deftbrain.com/): the full catalog, grouped by category
+- [ToolFinder](https://deftbrain.com/ToolFinder): describe a problem in plain words and get pointed at the right tool
+- [Guides](https://deftbrain.com/guides): how-to hubs for the most common problems
+
+## The Grind
+## The Grind
+
+- [Bike Medic](https://deftbrain.com/BikeMedic): A trailside mechanic in your pocket
+- [Bill Rescue](https://deftbrain.com/BillRescue): Your bill anxiety ends here
+- [Cut to the Chase](https://deftbrain.com/CutToTheChase): Paste any long document — we'll extract only what affects you
+- [Doctor Visit Prep](https://deftbrain.com/DoctorVisitPrep): Walk in prepared — so you don't waste the visit
+- [Doctor Visit Translator](https://deftbrain.com/DoctorVisitTranslator): Turn medical jargon into plain English
+- [Drive Home](https://deftbrain.com/DriveHome): Your safety net for every drive
+- [Final Wish](https://deftbrain.com/FinalWish): Organize what matters. Say what needs to be said.
+- [Jargon Assassin](https://deftbrain.com/JargonAssassin): Confusing documents → plain language → what to do about it
+- [LaundroMat](https://deftbrain.com/LaundroMat): AI laundry expert — wash smarter, treat stains faster, rescue ruined clothes
+- [Lease Trap Detector](https://deftbrain.com/LeaseTrapDetector): Find predatory clauses hiding in your lease
+- [Mise en Place](https://deftbrain.com/MiseEnPlace): Turn whatever's in your kitchen into a meal — with a battle plan
+- [Paperwork Path](https://deftbrain.com/PaperworkPath): The documents you need — and the order to handle them
+- [Pet Weirdness Decoder](https://deftbrain.com/PetWeirdnessDecoder): Is it quirky or concerning? Let's find out
+- [PlantRescue](https://deftbrain.com/PlantRescue)
+- [Procedure Probe](https://deftbrain.com/ProcedureProbe): Be an informed patient before you say yes.
+- [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): Your kitchen 911 — from crisis to confidence
+- [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day
+- [Roommate Court](https://deftbrain.com/RoommateCourt): Settle disputes and assign chores — no arguments
+- [Rulebook Breaker](https://deftbrain.com/RulebookBreaker): The loopholes, magic words, and escalation ladder nobody tells you about
+- [Safe Walk](https://deftbrain.com/SafeWalk): Prepare smart, walk safe
+- [WardrobeChaosHelper](https://deftbrain.com/WardrobeChaosHelper): AI picks your outfit. No more decision fatigue.
+
+## Out & About
+
+- [Culture Briefing](https://deftbrain.com/CultureBriefing): Know before you go — cultural intelligence for any destination
+- [Date Night](https://deftbrain.com/DateNight): A full evening plan, on budget, anywhere
+- [Hobby Match](https://deftbrain.com/HobbyMatch): Discover hobbies you didn't know existed.
+- [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into the best part of your trip
+- [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): Mini-adventures near you, under $20, in 2-4 hours
+- [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
+- [Sensory Minefield Mapper](https://deftbrain.com/SensoryMinefieldMapper): Predict and avoid overwhelming sensory environments
+
+## Humans
+
+- [Apology Calibrator](https://deftbrain.com/ApologyCalibrator): Match your apology to the actual harm caused
+- [Awkward Silence Filler](https://deftbrain.com/AwkwardSilenceFiller): Context-appropriate conversation rescues on demand
+- [Comeback Cooker](https://deftbrain.com/ComebackCooker): The perfect response you thought of 3 hours too late.
+- [Conflict Coach](https://deftbrain.com/ConflictCoach): Stop, breathe, and craft the right response
+- [Decoder Ring](https://deftbrain.com/DecoderRing): Decode what they actually mean beneath what they said
+- [Difficult Talk Coach](https://deftbrain.com/DifficultTalkCoach): Practice hard conversations before they happen
+- [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Never lose touch with people you care about
+- [Giftology](https://deftbrain.com/Giftology): The perfect gift for the hardest person to shop for.
+- [Gratitude Debt Clearer](https://deftbrain.com/GratitudeDebtClearer): Helps you convert bullet points into polished thank yous.
+- [Gravity Well](https://deftbrain.com/GravityWell): A 90-day plan to pull someone into your orbit — before you ever reach out
+- [Luck Surface](https://deftbrain.com/LuckSurface): Calculate your luck surface area. Expand it with five specific moves.
+- [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
+- [Read the Room](https://deftbrain.com/ReadTheRoom): Read the room before you walk in
+- [Social Battery Advisor](https://deftbrain.com/SocialBatteryAdvisor): See where your energy actually goes — and restructure your week around it
+- [Toast Writer](https://deftbrain.com/ToastWriter): Toasts, speeches, and tributes that land.
+- [Velvet Hammer](https://deftbrain.com/VelvetHammer): Transform furious drafts into professional messages
+
+## Loot
+
+- [Buy Wise](https://deftbrain.com/BuyWise): The research you'd do if you had an hour — done in seconds
+- [Complaint Escalation Writer](https://deftbrain.com/ComplaintEscalationWriter): Full escalation campaigns that companies can't ignore
+- [Contract Decoder](https://deftbrain.com/ContractDecoder): Paste any contract — know exactly what you're signing
+- [Fake Review Detective](https://deftbrain.com/FakeReviewDetective): Spot fake reviews before you get burned
+- [Magic Mouth (M²)](https://deftbrain.com/MagicMouth): The art of the ask.
+- [Markup Detective](https://deftbrain.com/MarkupDetective): Why does this cost that? Follow the money.
+- [Quote Check](https://deftbrain.com/QuoteCheck): Paste your repair quote — know if you're being overcharged
+- [Scam Radar](https://deftbrain.com/ScamRadar): Paste any suspicious message — know in seconds if it's a scam
+- [Subscription Tamer](https://deftbrain.com/SubscriptionTamer): Tame the subscriptions quietly draining you
+- [Ticket Tackler](https://deftbrain.com/TicketTackler): Got a ticket? Build your appeal — or find out it's not worth fighting.
+- [Upsell Shield](https://deftbrain.com/UpsellShield): Walk into high-pressure sales prepared.
+
+## Pursuits
+
+- [Brag Sheet Builder](https://deftbrain.com/BragSheetBuilder): Turn humble descriptions into a complete career advancement toolkit
+- [Caption Magic](https://deftbrain.com/CaptionMagic): Turn any photo into engaging social media captions
+- [Cold Open Craft](https://deftbrain.com/ColdOpenCraft): First messages that actually get responses.
+- [Future Proof](https://deftbrain.com/FutureProof): The 5-year trajectory on any skill, career, or bet — before you go all in
+- [Ghost Writer](https://deftbrain.com/GhostWriter): Turn rough notes into polished recommendation letters in seconds
+- [Idea Autopsy](https://deftbrain.com/IdeaAutopsy): Stress-test your business idea before you invest time or money
+- [Leverage Logic](https://deftbrain.com/LeverageLogic): Win any negotiation with the right strategy
+- [Name Audit](https://deftbrain.com/NameAudit): Stress-test any name before you commit
+- [Name Storm](https://deftbrain.com/NameStorm): Name anything. Know it works before you commit.
+- [Skill Gap Map](https://deftbrain.com/SkillGapMap): Your GPS from current role to dream job
+- [The Alibi](https://deftbrain.com/TheAlibi): Frame your real story for any audience — honest but strategic
+- [The Run-Through](https://deftbrain.com/TheRunthrough): Presentation coach in your pocket.
+
+## The Office
+
+- [BatchFlow](https://deftbrain.com/BatchFlow): Batch similar tasks to protect your focus and minimize mental gear-shifting
+- [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
+- [Heckler Prep](https://deftbrain.com/HecklerPrep): Anticipate the hardest questions before they land.
+- [Meeting BS Detector](https://deftbrain.com/MeetingBSDetector): Is this meeting necessary or could it be an email?
+- [Meeting Hijack Preventer](https://deftbrain.com/MeetingHijackPreventer): Keep meetings structured, inclusive, and on track
+- [Pre-Mortem](https://deftbrain.com/PreMortem): Your plan has already failed. This is the memo explaining why.
+- [The Debrief](https://deftbrain.com/TheDebrief): Paste a meeting transcript — get decisions, actions, and follow-ups
+
+## Energy
+
+- [Brain State Deejay](https://deftbrain.com/BrainStateDeejay): Science-backed playlists for your brain state
+- [Crash Predictor](https://deftbrain.com/CrashPredictor): Spot your burnout patterns before the crash
+- [Crisis Prioritizer](https://deftbrain.com/CrisisPrioritizer): Separate real urgency from anxiety urgency
+- [Dream Pattern Spotter](https://deftbrain.com/DreamPatternSpotter): Find recurring themes and emotional patterns in your dreams
+- [Focus Pocus](https://deftbrain.com/FocusPocus): Lock in. Get pulled out. Take care of yourself.
+- [Focus Sound Architect](https://deftbrain.com/FocusSoundArchitect): Create personalized soundscapes to enhance your concentration.
+- [Gentle Push Generator](https://deftbrain.com/GentlePushGenerator): Micro-challenges just outside your comfort zone
+- [GriefGuide](https://deftbrain.com/GriefGuide): Compassionate guidance for navigating loss — yours or someone else's
+- [Lazy Workout Adapter](https://deftbrain.com/LazyWorkoutAdapter): Low-barrier movement that meets you where you are
+- [Mental Health Navigator](https://deftbrain.com/MentalHealthNavigator): Find the right support for what you're going through
+- [Name That Feeling](https://deftbrain.com/NameThatFeeling): There's a word for that. Let's find it.
+- [Nerve Check](https://deftbrain.com/NerveCheck)
+- [PEP-Personal Energy Planner](https://deftbrain.com/PEP): Personal Energy Planner — understand your energy, plan around it
+- [SleepArchitect](https://deftbrain.com/SleepArchitect): A personalized sleep improvement protocol built around your habits
+- [Spiral Stopper](https://deftbrain.com/SpiralStopper): Emergency intervention for spirals, freezes, and crashes
+- [Task Avalanche Breaker](https://deftbrain.com/TaskAvalancheBreaker): Turn that overwhelming mountain into micro-steps
+- [Virtual Body Double](https://deftbrain.com/VirtualBodyDouble): A quiet coworking partner for solo tasks
+- [Waiting Mode Liberator](https://deftbrain.com/WaitingModeLiberator): Break free when upcoming events freeze your day
+
+## Discourse
+
+- [Analogy Engine](https://deftbrain.com/AnalogyEngine): Explain anything to anyone — using their world.
+- [Argue Better](https://deftbrain.com/ArgueBetter): State your position. Face the strongest opposing case.
+- [Context Collapse](https://deftbrain.com/ContextCollapse): See how different people will read the same message — before you send it
+- [Pronounce It Right](https://deftbrain.com/PronounceItRight): Names, food, places, brands — never mispronounce anything again
+- [The Final Word](https://deftbrain.com/TheFinalWord): Arguments settled. Facts checked. No appeals.
+
+## Go Deep!
+
+- [Belief Stress Test](https://deftbrain.com/BeliefStressTest): Your guiding beliefs, pressure-tested. Where they hold. Where they break.
+- [HistoryToday](https://deftbrain.com/HistoryToday): Find the structural historical parallel — not the obvious one
+- [PlainTalk](https://deftbrain.com/PlainTalk)
+- [Research Decoder](https://deftbrain.com/ResearchDecoder): What this paper actually says — and whether what you read about it is true
+- [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): Cut through contradictions and find what the evidence actually says
+- [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
+- [The Gap](https://deftbrain.com/TheGap): Stuck on a concept? We'll find where your understanding broke.
+
+## Diversions
+
+- [Bookmark](https://deftbrain.com/Bookmark): Pick up where you left off — without spoilers
+- [BrainRoulette](https://deftbrain.com/BrainRoulette)
+- [Crowd Wisdom](https://deftbrain.com/CrowdWisdom): Five real perspectives on the choice you can't stop thinking about
+- [Plot Hole](https://deftbrain.com/PlotHole): Find where the logic breaks in any movie, show, book, or game
+- [Roast Me](https://deftbrain.com/RoastMe): Paste anything — get a personalized comedy roast
+- [Six Degrees of Me](https://deftbrain.com/SixDegreesOfMe): The hidden chain between any two parts of your life
+- [Time Warp](https://deftbrain.com/TimeWarp): Collide anything modern with any historical period
+- [Tip of Tongue](https://deftbrain.com/TipOfTongue): Describe it from memory — I'll figure out what it is.
+
+## Me
+
+- [Brain Dump Buddy](https://deftbrain.com/BrainDumpBuddy): Everything in your head → one clear next step
+- [One Percenter](https://deftbrain.com/OnePercenter): The single 1% change with the largest compound effect on your year
+- [Truth Bomb](https://deftbrain.com/TruthBomb): The thing about yourself you don't reveal.
+- [What's My Vibe](https://deftbrain.com/WhatsMyVibe): Find out what you actually sound like.
+- [Where Did the Time Go?](https://deftbrain.com/WhereDidTheTimeGo): See the gap between where you think time went and where it actually went.
+
+## What If?
+
+- [Alternate Path](https://deftbrain.com/AlternatePath): What if history went differently?
+- [Chaos Pilot](https://deftbrain.com/ChaosPilot): One calculated disruption. Not random — strategically chaotic.
+- [Fan Theory](https://deftbrain.com/FanTheory): Wild but defensible fan theories about anything
+- [Plot Twist](https://deftbrain.com/PlotTwist): See every angle of a tough decision — then decide with clarity
+- [Which Life?](https://deftbrain.com/WhichLife): Feel both futures before you choose.
+- [Wrong Answers Only](https://deftbrain.com/WrongAnswersOnly): Ask anything — get a confidently, beautifully wrong answer
+
+## Veer
+
+- [Decision Coach](https://deftbrain.com/DecisionCoach): One answer. No second-guessing.
+
+## Do It!
+
+- [Tool Finder](https://deftbrain.com/ToolFinder): Describe your problem — I'll find the right tool.
+
