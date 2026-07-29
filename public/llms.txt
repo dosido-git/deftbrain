@@ -9,7 +9,6 @@
 - [Guides](https://deftbrain.com/guides): how-to hubs for the most common problems
 
 ## The Grind
-## The Grind
 
 - [Bike Medic](https://deftbrain.com/BikeMedic): A trailside mechanic in your pocket
 - [Bill Rescue](https://deftbrain.com/BillRescue): Your bill anxiety ends here
@@ -24,14 +23,14 @@
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): Turn whatever's in your kitchen into a meal — with a battle plan
 - [Paperwork Path](https://deftbrain.com/PaperworkPath): The documents you need — and the order to handle them
 - [Pet Weirdness Decoder](https://deftbrain.com/PetWeirdnessDecoder): Is it quirky or concerning? Let's find out
-- [PlantRescue](https://deftbrain.com/PlantRescue)
+- [Plant Rescue](https://deftbrain.com/PlantRescue): Diagnose and rescue your struggling plants
 - [Procedure Probe](https://deftbrain.com/ProcedureProbe): Be an informed patient before you say yes.
 - [Recipe Chaos Solver](https://deftbrain.com/RecipeChaosSolver): Your kitchen 911 — from crisis to confidence
 - [Renter's Deposit Saver](https://deftbrain.com/RentersDepositSaver): Protect your security deposit on move-in day
 - [Roommate Court](https://deftbrain.com/RoommateCourt): Settle disputes and assign chores — no arguments
 - [Rulebook Breaker](https://deftbrain.com/RulebookBreaker): The loopholes, magic words, and escalation ladder nobody tells you about
 - [Safe Walk](https://deftbrain.com/SafeWalk): Prepare smart, walk safe
-- [WardrobeChaosHelper](https://deftbrain.com/WardrobeChaosHelper): AI picks your outfit. No more decision fatigue.
+- [Wardrobe Chaos Helper](https://deftbrain.com/WardrobeChaosHelper): AI picks your outfit. No more decision fatigue.
 
 ## Out & About
 
@@ -93,7 +92,7 @@
 
 ## The Office
 
-- [BatchFlow](https://deftbrain.com/BatchFlow): Batch similar tasks to protect your focus and minimize mental gear-shifting
+- [Batch Flow](https://deftbrain.com/BatchFlow): Batch similar tasks to protect your focus and minimize mental gear-shifting
 - [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
 - [Heckler Prep](https://deftbrain.com/HecklerPrep): Anticipate the hardest questions before they land.
 - [Meeting BS Detector](https://deftbrain.com/MeetingBSDetector): Is this meeting necessary or could it be an email?
@@ -114,7 +113,7 @@
 - [Lazy Workout Adapter](https://deftbrain.com/LazyWorkoutAdapter): Low-barrier movement that meets you where you are
 - [Mental Health Navigator](https://deftbrain.com/MentalHealthNavigator): Find the right support for what you're going through
 - [Name That Feeling](https://deftbrain.com/NameThatFeeling): There's a word for that. Let's find it.
-- [Nerve Check](https://deftbrain.com/NerveCheck)
+- [Nerve Check](https://deftbrain.com/NerveCheck): Real confidence for scary moments.
 - [PEP-Personal Energy Planner](https://deftbrain.com/PEP): Personal Energy Planner — understand your energy, plan around it
 - [SleepArchitect](https://deftbrain.com/SleepArchitect): A personalized sleep improvement protocol built around your habits
 - [Spiral Stopper](https://deftbrain.com/SpiralStopper): Emergency intervention for spirals, freezes, and crashes
@@ -134,7 +133,7 @@
 
 - [Belief Stress Test](https://deftbrain.com/BeliefStressTest): Your guiding beliefs, pressure-tested. Where they hold. Where they break.
 - [HistoryToday](https://deftbrain.com/HistoryToday): Find the structural historical parallel — not the obvious one
-- [PlainTalk](https://deftbrain.com/PlainTalk)
+- [Plain Talk — Document Analyst](https://deftbrain.com/PlainTalk): See through any text — plain language plus structural X-ray
 - [Research Decoder](https://deftbrain.com/ResearchDecoder): What this paper actually says — and whether what you read about it is true
 - [Signal vs. Noise](https://deftbrain.com/SignalVsNoise): Cut through contradictions and find what the evidence actually says
 - [The Crux](https://deftbrain.com/TheCrux): Paste any talk or long read — get the signal without the noise
@@ -143,7 +142,7 @@
 ## Diversions
 
 - [Bookmark](https://deftbrain.com/Bookmark): Pick up where you left off — without spoilers
-- [BrainRoulette](https://deftbrain.com/BrainRoulette)
+- [Brain Roulette](https://deftbrain.com/BrainRoulette): Personalized rabbit holes you can't resist
 - [Crowd Wisdom](https://deftbrain.com/CrowdWisdom): Five real perspectives on the choice you can't stop thinking about
 - [Plot Hole](https://deftbrain.com/PlotHole): Find where the logic breaks in any movie, show, book, or game
 - [Roast Me](https://deftbrain.com/RoastMe): Paste anything — get a personalized comedy roast
