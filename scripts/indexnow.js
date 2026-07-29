@@ -1,8 +1,32 @@
 #!/usr/bin/env node
 // scripts/indexnow.js
 //
-// Submits all tool and guide URLs to IndexNow after every production build.
+// Submits CHANGED, INDEXABLE URLs to IndexNow after every production build.
 // IndexNow pings Bing and Yandex simultaneously — one submission, two engines.
+//
+// ── Why "changed" and "indexable" (2026-07-29) ───────────────────────────────
+// This script used to submit every id in tools.js on every deploy — all 125,
+// including the ~85 that the keep-list deliberately noindexes, whether or not
+// anything about them had changed. Two problems: it asked Bing to crawl pages
+// we tell Google not to index, and IndexNow's own guidance is to submit
+// added/updated/deleted URLs — repeatedly blasting a whole site is the pattern
+// that gets a submitter's signal discounted.
+//
+// Both filters come from state the build already maintains, so there is no new
+// source of truth to keep in sync:
+//   • WHAT'S INDEXABLE — src/data/sitemap-lastmod.json is keyed ONLY for
+//     keep-list tools (generate-sitemap.js writes it from the same
+//     tools-keep-list.json that drives the sitemap and prerender's noindex).
+//   • WHAT CHANGED — that file stores a content hash per URL and only advances
+//     `lastmod` when the hash moves, so `lastmod === today` means "this build
+//     genuinely changed this page".
+//   • GUIDES — build/guides-sitemap.xml is already keep-list-filtered and
+//     carries a per-URL <lastmod>, so the same today-comparison applies.
+//
+// Nothing changed → nothing submitted (and no ping at all). Set
+// INDEXNOW_ALL=1 for a deliberate full resubmit of every indexable URL — the
+// right move after a structural change like a keep-list revision, and wrong as
+// a habit.
 //
 // Setup (one-time):
 //   1. Copy public/3f1177f637e941e1160f382e43ac87ee.txt to your public/ folder
@@ -40,36 +64,65 @@ if (process.env.NODE_ENV !== 'production' && !process.env.FORCE_INDEXNOW) {
 
 // ─── Collect URLs ─────────────────────────────────────────────────────────────
 
-function getToolUrls() {
-  const toolsFile = path.join(ROOT, 'src', 'data', 'tools.js');
-  if (!fs.existsSync(toolsFile)) return [];
-  const content = fs.readFileSync(toolsFile, 'utf8');
-  const ids = [];
-  // Key may be quoted ("id":) or unquoted (id:) — tolerate both, else
-  // quoted-key tools (e.g. LaundroMat) never get submitted to IndexNow.
-  const re = /["']?\bid\b["']?\s*:\s*['"]([A-Za-z][\w-]+)['"]/g;
-  let m;
-  while ((m = re.exec(content)) !== null) {
-    if (!ids.includes(m[1])) ids.push(m[1]);
+const TODAY       = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+const SUBMIT_ALL  = process.env.INDEXNOW_ALL === '1';
+
+// Tool + static URLs, from the sitemap-lastmod state the sitemap build writes.
+// Keys are `tool:<Id>` and `static:<page>`, and ONLY for keep-list (indexable)
+// pages — so this is both the indexable filter and the change filter.
+function getSitemapStateUrls() {
+  const statePath = path.join(ROOT, 'src', 'data', 'sitemap-lastmod.json');
+  if (!fs.existsSync(statePath)) {
+    console.warn('IndexNow: sitemap-lastmod.json not found — tool URLs will be skipped.');
+    return { urls: [], considered: 0 };
   }
-  return ids.map(id => `${SITE_URL}/${id}`);
+  let state;
+  try {
+    state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  } catch (err) {
+    console.warn(`IndexNow: sitemap-lastmod.json unreadable (${err.message}) — tool URLs skipped.`);
+    return { urls: [], considered: 0 };
+  }
+
+  const urls = [];
+  let considered = 0;
+  for (const [key, entry] of Object.entries(state)) {
+    const loc = key.startsWith('tool:')   ? `${SITE_URL}/${key.slice(5)}`
+              : key.startsWith('static:') ? `${SITE_URL}/${key.slice(7)}`
+              : null;
+    if (!loc) continue;              // unknown key shape — never guess a URL
+    considered++;
+    if (SUBMIT_ALL || entry?.lastmod === TODAY) urls.push(loc);
+  }
+  return { urls, considered };
 }
 
+// Guide URLs from the generated guides-sitemap.xml — already keep-list-filtered
+// by generate-guides-sitemap.js, and each <url> carries its own <lastmod>.
+// NOTE: category hub pages are stamped with today's date on every build (they
+// regenerate each time), so they always qualify. That is correct-ish — their
+// content really is rebuilt — but it means hubs get resubmitted on every deploy.
+// Acceptable: there are ~18 of them, versus 125 before this change.
 function getGuideUrls() {
-  // Read from the generated guides-sitemap.xml in build/
   const sitemapPath = path.join(BUILD_DIR, 'guides-sitemap.xml');
   if (!fs.existsSync(sitemapPath)) {
     console.warn('IndexNow: guides-sitemap.xml not found — guide URLs will be skipped.');
-    return [];
+    return { urls: [], considered: 0 };
   }
   const xml  = fs.readFileSync(sitemapPath, 'utf8');
-  const re   = /<loc>([^<]+)<\/loc>/g;
   const urls = [];
-  let m;
-  while ((m = re.exec(xml)) !== null) {
-    urls.push(m[1]);
+  let considered = 0;
+  // Match each <url> block so a <loc> is paired with ITS OWN <lastmod>
+  const blockRe = /<url>([\s\S]*?)<\/url>/g;
+  let block;
+  while ((block = blockRe.exec(xml)) !== null) {
+    const loc     = /<loc>([^<]+)<\/loc>/.exec(block[1]);
+    const lastmod = /<lastmod>([^<]+)<\/lastmod>/.exec(block[1]);
+    if (!loc) continue;
+    considered++;
+    if (SUBMIT_ALL || (lastmod && lastmod[1] === TODAY)) urls.push(loc[1]);
   }
-  return urls;
+  return { urls, considered };
 }
 
 // ─── Submit ───────────────────────────────────────────────────────────────────
@@ -109,23 +162,28 @@ function post(urlList) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  const toolUrls  = getToolUrls();
-  const guideUrls = getGuideUrls();
+  const tools  = getSitemapStateUrls();
+  const guides = getGuideUrls();
 
-  // Always include homepage
-  const allUrls = [
-    `${SITE_URL}/`,
-    ...toolUrls,
-    ...guideUrls,
-  ];
+  // The homepage lists the catalog, so it legitimately changes whenever a tool
+  // page does — but submitting it alone, when nothing else moved, would be a
+  // ping with no news in it.
+  const changed = [...tools.urls, ...guides.urls];
+  const allUrls = changed.length ? [`${SITE_URL}/`, ...changed] : [];
 
-  // Deduplicate
   const urls = [...new Set(allUrls)];
 
-  console.log(`\nIndexNow: submitting ${urls.length} URLs`);
+  if (!urls.length) {
+    console.log('\nIndexNow: nothing changed this build — no submission sent.');
+    console.log(`  (${tools.considered} indexable tool/static + ${guides.considered} guide URLs unchanged)`);
+    console.log('  Set INDEXNOW_ALL=1 to force a full resubmit.');
+    return;
+  }
+
+  console.log(`\nIndexNow: submitting ${urls.length} URL(s)${SUBMIT_ALL ? ' [FULL RESUBMIT]' : ''}`);
   console.log(`  • 1 homepage`);
-  console.log(`  • ${toolUrls.length} tool pages`);
-  console.log(`  • ${guideUrls.length} guide pages`);
+  console.log(`  • ${tools.urls.length} of ${tools.considered} tool/static pages`);
+  console.log(`  • ${guides.urls.length} of ${guides.considered} guide pages`);
 
   // Submit in batches
   const batches = [];
