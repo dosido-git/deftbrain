@@ -220,3 +220,47 @@ URL via `src/data/sitemap-lastmod.json` — a date advances only when the tool e
 static page / homepage-link-structure actually changes. Re-run bumps 0; guides
 sitemap was already honest. After editing tools.js, run generate-sitemap.js and
 commit the refreshed state (Railway self-heals if forgotten).
+
+---
+
+## 2026-07-29 — DIAGNOSIS SETTLED: it's authority, not indexation
+
+Bing Webmaster data (first look) closed a question Google's exports alone
+couldn't. **Do not re-diagnose this from scratch next session.**
+
+**What Bing showed:** 619 pages Indexed · 0 Errors · 17 Warnings · 6 Excluded ·
+642 URLs known · **2 backlinks** · 163 impressions · 2 clicks (6 months) · and
+37 consecutive zero-impression days (2026-06-21 → 07-27).
+
+**Verified live the same day, so nothing below is inference:**
+- keeper pages serve `<meta name="robots" content="index, follow">`
+- non-keep-list tools serve `noindex` (so Bing's "restrictive robots tag"
+  SEO/GEO error on `/researchdecoder` is Bing correctly reporting OUR intent —
+  not a bug, and not to be "fixed")
+- every lowercase URL variant 301s to canonical PascalCase in ONE hop
+- we emit zero lowercase tool URLs ourselves (the lowercase entries in Bing's
+  index are Bing's own discovery/normalization, and it consolidates them)
+- `/llms.txt` live, 200, full catalog
+
+**Conclusion:** the site is indexed and technically healthy on both engines and
+still shown to almost nobody. 619 indexed pages behind 2 backlinks rank nowhere
+for everything. Google's impressions ≈0 since 06-12 and Bing's since 06-21 are
+the same phenomenon from two independent sources.
+
+**Therefore — and this is the operative decision:**
+- ❌ NOT a penalty, NOT a deindexing, NOT a robots/canonical/sitemap defect.
+  An earlier hypothesis of a Bing penalty was wrong; the data refutes it.
+- ❌ Further on-site SEO (titles, schema, sitemaps, internal links, more
+  consolidation) has **near-zero marginal value** at this stage. It is all
+  already in good shape. Resist the urge — it feels productive and isn't.
+- ✅ The only lever that moves the needle is **external signals**: backlinks,
+  launches, real mentions. See `DIRECTORY-SUBMISSIONS.xlsx` (9 free DO items)
+  and `LAUNCH-DRAFTS.md` (Show HN + Product Hunt).
+
+**Sept 1 checkpoint criteria REVISED (operator-approved 2026-07-29)**, cloud
+routine `trig_01SPbmACdwBg7WjBCY2MR6Dc` updated to match. The original test
+("are the 18 hubs indexed?") is now known to be the WRONG question — pages can
+be indexed and still invisible. The revised test:
+  (a) has the backlink count moved meaningfully above 2?
+  (b) are impressions nonzero and trending up on either engine?
+If both still no → the answer is external signals, never another reshuffle.
