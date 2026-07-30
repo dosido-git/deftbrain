@@ -23,6 +23,8 @@ NO INVENTED LIMITS: If the user did not give a price, budget, or ceiling, do NOT
 
 FINANCING REALITY: Do not claim that paying cash or bringing outside financing automatically lowers the purchase price. Dealers often earn back-end reserve on in-house financing, so they may discount the price MORE when you finance through them (you can refinance afterward). Frame financing tactics with that dynamic in mind rather than asserting the opposite.
 
+AMBIGUOUS PRODUCT NAMES: Shoppers type short names that can mean two different products — a bike stand is either a workshop repair stand or an everyday storage rack; a monitor is either a display or a baby monitor. Use the price and any context given to pick the single most likely reading, then analyze THAT product consistently in every field. Never silently switch readings partway through.
+
 ${NO_QUOTE_RULE}`
 
 // ════════════════════════════════════════════════════════════
@@ -62,7 +64,8 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "verdict": "One bold sentence: the overall recommendation — one sentence",
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
-  "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other"${isImpulse ? `,
+  "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
+  "interpreted_as": "The exact product this analysis is about, so the user can spot a misread at a glance: brand plus the specific product type, plus the detail that distinguishes it from a similarly-named product. If the name was ambiguous, name the reading you rejected too. — one short sentence"${isImpulse ? `,
 
   "impulse_check": {
     "do_you_need_it": "Honest answer: do they actually need this or is it a want? Be specific. — one sentence",
@@ -261,6 +264,7 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
   "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
+  "interpreted_as": "The exact product this analysis is about, so the user can spot a misread at a glance: brand plus the specific product type, plus the detail that distinguishes it from a similarly-named product. If the name was ambiguous, name the reading you rejected too. — one short sentence",
   "fair_price_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
   "timing_badge": ${timingToday ? '"NULL — needed today"' : '"BUY NOW | WAIT | GOOD TIME"'}
 }`;
@@ -280,7 +284,11 @@ ${DECISION_SCHEMA}`, 'decision', 800);
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
     }
 
+    // Pinning the resolved product here is what stops the three groups from each
+    // picking a different reading of an ambiguous name ("Canyon Bikestand" →
+    // repair stand in one panel, storage rack in another).
     const stance = `LOCKED DECISION — every section below MUST stay consistent with this; do NOT contradict it:
+- Product being analyzed: ${decision.interpreted_as || product}
 - Verdict: ${decision.verdict}
 - Fair-price stance: ${decision.fair_price_badge}
 - Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
@@ -411,6 +419,7 @@ ${schema}`;
       verdict_emoji: decision.verdict_emoji,
       verdict_summary: decision.verdict_summary,
       product_category: decision.product_category,
+      interpreted_as: decision.interpreted_as,
     };
     [aRes, bRes, cRes].forEach((r) => {
       if (r.status === 'fulfilled' && r.value && typeof r.value === 'object') {

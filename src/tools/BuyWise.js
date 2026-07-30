@@ -216,6 +216,11 @@ const BuyWise = ({ tool }) => {
   // ── State: Follow-up ──
   const [followups, setFollowups] = useState([]); // answered follow-ups
   const [followupLoading, setFollowupLoading] = useState(false);
+  // Which suggested question is in flight. followupLoading alone can't say —
+  // it dimmed every pill equally, so a click read as "nothing happened"
+  // (reported 2026-07-30). This lets the clicked pill spin while its
+  // siblings dim.
+  const [pendingQuestion, setPendingQuestion] = useState(null);
   const [customQuestion, setCustomQuestion] = useState('');
 
   // ── State: Budget mode ──
@@ -452,6 +457,7 @@ const BuyWise = ({ tool }) => {
   const askFollowup = useCallback(async (question) => {
     if (!question?.trim() || !results) return;
     setFollowupLoading(true);
+    setPendingQuestion(question.trim());
     try {
       const data = await callToolEndpoint('buy-wise/followup', {
         product: product.trim(),
@@ -466,6 +472,7 @@ const BuyWise = ({ tool }) => {
       setError(err.message || t('bw_err_analysis'));
     } finally {
       setFollowupLoading(false);
+      setPendingQuestion(null);
     }
   }, [results, product, currency, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
@@ -611,6 +618,7 @@ const BuyWise = ({ tool }) => {
     const r = results;
     const lines = [`${t('bw_copy_header')} ${product}`];
     if (price) lines.push(`${t('bw_copy_price')} ${currency}${price}`);
+    if (r.interpreted_as) lines.push(`${t('bw_read_as')} ${r.interpreted_as}`);
     lines.push('');
     if (r.verdict) lines.push(`${r.verdict_emoji || '🧠'} ${t('bw_copy_verdict')} ${r.verdict}`, r.verdict_summary || '', '');
     if (r.fair_price) lines.push(`💲 ${t('bw_copy_price_check')} ${r.fair_price.verdict_badge}`, r.fair_price.analysis, r.fair_price.typical_range ? `${t('bw_copy_range')} ${r.fair_price.typical_range}` : '', '');
@@ -957,8 +965,20 @@ const BuyWise = ({ tool }) => {
           </div>
         </div>
 
-        {product.trim() && (
-          <p className={`text-xs font-semibold ${c.textMuteded}`}>🛒 {t('bw_analysis_for')} <span className={c.text}>{product.trim()}</span></p>
+        {/* What the user typed, then what the model actually resolved it to.
+            Short product names are often ambiguous ("Canyon Bikestand" reads as
+            either a workshop repair stand or an everyday storage rack), and
+            without this line a misread is invisible — the whole report just
+            quietly describes the wrong product. */}
+        {(product.trim() || r.interpreted_as) && (
+          <div className="space-y-0.5">
+            {product.trim() && (
+              <p className={`text-xs font-semibold ${c.textMuteded}`}>🛒 {t('bw_analysis_for')} <span className={c.text}>{product.trim()}</span></p>
+            )}
+            {r.interpreted_as && (
+              <p className={`text-xs ${c.textMuteded}`}>↳ {t('bw_read_as')} <span className={c.textSecondary}>{r.interpreted_as}</span></p>
+            )}
+          </div>
         )}
 
         {/* Verdict */}
@@ -1309,16 +1329,27 @@ const BuyWise = ({ tool }) => {
             {/* Suggested questions */}
             {r.followup_questions?.filter(q => !followups.find(f => f.question === q)).length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
-                {r.followup_questions.filter(q => !followups.find(f => f.question === q)).map((q, i) => (
-                  <button
-                    key={i}
-                    onClick={() => askFollowup(q)}
-                    disabled={followupLoading}
-                    className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-start min-h-[36px] disabled:opacity-40`}
-                  >
-                    {q}
-                  </button>
-                ))}
+                {r.followup_questions.filter(q => !followups.find(f => f.question === q)).map((q, i) => {
+                  const isPending = pendingQuestion === q.trim();
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => askFollowup(q)}
+                      disabled={followupLoading}
+                      aria-busy={isPending}
+                      // Only ONE disabled:opacity-* class is emitted. Shipping both
+                      // and relying on `opacity-100` to override `opacity-40` loses:
+                      // same specificity, and Tailwind's emitted order decided it the
+                      // other way (verified in the DOM — the pending pill stayed 0.4).
+                      // The pending pill stays legible while its siblings dim; that
+                      // contrast is what makes "this one is working" readable.
+                      className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-start min-h-[36px] ${isPending ? 'ring-2 ring-cyan-500' : 'disabled:opacity-40'}`}
+                    >
+                      {isPending && <span className="animate-spin inline-block me-2">{tool?.icon ?? '💲'}</span>}
+                      {q}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -1343,8 +1374,11 @@ const BuyWise = ({ tool }) => {
               </button>
             </div>
 
-            {/* Answered follow-ups */}
-            {followups.length > 0 && (
+            {/* Answered follow-ups (+ a skeleton card for the one in flight, so
+                the wait is visible where the answer will land, not just up on
+                the pill). The skeleton reuses the pending question text — which
+                is already in the user's language — so it needs no new t() key. */}
+            {(followups.length > 0 || followupLoading) && (
               <div className="mt-3 space-y-3">
                 {followups.map((fu, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3 space-y-2`}>
@@ -1356,6 +1390,20 @@ const BuyWise = ({ tool }) => {
                     )}
                   </div>
                 ))}
+
+                {followupLoading && (
+                  <div className={`${c.quoteBg} rounded-lg p-3 space-y-2`} aria-live="polite" aria-busy="true">
+                    <p className={`text-xs font-bold ${c.textCyan} flex items-center gap-2`}>
+                      <span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span>
+                      {pendingQuestion}
+                    </p>
+                    <div className="animate-pulse space-y-2" aria-hidden="true">
+                      <div className={`h-3 rounded ${isDark ? 'bg-zinc-600' : 'bg-slate-300'} w-3/5`} />
+                      <div className={`h-2 rounded ${isDark ? 'bg-zinc-700' : 'bg-slate-200'} w-full`} />
+                      <div className={`h-2 rounded ${isDark ? 'bg-zinc-700' : 'bg-slate-200'} w-4/5`} />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
