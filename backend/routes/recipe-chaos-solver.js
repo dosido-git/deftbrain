@@ -387,7 +387,7 @@ Return ONLY valid JSON:
   "readiness_emoji": "✅|🟡|🔴|🚫",
   "ingredient_check": [
     {
-      "ingredient": "ingredient name — one sentence",
+      "ingredient": "ingredient name. Nothing else.",
       "status": "have|missing|unclear",
       "critical": true or false,
       "substitute": "suggested substitute if missing — one sentence" or null,
@@ -399,7 +399,7 @@ Return ONLY valid JSON:
     {"item": "equipment needed — one sentence", "status": "have|missing|alternative", "alternative": "what to use instead — one sentence" or null}
   ],
   "technique_warnings": [
-    {"technique": "technique name — one sentence", "difficulty": "easy|moderate|tricky", "tip": "Quick explanation for their skill level — one sentence"}
+    {"technique": "technique name. Nothing else.", "difficulty": "easy|moderate|tricky", "tip": "Quick explanation for their skill level — one sentence"}
   ],
   "time_estimate": {
     "recipe_says": "what recipe claims — one sentence",

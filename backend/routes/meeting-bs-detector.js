@@ -288,21 +288,21 @@ Generate messages. Return ONLY valid JSON:
   "message_type": "${messageType}",
   "versions": [
     {
-      "label": "Direct — one sentence",
+      "label": "Direct. Nothing else.",
       "subject": "Email subject line — one sentence",
       "body": "Full message body. Ready to send. — 2-4 sentences",
       "tone": "Brief tone description — one sentence",
       "best_for": "When to use this version — one sentence"
     },
     {
-      "label": "Diplomatic — one sentence",
+      "label": "Diplomatic. Nothing else.",
       "subject": "Email subject line — one sentence",
       "body": "Softer version — 2-4 sentences",
       "tone": "Brief tone description — one sentence",
       "best_for": "When to use this version — one sentence"
     },
     {
-      "label": "Constructive — one sentence",
+      "label": "Constructive. Nothing else.",
       "subject": "Email subject line — one sentence",
       "body": "Version that proposes an alternative — 2-4 sentences",
       "tone": "Brief tone description — one sentence",
@@ -433,7 +433,7 @@ Generate a shareable report. Return ONLY valid JSON:
   "grade": "A | B | C | D | F",
   "grade_label": "Meeting Ninja | Healthy | Needs Work | Meeting Heavy | Meeting Hell",
   "key_stats": [
-    {"label": "Stat name — one sentence", "value": "Number — one sentence", "emoji": "📊", "verdict": "Good | Concerning | Bad"}
+    {"label": "Stat name. Nothing else.", "value": "Number — one sentence", "emoji": "📊", "verdict": "Good | Concerning | Bad"}
   ],
   "biggest_win": "Something they're doing well with meetings — one sentence",
   "biggest_problem": "The #1 meeting culture issue revealed by the data — one sentence",

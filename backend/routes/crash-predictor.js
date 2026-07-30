@@ -184,7 +184,7 @@ Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be 
 
   "warning_signs_present": [
     {
-      "sign": "Warning sign name — one sentence",
+      "sign": "Warning sign name. Nothing else.",
       "your_typical_timeline": "appears X days before crash — one sentence",
       "current_status": "present for X days — one sentence",
       "urgency": "critical | high | moderate | watch",
@@ -266,7 +266,7 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
   "recovery_protocol": {
     "who_to_notify": [
       {
-        "person": "Role or name if provided — one sentence",
+        "person": "Role or name if provided. Nothing else.",
         "message": "Pre-written message they can copy — 2-4 sentences",
         "when": "When to send — one sentence"
       }

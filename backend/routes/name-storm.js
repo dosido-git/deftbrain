@@ -399,7 +399,7 @@ Return ONLY valid JSON:
         {
           "name": "The Name",
           "pronunciation": "Phonetic guide or null if obvious",
-          "why_it_works": "The Name DNA — one or two sentences",
+          "why_it_works": "One or two sentences on the name's DNA: what makes it work",
           "problems": [
             {"type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue", "detail": "Specific description", "severity": "warning | caution | info"}
           ],

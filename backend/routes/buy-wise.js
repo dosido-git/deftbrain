@@ -80,7 +80,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
     "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
     "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
-    "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation. — one sentence"
+    "risk_level": "Start with exactly LOW, MEDIUM or HIGH, then an em dash, then one short sentence on the risk they will not like it"
   }` : `,"gift_analysis": null`},
 
   "fair_price": {
@@ -100,9 +100,9 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "total_cost": {
     "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [
-      {"item": "Purchase price — one sentence", "cost": "${sym}X"},
-      {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
-      {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
+      {"item": "Purchase price. Nothing else.", "cost": "${sym}X"},
+      {"item": "Essential accessory/consumable. Nothing else.", "cost": "${sym}Y/year"},
+      {"item": "Maintenance or replacement part. Nothing else.", "cost": "${sym}Z over N years"}
     ],
     "year_1_total": "Only the total amount and nothing else, for example ${sym}68. Include purchase plus first-year costs, but do not explain that here.",
     "year_5_total": "Only the total amount and nothing else, or null for short-life products. Do not explain what it covers.",
@@ -121,7 +121,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     "what_to_inspect": ["What to check when buying used — product-specific"],
     "typical_used_price": "${sym}X - ${sym}Y",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform — one sentence"}]
+    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform. Nothing else."}]
   },
 
   "warranty_returns": {
@@ -167,7 +167,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   }` : ''},
 
   "where_to_buy": [
-    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product — one sentence"}
+    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product. Nothing else."}
   ],
 
   "followup_questions": [
@@ -316,7 +316,7 @@ ${schema}`;
     "perceived_value": "Will the recipient think this cost more or less than it did? — one sentence",
     "alternatives_at_price": "2-3 alternatives at a similar price — one sentence each",
     "presentation_tip": "How to present/wrap this to maximize impact — one sentence",
-    "risk_level": "LOW / MEDIUM / HIGH — risk they won't like it. With explanation. — one sentence"
+    "risk_level": "Start with exactly LOW, MEDIUM or HIGH, then an em dash, then one short sentence on the risk they will not like it"
   },` : `
   "gift_analysis": null,`}
   "fair_price": {
@@ -332,7 +332,7 @@ ${schema}`;
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
   },` : ''}
   "where_to_buy": [
-    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product — one sentence"}
+    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product. Nothing else."}
   ],
   "followup_questions": [
     "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
@@ -345,9 +345,9 @@ ${schema}`;
   "total_cost": {
     "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [
-      {"item": "Purchase price — one sentence", "cost": "${sym}X"},
-      {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
-      {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
+      {"item": "Purchase price. Nothing else.", "cost": "${sym}X"},
+      {"item": "Essential accessory/consumable. Nothing else.", "cost": "${sym}Y/year"},
+      {"item": "Maintenance or replacement part. Nothing else.", "cost": "${sym}Z over N years"}
     ],
     "year_1_total": "Only the total amount and nothing else, for example ${sym}68. Include purchase plus first-year costs, but do not explain that here.",
     "year_5_total": "Only the total amount and nothing else, or null for short-life products. Do not explain what it covers.",
@@ -364,7 +364,7 @@ ${schema}`;
     "what_to_inspect": ["What to check when buying used — product-specific"],
     "typical_used_price": "${sym}X - ${sym}Y",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform — one sentence"}]
+    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform. Nothing else."}]
   },
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
     "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
@@ -466,20 +466,20 @@ Recommend the best option(s) within this budget. Return ONLY valid JSON:
   "top_pick": {
     "product": "Specific product name with model if applicable — one sentence",
     "price": "${sym}X",
-    "why": "Why this is the best option at this budget. Be specific. — one sentence",
+    "why": "Why this is the best option at this budget. Be specific. Nothing else.",
     "where": "Where to buy it — one sentence"
   },
   "runner_up": {
     "product": "Second best option — one sentence",
     "price": "${sym}X",
-    "why": "Why someone might prefer this over the top pick — one sentence",
+    "why": "Why someone might prefer this over the top pick. Nothing else.",
     "where": "Where to buy it — one sentence"
   },
   "stretch_pick": {
     "product": "Worth spending 15-25% more for this — one sentence",
     "price": "${sym}X",
-    "why": "What the extra money gets you. Is it worth it? — one sentence",
-    "worth_the_stretch": "YES / MAYBE / NO — with one-sentence reason — one sentence"
+    "why": "What the extra money gets you. Is it worth it?. Nothing else.",
+    "worth_the_stretch": "Start with exactly YES, MAYBE or NO, then an em dash, then one short sentence of reasoning"
   },
   "avoid": "What to specifically avoid at this price point. Name brands/models if applicable. — one sentence",
   "budget_verdict": "Is ${sym}${budget} a realistic budget for ${category}? What should they expect at this price point? — one sentence",
@@ -886,7 +886,7 @@ Return ONLY valid JSON:
 
   "line_items": [
     {
-      "item": "Line item or cost component name — one sentence",
+      "item": "Line item or cost component name. Nothing else.",
       "amount": "${sym}X or null if not broken out",
       "verdict": "fair | high | low | red_flag | info",
       "note": "Why — one specific sentence — one sentence"
@@ -895,7 +895,7 @@ Return ONLY valid JSON:
 
   "negotiable": [
     {
-      "item": "What can be negotiated — one sentence",
+      "item": "What can be negotiated. Nothing else.",
       "how_to_negotiate": "Specific tactic for THIS industry — one sentence",
       "typical_discount": "How much you can typically save, e.g. '10-15%' or '${sym}200-500' — one sentence"
     }

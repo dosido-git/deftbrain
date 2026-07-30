@@ -64,39 +64,39 @@ Return ONLY valid JSON:
     "target": "Realistic best outcome — one sentence",
     "walkaway": "Minimum acceptable — below this, walk — one sentence",
     "concession_ladder": [
-      { "order": 1, "give_up": "First thing to concede — one sentence", "costs_you": "low / medium — one sentence", "value_to_them": "high — makes you look flexible — one sentence" },
-      { "order": 2, "give_up": "Second concession — one sentence", "costs_you": "medium — one sentence", "value_to_them": "medium — one sentence" }
+      { "order": 1, "give_up": "First thing to concede — one sentence", "costs_you": "Exactly one of these and nothing else: low, medium", "value_to_them": "high — makes you look flexible — one sentence" },
+      { "order": 2, "give_up": "Second concession — one sentence", "costs_you": "medium. Nothing else.", "value_to_them": "medium — one sentence" }
     ],
     "timing": "When to have this conversation and why — one sentence",
     "setting": "Where/how to have it (in person, email, etc.) — one sentence"
   },
   "scripts": [
     {
-      "moment": "Opening the conversation — one sentence",
+      "moment": "Opening the conversation. Nothing else.",
       "say_this": "Exact words to use — one sentence",
       "why_it_works": "Brief explanation — one sentence",
       "tone": "confident / warm / matter-of-fact"
     },
     {
-      "moment": "Presenting your ask — one sentence",
+      "moment": "Presenting your ask. Nothing else.",
       "say_this": "Exact words — one sentence",
       "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "If they say no or push back — one sentence",
+      "moment": "If they say no or push back. Nothing else.",
       "say_this": "Exact words — one sentence",
       "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "Deploying your leverage — one sentence",
+      "moment": "Deploying your leverage. Nothing else.",
       "say_this": "Exact words — subtle, not threatening — one sentence",
       "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
     },
     {
-      "moment": "Closing / getting to yes — one sentence",
+      "moment": "Exactly one of these and nothing else: Closing, getting to yes",
       "say_this": "Exact words — one sentence",
       "why_it_works": "Brief explanation — one sentence",
       "tone": "tone"
@@ -223,13 +223,13 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 {
   "readiness_score": 65,
-  "readiness_label": "almost_ready / needs_work / not_ready — 2-4 words",
+  "readiness_label": "Exactly one of these and nothing else: almost_ready, needs_work, not_ready",
   "critical_gaps": [
     {
       "gap": "What they don't know yet — one sentence",
       "why_critical": "How it could hurt them — one sentence",
       "how_to_find": "Specific way to get this information — one sentence",
-      "time_needed": "5 min / 30 min / a few hours (number)"
+      "time_needed": "Exactly one of these and nothing else: 5 min, 30 min, a few hours"
     }
   ],
   "strengths": ["What they already have going for them"],
@@ -292,7 +292,7 @@ Return ONLY valid JSON:
 {
   "scenarios": [
     {
-      "likelihood": "most_likely / possible / unlikely_but_possible — one sentence",
+      "likelihood": "Exactly one of these and nothing else: most_likely, possible, unlikely_but_possible",
       "they_say": "Their likely response — exact words — one sentence",
       "subtext": "What they actually mean — one sentence",
       "your_counter": "What to say back — exact words — one sentence",

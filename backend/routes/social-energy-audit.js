@@ -50,7 +50,7 @@ Analyze these interactions and return ONLY valid JSON:
 
   "drains": [
     {
-      "situation": "Name of the interaction — one sentence",
+      "situation": "Name of the interaction. Nothing else.",
       "energy_cost": "Short signed number string, e.g. '-3' (energy before minus after)",
       "performance_tax": "Just 'X/10' — the effort level only, NO explanation (why_costly carries the reasoning)",
       "why_costly": "One sentence explaining WHY this costs so much. Be specific to the situation.",
@@ -60,7 +60,7 @@ Analyze these interactions and return ONLY valid JSON:
 
   "rechargers": [
     {
-      "situation": "Name of any interaction where energy stayed flat or increased — one sentence",
+      "situation": "Name of any interaction where energy stayed flat or increased. Nothing else.",
       "energy_effect": "+X or 0 — how it affected energy — one sentence",
       "why_good": "One sentence on why this works for them"
     }
@@ -160,7 +160,7 @@ Predict energy costs and suggest optimizations. Return ONLY valid JSON:
   "risk_level": "LIGHT WEEK | MANAGEABLE | HEAVY | OVERLOADED",
   "day_breakdown": [
     {
-      "day": "Day name — one sentence",
+      "day": "Day name. Nothing else.",
       "commitments": ["List of commitments this day"],
       "predicted_cost": "Short, just the number of points, e.g. '8'",
       "risk": "LOW | MEDIUM | HIGH",
@@ -344,11 +344,11 @@ Generate an energy forecast. Return ONLY valid JSON:
 {
   "forecast_type": "${logsStr ? 'mid-week update' : 'full week prediction'}",
   "predicted_curve": [
-    {"day": "Monday — one sentence", "predicted_energy": 8, "risk": "LOW | MEDIUM | HIGH", "note": "Short note about the day — one sentence"},
-    {"day": "Tuesday — one sentence", "predicted_energy": 6, "risk": "MEDIUM — one sentence", "note": "..."}
+    {"day": "Monday. Nothing else.", "predicted_energy": 8, "risk": "LOW | MEDIUM | HIGH", "note": "Short note about the day — one sentence"},
+    {"day": "Tuesday. Nothing else.", "predicted_energy": 6, "risk": "MEDIUM — one sentence", "note": "..."}
   ],
-  "worst_day": "Day name — why it's the hardest — one sentence",
-  "best_day": "Day name — why it's the easiest — one sentence",
+  "worst_day": "The day name, then an em dash, then one short sentence on why it is the hardest",
+  "best_day": "The day name, then an em dash, then one short sentence on why it is the easiest",
   "weekly_energy_budget": "Just the number, e.g. '65/100' — no explanation",
   "danger_zones": ["Specific combinations or sequences that will drain the most"],
   "strategic_advice": ["2-3 specific suggestions for navigating the week based on the forecast"],
@@ -409,7 +409,7 @@ Design their ideal week. Return ONLY valid JSON:
   ],
   "ideal_week": [
     {
-      "day": "Monday — one sentence",
+      "day": "Monday. Nothing else.",
       "energy_budget": "Just 'X/10' — no explanation (what_goes_here carries the detail)",
       "what_goes_here": "What types of interactions fit this day and why — one sentence",
       "avoid": "What should NOT go on this day — one sentence",

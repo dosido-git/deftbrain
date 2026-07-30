@@ -45,7 +45,7 @@ Return ONLY valid JSON:
   "trimmed_est_minutes": 0,
   "what_was_cut": [
     {
-      "section": "Name or description of what was removed — one sentence",
+      "section": "The name of what was removed, or a short description if it has no name. Nothing else",
       "reason": "Why this was the right thing to cut — one sentence"
     }
   ],

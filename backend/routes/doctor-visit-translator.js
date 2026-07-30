@@ -128,7 +128,7 @@ Return ONLY this JSON structure (NO markdown):
       "how_to_take": "Exact instructions with timing — one sentence",
       "side_effects_to_watch": ["Important side effects"],
       "interactions_to_check": ["What to ask pharmacist about interactions"],
-      "generic_available": "Yes/No and generic name if applicable — one sentence",
+      "generic_available": "Yes or No, followed by the generic name when one exists. Nothing else",
       "cost_considerations": "Typical cost range or 'Ask pharmacist about generic/discount programs' — one sentence",
       "questions_to_ask_pharmacist": ["Specific questions"]
     }
@@ -144,7 +144,7 @@ Return ONLY this JSON structure (NO markdown):
   
   "test_results_explained": [
     {
-      "test": "Test name — one sentence",
+      "test": "Test name. Nothing else.",
       "your_result": "Patient's value — one sentence",
       "normal_range": "Normal range — one sentence",
       "what_it_means": "Interpretation — one sentence",

@@ -61,7 +61,7 @@ Return ONLY valid JSON:
 
   "active_threads": [
     {
-      "thread": "Name of the plot thread — one sentence",
+      "thread": "Name of the plot thread. Nothing else.",
       "status": "Where this thread stands at the stopping point — one sentence",
       "tension": "What the unresolved question is — one sentence"
     }
@@ -110,7 +110,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "active_threads": [
     {
-      "thread": "Plot thread or thematic element — one sentence",
+      "thread": "Plot thread or thematic element. Nothing else.",
       "status": "Where it stands — one sentence",
       "tension": "The unresolved question — one sentence"
     }
@@ -164,7 +164,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "active_threads": [
     {
-      "thread": "Story or side quest thread — one sentence",
+      "thread": "Story or side quest thread. Nothing else.",
       "status": "Where it stands — one sentence",
       "tension": "Unresolved question — one sentence"
     }

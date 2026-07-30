@@ -69,7 +69,7 @@ Return ONLY valid JSON:
   "breathe": "One very short calming sentence. Gentle. — one sentence",
   "one_task": {
     "task": "THE single easiest, smallest, most concrete thing they can do right now. Not the most important — the most doable. — one sentence",
-    "time_estimate": "Very short estimate — one sentence",
+    "time_estimate": "Very short estimate. Nothing else.",
     "why": "One sentence: why this one."
   },
   "one_release": {
@@ -140,11 +140,11 @@ Return ONLY valid JSON:
   "do_first": {
     "task": "THE one specific, concrete, startable next step. — one sentence",
     "why_this_first": "Why this first. — one sentence",
-    "time_estimate": "How long — one sentence"
+    "time_estimate": "How long. Nothing else."
   },
-  "actions": [{ "task": "Specific, concrete, startable — one sentence", "deadline": "Today / This week / When you can / null — one sentence", "time_estimate": "5 min / 30 min / 1-2 hours (number)" }],
-  "decisions": [{ "decision": "The choice to make — one sentence", "what_you_need": "Info needed to decide — one sentence", "deadline": "When to decide by — one sentence" }],
-  "tell_someone": [{ "who": "Person/role — one sentence", "what": "What to communicate — one sentence", "how": "Text / call / email — one sentence" }],
+  "actions": [{ "task": "Specific, concrete, startable — one sentence", "deadline": "Exactly one of these and nothing else: Today, This week, When you can, null", "time_estimate": "Exactly one of these and nothing else: 5 min, 30 min, 1-2 hours" }],
+  "decisions": [{ "decision": "The choice to make — one sentence", "what_you_need": "Info needed to decide — one sentence", "deadline": "When to decide by. Nothing else." }],
+  "tell_someone": [{ "who": "Person/role — one sentence", "what": "What to communicate — one sentence", "how": "Exactly one of these and nothing else: Text, call, email" }],
   "worries": [{ "thought": "The worry — one sentence", "reframe": "Gentle, honest reframe. — one sentence" }],
   "ideas": ["Ideas worth capturing."],
   "not_your_problem": [{ "task": "Not theirs — one sentence", "delegate_to": "Who should handle this — one sentence", "why_not_yours": "Brief reason — one sentence" }],
@@ -204,9 +204,9 @@ Return ONLY valid JSON:
 {
   "worry": "Original worry — one sentence",
   "whats_underneath": "What it's really about. — one sentence",
-  "likelihood": { "assessment": "very unlikely / somewhat possible / legitimate concern — 1-2 sentences", "reality_check": "One grounding sentence. — one sentence" },
+  "likelihood": { "assessment": "Exactly one of these and nothing else: very unlikely, somewhat possible, legitimate concern", "reality_check": "One grounding sentence. — one sentence" },
   "if_it_happened": "What they'd actually do. Calming because it shows they'd handle it. — one sentence",
-  "hidden_task": { "found": true, "task": "Hidden task or null — one sentence", "time_estimate": "How long or null — one sentence", "relief_potential": "How much relief — one sentence" },
+  "hidden_task": { "found": true, "task": "Hidden task or null — one sentence", "time_estimate": "How long or null. Nothing else.", "relief_potential": "How much relief — one sentence" },
   "if_just_a_worry": "If no hidden task, genuine validation. — one sentence",
   "one_thing": "Single most helpful thing to do about this worry right now. — one sentence"
 }

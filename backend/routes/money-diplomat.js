@@ -461,7 +461,7 @@ Return ONLY valid JSON:
 {
   "settlement": [
     {
-      "person": "Name/description — one sentence",
+      "person": "The person's name, or a short description if no name is given. Nothing else",
       "paid_so_far": "amount paid so far, compact figure in the user's currency",
       "fair_share": "fair share, compact figure in the user's currency",
       "owes_or_owed": "their net, in the user's currency — e.g. +£20 (owes) or -£20 (is owed) — one sentence"

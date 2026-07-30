@@ -218,7 +218,7 @@ ACCURACY RULES: Never assert model-specific component standards (bottom-bracket 
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "What's actually wrong (different from what they already tried) — 1-2 sentences",
+  "diagnosis": "What's actually wrong (different from what they already tried). Nothing else.",
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentences explaining why the first fix didn't work and what the real issue likely is",
@@ -248,7 +248,7 @@ ACCURACY RULES: Never assert model-specific component standards (bottom-bracket 
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "Short, clear name for the problem — 1-2 sentences",
+  "diagnosis": "Short, clear name for the problem. Nothing else.",
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentence plain-English explanation of what's happening mechanically",

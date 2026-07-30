@@ -412,7 +412,7 @@ Return ONLY valid JSON:
   "your_options": [
     {
       "option": "accept|accept_with_boundary|push_back|table_it|walk_away",
-      "label": "Short label — one sentence",
+      "label": "Short label. Nothing else.",
       "what_to_say": "Exact words for this response — one sentence",
       "when_this_fits": "When this is the right choice — one sentence"
     }
@@ -577,7 +577,7 @@ Return ONLY valid JSON:
   "paths_forward": [
     {
       "path": "accept_and_rebuild|accept_with_boundaries|forgive_from_distance|not_yet|not_ever",
-      "label": "Human-readable label — one sentence",
+      "label": "Human-readable label. Nothing else.",
       "what_it_looks_like": "Concrete description of choosing this path — one sentence",
       "what_to_say": "Words for communicating this choice — one sentence",
       "trade_offs": "What you gain and what you risk — one sentence"
@@ -803,7 +803,7 @@ Return ONLY valid JSON:
     "problems": [
       {
         "type": "defensive | too_vague | blame_shift | over_explained | missing_ownership | conditional | minimized | premature_move_on | sorry_you_feel | too_short | weaponized_apology",
-        "label": "Human-readable label (e.g. 'Buried the apology in an excuse') — one sentence",
+        "label": "Human-readable label (e.g. 'Buried the apology in an excuse'). Nothing else.",
         "evidence": "The exact phrase or element from their apology that demonstrates this problem — one sentence",
         "why_it_landed_wrong": "Why this specific thing made the other person feel worse or unheard — one sentence"
       }

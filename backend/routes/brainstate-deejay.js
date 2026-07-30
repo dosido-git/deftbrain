@@ -56,7 +56,7 @@ OUTPUT (JSON only):
     "task": "task context if any — one sentence"
   },
   "playlist_strategy": {
-    "approach": "strategy name — one sentence",
+    "approach": "strategy name. Nothing else.",
     "phase_1": "transition strategy — one sentence",
     "phase_2": "main work strategy — one sentence",
     "phase_3": "maintenance strategy — one sentence",

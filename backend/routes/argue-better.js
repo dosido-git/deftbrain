@@ -56,7 +56,7 @@ Return ONLY valid JSON:
   "key_challenges": [{ "point": "specific challenge — one sentence", "why_strong": "why hard to dismiss — one sentence", "type": "empirical | logical | moral | practical | historical" }],
   "acknowledged_strengths": ["1-2 things their position gets right"],
   "closing_question": "One targeted question at the weakest point. — one sentence",
-  "debate_context": { "user_side": "Brief label — one sentence", "ai_side": "Brief label — one sentence", "core_tension": "Fundamental disagreement in one sentence" }
+  "debate_context": { "user_side": "Brief label. Nothing else.", "ai_side": "Brief label. Nothing else.", "core_tension": "Fundamental disagreement in one sentence" }
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     const parsed = await callClaudeWithRetry({
@@ -106,7 +106,7 @@ Return ONLY valid JSON:
 {
   "response": "Your counter-response. 2-4 paragraphs. — one sentence",
   "concessions": ["strong points acknowledged"],
-  "fallacy_flags": [{ "type": "fallacy name — one sentence", "in_text": "what triggered it — one sentence", "suggestion": "how to fix — one sentence" }],
+  "fallacy_flags": [{ "type": "fallacy name. Nothing else.", "in_text": "what triggered it — one sentence", "suggestion": "how to fix — one sentence" }],
   "pressure_point": "weakest part of their response — one sentence",
   "closing_question": "next targeted question — one sentence",
   "momentum": { "assessment": "user_stronger | ai_stronger | even | shifting", "note": "internal assessment — one sentence" }
@@ -496,7 +496,7 @@ Return ONLY valid JSON:
 {
   "correct": true/false,
   "feedback": "Specific explanation of why they were right or wrong — 1-2 sentences",
-  "the_fallacy": "The actual fallacy name — one sentence",
+  "the_fallacy": "The actual fallacy name. Nothing else.",
   "explanation": "Why this is that fallacy — 1-2 sentences",
   "how_to_fix": "How to make the same point without the fallacy — one sentence",
   "streak": ${(streak || 0)} + (correct ? 1 : 0)
@@ -611,7 +611,7 @@ Return ONLY valid JSON:
   "targeted_weaknesses": [{ "blind_spot": "which weakness you're targeting — one sentence", "how": "how your argument exploits it — one sentence" }],
   "fallacy_traps": ["arguments designed to tempt them toward their habitual fallacies — they'll need to consciously avoid them"],
   "closing_question": "A question aimed squarely at their biggest documented blind spot. — one sentence",
-  "debate_context": { "user_side": "their position — one sentence", "ai_side": "opposing — one sentence", "core_tension": "the fundamental tension — one sentence" }
+  "debate_context": { "user_side": "their position. Nothing else.", "ai_side": "opposing. Nothing else.", "core_tension": "the fundamental tension — one sentence" }
 }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);

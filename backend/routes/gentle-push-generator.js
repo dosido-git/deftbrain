@@ -460,8 +460,8 @@ Return ONLY valid JSON:
     "observation": "1 compassionate sentence about this domain — no judgment, just insight — one sentence"
   },
   "patterns": [
-    { "pattern": "Pattern name — one sentence", "insight": "What this pattern reveals about them — 1 sentence" },
-    { "pattern": "Pattern name — one sentence", "insight": "..." }
+    { "pattern": "Pattern name. Nothing else.", "insight": "What this pattern reveals about them — 1 sentence" },
+    { "pattern": "Pattern name. Nothing else.", "insight": "..." }
   ],
   "recommended_first_push": {
     "direction": "Specific suggested first push — concrete, not generic — one sentence",

@@ -51,7 +51,7 @@ Return ONLY valid JSON:
 {
   "airport_name": "Full airport name — 3-6 words",
   "airport_code": "IATA code — one sentence",
-  "city": "City name — one sentence",
+  "city": "City name. Nothing else.",
 
   "verdict": "YES|NO|RISKY",
   "verdict_emoji": "✅|❌|⚠️",
@@ -75,7 +75,7 @@ Return ONLY valid JSON:
     "visa_info": "Visa/transit requirements for this nationality at this airport. null if not applicable. — one sentence",
     "transit_options": [
       {
-        "mode": "Train / Metro / Bus / Taxi / Rideshare — 2-4 words",
+        "mode": "Exactly one of these and nothing else: Train, Metro, Bus, Taxi, Rideshare",
         "name": "Specific line or service name — 3-6 words",
         "time_minutes": 35,
         "cost_estimate": "Approx fare in the traveler's local currency — short range",
@@ -184,10 +184,10 @@ Return ONLY valid JSON:
     {
       "name": "Lounge name — 3-6 words",
       "terminal": "Terminal/concourse — one sentence",
-      "network": "Priority Pass / Amex Centurion / Airline / Independent — one sentence",
+      "network": "Exactly one of these and nothing else: Priority Pass, Amex Centurion, Airline, Independent",
       "access_methods": [
         {
-          "method": "Priority Pass / Amex Platinum / Day Pass / Airline Status — one sentence",
+          "method": "Exactly one of these and nothing else: Priority Pass, Amex Platinum, Day Pass, Airline Status",
           "eligible": true,
           "cost": "Free with card / day pass price in the traveler's local currency / etc."
         }
@@ -197,14 +197,14 @@ Return ONLY valid JSON:
       "drinks": "Bar situation — one sentence",
       "has_showers": true,
       "has_sleeping": false,
-      "crowding": "Usually crowded / Usually quiet / Peak hours busy — one sentence",
+      "crowding": "Exactly one of these and nothing else: Usually crowded, Usually quiet, Peak hours busy",
       "best_feature": "The one thing that makes this lounge worth it — one sentence",
       "worst_feature": "The main complaint — one sentence",
       "worth_day_pass": true,
       "tip": "Insider advice — one sentence"
     }
   ],
-  "best_overall": "Name of the best lounge and why — one sentence",
+  "best_overall": "The best lounge, named, plus why it wins, in one short sentence",
   "best_value": "Best for day pass purchasers — one sentence",
   "best_for_sleep": "Best if you need to rest — one sentence",
   "no_lounge_alternative": "If no lounges are accessible, what's the next best option (quiet gate area, restaurant with outlets, etc.) — one sentence"
@@ -471,7 +471,7 @@ Return ONLY valid JSON:
   "airport": "${airport}",
   "grab_before_deplaning": [
     {
-      "item": "Item name — one sentence",
+      "item": "Item name. Nothing else.",
       "why": "Why you need this for THIS specific layover — one sentence",
       "priority": "essential|recommended|nice_to_have"
     }
@@ -529,7 +529,7 @@ Return ONLY valid JSON:
   "emergency_numbers": { "local_emergency": "Number — one sentence", "airport_info": "Number — one sentence" },
   "airline_desk": "Where to find your airline's customer service desk + phone number if known — one sentence",
   "wifi": { "network_name": "WiFi network name — 3-6 words", "password": "Password or 'free/no password' — one sentence", "how_to_connect": "Any steps needed — one sentence" },
-  "currency": { "local_currency": "Name + code — one sentence", "exchange_rate_approx": "vs USD — one sentence", "atm_locations": "Where to find ATMs — one sentence", "card_acceptance": "How widely accepted are cards? — one sentence" },
+  "currency": { "local_currency": "Name + code. Nothing else.", "exchange_rate_approx": "vs USD — one sentence", "atm_locations": "Where to find ATMs — one sentence", "card_acceptance": "How widely accepted are cards? — one sentence" },
   "key_phrases": [
     { "english": "Where is gate X? — one sentence", "local": "Translation — one sentence", "pronunciation": "Phonetic guide — one sentence" }
   ],

@@ -385,7 +385,7 @@ Never place a double-quote (") character inside any JSON string value — write 
     ],
     "emotional_patterns": {
       "most_common_emotion": "Emotion — one sentence",
-      "emotional_trend": "increasing/decreasing/stable — one sentence",
+      "emotional_trend": "Exactly one of these and nothing else: increasing, decreasing, stable",
       "correlation_with_life_events": "Correlation — one sentence"
     }
   },

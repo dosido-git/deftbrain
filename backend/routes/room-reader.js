@@ -518,7 +518,7 @@ HOW BAD I THINK IT WAS: "${howBad || 'bad'}"
 NAMES RULE: never invent a proper name for anyone the user did not name — refer to unnamed people by role ("your partner", "the host") in every ready-to-say line. Return ONLY valid JSON:
 {
   "damage_check": {
-    "how_bad_really": "1-10 scale, honest. Most things people panic about are a 3. — one sentence",
+    "how_bad_really": "A single whole number from 1 to 10 and nothing else. Be honest — most things people panic about are a 3.",
     "what_they_probably_thought": "Their most likely interpretation — honest, not what the person fears. — one sentence",
     "immediate_read": "Quick, warm reality check. If it's fine, say so. If it's bad, own it. — one sentence"
   },

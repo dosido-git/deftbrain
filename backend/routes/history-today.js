@@ -109,7 +109,7 @@ Your response MUST contain ALL 3 keys: event_summary, premise_check, picks. Prov
       ],
       "key_figures": [
         {
-          "historical": "Name and role — one sentence",
+          "historical": "Name and role. Nothing else.",
           "modern_parallel": "Who occupies a similar structural position today (or 'no clear parallel') — one sentence"
         }
       ],
@@ -139,7 +139,7 @@ Return ONLY valid JSON:
   "further_reading": [
     {
       "title": "Book or article title — 3-6 words",
-      "author": "Author name — one sentence",
+      "author": "Author name. Nothing else.",
       "why": "Why this is the right thing to read next — one sentence"
     }
   ]

@@ -57,9 +57,9 @@ Respond ONLY with valid JSON in this exact format:
   "topic_tag": "A 2-3 word tag for tracking (e.g., 'Roman gladiator diets')",
   "interest_connections": ["interest1", "interest2"],
   "deeper_threads": [
-    {"label": "Thread title (compelling question format) — one sentence", "prompt_hint": "What to explore if they click Go Deeper — one sentence"},
-    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"},
-    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
+    {"label": "Thread title (compelling question format). Nothing else.", "prompt_hint": "What to explore if they click Go Deeper — one sentence"},
+    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"}
   ],
   "share_snippet": "A single punchy sentence version perfect for texting a friend — one sentence"
 }
@@ -110,8 +110,8 @@ Respond ONLY with valid JSON:
   "content": "The deeper exploration — 2-4 sentences",
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
-    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"},
-    {"label": "Thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
+    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"}
   ]
 }
 
@@ -159,7 +159,7 @@ Respond ONLY with valid JSON:
 {
   "concepts": [
     {
-      "label": "Short concept name (2-4 words)",
+      "label": "Short concept name. Nothing else.",
       "angle": "Why this is interesting — one sentence teaser",
       "spin_prompt": "The exact topic string to feed into a new spin (specific enough to get a focused result) — one sentence"
     }
@@ -219,8 +219,8 @@ Respond ONLY with valid JSON:
   "content": "The deeper exploration — builds on the chain, goes somewhere new — 2-4 sentences",
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
-    {"label": "Next thread title (question format) — one sentence", "prompt_hint": "What to explore — one sentence"},
-    {"label": "Next thread title — one sentence", "prompt_hint": "What to explore — one sentence"}
+    {"label": "Next thread title (question format). Nothing else.", "prompt_hint": "What to explore — one sentence"},
+    {"label": "Next thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"}
   ]
 }
 
@@ -387,7 +387,7 @@ Respond ONLY with valid JSON:
   "mind_blown": "One 'whoa' sentence specific to this step — one sentence",
   "concepts": [
     {
-      "label": "Spinnable concept from this step (2-4 words)",
+      "label": "Spinnable concept from this step. Nothing else.",
       "angle": "Why this is interesting — one sentence",
       "prompt_hint": "Topic string for a new spin — one sentence"
     }

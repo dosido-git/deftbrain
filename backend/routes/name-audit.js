@@ -130,7 +130,7 @@ Return ONLY this JSON (no markdown, no preamble):
   "phonetic_profile": { "syllables": "e.g. LOO-mly, 2 syllables — one sentence", "mouth_feel": "One sentence", "sound_psychology": "One sentence", "accent_notes": "One sentence or None" },
   "memorability": { "score": 7, "day_after": true, "tell_a_friend": true, "phone": true, "drunk": false, "shout": true, "notes": "One sentence on weakest test" },
   "radio_test": { "pass": true, "likely_misspellings": ["wrong1"], "notes": "One sentence" },
-  "visual_analysis": { "url_form": "name.com — one sentence", "logo_potential": "One sentence", "issues": "Specific trap or None — one sentence" },
+  "visual_analysis": { "url_form": "name.com. Nothing else.", "logo_potential": "One sentence", "issues": "Specific trap or None — one sentence" },
   "global_language_flags": [
     { "language": "Spanish — one sentence", "issue": "What it means or sounds like — one sentence", "severity": "caution | problem" }
   ],
@@ -329,7 +329,7 @@ Respond in JSON:
   "variations": [
     {
       "name": "ImprovedName — 3-6 words",
-      "pronunciation": "im-PROOVD-name — one sentence",
+      "pronunciation": "im-PROOVD-name. Nothing else.",
       "why_its_better": "Clear explanation of why this variation is stronger — one sentence",
       "what_it_fixes": "Specific weaknesses/problems this addresses — one sentence",
       "tradeoff": "Any downside of this change, or null if none — one sentence",
@@ -413,7 +413,7 @@ Return ONLY this JSON:
       "description": "Early adopter, design-savvy, values aesthetics — 1-2 sentences",
       "reaction": "Their genuine, in-voice reaction to hearing this name for the first time — one sentence",
       "would_they_remember": "Yes/No/Maybe + brief why — one sentence",
-      "trust_level": "High/Medium/Low — what the name signals to them about credibility — one sentence"
+      "trust_level": "Start with exactly High, Medium or Low, then an em dash, then one short sentence on what the name signals about credibility"
     }
   ],
   "consensus": "1-2 sentence summary of the overall audience sentiment. Where do most personas agree? What's the pattern?"

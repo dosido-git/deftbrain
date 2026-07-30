@@ -63,20 +63,20 @@ Return ONLY valid JSON. Format:
 {
   "load_assessment": "Brief overall assessment (1 sentence) — 1-2 sentences",
   "separate_these": [
-    { "item": "item name — one sentence", "reason": "why it should be separate — one sentence", "risk": "high|medium" }
+    { "item": "item name. Nothing else.", "reason": "why it should be separate — one sentence", "risk": "high|medium" }
   ],
   "safe_together": ["items that can be washed together"],
   "recommended_settings": {
-    "cycle": "Normal/Delicate/Heavy Duty/etc — one sentence",
-    "temperature": "Cold/Warm/Hot (number)",
-    "spin": "Low/Medium/High — one sentence",
+    "cycle": "Normal/Delicate/Heavy Duty/etc. Nothing else.",
+    "temperature": "Exactly one of these and nothing else: Cold, Warm, Hot",
+    "spin": "Exactly one of these and nothing else: Low, Medium, High",
     "detergent_notes": "Any detergent advice — one sentence"
   },
   "drying_advice": [
-    { "item": "item or group — one sentence", "method": "specific drying instructions — one sentence", "risk": "high|low" }
+    { "item": "item or group. Nothing else.", "method": "specific drying instructions — one sentence", "risk": "high|low" }
   ],
   "pre_treatment": [
-    { "item": "item name — one sentence", "tip": "pre-treatment advice if needed — one sentence" }
+    { "item": "item name. Nothing else.", "tip": "pre-treatment advice if needed — one sentence" }
   ],
   "time_estimate": {
     "wash_minutes": 35,
@@ -134,13 +134,13 @@ Return ONLY valid JSON. Format:
     { "code": "exact code from the CARE SYMBOL CODES list below — pick the closest match", "name": "Symbol name — 3-6 words", "meaning": "Plain English — what to do — one sentence" }
   ],
   "recommended_settings": {
-    "cycle": "Based on the label — one sentence",
-    "temperature": "Based on the label (number)",
-    "spin": "Based on the label — one sentence",
+    "cycle": "Based on the label. Nothing else.",
+    "temperature": "Based on the label. Nothing else.",
+    "spin": "Based on the label. Nothing else.",
     "detergent_notes": "Any relevant notes — one sentence"
   },
   "drying_advice": [
-    { "item": "this garment — one sentence", "method": "Drying instructions from label — one sentence", "risk": "high or low — one sentence" }
+    { "item": "this garment. Nothing else.", "method": "The drying instructions from the label, in one short sentence", "risk": "high or low — one sentence" }
   ],
   "quick_tip": "One practical tip based on this garment type — one sentence"
 }
@@ -198,7 +198,7 @@ Return ONLY valid JSON. Format:
   ],
   "do_not": ["Don't do X — reason", "Don't do Y — reason"],
   "if_stain_is_set": "Alternative approach if the stain is already dried/set (1-2 sentences)",
-  "success_probability": "Honest assessment: High/Medium/Low — brief explanation — one sentence",
+  "success_probability": "Start with exactly High, Medium or Low, then an em dash, then a brief honest explanation in one short sentence",
   "pro_tip": "One bonus tip (1 sentence) — one sentence"
 }`
       });

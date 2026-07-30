@@ -47,7 +47,7 @@ Return ONLY valid JSON:
   },
   "factors": [
     {
-      "factor": "Noise / Crowds / Lighting / Smells / Visual Clutter / Temperature — one sentence",
+      "factor": "Exactly one of these and nothing else: Noise, Crowds, Lighting, Smells, Visual Clutter, Temperature",
       "prediction": "Specific prediction for this time (e.g., 'Moderate — background music + espresso machine, ~65dB') — one sentence",
       "concern_level": "low | medium | high",
       "peak_zones": ["Areas where this factor is worst"],
@@ -62,13 +62,13 @@ Return ONLY valid JSON:
   },
   "layout_intel": {
     "quietest_spots": [
-      { "area": "Area name — one sentence", "where": "How to find it — one sentence", "why_quiet": "Why it's calm — one sentence" }
+      { "area": "Area name. Nothing else.", "where": "How to find it — one sentence", "why_quiet": "Why it's calm — one sentence" }
     ],
     "exits": [
-      { "name": "Exit name — 3-6 words", "location": "Where it is — one sentence", "note": "Any relevant detail — one sentence" }
+      { "name": "Exit name — 3-6 words", "location": "Where it is. Nothing else.", "note": "Any relevant detail — one sentence" }
     ],
     "restrooms": [
-      { "location": "Where", "note": "Private/accessible/etc — one sentence" }
+      { "location": "Where", "note": "One short note about the space, such as whether it is private or step-free" }
     ],
     "fresh_air": [
       { "spot": "Where to step outside — one sentence", "note": "Covered? Seating? — one sentence" }
@@ -84,7 +84,7 @@ Return ONLY valid JSON:
     {
       "situation": "What you might need — one sentence",
       "script": "Exact words to say — 2-4 sentences",
-      "likelihood": "high / medium / low — one sentence"
+      "likelihood": "Exactly one of these and nothing else: high, medium, low"
     }
   ],
   "check_in_prompts": [
@@ -146,14 +146,14 @@ Return ONLY valid JSON:
   "alternative_places": [
     {
       "name": "Alternative location name — 3-6 words",
-      "type": "What kind of place — one sentence",
+      "type": "What kind of place. Nothing else.",
       "why_better": "Why it might be less intense — one sentence",
       "trade_off": "What you give up by going here instead — one sentence"
     }
   ],
   "skip_it_options": [
     {
-      "option": "Online/delivery/other alternative — one sentence",
+      "option": "Online/delivery/other alternative. Nothing else.",
       "how": "How to do it — one sentence",
       "note": "Any relevant detail — one sentence"
     }
@@ -321,7 +321,7 @@ Return ONLY valid JSON:
   "optimal_order": [
     {
       "order": 1,
-      "location": "Stop name — one sentence",
+      "location": "Stop name. Nothing else.",
       "place_type": "Type",
       "intensity": "low / moderate / high",
       "cumulative_energy": "fresh | fine | draining | depleted",
@@ -334,7 +334,7 @@ Return ONLY valid JSON:
   "breaks": [
     {
       "after_stop": 1,
-      "type": "quick_reset / proper_break / meal_break — one sentence",
+      "type": "Exactly one of these and nothing else: quick_reset, proper_break, meal_break",
       "duration": "5-10 min",
       "suggestion": "What to do during break — one sentence"
     }
@@ -391,16 +391,16 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 {
   "essentials": [
-    { "item": "Item name — one sentence", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have" }
+    { "item": "Item name. Nothing else.", "why": "Why for this specific trip — one sentence", "priority": "must_have / nice_to_have" }
   ],
   "comfort_items": [
-    { "item": "Item name — one sentence", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have" }
+    { "item": "Item name. Nothing else.", "why": "Why it helps with their specific concerns — one sentence", "priority": "must_have / nice_to_have" }
   ],
   "just_in_case": [
-    { "item": "Item name — one sentence", "why": "When you might need it — one sentence" }
+    { "item": "Item name. Nothing else.", "why": "When you might need it — one sentence" }
   ],
   "car_stash": [
-    { "item": "Item to keep in the car — one sentence", "why": "For recovery after — one sentence" }
+    { "item": "Item to keep in the car. Nothing else.", "why": "For recovery after — one sentence" }
   ],
   "quick_note": "One practical packing tip for this type of outing — one sentence"
 }

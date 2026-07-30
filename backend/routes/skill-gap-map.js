@@ -1554,7 +1554,7 @@ Return ONLY valid JSON:
   ],
   "mentorship_structure": {
     "frequency": "How often to meet — and why more than monthly is usually too much — short phrase",
-    "format": "Coffee/video/async — what works best for career transition mentoring — 2-4 words",
+    "format": "Start with exactly Coffee, video or async, then an em dash, then two to four words on why it suits career-transition mentoring",
     "duration": "How long the mentorship should last — short phrase"
   },
   "alternative_to_formal_mentor": "If you can't find a formal mentor, here's how to get 80% of the value through other means — one sentence"

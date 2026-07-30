@@ -147,7 +147,7 @@ Return ONLY valid JSON (no markdown, no preamble):
     "security_deposit": "deposit amount — one sentence",
     "total_move_in_cost": "all upfront costs combined (number)",
     "monthly_fees_beyond_rent": [
-      { "fee": "fee name — one sentence", "amount": "fee amount in the user's local currency" }
+      { "fee": "fee name. Nothing else.", "amount": "fee amount in the user's local currency" }
     ],
     "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months — one sentence",
     "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
@@ -165,35 +165,35 @@ Return ONLY valid JSON (no markdown, no preamble):
   },
   "red_flags": [
     {
-      "lease_reference": "Section/paragraph/page where this clause appears — one sentence",
+      "lease_reference": "Section/paragraph/page where this clause appears. Nothing else.",
       "clause_text": "exact clause from the lease — one sentence",
       "concern": "the problem and why it hurts the tenant — one sentence",
-      "legal_status": "illegal / unenforceable / exploitative — one sentence",
+      "legal_status": "Exactly one of these and nothing else: illegal, unenforceable, exploitative",
       "specific_law": "exact statute or code section — one sentence",
       "your_rights": "what the law actually allows and the tenant's rights — one sentence",
-      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence",
+      "negotiability": "Exactly one of these and nothing else: likely negotiable, possible with leverage, non-negotiable standard",
       "negotiation_script": "specific language to use when pushing back — 2 short sentences"
     }
   ],
   "yellow_flags": [
     {
-      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "lease_reference": "Section/paragraph/page reference. Nothing else.",
       "clause_text": "clause text — one sentence",
       "concern": "the issue and its potential risk — one sentence",
       "questions_to_ask": ["specific questions to ask landlord"],
-      "negotiability": "likely negotiable / possible with leverage / non-negotiable standard — one sentence"
+      "negotiability": "Exactly one of these and nothing else: likely negotiable, possible with leverage, non-negotiable standard"
     }
   ],
   "green_flags": [
     {
-      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "lease_reference": "Section/paragraph/page reference. Nothing else.",
       "clause_text": "good clause from the lease — one sentence",
       "why_good": "why this protects the tenant — one sentence"
     }
   ],
   "unenforceable_clauses": [
     {
-      "lease_reference": "Section/paragraph/page reference — one sentence",
+      "lease_reference": "Section/paragraph/page reference. Nothing else.",
       "clause_text": "clause that cannot be enforced — one sentence",
       "specific_law": "statute making it unenforceable — one sentence",
       "explanation": "why this is void/unenforceable — one sentence",
@@ -230,8 +230,8 @@ Return ONLY valid JSON (no markdown, no preamble):
   },
   "resources": [
     {
-      "resource": "organization name or type — one sentence",
-      "type": "tenant union / legal aid / housing authority / mediation / emergency housing — one sentence",
+      "resource": "organization name or type. Nothing else.",
+      "type": "Exactly one of these and nothing else: tenant union, legal aid, housing authority, mediation, emergency housing",
       "why_useful": "what they can help with and how to find them — one sentence"
     }
   ]
