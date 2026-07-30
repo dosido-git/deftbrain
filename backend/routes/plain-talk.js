@@ -55,7 +55,57 @@ router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? `\n${factsBlock}\nLEGAL CURRENCY: contract law changed in several jurisdictions after 2022 (auto-renewal, cancellation rights). For any legal claim not covered by a VERIFIED block above, state the rule's effective date if you know it, or advise the reader to verify the current rule — never present remembered law as settled.`
       : '';
 
-    const prompt = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+    // Parallel split (latency): the mega-schema single call generated ~12k
+    // output tokens serially (EN cold 218s). Split into two calls with
+    // DISJOINT top-level keys — "sections" (carries the whole document,
+    // verbatim + translation) vs everything else — run via Promise.all and
+    // merged back into the ORIGINAL response shape. Frontend unchanged.
+    const promptSections = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+
+ANALYZE THIS TEXT:
+---
+${trimmed}
+---
+${typeHint}${focusHint}${legalHint}
+
+INSTRUCTIONS:
+
+1. AUTO-DETECT the text type if not specified. Categories: legal, medical, academic, financial, technical, literary, political, bureaucratic, scientific, general.
+
+2. Produce the complete section-by-section plain-language translation:
+
+Return ONLY valid JSON (no markdown, no code fences, no preamble):
+
+{
+  "sections": [
+    {
+      "id": "sec_1",
+      "original": "The exact original text of this section (preserve verbatim)",
+      "translation": "Plain-English translation of this section — clear, conversational, no jargon",
+      "title": "Short descriptive title for this section",
+      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
+      "importance": "high|medium|low",
+      "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
+    }
+  ]
+}
+
+CRITICAL RULES:
+- Your response MUST contain ALL 1 keys: sections.
+- "sections" MUST cover the ENTIRE text — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
+- "original" in each section must be VERBATIM from the input text — do not paraphrase. ONE permitted deviation: replace any double-quote characters from the source with single quotes (') so the JSON stays valid.
+- "translation" must be genuinely plain — imagine explaining to a smart 14-year-old
+- "importance" should be "high" for anything that creates obligations, costs, risks, or deadlines
+- If the text is literary/creative, adapt: "purpose" becomes narrative function, "flags" becomes literary devices
+- For medical text: flag anything requiring patient action, consent implications, or risk disclosures.
+- For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations).
+- For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- Be thorough but never pad — only include what's genuinely useful
+- LIMITS: at most 12 sections. Keep short fields to one concise sentence; section "original" and "translation" are the exception — they carry the actual document and must stay complete.
+- Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
+- Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    const promptAnalysis = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
 ---
@@ -89,17 +139,6 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
     "action_items": ["Things the reader should DO based on this text"],
     "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
   },
-  "sections": [
-    {
-      "id": "sec_1",
-      "original": "The exact original text of this section (preserve verbatim)",
-      "translation": "Plain-English translation of this section — clear, conversational, no jargon",
-      "title": "Short descriptive title for this section",
-      "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
-      "importance": "high|medium|low",
-      "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
-    }
-  ],
   "structure": {
     "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
     "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
@@ -123,26 +162,36 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 }
 
 CRITICAL RULES:
-- "sections" MUST cover the ENTIRE text — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
-- "original" in each section must be VERBATIM from the input text — do not paraphrase. ONE permitted deviation: replace any double-quote characters from the source with single quotes (') so the JSON stays valid.
-- "translation" must be genuinely plain — imagine explaining to a smart 14-year-old
-- "importance" should be "high" for anything that creates obligations, costs, risks, or deadlines
-- If the text is literary/creative, adapt: "purpose" becomes narrative function, "flags" becomes literary devices, "persuasion_techniques" becomes style/voice analysis
+- Your response MUST contain ALL 9 keys: detected_type, detected_type_label, confidence, reading_level, overview, structure, specialist_suggestion, type_insights, jargon_glossary.
+- If the text is literary/creative, adapt: "persuasion_techniques" becomes style/voice analysis
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
 - For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
 - "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
 - "jargon_glossary" should include 5-15 domain-specific terms used in the text
 - Be thorough but never pad — only include what's genuinely useful
-- LIMITS: at most 12 sections and at most 15 jargon_glossary terms. Keep short fields to one concise sentence; section "original" and "translation" are the exception — they carry the actual document and must stay complete.
+- LIMITS: at most 15 jargon_glossary terms. Keep short fields to one concise sentence.
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
 - Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 12000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'plain-talk' });
+    // Two half-size generations in parallel ≈ halve wall-clock. max_tokens
+    // split 7500/4500 (sum = original 12000): "sections" carries the document
+    // twice (verbatim + translation); analysis half measured ~3.2-3.4k tokens
+    // on the probe doc (EN/DE) — 3000 truncated it, 4500 leaves DE headroom.
+    const [sectionsHalf, analysisHalf] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 7500,
+        messages: [{ role: 'user', content: promptSections }]
+      }, { label: 'plain-talk' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        messages: [{ role: 'user', content: promptAnalysis }]
+      }, { label: 'plain-talk-analysis' })
+    ]);
+    // Disjoint top-level keys — merge back into the original response shape.
+    const parsed = { ...sectionsHalf, ...analysisHalf };
     // full_translation is no longer model-generated (it fully duplicated the
     // per-section translations, ~tripling output size and hanging real-sized
     // documents — audit 2026-07-19). Sections must cover the entire text, so

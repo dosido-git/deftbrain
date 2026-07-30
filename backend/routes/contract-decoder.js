@@ -29,10 +29,7 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     ? `\nPrioritize these areas: ${focusAreas.join(', ')}`
     : '';
 
-  const systemPrompt = withLanguage(
-    `You are an expert contract attorney reviewing documents on behalf of the signing party — not the party that drafted the contract. Your goal is to protect the signer by identifying clauses that are unfair, unusual, high-risk, or commonly negotiated. You are precise and specific: you quote actual clause text, cite specific problems, and give concrete negotiation asks. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object. Never place a double-quote (") character inside any JSON string value — in the quote field and everywhere else, replace inner quote marks with single quotes, or the JSON breaks.`,
-    userLanguage
-  );
+  const SYSTEM_BASE = `You are an expert contract attorney reviewing documents on behalf of the signing party — not the party that drafted the contract. Your goal is to protect the signer by identifying clauses that are unfair, unusual, high-risk, or commonly negotiated. You are precise and specific: you quote actual clause text, cite specific problems, and give concrete negotiation asks. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object. Never place a double-quote (") character inside any JSON string value — in the quote field and everywhere else, replace inner quote marks with single quotes, or the JSON breaks.`;
 
   // Grounded facts PRE-PASS (shared lib/groundedFacts.js pattern + cache):
   // the 2026-07-23 audit showed the hedge alone misses changed law (a planted
@@ -46,27 +43,31 @@ Return ONLY valid JSON:
 { "jurisdiction": "Country/region", "verified": [{ "topic": "short slug", "rule": "The current rule in one sentence with the numeric limit", "statute": "Statute name/number", "effective": "Effective date or 'long-standing'", "source": "Domain verified against" }] }`,
     render: (cleanFacts) => {
       if (Array.isArray(cleanFacts.verified) && cleanFacts.verified.length) {
-        return `\nVERIFIED CURRENT LAW (web-checked today for ${cleanFacts.jurisdiction || userRegion || 'the stated region'}) — these figures OVERRIDE your training knowledge; use them verbatim and check every clause against them:\n` +
+        return `\nVERIFIED CURRENT LAW (web-checked today for ${cleanFacts.jurisdiction || userRegion || 'the stated region'}) — these figures OVERRIDE your training knowledge; use them verbatim wherever they are relevant to what this prompt asks for:\n` +
           cleanFacts.verified.map(f => `- [${f.topic}] ${f.rule} (${f.statute}, ${f.effective}; source: ${f.source})`).join('\n') + '\n';
       }
       return '';
     },
   });
 
-  const prompt = `Review this ${typeName} and identify clauses the signer should know about.
-
-LEGAL FIGURES: laws change and your knowledge may be stale — when citing a statute or numeric legal limit, note its effective date if known and advise the signer to verify current law; never present a remembered figure as a verified hard limit.
+  // Shared context/document block — identical in both parallel prompts
+  // (input tokens are cheap; output tokens generate serially, so two
+  // half-size generations in parallel ≈ halve wall-clock).
+  const sharedContext = `LEGAL FIGURES: laws change and your knowledge may be stale — when citing a statute or numeric legal limit, note its effective date if known and advise the signer to verify current law; never present a remembered figure as a verified hard limit.
 ${verifiedLawBlock}${context ? `\nSigner's situation: ${context}` : ''}${focusList}
 
 Contract text:
 ---
 ${contractText.trim()}
----
+---`;
+
+  const clausesPrompt = `Review this ${typeName} and identify clauses the signer should know about.
+
+${sharedContext}
 
 Return ONLY valid JSON with this exact structure:
 {
   "overall_risk": "high" | "medium" | "low",
-  "overall_summary": <2-3 sentence plain-English summary of the contract's most important concerns for the signer>,
   "red_flags_count": <integer — count of high-risk clauses only>,
   "clauses": [
     {
@@ -78,22 +79,47 @@ Return ONLY valid JSON with this exact structure:
       "what_to_do": <specific recommended action — e.g. "Request a liability cap equal to fees paid", "Strike this clause entirely">,
       "negotiate": <specific replacement language or ask — null if not negotiable or standard>
     }
-  ],
+  ]
+}
+
+Your response MUST contain ALL 3 keys: overall_risk, red_flags_count, clauses. Order clauses by risk_level descending (high first). Include at most 8 clauses (the most important — skip genuinely boilerplate, fair clauses). Be specific — quote actual text (with inner quote marks replaced by single quotes), cite actual problems. Return ONLY the JSON object.`;
+
+  const summaryPrompt = `Review this ${typeName} and identify what the signer should know before signing.
+
+${sharedContext}
+
+Return ONLY valid JSON with this exact structure:
+{
+  "overall_summary": <2-3 sentence plain-English summary of the contract's most important concerns for the signer>,
   "missing_protections": [<protection standard for this contract type that is absent — be specific>],
   "before_you_sign": [<concrete action to take before signing — max 5 items>]
 }
 
-Order clauses by risk_level descending (high first). Include at most 8 clauses (the most important — skip genuinely boilerplate, fair clauses) and at most 6 missing_protections. Be specific — quote actual text (with inner quote marks replaced by single quotes), cite actual problems. Return ONLY the JSON object.`;
+Your response MUST contain ALL 3 keys: overall_summary, missing_protections, before_you_sign. Include at most 5 missing_protections and at most 4 before_you_sign items. Be specific — cite actual problems. Keep every list item to ONE concise sentence; clause-by-clause analysis is handled separately, so do not reproduce it here. Keep the ENTIRE response under 300 words — a short, complete answer beats a long truncated one. Return ONLY the JSON object.`;
 
   try {
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      // 6000 (the German-era fix) truncated every Arabic call; verbatim quote
-      // excerpts × non-Latin scripts need more headroom — 2026-07-23 audit.
-      max_tokens: 9000,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'contract-decoder' });
+    // Parallel split (proven pattern): clauses half is the bulk of the output
+    // and carries the verbatim quote excerpts, so it keeps most of the token
+    // budget. 6500 + 2500 = 9000 — the Arabic-headroom total from the
+    // 2026-07-23 audit (6000 truncated every Arabic call), never more.
+    // (Summary half kept truncating at 2000/2500/3000 in DE — the verified-law
+    // block lures it into long legal analysis; the 300-word prompt cap plus
+    // 3500 headroom closes it. 5500 + 3500 = 9000, never more than pre-split.)
+    const [clausesHalf, summaryHalf] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 5500,
+        system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: clausesPrompt }],
+      }, { label: 'contract-decoder-clauses' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: summaryPrompt }],
+      }, { label: 'contract-decoder-summary' }),
+    ]);
+    const parsed = { ...summaryHalf, ...clausesHalf };
 
     const VALID_RISKS = ['high', 'medium', 'low'];
     if (!VALID_RISKS.includes(parsed?.overall_risk)) {
@@ -109,6 +135,7 @@ Order clauses by risk_level descending (high first). Include at most 8 clauses (
       before_you_sign:      Array.isArray(parsed.before_you_sign) ? parsed.before_you_sign : [],
     }));
   } catch (err) {
+    console.error('[contract-decoder] Error:', err.message);
     if (!res.headersSent) {
       res.status(500).json({ error: 'Analysis failed. Please try again.' });
     }

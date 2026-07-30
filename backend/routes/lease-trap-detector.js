@@ -77,7 +77,13 @@ router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
     const systemPrompt = 'You are an expert tenant rights attorney with deep knowledge of state and local landlord-tenant law.';
 
-    const prompt = `You are analyzing a rental lease agreement.
+    // PARALLEL SPLIT (latency): one 10000-token mega-schema call ran ~143s cold /
+    // 111s warm — output tokens generate serially, so two half-size schemas with
+    // DISJOINT top-level keys generated in parallel roughly halve wall-clock.
+    // Merged response is the ORIGINAL shape; frontend needs zero changes.
+    // negotiation_strategy stays in the same call as red/yellow flags because it
+    // curates across them (cross-item dependency).
+    const sharedContext = `You are analyzing a rental lease agreement.
 
 LEASE TYPE: ${leaseType}
 LOCATION: ${location}
@@ -127,13 +133,11 @@ RESOURCES FOR ${location}:
 - The most useful tenant organizations (tenant union / legal aid / housing authority / mediation)
 - Do NOT invent specific phone numbers or URLs. Name the type of organization and how to find it (e.g., "search '[city] tenant rights organization'") unless you are confident a specific detail is current and correct.
 
-═══════════════════════════════════════════
-OUTPUT FORMAT
-═══════════════════════════════════════════
+`;
 
-Return ONLY valid JSON (no markdown, no preamble):
-
-{
+    // Sub-schemas below are EXACT copies of the original mega-schema key blocks
+    // (only regrouped) — do not re-word; the frontend renders these fields verbatim.
+    const schemaA = `{
   "overall_assessment": {
     "risk_level": "high | medium | low",
     "major_concerns_count": number,
@@ -141,27 +145,6 @@ Return ONLY valid JSON (no markdown, no preamble):
     "jurisdiction_type": "tenant-favorable | landlord-favorable | neutral",
     "rent_control_applicable": true/false,
     "rent_control_details": "details if applicable, null otherwise — one sentence"
-  },
-  "financial_summary": {
-    "monthly_rent": "base rent amount from lease — one sentence",
-    "security_deposit": "deposit amount — one sentence",
-    "total_move_in_cost": "all upfront costs combined (number)",
-    "monthly_fees_beyond_rent": [
-      { "fee": "fee name. Nothing else.", "amount": "fee amount in the user's local currency" }
-    ],
-    "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months — one sentence",
-    "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
-    "financial_red_flags": ["brief financial concerns"]
-  },
-  "security_deposit_analysis": {
-    "lease_deposit_amount": "what the lease charges (number)",
-    "legal_maximum": "maximum allowed by law in ${location} — one sentence",
-    "is_over_limit": true/false,
-    "interest_required": true/false,
-    "return_timeline_days": number,
-    "return_timeline_law": "specific statute — one sentence",
-    "walkthrough_required": true/false,
-    "issues_found": ["deposit-related problems in this lease, including deduction concerns"]
   },
   "red_flags": [
     {
@@ -191,6 +174,41 @@ Return ONLY valid JSON (no markdown, no preamble):
       "why_good": "why this protects the tenant — one sentence"
     }
   ],
+  "negotiation_strategy": {
+    "opening_email": "email/letter opening to send to landlord — 2-3 short sentences",
+    "key_points": ["prioritized list of negotiation points"],
+    "stand_firm_on": ["non-negotiable items"],
+    "if_they_say_scripts": [
+      {
+        "landlord_says": "common landlord pushback — one sentence",
+        "you_respond": "effective response — one sentence"
+      }
+    ]
+  }
+}`;
+
+    const schemaB = `{
+  "financial_summary": {
+    "monthly_rent": "base rent amount from lease — one sentence",
+    "security_deposit": "deposit amount — one sentence",
+    "total_move_in_cost": "all upfront costs combined (number)",
+    "monthly_fees_beyond_rent": [
+      { "fee": "fee name. Nothing else.", "amount": "fee amount in the user's local currency" }
+    ],
+    "annual_extra_costs": "estimated total fees/charges beyond rent over 12 months — one sentence",
+    "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
+    "financial_red_flags": ["brief financial concerns"]
+  },
+  "security_deposit_analysis": {
+    "lease_deposit_amount": "what the lease charges (number)",
+    "legal_maximum": "maximum allowed by law in ${location} — one sentence",
+    "is_over_limit": true/false,
+    "interest_required": true/false,
+    "return_timeline_days": number,
+    "return_timeline_law": "specific statute — one sentence",
+    "walkthrough_required": true/false,
+    "issues_found": ["deposit-related problems in this lease, including deduction concerns"]
+  },
   "unenforceable_clauses": [
     {
       "lease_reference": "Section/paragraph/page reference. Nothing else.",
@@ -217,17 +235,6 @@ Return ONLY valid JSON (no markdown, no preamble):
       "negotiation_strategy": "how to push back on this fee — one sentence"
     }
   ],
-  "negotiation_strategy": {
-    "opening_email": "email/letter opening to send to landlord — 2-3 short sentences",
-    "key_points": ["prioritized list of negotiation points"],
-    "stand_firm_on": ["non-negotiable items"],
-    "if_they_say_scripts": [
-      {
-        "landlord_says": "common landlord pushback — one sentence",
-        "you_respond": "effective response — one sentence"
-      }
-    ]
-  },
   "resources": [
     {
       "resource": "organization name or type. Nothing else.",
@@ -235,9 +242,9 @@ Return ONLY valid JSON (no markdown, no preamble):
       "why_useful": "what they can help with and how to find them — one sentence"
     }
   ]
-}
+}`;
 
-CRITICAL RULES:
+    const criticalRules = `CRITICAL RULES:
 - Every flag MUST include a lease_reference citing the section, paragraph, page, or clause number
 - Cite SPECIFIC laws and statutes for ${location}
 - Every red flag MUST include the specific law that applies
@@ -248,27 +255,68 @@ CRITICAL RULES:
 - ${NO_QUOTE_RULE}
 - Return ONLY valid JSON.`;
 
-    contentBlocks.push({ type: 'text', text: prompt });
+    const outputHeader = `═══════════════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════════════
 
+Return ONLY valid JSON (no markdown, no preamble):`;
+
+    const promptA = `${sharedContext}
+
+${outputHeader}
+
+${schemaA}
+
+Your response MUST contain ALL 5 top-level keys: overall_assessment, red_flags, yellow_flags, green_flags, negotiation_strategy.
+
+${criticalRules}`;
+
+    const promptB = `${sharedContext}
+
+${outputHeader}
+
+${schemaB}
+
+Your response MUST contain ALL 6 top-level keys: financial_summary, security_deposit_analysis, unenforceable_clauses, missing_protections, unusual_fees, resources.
+
+${criticalRules}`;
+
+    // Grounded VERIFIED CURRENT TENANT LAW block is appended to BOTH split
+    // prompts; its override rule lives in the shared LEGAL RESEARCH REQUIREMENTS
+    // text, which both prompts also carry.
     const verifiedLawBlock = await groundTenantLawFacts({ location, userLanguage });
-    if (verifiedLawBlock) {
-      const li = contentBlocks.length - 1;
-      contentBlocks[li] = { type: 'text', text: contentBlocks[li].text + verifiedLawBlock };
-    }
+
+    // contentBlocks (optional PDF document block + instruction text) is shared by
+    // both calls; each call appends its own prompt as the final text block — same
+    // array shape as the original single call. withLanguage does string
+    // interpolation, which would stringify the array and destroy the PDF for
+    // non-English users. The output-language directive already lives in `system` below.
+    const messagesFor = (promptText) => [{
+      role: 'user',
+      content: [...contentBlocks, { type: 'text', text: promptText + verifiedLawBlock }],
+    }];
 
     let parsed;
     try {
-      parsed = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        // 7000 truncated on EVERY non-Latin-script call (DE borderline, AR/ZH 100%
-        // fail — 2026-07-23 audit): the schema caps were sized for English tokens.
-        max_tokens: 10000,
-        // contentBlocks is an array (PDF document block + text block). withLanguage does
-        // string interpolation, which would stringify the array and destroy the PDF for
-        // non-English users. The output-language directive already lives in `system` above.
-        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: contentBlocks }],
-      }, { label: 'lease-trap-detector' });
+      const [core, extras] = await Promise.all([
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          // Single-call budget was 10000 (7000 truncated on EVERY non-Latin-script
+          // call — 2026-07-23 audit). Split halves get 5000 each; sum unchanged.
+          max_tokens: 5000,
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          messages: messagesFor(promptA),
+        }, { label: 'lease-trap-detector-core' }),
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 5000,
+          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+          messages: messagesFor(promptB),
+        }, { label: 'lease-trap-detector-financial' }),
+      ]);
+      // Top-level keys are disjoint across the two schemas — merging reconstructs
+      // the original response shape exactly.
+      parsed = { ...extras, ...core };
     } catch (err) {
       return handleAiError(res, err, 'The analysis came out too detailed to complete in one pass. Try again — or paste just the sections you care about most.');
     }
