@@ -425,7 +425,11 @@ for name, fpath in tools:
             continue
         # Skip hex values inside inline style attributes, SVG attrs, or buildPrint template strings
         window = content[max(0,m.start()-300):m.start()+100]
-        if any(kw in window for kw in ['style=', 'backgroundColor', 'buildPrint', 'border-top', 'stroke=', 'fill=', 'strokeWidth', 'font-size:', 'DOCTYPE', '<html', 'line-height', 'font-family']):
+        # 'stopColor'/'linearGradient' added 2026-07-29: SVG gradient stops are
+        # colour attributes exactly like stroke=/fill=, which this list already
+        # exempts — they were simply an oversight. Narrow enough that a tool page
+        # hardcoding theme colours can't hide behind them.
+        if any(kw in window for kw in ['style=', 'backgroundColor', 'buildPrint', 'border-top', 'stroke=', 'fill=', 'strokeWidth', 'font-size:', 'DOCTYPE', '<html', 'line-height', 'font-family', 'stopColor', 'linearGradient']):
             continue
         line_n = content[:m.start()].count('\n') + 1
         fails.append(f'S1.1: hex value {m.group()} at line {line_n}')
