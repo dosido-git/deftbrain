@@ -1095,16 +1095,22 @@ const BuyWise = ({ tool }) => {
                     <span className={`text-xs font-bold ${c.text}`}>{item.cost}</span>
                   </div>
                 ))}
+                {/* These rows are a short label + a bare figure. The prompt now
+                    enforces that, but the model can still return a clause on a
+                    bad day ("~$96 assuming one bag replacement and occasional
+                    tube restock" wrapped and knocked the label out of line).
+                    flex-shrink-0 on the label + text-end on the value makes a
+                    long value wrap tidily on the right instead of colliding. */}
                 {r.total_cost.year_1_total && (
-                  <div className={`flex justify-between items-center p-2.5 rounded-lg ${c.highlightBg} border`}>
-                    <span className={`text-xs font-bold ${c.text}`}>{t('bw_year1_total')}</span>
-                    <span className={`text-sm font-black ${c.textCyan}`}>{r.total_cost.year_1_total}</span>
+                  <div className={`flex justify-between items-center gap-3 p-2.5 rounded-lg ${c.highlightBg} border`}>
+                    <span className={`text-xs font-bold flex-shrink-0 ${c.text}`}>{t('bw_year1_total')}</span>
+                    <span className={`text-sm font-black text-end ${c.textCyan}`}>{r.total_cost.year_1_total}</span>
                   </div>
                 )}
                 {r.total_cost.year_5_total && (
-                  <div className={`flex justify-between items-center p-2 rounded-lg ${c.quoteBg}`}>
-                    <span className={`text-xs font-bold ${c.text}`}>{t('bw_year5_total')}</span>
-                    <span className={`text-sm font-bold ${c.text}`}>{r.total_cost.year_5_total}</span>
+                  <div className={`flex justify-between items-center gap-3 p-2 rounded-lg ${c.quoteBg}`}>
+                    <span className={`text-xs font-bold flex-shrink-0 ${c.text}`}>{t('bw_year5_total')}</span>
+                    <span className={`text-sm font-bold text-end ${c.text}`}>{r.total_cost.year_5_total}</span>
                   </div>
                 )}
               </div>

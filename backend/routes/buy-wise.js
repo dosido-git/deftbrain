@@ -104,8 +104,8 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
       {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
       {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
     ],
-    "year_1_total": "${sym}X (purchase + first year costs)",
-    "year_5_total": "${sym}X (if applicable — skip for short-life products)",
+    "year_1_total": "Only the total amount and nothing else, for example ${sym}68. Include purchase plus first-year costs, but do not explain that here.",
+    "year_5_total": "Only the total amount and nothing else, or null for short-life products. Do not explain what it covers.",
     "price_per_use": null
   },
 
@@ -349,8 +349,8 @@ ${schema}`;
       {"item": "Essential accessory/consumable — one sentence", "cost": "${sym}Y/year"},
       {"item": "Maintenance or replacement part — one sentence", "cost": "${sym}Z over N years"}
     ],
-    "year_1_total": "${sym}X (purchase + first year costs)",
-    "year_5_total": "${sym}X (if applicable — skip for short-life products)",
+    "year_1_total": "Only the total amount and nothing else, for example ${sym}68. Include purchase plus first-year costs, but do not explain that here.",
+    "year_5_total": "Only the total amount and nothing else, or null for short-life products. Do not explain what it covers.",
     "price_per_use": null
   },
   "cheaper_alternative": {
