@@ -10,77 +10,6 @@
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 
-/**
- * TinyStartupsBadge — vendor-supplied launch badge, transcribed to JSX.
- *
- * Kept as its own component (rather than a row in the `badges` array) because
- * that array is for hosted <img> badges and this one is inline SVG + gradient
- * border. The vendor's colours, gradient, fonts and white card are reproduced
- * as given: a launch badge is a third-party brand asset, so it is deliberately
- * NOT themed for dark mode — same treatment as the hosted SaaSHub image, which
- * also stays light on a dark footer.
- *
- * The <svg> carries aria-hidden because the badge's own text ("Launched on
- * Tiny Startups") is real text and already announces it; the link gets the
- * accessible name.
- */
-const TinyStartupsBadge = () => (
-  <a
-    href="https://www.tinystartups.com/startup/deftbrain"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="DeftBrain — launched on Tiny Startups"
-    // Vendor brand values are listed first in the style object so the colour
-    // literals stay inside the audit's inline-style window (S1.1 exempts
-    // style/SVG colour attrs, but only looks a fixed distance back).
-    style={{
-      background:
-        'linear-gradient(#fff,#fff) padding-box, linear-gradient(90deg,#3525E6,#D81FE0,#22B8F0) border-box',
-      color: '#0E0B1F',
-      border: '2px solid transparent',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 14,
-      padding: '14px 22px 14px 18px',
-      borderRadius: 14,
-      textDecoration: 'none',
-      fontFamily: "'Inter', system-ui, sans-serif",
-    }}
-  >
-    <svg width="56" height="56" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="tsg" x1=".1" y1="0" x2=".9" y2="1">
-          <stop offset="0%" stopColor="#3525E6" />
-          <stop offset="55%" stopColor="#D81FE0" />
-          <stop offset="100%" stopColor="#22B8F0" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M50 6C52 32 68 48 94 50C68 52 52 68 50 94C48 68 32 52 6 50C32 48 48 32 50 6Z"
-        fill="url(#tsg)"
-      />
-    </svg>
-    <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-      <span
-        style={{
-          fontFamily: 'monospace',
-          fontSize: 9,
-          fontWeight: 600,
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: '#6A6585',
-        }}
-      >
-        Launched on
-      </span>
-      <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.025em' }}>
-        Tiny Startups
-      </span>
-      <span style={{ fontSize: 11, color: '#6A6585', marginTop: 4 }}>tinystartups.com</span>
-    </span>
-  </a>
-);
-
 const Footer = () => {
   const { isDark } = useTheme();
 
@@ -164,16 +93,18 @@ const Footer = () => {
 
         </div>
 
-        {/* flex-wrap so the badge row reflows on narrow screens instead of
-            overflowing — the Tiny Startups badge is ~230px wide on its own. */}
-        <div className="flex flex-wrap justify-center items-center gap-4 mt-4">
-          {badges.map(b => (
-            <a key={b.key} href={b.href} target="_blank" rel="noopener noreferrer" aria-label={b.alt}>
-              <img src={b.src} alt={b.alt} className="max-w-[150px] h-auto" />
-            </a>
-          ))}
-          <TinyStartupsBadge />
-        </div>
+        {/* The Tiny Startups badge lives ABOVE THE FOLD on the dashboard until
+            verification completes (see TinyStartupsBadge.js) — it returns here,
+            or to /about, once the operator confirms. */}
+        {badges.length > 0 && (
+          <div className="flex flex-wrap justify-center items-center gap-4 mt-4">
+            {badges.map(b => (
+              <a key={b.key} href={b.href} target="_blank" rel="noopener noreferrer" aria-label={b.alt}>
+                <img src={b.src} alt={b.alt} className="max-w-[150px] h-auto" />
+              </a>
+            ))}
+          </div>
+        )}
 
       </div>
     </footer>

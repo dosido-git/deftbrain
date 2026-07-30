@@ -7,6 +7,7 @@ import HeroPitch from './HeroPitch';
 import LocaleSelectors from './LocaleSelectors';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
+import TinyStartupsBadge from './TinyStartupsBadge';
 import IdeaPrompt from './IdeaPrompt';
 import keepList from '../data/tools-keep-list.json';
 
@@ -335,6 +336,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <div className="mt-4">
           {!isSearching && <HeroPitch isDark={false} />}
         </div>
+        {/* ─── TEMPORARY (2026-07-30) ─────────────────────────────────────────
+            Tiny Startups verification wants the badge visibly placed, so it sits
+            above the fold here instead of in the footer. Moves to /about once
+            the operator confirms verification; a smaller variant is deferred
+            until then so nothing changes mid-check. Hidden while searching, so
+            it never sits on top of results. */}
+        {!isSearching && (
+          <div className="mt-4">
+            <TinyStartupsBadge />
+          </div>
+        )}
         {/* The fold's next step. The catalog is the product, but it starts
             2+ screens down on mobile — without this, a visitor who doesn't
             scroll past the demos never learns the breadth exists. */}
