@@ -185,7 +185,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                   <span className={isDark ? 'text-[#d9a04e]' : 'text-[#c8872e]'}>D</span>
                   <span className={isDark ? 'text-[#a8b9ce]' : 'text-[#2c4a6e]'}>eftBrain</span>
                 </span>
-                <p className={`text-[10px] leading-snug mt-1.5 max-w-[24ch] ${isDark ? 'text-[#8a8275]' : 'text-[#78716c]'}`}>
+                {/* 10px was too small to read comfortably (reported 2026-07-30).
+                    Now 12px, and the inks match the dashboard's corrected pair:
+                    #78716c/#8a8275 only cleared AA by a hair (4.53/4.67:1),
+                    while #6e6659 and #a8a29a give 5.3:1 and 7:1. max-w widened
+                    so the larger text still breaks after "deft (adj.) —"
+                    instead of wrapping to three lines. */}
+                <p className={`text-xs leading-snug mt-1.5 max-w-[34ch] ${isDark ? 'text-[#a8a29a]' : 'text-[#6e6659]'}`}>
                   <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
                 </p>
               </div>
