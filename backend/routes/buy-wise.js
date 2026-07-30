@@ -121,7 +121,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     "what_to_inspect": ["What to check when buying used — product-specific"],
     "typical_used_price": "${sym}X - ${sym}Y",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Platform — 3-6 words", "trust": "HIGH/MEDIUM/LOW — one sentence", "why": "reason — one sentence"}]
+    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform — one sentence"}]
   },
 
   "warranty_returns": {
@@ -160,14 +160,14 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   }`}${compProducts.length > 0 ? `,
 
   "comparison": {
-    "winner": "Product name or 'It depends' — one sentence",
+    "winner": "Just the winning product name, or the words It depends",
     "analysis": "Detailed practical comparison. — 1-2 sentences",
     "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
   }` : ''},
 
   "where_to_buy": [
-    {"platform": "Store/platform name — one sentence", "why": "Why this platform for this specific product — one sentence"}
+    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product — one sentence"}
   ],
 
   "followup_questions": [
@@ -326,13 +326,13 @@ ${schema}`;
     "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
   },${compProducts.length > 0 ? `
   "comparison": {
-    "winner": "Product name or 'It depends' — one sentence",
+    "winner": "Just the winning product name, or the words It depends",
     "analysis": "Detailed practical comparison. — 1-2 sentences",
     "for_your_priority": "Based on the user's stated priority (${priority}), which one wins and why? (number)",
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
   },` : ''}
   "where_to_buy": [
-    {"platform": "Store/platform name — one sentence", "why": "Why this platform for this specific product — one sentence"}
+    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product — one sentence"}
   ],
   "followup_questions": [
     "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
@@ -364,7 +364,7 @@ ${schema}`;
     "what_to_inspect": ["What to check when buying used — product-specific"],
     "typical_used_price": "${sym}X - ${sym}Y",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Platform — 3-6 words", "trust": "HIGH/MEDIUM/LOW — one sentence", "why": "reason — one sentence"}]
+    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform — one sentence"}]
   },
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
     "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
@@ -595,10 +595,10 @@ When is the best time to buy ${category}? Map out the full year. Return ONLY val
   "worst_month": "The worst month (highest prices), with reason — one sentence",
   "calendar": [
     {
-      "month": "January — one sentence",
+      "month": "Month name only, for example January",
       "rating": "GREAT | GOOD | AVERAGE | BAD",
       "events": "Specific sale events this month (e.g., 'New Year sales, CES announcements drop last-gen prices') — one sentence",
-      "typical_discount": "Typical % off or savings range — one sentence"
+      "typical_discount": "Typical percentage off or savings range, for example 15-25%"
     }
   ],
   "pro_tips": [
