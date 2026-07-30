@@ -93,9 +93,10 @@ const Footer = () => {
 
         </div>
 
-        {/* The Tiny Startups badge lives ABOVE THE FOLD on the dashboard until
-            verification completes (see TinyStartupsBadge.js) — it returns here,
-            or to /about, once the operator confirms. */}
+        {/* The Tiny Startups badge is NOT here by choice (2026-07-30): their
+            verification never completed, so it sits as static HTML on /about at
+            ~60% size rather than as a site-wide outbound link. See
+            audit/DIRECTORY-SUBMISSIONS.xlsx for the reasoning. */}
         {badges.length > 0 && (
           <div className="flex flex-wrap justify-center items-center gap-4 mt-4">
             {badges.map(b => (
