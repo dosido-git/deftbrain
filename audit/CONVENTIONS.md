@@ -640,6 +640,42 @@ Single-mode tools retain the strict rule: `tool?.icon` in both branches.
 
 *Reference case: ApologyCalibrator (13 modes, each with topical submit icon, shared `Spinner` helper using `tool?.icon` for loading).*
 
+**Per-item exception — a ROW of buttons sharing one loading flag.** When several
+buttons are rendered from a `.map()` and all disable on the same flag, plain
+`disabled:opacity-40` is actively wrong: every sibling dims identically, so the
+button the user actually pressed is indistinguishable from the ones they didn't,
+and the click reads as "nothing happened." Use
+[`src/components/PendingAction.js`](../src/components/PendingAction.js) — never
+hand-roll this:
+
+```jsx
+import { PendingBtn, usePendingKey } from '../components/PendingAction';
+const [pending, runPending] = usePendingKey();
+// …
+{items.map(item => (
+  <PendingBtn key={item.id} itemKey={item.id} pending={pending}
+    icon={pending === item.id ? (tool?.icon ?? '⚙️') : '🔍'}
+    onClick={() => runPending(item.id, () => handleThing(item))}
+    disabled={loading} className={`text-xs ${c.btnSecondary}`}>
+    {t('deep_dive')}
+  </PendingBtn>
+))}
+```
+
+The pressed button keeps full opacity, gains `ring-2 ring-current`, and spins the
+tool icon; its siblings dim as usual. `pendingClass()` is the only ternary PF-13
+accepts in place of a literal `disabled:opacity-40` (audit v2.8) — arbitrary
+`${loading ? a : b}` remains banned. If the answer lands far below the button
+(e.g. in a results list), also render a pulsing skeleton card where it will
+appear, so the wait is visible at both ends.
+
+**Do NOT** emit both `disabled:opacity-40` and `disabled:opacity-100` expecting
+the latter to win — same specificity, and Tailwind's emitted order decides it the
+other way. Emit exactly one, which is what `pendingClass()` does.
+
+*Reference case: BuyWise "Want to Know More?" pills (2026-07-30). The same shape
+was found in six other tools by AST scan; all now use this component.*
+
 ---
 
 ### PF-15 · Required Field Asterisks

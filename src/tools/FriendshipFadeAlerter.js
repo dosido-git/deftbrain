@@ -713,7 +713,11 @@ const FriendshipFadeAlerter = ({ tool }) => {
                                 <button onClick={() => generateFreqSuggest(person)}
                                   disabled={freqSuggestLoadingId === person.id}
                                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full disabled:opacity-40 ${isDark ? 'bg-cyan-800/50 text-cyan-300 hover:bg-cyan-700/50' : 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200'}`}>
-                                  {freqSuggestLoadingId === person.id ? '...' : freqOpen ? t('ffa_hide') : t('ffa_ai_adjust')}
+                                  {/* '...' is static and easy to miss at 10px; spin the
+                                      tool icon so the pending row is unmistakable. */}
+                                  {freqSuggestLoadingId === person.id
+                                    ? <span className="animate-spin inline-block">{tool?.icon ?? '💔'}</span>
+                                    : freqOpen ? t('ffa_hide') : t('ffa_ai_adjust')}
                                 </button>
                               </div>
                             </div>

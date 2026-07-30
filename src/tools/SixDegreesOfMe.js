@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { PendingBtn, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
@@ -102,6 +103,11 @@ const computeLayout = (nodes, edges, width, height) => {
 // ════════════════════════════════════════════════════════════
 const SixDegreesOfMe = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
+  // Which per-item action is running. The shared `loading` flag dims every
+  // sibling button identically, so the one you pressed reads as unresponsive —
+  // and the only spinner on this page is on the main Find button, far away.
+  const [pendingIdeas, runIdeas] = usePendingKey();
+  const [pendingWhatIf, runWhatIf] = usePendingKey();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const webRef = useRef(null);
@@ -521,8 +527,10 @@ const SixDegreesOfMe = ({ tool }) => {
                         </div>
                       )}
                       {target === 'A' && (
-                        <button onClick={() => handleAiQuestions(cat.id)} disabled={loading}
-                          className={`text-[10px] font-semibold ${c.accentTxt} disabled:opacity-40`}>{t('sdm_profile_get_ideas')}</button>
+                        <PendingBtn itemKey={cat.id} pending={pendingIdeas}
+                          icon={pendingIdeas === cat.id ? (tool?.icon ?? '🔗') : null}
+                          onClick={() => runIdeas(cat.id, () => handleAiQuestions(cat.id))} disabled={loading}
+                          className={`text-[10px] font-semibold ${c.accentTxt}`}>{t('sdm_profile_get_ideas')}</PendingBtn>
                       )}
                     </div>
                   )}
@@ -662,10 +670,12 @@ const SixDegreesOfMe = ({ tool }) => {
                   </p>
                   <p className={`text-xs leading-relaxed ${c.chainConnText}`}>{step.connection}</p>
                   {showWhatIf && !isFlip && (
-                    <button onClick={() => handleWhatIf(step)} disabled={loading}
-                      className={`text-[10px] font-semibold mt-1 ${c.warningTxt} disabled:opacity-40`}>
+                    <PendingBtn itemKey={step} pending={pendingWhatIf}
+                      icon={pendingWhatIf === step ? (tool?.icon ?? '🔗') : null}
+                      onClick={() => runWhatIf(step, () => handleWhatIf(step))} disabled={loading}
+                      className={`text-[10px] font-semibold mt-1 ${c.warningTxt}`}>
                       {t('sdm_chain_what_if_btn')}
-                    </button>
+                    </PendingBtn>
                   )}
                 </div>
               </div>

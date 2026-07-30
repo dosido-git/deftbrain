@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { Spin, pendingClass, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 
@@ -219,8 +220,8 @@ const BuyWise = ({ tool }) => {
   // Which suggested question is in flight. followupLoading alone can't say —
   // it dimmed every pill equally, so a click read as "nothing happened"
   // (reported 2026-07-30). This lets the clicked pill spin while its
-  // siblings dim.
-  const [pendingQuestion, setPendingQuestion] = useState(null);
+  // siblings dim. Shared with six other tools via PendingAction.
+  const [pendingQuestion, runFollowup] = usePendingKey();
   const [customQuestion, setCustomQuestion] = useState('');
 
   // ── State: Budget mode ──
@@ -457,7 +458,6 @@ const BuyWise = ({ tool }) => {
   const askFollowup = useCallback(async (question) => {
     if (!question?.trim() || !results) return;
     setFollowupLoading(true);
-    setPendingQuestion(question.trim());
     try {
       const data = await callToolEndpoint('buy-wise/followup', {
         product: product.trim(),
@@ -472,9 +472,14 @@ const BuyWise = ({ tool }) => {
       setError(err.message || t('bw_err_analysis'));
     } finally {
       setFollowupLoading(false);
-      setPendingQuestion(null);
     }
   }, [results, product, currency, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+
+  // Wraps askFollowup so the pill that was pressed is the one that spins.
+  const askFollowupTracked = useCallback(
+    (question) => runFollowup(question?.trim(), () => askFollowup(question)),
+    [runFollowup, askFollowup]
+  );
 
   // ── API: Budget mode ──
   const analyzeBudget = useCallback(async () => {
@@ -1334,18 +1339,12 @@ const BuyWise = ({ tool }) => {
                   return (
                     <button
                       key={i}
-                      onClick={() => askFollowup(q)}
+                      onClick={() => askFollowupTracked(q)}
                       disabled={followupLoading}
                       aria-busy={isPending}
-                      // Only ONE disabled:opacity-* class is emitted. Shipping both
-                      // and relying on `opacity-100` to override `opacity-40` loses:
-                      // same specificity, and Tailwind's emitted order decided it the
-                      // other way (verified in the DOM — the pending pill stayed 0.4).
-                      // The pending pill stays legible while its siblings dim; that
-                      // contrast is what makes "this one is working" readable.
-                      className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-start min-h-[36px] ${isPending ? 'ring-2 ring-cyan-500' : 'disabled:opacity-40'}`}
+                      className={`${c.btnSecondary} px-3 py-2 rounded-lg text-xs font-medium text-start min-h-[36px] ${pendingClass(isPending)}`}
                     >
-                      {isPending && <span className="animate-spin inline-block me-2">{tool?.icon ?? '💲'}</span>}
+                      {isPending && <Spin on icon={tool?.icon ?? '💲'} />}{isPending ? ' ' : ''}
                       {q}
                     </button>
                   );
@@ -1363,10 +1362,10 @@ const BuyWise = ({ tool }) => {
                 onChange={e => setCustomQuestion(e.target.value)}
                 placeholder={t('bw_ph_own_q')}
                 className={`flex-1 px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
-                onKeyDown={e => e.key === 'Enter' && customQuestion.trim() && askFollowup(customQuestion)}
+                onKeyDown={e => e.key === 'Enter' && customQuestion.trim() && askFollowupTracked(customQuestion)}
               />
               <button
-                onClick={() => askFollowup(customQuestion)}
+                onClick={() => askFollowupTracked(customQuestion)}
                 disabled={!customQuestion.trim() || followupLoading}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px] disabled:opacity-40`}
               >

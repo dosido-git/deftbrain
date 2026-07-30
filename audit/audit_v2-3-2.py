@@ -1,3 +1,13 @@
+# v2.8 · 2026-07-30 · PF-13 pendingClass() exception. A row of buttons sharing
+#                     ONE loading flag must NOT dim uniformly — the button the
+#                     user actually pressed has to stay legible and spin, or the
+#                     click reads as "nothing happened" (BuyWise "Want to Know
+#                     More?" pills, plus six other tools). pendingClass() in
+#                     src/components/PendingAction.js returns disabled:opacity-40
+#                     for every non-pending button and a ring for the working one,
+#                     so it satisfies PF-13's intent while failing its literal
+#                     text match. The exception names that ONE helper — arbitrary
+#                     ternaries stay banned, per CONVENTIONS.md.
 # v2.7 · 2026-05-21 · three new checks from BikeMedic audit:
 #                     PF-26 — useRegisterActions called with function reference
 #                       instead of result (always-truthy ActionBar).
@@ -1437,7 +1447,12 @@ for name, fpath in tools:
             _cn_value = _btn_open[_start:_p]
         else:
             continue
-        if 'disabled:opacity-40' not in _cn_value:
+        # Exception (v2.8): pendingClass() from src/components/PendingAction.js.
+        # It emits disabled:opacity-40 for every non-pending button and swaps in
+        # a ring for the single button that is currently working — the one case
+        # PF-13's flat rule cannot express. Naming the helper explicitly keeps
+        # arbitrary `${loading ? a : b}` ternaries banned as before.
+        if 'disabled:opacity-40' not in _cn_value and 'pendingClass(' not in _cn_value:
             _line_n = content[:_btn_m.start()].count('\n') + 1
             _pf13_violations.append(_line_n)
     if _pf13_violations:

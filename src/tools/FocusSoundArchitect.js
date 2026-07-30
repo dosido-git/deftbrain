@@ -2032,7 +2032,11 @@ const FocusSoundArchitect = ({ tool }) => {
                       ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
                       : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
                   } disabled:opacity-40`}>
-                  {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji} {t(f.labelKey)}
+                  {/* Was a STATIC swap to the tool icon — it read as a changed
+                      emoji, not as work in progress. Spin it. */}
+                  <span className={smartAdjustLoading && feedback === f.id ? 'animate-spin inline-block' : 'inline-block'}>
+                    {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji}
+                  </span> {t(f.labelKey)}
                 </button>
               ))}
             </div>
