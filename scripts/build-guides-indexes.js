@@ -528,7 +528,13 @@ function renderByTool(specs) {
         <h2 class="tool-name">${headerInner}</h2>
         <p class="tool-meta">${group.items.length} guide${group.items.length === 1 ? '' : 's'}</p>
         <ul class="tool-guides">
-${group.items.map(g => { const kept = KEEP_SET.has(`${g.category}/${g.slug}`); const href = kept ? `/guides/${escHtml(g.category)}/${escHtml(g.slug)}` : `/guides/${escHtml(g.category)}#${escHtml(g.slug)}`; return `          <li><a href="${href}">${escHtml(g.title)}</a><span class="cat-tag">${escHtml(CATEGORY_META[g.category]?.name || g.category)}</span></li>`; }).join('\n')}
+${group.items.map(g => {
+          // Every guide has a real standalone page (all 552 are built and
+          // served); the non-keep-list ones are noindexed rather than
+          // redirected, so a link labelled as a guide leads to the guide.
+          const cat = escHtml(CATEGORY_META[g.category]?.name || g.category);
+          return `          <li><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">${escHtml(g.title)}</a><span class="cat-tag">${cat}</span></li>`;
+        }).join('\n')}
         </ul>
       </section>
 `;
@@ -577,13 +583,16 @@ function renderCategoryPage(catKey, meta, guidesInCat, keepSet) {
     const cta = g.cta?.toolId
       ? `\n          <p class="hub-topic-cta"><a href="/${escHtml(g.cta.toolId)}">${escHtml(g.cta.glyph || '🔧')} ${escHtml(g.cta.toolName || g.cta.toolId)}</a> does this for you.</p>`
       : '';
+    // The summary is an overview, not a replacement — link through to the full
+    // guide, which is a live standalone page (noindexed, not redirected).
+    const full = `\n          <p class="hub-topic-more"><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">Read the full guide &rarr;</a></p>`;
     return `
         <section class="hub-topic" id="${escHtml(g.slug)}">
-          <h3>${escHtml(g.title)}</h3>
+          <h3><a href="/guides/${escHtml(g.category)}/${escHtml(g.slug)}">${escHtml(g.title)}</a></h3>
           <p>${escHtml(g.deck || g.description || '')}</p>
           <ol class="hub-topic-steps">
 ${steps}
-          </ol>${cta}
+          </ol>${full}${cta}
         </section>`;
   }).join('\n');
 
@@ -601,7 +610,10 @@ ${foldedHtml}` : '';
       .hub-topic h3 { font-size: 1.15rem; margin-bottom: .4rem; }
       .hub-topic-steps { margin: .6rem 0 0 1.2rem; }
       .hub-topic-steps li { margin: .25rem 0; }
-      .hub-topic-cta { margin-top: .6rem; font-size: .95rem; }`,
+      .hub-topic-cta { margin-top: .6rem; font-size: .95rem; }
+      .hub-topic-more { margin-top: .7rem; font-size: .95rem; font-weight: 500; }
+      .hub-topic h3 a { color: inherit; text-decoration: none; }
+      .hub-topic h3 a:hover { text-decoration: underline; }`,
   }) + `
 
   <main>

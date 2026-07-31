@@ -400,11 +400,21 @@ app.get('/api/endpoints', (req, res, next) => {
   res.json({ endpoints: routeList, count: routeList.length });
 });
 
-// ── Consolidated-guide redirects (SEO footprint prune, 2026-07) ──
-// Guides NOT in guides/keep-list.json no longer have standalone pages: their
-// content lives as an anchored section on the category hub, and the old URL
-// (and its legacy .html variant) 301s there. Must run BEFORE express.static,
-// which would otherwise serve the retired flat file at the old URL.
+// ── Consolidated-guide redirects — RETIRED 2026-07-31 ──
+// This middleware used to 301 every non-keep-list guide URL to a condensed
+// summary anchored on the category hub. The pages themselves were always built
+// and deployed (all 552 are on disk); only this interception stood between a
+// reader and the guide. The result was that ~80% of the links on
+// /guides/by-tool were labelled as guides but landed on a 3-line summary.
+//
+// Guides now follow the SAME policy as tools (see prerender.js): the page stays
+// fully live for users, and non-keep-list guides carry
+// <meta name="robots" content="noindex"> so the search footprint stays exactly
+// as small as before. The hub summaries remain as an overview and link through
+// to the full guide.
+//
+// Kept as dead code, disabled, so the rationale survives with the mechanism —
+// re-enabling it would silently re-break the by-tool page.
 const KEEP_LIST = (() => {
   try {
     const data = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'guides', 'keep-list.json'), 'utf8'));
@@ -416,7 +426,8 @@ const KEEP_LIST = (() => {
     return null;
   }
 })();
-if (KEEP_LIST) {
+const CONSOLIDATED_GUIDE_REDIRECTS = false; // see the note above — do not re-enable
+if (KEEP_LIST && CONSOLIDATED_GUIDE_REDIRECTS) {
   const GUIDE_ARTICLE = /^\/guides\/([a-z-]+)\/([a-z0-9-]+?)(\.html)?$/;
   app.use((req, res, next) => {
     const m = req.path.match(GUIDE_ARTICLE);

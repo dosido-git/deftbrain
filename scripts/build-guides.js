@@ -24,6 +24,23 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { getFooterHTML, getToolList, getToolIndexHTML } = require('../src/seo/chrome');
+
+// ── Guides keep-list (SEO concentration, 2026-07) ──
+// Mirrors the tools policy in prerender.js: every guide keeps a real, standalone
+// page that is FULLY LIVE FOR USERS, and the 440 outside the keep-list carry
+// <meta name="robots" content="noindex"> so Google sees a small, deliberate
+// footprint instead of 552 template siblings. Previously those 440 URLs 301'd
+// to a condensed summary anchored on the category hub — which meant a link
+// labelled as a guide did not lead to the guide. Missing file = hard fail
+// rather than silently indexing all 552.
+const GUIDES_KEEP_LIST = (() => {
+  const p = path.join(__dirname, '..', 'guides', 'keep-list.json');
+  const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+  const set = new Set();
+  for (const [cat, slugs] of Object.entries(data.keep)) slugs.forEach(sl => set.add(`${cat}/${sl}`));
+  if (!set.size) throw new Error('guides/keep-list.json parsed to an empty set');
+  return set;
+})();
 // Crawlable all-tools index appended to every guide — spreads internal authority
 // from the (ranking) guides to all tool pages. Computed once.
 const TOOL_INDEX_HTML = getToolIndexHTML(getToolList());
@@ -181,6 +198,7 @@ function renderGuide(spec, siblings) {
 
   <title>${esc(metaTitle)}</title>
   <meta name="description" content="${esc(spec.description)}">
+  <meta name="robots" content="${GUIDES_KEEP_LIST.has(`${spec.category}/${spec.slug}`) ? 'index, follow' : 'noindex'}">
   <link rel="canonical" href="${canonical}">
 
   <meta property="og:type"        content="article">

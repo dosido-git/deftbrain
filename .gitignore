@@ -42,3 +42,6 @@ scripts/fonts/DM_Sans,Playfair_Display/
 scripts/fonts/Playfair_Display/
 scripts/fonts/DM_Sans/
 __pycache__/
+
+# Excel/Word lock artifacts — created while a file is open, never content
+~$*
