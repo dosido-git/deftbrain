@@ -61,13 +61,17 @@ The tool-page instance of the *deft* line was raised to 12px on 2026-07-30
 (`2da35e34`); the header/brandmark instances were not, and still render 10–11px.
 Same fix, same reasoning, not yet applied.
 
-### 3. Dashboard header collides with the brandmark at 390px — MEDIUM, mobile
+### 3. Dashboard header collides with the brandmark at 390px — FIXED 2026-08-01
 
 At 390px the locale pills sit on top of the "DeftBrain" wordmark on the
 dashboard: the brand block and the pills compete for one row and neither wraps.
 Pre-existing, and improved rather than caused by the tap-target fix (pills went
-305px → 165px combined), but still visibly overlapping. The header needs to
-wrap or the brand needs to shrink at that width.
+305px → 165px combined), but still visibly overlapping.
+
+Fixed by stacking below `sm`: brand on its own row, pills right-aligned on the
+next — which is what `ToolPageWrapper` already did on mobile, so the dashboard
+was the only surface with the bug. Verified at 390px (overlap NONE, no
+horizontal scroll) and at 900px (still one row, pills right, overlap NONE).
 
 ### 4. Dashboard density — MEDIUM, mobile
 

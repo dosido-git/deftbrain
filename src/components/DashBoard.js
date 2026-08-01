@@ -328,9 +328,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         {/* Brand left, locale controls right — the header is now the single,
             consistent home for language/currency everywhere (tool pages carry
             their own via ToolPageWrapper; the footer copy was removed). */}
-        <div className="flex items-center justify-between gap-3">
+        {/* Below sm the brand and the pills cannot share a row: the wordmark
+            runs to ~252px and the two pills need ~165px more, so at 390px the
+            pills painted an opaque white box over the tail of "DeftBrain"
+            (measured 51x11px overlap, 2026-08-01). Stack them instead, pills
+            right-aligned on their own line — which is what ToolPageWrapper
+            already does on mobile. */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <BrandMark direction="left" size="md" isDark={false} showTagline={true} />
-          <LocaleSelectors dark={false} />
+          <div className="flex justify-end sm:block">
+            <LocaleSelectors dark={false} />
+          </div>
         </div>
         <div className="mt-4">
           {!isSearching && <HeroPitch isDark={false} />}
