@@ -288,7 +288,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             </button>
             </div>
             {actions.content && (
-              <ActionBar content={actions.content} title={actions.title} />
+              <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
             )}
           </div>
 
