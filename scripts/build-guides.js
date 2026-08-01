@@ -132,6 +132,11 @@ function validate(spec, source) {
 const TITLE_SUFFIX  = ' | DeftBrain'; // 12 chars
 const MAX_TITLE_LEN = 70;
 
+// JSON.stringify is not safe inside a <script> block: it leaves "</script>"
+// intact, which would terminate the element early. Escaping "<" to \u003c is
+// still valid JSON and renders identically.
+const jsLit = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
+
 function renderGuide(spec, siblings) {
   // canonicalOverride: for a guide that exists at two URLs (same slug filed in
   // two categories) the twin points its canonical at the primary — Google
@@ -296,6 +301,55 @@ ${featuresHtml}
       <div class="related-grid">
 ${relatedCards}
       </div>
+
+      <!-- Cite / link block.
+           Guides are the linkable asset — nobody links a form, people link an
+           explainer they found useful — and the audience that would link is the
+           audience that owns a site. Built on all 552 guides, not just the 112
+           indexable ones, so the other 440 are ready the day indexing widens.
+           Vanilla JS: guides are static HTML, no React on this page. -->
+      <div class="cite-box">
+        <p class="cite-title">Found this useful? Link to it.</p>
+        <p class="cite-url" id="cite-url">${canonical}</p>
+        <div class="cite-actions">
+          <button type="button" class="cite-btn" data-copy="url">Copy link</button>
+          <button type="button" class="cite-btn" data-copy="html">Copy HTML</button>
+          <button type="button" class="cite-btn" data-copy="cite">Copy citation</button>
+        </div>
+        <p class="cite-note">Free to read, no account, no paywall — link away.</p>
+      </div>
+      <script>
+        (function () {
+          var URL_ = ${jsLit(canonical)};
+          var TITLE = ${jsLit(spec.title)};
+          var MOD = ${jsLit(formatDate(spec.modified))};
+          var payload = {
+            url: URL_,
+            html: '<a href="' + URL_ + '">' + TITLE + '</a>',
+            cite: TITLE + '. DeftBrain. Updated ' + MOD + '. ' + URL_
+          };
+          document.querySelectorAll('.cite-btn').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var text = payload[b.getAttribute('data-copy')];
+              var done = function () {
+                var was = b.textContent; b.textContent = 'Copied'; b.classList.add('is-copied');
+                setTimeout(function () { b.textContent = was; b.classList.remove('is-copied'); }, 1600);
+              };
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done, function () {});
+              } else {
+                // Older Safari / non-secure contexts have no async clipboard.
+                var ta = document.createElement('textarea');
+                ta.value = text; ta.setAttribute('readonly', '');
+                ta.style.position = 'absolute'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); done(); } catch (e) {}
+                document.body.removeChild(ta);
+              }
+            });
+          });
+        })();
+      </script>
 
     </div>
   </main>

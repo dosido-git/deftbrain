@@ -362,3 +362,56 @@ h1            { animation-delay: .10s; }
 @media (max-width: 480px) {
   .step { grid-template-columns: 28px 1fr; }
 }
+
+
+/* ── Cite / link block ───────────────────────────────────────────────
+   On every guide, indexable or not. Deliberately quiet: it sits after the
+   related grid, states the URL plainly, and offers the three shapes someone
+   actually pastes — the bare link, an <a> tag for a blog, and a citation
+   line. Nothing here asks for a favour; it just removes the friction. */
+.cite-box {
+  margin: 2.5rem 0 0;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid #e5e2da;
+  border-radius: 10px;
+  background: #faf8f5;
+}
+.cite-title {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  margin: 0 0 .45rem;
+  color: #1a2e44;
+}
+.cite-url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .82rem;
+  color: #6e675c;
+  margin: 0 0 .8rem;
+  word-break: break-all;
+}
+.cite-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.cite-btn {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: .82rem;
+  font-weight: 500;
+  color: #1a2e44;
+  background: #fff;
+  border: 1px solid #d9d4c8;
+  border-radius: 6px;
+  padding: .42rem .85rem;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.cite-btn:hover { background: #f2efe8; border-color: #b9b2a3; }
+.cite-btn.is-copied { background: #e8f2ea; border-color: #8fbf9f; color: #2f6b45; }
+.cite-note {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: .78rem;
+  color: #8a8275;
+  margin: .8rem 0 0;
+}
+@media (max-width: 640px) {
+  .cite-actions { gap: .4rem; }
+  .cite-btn { flex: 1 1 auto; text-align: center; }
+}
