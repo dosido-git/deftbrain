@@ -119,6 +119,9 @@ const PlainTalk = ({ tool }) => {
   const [textType, setTextType] = useState('auto');
   const [focusQuestion, setFocusQuestion] = useState('');
   const [fileName, setFileName] = useState('');
+  // PDFs are handed to the model as a document block, never scraped in the
+  // browser — see handleFileUpload.
+  const [pdfBase64, setPdfBase64] = useState(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [compareOnly, setCompareOnly] = useState(false); // compare-mode sentinel — session-only, never persisted
@@ -166,46 +169,38 @@ const PlainTalk = ({ tool }) => {
     const file = e.target.files[0];
     if (!file) return;
     setError('');
-    setFileName(file.name);
+
+    // A PDF is NOT text. The previous implementation TextDecoder'd the raw
+    // bytes and regexed for /\(([^)]+)\)/ — but modern PDFs Flate-compress
+    // their content streams, so that scrapes binary, and the `length > 10`
+    // guard always passed because binary is full of parentheses. Result: the
+    // textarea filled with mojibake and reported "2,164 words" of garbage
+    // instead of failing (reported 2026-08-01).
+    //
+    // The model reads PDFs natively. Send the file as a document block, the
+    // same way LeaseTrapDetector does, and leave the textarea alone.
+    if (file.type === 'application/pdf') {
+      if (file.size > 10 * 1024 * 1024) { setError(t('plt_err_too_large')); return; }
+      const reader = new FileReader();
+      reader.onerror = () => setError(t('plt_err_read'));
+      reader.onload = (ev) => { setPdfBase64(ev.target.result); setFileName(file.name); setInputText(''); };
+      reader.readAsDataURL(file);
+      return;
+    }
 
     try {
-      if (file.type === 'application/pdf') {
-        // Read PDF as text — basic extraction
-        const arrayBuffer = await file.arrayBuffer();
-        const bytes = new Uint8Array(arrayBuffer);
-        // Simple PDF text extraction — look for text between stream markers
-        let text = '';
-        const decoder = new TextDecoder('utf-8', { fatal: false });
-        const rawText = decoder.decode(bytes);
-
-        // Try to extract readable text content from PDF
-        const textMatches = rawText.match(/\(([^)]+)\)/g);
-        if (textMatches && textMatches.length > 10) {
-          text = textMatches.map(m => m.slice(1, -1)).join(' ');
-        }
-
-        // Fallback: extract anything that looks like sentences
-        if (text.length < 50) {
-          const lines = rawText.split('\n').filter(line => {
-            const clean = line.replace(/[^a-zA-Z\s]/g, '').trim();
-            return clean.length > 20 && /[a-z]/.test(clean);
-          });
-          text = lines.join('\n');
-        }
-
-        if (text.trim().length < 30) {
-          setError(t('plt_err_pdf'));
-          return;
-        }
-        setInputText(text.trim());
-      } else {
-        // Plain text / other readable formats
-        const text = await file.text();
-        setInputText(text);
-      }
+      const text = await file.text();
+      setPdfBase64(null);
+      setFileName(file.name);
+      setInputText(text);
     } catch (err) {
       setError(t('plt_err_read'));
     }
+  };
+
+  const removeFile = () => {
+    setPdfBase64(null); setFileName(''); setError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // ═══════════════════════════════════════
@@ -213,19 +208,22 @@ const PlainTalk = ({ tool }) => {
   // ═══════════════════════════════════════
 
   const handleAnalyze = async () => {
-    if (!inputText.trim()) { setError(t('plt_err_empty')); return; }
-    if (inputText.trim().length < 30) { setError(t('plt_err_short')); return; }
+    if (!pdfBase64) {
+      if (!inputText.trim()) { setError(t('plt_err_empty')); return; }
+      if (inputText.trim().length < 30) { setError(t('plt_err_short')); return; }
+    }
     setError(''); setResult(null); setFollowUpAnswers([]);
     try {
       const data = await callToolEndpoint('plaintalk', {
         text: inputText.trim(),
+        pdfBase64,
         textType,
         focusQuestion: focusQuestion.trim() || null,
         userLocale, userCurrency, userRegion,
       });
       setResult(data);
       // PF-25 exception: 40 is a preview-text length; history is capped at 6.
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (inputText || fileName || '').slice(0, 40) }, ...prev].slice(0, 6));
       setActiveTab('overview');
       const autoExpand = {};
       (data.sections || []).forEach(s => { if (s.importance === 'high') autoExpand[s.id] = true; });
@@ -256,7 +254,7 @@ const PlainTalk = ({ tool }) => {
 
   const handleReset = () => {
     setInputText(''); setTextType('auto'); setFocusQuestion('');
-    setFileName(''); setResult(null); setError(''); setCompareOnly(false);
+    setFileName(''); setPdfBase64(null); setResult(null); setError(''); setCompareOnly(false);
     setActiveTab('overview'); setExpandedSections({});
     setFollowUpAnswers([]); setFollowUpQuestion('');
     setShowGlossary(false); setCompareTextA(''); setCompareTextB('');
@@ -548,7 +546,14 @@ const PlainTalk = ({ tool }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${c.btnSecondary}`}>
                   📎 {t('plt_upload_file')}
                 </label>
-                {fileName && <span className={`text-xs ${c.textMuteded}`}>{fileName}</span>}
+                {fileName && (
+                  <span className={`text-xs flex items-center gap-1.5 ${c.textMuteded}`}>
+                    {pdfBase64 && <span aria-hidden="true">📄</span>}{fileName}
+                    <button type="button" onClick={removeFile}
+                      aria-label={t('plt_remove_file')}
+                      className={`px-1 rounded ${c.btnSecondary}`}>✕</button>
+                  </span>
+                )}
               </div>
               <span className={`text-xs ${c.textMuteded}`}>
                 {wordCount > 0 ? t('plt_words', { count: wordCount.toLocaleString() }) : ''}
@@ -646,7 +651,7 @@ const PlainTalk = ({ tool }) => {
                 reader decide, and again while running reassures them it has
                 not hung. Threshold ~2.5k chars ≈ the point where the section
                 pass starts to dominate. */}
-            {(inputText.trim().length >= 2500 || loading) && (
+            {(inputText.trim().length >= 2500 || pdfBase64 || loading) && (
               <div className={`${c.warning} border rounded-xl p-3.5 flex items-start gap-2.5`} role="status">
                 <span aria-hidden="true" className="flex-shrink-0">⏱️</span>
                 <div>
@@ -658,9 +663,9 @@ const PlainTalk = ({ tool }) => {
 
             {/* Analyze button */}
             <button onClick={handleAnalyze}
-              disabled={loading || !inputText.trim() || inputText.trim().length < 30}
+              disabled={loading || (!pdfBase64 && (!inputText.trim() || inputText.trim().length < 30))}
               className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
-                inputText.trim().length >= 30
+                (pdfBase64 || inputText.trim().length >= 30)
                   ? `${c.btnPrimary} shadow-cyan-200 dark:shadow-cyan-900/40`
                   : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
               }`}>

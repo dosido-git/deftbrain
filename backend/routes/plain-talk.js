@@ -37,13 +37,37 @@ const LEGALISH = /contract|agreement|terms|lease|policy|warranty|vertrag|klausel
 
 router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { text, textType, focusQuestion, userLanguage } = req.body;
+    const { text, pdfBase64, textType, focusQuestion, userLanguage } = req.body;
 
-    if (!text || !text.trim()) {
+    if ((!text || !text.trim()) && !pdfBase64) {
       return res.status(400).json({ error: 'Text is required' });
     }
 
-    const trimmed = text.trim().slice(0, 15000); // Cap at ~15k chars
+    // A PDF goes to the model as a document block — it reads them natively.
+    // The frontend used to scrape the bytes in-browser and paste the mojibake
+    // into the textarea (fixed 2026-08-01); nothing here should ever receive
+    // extracted-PDF text again.
+    const contentBlocks = [];
+    if (pdfBase64) {
+      const comma = pdfBase64.indexOf(',');
+      contentBlocks.push({
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: comma !== -1 ? pdfBase64.slice(comma + 1) : pdfBase64 },
+      });
+      contentBlocks.push({
+        type: 'text',
+        text: 'The document above is the text to analyze. Read all of it and treat it as the input document.',
+      });
+    }
+    // withLanguage does string interpolation, so it must never touch the block
+    // array — that would stringify it and destroy the PDF for non-English
+    // users. Each prompt below is wrapped individually, then appended here.
+    const messagesFor = (promptText) => [{
+      role: 'user',
+      content: contentBlocks.length ? [...contentBlocks, { type: 'text', text: promptText }] : promptText,
+    }];
+
+    const trimmed = (text || '').trim().slice(0, 15000); // Cap at ~15k chars
     const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE (user-specified): ${textType}` : '';
     const focusHint = focusQuestion ? `\nUSER'S SPECIFIC QUESTION: "${focusQuestion}"` : '';
 
@@ -63,9 +87,7 @@ router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const promptSections = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
----
-${trimmed}
----
+${trimmed ? `---\n${trimmed}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}
 ${typeHint}${focusHint}${legalHint}
 
 INSTRUCTIONS:
@@ -108,9 +130,7 @@ CRITICAL RULES:
     const promptAnalysis = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
----
-${trimmed}
----
+${trimmed ? `---\n${trimmed}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}
 ${typeHint}${focusHint}${legalHint}
 
 INSTRUCTIONS:
@@ -182,12 +202,12 @@ CRITICAL RULES:
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 7500,
-        messages: [{ role: 'user', content: promptSections }]
+        messages: messagesFor(promptSections)
       }, { label: 'plain-talk' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4500,
-        messages: [{ role: 'user', content: promptAnalysis }]
+        messages: messagesFor(promptAnalysis)
       }, { label: 'plain-talk-analysis' })
     ]);
     // Disjoint top-level keys — merge back into the original response shape.

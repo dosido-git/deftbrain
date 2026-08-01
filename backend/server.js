@@ -71,7 +71,8 @@ const LARGE_BODY_PREFIXES = [
   '/api/bike-medic', '/api/bill-rescue', '/api/buy-wise', '/api/caption-magic',
   '/api/doctor-visit-translator', '/api/jargon-assassin', '/api/laundro-mat',
   '/api/lease-trap-detector', '/api/mise-en-place', '/api/pet-weirdness-decoder',
-  '/api/plant-rescue', '/api/quote-check', '/api/recipe-chaos-solver', '/api/the-final-word',
+  '/api/plant-rescue', '/api/plaintalk', '/api/quote-check', '/api/recipe-chaos-solver',
+  '/api/the-final-word',
 ];
 const largeJson = express.json({ limit: '12mb' });
 app.use((req, res, next) => {
