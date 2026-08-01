@@ -56,7 +56,7 @@ const GlobalHeader = ({ searchTerm, setSearchTerm, toolCount }) => {
           scrolled ? 'flex-row items-center gap-4 pb-0' : 'flex-col items-end'
         }`}>
           <p className={`text-slate-500 leading-snug text-end transition-all duration-300 ${
-            scrolled ? 'text-[10px] hidden sm:block' : 'text-[11px]'
+            scrolled ? 'text-xs hidden sm:block' : 'text-xs'
           }`}>
             <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
           </p>

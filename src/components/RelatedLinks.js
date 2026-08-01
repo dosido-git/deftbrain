@@ -111,8 +111,11 @@ export default function RelatedLinks() {
     const picks = [];
     for (const list of Object.values(byTool)) if (list[0] && picks.length < 10) picks.push(list[0]);
     const links = picks.map(g => ({ href: `/guides/${g.category}/${g.slug}`, text: g.title }));
+    // py-2 -my-2: this link measured 13px tall at 390px, far under WCAG 2.2 AA's
+    // 24px floor. Padding raises the hit box; the negative margin keeps the
+    // surrounding line height unchanged.
     const hub = (
-      <> — <a href="/guides" className={c.link}>browse all {guides.length} &rarr;</a></>
+      <> — <a href="/guides" className={`${c.link} inline-block py-2 -my-2`}>browse all {guides.length} &rarr;</a></>
     );
     body = (
       <>

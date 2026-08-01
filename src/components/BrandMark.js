@@ -15,9 +15,13 @@
 import React from 'react';
 
 const SIZES = {
-  lg: { img: 'h-28 sm:h-32', text: 'text-3xl sm:text-4xl', tagline: 'text-[11px]', taglineTracking: 'tracking-[0.45em]', gap: 'gap-3' },
-  md: { img: 'h-20 sm:h-24', text: 'text-2xl sm:text-3xl', tagline: 'text-[10px]', taglineTracking: 'tracking-[0.45em]', gap: 'gap-2.5' },
-  sm: { img: 'h-14 sm:h-16', text: 'text-xl sm:text-2xl',  tagline: 'text-[10px]', taglineTracking: 'tracking-[0.18em]', gap: 'gap-2' },
+  // Tagline floor is 12px everywhere. 10-11px was reported as hard to read
+  // (2026-07-30); the tool-page instance was raised in 2da35e34 and these were
+  // missed. This line carries the brand argument — it should not be the
+  // smallest text on the page.
+  lg: { img: 'h-28 sm:h-32', text: 'text-3xl sm:text-4xl', tagline: 'text-xs', taglineTracking: 'tracking-[0.45em]', gap: 'gap-3' },
+  md: { img: 'h-20 sm:h-24', text: 'text-2xl sm:text-3xl', tagline: 'text-xs', taglineTracking: 'tracking-[0.45em]', gap: 'gap-2.5' },
+  sm: { img: 'h-14 sm:h-16', text: 'text-xl sm:text-2xl',  tagline: 'text-xs', taglineTracking: 'tracking-[0.18em]', gap: 'gap-2' },
 };
 
 const BrandMark = ({

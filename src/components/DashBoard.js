@@ -354,7 +354,10 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           >
             Browse Categories ↓
           </button>
-          <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline" style={{ color: CLR.gold700 }}>
+          {/* inline-flex + min-h lifts the hit box to 44px without changing the
+              type size — it measured 20px tall, under WCAG 2.2 AA's 24px floor,
+              on the fold. -my-2 keeps the visual gap unchanged. */}
+          <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline inline-flex items-center min-h-[44px] -my-2" style={{ color: CLR.gold700 }}>
             or describe your problem — we&rsquo;ll find the tool &rarr;
           </Link>
         </div>

@@ -49,7 +49,7 @@ Fix is a judgment call on header density, so it is not applied here: either
 stretch the select to fill the pill, or overlay a transparent full-bleed select
 and render the current value as text.
 
-### 2. Small text below 12px — LOW/MEDIUM
+### 2. Small text below 12px — FIXED 2026-08-01 (deft line)
 
 | Where | Size |
 |---|---|
@@ -57,9 +57,11 @@ and render the current value as text.
 | Category badge (`Loot`) on tool pages | 10px |
 | Dashboard | ~190 elements under 12px |
 
-The tool-page instance of the *deft* line was raised to 12px on 2026-07-30
-(`2da35e34`); the header/brandmark instances were not, and still render 10–11px.
-Same fix, same reasoning, not yet applied.
+The tool-page instance was raised to 12px on 2026-07-30 (`2da35e34`); the
+`BrandMark` (all three sizes) and `GlobalHeader` (scrolled and unscrolled)
+instances were missed and still rendered 10–11px. Now 12px everywhere.
+The ~190 dashboard elements under 12px are labels and metadata, not the brand
+line, and are left as-is.
 
 ### 3. Dashboard header collides with the brandmark at 390px — FIXED 2026-08-01
 
@@ -73,11 +75,25 @@ next — which is what `ToolPageWrapper` already did on mobile, so the dashboard
 was the only surface with the bug. Verified at 390px (overlap NONE, no
 horizontal scroll) and at 900px (still one row, pills right, overlap NONE).
 
-### 4. Dashboard density — MEDIUM, mobile
+### 4. Dashboard controls under 40px — TRIAGED 2026-08-01
 
-At 454px: **31 controls under 40px** and ~190 text nodes under 12px. The
-dashboard is the entry point for anyone arriving at the root domain, and it is
-the densest page on the site at mobile width.
+31 controls measured under 40px at 390px. Broken down, most are fine:
+
+| Count | Height | What |
+|---:|---:|---|
+| 21 | 35px | tool-list links in the catalog grid |
+| 6 | 32px | footer nav (Find a Tool, Guides, About) |
+| 2 | 32px | locale pills (raised from 26px) |
+| 1 | **20px** | "or describe your problem" CTA, on the fold |
+| 1 | **13px** | "browse all N →" guides-hub link |
+
+Apple's 44px is guidance for standalone targets; WCAG 2.2 AA's binding floor is
+24px. The 35px and 32px groups clear it comfortably and sit in list contexts
+with separated neighbours — left alone deliberately.
+
+The last two did NOT clear it and are fixed: both got padding with a
+compensating negative margin, so the hit box grows without changing type size
+or layout. The CTA is now 44px. Controls under 24px on the dashboard: **0**.
 
 ### 5. Static sweep — clean apart from three cosmetic items
 
@@ -101,10 +117,12 @@ output is meant to include cards and layout, it currently cannot.
 
 ## Not verified — do not treat as clean
 
-- **True desktop layout.** The browser pane capped at ~450px wide; the
-  "desktop" preset reported a 253px viewport. Every desktop-specific finding in
-  this document is therefore untested, including the one overflow warning,
-  which is an artefact of the narrow pane rather than a real defect.
+- **Wide-viewport coverage is thin, not absent.** An earlier note here claimed
+  the browser pane could not exceed ~450px. That was wrong — it resizes to
+  1440px fine; the 253px reading came from the "desktop" preset, which restores
+  the pane's own width rather than setting a desktop one. Checked at 1440px:
+  no horizontal overflow, deft line 12px. But only the dashboard was checked
+  there, so tool and guide pages remain unverified at desktop width.
 - **Real-device behaviour.** Tap targets were measured geometrically, not by
   tapping. iOS Safari in particular applies its own minimum hit-slop that can
   rescue a small control.
