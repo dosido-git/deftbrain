@@ -43,12 +43,16 @@ const add = (id, severity, title, detail, items = []) =>
   findings.push({ id, severity, title, detail, count: items.length || undefined, items: items.slice(0, 8) });
 
 // ── R1: optional capability never supplied ───────────────────────────────────
+// NOTE: do not add `resultsRef` here. PrintBtn's signature is ({ label }) — it
+// prints the rendered page through window.print() and the print CSS, and never
+// accepted a ref. Counting it as an unsupplied capability produced a false
+// finding on 2026-08-01. A prop being declared somewhere is not evidence that a
+// capability exists; check the consumer's signature.
 const CENTRAL_DEFAULTS = new Set(['shareUrl']); // defaulted in ActionBarContext, so a low per-tool count is fine
 const OPTIONAL = [
   ['shareUrl', /shareUrl/, 'ShareBtn/ActionBar accept a url; without it a native share has no link or preview card'],
   ['copyLabel', /copyLabel=/, 'ActionBar copy button says a generic "Copy" instead of naming what is copied'],
   ['printLabel', /printLabel=/, 'ActionBar print button is unlabelled for its content'],
-  ['resultsRef', /resultsRef=/, 'PrintBtn can print the RENDERED results element; without it print falls back to the text export'],
 ];
 for (const [name, re, why] of OPTIONAL) {
   const have = toolFiles.filter(f => re.test(readTool(f)));

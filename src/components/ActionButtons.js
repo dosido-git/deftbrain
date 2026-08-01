@@ -235,7 +235,6 @@ export const PrintBtn = ({ label }) => {
  */
 export const ActionBar = ({
   content,
-  resultsRef,
   title = 'DeftBrain',
   copyLabel,
   printLabel,
@@ -249,7 +248,15 @@ export const ActionBar = ({
     <div data-print-hide className="flex items-center gap-2">
       {showCopy && <CopyBtn content={content} label={copyLabel} onCopied={onCopied} />}
       {showShare && <ShareBtn content={content} title={title} url={shareUrl} />}
-      {showPrint && <PrintBtn content={content} resultsRef={resultsRef} title={title} label={printLabel} />}
+      {/* PrintBtn takes only `label`. It prints the RENDERED page via
+          window.print() plus the print CSS in ToolPageWrapper — data-print-hide
+          drops the chrome, data-print-main expands the tool's output to full
+          width — so it never needed content, a ref, or a title. Those three
+          props were forwarded and silently ignored, and reading them as a
+          capability is what produced a false "print never shows rendered
+          results" finding on 2026-08-01. Removed so the signature tells the
+          truth. */}
+      {showPrint && <PrintBtn label={printLabel} />}
     </div>
   );
 };

@@ -107,11 +107,25 @@ or layout. The CTA is now 44px. Controls under 24px on the dashboard: **0**.
 | R7 `<img>` without `alt` | 0 |
 | R1 `copyLabel` / `printLabel` / `resultsRef` | 0/126 each |
 
-`resultsRef` is the only one of the three worth a second look: `PrintBtn`
-accepts it to print the **rendered** results element, and with none supplied
-every tool prints from the plain-text export instead. That may well be
-deliberate — text prints more predictably than a React tree — but if print
-output is meant to include cards and layout, it currently cannot.
+**Correction (2026-08-01).** An earlier version of this section claimed
+`resultsRef` at 0/126 meant print never showed rendered results. That was
+wrong. `PrintBtn`'s signature is `({ label })` — it never accepted a ref. It
+prints the **rendered page** via `window.print()` plus the print CSS in
+`ToolPageWrapper`: `data-print-hide` drops the chrome, `data-print-main`
+expands the tool's output to full width, backgrounds go white. Printing has
+always done exactly what it is meant to do.
+
+What was actually there: `ActionBar` declared `resultsRef` and forwarded
+`content`, `resultsRef` and `title` to a component that accepts none of them.
+Three dead props — harmless at runtime, and precisely what produced the false
+finding. Removed.
+
+Lesson for the audit: a prop being *declared* is not evidence a capability
+*exists*. The R1 check now reads the consumer's signature, and the `resultsRef`
+probe is deleted rather than left to re-manufacture the same error.
+
+`copyLabel` and `printLabel` remain unsupplied at 0/126 — genuinely cosmetic,
+the buttons read "Copy" and "Print" rather than naming their content.
 
 ---
 
