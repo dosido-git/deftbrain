@@ -490,10 +490,16 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       const lang = (e.props && e.props.lang) || '?';
       (locLangs[l] = locLangs[l] || {})[lang] = (locLangs[l][lang] || 0) + 1;
     }
-    for (const e of events) {
-      if (e.event !== 'interact' || !e.location) continue;
-      locInteract[e.location] = (locInteract[e.location] || 0) + 1;
-    }
+    // `location` is only attached to `interact` from 2026-08-01, so events
+    // recorded before that carry none. Count how many ARE attributable: with
+    // zero, the per-country column is MISSING DATA, not a finding, and must
+    // never be rendered as "no interaction" — that reads as evidence of bots
+    // and is how this shipped wrong the first time.
+    const interactAll = events.filter(e => e.event === 'interact');
+    const interactLocated = interactAll.filter(e => e.location);
+    for (const e of interactLocated) locInteract[e.location] = (locInteract[e.location] || 0) + 1;
+    const interactAttributable = interactLocated.length > 0;
+    const interactUnattributed = interactAll.length - interactLocated.length;
     const topLang = l => {
       const m = locLangs[l] || {};
       const [best, n] = Object.entries(m).sort((a, b) => b[1] - a[1])[0] || ['?', 0];
@@ -506,6 +512,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const locMax = Math.max(1, ...Object.values(locs));
     const locRows = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 20)
       .map(([l, n]) => {
+        if (!interactAttributable) return barRow(l, n, locMax, topLang(l));
         const ia = locInteract[l] || 0;
         const flag = ia === 0 && n >= 3
           ? ' <span style="color:#b45309;font-weight:600">no interaction</span>'
@@ -554,7 +561,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
     <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Locations (sessions)</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. &ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers. Interaction-by-country only counts sessions recorded after 2026-08-01.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. ${interactAttributable
+      ? '&ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers.'
+      : `Interaction is not yet attributable to a country: ${interactUnattributed} interactive session${interactUnattributed === 1 ? '' : 's'} in this window predate the 2026-08-01 change that records location on the interact beacon. The headline &ldquo;interactive&rdquo; count is unaffected. This column will populate as new sessions arrive.`}</p>
     <table>${locRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Recent feedback</h2>
