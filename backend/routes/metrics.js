@@ -122,9 +122,16 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   if (isExcluded(req)) return res.status(204).end();
   const { event, path, props, ref, sawGuide } = req.body || {};
   if (!event || typeof event !== 'string') return res.status(204).end();
-  // One location per session (on the new-session page_view), not per event —
-  // matches how `sessions`/`returning` are already scoped in the report below.
-  const location = (event === 'page_view' && props && props.newSession) ? locationOf(req) : undefined;
+  // One location per session, not per event. Two events qualify, and both are
+  // once-per-session by construction: the new-session page_view, and `interact`
+  // (analytics.js fires it exactly once, guarded by sessionStorage). Tagging
+  // `interact` too is what makes "which countries are actually HUMAN" answerable
+  // — without it the location table cannot be crossed against the human signal,
+  // and a block of non-interactive sessions from one country is indistinguishable
+  // from real readers (asked 2026-08-01: 19 BR sessions, 23/26 reporting en-US).
+  // Same privacy posture as before: derived at write time, IP discarded, never stored.
+  const isSessionScoped = (event === 'page_view' && props && props.newSession) || event === 'interact';
+  const location = isSessionScoped ? locationOf(req) : undefined;
   logMetric('event', {
     event: event.slice(0, 60),
     path,
@@ -470,11 +477,41 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     for (const e of returningSessions) { const b = e.props.bucket || '?'; buckets[b] = (buckets[b] || 0) + 1; }
 
     // ── locations (session-scoped, derived server-side from IP at write time — see locationOf) ──
+    // Sessions alone cannot tell readers from traffic. Each location is crossed
+    // against the once-per-session `interact` beacon and the session's reported
+    // browser language: a country with many sessions, ~no interaction and a
+    // language that does not match it is proxy/scraper traffic, not an audience.
     const locs = {};
-    for (const e of sessions) { const l = e.location; if (l) locs[l] = (locs[l] || 0) + 1; }
+    const locInteract = {};
+    const locLangs = {};
+    for (const e of sessions) {
+      const l = e.location; if (!l) continue;
+      locs[l] = (locs[l] || 0) + 1;
+      const lang = (e.props && e.props.lang) || '?';
+      (locLangs[l] = locLangs[l] || {})[lang] = (locLangs[l][lang] || 0) + 1;
+    }
+    for (const e of events) {
+      if (e.event !== 'interact' || !e.location) continue;
+      locInteract[e.location] = (locInteract[e.location] || 0) + 1;
+    }
+    const topLang = l => {
+      const m = locLangs[l] || {};
+      const [best, n] = Object.entries(m).sort((a, b) => b[1] - a[1])[0] || ['?', 0];
+      const tot = Object.values(m).reduce((a, b) => a + b, 0) || 1;
+      // barRow renders `extra` as raw HTML, and `lang` arrives in a client-POSTed
+      // props object — escape it. The dashboard is key-gated, but stored XSS in
+      // an admin panel is still stored XSS.
+      return `${escH(best)} (${Math.round(n / tot * 100)}%)`;
+    };
     const locMax = Math.max(1, ...Object.values(locs));
     const locRows = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 20)
-      .map(([l, n]) => barRow(l, n, locMax)).join('');
+      .map(([l, n]) => {
+        const ia = locInteract[l] || 0;
+        const flag = ia === 0 && n >= 3
+          ? ' <span style="color:#b45309;font-weight:600">no interaction</span>'
+          : '';
+        return barRow(l, n, locMax, `${ia} interactive · ${topLang(l)}${flag}`);
+      }).join('');
     const locKnown = Object.values(locs).reduce((a, b) => a + b, 0);
     const ideaRows = ideas.slice(-50).reverse().map(r =>
       `<tr><td>${escH(r.problem || '')}</td><td>${escH(r.source || '')}</td><td>${escH(r.query || '')}</td><td style="white-space:nowrap">${escH((r.at || '').slice(0, 10))}</td></tr>`
@@ -517,7 +554,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
     <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Locations (sessions)</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Derived from IP at write time (offline lookup, no third-party call); the IP itself is discarded, never stored. ${locKnown}/${sessions.length} sessions resolved. &ldquo;Interactive&rdquo; = sessions that produced a real gesture; a country with sessions but none of them, or a browser language that does not match the country, is very likely proxy traffic rather than readers. Interaction-by-country only counts sessions recorded after 2026-08-01.</p>
     <table>${locRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Languages (sessions)</h2><table>${langRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Recent feedback</h2>
