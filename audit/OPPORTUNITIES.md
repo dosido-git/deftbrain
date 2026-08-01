@@ -14,7 +14,24 @@ schema mismatch, or a golden regression.
 
 ## Verified findings
 
-### 1. Locale selectors: 16px tap target — MEDIUM, every page
+### 1. Locale selectors: 16px tap target — FIXED 2026-08-01
+
+Resolved in `LocaleSelectors.js`. Original finding kept below for the record.
+
+The select is now absolutely positioned over the whole pill at opacity 0 with
+`-inset-px` (an absolutely positioned box lays out against the ancestor's
+PADDING box, so `inset-0` would leave the 1px border ring uncovered), and the
+chosen value renders as ordinary text beside the glyph. Verified by
+`elementFromPoint` at the caret, both far corners and the centre — every probe
+returns the select. Pill height 26px → 32px, which clears WCAG 2.2 AA's 24px
+floor but is still under Apple's 44px guidance; going further would change
+header density, so it was left as a separate decision.
+
+Side effect worth having: the pills got NARROWER, 305px combined → 165px,
+because the value renders as truncated text rather than the native select
+sizing to its widest option.
+
+#### Original finding — 16px tap target, every page
 
 `src/components/LocaleSelectors.js`. The `<select>` carries no vertical
 padding, so the actual hit area is **16px tall** inside a 26px decorative pill.
@@ -44,13 +61,21 @@ The tool-page instance of the *deft* line was raised to 12px on 2026-07-30
 (`2da35e34`); the header/brandmark instances were not, and still render 10–11px.
 Same fix, same reasoning, not yet applied.
 
-### 3. Dashboard density — MEDIUM, mobile
+### 3. Dashboard header collides with the brandmark at 390px — MEDIUM, mobile
+
+At 390px the locale pills sit on top of the "DeftBrain" wordmark on the
+dashboard: the brand block and the pills compete for one row and neither wraps.
+Pre-existing, and improved rather than caused by the tap-target fix (pills went
+305px → 165px combined), but still visibly overlapping. The header needs to
+wrap or the brand needs to shrink at that width.
+
+### 4. Dashboard density — MEDIUM, mobile
 
 At 454px: **31 controls under 40px** and ~190 text nodes under 12px. The
 dashboard is the entry point for anyone arriving at the root domain, and it is
 the densest page on the site at mobile width.
 
-### 4. Static sweep — clean apart from three cosmetic items
+### 5. Static sweep — clean apart from three cosmetic items
 
 | Check | Result |
 |---|---|
