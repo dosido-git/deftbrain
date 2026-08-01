@@ -636,6 +636,26 @@ const PlainTalk = ({ tool }) => {
               </div>
             </div>
 
+            {/* Long-document heads-up.
+                PlainTalk translates EVERY section, so output — and therefore
+                wall-clock — scales with input length. Unlike the rest of the
+                catalog it has no fixed ceiling, so it cannot meet the sitewide
+                <60s target by architecture (measured 2026-07-31: a 3.7k-char
+                lease runs ~124s after the flags cap). Setting the expectation
+                up front is the honest fix; showing it before submit lets the
+                reader decide, and again while running reassures them it has
+                not hung. Threshold ~2.5k chars ≈ the point where the section
+                pass starts to dominate. */}
+            {(inputText.trim().length >= 2500 || loading) && (
+              <div className={`${c.warning} border rounded-xl p-3.5 flex items-start gap-2.5`} role="status">
+                <span aria-hidden="true" className="flex-shrink-0">⏱️</span>
+                <div>
+                  <p className="text-sm font-bold">{t('plt_long_title')}</p>
+                  <p className="text-xs leading-relaxed mt-0.5">{t('plt_long_body')}</p>
+                </div>
+              </div>
+            )}
+
             {/* Analyze button */}
             <button onClick={handleAnalyze}
               disabled={loading || !inputText.trim() || inputText.trim().length < 30}

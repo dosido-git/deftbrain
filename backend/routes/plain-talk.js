@@ -85,7 +85,7 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
       "title": "Short descriptive title for this section",
       "purpose": "What this section is DOING in the document (e.g., 'Limits your ability to sue', 'Establishes the payment schedule')",
       "importance": "high|medium|low",
-      "flags": ["Any red flags, asymmetries, or notable aspects of this section"]
+      "flags": ["At most 2, and only when genuinely notable — a red flag, an asymmetry, or a term that costs the reader something. Omit the array entirely when a section is routine."]
     }
   ]
 }
