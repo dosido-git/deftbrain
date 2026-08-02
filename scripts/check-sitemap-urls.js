@@ -42,11 +42,16 @@ const sitemaps = ['sitemap-app.xml', 'guides-sitemap.xml'];
 let total = 0;
 const missing = [];
 
-// A sitemap URL whose page carries <meta name="robots" content="noindex"> sends
-// Google contradictory signals ("index this" / "don't index this") — exactly the
-// drift the tools keep-list split (sitemap in generate-sitemap.js, noindex in
+// A sitemap URL whose page carries a noindex directive sends Google
+// contradictory signals ("index this" / "don't index this") — exactly the drift
+// the tools keep-list split (sitemap in generate-sitemap.js, noindex in
 // prerender.js) could create if the two ever read different lists.
-const NOINDEX_RE = /<meta\s+name="robots"\s+content="[^"]*noindex[^"]*"/i;
+//
+// Matches BOTH `robots` and `googlebot`. The directive was scoped to googlebot
+// on 2026-08-02 so Bing keeps the pages; a regex hard-coded to `robots` would
+// have matched nothing from that day on and passed vacuously forever — the
+// failure mode this gate exists to prevent, in the gate itself.
+const NOINDEX_RE = /<meta\s+name="(robots|googlebot)"\s+content="[^"]*noindex[^"]*"/i;
 
 for (const sm of sitemaps) {
   const urls = locs(path.join(BUILD, sm));

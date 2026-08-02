@@ -52,7 +52,7 @@ const { getToolIndexHTML } = require(path.join(ROOT, 'src', 'seo', 'chrome'));
 
 // ── Tools keep-list (SEO concentration, 2026-07) ──
 // Union of focus+keepers = the INDEXABLE tool set. Every other tool page stays
-// fully live for users but gets <meta name="robots" content="noindex"> so
+// fully live for users but gets <meta name="googlebot" content="noindex"> so
 // Google sees a small, deliberate footprint instead of 122 template siblings.
 // generate-sitemap.js filters the sitemap from the SAME file, and
 // check-sitemap-urls.js asserts sitemap ∩ noindex = ∅. Missing file = hard
@@ -318,9 +318,17 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   // so noindexed pages no longer ship a conflicting "index, follow" alongside
   // the noindex (Google resolved it correctly — most restrictive wins — but
   // one unambiguous directive beats relying on conflict resolution).
+  // Scoped to GOOGLEBOT, not all robots (2026-08-02). The keep-list exists to
+  // protect Google's site-quality signal — that is where indexing collapsed to
+  // ~67 pages. A bare `robots` directive applies to every crawler, so it also
+  // cost Bing, which was indexing the whole catalogue happily and which feeds
+  // ChatGPT Search and Copilot. Naming googlebot keeps the Google-facing
+  // concentration exactly as it was and gives the other engines their pages
+  // back. Indexable pages keep the all-crawler "index, follow": there is
+  // nothing to scope when the answer is yes to everyone.
   const robotsTag = INDEXABLE_TOOLS.has(id)
     ? [`<meta name="robots" content="index, follow" />`]
-    : [`<meta name="robots" content="noindex" />`];
+    : [`<meta name="googlebot" content="noindex" />`];
 
   const metaBlock = [
     `<title>${safeTitle}</title>`,
@@ -352,7 +360,7 @@ function injectMeta(template, { id, title, description, tagline, seoTitle, seoDe
   html = html.replace(/<title>[^<]*<\/title>/gi, '');
   html = html.replace(/<meta\s+name="description"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="author"[^>]*>/gi, '');
-  html = html.replace(/<meta\s+name="robots"[^>]*>/gi, '');
+  html = html.replace(/<meta\s+name="(robots|googlebot)"[^>]*>/gi, '');
   html = html.replace(/<meta\s+property="og:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<meta\s+name="twitter:[^"]*"[^>]*>/gi, '');
   html = html.replace(/<link\s+rel="canonical"[^>]*>/gi, '');
