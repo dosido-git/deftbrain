@@ -97,6 +97,13 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
 
+  "noticed": [
+    {
+      "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder or DecisionCoach",
+      "why": "One short sentence on what that tool would do about it"
+    }
+  ],
   "total_cost": {
     "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [
@@ -342,6 +349,13 @@ ${schema}`;
 
     // ── 2b) GROUP B — cost (the token-heavy money panels) ──
     const GROUP_B = `{
+  "noticed": [
+    {
+      "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder or DecisionCoach",
+      "why": "One short sentence on what that tool would do about it"
+    }
+  ],
   "total_cost": {
     "summary": "What will this ACTUALLY cost over time? Include consumables, maintenance, accessories, and hidden costs. — 1-2 sentences",
     "breakdown": [

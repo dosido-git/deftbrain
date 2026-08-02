@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect, useReducer, useRef } 
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { getToolById } from '../data/tools';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { Spin, pendingClass, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
@@ -985,6 +986,37 @@ const BuyWise = ({ tool }) => {
             )}
           </div>
         )}
+
+        {/* ── "Also worth knowing" ──────────────────────────────────────
+            The model researches the whole purchase; everything it saw beyond
+            the verdict used to be discarded and replaced with the same two
+            hardcoded cross-refs shown to everyone. These come from THIS
+            purchase. Empty array renders nothing.
+            Tool ids are resolved through getToolById() and dropped if unknown —
+            the model can name a tool that does not exist. */}
+        {Array.isArray(r.noticed) && (() => {
+          const found = r.noticed
+            .map(n => ({ ...n, tool: getToolById(n.tool) }))
+            .filter(n => n.tool && n.what);
+          if (!found.length) return null;
+          return (
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>{t('bw_noticed_title')}</p>
+              <ul className="space-y-2">
+                {found.map((n, i) => (
+                  <li key={i} className={`text-sm flex items-start gap-2 ${c.textSecondary}`}>
+                    <span aria-hidden="true" className="flex-shrink-0">{n.tool.icon}</span>
+                    <span>
+                      {n.what}{' '}
+                      <a href={`/${n.tool.id}`} className={`font-semibold ${c.textCyan}`}>{n.tool.title}</a>
+                      {n.why ? ` — ${n.why}` : ''}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
 
         {/* Verdict */}
         {r.verdict && (
