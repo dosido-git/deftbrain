@@ -201,7 +201,7 @@ RESOURCES FOR ${location}:
   },
   "noticed": [
     {
-      "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant money or gives up a right — a standard term like a no-pets clause or an ordinary late fee is not worth raising, however real it is. Two entries is a lot; zero is the normal answer for an unremarkable lease, and an empty array is correct.",
+      "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant real money or strips a protection they would otherwise have. A term that is standard, or that already favours the tenant, is NEVER worth raising however true it is — normal venue, an ordinary late fee, a refundable pet deposit, a routine notice period are all fine and must be left alone. Do not reach: if you are describing an omission rather than a harm, leave it out. Two entries is a lot; zero is the expected answer for an unremarkable lease and an empty array is the correct response, not a failure.",
       "tool": "Exactly one of these English identifiers, copied verbatim and never translated: BillRescue or RentersDepositSaver or ComplaintEscalationWriter or MoneyDiplomat or JargonAssassin or VelvetHammer or DifficultTalkCoach",
       "why": "One short sentence on what that tool would do about it"
     }
