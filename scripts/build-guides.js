@@ -297,11 +297,6 @@ ${featuresHtml}
         <span class="cta-subtext">No account required to get started.</span>
       </div>
 
-      <div class="section-rule"><span>Related situations</span></div>
-      <div class="related-grid">
-${relatedCards}
-      </div>
-
       <!-- Cite / link block.
            Guides are the linkable asset — nobody links a form, people link an
            explainer they found useful — and the audience that would link is the
@@ -350,6 +345,12 @@ ${relatedCards}
           });
         })();
       </script>
+
+      <div class="section-rule"><span>Related situations</span></div>
+      <div class="related-grid">
+${relatedCards}
+      </div>
+
 
     </div>
   </main>
