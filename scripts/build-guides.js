@@ -187,8 +187,46 @@ function renderGuide(spec, siblings) {
     .join('\n');
 
   // Related-grid: every sibling except self, in spec-file declaration order
-  const relatedCards = siblings
-    .filter(s => s.slug !== spec.slug)
+  // ── Related guides: capped and chosen, not "everything in the folder" ──
+  // This was uncapped, so a guide rendered every sibling in its category — 92
+  // cards on a conversations guide, 33,018 related-card links sitewide. Nobody
+  // reads 92 cards, and on the big categories it was most of the page's markup.
+  //
+  // Selection is deterministic (no Math.random — the build must be
+  // reproducible): 4 by relatedness, then 1 rotating pick so link coverage
+  // spreads across the category instead of the same few guides absorbing every
+  // link. Guides sharing a cta.toolId are genuinely about the same problem, so
+  // that outranks wording overlap.
+  const RELATED_MAX = 5;
+  const STOP = new Set(['the','and','for','with','you','your','that','this','from','when','what','how','why','are','not','but','all','can','into','than','then','they','their','have','has','was','were','will','who','whom','its','out','get','got','one','two','a','an','of','to','in','on','is','it','be','do','if','or','at','as','my','me']);
+  const bagOf = (g) => new Set(
+    `${g.title} ${g.description || ''}`.toLowerCase().match(/[a-z']{3,}/g)?.filter(w => !STOP.has(w)) || []
+  );
+  const selfBag = bagOf(spec);
+  const pool = siblings.filter(s => s.slug !== spec.slug);
+  const scored = pool.map(s => {
+    const b = bagOf(s);
+    let overlap = 0;
+    b.forEach(w => { if (selfBag.has(w)) overlap++; });
+    const sameTool = s.cta?.toolId && spec.cta?.toolId && s.cta.toolId === spec.cta.toolId;
+    return { s, score: (sameTool ? 100 : 0) + overlap };
+  // Tie-break on slug so the order never depends on directory-read order.
+  }).sort((a, b) => b.score - a.score || a.s.slug.localeCompare(b.s.slug));
+
+  const picked = scored.slice(0, RELATED_MAX - 1).map(x => x.s);
+  // Rotating slot: walk the alphabetical pool from an offset derived from this
+  // guide's own position, so every sibling eventually gets inbound links even
+  // if it never scores well on wording.
+  const alpha = [...pool].sort((a, b) => a.slug.localeCompare(b.slug));
+  if (alpha.length) {
+    const start = alpha.findIndex(x => x.slug > spec.slug);
+    for (let i = 0; i < alpha.length; i++) {
+      const cand = alpha[(Math.max(0, start) + i) % alpha.length];
+      if (!picked.some(p => p.slug === cand.slug)) { picked.push(cand); break; }
+    }
+  }
+
+  const relatedCards = picked
     .map(s => `        <a href="/guides/${s.category}/${s.slug}" class="related-card">
           <div class="rel-cat">${esc(s.categoryLabel)}</div>
           <div class="rel-title">${esc(s.navTitle)}</div>
