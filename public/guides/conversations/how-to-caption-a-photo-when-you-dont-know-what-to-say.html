@@ -192,6 +192,63 @@
         })();
       </script>
 
+      <!-- Guide analytics beacon.
+           Guides are STATIC HTML — src/utils/analytics.js only runs inside the
+           React app, and there is no /guides route there, so until now 552
+           pages emitted nothing at all. Two consequences: guide readership was
+           entirely invisible, and sawGuide could never be set, which made
+           "Guide → tool crossover" a stat that could only ever report 0.
+           Mirrors analytics.js exactly — same endpoint, same payload shape,
+           same operator opt-out, same privacy posture (no cookies, no
+           identifier ever leaves the browser; the client reports only a
+           boolean and a coarse recency bucket). -->
+      <script>
+        (function () {
+          try {
+            if (localStorage.getItem('db-operator') === '1') return;
+          } catch (e) { /* storage blocked — still send, just without context */ }
+          var now = Date.now(), first = null, returning = false, bucket = 'new';
+          var newSession = false, ref, lang;
+          try {
+            first = parseInt(localStorage.getItem('db-first-seen'), 10) || null;
+            returning = !!first;
+            if (!first) localStorage.setItem('db-first-seen', String(now));
+            var days = first ? Math.floor((now - first) / 86400000) : 0;
+            bucket = !returning ? 'new' : days <= 7 ? '1-7d' : days <= 30 ? '8-30d' : '30d+';
+            if (!sessionStorage.getItem('db-sess')) { sessionStorage.setItem('db-sess', '1'); newSession = true; }
+            if (newSession) {
+              var q = new URLSearchParams(location.search);
+              ref = q.get('utm_source') || q.get('ref') || undefined;
+              if (!ref && document.referrer && document.referrer.indexOf(location.hostname) === -1) {
+                ref = new URL(document.referrer).hostname;
+              }
+              if (ref) sessionStorage.setItem('db-ref', ref);
+            } else {
+              ref = sessionStorage.getItem('db-ref') || undefined;
+            }
+            // This is the flag the crossover stat needs: set here so a tool run
+            // later in the same session can report that a guide came first.
+            sessionStorage.setItem('db-saw-guide', '1');
+            lang = (navigator.language || '').slice(0, 5) || undefined;
+          } catch (e) { /* private mode — send what we have */ }
+          var body = JSON.stringify({
+            event: 'page_view',
+            path: location.pathname,
+            ts: now,
+            sawGuide: true,
+            ref: ref,
+            props: { returning: returning, bucket: bucket, newSession: newSession, ref: ref, lang: lang }
+          });
+          try {
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }));
+            } else {
+              fetch('/api/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+            }
+          } catch (e) { /* a broken beacon must never surface to the reader */ }
+        })();
+      </script>
+
       <div class="section-rule"><span>Related situations</span></div>
       <div class="related-grid">
         <a href="/guides/conversations/captions-for-solo-travel-photos" class="related-card">

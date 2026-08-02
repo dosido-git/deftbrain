@@ -468,8 +468,29 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const srcRows = Object.entries(srcSessions).sort((a, b) => b[1] - a[1]).slice(0, 15)
       .map(([r, n]) => barRow(r, n, srcMax, `${srcRuns[r] || 0} runs`)).join('');
 
+    // ── guides ──
+    // Guide pages are static HTML and emitted nothing until 2026-08-02, so
+    // readership was invisible and `sawGuide` was never set — which made the
+    // crossover line below a number that could only ever be 0. Both fixed by
+    // the beacon in scripts/build-guides.js.
+    const guideViews = pv.filter(e => /^\/guides\//.test(e.path || ''));
+    const guideByPath = {}, guideByCat = {};
+    for (const e of guideViews) {
+      const m = (e.path || '').match(/^\/guides\/([a-z-]+)(?:\/([a-z0-9-]+))?/);
+      if (!m) continue;
+      guideByCat[m[1]] = (guideByCat[m[1]] || 0) + 1;
+      const key = m[2] ? `${m[1]}/${m[2]}` : `${m[1]} (hub)`;
+      guideByPath[key] = (guideByPath[key] || 0) + 1;
+    }
+    const guideMax = Math.max(1, ...Object.values(guideByCat));
+    const guideCatRows = Object.entries(guideByCat).sort((a, b) => b[1] - a[1])
+      .map(([c, n]) => barRow(c, n, guideMax)).join('');
+    const guideTopRows = Object.entries(guideByPath).sort((a, b) => b[1] - a[1]).slice(0, 15)
+      .map(([g, n]) => `<tr><td><a href="/guides/${escH(g.replace(' (hub)', ''))}">${escH(g)}</a></td><td>${n}</td></tr>`).join('');
+
     // ── guide→tool crossover + locale + recency ──
     const runsFromGuides = runs.filter(e => e.sawGuide).length;
+    const guideBeaconLive = guideViews.length > 0;
     const langs = {};
     for (const e of sessions) { const l = (e.props && e.props.lang) || '?'; langs[l] = (langs[l] || 0) + 1; }
     const langRows = Object.entries(langs).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([l, n]) => `<tr><td>${escH(l)}</td><td>${n}</td></tr>`).join('');
@@ -556,7 +577,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Guide → tool crossover</h2>
-    <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.</p>
+    <p>${runsFromGuides} of ${runs.length} tool runs (${pct(runsFromGuides, runs.length)}) came from sessions that read a guide first.${guideBeaconLive ? '' : ' <span style="color:#b45309">Guide pages only began reporting on 2026-08-02 — before that this could only ever read 0.</span>'}</p>
+
+    <h2>Guides <span style="font-weight:400;font-size:12px;color:#888">— 552 pages; 112 indexable, the rest live but noindexed</span></h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Guide pages are static HTML and began reporting on 2026-08-02; earlier windows show nothing regardless of real traffic.</p>
+    <h3 style="font-size:14px;margin:12px 0 4px">By category</h3>
+    <table>${guideCatRows || '<tr><td style="color:#888">No guide views in this window.</td></tr>'}</table>
+    <h3 style="font-size:14px;margin:16px 0 4px">Most-read guides</h3>
+    <table>${guideTopRows || '<tr><td style="color:#888">No guide views in this window.</td></tr>'}</table>
     <h2>Return visitors <span style="font-weight:400;font-size:12px;color:#888">— a "return" is this browser (localStorage), not a verified unique person; no cross-device or persistent ID is used</span></h2>
     <p>${returningSessions.length} of ${sessions.length} sessions (${pct(returningSessions.length, sessions.length)}) were returning.</p>
     <table><tr><th>recency</th><th>sessions</th></tr>${Object.entries(buckets).sort((a, b) => b[1] - a[1]).map(([b, n]) => `<tr><td>${escH(b)}</td><td>${n}</td></tr>`).join('') || '<tr><td colspan=2 style="color:#888">No data yet.</td></tr>'}</table>
