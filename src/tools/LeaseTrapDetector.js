@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { getToolById } from '../data/tools';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 
@@ -618,6 +619,41 @@ const LeaseTrapDetector = ({ tool }) => {
 
         {results && (
           <div className="space-y-5">
+            {/* ── "Also noticed" ────────────────────────────────────────────
+                The model reads the whole lease anyway. Until now everything it
+                saw beyond the question asked was discarded and replaced with a
+                hardcoded RentersDepositSaver link shown to every user whether
+                or not their lease had a deposit problem. These are things
+                actually found in THIS document.
+
+                Every tool id is resolved against the real catalog before it
+                renders — the model can name a tool that does not exist, and
+                five guides shipped for months pointing at /Recall, which 404s.
+                An unresolvable id is dropped, not linked. */}
+            {Array.isArray(results.noticed) && (() => {
+              const found = results.noticed
+                .map(n => ({ ...n, tool: getToolById(n.tool) }))
+                .filter(n => n.tool && n.what);
+              if (!found.length) return null;
+              return (
+                <div className={`${c.card} border rounded-2xl p-4`}>
+                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>{t('ltd_noticed_title')}</p>
+                  <ul className="space-y-2">
+                    {found.map((n, i) => (
+                      <li key={i} className="text-sm flex items-start gap-2">
+                        <span aria-hidden="true" className="flex-shrink-0">{n.tool.icon}</span>
+                        <span>
+                          {n.what}{' '}
+                          <a href={`/${n.tool.id}`} className={linkStyle}>{n.tool.title}</a>
+                          {n.why ? ` — ${n.why}` : ''}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
+
             {/* Top bar */}
             <div className="flex items-center justify-between flex-wrap gap-2">
 

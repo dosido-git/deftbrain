@@ -199,6 +199,13 @@ RESOURCES FOR ${location}:
     "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
     "financial_red_flags": ["brief financial concerns"]
   },
+  "noticed": [
+    {
+      "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant money or gives up a right — a standard term like a no-pets clause or an ordinary late fee is not worth raising, however real it is. Two entries is a lot; zero is the normal answer for an unremarkable lease, and an empty array is correct.",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: BillRescue or RentersDepositSaver or ComplaintEscalationWriter or MoneyDiplomat or JargonAssassin or VelvetHammer or DifficultTalkCoach",
+      "why": "One short sentence on what that tool would do about it"
+    }
+  ],
   "security_deposit_analysis": {
     "lease_deposit_amount": "what the lease charges (number)",
     "legal_maximum": "maximum allowed by law in ${location} — one sentence",
@@ -277,7 +284,7 @@ ${outputHeader}
 
 ${schemaB}
 
-Your response MUST contain ALL 6 top-level keys: financial_summary, security_deposit_analysis, unenforceable_clauses, missing_protections, unusual_fees, resources.
+Your response MUST contain ALL 7 top-level keys: noticed, financial_summary, security_deposit_analysis, unenforceable_clauses, missing_protections, unusual_fees, resources.
 
 ${criticalRules}`;
 
