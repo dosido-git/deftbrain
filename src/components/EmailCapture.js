@@ -23,7 +23,18 @@ const EmailCapture = () => {
   const [error, setError] = useState('');
 
   const c = {
-    bg:     isDark ? 'bg-zinc-900' : 'bg-[#faf8f5]',
+    // The BAND steps away from the page, and the CARD steps away from the band.
+    // Previously `bg` was zinc-900 in dark mode — the exact page background —
+    // so the only separation was a 1px zinc-800 rule that is invisible against
+    // zinc-900. Light mode was #faf8f5 against a #fafaf9 page: one point apart.
+    // In practice the block read as more page, directly under the tool's output.
+    bg:     isDark ? 'bg-zinc-950' : 'bg-[#f2ece1]',
+    // zinc-800, not zinc-900: zinc-900 IS the page colour, so the card would
+    // read as a hole rather than an object. Three levels now — page zinc-900,
+    // band zinc-950 (a trough), card zinc-800 (raised) — which is also the
+    // surfaceAlt every other card on a tool page uses.
+    card:   isDark ? 'bg-zinc-800' : 'bg-white',
+    cardBd: isDark ? 'border-zinc-700' : 'border-[#e0d7c6]',
     border: isDark ? 'border-zinc-800' : 'border-[#e8e1d5]',
     head:   isDark ? 'text-zinc-100' : 'text-[#1a2e44]',
     body:   isDark ? 'text-zinc-400' : 'text-[#5a544a]',
@@ -62,8 +73,8 @@ const EmailCapture = () => {
 
   return (
     <div className={`${c.bg} border-t ${c.border} print:hidden`}>
-      <div className="max-w-5xl mx-auto px-5 py-8">
-        <div className="max-w-xl">
+      <div className="max-w-5xl mx-auto px-5 py-10 sm:py-12">
+        <div className={`max-w-xl mx-auto rounded-2xl border ${c.cardBd} ${c.card} px-6 py-7 shadow-sm`}>
           <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>
             <span>📮</span> The Deft Brief
           </p>

@@ -85,10 +85,15 @@ function getToolIndexHTML(tools, relatedHTML = '') {
 
 // Static twin of src/components/EmailCapture.js — same copy, same endpoint,
 // vanilla JS (these pages have no React). Keep the two in sync.
+//
+// Separation, matching the React component: the band is a warm trough a step
+// DARKER than the page, and the form sits in a white card inset within it. The
+// old version was #faf8f5 against a #fafaf9 page — one point apart, so the
+// block read as more page rather than as a distinct offer.
 function getCaptureHTML() {
-  return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#faf8f5">
-    <div style="max-width:1100px;margin:0 auto;padding:32px 20px;font-family:'DM Sans',system-ui,sans-serif">
-      <div style="max-width:560px">
+  return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#f2ece1">
+    <div style="max-width:1100px;margin:0 auto;padding:44px 20px;font-family:'DM Sans',system-ui,sans-serif">
+      <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e0d7c6;border-radius:16px;padding:26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
         <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; The Deft Brief</p>
         <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">A short email about once a month: what shipped, and one tool worth knowing before life demands it. No spam &mdash; The Operator hates it more than you do. Unsubscribe in one click.</p>
         <form id="db-cap-form" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
