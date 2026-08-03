@@ -1646,7 +1646,7 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You want something and asking badly would cost you it.",
+    when: "You need to ask someone for something, and how you ask will decide the answer.",
     give: "Exactly what you want, and the situation.",
     get: "The power dynamics, your strongest angle, and the words to use.",
   },
