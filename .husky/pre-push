@@ -17,3 +17,10 @@ fi
 # in scripts/localization-audit.js) stay localized: no hardcoded currency, no
 # un-wrapped UI strings, and every t() key present in all supported languages.
 node scripts/localization-audit.js
+
+# Gate 6 — preamble completeness. The "In a Nutshell" card is optional by design
+# (`tool?.primer &&`) and the renderer drops empty fields, so a tool with no
+# preamble — or half a preamble — renders perfectly and says nothing. Exactly the
+# blind spot in audit/OPPORTUNITIES.md: the capability exists and nothing reaches
+# it. `edge` stays optional and is reported as a TODO, never a failure.
+node scripts/primer-audit.js

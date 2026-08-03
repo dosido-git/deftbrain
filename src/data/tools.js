@@ -45,6 +45,14 @@ template:
 export const tools = [
 {
   id: "MentalHealthNavigator",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You know you need help but not what kind, or who to call first.",
+    give: "What's been on your mind, your situation in your own words, and anything you have already tried. Two minutes.",
+    get: "Which kind of professional actually fits — therapist, psychiatrist, GP, coach, group — what each one does differently, and how to get in the door.",
+    edge: "It answers the question that comes before therapy: who to call. Most mental-health tools assume you already know.",
+  },
   seoDescription: "Describe what you're going through and get free, instant guidance on the right type of mental health support, what it costs, and how to reach out.",
   seoTitle: "Find a Therapist: Mental Health Support Finder",
   title: "Mental Health Navigator",
@@ -83,6 +91,14 @@ export const tools = [
 },
 {
   id: "GriefGuide",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Someone died, or someone you love is grieving and you don't know what to say.",
+    give: "Who it's for, what kind of loss, and roughly when it happened.",
+    get: "What you're feeling, named and normalised, plus what actually helps and what to stop saying.",
+    edge: "It works in both directions — for the person grieving and for the person trying to help without making it worse.",
+  },
   seoDescription: "Get compassionate, free guidance for navigating grief — whether you're grieving or supporting someone. Learn what's normal, what to say, and when to get help.",
   seoTitle: "Grief Support Guide: Coping With Loss",
   title: "GriefGuide",
@@ -120,6 +136,14 @@ export const tools = [
 },
 {
   id: "IdeaAutopsy",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you quit, incorporate, or spend real money.",
+    give: "Your idea in detail — what it is, who it's for, how it makes money — and how far along you are.",
+    get: "The specific ways it fails: market size, willingness to pay, cold start, moat. Ranked, with what would have to be true for it to work.",
+    edge: "It assumes the idea dies and works out why. Feedback from friends tells you what's good; this tells you what kills it.",
+  },
   seoDescription: "Stress-test your business idea before you spend a dime. Get a free, brutally honest viability score, ranked failure modes, and a 30-day validation plan.",
   seoTitle: "Business Idea Validator & Risk Checker",
   title: "Idea Autopsy",
@@ -159,6 +183,14 @@ export const tools = [
 },
 {
   id: "SleepArchitect",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've read the generic sleep advice and it didn't stick.",
+    give: "Your bedtime, wake time, actual hours slept, what disrupts you, and what you've already tried.",
+    get: "A protocol built around your schedule rather than an ideal one, in the order to change things.",
+    edge: "It won't tell you to avoid screens. It starts from what's actually happening in your evening.",
+  },
   seoDescription: "Fix your sleep with a free, personalized improvement plan built around your habits. Get quick wins to try tonight plus a phased, science-backed protocol.",
   seoTitle: "Sleep Improvement Plan & Insomnia Fixer",
   title: "SleepArchitect",
@@ -198,6 +230,14 @@ export const tools = [
 },
 {
   id: "CultureBriefing",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've booked the trip and you don't want to be the rude tourist.",
+    give: "Destination, trip purpose, how long, and where you're from.",
+    get: "What to do, what never to do, how to greet people, what not to wear, how tipping really works, which gestures to avoid.",
+    edge: "Specific instructions, not 'respect local customs'. And it's calibrated to where YOU are from — what's rude depends on both ends.",
+  },
   seoDescription: "Get a free travel etiquette briefing for any country — greetings, taboos, tipping, dining, and dress — plus the insider tips guidebooks miss. Know before you go.",
   seoTitle: "Travel Etiquette & Culture Guide by Country",
   title: "Culture Briefing",
@@ -237,6 +277,14 @@ export const tools = [
 },
 {
   id: "ContractDecoder",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you sign. Employment, NDA, freelance, SaaS terms, lease.",
+    give: "The contract text and its type. Optionally the areas you care about — IP, exit, liability, auto-renewal.",
+    get: "Every clause worth knowing, ordered by risk, in plain English, with what's standard and what isn't.",
+    edge: "It ranks by risk rather than reading top to bottom, so the buried clause surfaces first.",
+  },
   seoDescription: "Paste any contract and get a free, plain-English breakdown of every clause that matters, flagged by risk, with negotiation asks and a before-you-sign checklist.",
   seoTitle: "Contract Review & Red-Flag Clause Checker",
   title: "Contract Decoder",
@@ -277,6 +325,14 @@ export const tools = [
 },
 {
   id: "ScamRadar",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A message arrived and something feels off.",
+    give: "The full message, its type, and whatever you know about the sender.",
+    get: "A verdict, the specific technique being used, and what to do next.",
+    edge: "It names the technique — advance fee, authority impersonation, romance — rather than just scoring it 'suspicious'.",
+  },
   seoDescription: "Paste any suspicious email, text, or DM and find out in seconds if it's a scam. Free AI checker flags the red flags and tells you exactly what to do next.",
   seoTitle: "Scam & Phishing Checker: Is This a Scam?",
   title: "Scam Radar",
@@ -315,6 +371,14 @@ export const tools = [
 {
   modified: "2026-04-24",
   id: "DoctorVisitPrep",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The night before an appointment you can't afford to waste.",
+    give: "Your main concern, how long it's been going on, what you've tried, and what worries you most.",
+    get: "A one-sentence opener, the questions to ask, and what to bring — ordered so the important thing gets said first.",
+    edge: "Appointments run short and the real concern often comes out last. This front-loads it.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -370,6 +434,14 @@ export const tools = [
 {
   modified: "2026-03-24",
   id: "DriveHome",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a long or late solo drive, especially if you're tired.",
+    give: "Where you're driving from and to, conditions, road type, and how you're feeling.",
+    get: "A pre-drive checklist, what to watch for on that route, and an honest read if you shouldn't be driving.",
+    edge: "Not navigation. It's the passenger who notices you're too tired and says so.",
+  },
   seoDescription: "Your free safety net for every drive — a check-in timer and companion for night, solo, and bad-weather trips. Set it and someone gets alerted if you're late.",
   seoTitle: "Safe Drive Check-In Timer & Safety Companion",
   title: "Drive Home",
@@ -420,6 +492,14 @@ export const tools = [
 {
   modified: "",
   id: "ToolFinder",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You have a problem and don't want to browse 125 tools.",
+    give: "Your problem in plain language.",
+    get: "One to five tools ranked, each with why it fits your situation specifically.",
+    edge: "It reads between the lines, so you don't have to know what the tool would be called.",
+  },
   seoDescription: "Describe your problem in plain language and instantly find the right DeftBrain tool for it. Get matched picks, why each fits, and what to enter. Free, no signup.",
   seoTitle: "AI Tool Finder: Describe Your Problem",
   title: "Tool Finder",
@@ -454,6 +534,14 @@ export const tools = [
 {
   modified: "2026-03-10",
   id: "CrowdWisdom",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A choice you keep turning over and can't settle.",
+    give: "The situation, plus anything about your goals or values.",
+    get: "Five distinct people arguing — what each believes, what they'd tell you, and what each is blind to.",
+    edge: "It isn't looking for consensus. The value is the disagreement and the question none of them asked.",
+  },
   seoDescription: "Get five real perspectives on the choice you can't stop thinking about — Pragmatist, Risk-Taker, and more. See the tension and the question nobody asked. Free.",
   seoTitle: "Decision Helper: 5 Perspectives on Your Choice",
   title: "Crowd Wisdom",
@@ -493,6 +581,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "FutureProof",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you commit years to a skill, career, or bet.",
+    give: "What you're stress-testing and what type it is. Your industry and experience help.",
+    get: "A five-year trajectory: the forces for and against, automation risk, adjacent moves, and three honest scenarios.",
+    edge: "It maps the exits as well as the path, so a bad bet still leaves you somewhere.",
+  },
   seoDescription: "Get a free 5-year trajectory on any skill, career, or bet before you go all in — tailwinds, automation risk, pivot moves, and bull, base, and bear scenarios.",
   seoTitle: "5-Year Career & Skill Trajectory Forecaster",
   title: "Future Proof",
@@ -528,6 +624,13 @@ export const tools = [
 {
   modified: "",
   id: "MarkupDetective",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something costs more than it should and you want to know why.",
+    give: "The product or service, and the price you saw.",
+    get: "Where your money actually goes — materials, labour, brand premium, pure margin — and the pricing psychology in play.",
+  },
   seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the fair price, and how to pay less.",
   seoTitle: "Price Breakdown: Why Does It Cost That Much?",
   title: "Markup Detective",
@@ -563,6 +666,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "SignalVsNoise",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've read five confident articles that contradict each other.",
+    give: "The contested topic. One line.",
+    get: "What the evidence actually supports, what's noise and why, and where honest people still disagree.",
+    edge: "It separates 'not proven' from 'disproven' — the distinction most coverage collapses.",
+  },
   seoDescription: "Cut through contradictory studies and find what the evidence actually says on any health, finance, or productivity topic. Free: what to do, what to ignore.",
   seoTitle: "Evidence Checker: What Studies Actually Say",
   title: "Signal vs. Noise",
@@ -598,6 +709,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "PreMortem",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The plan is written and everyone agrees. That's the dangerous moment.",
+    give: "The plan in specific terms and what type it is.",
+    get: "The memo from the future explaining why it failed, working backward to what you'd change now.",
+    edge: "Assuming failure surfaces risks that forward planning misses. NASA and venture investors use the same inversion.",
+  },
   seoDescription: "Read the memo explaining why your plan failed — before you execute. Get likely failure modes, the fatal assumption you're making, and the warning signs. Free.",
   seoTitle: "Pre-Mortem Risk Planner: Why Your Plan Fails",
   title: "Pre-Mortem",
@@ -633,6 +752,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "ChaosPilot",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Nothing's wrong, but nothing's moving either.",
+    give: "Your typical week in detail, and what feels stale.",
+    get: "One specific disruption you can do today — targeted at the pattern causing the stagnation, not random novelty.",
+    edge: "It diagnoses the pattern first. 'Do something different' is advice; this names which thing.",
+  },
   seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
   seoTitle: "Break Out of a Rut: Routine Disruptor",
   title: "Chaos Pilot",
@@ -668,6 +795,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "OnePercenter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want one change to make, not a list of twelve.",
+    give: "Your daily routine honestly, bad habits included, and what isn't working.",
+    get: "The single change with the largest downstream effect, and why that one.",
+    edge: "The discipline is picking the right 1%. Anyone can generate a list of improvements.",
+  },
   seoDescription: "Find the single 1% habit change with the biggest compound effect on your year. Free analysis of your routine reveals the one bottleneck holding everything back.",
   seoTitle: "Find the 1% Habit Change That Compounds",
   title: "One Percenter",
@@ -704,6 +839,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "BeliefStressTest",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A rule you live by keeps producing results you don't like.",
+    give: "The belief, and how you apply it.",
+    get: "Where it holds, where it breaks, and the specific situations where it misleads you.",
+    edge: "It isn't trying to demolish the belief — it finds the boundary where a useful simplification stops being useful.",
+  },
   seoDescription: "Pressure-test the beliefs you live by against historical, logical, and cultural edge cases. Free AI finds where each belief holds, breaks, and what survives.",
   seoTitle: "Belief Stress Test: Pressure-Test Your Beliefs",
   title: "Belief Stress Test",
@@ -739,6 +882,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "LuckSurface",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Good things keep happening to other people.",
+    give: "Where you go, who you know, what you make publicly, and the kind of luck you want.",
+    get: "Five specific moves — low effort, high potential upside — sized to your actual life.",
+    edge: "Treats luck as exposure you can engineer rather than something you wait for.",
+  },
   seoDescription: "Calculate your luck surface area and get 5 specific, low-effort moves to expand it — broadcast a signal, enter new rooms, attract opportunity. Free, no signup.",
   seoTitle: "Luck Surface Area Calculator & Booster",
   title: "Luck Surface",
@@ -774,6 +925,14 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "GravityWell",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "There's someone you want to know and cold outreach would fail.",
+    give: "Who they are, their world, what they're known for, and your background.",
+    get: "A 90-day plan that builds proximity and visibility, so the first contact isn't cold.",
+    edge: "It doesn't write you a better cold email. It removes the need to send one.",
+  },
   seoDescription: "Get a 90-day plan to enter someone's orbit before you reach out — no cold outreach. Three phases, the exact first message, and one thing to do today. Free.",
   seoTitle: "90-Day Plan to Get on Someone's Radar",
   title: "Gravity Well",
@@ -814,6 +973,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "RulebookBreaker",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've been told no by a company, agency, or institution.",
+    give: "The system you're up against, the problem, and the outcome you want.",
+    get: "The exceptions that exist but aren't advertised, the phrases that route your call differently, the regulator that actually investigates, and the escalation ladder.",
+    edge: "Every formal system has an informal architecture. This maps that one, not the published policy.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -863,6 +1030,14 @@ export const tools = [
 {
   modified: "2025-03-05",
   id: "TruthBomb",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "There's something you haven't said and it's costing you.",
+    give: "The thing you're hiding, who it's about, and why you haven't said it.",
+    get: "What's really driving the silence, what it costs to keep it, what would realistically happen, and three ways to say it.",
+    edge: "It costs something to say nothing, and that side is usually invisible. This prices both.",
+  },
   seoDescription: "Say the hard thing you've been hiding. Free AI shows what it costs to keep silent and scripts it three ways — gentle opening, direct statement, full truth.",
   seoTitle: "How to Say the Hard Thing: Truth Script",
   title: "Truth Bomb",
@@ -898,6 +1073,14 @@ export const tools = [
 {
   modified: "",
   id: "AnalogyEngine",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've explained it three times and they still don't get it.",
+    give: "The concept, and who you're explaining it to — especially what they're into.",
+    get: "Several analogies built from that person's world, with where each one breaks down.",
+    edge: "It builds from the listener's interests, not generic comparisons — and tells you where the analogy stops being true.",
+  },
   seoDescription: "Explain anything to anyone using their world. Free AI generates tailored analogies with accuracy ratings, where each breaks down, and a teaching tip for delivery.",
   seoTitle: "AI Analogy Generator: Explain Anything",
   title: "Analogy Engine",
@@ -933,6 +1116,13 @@ export const tools = [
 {
   modified: "",
   id: "ColdOpenCraft",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You need to message a stranger and not sound like spam.",
+    give: "Who they are, and what you want from the connection.",
+    get: "Three openers at different boldness levels, the psychology of each, and rough response rates.",
+  },
   seoDescription: "Write cold outreach that actually gets replies. Free AI crafts 3 first-message openers by boldness, explains the psychology, and adds what not to say.",
   seoTitle: "Cold Outreach Message & First-DM Writer",
   title: "Cold Open Craft",
@@ -969,6 +1159,13 @@ export const tools = [
 {
   modified: "",
   id: "ToastWriter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You have to stand up and say something, and you're dreading it.",
+    give: "Who it's for, the occasion, your relationship, and any stories or details.",
+    get: "Three complete speeches at different lengths and warmth levels, with delivery notes.",
+  },
   seoDescription: "Write a toast, speech, or tribute that lands. Free AI gives 3 versions — warm, funny, elegant — with delivery cues and an emergency closer if you freeze.",
   seoTitle: "AI Toast & Speech Writer for Any Occasion",
   title: "Toast Writer",
@@ -1006,6 +1203,14 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "HobbyMatch",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want a new hobby and keep landing on yoga or painting.",
+    give: "What you're like, what you're after, plus your schedule, budget and physical situation.",
+    get: "Hobbies you'd never have searched for, matched to your actual constraints, with how to start each.",
+    edge: "It reaches well past the obvious list — urban sketching, historical fencing — because you can't search for something you don't know exists.",
+  },
   seoDescription: "Discover 5-6 new hobbies you've never considered. Free AI matches your personality, schedule, and budget, then gives the first step you can take today. No signup.",
   seoTitle: "New Hobby Finder & Idea Generator",
   title: "Hobby Match",
@@ -1046,6 +1251,14 @@ export const tools = [
 {
   modified: "",
   id: "ProcedureProbe",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A procedure was recommended and you're about to say yes.",
+    give: "The procedure and the type of provider.",
+    get: "What it is in plain language, whether it's standard for your situation, the exact questions to ask, and the alternatives.",
+    edge: "It tells you whether the recommendation itself is standard — the question most patients don't know to ask.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -1095,6 +1308,14 @@ export const tools = [
 {
   modified: "",
   id: "UpsellShield",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you walk into a dealership, a showroom, or a sales call.",
+    give: "Where you're going, what you want, and your budget.",
+    get: "The specific tactics that industry uses, your counters, and the lines to hold.",
+    edge: "Preparation before, not damage control after. Named tactics are much easier to resist.",
+  },
   seoDescription: "Walk into any high-pressure sale prepared. Free AI reveals the tactics they'll use, the phrases that deflect each one, and your walk-away line. Leave with what you wanted.",
   seoTitle: "Beat High-Pressure Sales Tactics Prep",
   title: "Upsell Shield",
@@ -1130,6 +1351,14 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "HecklerPrep",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a pitch or presentation with a sceptical room.",
+    give: "What you're proposing and who's in the audience.",
+    get: "The hardest questions that audience will actually ask, with strong answers.",
+    edge: "It writes real challenges, not softballs — which is the only kind worth rehearsing.",
+  },
   seoDescription: "Anticipate the 10 hardest questions before you pitch or present. Free AI gives a coached answer, the real concern behind each, and what to do if you don't know.",
   seoTitle: "Tough Q&A Prep for Pitches & Presentations",
   title: "Heckler Prep",
@@ -1171,6 +1400,14 @@ export const tools = [
 {
   modified: "",
   id: "PartyArchitect",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You're hosting and the fear is dead air.",
+    give: "The occasion, the vibe, guest count, who's coming, space and budget.",
+    get: "A timeline: arrival flow, when food lands, when energy peaks, how it ends.",
+    edge: "It designs the flow rather than the menu — the part that decides whether it felt good.",
+  },
   seoDescription: "Host a gathering people actually remember. Free AI designs the full event flow — arrival, conversation catalysts, activity timing, and how to mix groups.",
   seoTitle: "Party & Event Planner: Flow and Activities",
   title: "Party Architect",
@@ -1206,6 +1443,14 @@ export const tools = [
 {
   modified: "",
   id: "WhereDidTheTimeGo",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The day is over and you can't account for it.",
+    give: "A timeframe and a stream-of-consciousness account of what you did.",
+    get: "Where the time actually went versus where you thought, and the invisible overhead you're not counting.",
+    edge: "The gap between the two is the point. You almost certainly overestimate your focused hours.",
+  },
   seoDescription: "Where did your day really go? Free AI traces the invisible overhead — transitions, recovery, context switches — and gives one structural change to get time back.",
   seoTitle: "Where Did My Time Go? Daily Time Tracker",
   title: "Where Did the Time Go?",
@@ -1241,6 +1486,14 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "Giftology",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Someone impossible to shop for, and a date approaching.",
+    give: "Everything you know about them — interests, quirks, offhand remarks. Occasion, budget, deadline.",
+    get: "Ideas with the reasoning chain from a specific detail about them to a specific gift.",
+    edge: "The reasoning is the product. It connects things you already knew but hadn't put together.",
+  },
   seoDescription: "Find the perfect gift for the hardest person to shop for. Free AI turns what you know about them into thoughtful ideas, with where to buy and what to write.",
   seoTitle: "AI Gift Idea Generator for Hard-to-Shop-For",
   title: "Giftology",
@@ -1281,6 +1534,13 @@ export const tools = [
 {
   modified: "",
   id: "AwkwardSilenceFiller",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The conversation just died and you're still standing there.",
+    give: "The setting, and any context.",
+    get: "Five to seven things you can safely say right now, matched to that setting.",
+  },
   seoDescription: "Rescue any awkward silence with 5-7 safe things to say, matched to your setting — work, party, date, or family. Free AI adds exit lines and what not to say.",
   seoTitle: "Conversation Starters for Awkward Silences",
   title: "Awkward Silence Filler",
@@ -1326,6 +1586,14 @@ export const tools = [
 {
   modified: "",
   id: "TipOfTongue",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You can picture it, taste it, or hum it, but not name it.",
+    give: "Whatever you remember — sensory fragments, vibes, partial facts. A category if you have one.",
+    get: "What it most likely is, with alternatives if it's ambiguous.",
+    edge: "Built for fragments. Search engines need the name you don't have.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -1375,6 +1643,13 @@ export const tools = [
 {
   modified: "",
   id: "MagicMouth",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want something and asking badly would cost you it.",
+    give: "Exactly what you want, and the situation.",
+    get: "The power dynamics, your strongest angle, and the words to use.",
+  },
   seoDescription: "Get a refund, an upgrade, a waived fee, or a table at a full restaurant. Free AI finds your best angle, writes the exact script, and coaches the delivery.",
   seoTitle: "How to Ask for a Refund, Upgrade or Favor",
   title: "Magic Mouth (M²)",
@@ -1410,6 +1685,13 @@ export const tools = [
 {
   modified: "",
   id: "NameThatFeeling",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You feel something and 'sad' or 'anxious' isn't it.",
+    give: "The feeling in your own messy words — when it happens, what it's near but not quite.",
+    get: "The precise word, from forgotten English terms to ones other languages have and English doesn't.",
+  },
   seoDescription: "Can't name what you're feeling? Describe it in your own messy words and AI finds the precise word for it — from English to terms other languages nailed.",
   seoTitle: "Find the Word for a Feeling - AI Emotion Namer",
   title: "Name That Feeling",
@@ -1445,6 +1727,14 @@ export const tools = [
 {
   modified: "",
   id: "WhatsMyVibe",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a job application, a dating profile, or a message that matters.",
+    give: "A sample of your real writing — texts, emails, posts. Variety helps.",
+    get: "How you actually land, your verbal habits, and where intent and impression diverge.",
+    edge: "It reads what you wrote, not what you meant. Nobody can see their own tone.",
+  },
   seoDescription: "Find out what you actually sound like. Paste your texts, emails, or tweets and AI reveals your tone, personality, and verbal habits — how you really come across.",
   seoTitle: "AI Tone & Writing Vibe Checker",
   title: "What's My Vibe",
@@ -1480,6 +1770,13 @@ export const tools = [
 {
   modified: "",
   id: "TheRunthrough",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The talk is written and you have one rehearsal left.",
+    give: "Your presentation text, notes or outline. Pick Cut, Anticipate or Hook.",
+    get: "Trimmed to time with the core intact, the hard questions predicted, or a rewritten open and close.",
+  },
   seoDescription: "Rehearse smarter with a free AI presentation coach. Cut your talk to time, predict the toughest Q&A with draft answers, and rewrite your opening to land harder.",
   seoTitle: "AI Presentation Coach & Speech Practice",
   title: "The Run-Through",
@@ -1515,6 +1812,14 @@ export const tools = [
 {
   modified: "",
   id: "WhichLife",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Two paths, and the pro/con list didn't settle it.",
+    give: "Path A and Path B, described honestly.",
+    get: "A vivid ordinary day inside each future — specific, not idealised.",
+    edge: "Pro/con lists compare features. This compares what it feels like on a Tuesday, which is what you're actually choosing between.",
+  },
   seoDescription: "Torn between two paths? Instead of a pro/con list, AI writes a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
   seoTitle: "Which Life? — AI Tool to Simulate Two Life Paths",
   title: "Which Life?",
@@ -1550,6 +1855,13 @@ export const tools = [
 {
   modified: "",
   id: "ComebackCooker",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Hours later, still replaying it.",
+    give: "What happened, ideally their exact words, and the mood you want.",
+    get: "Responses in that register — surgical, witty, petty or dignified — plus whether to send at all.",
+  },
   seoDescription: "Got the perfect comeback three hours too late? Describe the moment and AI cooks up the witty clapbacks you wish you'd said — surgical to petty. Purely cathartic.",
   seoTitle: "AI Comeback Generator - Perfect Clapbacks",
   title: "Comeback Cooker",
@@ -1585,6 +1897,13 @@ export const tools = [
 {
   modified: "",
   id: "AlternatePath",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Curiosity, or an argument about whether one event really mattered.",
+    give: "A historical event, and the one detail you'd change.",
+    get: "A plausible alternate timeline, each consequence cascading into the next.",
+  },
   seoDescription: "Pick any moment in history, change one detail, and watch the consequences cascade through a plausible alternate timeline — politics, tech, and culture, up to today.",
   seoTitle: "Alternate History Generator - What-If Timelines",
   title: "Alternate Path",
@@ -1621,6 +1940,14 @@ export const tools = [
 {
   modified: "",
   id: "PlotHole",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something in the plot bothered you and you can't articulate what.",
+    give: "The title and media type. A specific season or scene helps.",
+    get: "The exact scenes where the logic breaks, rated by how much damage each does.",
+    edge: "It cites specific scenes and character knowledge, not vague complaints.",
+  },
   seoDescription: "Name any movie, show, book, or game and AI finds the plot holes — timeline slips, 'why didn't they just' moments, and logic breaks, each rated by severity. Free.",
   seoTitle: "Plot Hole Finder for Movies, Shows & Books",
   title: "Plot Hole",
@@ -1655,6 +1982,13 @@ export const tools = [
 {
   modified: "",
   id: "FanTheory",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've finished it and want to keep thinking about it.",
+    give: "The title, and a direction if you have one.",
+    get: "A theory that cites actual plot details as evidence and holds together internally.",
+  },
   seoDescription: "Name any movie, show, book, or game and AI spins a wild but defensible fan theory with cited evidence and a smoking gun. Or grade your own theory. Free, no signup.",
   seoTitle: "AI Fan Theory Generator for Any Movie or Show",
   title: "Fan Theory",
@@ -1688,6 +2022,13 @@ export const tools = [
 {
   modified: "",
   id: "RoastMe",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want to be made fun of accurately.",
+    give: "Your resume, dating profile, LinkedIn, or whatever else.",
+    get: "A roast targeted at what's specifically ridiculous about yours.",
+  },
   seoDescription: "Paste your resume, dating profile, LinkedIn bio, or any text and get a personalized comedy roast targeting your specific content. Three heat levels, zero generics.",
   seoTitle: "AI Roast Generator - Roast My Resume or Bio",
   title: "Roast Me",
@@ -1722,6 +2063,13 @@ export const tools = [
 {
   modified: "",
   id: "TimeWarp",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want something funny that's also secretly educational.",
+    give: "A modern thing and a historical period. Pick a format.",
+    get: "The collision written as an explainer, review, news report, letter, debate or ad.",
+  },
   seoDescription: "Collide anything modern with any historical era and AI generates the funny, historically accurate result — reviews, news reports, ads, and real footnotes.",
   seoTitle: "Modern Meets History - AI Comedy Generator",
   title: "Time Warp",
@@ -1755,6 +2103,13 @@ export const tools = [
 {
   modified: "",
   id: "WrongAnswersOnly",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want an answer that's wrong on purpose.",
+    give: "Any real question. Pick a category and how straight-faced you want it.",
+    get: "A confidently, structurally impeccable, completely incorrect answer.",
+  },
   seoDescription: "Ask any real question and get a confidently, beautifully wrong answer — fake studies, invented experts, nonsense equations. Three absurdity levels. Real answer on toggle.",
   seoTitle: "Wrong Answers Only - Confidently Wrong AI",
   title: "Wrong Answers Only",
@@ -1788,6 +2143,14 @@ export const tools = [
 {
   modified: "",
   id: "SocialBatteryAdvisor",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You're tired all week and can't tell which things did it.",
+    give: "Your week's interactions logged with duration and how drained each left you. A few minutes.",
+    get: "Where your energy actually goes, which interactions cost most, and how to restructure the week.",
+    edge: "Cost isn't length. A 30-minute call where you're fully 'on' can outspend a three-hour dinner, and only logging reveals it.",
+  },
   seoDescription: "Always drained but can't say why? Log your interactions with before/after energy ratings, forecast your week's lowest-battery point, and get exactly what to skip, shorten, or protect. Free, no signup.",
   seoTitle: "Social Battery Tracker & Burnout Forecaster",
   title: "Social Battery Advisor",
@@ -1826,6 +2189,14 @@ export const tools = [
 {
   modified: "2026-03-24",
   id: "PronounceItRight",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you have to say it out loud in front of someone.",
+    give: "The word, its category, and your native language.",
+    get: "A phonetic guide built from sounds you already have, plus what to avoid.",
+    edge: "It calibrates to your native language — the hard part of a word is different for a Spanish speaker than a Mandarin one.",
+  },
   seoDescription: "Type any name, dish, brand, or place and get a pronunciation guide tuned to your native language — phonetic spelling, stress, common mistakes, and a confidence script.",
   seoTitle: "How to Pronounce Any Word - Pronunciation Guide",
   title: "Pronounce It Right",
@@ -1865,6 +2236,13 @@ export const tools = [
 {
   modified: "",
   id: "TheDebrief",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The meeting ended and nobody wrote anything down.",
+    give: "The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Series.",
+    get: "Decisions, action items with owners, open questions, and drafted follow-up messages.",
+  },
   seoDescription: "Paste any meeting transcript and instantly get the decisions, action items with owners and deadlines, and ready-to-send follow-ups — without digging through notes.",
   seoTitle: "AI Meeting Notes: Action Items & Decisions",
   title: "The Debrief",
@@ -1902,6 +2280,13 @@ export const tools = [
 {
   modified: "",
   id: "TheCrux",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "An hour of talk or a long read where maybe ten minutes matters.",
+    give: "The transcript or text. Pick Distill, Study Guide, Test Prep or Connect.",
+    get: "The signal without the tangents — as notes, a study guide, practice questions, or themes across sources.",
+  },
   seoDescription: "Paste any talk, lecture, podcast, or long article and get the 20% that actually matters — the signal without the noise. Distill, study guide, test prep, and connect modes. Free.",
   seoTitle: "Summarize Any Talk, Lecture or Long Read — AI",
   title: "The Crux",
@@ -1939,6 +2324,14 @@ export const tools = [
 {
   modified: "",
   id: "TheAlibi",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A gap, a firing, or a mess you'll have to explain.",
+    give: "The real story, honestly and in detail, and who you're telling.",
+    get: "The same true story framed for that audience — what to lead with, what to leave out.",
+    edge: "Not a cover story. The facts stay true; the emphasis changes with who's listening.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -1989,6 +2382,14 @@ export const tools = [
 {
   modified: "",
   id: "CutToTheChase",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A long document arrived and most of it isn't about you.",
+    give: "The full text and the document type.",
+    get: "Only the parts that affect your situation, and what to do about each.",
+    edge: "Not a summary. A shorter version of irrelevant information is still irrelevant — this filters by whether it applies to you.",
+  },
   seoDescription: "Paste any long document — insurance EOB, HOA notice, lease, policy update — describe your situation, and AI extracts only what costs you money or needs action.",
   seoTitle: "Cut to the Chase: Find What Actually Affects You",
   title: "Cut to the Chase",
@@ -2025,6 +2426,14 @@ export const tools = [
 {
   modified: "",
   id: "ContextCollapse",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you post or send something that could be read badly.",
+    give: "The message, and the platform.",
+    get: "How different readers will take it, where it could land wrong, and a safer wording.",
+    edge: "The same words land differently by audience. This shows you the readings you didn't intend.",
+  },
   seoDescription: "Before you hit send, see how each person reads your message. AI previews how your boss, coworker, or mom interprets it — with risk ratings and safer rewrites.",
   seoTitle: "Check How a Message Reads Before You Send It",
   title: "Context Collapse",
@@ -2061,6 +2470,14 @@ export const tools = [
 {
   modified: "",
   id: "Bookmark",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You abandoned a show or book and want back in without spoilers.",
+    give: "The title and exactly where you stopped.",
+    get: "A recap up to that point and no further, plus whether it's worth resuming.",
+    edge: "Wikis and search results spoil you on the way to the answer. This stops at your bookmark.",
+  },
   seoDescription: "Returning to a show, book, game, or season you abandoned? Get a free spoiler-free recap calibrated to exactly where you stopped — no spoilers past your point.",
   seoTitle: "Spoiler-Free Show & Book Recap Generator",
   title: "Bookmark",
@@ -2100,6 +2517,13 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "DecoderRing",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A message arrived and the words don't match the feeling.",
+    give: "The exact message and where it came from.",
+    get: "What's underneath — passive aggression, hedging, a power move, a non-answer, or genuine warmth — and how to respond.",
+  },
   seoDescription: "Paste any confusing or passive-aggressive message and instantly decode the subtext, what they really want, red flags, and 3 ready-to-send responses. Free, no signup.",
   seoTitle: "Text Message Subtext Decoder",
   title: "Decoder Ring",
@@ -2139,6 +2563,14 @@ export const tools = [
 {
   modified: "",
   id: "PlotTwist",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A hard decision you keep circling.",
+    give: "The decision, what makes it hard, and your options.",
+    get: "The same choice run through several decision frameworks, so you can see which considerations you've been ignoring.",
+    edge: "It doesn't pick for you. It shows you which framework you've been using without noticing.",
+  },
   seoDescription: "Stuck on a tough decision? Run it through 6 proven decision frameworks free — pre-mortem, 10/10/10, reversibility, values check — and finally decide with clarity.",
   seoTitle: "AI Decision-Making Helper & Analyzer",
   title: "Plot Twist",
@@ -2174,6 +2606,14 @@ export const tools = [
 {
   modified: "",
   id: "MiseEnPlace",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "There's food in the fridge and no plan.",
+    give: "What you have, or a photo. Your time, skill level and dietary needs.",
+    get: "A meal plus the order of operations — what to start first, what to do while it cooks.",
+    edge: "Sequencing, not recipes. The hard part of home cooking is what to do when, and that's what it plans.",
+  },
   seoDescription: "List your ingredients or snap a photo of your fridge and get a minute-by-minute cooking plan with timing alerts and leftover ideas. Free AI recipe tool, no signup.",
   seoTitle: "AI Recipe Generator from Your Ingredients",
   title: "Mise en Place",
@@ -2209,6 +2649,13 @@ export const tools = [
 {
   modified: "2026-03-11",
   id: "GhostWriter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Someone asked you for a reference and the deadline is close.",
+    give: "Their name, your relationship, what they're applying for, and what you know about them.",
+    get: "A finished letter with specific evidence, in a voice that sounds like you wrote it carefully.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -2263,6 +2710,14 @@ export const tools = [
 {
   modified: "",
   id: "CaptionMagic",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The photo's ready and the caption isn't.",
+    give: "The image, or a description. Your platform and tone.",
+    get: "Captions that sound like a person rather than a brand account.",
+    edge: "It looks at the actual photo, so the caption is about what's in it.",
+  },
   seoDescription: "Turn any photo into 3 scroll-stopping social media captions with smart hashtags, alt text, and per-platform versions. Free AI caption generator, no signup needed.",
   seoTitle: "AI Social Media Caption Generator",
   title: "Caption Magic",
@@ -2309,6 +2764,14 @@ export const tools = [
 {
   modified: "2026-03-11",
 id: "PEP",
+// Preamble — the four questions a new visitor has, in order.
+// `give` states the input burden before the form; see ToolPageWrapper.
+primer: {
+  when: "You're depleted, or planning a week you may not have the energy for.",
+  give: "Recharge: your energy, mood, environment, time. Budget: your tasks.",
+  get: "A menu of restorative options matched to what you actually have, or your tasks mapped against available energy.",
+  edge: "It plans around your energy rather than assuming it. Most planners assume you'll have the capacity when the day arrives.",
+},
   seoDescription: "Beat burnout before it hits. Build a personalized recharge menu, budget tasks to your energy, and spot warning signs early with 15-second check-ins. Free, no signup.",
 seoTitle: "Personal Energy & Burnout Planner",
 title: "PEP-Personal Energy Planner",
@@ -2348,6 +2811,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BatchFlow",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A scattered list and a day of constant gear-shifting ahead.",
+    give: "Everything on your plate, unfiltered. Or paste a raw list.",
+    get: "Tasks grouped by the kind of thinking each needs, sequenced to minimise switching.",
+    edge: "It groups by cognitive mode, not topic or deadline. Switching between creative and analytical work is what costs you the day.",
+  },
   seoDescription: "Batch similar tasks by mental mode to kill context switching and protect your focus. Get a ready-to-run schedule built around your energy in seconds. Free, no signup.",
   seoTitle: "Task Batching & Focus Planner",
   title: 'Batch Flow',
@@ -2388,6 +2859,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LazyWorkoutAdapter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You know you should move and you really don't want to.",
+    give: "Your energy, what happened today, where it hurts, and how long you've got.",
+    get: "A workout sized to that, with swaps if a movement is wrong for you today.",
+    edge: "It starts from having no motivation rather than assuming some. Nothing here requires you to feel like it.",
+  },
   seoDescription: "For the days you don't want to move. Get a workout matched to your real energy, what hurts, and how your day went — from a 2-minute floor up. Free, no signup.",
   seoTitle: "Low-Energy Workout Generator",
   title: "Lazy Workout Adapter",
@@ -2435,6 +2914,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "JargonAssassin",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A lease, consent form, policy or contract you can't parse.",
+    give: "The document, its type, and how plain you want the translation.",
+    get: "Plain language, a danger score, flagged sections, and what to do about each.",
+    edge: "It doesn't stop at translating — it flags what's actually enforceable and what you can push back on.",
+  },
   seoDescription: "Paste any legal, medical, or insurance document and get it in plain language — with red flags, deadlines, and what to do next. Free document translator, no signup.",
   seoTitle: "Legal & Medical Document Translator",
   title: "Jargon Assassin",
@@ -2486,6 +2973,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-10",
   id: "ArgueBetter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You hold a position and have only heard weak versions of the other side.",
+    give: "Your position, a debate format, and how hard you want it.",
+    get: "The strongest honest counter-case, then pressure on your answers.",
+    edge: "It argues the best version of the opposing case, not the caricature — which is the only version worth beating.",
+  },
   seoDescription: "State any position and face the strongest opposing case — a real steelman, not a strawman. Practice debates, spot fallacies, and sharpen your thinking. Free.",
   seoTitle: "Argue Better: AI Debate Practice & Argument Trainer",
   title: "Argue Better",
@@ -2527,6 +3022,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ResearchDecoder",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A headline claims a study proved something.",
+    give: "The abstract or paper text. The field, if you know it.",
+    get: "The actual finding in one sentence, what the method can and can't support, and whether the coverage is fair.",
+    edge: "It checks the claim against the paper, so you can tell whether the headline is the study's fault or the journalist's.",
+  },
   seoDescription: "Translate any research paper into plain English — no PhD needed. Get the real finding, limitations, and whether the headline about it is actually true. Free.",
   seoTitle: "Research Paper Summarizer & Explainer",
   title: "Research Decoder",
@@ -2566,6 +3069,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ReadTheRoom",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before an event you're dreading, during one that's going sideways, or after one you're replaying.",
+    give: "The event and who'll be there. Or, mid-event, what just happened.",
+    get: "Conversation starters, a map of who's who, exit lines, and afterwards an honest debrief.",
+    edge: "It covers all three moments, and each one feeds a Playbook that gets more specific to you over time.",
+  },
   seoDescription: "Read the room before you walk in. Free social coach for every stage — prep conversations, recover from awkward moments, and debrief afterward. No signup needed.",
   seoTitle: "Social Situation Coach & Conversation Prep",
   title: "Read the Room",
@@ -2612,6 +3123,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "MoneyDiplomat",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A money moment with a social edge — a tip, a split, a gift, a salary number.",
+    give: "The situation type and the details. A saved profile sharpens everything.",
+    get: "The right number, plus the words to say and how to handle the awkwardness.",
+    edge: "It handles the etiquette as well as the arithmetic. Knowing the number isn't the hard part.",
+  },
   seoDescription: "Navigate every awkward money moment — tips, bill splits, lending, gifts, and salary talks. Get the right number and the words to say it. Free, no signup.",
   seoTitle: "Tip, Bill Split & Money Etiquette Calculator",
   title: "Money Diplomat",
@@ -2650,6 +3169,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "SkillGapMap",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want a different job and don't know what's actually missing.",
+    give: "Your current role and the one you want. Or your interests, to find candidates.",
+    get: "The real gap, the order to close it, what the day-to-day is really like, and the salary economics.",
+    edge: "It sequences the learning. Knowing which skills you lack is easy; knowing which to get first is the useful part.",
+  },
   seoDescription: "Map the exact skill gap between your current job and your dream role — then close it with a timeline, projects, and mock interviews. Free career planner, no signup.",
   seoTitle: "Career Change Skill Gap Analyzer",
   title: "Skill Gap Map",
@@ -2688,6 +3215,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "HistoryToday",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something is happening and 'this is just like Rome' isn't helping.",
+    give: "The current event or trend. An angle, if you have one.",
+    get: "A structural parallel — same underlying mechanism, not same surface — and what happened next that time.",
+    edge: "It matches on mechanism rather than resemblance, which is why the parallel it finds isn't the obvious one.",
+  },
   seoDescription: "Enter any current event and get 2-3 deep historical parallels based on real power dynamics — what happened next, and where the comparison breaks down. Free.",
   seoTitle: "Historical Parallel Finder for Current Events",
   title: "HistoryToday",
@@ -2738,6 +3273,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BragSheetBuilder",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Review season, a promotion case, or a resume that undersells you.",
+    give: "What you did in your own words. The Memory Jogger helps if you've forgotten.",
+    get: "Power statements with real verbs and numbers, plus the case built around them.",
+    edge: "Most people describe their work in the language of tasks. This converts it to the language of impact without inflating it.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -2807,6 +3350,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "LayoverMaximizer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you book a connection, or the night before you fly it.",
+    give: "Airport, layover length, passport, terminals.",
+    get: "A yes/no/risky verdict backed by real time arithmetic, plus a plan for either staying or going out.",
+    edge: "It does the time math against your actual terminals and passport, so the verdict is about your connection, not a generic one.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -2871,6 +3422,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "TheFinalWord",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "An argument that won't end, or a fact nobody can confirm.",
+    give: "The question or the dispute. Pick Quick Answer, Settle It, Fact Check or Trivia.",
+    get: "A confident answer with a confidence rating, or a verdict on the disagreement.",
+  },
   seoDescription: "Settle any argument for good — get confident answers, impartial verdicts with accuracy scores, fact-checks, and trivia rounds. Free argument settler, no signup.",
   seoTitle: "Argument Settler & Fact Checker",
   title: "The Final Word",
@@ -2909,6 +3467,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "NameAudit",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You have a shortlist and need to know which name survives contact.",
+    give: "The name or names, and what it's for.",
+    get: "A twelve-dimension read — first impression, sound, spelling, crowding, trademark risk — and a verdict.",
+    edge: "It's the other half of naming: NameStorm gives you options, this tells you which ones break.",
+  },
   seoDescription: "Stress-test any name — business, pet, band, baby, or brand — across 12 dimensions before you commit. Free AI analysis with live domain and social checks.",
   seoTitle: "Name Checker & Rater: Business, Pet, Baby & More",
   title: "Name Audit",
@@ -2948,6 +3514,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "NameStorm",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You need a name and the good ones feel taken.",
+    give: "What needs naming, and the energy you want.",
+    get: "Twenty-five to thirty-five names across styles, with the reasoning behind each.",
+  },
   seoDescription: "Generate dozens of brandable names for your business, product, pet, or band in seconds. Free AI namer with pronunciation guides and live domain checks.",
   seoTitle: "AI Business & Brand Name Generator",
   title: "Name Storm",
@@ -2988,6 +3561,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "GratitudeDebtClearer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You owe someone a thank-you and keep not writing it.",
+    give: "Who it's for and bullet points of what you're grateful for. Specifics matter.",
+    get: "A finished message that sounds like you meant it.",
+  },
   seoDescription: "Turn a few bullet points into a heartfelt, genuine thank-you message in seconds. Free AI tool for when you mean it but freeze up writing it. No signup.",
   seoTitle: "Thank You Message & Note Generator",
   title: "Gratitude Debt Clearer",
@@ -3034,6 +3614,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DifficultTalkCoach",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A conversation you keep postponing.",
+    give: "What you need to say, who it's with, your goal, and how much resistance you expect.",
+    get: "Several approaches with exact scripts, the pushback each will get, and how to answer it.",
+    edge: "It rehearses their side too, so the sentence you didn't prepare for isn't the one that ends the conversation.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -3090,6 +3678,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ComplaintEscalationWriter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've complained once, been fobbed off, and stopped.",
+    give: "The company, the industry, and what happened — dates, amounts, promises, names.",
+    get: "A five-stage escalation campaign with the laws that apply, letters, and who to contact at each step.",
+    edge: "Most complaints fail because people don't know what leverage they have. This finds the statute and the regulator before it writes a word.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -3146,6 +3742,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "PlainTalk",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A text you can read but can't follow.",
+    give: "The text or a PDF. Any length, any subject.",
+    get: "A plain-English translation plus a structural read — what it's really doing, and what it leaves out.",
+    edge: "Two passes, not one: what it says, and what its shape tells you about intent.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -3202,6 +3806,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FocusSoundArchitect",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You need to concentrate and music keeps pulling you out of it.",
+    give: "Your task, your environment, and any sounds you can't tolerate.",
+    get: "A soundscape recipe you can build, tuned to that combination.",
+    edge: "It accounts for auditory sensitivities, so the recommendation isn't 'lo-fi beats' for everyone.",
+  },
   seoDescription: "Build a personalized focus soundscape tuned to your task and sensory needs — white noise, nature sounds, binaural beats, and ambient music. Free, no signup.",
   seoTitle: "Focus Soundscape & Concentration Noise Maker",
   title: "Focus Sound Architect",
@@ -3238,6 +3850,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FocusPocus",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You need to start, or you've been at it too long to notice.",
+    give: "What you're working on and how long. Context on meals and obligations helps.",
+    get: "A session that holds you in, then interrupts you when time's up and pushes back if you quit early.",
+    edge: "It handles both failure modes. Most timers only help you start; this one also gets you to stop.",
+  },
   seoDescription: "Lock in with a focus timer that keeps you on task, then pulls you out when time's up — escalating if you ignore it, with a recovery plan. Free, no signup.",
   seoTitle: "Focus Timer & Pomodoro Session Tracker",
   title: "Focus Pocus",
@@ -3286,6 +3906,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DecisionCoach",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Too depleted to choose, but you still have to.",
+    give: "The category and what needs deciding.",
+    get: "One answer. Not options.",
+    edge: "It gives a single decision on purpose. A ranked list is another choice to make, which is the thing you couldn't do.",
+  },
   seoDescription: "Too stuck to choose? Get ONE clear answer with execution steps — no endless options, no second-guessing. Free AI decision maker for choice paralysis.",
   seoTitle: "Decision Maker: Pick One Answer When Stuck",
   title: "Decision Coach",
@@ -3330,6 +3958,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "SixDegreesOfMe",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Idle curiosity about how your life fits together.",
+    give: "Two things from your life. A profile makes every chain richer.",
+    get: "The chain connecting them, link by link.",
+  },
   seoDescription: "Find the hidden chain linking any two parts of your life — your degree and your career, your fear and your favorite food. Free AI tool, surprisingly personal.",
   seoTitle: "Find Hidden Connections Between Anything",
   title: "Six Degrees of Me",
@@ -3375,6 +4010,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-10",
   id: "BrainRoulette",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want to fall down a rabbit hole worth the time.",
+    give: "Two or more interests, and how deep you want to go.",
+    get: "A rabbit hole at the intersection of them.",
+    edge: "It works the overlap between your interests rather than serving one at a time, so what comes back isn't findable by searching either.",
+  },
   seoDescription: "Spin up fascinating rabbit holes tuned to your interests, where AI finds the surprising links between topics you love. Free, endlessly bingeable, no signup.",
   seoTitle: "Random Rabbit Hole & Curiosity Generator",
   title: 'Brain Roulette',
@@ -3420,6 +4063,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FinalWish",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Nobody else knows your passwords, your accounts, or what you'd want.",
+    give: "A guided interview across accounts, documents, finances, messages and wishes. Take it in sittings.",
+    get: "A self-contained encrypted package for the person you trust.",
+    edge: "It covers the digital estate — accounts, devices, subscriptions — which wills predate and rarely mention.",
+  },
   seoDescription: "Organize your accounts, documents, finances, and personal messages into one printable legacy document for someone you trust. Free, guided, nothing stored.",
   seoTitle: "Digital Legacy & End-of-Life Planner",
   title: "Final Wish",
@@ -3456,6 +4107,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-08",
   id: "BikeMedic",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something's wrong with the bike and the shop is closed.",
+    give: "The symptom, or answers to a few diagnostic questions.",
+    get: "The likely cause and a step-by-step fix with visual demos.",
+  },
   seoDescription: "Diagnose and fix any bike problem with step-by-step guides, animated demos, and AI follow-up when standard repairs fail. Your free trailside mechanic, no signup.",
   seoTitle: "Bike Repair & Troubleshooting Diagnoser",
   title: "Bike Medic",
@@ -3492,6 +4150,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "WardrobeChaosHelper",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Standing in front of the wardrobe with nothing decided.",
+    give: "Your wardrobe once, then just the day's weather, plans and mood.",
+    get: "A complete outfit, and why it works for that day.",
+  },
   seoDescription: "Let AI pick complete outfits from your own closet based on weather, mood, and comfort needs. Beat decision fatigue every morning — free, no signup.",
   seoTitle: "AI Outfit Picker From Your Own Wardrobe",
   title: 'Wardrobe Chaos Helper',
@@ -3540,6 +4205,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "PlantRescue",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The plant is dying and you don't know why.",
+    give: "A photo of the affected parts, plus light, watering and location.",
+    get: "The species, the diagnosis, and a rescue plan in priority order.",
+  },
   seoDescription: "Snap a photo or describe symptoms and get an instant diagnosis plus a step-by-step rescue plan for your dying plant. Free AI plant doctor, no signup.",
   seoTitle: "Plant Problem Diagnoser & Care Rescue Plan",
   title: 'Plant Rescue',
@@ -3588,6 +4260,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ConflictCoach",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A message landed badly and you want to reply now, which is the worst time to.",
+    give: "The message you received and your relationship to the sender.",
+    get: "What's actually going on emotionally, several response strategies, and drafts of each.",
+    edge: "It gives you validate, boundary and de-escalate versions side by side, so you choose the register deliberately instead of by mood.",
+  },
   seoDescription: "Got a tense text? Before you fire back, get de-escalating response options, emotional analysis, and what NOT to say. Free AI tool to dodge regrettable replies.",
   seoTitle: "Tense Text Response Helper & De-escalator",
   title: "Conflict Coach",
@@ -3660,6 +4340,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "TaskAvalancheBreaker",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A project so big you can't start it.",
+    give: "The project, and why it feels overwhelming.",
+    get: "Micro-steps specific enough to need no decisions — each one a single physical action.",
+    edge: "The steps are sized so that starting requires no thinking. 'Break it down' fails when the sub-tasks still need decisions.",
+  },
   seoDescription: "Break any overwhelming project into 5-minute micro-steps with zero decisions required. Built to beat 'too big to start' paralysis. Free AI tool, no signup.",
   seoTitle: "Overwhelming Task Breakdown Into Micro-Steps",
   title: "Task Avalanche Breaker",
@@ -3728,6 +4416,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "PetWeirdnessDecoder",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Your pet is doing something odd and you're wondering whether to call the vet.",
+    give: "Species, breed, age, and what they're doing.",
+    get: "Whether it's normal, worth watching, or worth a vet visit — and what to watch for.",
+    edge: "It draws the line between quirky and concerning, which is the actual question.",
+  },
   seoDescription: "Is your pet's weird behavior an adorable quirk or a vet visit? Get instant AI analysis that tells normal habits from symptoms worth worrying about. Free, no signup.",
   seoTitle: "Pet Behavior Decoder: Quirk or Vet Visit?",
   title: "Pet Weirdness Decoder",
@@ -3796,6 +4492,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FakeReviewDetective",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Great reviews and a nagging feeling.",
+    give: "A product URL, or paste the review text.",
+    get: "Star distribution, verified share, date clustering and language flags, then a read on which reviews are real.",
+    edge: "The statistics are computed from your actual reviews before any judgment is made, so the numbers aren't an impression.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -3862,6 +4566,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "CrashPredictor",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've burned out before and don't want to again.",
+    give: "A sixty-second daily check-in: energy, sleep, stress, symptoms, warning signs.",
+    get: "Your own pattern before a crash, and how far out you are now.",
+    edge: "It learns your indicators rather than generic burnout symptoms — which is why it needs a few days before it's useful.",
+  },
   seoDescription: "Track energy, sleep, and stress to spot YOUR personal burnout pattern before you crash. Free AI tool gives a days-to-crash warning and urgent fixes.",
   seoTitle: "Burnout Warning Sign Tracker & Predictor",
   title: "Crash Predictor",
@@ -3904,6 +4616,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DreamPatternSpotter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The same dream keeps coming back.",
+    give: "One dream in detail, or several to compare. Emotions and what's happening in your life help.",
+    get: "Recurring themes across dreams and what's changing alongside them.",
+  },
   seoDescription: "Find the recurring themes, symbols, and emotional patterns hiding in your dreams. Free AI dream analysis with reflection questions that connect to waking life.",
   seoTitle: "Dream Meaning & Recurring Pattern Analyzer",
   title: "Dream Pattern Spotter",
@@ -3942,6 +4661,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "MeetingHijackPreventer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a meeting that always gets derailed by the same person.",
+    give: "A template or your meeting goal, plus format and length.",
+    get: "A time-boxed agenda, explicit speaking order, and facilitator scripts for the moments it goes wrong.",
+    edge: "It scripts the intervention — what to actually say when someone runs long — which is the part that's hard in the room.",
+  },
   seoDescription: "Build a structured, inclusive meeting agenda with time-boxed items, facilitator scripts, and anti-hijack tactics so no one derails it. Free, instant, no signup.",
   seoTitle: "Meeting Agenda Maker & Facilitator Scripts",
   title: "Meeting Hijack Preventer",
@@ -3977,6 +4704,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "DoctorVisitTranslator",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You're home from the appointment and don't know what you were told.",
+    give: "Your visit notes, or what you remember — medications, results, diagnosis, instructions.",
+    get: "Plain English, what matters, and what to ask at the follow-up.",
+    edge: "The companion to Doctor Visit Prep: that one shapes what you say going in, this decodes what you heard coming out.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -4101,6 +4836,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LeaseTrapDetector",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before you sign a lease.",
+    give: "The lease as a PDF or text, plus your city and state.",
+    get: "Predatory clauses flagged, compared against local tenant law, with what's unenforceable where you live.",
+    edge: "It checks against your jurisdiction, so a clause that's routine in one state and illegal in another is labelled correctly.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -4177,6 +4920,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "FriendshipFadeAlerter",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You keep meaning to reach out and months go by.",
+    give: "The people who matter, how often you'd like to be in touch, and when you last were.",
+    get: "Who's fading, and something specific to say to each.",
+    edge: "Built for time-blindness. It notices the drift you can't feel, because three months doesn't feel like three months.",
+  },
   seoDescription: "Never lose touch with people you care about. Track relationships, get alerts when it's been too long, and get guilt-free conversation starters. Free, no signup.",
   seoTitle: "Keep in Touch Reminder & Reconnect Helper",
   title: "Friendship Fade Alerter",
@@ -4230,6 +4981,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-24",
   id: "SensoryMinefieldMapper",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before going somewhere that might be too much.",
+    give: "Where, when, the kind of place, and what you're sensitive to. Save a profile once.",
+    get: "Expected conditions, the best time to go, where to retreat to, and an exit plan.",
+    edge: "It predicts the environment before you're in it, so the decision isn't made while overwhelmed.",
+  },
   seoDescription: "Scout any place before you go. Predict crowds, noise, lighting, and sensory intensity by time of day, plus a game plan and quiet spots. Free, instant, no signup.",
   seoTitle: "Sensory Overload Planner: Scout a Place First",
   title: "Sensory Minefield Mapper",
@@ -4269,6 +5028,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LeverageLogic",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a negotiation you can't afford to walk into cold.",
+    give: "The negotiation, what you want, and the type.",
+    get: "A power-balance read, your leverage and theirs, scripts, and a walk-away line.",
+    edge: "It maps their leverage too, which is what stops you overplaying a weak hand.",
+  },
   seoDescription: "Win any negotiation with the right strategy. Free AI maps your leverage and theirs, arms you with scripts and a concession ladder, war-games their responses, and drafts the email.",
   seoTitle: "AI Negotiation Strategist — Leverage, Scripts & War-Gaming",
   title: "Leverage Logic",
@@ -4307,6 +5074,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "MeetingBSDetector",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A meeting invite arrives and you suspect it's an email.",
+    give: "The meeting description, duration and headcount.",
+    get: "A verdict, the real cost in salaried hours, and how to propose the async version.",
+    edge: "It prices the meeting in people-hours, which turns a vibe into an argument you can send.",
+  },
   seoDescription: "Could this meeting be an email? Free AI checks the agenda for red flags, gives a verdict with confidence score, plus an async alternative and a decline script.",
   seoTitle: "Could This Meeting Be an Email? Checker",
   title: "Meeting BS Detector",
@@ -4352,6 +5127,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "RecipeChaosSolver",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Mid-cook and something has gone wrong.",
+    give: "The recipe or the problem. Or run Pre-Flight before you start.",
+    get: "A rescue with the reason it works — or, beforehand, the steps most likely to go wrong.",
+    edge: "It explains the food science, so the same mistake doesn't repeat.",
+  },
   seoDescription: "Mid-cook crisis? Get instant rescue fixes, smart ingredient substitutions with exact ratios, recipe scaling, and flavor fixes. Free kitchen 911, no signup.",
   seoTitle: "Cooking Rescue & Ingredient Substitution Helper",
   title: "Recipe Chaos Solver",
@@ -4404,6 +5187,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BillRescue",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A bill arrives that's wrong, or larger than it should be.",
+    give: "The bill type and details. Or describe a single charge for a quick check.",
+    get: "Phone scripts, dispute letters, your rights, and an escalation ladder.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -4469,6 +5259,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "SubscriptionTamer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You don't know what's charging you every month.",
+    give: "Your subscriptions, or a statement to scan.",
+    get: "Cost per use, verdicts on what to cut, renewal warnings, and cancellation steps for each.",
+    edge: "Cost per use is the number that settles it — a service you love and open twice a year is still a bad subscription.",
+  },
   seoTitle: "Subscription Tracker & Cancellation Tool — Cost-Per-Use Audit",
   seoDescription: "Tame the subscriptions quietly draining you. Subscription Tamer audits every subscription by real cost-per-use, catches price hikes and duplicates, writes cancellation scripts that beat retention tactics, and gives you guilt-free permission to cancel. Free, no signup.",
   title: "Subscription Tamer",
@@ -4518,6 +5316,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "ApologyCalibrator",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've done something and don't know how big the apology should be.",
+    give: "What happened and your relationship to the person.",
+    get: "The actual harm versus your actual responsibility, and an apology sized to it.",
+    edge: "It corrects in both directions — over-apologising for nothing and under-apologising for something are the same failure to calibrate.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -4578,6 +5384,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "MicroAdventureMapper",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A free afternoon and no plan.",
+    give: "Your location and how long you have.",
+    get: "Specific plans — two to four hours, under twenty, doable this week.",
+  },
   seoDescription: "Beat boredom with a mini-adventure near you, under $20 and done in 2-4 hours. Free AI builds a full itinerary with timing and what to bring. No signup.",
   seoTitle: "Cheap Micro-Adventure Planner Near You",
   title: "Micro-Adventure Mapper",
@@ -4621,6 +5434,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-10",
   id: "DateNight",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "'I dunno, what do you want to do?'",
+    give: "Your budget, currency, the vibe, and where you are.",
+    get: "A full evening with a timeline, per-stop costs, and a buffer so you don't overshoot.",
+    edge: "It plans to a hard budget with the buffer built in, so the plan survives contact with the bill.",
+  },
   seoDescription: "Get a complete date night itinerary on your budget, anywhere in the world. Free AI plans every stop with timing, costs, a buffer, and a Plan B. No signup.",
   seoTitle: "Date Night Planner with Budget Itinerary",
   title: "Date Night",
@@ -4665,6 +5486,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-10",
   id: "CrisisPrioritizer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Everything feels urgent and you can't tell what's real.",
+    give: "Your tasks, and a timeframe — today, this week, or a few weeks out.",
+    get: "What genuinely needs attention now, what can wait, and who's actually waiting on you.",
+    edge: "It separates real urgency from anxiety urgency by checking consequences and who's waiting, not how loud something feels.",
+  },
   seoDescription: "Separate real urgency from anxiety urgency. Free AI triage ranks your tasks by what actually breaks if you skip them, with a time-blocked plan and panic button.",
   seoTitle: "Task Triage Tool: What's Actually Urgent",
   title: "Crisis Prioritizer",
@@ -4712,6 +5541,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "VirtualBodyDouble",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A task you'd do fine with someone else in the room.",
+    give: "Your task and a session mode. It can split the task for you.",
+    get: "A working session with check-ins, in a personality you picked.",
+    edge: "It recreates body doubling — the reason coffee shops and libraries work — without needing anyone to be there.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
@@ -4772,6 +5609,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "WaitingModeLiberator",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something's happening later and the whole day is frozen around it.",
+    give: "Your events with times, prep and travel. Your energy level.",
+    get: "The actual free windows and what fits in each.",
+    edge: "It does the arithmetic you're avoiding. 'I have stuff later' usually means three usable hours you can't see.",
+  },
   seoDescription: "Stop letting 'I have a thing later' freeze your whole day. Free AI maps your free windows around appointments and matches tasks to your energy. No signup.",
   seoTitle: "Beat Waiting Mode: Time-Block Around Appointments",
   title: "Waiting Mode Liberator",
@@ -4820,6 +5665,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BrainDumpBuddy",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Head full, everything blurring together.",
+    give: "All of it, unsorted. Type, rapid-fire, or talk.",
+    get: "Sorted into buckets, with one clear next step.",
+    edge: "It ends with a single next action rather than a tidy list — the list is what you already had.",
+  },
   seoDescription: "Dump every racing thought and let AI sort the chaos into action items, decisions, and worries you can drop. Free, no signup. Find your real next step.",
   seoTitle: "Brain Dump Organizer & To-Do Sorter",
   title: "Brain Dump Buddy",
@@ -4875,6 +5728,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-11",
   id: "GentlePushGenerator",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You want to grow and every motivational thing makes it worse.",
+    give: "Your comfort zone and where you want to expand.",
+    get: "A challenge sized to today's capacity — achievable, slightly scary.",
+    edge: "Attempting counts as success. It's built so a bad day doesn't become a failure.",
+  },
   seoDescription: "Get a free micro-challenge sized to your real capacity — achievable but slightly scary. Grow at the edge of your comfort zone without pressure or burnout.",
   seoTitle: "Comfort Zone Challenge Generator",
   title: "Gentle Push Generator",
@@ -4920,6 +5781,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BrainStateDeejay",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You need to get from the state you're in to the one you need.",
+    give: "Where you are now and where you want to be.",
+    get: "A playlist that moves you there gradually, using tempo, complexity and familiarity.",
+    edge: "It transitions rather than jumping. Calm music doesn't work on an anxious brain until something bridges the gap.",
+  },
   seoDescription: "Find the perfect focus playlist for your brain right now. Free AI tunes tempo, complexity, and genre to move you from scattered to focused in minutes.",
   seoTitle: "Focus Music & Mood Playlist Finder",
   title: "Brain State Deejay",
@@ -4965,6 +5834,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-23",
   id: "SpiralStopper",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Right now, mid-spiral, frozen, or completely spent.",
+    give: "Which of the three you're in, and whatever you can get out.",
+    get: "A structured intervention for that specific state.",
+    edge: "Three different states get three different interventions. What breaks a spiral will not move someone who's frozen.",
+  },
   seoDescription: "Free crisis tool for when your brain goes sideways. Get grounded from an anxiety spiral, unstuck from a freeze, or a recovery plan when you've crashed.",
   seoTitle: "Anxiety Spiral & Panic Help Tool",
   title: "Spiral Stopper",
@@ -5010,6 +5887,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "VelvetHammer",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've drafted something you shouldn't send.",
+    give: "The angry version, unfiltered. Your relationship to the recipient helps.",
+    get: "The same point, professionally, with the substance intact.",
+    edge: "The complaint survives the rewrite. It removes the damage, not the argument.",
+  },
   seoDescription: "Turn your furious draft into a professional message in seconds. Free AI gives you three polished versions that keep your point and lose the fire. No signup.",
   seoTitle: "Angry Email Rewriter: Stay Professional",
   title: "Velvet Hammer",
@@ -5055,6 +5940,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "TheGap",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "You've re-read the hard part four times and it still won't go in.",
+    give: "The exact concept, the subject, and your level.",
+    get: "The prerequisite you're actually missing, and what to learn first.",
+    edge: "The block is almost never the hard material — it's something earlier. Re-reading the hard part is why you're stuck.",
+  },
   seoDescription: "Stuck on a concept? Free AI traces backward through the prerequisites to find the exact point your understanding broke — then hands you a focused fix.",
   seoTitle: "Find Your Knowledge Gap Study Helper",
   title: "The Gap",
@@ -5093,6 +5986,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "BuyWise",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Something's in the cart and you're not sure.",
+    give: "What you're buying. The price you've seen helps.",
+    get: "Whether the price is fair, buy now or wait, the true cost including consumables, and what actually goes wrong with it.",
+    edge: "Total cost of ownership, not sticker price — the cheap printer with expensive ink is the whole point.",
+  },
   seoDescription: "Should you buy it? Get instant fair-price analysis, total cost of ownership, cheaper alternatives, and an impulse check. Free AI research that stops overpaying.",
   seoTitle: "Should I Buy It? Purchase Research Tool",
   title: "Buy Wise",
@@ -5141,6 +6042,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-03-24",
   id: "SafeWalk",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Before a walk you're slightly uneasy about.",
+    give: "Your route, time of day, area type and duration.",
+    get: "A safety brief for that specific walk, plus live companion tools while you're out.",
+  },
   seoDescription: "Free AI safety coach for solo walks. Assess your route, then use a check-in timer, convincing fake call, GPS sharing, and one-tap alarm while you walk.",
   seoTitle: "Walking Home Safety App & Fake Call",
   title: "Safe Walk",
@@ -5187,6 +6095,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "RoommateCourt",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The same argument for the third time.",
+    give: "The conflict, both sides honestly — including what they'd say.",
+    get: "A verdict with fault percentages, the real underlying issue, and next steps.",
+    edge: "It asks for their side in your words and catches it when the account is one-sided.",
+  },
   seoDescription: "Settle roommate disputes with an impartial AI verdict and a word-for-word script — plus fairly split chores by effort. Free, no signup. End the arguments.",
   seoTitle: "Roommate Dispute Mediator & Chore Splitter",
   title: "Roommate Court",
@@ -5302,6 +6218,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "LaundroMat",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "An unfamiliar load, a fresh stain, or something already ruined.",
+    give: "Describe the load, or photograph the care label or the stain.",
+    get: "What to separate, cycle settings, drying risks, or a rescue for the thing you've already damaged.",
+  },
   seoDescription: "Free AI laundry expert: get a load plan, treat any stain fast, rescue shrunk or bled clothes, translate care labels, and run smart wash and dry timers.",
   seoTitle: "AI Laundry Helper: Stains, Care Labels & Rescue",
   title: "LaundroMat",
@@ -5337,6 +6260,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "NerveCheck",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The day before, or ten minutes before.",
+    give: "Prep mode: what you're facing and who's involved. SOS mode: just start.",
+    get: "A fear breakdown and a plan, or immediate help mid-panic.",
+    edge: "Two modes because preparation and panic need opposite things — one wants detail, the other wants none.",
+  },
   seoDescription: "Free confidence coach for interviews, presentations, dates, and hard talks. Break down the fear, build a prep plan, and hit SOS mode for live panic.",
   seoTitle: "Interview & Presentation Confidence Coach",
   title: "Nerve Check",
@@ -5371,6 +6302,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-07-21",
   id: "PaperworkPath",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A death, a move, a divorce, a new job — and a pile of forms.",
+    give: "The life event and your location.",
+    get: "Every document you need, in dependency order.",
+    edge: "The order is the product. Most of these tasks block each other, and doing them in the wrong sequence means doing them twice.",
+  },
   seoDescription: "Handling a move, new baby, new job, marriage, divorce, or loss? Get the exact documents you need and the right order to handle them — so nothing falls through the cracks. Free, no signup.",
   seoTitle: "Life Admin Checklist: What Paperwork & In What Order",
   title: "Paperwork Path",
@@ -5413,6 +6352,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "2026-07-15",
   id: "QuoteCheck",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A repair quote arrived and you don't know if it's fair.",
+    give: "The quote and the repair type.",
+    get: "Whether it's reasonable, which line items are padded, and what to say to push back.",
+    edge: "It reads the quote the way someone who worked in the trade would, rather than pretending to a pricing database that doesn't exist.",
+  },
   seoDescription: "Paste your appliance or car repair quote and find out if you're being overcharged. Get a fairness verdict, red flags, itemization check, and an exact negotiation script. Free, no signup.",
   seoTitle: "Repair Quote Checker: Am I Being Overcharged?",
   title: "Quote Check",
@@ -5452,6 +6399,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 {
   id: "TicketTackler",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "A parking or camera ticket, before the deadline to contest.",
+    give: "The ticket type and your city.",
+    get: "An honest read on whether it's worth fighting, and if so the appeal built for your local process.",
+    edge: "It starts by telling you to just pay it when that's the right answer, which is most of the time.",
+  },
   seoTitle: "Fight a Parking or Camera Ticket: Free Appeal Builder",
   seoDescription: "Contest a parking or red-light camera ticket with a free AI appeal builder — honest case assessment, defense angles, evidence checklist, and a ready-to-send appeal letter.",
   title: "Ticket Tackler",
