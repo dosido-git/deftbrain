@@ -315,11 +315,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
         </main>
 
-        {/* Right Column: The Gist + Ad Panel + Guide Sidebar */}
+        {/* Right Column: Cheat Code + Ad Panel + Guide Sidebar */}
         {/* Below `lg` the whole aside stacks AFTER the form, as it always has. */}
         <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
 
-          {/* ── The Gist — its own card, deliberately ────────────────────────
+          {/* ── Cheat Code — its own card, deliberately ────────────────────────
               `lg:mt-11` clears the locale pills, which are pinned to the GRID's
               top-right corner (`lg:absolute lg:top-3 lg:end-4`, above) — i.e.
               exactly where the sidebar's first card starts. Measured 90x32px of
@@ -339,24 +339,39 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               not done: it is a layout change for all 125 tools, and this is a
               two-tool trial.
 
-              <details open> — collapsible, but open by default. The whole point
-              is being read BEFORE someone commits to the form; hiding it behind
-              a closed triangle would defeat it. Collapsing is for the returning
-              visitor who already knows.
+              CLOSED by default, deliberately. The content is the same either
+              way; what changes is how it feels to arrive at. Open, it is a wall
+              of orientation text you were handed. Closed, opening it is a small
+              act of opting in — the reader unlocks it, which is the whole point
+              of calling it a Cheat Code. Cost of the choice: a first-time
+              visitor may never open it, which is exactly who it was written for.
+              That is the trade being made, not an oversight.
 
               Optional: 123 of 125 tools have no primer and skip this entirely. */}
           {tool?.primer && (
-            <details open className={`${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl p-5 lg:mt-11 transition-colors duration-200`}>
-              {/* py-2/-my-2 grows the tap row 24px -> 40px into the card's own
+            <details className={`group ${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl p-5 lg:mt-11 transition-colors duration-200`}>
+              {/* The flex row is an inner div, NOT the <summary> itself. Setting
+                  `display` on a <summary> to anything but `list-item` is known
+                  to cost you the native disclosure behaviour in WebKit — the
+                  marker disappears and the element's exposure degrades. The
+                  inner-wrapper pattern gets the same layout with `display:
+                  list-item` intact (asserted in the browser), so it is what we
+                  use even though no breakage was observed in Chromium here.
+                  `list-none` only sets list-style-type, so it hides the Firefox
+                  marker without touching display.
+
+                  py-2/-my-2 grows the tap row 24px -> 40px into the card's own
                   padding, without moving the text. 24px only just clears WCAG
-                  2.2 AA; this is the same fix the locale pills got. */}
-              <summary className={`text-xs font-semibold ${colors.text} uppercase tracking-widest cursor-pointer list-none flex items-center gap-2 py-2 -my-2 [&::-webkit-details-marker]:hidden`}>
-                <span className={`text-base ${colors.accent}`}>⚡</span>
-                The Gist
-                <span
-                  className={`ms-auto text-xs ${colors.accent} transition-transform duration-200 [details[open]_&]:rotate-180`}
-                  aria-hidden="true"
-                >▾</span>
+                  2.2 AA; same fix the locale pills got. */}
+              <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
+                <div className={`text-xs font-semibold ${colors.text} uppercase tracking-widest flex items-center gap-2`}>
+                  <span className={`text-base ${colors.accent}`}>⚡</span>
+                  Cheat Code
+                  <span
+                    className={`ms-auto text-xs ${colors.accent} rotate-0 group-open:rotate-180 transition-transform duration-200`}
+                    aria-hidden="true"
+                  >▾</span>
+                </div>
               </summary>
               <dl className="space-y-2.5 mt-4">
                 {[['When', tool.primer.when], ['You give', tool.primer.give],
