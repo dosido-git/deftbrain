@@ -1647,7 +1647,7 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You need to ask someone for something, and how you ask will decide the answer.",
-    give: "Exactly what you want, and the situation.",
+    give: "What you want, and the situation.",
     get: "The power dynamics, your strongest angle, and the words to use.",
   },
   seoDescription: "Get a refund, an upgrade, a waived fee, or a table at a full restaurant. Free AI finds your best angle, writes the exact script, and coaches the delivery.",
@@ -6098,10 +6098,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "The same argument for the third time.",
-    give: "The conflict, both sides honestly — including what they'd say.",
-    get: "A verdict with fault percentages, the real underlying issue, and next steps.",
-    edge: "It asks for their side in your words and catches it when the account is one-sided.",
+    when: "The same roommate argument for the third time — or a chore split nobody thinks is fair.",
+    give: "What happened, your side, and how your roommate would tell it. Being honest about their version is the point.",
+    get: "A verdict that splits the fault between you as percentages, names the real issue under the surface fight, and says what to do next.",
+    edge: "It makes you argue their side too, and calls it out when your account is one-sided — so the verdict is not just agreeing with whoever typed it.",
   },
   seoDescription: "Settle roommate disputes with an impartial AI verdict and a word-for-word script — plus fairly split chores by effort. Free, no signup. End the arguments.",
   seoTitle: "Roommate Dispute Mediator & Chore Splitter",
