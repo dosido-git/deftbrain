@@ -778,20 +778,28 @@ const CrisisPrioritizer = ({ tool }) => {
   handleRef.current = handlePrioritize;
   canSubmitRef.current = !loading && filledTasks.length > 0;
 
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(acctResult || delegateResult || fuResult || oneThingResult || patternResult || results || retriageResult || rollingResult || splitResult || timeBlockResult || delegateTask || splitTask || dumpText.trim() || emotional.trim() || energy.trim() || hours.trim() || rollingNewTasks.trim() || voice.trim());
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cp_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🚨'}</span>{tool?.title ?? 'Crisis Prioritizer'}</h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cp_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(hasInput) ? (
+              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↺ {t('start_over')}
+              </button>
+            ) : null}
+          </div>
         </div>
-        {(results || filledTasks.length > 0) && (
-          <button onClick={reset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
-            ↺ {t('start_over')}
-          </button>
-        )}
       </div>
 
       {/* Nav */}

@@ -172,11 +172,21 @@ const TimeWarp = ({ tool }) => {
       {/* Input */}
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b border-zinc-500`}>
-          <h2 className={`text-xl font-bold ${c.text}`}>
-            <span className="me-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? t('tw_title')}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tw_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}>
+                <span className="me-2">{tool?.icon ?? '⏰'}</span>{tool?.title ?? t('tw_title')}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tw_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(results || historicalPeriod.trim() || modernThing.trim()) ? (
+              <button onClick={() => { setModernThing(''); setHistoricalPeriod(''); setResults(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                {t('tw_new_warp')}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {/* Quick combos */}
@@ -304,10 +314,6 @@ const TimeWarp = ({ tool }) => {
             <button onClick={runWarp} disabled={loading}
               className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
               {t('tw_same_combo')}
-            </button>
-            <button onClick={() => { setModernThing(''); setHistoricalPeriod(''); setResults(null); }}
-              className={`${c.btnSecondary} font-bold py-3 px-4 rounded-lg min-h-[44px]`}>
-              {t('tw_new_warp')}
             </button>
           </div>
         </div>

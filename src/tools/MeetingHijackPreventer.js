@@ -652,11 +652,21 @@ const MeetingHijackPreventer = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('mhp_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mhp_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '🛡️'}</span>{tool?.title ?? t('mhp_title')}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mhp_tagline')}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(results || meetingGoal.trim() || participants.length || selectedTemplate.trim()) ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ✨ {t('mhp_new_meeting')}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="p-4">
@@ -876,7 +886,6 @@ const MeetingHijackPreventer = ({ tool }) => {
             </div></Section>}
 
           {results?.success_metrics && <div className={`${c.success} border-s-4 rounded-e-lg p-4`}><p className="text-sm">📊 {results?.success_metrics}</p></div>}
-          <button onClick={handleReset} className={`${c.btnSecondary} w-full py-2 rounded-lg text-sm`}>✨ {t('mhp_new_meeting')}</button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

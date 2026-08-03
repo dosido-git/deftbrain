@@ -306,6 +306,9 @@ const LeverageLogic = ({ tool }) => {
   // RENDER
   // ═══════════════════════════════════
 
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(counterResults || debriefResults || emailResults || prepResults || results || simResults || anchorTheir.trim() || anchorWalkaway.trim() || anchorYour.trim() || desired.trim() || finalOutcome.trim() || leverage.trim() || negotiationType.trim() || situation.trim() || theyJustSaid.trim() || timeline.length || whatYouDontKnow.trim() || whatYouKnow.trim());
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -316,11 +319,21 @@ const LeverageLogic = ({ tool }) => {
         <div className="space-y-5">
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
             <div className="pb-3 border-b border-zinc-500">
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Leverage Logic'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('llog_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}>
+                    <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Leverage Logic'}
+                  </h2>
+                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('llog_tagline')}</p>
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                </div>
+                {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+                {(hasInput) ? (
+                  <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                    {t('llog_new')}
+                  </button>
+                ) : null}
+              </div>
             </div>
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
@@ -398,7 +411,6 @@ const LeverageLogic = ({ tool }) => {
       {view === 'results' && results && (
         <div className="space-y-5">
           <div className="flex gap-2 flex-wrap">
-            <button onClick={resetAll} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('llog_new')}</button>
           </div>
 
             {/* Situation read */}

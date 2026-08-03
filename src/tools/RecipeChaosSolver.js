@@ -1602,10 +1602,6 @@ const RecipeChaosSolver = ({ tool }) => {
             </div>
           </div>
 
-          <button onClick={resetRescue}
-            className={`${c.btnSecondary} w-full py-2.5 rounded-lg text-xs font-bold min-h-[40px]`}>
-            {t('rcs_new_problem')}
-          </button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -2874,6 +2870,9 @@ const RecipeChaosSolver = ({ tool }) => {
     setError('');
   };
 
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(rescueResults || disasterImageBase64 || disasterImagePreview || pantryImageBase64 || pantryImagePreview || recipeImageBase64 || recipeImagePreview || availableIngredients.trim() || availableSubstitutes.trim() || missingIngredient.trim() || problemDescription.trim() || quickDish.trim() || recipeText.trim() || timePressure.trim());
+
   return (
     <div className={`space-y-4 ${c.text}`}>
 
@@ -2881,16 +2880,26 @@ const RecipeChaosSolver = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('rcs_title')}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rcs_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('rcs_try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}>
+                    <span className="me-2">{tool?.icon ?? '🍳'}</span>{tool?.title ?? t('rcs_title')}
+                  </h2>
+                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rcs_tagline')}</p>
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('rcs_try_example')}</button>
+                </div>
+                {(results || recipeText.trim() || problemDescription.trim()) && (
+                  <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('rcs_start_over')}</button>
+                )}
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(hasInput) ? (
+                <button onClick={resetRescue} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  {t('rcs_new_problem')}
+                </button>
+              ) : null}
             </div>
-            {(results || recipeText.trim() || problemDescription.trim()) && (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('rcs_start_over')}</button>
-            )}
           </div>
         </div>
         <div className="px-5 py-3">

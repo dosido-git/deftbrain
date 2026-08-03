@@ -239,11 +239,21 @@ const FanTheory = ({ tool }) => {
       {/* Persistent header card — h2 FIRST, inputs after border-b per PF-3 */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="me-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? t('ft_title')}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ft_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="me-2">{tool?.icon ?? '🧵'}</span>{tool?.title ?? t('ft_title')}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ft_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(gradeResults || results || myTheory.trim() || theoryHistory.length || title.trim()) ? (
+              <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setTheoryHistory([]); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                🔄 {t('ft_reset')}
+              </button>
+            ) : null}
+          </div>
         </div>
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -399,10 +409,6 @@ const FanTheory = ({ tool }) => {
             <button onClick={() => runGenerate(true)} disabled={loading}
               className={`flex-1 ${c.btnSecondary} disabled:opacity-40 font-bold py-3 rounded-lg min-h-[44px]`}>
               <span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_different_theory')}
-            </button>
-            <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setTheoryHistory([]); }}
-              className={`px-5 py-3 rounded-lg font-bold text-sm min-h-[44px] ${c.btnSecondary}`}>
-              🔄 {t('ft_reset')}
             </button>
           </div>
 

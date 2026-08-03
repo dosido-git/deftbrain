@@ -444,11 +444,21 @@ const MoneyDiplomat = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The right number for every money moment'}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '💵'}</span>{tool?.title ?? 'Money Diplomat'}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'The right number for every money moment'}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(simPrompt || simHistory.length || simSituation.trim()) ? (
+                <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('md_sim_new_scenario')}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="p-5 space-y-3">
@@ -685,7 +695,6 @@ const MoneyDiplomat = ({ tool }) => {
                     {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💬</span>}
                     {t('md_sim_respond')}
                   </button>
-                  <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`text-xs ${c.textMuteded} underline`}>{t('md_sim_new_scenario')}</button>
                 </div>
               </div>
             )}

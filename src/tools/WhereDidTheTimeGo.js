@@ -197,9 +197,19 @@ const WhereDidTheTimeGo = ({ tool }) => {
         {/* Input */} {!results && (<div className={`${c.card} ${c.border} border rounded-2xl p-6 shadow-sm space-y-5`}>
 
             {/* Header */} <div className={`mb-4 pb-3 border-b ${c.border}`}>
-              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
-              <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('wdttg_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
+                  <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('wdttg_tagline')}</p>
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                </div>
+                {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+                {(results || dayDescription.trim() || perceivedBreakdown.trim()) ? (
+                  <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                    ↺ {t('start_over')}
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             {/* Timeframe */} <div className="space-y-2">
@@ -255,9 +265,6 @@ const WhereDidTheTimeGo = ({ tool }) => {
                   <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title ?? t('wdttg_title')}</h2>
                   <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('wdttg_tagline')}</p>
                 </div>
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
-                  ↺ {t('start_over')}
-                </button>
               </div>
             </div>
           </div>

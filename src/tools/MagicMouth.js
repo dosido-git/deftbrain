@@ -292,11 +292,21 @@ const MagicMouth = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('mm_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mm_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '🗣️'}</span>{tool?.title ?? t('mm_title')}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mm_tagline')}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(phoneResults || phoneCompany.trim() || phoneGoal.trim() || phoneIssue.trim()) ? (
+                <button onClick={handlePhoneReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  📞 {t('mm_try_another_call')}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="p-4">
@@ -477,9 +487,6 @@ const MagicMouth = ({ tool }) => {
               </div>
             )}
 
-            <button onClick={handlePhoneReset} className={`w-full py-2.5 rounded-xl text-sm ${c.btnSecondary}`}>
-              📞 {t('mm_try_another_call')}
-            </button>
           </div>
         )}
 

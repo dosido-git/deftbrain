@@ -442,24 +442,30 @@ function SleepArchitect({ tool }) {
     );
   };
 
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(results || bedtime.trim() || disruptors.length || freeform.trim() || goals.length || hoursActual.trim() || wakeTime.trim());
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="flex items-start justify-between">
           <div>
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '😴'}</span>{tool?.title ?? t('sa_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sa_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '😴'}</span>{tool?.title ?? t('sa_title')}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sa_tagline')}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(hasInput) ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('start_over')}
+                </button>
+              ) : null}
+            </div>
           </div>
-          <button
-            onClick={handleReset}
-            style={{ visibility: (results || goals.length || freeform.trim()) ? 'visible' : 'hidden' }}
-            className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}
-          >
-            ↺ {t('start_over')}
-          </button>
         </div>
       </div>
       {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('sa_xref_stress')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}</p>}

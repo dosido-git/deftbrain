@@ -735,7 +735,7 @@ const TheFinalWord = ({ tool }) => {
     );
   };
 
-  const VerdictActions = ({ resetLabel, showAppealBtn }) => (
+  const VerdictActions = ({ showAppealBtn }) => (
     <div className={`px-6 py-3 border-t flex items-center justify-between flex-wrap gap-2 ${c.border}`}>
       <div className="flex gap-1.5 flex-wrap">
         <ShareBtn content={getVerdictText()} title={t('tfw_copy_title')} />
@@ -751,9 +751,6 @@ const TheFinalWord = ({ tool }) => {
           </button>
         )}
       </div>
-      <button onClick={() => { resetAll(); setMode(null); }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${c.btnSecondary}`}>
-        <span>🔄</span> {resetLabel || t('tfw_new')}
-      </button>
     </div>
   );
 
@@ -795,24 +792,37 @@ const TheFinalWord = ({ tool }) => {
   // ════════════════════════════════════════════════════════
   // RENDER
   // ════════════════════════════════════════════════════════
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(appealResult || challengeResult || daResult || dissectResult || result || shareId || appealEvidence.trim() || challengeText.trim() || claim.trim() || claimA.trim() || claimB.trim() || daPosition.trim() || daTopic.trim() || disputeContext.trim() || followUpResults.length || followUpText.trim() || personA.trim() || personB.trim() || question.trim());
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── Persistent header ── */}
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                  <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tfw_tagline')}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                      <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'The Final Word'}
+                    </h2>
+                    <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('tfw_tagline')}</p>
+                    <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                  </div>
+                  {(result || triviaQuestion || triviaFinished || mpMode) && (
+                    <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+                      ↺ {t('start_over')}
+                    </button>
+                  )}
+                </div>
               </div>
-              {(result || triviaQuestion || triviaFinished || mpMode) && (
-                <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
-                  ↺ {t('start_over')}
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(hasInput) ? (
+                <button onClick={() => { resetAll(); setMode(null); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  <span>🔄</span> {t('tfw_new')}
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
           {!result && !triviaQuestion && !triviaFinished && !mpMode && (sessionHistory.length > 0 || stats.totalVerdicts > 0) && (
@@ -1374,7 +1384,7 @@ const TheFinalWord = ({ tool }) => {
               <SourcesList sources={result.sources} />
             </div>
             <ShareLinkDisplay />
-            <VerdictActions resetLabel={t('tfw_result_new_question')} />
+            <VerdictActions />
           </div>
         )}
 
@@ -1408,7 +1418,7 @@ const TheFinalWord = ({ tool }) => {
               <SourcesList sources={result.sources} />
             </div>
             <ShareLinkDisplay />
-            <VerdictActions resetLabel={t('tfw_result_new_dispute')} showAppealBtn={true} />
+            <VerdictActions showAppealBtn={true} />
           </div>
         )}
 
@@ -1444,7 +1454,7 @@ const TheFinalWord = ({ tool }) => {
               )}
             </div>
             <ShareLinkDisplay />
-            <VerdictActions resetLabel={t('tfw_result_new_claim')} />
+            <VerdictActions />
           </div>
         )}
 

@@ -405,17 +405,22 @@ const TheAlibi = ({ tool }) => {
     <div>
       <div className="flex items-start justify-between gap-3 mb-5">
         <div>
-          <h2 className={'text-2xl font-bold ' + c.text}>
-            <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ta_title')}
-          </h2>
-          <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? t('ta_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={'text-2xl font-bold ' + c.text}>
+                <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ta_title')}
+              </h2>
+              <p className={'text-sm ' + c.textMuted}>{tool?.tagline ?? t('ta_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(results || concerns.trim() || context.trim() || customAudience.trim() || situation.trim()) ? (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↺ {t('start_over')}
+              </button>
+            ) : null}
+          </div>
         </div>
-        {(results || situation.trim()) && (
-          <button onClick={handleReset} className={'flex-shrink-0 ' + c.btnSecondary + ' px-3 py-1.5 rounded-lg text-xs font-medium'}>
-            ↺ {t('start_over')}
-          </button>
-        )}
       </div>
       {!results && (
         <p className={'text-xs ' + c.textMuted + ' mb-3'}>

@@ -531,12 +531,22 @@ const FriendshipFadeAlerter = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '💔'}</span>{tool?.title ?? 'Friendship Fade Alerter'}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose touch with people you care about'}</p>
-              <button onClick={loadExample} disabled={digestLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div>
+                  <h2 className={`text-xl font-bold ${c.text}`}>
+                    <span className="me-2">{tool?.icon ?? '💔'}</span>{tool?.title ?? 'Friendship Fade Alerter'}
+                  </h2>
+                  <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Never lose touch with people you care about'}</p>
+                  <button onClick={loadExample} disabled={digestLoading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                </div>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(eventDate.trim() || eventLabel.trim()) ? (
+                <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  <span className="me-1">{tool?.icon ?? '💔'}</span> {t('ffa_add_person')}
+                </button>
+              ) : null}
             </div>
           </div>
         </div>
@@ -607,9 +617,6 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
               {/* Action buttons */}
               <div className="flex gap-3 flex-wrap">
-                <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-lg font-bold w-full ${c.btnPrimary} disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2`}>
-                  <span className="me-1">{tool?.icon ?? '💔'}</span> {t('ffa_add_person')}
-                </button>
                 {overduePeople.length >= 2 && (
                   <button onClick={runBatch} className={`flex-1 py-3 rounded-lg font-bold ${c.btnSecondary}`}>
                     <span className="me-2">⚡</span> {t('ffa_catchup_sprint', { count: overduePeople.length })}
