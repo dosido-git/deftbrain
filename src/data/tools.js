@@ -96,7 +96,7 @@ export const tools = [
   primer: {
     when: "Someone died, or someone you love is grieving and you don't know what to say.",
     give: "Who it's for, what kind of loss, and roughly when it happened.",
-    get: "What you're feeling, named and normalised, plus what actually helps and what to stop saying.",
+    get: "What you're feeling, named and normalized, plus what actually helps and what to stop saying.",
     edge: "It works in both directions — for the person grieving and for the person trying to help without making it worse.",
   },
   seoDescription: "Get compassionate, free guidance for navigating grief — whether you're grieving or supporting someone. Learn what's normal, what to say, and when to get help.",
@@ -495,7 +495,7 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You have a problem and don't want to browse 125 tools.",
+    when: "You have a problem and no idea which tool solves it.",
     give: "Your problem in plain language.",
     get: "One to five tools ranked, each with why it fits your situation specifically.",
     edge: "It reads between the lines, so you don't have to know what the tool would be called.",
@@ -629,7 +629,7 @@ export const tools = [
   primer: {
     when: "Something costs more than it should and you want to know why.",
     give: "The product or service, and the price you saw.",
-    get: "Where your money actually goes — materials, labour, brand premium, pure margin — and the pricing psychology in play.",
+    get: "Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.",
   },
   seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the fair price, and how to pay less.",
   seoTitle: "Price Breakdown: Why Does It Cost That Much?",
@@ -1354,7 +1354,7 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before a pitch or presentation with a sceptical room.",
+    when: "Before a pitch or presentation with a skeptical room.",
     give: "What you're proposing and who's in the audience.",
     get: "The hardest questions that audience will actually ask, with strong answers.",
     edge: "It writes real challenges, not softballs — which is the only kind worth rehearsing.",
@@ -1647,7 +1647,7 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You need to ask someone for something, and how you ask will decide the answer.",
-    give: "What you want, and the situation.",
+    give: "Exactly what you are asking for, who you are asking, and the situation around it.",
     get: "The power dynamics, your strongest angle, and the words to use.",
   },
   seoDescription: "Get a refund, an upgrade, a waived fee, or a table at a full restaurant. Free AI finds your best angle, writes the exact script, and coaches the delivery.",
@@ -1817,7 +1817,7 @@ export const tools = [
   primer: {
     when: "Two paths, and the pro/con list didn't settle it.",
     give: "Path A and Path B, described honestly.",
-    get: "A vivid ordinary day inside each future — specific, not idealised.",
+    get: "A vivid ordinary day inside each future — specific, not idealized.",
     edge: "Pro/con lists compare features. This compares what it feels like on a Tuesday, which is what you're actually choosing between.",
   },
   seoDescription: "Torn between two paths? Instead of a pro/con list, AI writes a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
@@ -1900,7 +1900,7 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Curiosity, or an argument about whether one event really mattered.",
+    when: "You want to know whether one moment in history actually changed anything.",
     give: "A historical event, and the one detail you'd change.",
     get: "A plausible alternate timeline, each consequence cascading into the next.",
   },
@@ -2027,7 +2027,7 @@ export const tools = [
   primer: {
     when: "You want to be made fun of accurately.",
     give: "Your resume, dating profile, LinkedIn, or whatever else.",
-    get: "A roast targeted at what's specifically ridiculous about yours.",
+    get: "A roast aimed at what is specifically ridiculous about what you sent.",
   },
   seoDescription: "Paste your resume, dating profile, LinkedIn bio, or any text and get a personalized comedy roast targeting your specific content. Three heat levels, zero generics.",
   seoTitle: "AI Roast Generator - Roast My Resume or Bio",
@@ -2108,7 +2108,7 @@ export const tools = [
   primer: {
     when: "You want an answer that's wrong on purpose.",
     give: "Any real question. Pick a category and how straight-faced you want it.",
-    get: "A confidently, structurally impeccable, completely incorrect answer.",
+    get: "A confident, impeccably structured, completely incorrect answer.",
   },
   seoDescription: "Ask any real question and get a confidently, beautifully wrong answer — fake studies, invented experts, nonsense equations. Three absurdity levels. Real answer on toggle.",
   seoTitle: "Wrong Answers Only - Confidently Wrong AI",
@@ -2816,7 +2816,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "A scattered list and a day of constant gear-shifting ahead.",
     give: "Everything on your plate, unfiltered. Or paste a raw list.",
-    get: "Tasks grouped by the kind of thinking each needs, sequenced to minimise switching.",
+    get: "Tasks grouped by the kind of thinking each needs, sequenced to minimize switching.",
     edge: "It groups by cognitive mode, not topic or deadline. Switching between creative and analytical work is what costs you the day.",
   },
   seoDescription: "Batch similar tasks by mental mode to kill context switching and protect your focus. Get a ready-to-run schedule built around your energy in seconds. Free, no signup.",
@@ -2864,7 +2864,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You know you should move and you really don't want to.",
     give: "Your energy, what happened today, where it hurts, and how long you've got.",
-    get: "A workout sized to that, with swaps if a movement is wrong for you today.",
+    get: "A workout sized to that, with swaps if a movement is wrong for you today. Also two-minute micro-moves, a week's plan, and recovery, sleep and breathing sets.",
     edge: "It starts from having no motivation rather than assuming some. Nothing here requires you to feel like it.",
   },
   seoDescription: "For the days you don't want to move. Get a workout matched to your real energy, what hurts, and how your day went — from a 2-minute floor up. Free, no signup.",
@@ -2978,7 +2978,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You hold a position and have only heard weak versions of the other side.",
     give: "Your position, a debate format, and how hard you want it.",
-    get: "The strongest honest counter-case, then pressure on your answers.",
+    get: "The strongest honest counter-case, then pressure on your answers — plus a scorecard, the fallacies on both sides named, and a replay of where you lost ground.",
     edge: "It argues the best version of the opposing case, not the caricature — which is the only version worth beating.",
   },
   seoDescription: "State any position and face the strongest opposing case — a real steelman, not a strawman. Practice debates, spot fallacies, and sharpen your thinking. Free.",
@@ -4155,7 +4155,8 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "Standing in front of the wardrobe with nothing decided.",
     give: "Your wardrobe once, then just the day's weather, plans and mood.",
-    get: "A complete outfit, and why it works for that day.",
+    get: "A complete outfit and why it works for that day — plus a packing list for trips and a record of what you have actually been wearing.",
+    edge: "Everything it suggests is clothing you already own, so no recommendation ends in a purchase.",
   },
   seoDescription: "Let AI pick complete outfits from your own closet based on weather, mood, and comfort needs. Beat decision fatigue every morning — free, no signup.",
   seoTitle: "AI Outfit Picker From Your Own Wardrobe",
@@ -4842,7 +4843,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     when: "Before you sign a lease.",
     give: "The lease as a PDF or text, plus your city and state.",
     get: "Predatory clauses flagged, compared against local tenant law, with what's unenforceable where you live.",
-    edge: "It checks against your jurisdiction, so a clause that's routine in one state and illegal in another is labelled correctly.",
+    edge: "It checks against your jurisdiction, so a clause that's routine in one state and illegal in another is labeled correctly.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -5033,7 +5034,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "Before a negotiation you can't afford to walk into cold.",
     give: "The negotiation, what you want, and the type.",
-    get: "A power-balance read, your leverage and theirs, scripts, and a walk-away line.",
+    get: "A power-balance read, your leverage and theirs, scripts, and a walk-away line. Then rehearse against a simulated counterpart, draft the email, and debrief after.",
     edge: "It maps their leverage too, which is what stops you overplaying a weak hand.",
   },
   seoDescription: "Win any negotiation with the right strategy. Free AI maps your leverage and theirs, arms you with scripts and a concession ladder, war-games their responses, and drafts the email.",
@@ -5079,7 +5080,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "A meeting invite arrives and you suspect it's an email.",
     give: "The meeting description, duration and headcount.",
-    get: "A verdict, the real cost in salaried hours, and how to propose the async version.",
+    get: "A verdict, the real cost in salaried hours, and how to propose the async version. Then an agenda if it should happen, an audit of your recurring meetings, and messages to decline the rest.",
     edge: "It prices the meeting in people-hours, which turns a vibe into an argument you can send.",
   },
   seoDescription: "Could this meeting be an email? Free AI checks the agenda for red flags, gives a verdict with confidence score, plus an async alternative and a decline script.",
@@ -5322,7 +5323,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     when: "You've done something and don't know how big the apology should be.",
     give: "What happened and your relationship to the person.",
     get: "The actual harm versus your actual responsibility, and an apology sized to it.",
-    edge: "It corrects in both directions — over-apologising for nothing and under-apologising for something are the same failure to calibrate.",
+    edge: "It corrects in both directions — over-apologizing for nothing and under-apologizing for something are the same failure to calibrate.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -5389,7 +5390,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "A free afternoon and no plan.",
     give: "Your location and how long you have.",
-    get: "Specific plans — two to four hours, under twenty, doable this week.",
+    get: "Specific plans — two to four hours, little or no cost, doable this week.",
   },
   seoDescription: "Beat boredom with a mini-adventure near you, under $20 and done in 2-4 hours. Free AI builds a full itinerary with timing and what to bring. No signup.",
   seoTitle: "Cheap Micro-Adventure Planner Near You",
@@ -6263,7 +6264,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "The day before, or ten minutes before.",
+    when: "The day before something you are dreading, or ten minutes before it starts.",
     give: "Prep mode: what you're facing and who's involved. SOS mode: just start.",
     get: "A fear breakdown and a plan, or immediate help mid-panic.",
     edge: "Two modes because preparation and panic need opposite things — one wants detail, the other wants none.",
