@@ -332,12 +332,12 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
             
             {/* Header */}
-            <h3 className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-6 flex items-center gap-2`}>
+            <h3 className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-6 flex items-center justify-center gap-2`}>
               <span className={`text-base ${colors.accent}`}>📖</span>
               How to Use This Tool
             </h3>
             
-            {/* ── The Crux ─────────────────────────────────────────────────
+            {/* ── In a Nutshell ────────────────────────────────────────────
                 First thing under the header, above What This Does: it answers
                 "is this for me" in four lines, which is the question someone
                 asks before they will read the ~380 words below it.
@@ -363,11 +363,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     text — 24px only just clears WCAG 2.2 AA. */}
                 <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
                   <div className={`text-xs font-bold ${colors.accent} uppercase tracking-wide flex items-center gap-2`}>
-                    The Crux
+                    In a Nutshell
                     <span
-                      className={`ms-auto text-xs rotate-0 group-open:rotate-180 transition-transform duration-200`}
+                      className={`ms-auto flex items-center gap-1 rounded-full border ${colors.accentBorder} ps-2 pe-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal group-hover:opacity-80 transition-opacity`}
                       aria-hidden="true"
-                    >▾</span>
+                    >
+                      <span className="group-open:hidden">Show</span>
+                      <span className="hidden group-open:inline">Hide</span>
+                      <span className="text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200">▼</span>
+                    </span>
                   </div>
                 </summary>
                 <dl className="space-y-2.5 mt-3">
