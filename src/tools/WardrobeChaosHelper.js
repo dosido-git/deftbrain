@@ -349,10 +349,18 @@ const WardrobeChaosHelper = ({ tool }) => {
             <p className={`text-sm ${c.textMuted}`}>{tool?.tagline}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
           </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+          {(results || getTotalItems() > 0 || weather.trim() || mood.trim()) ? (
+            <button onClick={()=>{setStep('wardrobe');setResults(null);}} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+              ↺ {t('wch_start_over')}
+            </button>
+          ) : null}
           {getTotalItems()>=3 && step!=='results' && (<button onClick={handleJustDressMe} disabled={loading} className={`${c.btnPrimary} px-4 py-3 rounded-lg font-bold text-sm flex items-center gap-2 disabled:opacity-40 shadow-lg`}>
               {loading?<span className="inline-block animate-spin">{tool?.icon ?? '👗👔'}</span>:<span>{tool?.icon ?? '👗👔'}</span>} {t('wch_just_dress_me')}
             </button>
           )} </div>
+        </div>
 
         <div className="flex gap-2 flex-wrap mb-3">
           {[{id:'wardrobe',label:t('wch_tab_wardrobe'),icon:'👕'},{id:'needs',label:t('wch_tab_today'),icon:'📅'},{id:'history',label:t('wch_tab_history'),icon:'📆'},{id:'packing',label:t('wch_tab_pack'),icon:'🧳'}].map(tab=>(<button key={tab.id} onClick={()=>{setStep(tab.id);setError('');}} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${step===tab.id||(step==='results'&&tab.id==='needs')?c.btnPrimary:c.btnSecondary}`}><span>{tab.icon}</span> {tab.label}</button>
@@ -426,7 +434,7 @@ const WardrobeChaosHelper = ({ tool }) => {
         <p className={`text-xs ${c.textMuted} mt-2`}>{t('wch_needs_xref')} <a href="/BuyWise" className={linkStyle}>{t('wch_buywise')}</a> {t('wch_needs_xref_after')}</p>
         </div>
       )} {/* STEP 3: RESULTS */} {step==='results'&&results&&(<div className="space-y-6">
-          <div className="flex items-center justify-between flex-wrap gap-2"><button onClick={()=>setStep('needs')} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>← {t('wch_adjust')}</button><button onClick={()=>{setStep('wardrobe');setResults(null);}} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>{t('wch_start_over')}</button></div>
+          <div className="flex items-center justify-between flex-wrap gap-2"><button onClick={()=>setStep('needs')} className={`${c.btnSecondary} px-4 py-2 rounded text-sm`}>← {t('wch_adjust')}</button></div>
           {results.outfit_combinations?.length>0&&(<div className="space-y-4"><h3 className={`text-xl font-bold ${c.text}`}>{t('wch_your_outfits')}</h3>
             {(results.total_items || results.total_outfits || results.reuse_efficiency) && (
               <p className={`text-xs ${c.textMuted}`}>

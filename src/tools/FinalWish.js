@@ -417,6 +417,12 @@ const FinalWish = ({ tool }) => {
 
   const clearDraft = useCallback(() => { localStorage.removeItem(LS_KEY); setResumePrompt(false); addToast(t('fws_toast_draft_cleared'), 'success'); }, [addToast, t]);
 
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(userName.trim() || accounts.length || financialAccounts.length ||
+    messages.length || pets.length || emergencyContacts.length || docNotes.trim() ||
+    recurringBills.trim() || homeNotes.trim() || deviceNotes.trim() ||
+    memorialWishes.trim() || specialRequests.trim() || screen !== 'welcome');
+
   const clearAllAndRestart = useCallback(() => {
     localStorage.removeItem(LS_KEY);
     setUserName(''); setTrustedPeople([{ id: 'tp_1', name: '', role: 'primary' }]); setAccounts([]); setDocuments({}); setDocNotes('');
@@ -2057,7 +2063,10 @@ async function decrypt(){
             </h2>
             <p className={`text-xs ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
           </div>
-          <button onClick={clearAllAndRestart} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex-shrink-0`}>{t('fws_start_over')}</button>
+          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+          {hasInput ? (
+            <button onClick={clearAllAndRestart} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex-shrink-0`}>{t('fws_start_over')}</button>
+          ) : null}
         </div>
       </div>
       {renderProgressBar()}

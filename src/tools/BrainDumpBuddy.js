@@ -945,7 +945,10 @@ const BrainDumpBuddy = ({ tool }) => {
                       <span>{contextInfo.icon}</span> {t(contextInfo.labelKey)}
                     </span>
                   )}
-                  <button onClick={handleReset} className={`text-sm px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>{t('bdb_new_dump')}</button>
+                  {/* PF-16: gated on first input, like every other tool. */}
+                  {(results || freeText.trim() || rapidThoughts.length || context.trim()) ? (
+                    <button onClick={handleReset} className={`text-sm px-3 py-1.5 rounded-lg ${c.btnSecondary}`}>{t('bdb_new_dump')}</button>
+                  ) : null}
                 </div>
               </div>
               <p className={`${c.textSecondary} text-sm mt-0.5`}>{tool?.tagline ?? t('bdb_tagline')}</p>

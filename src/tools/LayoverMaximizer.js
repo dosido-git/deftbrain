@@ -610,23 +610,6 @@ const LayoverMaximizer = ({ tool }) => {
           const r = results;
           return (
             <div ref={resultsRef} className="space-y-4">
-              <button onClick={() => {
-                setResults(null);
-                setAirport('');
-                setLayoverHours('');
-                setNationality('');
-                setArrivalTerminal('');
-                setConnectionTerminal('');
-                setArrivalTime('');
-                setTravelStyle('');
-                setHasCheckedBags(false);
-                setHasPreCheck(false);
-                setIsLiveMode(false);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-                className={`w-full ${c.btnSecondary} border ${c.border} font-bold py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 min-h-[44px]`}>
-                <span>🔄</span> {t('lmx_btn_analyze_different')}
-              </button>
               {/* Verdict banner */}
               <div className={`border-2 rounded-xl p-5 text-center ${VERDICT_COLORS[r.verdict] || c.card}`}>
                 <p className="text-3xl mb-1">{r.verdict_emoji}</p>
@@ -1795,11 +1778,27 @@ const LayoverMaximizer = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? t('lmx_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lmx_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('lmx_try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? t('lmx_title')}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lmx_tagline')}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('lmx_try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(results || airport.trim() || layoverHours.trim() || nationality.trim()) ? (
+                <button onClick={() => {
+                  setResults(null); setAirport(''); setLayoverHours(''); setNationality('');
+                  setArrivalTerminal(''); setConnectionTerminal(''); setArrivalTime('');
+                  setTravelStyle(''); setHasCheckedBags(false); setHasPreCheck(false);
+                  setIsLiveMode(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  <span>🔄</span> {t('lmx_btn_analyze_different')}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="px-5 py-3">

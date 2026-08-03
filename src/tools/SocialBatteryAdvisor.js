@@ -234,6 +234,9 @@ const SocialBatteryAdvisor = ({ tool }) => {
   // Clears the working session (inputs + every view's results) back to a clean Log
   // view. Deliberately preserves the user's persisted libraries — journal, session
   // history, saved template, daily check-ins — which are accumulated across sessions.
+  // Any sign the user has begun — drives the PF-16 reset on the title row.
+  const hasInput = !!(results || interactions.length || weekLabel.trim());
+
   const handleReset = useCallback(() => {
     setView('log');
     setInteractions([]);
@@ -2077,7 +2080,10 @@ const SocialBatteryAdvisor = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('sea_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('sea_try_example')}</button>
             </div>
-            <button onClick={handleReset} disabled={loading} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40`}>{t('sea_start_over')}</button>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {hasInput ? (
+              <button onClick={handleReset} disabled={loading} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40`}>{t('sea_start_over')}</button>
+            ) : null}
           </div>
         </div>
         <div className="pt-3">

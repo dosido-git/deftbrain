@@ -913,10 +913,13 @@ const MicroAdventureMapper = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('mam_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
-            <button onClick={handleReset}
-              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-              ↺ {t('start_over')}
-            </button>
+            {/* PF-16: gated on first input, like every other tool. */}
+            {(results || location.trim() || timeAvailable.trim()) ? (
+              <button onClick={handleReset}
+                className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                ↺ {t('start_over')}
+              </button>
+            ) : null}
           </div>
         </div>
         <div className="p-5 space-y-4">

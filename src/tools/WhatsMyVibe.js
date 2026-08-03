@@ -170,9 +170,19 @@ const WhatsMyVibe = ({ tool }) => {
   return (<div className={`space-y-4 ${c.text}`}>
       {/* ── Input ── */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('wmv_try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('wmv_try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(results || samples.trim()) ? (
+              <button onClick={() => { setResults(null); setSamples(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                🔄 {t('wmv_check_another')}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {/* Source type */} <div className="mb-4">
@@ -272,10 +282,7 @@ const WhatsMyVibe = ({ tool }) => {
                 <p className={`text-sm font-bold ${c.text}`}>{results?.share_line}</p>
               </div>
             </div>
-          )} {/* Go again */} <button
-            onClick={() => { setResults(null); setSamples(''); }} className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`} >
-            🔄 {t('wmv_check_another')}
-          </button>
+          )}
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

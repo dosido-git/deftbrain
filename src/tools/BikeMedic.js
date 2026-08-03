@@ -1501,9 +1501,12 @@ const BikeMedic = ({ tool }) => {
             <button onClick={goBack} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
               {t('bmd_back')}
             </button>
-            <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-              {t('bmd_start_over')}
-            </button>
+            {/* PF-16: gated on first input, like every other tool. */}
+            {(selectedProblem || aiDiagnosis || treePath.length || customProblem.trim() || symptomText.trim()) ? (
+              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                {t('bmd_start_over')}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

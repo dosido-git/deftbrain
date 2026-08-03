@@ -542,9 +542,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(eventDate.trim() || eventLabel.trim()) ? (
-                <button onClick={() => { resetForm(); setView('add'); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  <span className="me-1">{tool?.icon ?? '💔'}</span> {t('ffa_add_person')}
+              {(view !== 'dashboard' || form.name.trim() || eventLabel.trim() || eventDate.trim()) ? (
+                <button onClick={() => { resetForm(); setView('dashboard'); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('start_over')}
                 </button>
               ) : null}
             </div>
@@ -617,6 +617,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
               {/* Action buttons */}
               <div className="flex gap-3 flex-wrap">
+                <button onClick={() => { resetForm(); setView('add'); }} className={`flex-1 py-3 rounded-lg font-bold w-full ${c.btnPrimary} disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2`}>
+                  <span className="me-1">{tool?.icon ?? '💔'}</span> {t('ffa_add_person')}
+                </button>
                 {overduePeople.length >= 2 && (
                   <button onClick={runBatch} className={`flex-1 py-3 rounded-lg font-bold ${c.btnSecondary}`}>
                     <span className="me-2">⚡</span> {t('ffa_catchup_sprint', { count: overduePeople.length })}

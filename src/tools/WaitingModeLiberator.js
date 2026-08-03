@@ -596,11 +596,19 @@ const WaitingModeLiberator = ({ tool }) => {
         <div className="max-w-xl mx-auto space-y-4">
 
           {/* Header */} <div className="pt-2 pb-1">
-            <div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
               <h2 className={`text-2xl font-bold ${c.text}`}>
                 <span className="me-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
               <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(view !== 'setup' || userTasks.trim() || events.length) ? (
+                <button onClick={resetAndGoBack} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↩ {t('start_over')}
+                </button>
+              ) : null}
             </div>
             <div className={`mt-4 px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
               <span className="font-bold">{t('wml_intro_bold')}</span> {t('wml_intro_rest')}
@@ -999,7 +1007,7 @@ const WaitingModeLiberator = ({ tool }) => {
             <button onClick={() => setView('debrief')} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>📝</span> {t('wml_done_debrief')}
             </button>
-            <button onClick={resetAndGoBack} className={`flex-1 py-3.5 rounded-xl font-bold border ${c.tag}`}><span>←</span> {t('wml_new_session')}</button>
+
           </div>
 
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>} </div>
@@ -1087,10 +1095,6 @@ const WaitingModeLiberator = ({ tool }) => {
                 </div>
               )} {/* Save */} <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
                 <span>💾</span> {t('wml_save_session')}
-              </button>
-              <button
-                onClick={resetAndGoBack} className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`} >
-                ↩ {t('start_over')}
               </button>
             </div>
           )} {/* Skip debrief */} {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>

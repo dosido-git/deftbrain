@@ -565,11 +565,19 @@ const VirtualBodyDouble = ({ tool }) => {
     return (<div className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Header */} <div className="mb-2">
+          {/* Header */} <div className="mb-2 flex items-start justify-between gap-3">
+            <div>
             <h1 className={`text-2xl font-bold ${c.text}`}>
               <span className="me-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
             <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(view !== 'setup' || task.trim() || environment.trim() || mood.trim()) ? (
+              <button onClick={() => { setView('setup'); resetForm(); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↩ {t('start_over')}
+              </button>
+            ) : null}
           </div>
           <div className={`px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
             <span className="font-bold">{t('vbd_intro_bold')}</span> {t('vbd_intro_rest')}
@@ -951,9 +959,6 @@ const VirtualBodyDouble = ({ tool }) => {
               <span>🔄</span> {t('vbd_plus_15')}
             </button>
           </div>
-          <button onClick={() => { setView('setup'); resetForm(); }} className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.btnSecondary}`}>
-            ↩ {t('start_over')}
-          </button>
 
         </div>
       </div>
