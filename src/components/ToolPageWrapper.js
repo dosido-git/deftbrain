@@ -315,76 +315,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
         </main>
 
-        {/* Right Column: Cheat Code + Ad Panel + Guide Sidebar */}
+        {/* Right Column: Ad Panel + Guide Sidebar */}
         {/* Below `lg` the whole aside stacks AFTER the form, as it always has. */}
         <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
-
-          {/* ── Cheat Code — its own card, deliberately ────────────────────────
-              `lg:mt-11` clears the locale pills, which are pinned to the GRID's
-              top-right corner (`lg:absolute lg:top-3 lg:end-4`, above) — i.e.
-              exactly where the sidebar's first card starts. Measured 90x32px of
-              overlap without it. Scoped to this card rather than the aside so
-              the 123 tools with no primer keep the layout they have.
-
-              Its own card, not a block inside the guide card, so it reads as a
-              distinct thing rather than the first paragraph of a long guide.
-
-              Mobile position: still BELOW the form, because the aside stacks
-              after <main> below `lg` and this card lives inside the aside.
-              `order-first` was tried here and does nothing — `order` applies to
-              grid/flex ITEMS, and the grid item is the <aside>, not this. To
-              hoist it the card has to become a direct child of the grid (or the
-              aside needs `display: contents` on mobile, which historically
-              dropped its complementary role from the a11y tree). Deliberately
-              not done: it is a layout change for all 125 tools, and this is a
-              two-tool trial.
-
-              CLOSED by default, deliberately. The content is the same either
-              way; what changes is how it feels to arrive at. Open, it is a wall
-              of orientation text you were handed. Closed, opening it is a small
-              act of opting in — the reader unlocks it, which is the whole point
-              of calling it a Cheat Code. Cost of the choice: a first-time
-              visitor may never open it, which is exactly who it was written for.
-              That is the trade being made, not an oversight.
-
-              Optional: 123 of 125 tools have no primer and skip this entirely. */}
-          {tool?.primer && (
-            <details className={`group ${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl px-4 py-2 open:pb-5 lg:mt-11 transition-colors duration-200`}>
-              {/* The flex row is an inner div, NOT the <summary> itself. Setting
-                  `display` on a <summary> to anything but `list-item` is known
-                  to cost you the native disclosure behaviour in WebKit — the
-                  marker disappears and the element's exposure degrades. The
-                  inner-wrapper pattern gets the same layout with `display:
-                  list-item` intact (asserted in the browser), so it is what we
-                  use even though no breakage was observed in Chromium here.
-                  `list-none` only sets list-style-type, so it hides the Firefox
-                  marker without touching display.
-
-                  py-2/-my-2 grows the tap row 24px -> 40px into the card's own
-                  padding, without moving the text. 24px only just clears WCAG
-                  2.2 AA; same fix the locale pills got. */}
-              <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
-                <div className={`text-xs font-semibold ${colors.text} uppercase tracking-widest flex items-center gap-2`}>
-                  <span className={`text-base ${colors.accent}`}>⚡</span>
-                  Cheat Code
-                  <span
-                    className={`ms-auto text-xs ${colors.accent} rotate-0 group-open:rotate-180 transition-transform duration-200`}
-                    aria-hidden="true"
-                  >▾</span>
-                </div>
-              </summary>
-              <dl className="space-y-2.5 mt-4">
-                {[['When', tool.primer.when], ['You give', tool.primer.give],
-                  ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
-                  .filter(([, v]) => v).map(([label, value]) => (
-                  <div key={label}>
-                    <dt className={`text-[10px] font-bold ${colors.accent} uppercase tracking-wide`}>{label}</dt>
-                    <dd className={`text-sm ${colors.textSecondary} leading-relaxed`}>{value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </details>
-          )}
 
           {/* ── Ad Panel Placeholder — commented out until ready to activate ── */}
           {/* <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
@@ -404,6 +337,52 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               How to Use This Tool
             </h3>
             
+            {/* ── The Crux ─────────────────────────────────────────────────
+                First thing under the header, above What This Does: it answers
+                "is this for me" in four lines, which is the question someone
+                asks before they will read the ~380 words below it.
+
+                CLOSED by default. Open, it is orientation text you were handed;
+                closed, opening it is a small act of opting in. The cost is real
+                and deliberate — a first-time visitor may never open it, and they
+                are exactly who it was written for.
+
+                Optional: tools with no primer skip this entirely and the guide
+                card renders as it always has. */}
+            {tool?.primer && (
+              <details className={`group -mt-2 mb-6 border-s-2 ${colors.accentBorder} ps-4`}>
+                {/* The flex row is an inner div, NOT the <summary> itself.
+                    Setting `display` on a <summary> to anything but `list-item`
+                    is known to cost the native disclosure behaviour in WebKit.
+                    The inner-wrapper pattern gets the same layout with
+                    `display: list-item` intact. `list-none` only sets
+                    list-style-type, so it hides the Firefox marker without
+                    touching display.
+
+                    py-2/-my-2 grows the tap row 24px -> 40px without moving the
+                    text — 24px only just clears WCAG 2.2 AA. */}
+                <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
+                  <div className={`text-xs font-bold ${colors.accent} uppercase tracking-wide flex items-center gap-2`}>
+                    The Crux
+                    <span
+                      className={`ms-auto text-xs rotate-0 group-open:rotate-180 transition-transform duration-200`}
+                      aria-hidden="true"
+                    >▾</span>
+                  </div>
+                </summary>
+                <dl className="space-y-2.5 mt-3">
+                  {[['When', tool.primer.when], ['You give', tool.primer.give],
+                    ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
+                    .filter(([, v]) => v).map(([label, value]) => (
+                    <div key={label}>
+                      <dt className={`text-[10px] font-bold ${colors.accent} uppercase tracking-wide`}>{label}</dt>
+                      <dd className={`text-sm ${colors.textSecondary} leading-relaxed`}>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            )}
+
             {/* Extended Description */}
             <div className="mb-6">
               <h4 className={`text-xs font-bold ${colors.accent} uppercase mb-3 tracking-wide`}>
