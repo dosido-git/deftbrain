@@ -316,6 +316,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         </main>
 
         {/* Right Column: Ad Panel + Guide Sidebar */}
+        {/* Below `lg` the sidebar stacks AFTER the form, as it always has.
+            Hoisting it above the form on mobile was tried and reverted: the
+            primer is ~60 words but the card it lives in is ~380 with tips,
+            pitfalls and the FAQ, which put a full screen of preamble in front
+            of the tool. Consequence worth knowing: `give` states the input
+            burden before the form on desktop only. Fixing that on mobile needs
+            the primer to be its own grid child rather than the first block of
+            this card. */}
         <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
           {/* ── Ad Panel Placeholder — commented out until ready to activate ── */}
           {/* <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
@@ -335,6 +343,31 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               How to Use This Tool
             </h3>
             
+            {/* ── Preamble ──────────────────────────────────────────────
+                The four questions a new visitor actually has, in the order they
+                have them. `give` is the one that matters most: it states the
+                input burden BEFORE the form. Renter's Deposit Saver asks for a
+                room-by-room walkthrough — about five minutes — and someone who
+                meets that as a surprise leaves, which reads back as disinterest
+                rather than as a mismatch of expectations.
+
+                Optional: 123 of 125 tools have no primer yet and render exactly
+                as before. */}
+            {tool?.primer && (
+              <div className={`mb-6 pb-5 border-b ${colors.border}`}>
+                <dl className="space-y-2.5">
+                  {[['When', tool.primer.when], ['You give', tool.primer.give],
+                    ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
+                    .filter(([, v]) => v).map(([label, value]) => (
+                    <div key={label}>
+                      <dt className={`text-[10px] font-bold ${colors.accent} uppercase tracking-wide`}>{label}</dt>
+                      <dd className={`text-sm ${colors.textSecondary} leading-relaxed`}>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+
             {/* Extended Description */}
             <div className="mb-6">
               <h4 className={`text-xs font-bold ${colors.accent} uppercase mb-3 tracking-wide`}>
@@ -345,84 +378,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               </p>
             </div>
 
-            {/* Step-by-step Instructions */}
-            {guide.howToUse && guide.howToUse.length > 0 && (
-              <div className="mb-6">
-                <h4 className={`text-xs font-bold ${colors.accent} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                  <span className="text-sm">▶️</span>
-                  Step-by-Step
-                </h4>
-                <ol className="space-y-3">
-                  {guide.howToUse.map((step, index) => (
-                    <li key={index} className="flex gap-3">
-                      <span className={`
-                        flex-shrink-0 w-6 h-6 rounded-full 
-                        ${isDark ? 'bg-[#D4AF37]/20 text-[#D4AF37] border-[#D4AF37]/30' : 'bg-amber-100 text-amber-700 border-amber-200'}
-                        flex items-center justify-center text-xs font-bold border
-                      `}>
-                        {index + 1}
-                      </span>
-                      <span className={`text-sm ${colors.textSecondary} leading-relaxed pt-0.5`}>
-                        {step}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-
-            {/* Example */}
-            {guide.example && (
-              <div className="mb-6">
-                {/* -700 shades (not -600) in light mode: 12px bold headings need
-                    ≥4.5:1 on the stone-100 sidebar — the -600s sit at 2.6–3.3 */}
-                <h4 className={`text-xs font-bold ${isDark ? 'text-green-400' : 'text-green-700'} uppercase mb-3 tracking-wide`}>
-                  Example
-                </h4>
-                {/* zinc-900 (not 700) box in dark: zinc-400 labels on zinc-700
-                    were 4.07:1 — just under AA; on zinc-900 they reach 6.9:1 */}
-                <div className={`${isDark ? 'bg-zinc-900 border-zinc-600' : 'bg-stone-100 border-stone-200'} border rounded-lg p-4 transition-colors duration-200`}>
-                  {typeof guide.example === 'string' ? (
-                    <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                      {guide.example}
-                    </p>
-                  ) : (
-                    <>
-                      {guide.example.scenario && (
-                        <div className="mb-3">
-                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
-                            Scenario:
-                          </p>
-                          <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                            {guide.example.scenario}
-                          </p>
-                        </div>
-                      )}
-                      {guide.example.action && (
-                        <div className="mb-3">
-                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
-                            What to do:
-                          </p>
-                          <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                            {guide.example.action}
-                          </p>
-                        </div>
-                      )}
-                      {guide.example.result && (
-                        <div>
-                          <p className={`text-xs font-semibold ${colors.textSecondary} uppercase mb-1`}>
-                            Result:
-                          </p>
-                          <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'} leading-relaxed`}>
-                            {guide.example.result}
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Step-by-Step and Example were removed 2026-08-03.
+                Step-by-Step averaged 86 words of "fill in the form, press the
+                button" across 125 tools; Example duplicated the Try an Example
+                button that every tool already has. Between them they were a
+                third of the sidebar and neither helped anyone decide whether to
+                use the tool. Order is now: Preamble, What This Does, Pro Tips,
+                Avoid These Mistakes. */}
 
             {/* Pro Tips */}
             {guide.tips && guide.tips.length > 0 && (

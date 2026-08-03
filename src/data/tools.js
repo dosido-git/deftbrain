@@ -4030,6 +4030,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "EmailUrgencyTriager",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "Your inbox has piled up and you cannot tell what actually needs you today.",
+    give: "Paste a batch of emails and your role. A minute or two.",
+    get:  "Every email sorted into now, this week, or optional — with the reason, any deadline it found, and what happens if you wait. Then the batch view: total time to clear it, what to delegate, what to ignore.",
+    edge: "It gives you permission to wait. Alongside the triage it names what to ignore outright and which senders are never actually urgent — it is built to shrink the list, not to make you answer faster.",
+  },
   seoDescription: "Cut through inbox anxiety in seconds. Paste your emails and find out what actually needs a reply today versus what can wait or be ignored. Free, no signup.",
   seoTitle: "Email Priority Sorter: What to Reply Today",
   title: "Email Urgency Triager",
@@ -5224,6 +5232,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 {
   modified: "",
   id: "RentersDepositSaver",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
+  primer: {
+    when: "The day you move in, before you unpack.",
+    give: "Address, landlord, deposit amount, and a room-by-room walkthrough. About five minutes.",
+    get:  "Five documents: a dated condition report, a letter to your landlord, a photo shot list, your local deposit rights, and a move-out sequence.",
+    edge: "It is built for move-IN. Most deposit tools help you fight a deduction after it happens; this one creates the evidence a year before you need it.",
+  },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
