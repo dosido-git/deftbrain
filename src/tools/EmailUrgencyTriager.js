@@ -458,11 +458,22 @@ const EmailUrgencyTriager = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="me-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('eut_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
+                <span className="me-2">{tool?.icon ?? '📬'}</span>{tool?.title ?? 'Email Urgency Triager'}
+              </h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('eut_tagline')}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's ONE reset, on the title row, reachable from every
+                tab. It used to sit in the results header, so anyone who had pasted
+                a long batch on the Triage tab and wanted to start again had no
+                control at all — the reset only existed once results were on screen. */}
+            {(results || emailContent.trim()) ? (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex-shrink-0`}>{t('eut_new')}</button>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -550,7 +561,6 @@ const EmailUrgencyTriager = ({ tool }) => {
               <button onClick={saveToHistory} className={`${c.btnPrimary} py-2 px-4 rounded-lg text-sm font-semibold`}>{t('eut_save')}</button>
               <button onClick={() => setExpandAll(p => !p)} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>{expandAll ? t('eut_collapse') : t('eut_expand')}</button>
             </div>
-            <button onClick={handleReset} className={`${c.btnSecondary} py-2 px-3 rounded-lg text-sm`}>{t('eut_new')}</button>
           </div>
 
           <div className="grid grid-cols-4 gap-3">

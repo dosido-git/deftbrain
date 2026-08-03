@@ -349,7 +349,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
               Optional: 123 of 125 tools have no primer and skip this entirely. */}
           {tool?.primer && (
-            <details className={`group ${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl p-5 lg:mt-11 transition-colors duration-200`}>
+            <details className={`group ${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl px-4 py-2 open:pb-5 lg:mt-11 transition-colors duration-200`}>
               {/* The flex row is an inner div, NOT the <summary> itself. Setting
                   `display` on a <summary> to anything but `list-item` is known
                   to cost you the native disclosure behaviour in WebKit — the
