@@ -84,6 +84,9 @@ const WrongAnswersOnly = ({ tool }) => {
   const [seriousness, setSeriousness] = useState('playful');
   const [results, setResults] = usePersistentState('wronganswersonly-result', null);
   const [error, setError] = useState('');
+  // PF-16: this tool shipped with no reset at all — setResults(null) existed
+  // only inside the submit handler. Added, on the title row like every other.
+  const handleReset = () => { setQuestion(''); setResults(null); setError(''); setShowReal(false); };
   const loadExample = () => {
     const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
     setQuestion(ex.question);
@@ -178,9 +181,19 @@ const WrongAnswersOnly = ({ tool }) => {
   return (<div className={`space-y-4 ${c.text}`}>
       {/* Input */} <div className={`${c.card} border rounded-xl p-5`}>
         <div className={`mb-4 pb-3 border-b ${isDark ? 'border-zinc-500' : 'border-zinc-500'}`}>
-          <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
+              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(results || question.trim()) ? (
+              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                ↺ {t('start_over')}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {/* Quick questions */} <div className="mb-4">

@@ -81,6 +81,9 @@ const NameThatFeeling = ({ tool }) => {
   const [results, setResults] = usePersistentState('namethatfeeling-result', null);
   const [sessionHistory, setSessionHistory] = usePersistentState('namethatfeeling-history', []);
   const [error, setError] = useState('');
+  // PF-16: this tool shipped with no reset at all — setResults(null) existed
+  // only inside the submit handler. Added, on the title row like every other.
+  const handleReset = () => { setDescription(''); setContext(''); setResults(null); setError(''); };
 
   // ── API ──
   const runSearch = useCallback(async () => {
@@ -175,11 +178,21 @@ const NameThatFeeling = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
           <div className="pb-3 border-b border-zinc-500">
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ntf_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ntf_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className={`text-xl font-bold ${c.text}`}>
+                  <span className="me-2">{tool?.icon ?? '🎭'}</span>{tool?.title ?? t('ntf_title')}
+                </h2>
+                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('ntf_tagline')}</p>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              </div>
+              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+              {(results || description.trim() || context.trim()) ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('start_over')}
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
         <div className="px-5 pb-5 pt-4 space-y-4">
