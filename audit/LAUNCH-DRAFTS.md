@@ -27,8 +27,24 @@ pitch. Never omit it either: "125 tools" without a concrete one is an abstractio
 ## The anti-farm proof (non-negotiable everywhere)
 
 "Over 100 AI tools" pattern-matches to a content farm and curators scan
-defensively for it. **Never lead with the count.** Lead with the problem class,
-then earn it with three things a farm never does:
+defensively for it.
+
+**Never lead with the count ALONE.** The number is a liability only when it
+arrives unaccompanied — "125 AI tools" is indistinguishable from slop. It is
+safe, and on Hacker News actively useful, when the same breath disarms it:
+*"125 tools, and several will tell you not to use them"* is not a farm claim,
+it is an argument. A farm cannot say the second half.
+
+Practical split:
+- **Directories and curators** — lead with the problem class. The count belongs
+  late or not at all; a curator scanning submissions has no patience for the
+  second clause. (An earlier version of this file stated the rule this way and
+  then broke it in the HN titles below. This is the correction.)
+- **Hacker News** — the count is a hook, because "why would anyone build 125
+  instead of one" is a design decision and HN rewards those. Still never on its
+  own.
+
+Then earn it with three things a farm never does:
 
 1. **13 languages with jurisdictional and currency reasoning.** Not translation:
    prices, customs and legal parameters change with the reader.
@@ -50,10 +66,18 @@ then earn it with three things a farm never does:
 1. `Show HN: 125 single-purpose AI tools, and several will tell you not to use them`
 2. `Show HN: DeftBrain – small AI tools for problems too specific to Google`
 3. `Show HN: I built 125 tiny AI tools instead of one chatbot`
+4. `Show HN: Small AI tools for problems too specific to search for`
 
-Recommendation: **#1.** The clause after the comma is the hook, and it is the
-one claim a reader cannot assume they have seen before. #3 invites "why?", which
-is a good comment thread but a weaker title.
+Recommendation: **#1.** The clause after the comma is the hook and the one claim
+a reader cannot assume they have seen before — and it is what licenses the count
+in front of it. #3 makes the design argument instead and invites "why?", which
+is a good comment thread but a weaker title. #4 is the count-free option: safest,
+and the least likely to be read at all. Do not use #2 or #4 unless #1 feels too
+promotional on the day.
+
+Note which titles carry the number: #1 and #3 do, deliberately, per the split
+above. #2 and #4 do not, and are the fallback if HN's mood that week is hostile
+to AI submissions.
 
 **First comment (post immediately after submitting — plain voice, no marketing):**
 
