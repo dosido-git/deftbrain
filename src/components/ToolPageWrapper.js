@@ -347,7 +347,10 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               Optional: 123 of 125 tools have no primer and skip this entirely. */}
           {tool?.primer && (
             <details open className={`${colors.surfaceAlt} border ${colors.accentBorder} rounded-2xl p-5 lg:mt-11 transition-colors duration-200`}>
-              <summary className={`text-xs font-semibold ${colors.text} uppercase tracking-widest cursor-pointer list-none flex items-center gap-2 [&::-webkit-details-marker]:hidden`}>
+              {/* py-2/-my-2 grows the tap row 24px -> 40px into the card's own
+                  padding, without moving the text. 24px only just clears WCAG
+                  2.2 AA; this is the same fix the locale pills got. */}
+              <summary className={`text-xs font-semibold ${colors.text} uppercase tracking-widest cursor-pointer list-none flex items-center gap-2 py-2 -my-2 [&::-webkit-details-marker]:hidden`}>
                 <span className={`text-base ${colors.accent}`}>⚡</span>
                 The Gist
                 <span

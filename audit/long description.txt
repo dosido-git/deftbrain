@@ -1,3 +1,27 @@
+PRODUCT HUNT (<800 chars)
+DeftBrain.com is 125 single-purpose tools that help non-technical people solve everyday problems with AI. No signup. No prompting. 14 categories span money, health, work, home, relationships, creativity
+
+Each tool is purpose-built to solve one real problem: Apology Calibrator, Ticket Tackler, Doctor Visit Translator. The output is a finished artifact — a written apology, an appeal letter, an evidence checklist, a step-by-step plan — not an essay you have to format.
+
+Several will talk you out of using them. Ticket Tackler might tell you "just pay it." Legal and regulatory facts are checked at request time.
+
+Everything runs in 13 languages, adapting prices, local customs & the rules where you actually live.
+
+Free while we calibrate demand. No accounts, no cookies, nothing you type is stored.
+===============
+
+HACKER NEWS/YCOMBINATOR
+DeftBrain.com is a catalog of 125 single-purpose tools that help non-technical people solve everyday problems with AI. No signup. No prompting skill needed. Fourteen categories spanning money, health, work, home, relationships and creativity.
+
+Each tool is a purpose-built form asking just enough to solve one real problem: Apology Calibrator, Ticket Tackler, Doctor Visit Translator. The output is a finished artifact — a written apology, an appeal letter, an evidence checklist, a step-by-step plan — not an essay you have to format.
+
+Several will talk you out of using them. Ticket Tackler might tell you "just pay it." Legal and regulatory facts are checked against live sources at request time, not recalled from training data.
+
+Everything runs in 13 languages, adapting prices, local customs and the rules where you actually live.
+
+Free while we calibrate demand. No accounts, no cookies, nothing you type is stored.
+
+==================
 Personal AI problem solvers for moments too specific or personal for search engines.
 
 Most AI tools are generic chatbots trying to do everything. DeftBrain is the opposite: small, focused AI tools, each built for a specific, real problem — not "write me an email," but "how do I get my full security deposit back" or "is this lease going to screw me."
