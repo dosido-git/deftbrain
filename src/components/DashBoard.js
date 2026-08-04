@@ -272,17 +272,37 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     return list;
   }, [toolsWithCategories, activeCategory, searchTerm, favorites, sortMode, usageFrequency]);
 
-  // Group tools by primary category for "All" view
+  // Group tools by category for the "All" view.
+  //
+  // A tool appears under EVERY category it belongs to, not just its first.
+  // This used to filter on `primaryCategory`, so 74 of 125 tools — every
+  // multi-category one — were invisible under their second and third
+  // categories. GriefGuide is tagged Energy AND Me; browsing Me never showed
+  // it. The category PILL counts were already computed across all categories,
+  // so the count and the list disagreed.
+  //
+  // Appearing twice while BROWSING is the intent: the whole point of a tool
+  // being in two categories is that two different mental routes reach it.
+  // Appearing twice while SEARCHING would be a bug, and cannot happen —
+  // `showCategoryHeadings` is false whenever there is a search term, so
+  // command-K renders the flat `filteredTools`, which is one entry per tool
+  // (it is a .filter() over a .map() of allTools; nothing duplicates).
   const showCategoryHeadings = activeCategory === 'All' && sortMode === 'alpha' && !searchTerm.trim();
   const groupedTools = useMemo(() => {
     if (!showCategoryHeadings) return null;
     const groups = [];
+    const placed = new Set();
     CATEGORY_META.forEach(cm => {
-      const tools = filteredTools.filter(t => t.primaryCategory === cm.name);
-      if (tools.length > 0) groups.push({ ...cm, tools });
+      const tools = filteredTools.filter(t => t.resolvedCategories.includes(cm.name));
+      if (tools.length > 0) {
+        groups.push({ ...cm, tools });
+        tools.forEach(t => placed.add(t.id));
+      }
     });
-    const mapped = new Set(CATEGORY_META.map(cm => cm.name));
-    const other = filteredTools.filter(t => !mapped.has(t.primaryCategory));
+    // "Other" is now whatever landed in no group at all, rather than whatever
+    // had an unmapped FIRST category — a tool whose primary is unmapped but
+    // whose second category is real now sits in that real group instead.
+    const other = filteredTools.filter(t => !placed.has(t.id));
     if (other.length > 0) groups.push({ name: 'Other', emoji: '📦', tools: other });
     return groups;
   }, [filteredTools, showCategoryHeadings]);
