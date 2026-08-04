@@ -267,9 +267,17 @@ function buildJsonLd({ id, title, description, faq }) {
     url: `${SITE_URL}/${id}`,
     applicationCategory: 'UtilityApplication',
     operatingSystem: 'Web',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
-    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+    inLanguage: ['en', 'es', 'zh', 'hi', 'ar', 'pt', 'fr', 'de', 'ja', 'ko', 'ru', 'th', 'vi'],
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD',
+              availability: 'https://schema.org/InStock' },
+    // Reference the canonical entities by @id rather than restating a
+    // name+url stub on all 125 pages. The nodes themselves are defined once,
+    // in the homepage @graph (public/index.html). Repeating a stub per page
+    // invites a crawler to treat each as a separate publisher; an @id
+    // reference resolves to one entity across the whole site, which is what
+    // an AI retrieval system needs to answer "what is DeftBrain".
+    isPartOf:  { '@id': `${SITE_URL}/#website` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
   };
   const json = JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
   let out = `<script type="application/ld+json">${json}</script>`;

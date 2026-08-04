@@ -117,12 +117,20 @@ function PageTemplate(record) {
   <meta property="og:site_name"   content="DeftBrain">
   ${modified ? `<meta property="article:modified_time" content="${esc(modified)}">` : ''}
 
+  <!-- Guide pages carried a bare HowTo with no publisher and no site
+       relationship, so 552 pages of real content were orphaned from the
+       DeftBrain entity as far as any crawler was concerned. isPartOf and
+       publisher reference the canonical nodes defined in the homepage
+       @graph (public/index.html) by @id. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "${escJson(title)}",
     "description": "${escJson(meta_description)}",
+    "inLanguage": "en",
+    "isPartOf":  { "@id": "https://deftbrain.com/#website" },
+    "publisher": { "@id": "https://deftbrain.com/#organization" },
     "step": [${schemaSteps}]
   }
   </script>

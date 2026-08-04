@@ -35,29 +35,76 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
 
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Structured Data (JSON-LD) — a single @graph, not three loose blocks.
+         Organization and WebSite carry stable @ids so every other page on the
+         site (tool prerenders, guide pages) REFERENCES them instead of
+         restating a name+url stub. That is what lets a crawler or an AI
+         retrieval system resolve "DeftBrain" to one entity rather than
+         inferring a different one per page.
+
+         prerender.js strips all ld+json from TOOL pages and substitutes a
+         per-tool SoftwareApplication, so this block is homepage-only. The
+         homepage variant does not go through that stripper. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "DeftBrain",
-      "alternateName": "DeftBrain — Skill in Handling Things",
-      "url": "https://deftbrain.com",
-      "description": "Personal AI problem solvers for productivity, communication, health, finance, and more — no signup, no prompting.",
-      "applicationCategory": "UtilityApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "AI-powered communication tools",
-        "Productivity and focus support",
-        "Financial decision-making tools",
-        "Health and wellness trackers",
-        "Focus and productivity tools",
-        "Social skills coaching"
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://deftbrain.com/#organization",
+          "name": "DeftBrain",
+          "url": "https://deftbrain.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://deftbrain.com/logo512.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "DeftBrain builds free, single-purpose AI tools for everyday problems — leases, repair quotes, medical appointments, scam messages, hard conversations."
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://deftbrain.com/#website",
+          "name": "DeftBrain",
+          "alternateName": "DeftBrain — Skill in Handling Things",
+          "url": "https://deftbrain.com",
+          "publisher": { "@id": "https://deftbrain.com/#organization" },
+          "inLanguage": ["en", "es", "zh", "hi", "ar", "pt", "fr", "de", "ja", "ko", "ru", "th", "vi"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://deftbrain.com/ToolFinder?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://deftbrain.com/#webapp",
+          "name": "DeftBrain",
+          "url": "https://deftbrain.com",
+          "description": "125+ free, single-purpose AI tools for everyday problems. No signup, no account, nothing stored. Available in 13 languages.",
+          "applicationCategory": "UtilityApplication",
+          "operatingSystem": "Web",
+          "browserRequirements": "Requires JavaScript",
+          "isPartOf": { "@id": "https://deftbrain.com/#website" },
+          "publisher": { "@id": "https://deftbrain.com/#organization" },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          },
+          "featureList": [
+            "Read a lease or contract and flag predatory clauses against local law",
+            "Check a repair quote or price for padding and overcharging",
+            "Identify the specific technique used in a suspected scam message",
+            "Prepare for and decode medical appointments",
+            "Script difficult conversations and negotiations",
+            "Sort an overwhelming task list into an achievable next step"
+          ]
+        }
       ]
     }
     </script>
