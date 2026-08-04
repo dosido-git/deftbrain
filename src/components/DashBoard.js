@@ -330,14 +330,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const didMountRef = useRef(false);
   useEffect(() => {
     if (!didMountRef.current) { didMountRef.current = true; return; }   // not on first paint
-    if (activeCategory === 'All') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    // Bring the active pill into view horizontally within the strip.
+    // ALL lands on the strip too, exactly like a category. It used to jump to
+    // top:0, so switching between ALL and a category threw you to a different
+    // anchor each time and the toolbar moved under the cursor.
     const scroll = stripScrollRef.current;
-    const pill   = pillRefsMap.current[activeCategory];
-    if (scroll && pill) scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
+    if (activeCategory === 'All') {
+      // Rewind the strip as well, so the category list starts from the left
+      // rather than wherever the last selection had scrolled it to.
+      scroll?.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      // Bring the active pill into view horizontally within the strip.
+      const pill = pillRefsMap.current[activeCategory];
+      if (scroll && pill) scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
+    }
     // Land on the STRIP, not the results below it. This used to target
     // resultsRef, which put the results header at the top of the viewport and
     // pushed the category toolbar off-screen — so after filtering you could
