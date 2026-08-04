@@ -361,7 +361,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   return (
     <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 pb-6"
          style={{ background: CLR.sand50, minHeight: '100vh' }}>
-      <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}`}</style>
+      <style>{`.db-strip-scroll::-webkit-scrollbar{display:none}
+        /* Examples disclosure. list-style:none plus hiding the WebKit marker,
+           NOT display:block - changing display on a summary costs it the
+           native disclosure behaviour in WebKit. The flex row is an inner div.
+           No backticks in here: this is inside a template literal. */
+        .db-ex>summary{list-style:none}
+        .db-ex>summary::-webkit-details-marker{display:none}
+        .db-ex[open] .db-ex-show{display:none}
+        .db-ex:not([open]) .db-ex-hide{display:none}
+        .db-ex-caret{transition:transform .2s}
+        .db-ex[open] .db-ex-caret{transform:rotate(180deg)}`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
@@ -418,12 +428,41 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
         </div>
       </div>
+      {/* Examples sit behind a disclosure. They are worth having — they show
+          what the output actually looks like — but they are not what a
+          returning visitor came for, and on mobile they pushed the catalog
+          two screens down. Closed by default puts the categories nearer the
+          fold; one tap gets the demos back. */}
       {!isSearching && (
-        <>
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.15em] mb-2"
-             style={{ color: CLR.navy500, paddingInlineStart: 12 }}>Examples</p>
-          <DemoCards isDark={false} />
-        </>
+        <details className="db-ex" style={{ marginBottom: 12 }}>
+          {/* The padding goes on the SUMMARY, not the inner span. Vertical
+              padding on an inline-flex element does not grow its line box, so
+              putting it there left the tap row at 25px - barely over WCAG 2.2
+              AA's 24px floor. On the summary (display:list-item, a block box)
+              it works: 25px -> 41px, with -my cancelling the visual shift. */}
+          <summary style={{ cursor: 'pointer', paddingBlock: 8, marginBlock: -8 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              paddingInlineStart: 12,
+            }}>
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+                    style={{ color: CLR.navy500 }}>Examples</span>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                fontSize: 10, fontWeight: 700, color: CLR.gold700,
+                border: `1px solid ${CLR.sand300}`, borderRadius: 999,
+                padding: '2px 8px', background: '#ffffff',
+              }}>
+                <span className="db-ex-show">See what the output looks like</span>
+                <span className="db-ex-hide">Hide</span>
+                <span className="db-ex-caret" style={{ fontSize: 9 }}>▼</span>
+              </span>
+            </span>
+          </summary>
+          <div style={{ marginTop: 10 }}>
+            <DemoCards isDark={false} />
+          </div>
+        </details>
       )}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
