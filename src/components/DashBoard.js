@@ -315,22 +315,40 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const recordRecent  = useCallback((toolId) => {
     setRecents(prev => [toolId, ...prev.filter(id => id !== toolId)].slice(0, 20));
   }, []);
-  const selectCategory = useCallback((cat) => {
-    setActiveCategory(cat);
-    if (cat !== 'All') {
-      setTimeout(() => {
-        // Scroll the strip to show the active pill
-        const scroll = stripScrollRef.current;
-        const pill   = pillRefsMap.current[cat];
-        if (scroll && pill) {
-          scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
-        }
-        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
-    } else {
+  const selectCategory = useCallback((cat) => setActiveCategory(cat), []);
+
+  // Scroll AFTER React commits the filtered list, not inside the click handler.
+  //
+  // Two earlier attempts failed for the same underlying reason — the handler
+  // measures a layout that is about to change. Filtering drops the list from
+  // ~205 rows to a handful, the document gets much shorter, and a scroll
+  // issued beforehand is clamped against the new maximum: measured scrollY
+  // 1370 -> 1370, i.e. nothing moved. requestAnimationFrame did not help and
+  // is actively worse: its callbacks are suspended whenever the tab is not
+  // painting, so the scroll silently never happens at all. An effect runs
+  // after the commit, when the DOM is real and measurable.
+  const didMountRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRef.current) { didMountRef.current = true; return; }   // not on first paint
+    if (activeCategory === 'All') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
-  }, []);
+    // Bring the active pill into view horizontally within the strip.
+    const scroll = stripScrollRef.current;
+    const pill   = pillRefsMap.current[activeCategory];
+    if (scroll && pill) scroll.scrollTo({ left: pill.offsetLeft - 8, behavior: 'smooth' });
+    // Land on the STRIP, not the results below it. This used to target
+    // resultsRef, which put the results header at the top of the viewport and
+    // pushed the category toolbar off-screen — so after filtering you could
+    // not see which category was active, or switch to another, without
+    // scrolling back up.
+    const el = catalogRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 20;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+  }, [activeCategory]);
 
   const isSearching  = searchTerm.trim().length > 0;
   const activeMeta   = CATEGORY_META.find(c => c.name === activeCategory);
@@ -452,7 +470,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       )}
 
       {/* ═══════════ CATEGORY STRIP ═══════════ */}
-      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingInlineStart: 12, scrollMarginTop: 12 }}>
+      <div ref={catalogRef} className="flex items-center mb-1 mt-3" style={{ paddingInlineStart: 12, scrollMarginTop: 20 }}>
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
            style={{ color: CLR.navy500 }}>Categories</p>
       </div>
