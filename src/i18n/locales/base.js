@@ -45,7 +45,6 @@ export const base = {
     "wizard_your_situation": "Your situation:",
     "wizard_use_together": "Use these together:",
     "best_match": "Best match",
-    "tools_count_subtext": "120+ tools across 18 categories",
     "submit_shortcut_hint": "⌘↵ to submit",
     "open_full_toolfinder": "Open full ToolFinder →",
     "try_again": "Try again"
@@ -93,7 +92,6 @@ export const base = {
     "wizard_your_situation": "Tu situación:",
     "wizard_use_together": "Úsalas juntas:",
     "best_match": "Mejor coincidencia",
-    "tools_count_subtext": "120+ herramientas en 18 categorías",
     "submit_shortcut_hint": "⌘↵ para enviar",
     "open_full_toolfinder": "Abrir ToolFinder completo →",
     "try_again": "Intentar de nuevo"
@@ -141,7 +139,6 @@ export const base = {
     "wizard_your_situation": "您的情况：",
     "wizard_use_together": "搭配使用：",
     "best_match": "最佳匹配",
-    "tools_count_subtext": "120+ 个工具，涵盖 18 个类别",
     "submit_shortcut_hint": "⌘↵ 提交",
     "open_full_toolfinder": "打开完整 ToolFinder →",
     "try_again": "重试"
@@ -189,7 +186,6 @@ export const base = {
     "wizard_your_situation": "आपकी स्थिति:",
     "wizard_use_together": "इन्हें एक साथ इस्तेमाल करें:",
     "best_match": "सर्वश्रेष्ठ मिलान",
-    "tools_count_subtext": "18 श्रेणियों में 120+ टूल",
     "submit_shortcut_hint": "⌘↵ सबमिट करने के लिए",
     "open_full_toolfinder": "पूर्ण ToolFinder खोलें →",
     "try_again": "फिर से प्रयास करें"
@@ -237,7 +233,6 @@ export const base = {
     "wizard_your_situation": "وضعك:",
     "wizard_use_together": "استخدمها معاً:",
     "best_match": "الأفضل تطابقاً",
-    "tools_count_subtext": "أكثر من 120 أداة عبر 18 فئة",
     "submit_shortcut_hint": "⌘↵ للإرسال",
     "open_full_toolfinder": "افتح ToolFinder الكامل →",
     "try_again": "حاول مرة أخرى"
@@ -285,7 +280,6 @@ export const base = {
     "wizard_your_situation": "Sua situação:",
     "wizard_use_together": "Use juntas:",
     "best_match": "Melhor correspondência",
-    "tools_count_subtext": "120+ ferramentas em 18 categorias",
     "submit_shortcut_hint": "⌘↵ para enviar",
     "open_full_toolfinder": "Abrir ToolFinder completo →",
     "try_again": "Tentar novamente"
@@ -333,7 +327,6 @@ export const base = {
     "wizard_your_situation": "Votre situation :",
     "wizard_use_together": "À utiliser ensemble :",
     "best_match": "Meilleure correspondance",
-    "tools_count_subtext": "120+ outils dans 18 catégories",
     "submit_shortcut_hint": "⌘↵ pour envoyer",
     "open_full_toolfinder": "Ouvrir le ToolFinder complet →",
     "try_again": "Réessayer"
@@ -381,7 +374,6 @@ export const base = {
     "wizard_your_situation": "Ihre Situation:",
     "wizard_use_together": "Zusammen verwenden:",
     "best_match": "Beste Übereinstimmung",
-    "tools_count_subtext": "120+ Werkzeuge in 18 Kategorien",
     "submit_shortcut_hint": "⌘↵ zum Absenden",
     "open_full_toolfinder": "Vollständigen ToolFinder öffnen →",
     "try_again": "Erneut versuchen"
@@ -429,7 +421,6 @@ export const base = {
     "wizard_your_situation": "あなたの状況：",
     "wizard_use_together": "組み合わせて使用：",
     "best_match": "最適",
-    "tools_count_subtext": "18カテゴリーにわたる120以上のツール",
     "submit_shortcut_hint": "⌘↵ で送信",
     "open_full_toolfinder": "フル版ToolFinderを開く →",
     "try_again": "もう一度試す"
@@ -477,7 +468,6 @@ export const base = {
     "wizard_your_situation": "당신의 상황:",
     "wizard_use_together": "함께 사용하기:",
     "best_match": "최적 일치",
-    "tools_count_subtext": "18개 카테고리에 걸친 120개 이상의 도구",
     "submit_shortcut_hint": "⌘↵ 제출",
     "open_full_toolfinder": "전체 ToolFinder 열기 →",
     "try_again": "다시 시도"
@@ -525,7 +515,6 @@ export const base = {
     "wizard_your_situation": "Ваша ситуация:",
     "wizard_use_together": "Используйте вместе:",
     "best_match": "Лучшее совпадение",
-    "tools_count_subtext": "Более 120 инструментов в 18 категориях",
     "submit_shortcut_hint": "⌘↵ для отправки",
     "open_full_toolfinder": "Открыть полный ToolFinder →",
     "try_again": "Попробовать снова"
@@ -573,7 +562,6 @@ export const base = {
     "wizard_your_situation": "สถานการณ์ของคุณ:",
     "wizard_use_together": "ใช้ร่วมกัน:",
     "best_match": "ตรงที่สุด",
-    "tools_count_subtext": "120+ เครื่องมือใน 18 หมวดหมู่",
     "submit_shortcut_hint": "⌘↵ เพื่อส่ง",
     "open_full_toolfinder": "เปิด ToolFinder แบบเต็ม →",
     "try_again": "ลองใหม่"
@@ -621,7 +609,6 @@ export const base = {
     "wizard_your_situation": "Tình huống của bạn:",
     "wizard_use_together": "Dùng cùng nhau:",
     "best_match": "Phù hợp nhất",
-    "tools_count_subtext": "Hơn 120 công cụ trong 18 danh mục",
     "submit_shortcut_hint": "⌘↵ để gửi",
     "open_full_toolfinder": "Mở ToolFinder đầy đủ →",
     "try_again": "Thử lại"

@@ -50,7 +50,7 @@ const CLR = {
 };
 
 // ════════════════════════════════════════════════════════════
-// CATEGORY DEFINITIONS — 17 categories
+// CATEGORY DEFINITIONS — 14 categories (count this array, not this comment)
 // ════════════════════════════════════════════════════════════
 const CATEGORY_META = [
   { name: 'The Grind',     emoji: '🌅', tag: 'home', sub: 'home · household · daily life' },

@@ -31,7 +31,10 @@ const GUIDES_DIR = path.join(ROOT, 'guides');
 
 // ── Shared header ─────────────────────────────────────────────────────────────
 
-const SUMMARY = `> DeftBrain (${SITE}) is a free collection of 120+ single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. Each tool is a plain form, not a chatbox: fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.`;
+// SUMMARY is a function, not a const, so the tool count comes from the
+// catalog rather than from a number someone has to remember to update.
+// It read "120+" while the catalog held 125.
+const summaryText = (n) => `> DeftBrain (${SITE}) is a free collection of ${n} single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. Each tool is a plain form, not a chatbox: fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.`;
 
 const START_HERE = [
   `- [All tools](${SITE}/): the full catalog, grouped by category`,
@@ -209,6 +212,7 @@ function buildFull(tools, guides) {
 // ── Write ─────────────────────────────────────────────────────────────────────
 
 const tools  = loadTools();
+const SUMMARY = summaryText(tools.length);
 const guides = loadKeepListGuides();
 if (!tools.length) {
   console.error('generate-llms: no tools loaded — refusing to write empty files.');
