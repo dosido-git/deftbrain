@@ -110,7 +110,18 @@
     </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Create React App's default read "You need to enable JavaScript to run
+         this app." Wrong on two counts: it says "app" rather than naming the
+         site, and it implies the page is useless without JS when the
+         prerendered description, how-to, tips and FAQ below are perfectly
+         readable. The tools themselves genuinely do need JS — they call an
+         API — so the message should say which half is unavailable. -->
+    <noscript>
+      <div style="max-width:640px;margin:0 auto;padding:24px 20px;font-family:'DM Sans',system-ui,sans-serif;line-height:1.6;color:#1a2e44">
+        <p style="margin:0 0 8px;font-weight:700">DeftBrain's tools need JavaScript.</p>
+        <p style="margin:0;color:#5a544a">The tools run in your browser and call an API, so they cannot work with JavaScript disabled. You can still read what this tool does, how to use it, and its common pitfalls below.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>
