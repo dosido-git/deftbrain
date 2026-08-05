@@ -1,6 +1,6 @@
 # DeftBrain — full content
 
-> DeftBrain (https://deftbrain.com) is a free collection of 125 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. Each tool is a plain form, not a chatbox: fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
+> DeftBrain (https://deftbrain.com) is a free collection of 125 single-purpose AI tools for everyday life problems — contest a parking ticket, decode a lease, check a repair quote, prepare for a doctor visit. The premise is that answers begin with the right questions: each tool is a form that already knows what to ask you about its problem, so you never have to work out how to phrase it. Fill in a few labeled fields and get a structured, ready-to-use result (an appeal letter, an evidence checklist, a step-by-step plan). No account or signup. Works in 13 languages (English, Spanish, Chinese, Hindi, Arabic, Portuguese, French, German, Japanese, Korean, Russian, Thai, Vietnamese) with local currency and jurisdiction awareness. Tools that depend on volatile facts (appeal deadlines, tenant law, billing rights) verify current rules against authoritative sources with live web checks. Recommendations are honest rather than agreeable — several tools will advise against acting when that is the better choice. Not legal, medical, or financial advice.
 
 This file carries the substance behind https://deftbrain.com/llms.txt: what each tool does, and the full text of the guides. Tool pages are interactive forms, so their value is described rather than transcribed; the guides are reproduced in full.
 
@@ -4157,10 +4157,10 @@ Output: DECISION: Order veggie burrito bowl from Chipotle. Why: Meets all constr
 
 ## Do It!
 
-### Tool Finder
+### Start Here
 
 URL: https://deftbrain.com/ToolFinder
-Tagline: Describe your problem — I'll find the right tool.
+Tagline: Tell me what you're dealing with — I'll find the right tool.
 Categories: Do It!
 
 With 100+ tools, how can you find the right one? Describe what you need in plain language and ToolFinder employs AI to find the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.

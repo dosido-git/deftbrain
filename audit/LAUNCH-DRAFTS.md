@@ -21,6 +21,28 @@ prompt themselves.* Against that, breadth **is** the product: the prompt
 engineering, the output schema, the jurisdiction grounding and the formatting
 are already done, 125 times over. Only a catalogue can tell that story.
 
+### State it as a promise, not a spec (revised 2026-08-05)
+
+A usability review landed on the sharpest version of this, and it is now the
+line to lead with everywhere:
+
+> **Answers begin with the right questions.**
+
+Users do not care about prompt engineering. What they care about is *"someone
+already knows the right questions to ask me."* Same fact, opposite framing.
+
+Think of a good doctor. You do not admire their internal reasoning — you notice
+they asked the right things before advising. That is what the forms do: they
+encode expertise as a conversation without exposing the machinery.
+
+Practical consequence for every draft below:
+
+- **Stop leading with "not a chatbot."** That is negative positioning — it says
+  what DeftBrain is not, and invites the reader to picture a chatbot. Lead with
+  what the form does: it already knows what to ask.
+- "125 single-purpose tools" is the *evidence* for that claim, not the claim.
+- The old framing survives as the second beat, never the first.
+
 A single tool still appears — as the **example inside** the pitch, never as the
 pitch. Never omit it either: "125 tools" without a concrete one is an abstraction.
 
