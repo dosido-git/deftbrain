@@ -206,8 +206,13 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   }, [allTools]);
 
   // ── Recents band: pick up where you left off (already tracked for sorting) ──
+  // Three, not four. As chips the row is sized by NAME length, and four long
+  // ones ("Complaint Escalation Writer") wrapped to three lines at 390px —
+  // 146px, barely better than the catalog-row layout this replaced.
+  // Truncating was the alternative, but the name is the only thing
+  // identifying a chip, so fewer chips beats shorter ones.
   const recentTools = useMemo(() =>
-    recents.slice(0, 4)
+    recents.slice(0, 3)
       .map(id => (allTools || []).find(t => t.id === id))
       .filter(Boolean),
   [recents, allTools]);
@@ -492,8 +497,16 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               padding: '9px 12px',
             }}>
               <span style={{ fontSize: 14, lineHeight: 1 }}>↩️</span>
+              {/* The label, not the chip count, was what forced every chip onto
+                  its own line at 390px: "PICK UP WHERE YOU LEFT OFF" measured
+                  218px of 334px usable — 65% — leaving 86px, which fits no
+                  chip. Short form below sm so the label shares a line with the
+                  first chip instead of owning one. */}
               <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] me-1"
-                 style={{ color: CLR.navy500 }}>Pick up where you left off</p>
+                 style={{ color: CLR.navy500 }}>
+                <span className="sm:hidden">Recent</span>
+                <span className="hidden sm:inline">Pick up where you left off</span>
+              </p>
               {recentTools.map(tool => (
                 <Link
                   key={tool.id}
