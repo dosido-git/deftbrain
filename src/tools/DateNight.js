@@ -701,7 +701,19 @@ const DateNight = ({ tool }) => {
   };
 
   // Any sign the user has begun — drives the PF-16 reset on the title row.
-  const hasInput = !!(rateResult || rutResult || similarResults || checklist || shareData || actualSpend.trim() || rateNotes.trim());
+  // Derived from the tool's real inputs, not from what the reset happens to
+  // clear. The generated version listed rateResult/rutResult/checklist/
+  // shareData — all POST-RESULT state — because resetResults() only cleared
+  // that, so the button stayed hidden no matter how much of the form you
+  // filled in. dateType and location are the two fields generate() itself
+  // requires, so they are exactly the signal that someone has begun.
+  // NOTE: location is deliberately absent. It is seeded from detectLoc() on
+  // mount, so it is almost always non-empty before the user has done anything
+  // — including it made the reset appear on a pristine form. dateType starts
+  // empty and is required by generate(), so it is the honest first signal.
+  const hasInput = !!(results || dateType || lastTime.trim() || weather ||
+                      dietary.length || rateResult || rutResult ||
+                      similarResults || checklist || shareData);
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -747,7 +759,10 @@ const DateNight = ({ tool }) => {
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(hasInput) ? (
-                <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                <button onClick={() => { setResults(null); setShowInputs(true); resetResults();
+                                         setDateType(''); setLocation(''); setLastTime('');
+                                         setWeather(''); setDietary([]); setError(''); }}
+                  className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   🔄 {t('dn_new_date_night')}
                 </button>
               ) : null}
@@ -994,7 +1009,7 @@ const DateNight = ({ tool }) => {
               in 13 languages and could never fire. A dead button also tells
               the user nothing about WHICH field is missing. */}
           <button onClick={generate} disabled={loading}
-          className={`flex-1 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
+          className={`w-full px-6 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
           {loading
             ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
             : isAnni
