@@ -473,21 +473,49 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ RECENTS + SPOTLIGHT BANDS ═══════════ */}
       {!isSearching && activeCategory === 'All' && (
         <>
+          {/* Recents as chips, not catalog rows.
+              This used to render through ToolColumns — the same treatment the
+              catalog gets: full rows with taglines, category badges, favourite
+              stars and arrows, ~150px for four entries. All of that is aimed at
+              someone DECIDING. A recent tool is one you have already used, so
+              the tagline is dead weight; you only need to get back to it. Name
+              and icon are the whole job, and it now costs ~40px.
+
+              Still conditional, so a first-time visitor never sees it — which
+              is why it is worth keeping at all: it is the only personalisation
+              on the page, and it costs nothing to anyone it cannot help. */}
           {recentTools.length > 0 && (
-            <div className="mt-5" style={{
+            <div className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1.5" style={{
               border: `1.5px solid ${CLR.sand300}`,
               background: '#ffffff',
               borderRadius: 14,
-              padding: '12px 14px 8px',
+              padding: '9px 12px',
             }}>
-              <div className="flex items-center gap-2 mb-1">
-                <span style={{ fontSize: 14, lineHeight: 1 }}>↩️</span>
-                <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
-                   style={{ color: CLR.navy500 }}>Pick up where you left off</p>
-                <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
-              </div>
-              <ToolColumns tools={recentTools} favorites={favorites}
-                onToggleFavorite={toggleFavorite} onNavigate={recordRecent} showCategory={true} />
+              <span style={{ fontSize: 14, lineHeight: 1 }}>↩️</span>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.15em] me-1"
+                 style={{ color: CLR.navy500 }}>Pick up where you left off</p>
+              {recentTools.map(tool => (
+                <Link
+                  key={tool.id}
+                  to={`/${tool.id}`}
+                  onClick={() => recordRecent(tool.id)}
+                  title={tool.tagline || tool.title}
+                  className="inline-flex items-center gap-1.5 rounded-lg text-[12px] font-semibold transition-colors"
+                  style={{
+                    padding: '5px 10px',
+                    border: `1px solid ${CLR.sand300}`,
+                    background: CLR.sand50,
+                    color: CLR.navy600,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = CLR.gold500;
+                                       e.currentTarget.style.background = '#ffffff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = CLR.sand300;
+                                       e.currentTarget.style.background = CLR.sand50; }}
+                >
+                  <span style={{ fontSize: 13, lineHeight: 1 }}>{tool.icon || '🔧'}</span>
+                  {tool.title}
+                </Link>
+              ))}
             </div>
           )}
           {spotlightTools.length > 0 && (
