@@ -70,11 +70,20 @@ const HeroPitch = ({ isDark = false, className = '' }) => {
   // Darker than the old #8a8275 (3.6:1, failed WCAG at this size) — this line
   // carries the value prop and the no-signup promise; it has to be readable.
   const trailColor   = isDark ? 'text-zinc-400' : 'text-[#5a544a]';
+  const taglineColor = isDark ? 'text-zinc-300' : 'text-[#3d3935]';
 
   return (
     <div className={`max-w-3xl ${className}`}>
       <p className={`text-lg sm:text-xl font-semibold leading-snug ${samplerColor}`}>
         {triplet}
+      </p>
+      {/* Three lines, three jobs: the sampler shows WHAT (concrete tasks), the
+          tagline explains WHY it works, the caps line states what it costs.
+          The tagline is the positioning a usability review surfaced — the
+          differentiator is not the prompt engineering, it is that the form
+          already knows what to ask you. */}
+      <p className={`text-sm sm:text-base mt-2 ${taglineColor}`}>
+        Answers begin with the right questions.
       </p>
       <p className={`text-[11px] font-bold uppercase tracking-[0.13em] mt-2 ${trailColor}`}>
         Personal AI problem solvers · no signup · no prompting.

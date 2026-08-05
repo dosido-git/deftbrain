@@ -404,20 +404,37 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         {/* The fold's next step. The catalog is the product, but it starts
             2+ screens down on mobile — without this, a visitor who doesn't
             scroll past the demos never learns the breadth exists. */}
+        {/* CTA hierarchy, inverted 2026-08-05 after a usability review.
+            It used to read: filled navy "Browse Categories" button, then a
+            text link prefixed with the word "or" pointing at the router. The
+            markup literally told every visitor that browsing is the main path
+            and describing your problem is the fallback — which is backwards.
+            A first-time visitor has a problem, not a taxonomy.
+
+            The router is also the right thing to put first mechanically: it
+            runs on MODELS.FAST with max_tokens 2000, so it answers in seconds,
+            against 26-95s for the tools it routes to.
+
+            Browsing stays visible rather than hidden — "125 tools" is itself
+            a credibility signal, and a router alone gives no sense of scope. */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4">
-          <button
-            onClick={() => catalogRef.current && catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+          <Link
+            to="/ToolFinder"
+            className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90 inline-flex items-center min-h-[44px]"
             style={{ background: CLR.navy500 }}
           >
-            Browse Categories ↓
-          </button>
+            What do you need help with? &rarr;
+          </Link>
           {/* inline-flex + min-h lifts the hit box to 44px without changing the
               type size — it measured 20px tall, under WCAG 2.2 AA's 24px floor,
               on the fold. -my-2 keeps the visual gap unchanged. */}
-          <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline inline-flex items-center min-h-[44px] -my-2" style={{ color: CLR.gold700 }}>
-            or describe your problem — we&rsquo;ll find the tool &rarr;
-          </Link>
+          <button
+            onClick={() => catalogRef.current && catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            className="text-[13px] font-semibold hover:underline inline-flex items-center min-h-[44px] -my-2"
+            style={{ color: CLR.gold700 }}
+          >
+            or browse all {toolsWithCategories.length} tools &darr;
+          </button>
           {/* Search + sort share this row rather than owning one below it.
               Apart they were two half-empty rows: the button ended ~740px
               short of the search box, which started ~900px from the left

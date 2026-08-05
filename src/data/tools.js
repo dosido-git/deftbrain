@@ -502,8 +502,13 @@ export const tools = [
   },
   seoDescription: "Describe your problem in plain language and instantly find the right DeftBrain tool for it. Get matched picks, why each fits, and what to enter. Free, no signup.",
   seoTitle: "AI Tool Finder: Describe Your Problem",
-  title: "Tool Finder",
-  tagline: "Describe your problem — I'll find the right tool.",
+  // Renamed 2026-08-05 after a usability review: "Tool Finder" names the
+  // mechanism from the builder's side. Users do not want to find tools, they
+  // want to solve problems. The id and route stay /ToolFinder — this is a
+  // display change only, so no redirects and no lost inbound links. seoTitle
+  // still carries "AI Tool Finder" for anyone searching the old phrasing.
+  title: "Start Here",
+  tagline: "Tell me what you're dealing with — I'll find the right tool.",
   tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse', 'discover', 'guide', 'navigate', 'right tool', 'suggest', 'match'],
   icon: "🧰",
   categories: ['Do It!'],
