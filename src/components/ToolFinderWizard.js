@@ -249,8 +249,8 @@ export default function ToolFinderWizard() {
         background: 'none',
         border: `1.5px solid ${CLR.sand300}`,
         borderRadius: 12,
-        padding: '9px 14px',
-        fontSize: 12,
+        padding: '11px 14px',
+        fontSize: 13,
         fontWeight: 600,
         color: CLR.warm700,
         cursor: 'pointer',
@@ -267,7 +267,7 @@ export default function ToolFinderWizard() {
       }}
     >
       <span>🔍 {t('wizard_intro')}</span>
-      <span style={{ fontSize: 10, marginInlineStart: 8 }}>{isOpen ? '▲' : '▼'}</span>
+      <span style={{ fontSize: 11, marginInlineStart: 8 }}>{isOpen ? '▲' : '▼'}</span>
     </button>
   );
 

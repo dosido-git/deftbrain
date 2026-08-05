@@ -413,28 +413,30 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
           <Link to="/ToolFinder" className="text-[13px] font-semibold hover:underline inline-flex items-center min-h-[44px] -my-2" style={{ color: CLR.gold700 }}>
             or describe your problem — we&rsquo;ll find the tool &rarr;
           </Link>
+          {/* Search + sort share this row rather than owning one below it.
+              Apart they were two half-empty rows: the button ended ~740px
+              short of the search box, which started ~900px from the left
+              edge. Together they cost one row instead of two, and the space
+              between them is now intentional rather than left over.
+              `ms-auto` right-aligns them; below sm the row wraps and they
+              take their own line, which is the old layout anyway.
+              This row is NOT inside the !isSearching guard, so the search
+              box stays mounted and never disappears mid-query. */}
+          <div className="flex items-center gap-2 ms-auto flex-shrink-0">
+            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+          </div>
         </div>
       </header>
 
       {/* ═══════════ DEMO CARDS ═══════════ */}
-      {/* Persistent controls row: search + sort right-justified — stays mounted
-          so search never disappears. The "Examples" label lives directly above
-          the first card (not in this row) so it labels the cards, not the
-          search box — on mobile the row wraps and the old placement left the
-          label orphaned far from its content. */}
-      <div className="flex items-center justify-end gap-3 mt-4 mb-3" style={{ paddingInlineStart: 12, paddingInlineEnd: 12 }}>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
-        </div>
-      </div>
       {/* Examples sit behind a disclosure. They are worth having — they show
           what the output actually looks like — but they are not what a
           returning visitor came for, and on mobile they pushed the catalog
           two screens down. Closed by default puts the categories nearer the
           fold; one tap gets the demos back. */}
       {!isSearching && (
-        <details className="db-ex" style={{ marginBottom: 12 }}>
+        <details className="db-ex" style={{ marginTop: 14, marginBottom: 10 }}>
           {/* The padding goes on the SUMMARY, not the inner span. Vertical
               padding on an inline-flex element does not grow its line box, so
               putting it there left the tap row at 25px - barely over WCAG 2.2
@@ -445,17 +447,17 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               display: 'inline-flex', alignItems: 'center', gap: 8,
               paddingInlineStart: 12,
             }}>
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
+              <span className="text-[12px] font-extrabold uppercase tracking-[0.15em]"
                     style={{ color: CLR.navy500 }}>Examples</span>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                fontSize: 10, fontWeight: 700, color: CLR.gold700,
+                fontSize: 11, fontWeight: 700, color: CLR.gold700,
                 border: `1px solid ${CLR.sand300}`, borderRadius: 999,
                 padding: '2px 8px', background: '#ffffff',
               }}>
                 <span className="db-ex-show">See what the output looks like</span>
                 <span className="db-ex-hide">Hide</span>
-                <span className="db-ex-caret" style={{ fontSize: 9 }}>▼</span>
+                <span className="db-ex-caret" style={{ fontSize: 10 }}>▼</span>
               </span>
             </span>
           </summary>
