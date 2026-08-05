@@ -713,11 +713,30 @@ const DateNight = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div>
-                  <h2 className={`text-xl font-bold ${c.text}`}>
-                    <span className="me-2">{tool?.icon ?? '💘'}</span>{tool?.title ?? t('dn_title')}
-                  </h2>
+                  {/* The <h2> that repeated the wrapper's <h1> title is gone: a
+                      visitor read the same words twice before reaching an
+                      input, and the page spent its first <h2> — the most
+                      significant heading after the title — on zero new
+                      information.
+
+                      The tagline STAYS. It is not a duplicate: the wrapper
+                      renders `description` ("Budget-driven evening planner
+                      for two..."), this renders `tagline` ("A full evening
+                      plan, on budget, anywhere"). Different strings. It also
+                      anchors the Try Example pill, which PF-17 places
+                      beneath the tagline. */}
                   <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dn_tagline')}</p>
-                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+                  {/* Dark ink in BOTH themes. The old rule flipped to white text
+                      in dark mode — the usual instinct — but the background
+                      here is the tool's own headerColor, not the page.
+                      headerColor is pale on 119 of 125 tools, so white text
+                      measured 1.41:1. Ink on the same pill: 4.51:1.
+
+                      The `+ '80'` pill is kept because PF-17b requires it. On
+                      its own, full-strength headerColor with ink would reach
+                      12.59:1 — but that is a convention change across 125
+                      tools, not a call to make inside one file. */}
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-black/20 text-zinc-900 disabled:opacity-40">{t('try_example')}</button>
                 </div>
                 {results && !showInputs && (
                   <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }}
@@ -967,7 +986,14 @@ const DateNight = ({ tool }) => {
 
           {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
 
-          <button onClick={generate} disabled={loading || !location.trim() || !dateType}
+          {/* Disabled ONLY while loading. It used to be disabled whenever a
+              required field was empty, which made generate() unreachable —
+              and generate() already guards both fields and sets a specific,
+              translated message ("dn_err_location" / "dn_err_datetype") that
+              renders in the error block directly above. Those messages exist
+              in 13 languages and could never fire. A dead button also tells
+              the user nothing about WHICH field is missing. */}
+          <button onClick={generate} disabled={loading}
           className={`flex-1 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
           {loading
             ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
