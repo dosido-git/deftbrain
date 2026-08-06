@@ -12,6 +12,13 @@
  *
  * POSTs to /api/subscribe (first-party — no third-party embed or script);
  * the backend forwards to Buttondown, which handles double opt-in.
+ *
+ * PRINTS. This band, RelatedLinks and Footer all used to carry `print:hidden`,
+ * so a printed page stopped dead after the last tool row. On paper the reader
+ * has no address bar and cannot click anything, which makes the tail of the
+ * page MORE useful in print, not less — it is where the site name, the URL,
+ * the guide links and what the newsletter is all live. Tool pages still strip
+ * their chrome via data-print-hide, which none of these three use.
  */
 import React, { useState } from 'react';
 import { useTheme } from '../hooks/useTheme';
@@ -72,7 +79,7 @@ const EmailCapture = () => {
   };
 
   return (
-    <div className={`${c.bg} border-t ${c.border} print:hidden`}>
+    <div className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-5xl mx-auto px-5 py-10 sm:py-12">
         <div className={`max-w-xl mx-auto rounded-2xl border ${c.cardBd} ${c.card} px-6 py-7 shadow-sm`}>
           <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>

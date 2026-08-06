@@ -142,7 +142,7 @@ export default function RelatedLinks() {
   if (!body) return null;
 
   return (
-    <div className={`${c.bg} border-t ${c.border} mt-2 print:hidden`}>
+    <div className={`${c.bg} border-t ${c.border} mt-2`}>
       <div className="max-w-5xl mx-auto px-5 pt-6">
         {body}
       </div>
