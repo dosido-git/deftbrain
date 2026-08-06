@@ -376,7 +376,19 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         .db-ex[open] .db-ex-show{display:none}
         .db-ex:not([open]) .db-ex-hide{display:none}
         .db-ex-caret{transition:transform .2s}
-        .db-ex[open] .db-ex-caret{transform:rotate(180deg)}`}</style>
+        .db-ex[open] .db-ex-caret{transform:rotate(180deg)}
+        /* PRINT. Two problems on paper, both worse in landscape because the
+           page is shorter: a category heading printed alone at the foot of a
+           page with its list overleaf, and single tool rows split across the
+           break. Neither is a layout bug on screen - only print paginates. */
+        @media print {
+          .db-cat-heading { break-after: avoid; page-break-after: avoid; }
+          .db-cat-group   { break-before: auto; }
+          .db-tool-row    { break-inside: avoid; page-break-inside: avoid; }
+          /* The strip is navigation. On paper it cannot be scrolled or
+             clicked, and it forces a wide un-breakable row. */
+          .db-nav-strip { display: none !important; }
+        }`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="w-full py-3" style={{ borderBottom: `1px solid ${CLR.sand200}` }}>
@@ -578,7 +590,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         <p className="text-[10px] font-extrabold uppercase tracking-[0.15em]"
            style={{ color: CLR.navy500 }}>Categories</p>
       </div>
-      <div className="mb-3" style={{
+      <div className="mb-3 db-nav-strip" style={{
         background: CLR.navy500,
         borderRadius: 14,
         padding: '10px 12px',
@@ -720,8 +732,8 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       {/* ═══════════ TOOL LIST ═══════════ */}
       {groupedTools ? (
         groupedTools.map(group => (
-          <div key={group.name} className="mb-6">
-            <div className="flex items-center gap-2 mb-1.5 mt-2">
+          <div key={group.name} className="mb-6 db-cat-group">
+            <div className="flex items-center gap-2 mb-1.5 mt-2 db-cat-heading">
               <button
                 onClick={() => selectCategory(group.name)}
                 title={`Filter by ${group.name}`}

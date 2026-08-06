@@ -50,8 +50,15 @@ const Footer = () => {
     },
   ];
 
+  // Prints. This used to carry `print:hidden`, so a printed page ended with
+  // the last tool row and no site name, URL, or legal links — exactly what a
+  // reader on paper needs, having no address bar. Tool pages hide their chrome
+  // via data-print-hide, which this deliberately does not use.
+  //
+  // A normal JS comment, not a JSX one: a {/* */} between `return (` and the
+  // root element is a second child of the return and does not compile.
   return (
-    <footer className={`${c.bg} border-t ${c.border} print:hidden`}>
+    <footer className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 
