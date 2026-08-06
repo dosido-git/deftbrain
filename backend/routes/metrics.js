@@ -269,16 +269,17 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     iframe{width:100%;border:0;display:block;height:calc(100vh - 52px)}
     #login{padding:48px 16px;text-align:center;color:#666;font-size:14px}
     /* Printing. The report lives in an iframe (srcdoc) so its styles stay
-       isolated from this shell — but an iframe is a fixed box, and a browser
-       prints only what fits inside that box. At height:calc(100vh - 52px)
-       that is exactly one screenful: page 1 came out as the toolbar plus a
-       blank rectangle, and the report itself was clipped mid-table.
-       On print: drop the chrome and let the iframe be its full content
-       height, which beforeprint() below measures and sets. */
+       isolated from this shell. An iframe's content is painted as a SINGLE
+       unit and clipped at the first page break — it never paginates, however
+       tall the box is. Making the iframe taller (tried first) does nothing.
+       So for printing, beforeprint() copies the report's styles and body OUT
+       of the frame and into #printhost in this document, where the printer
+       can break it across pages normally. */
+    #printhost { display: none; }
     @media print {
-      header, #login { display: none !important; }
+      header, #login, iframe { display: none !important; }
       body { background: #fff; }
-      iframe { height: auto !important; min-height: 0 !important; }
+      #printhost { display: block !important; }
     }
   </style></head><body>
   <header>
@@ -327,25 +328,39 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
         frame.style.display='none';login.style.display='block';login.textContent='Could not load: '+e.message;say(e.message);
       });
     }
-    // An iframe cannot size itself to its content, and CSS cannot do it either
-    // — it needs a measurement from inside the frame. Do it just before the
-    // print dialog opens, and put it back afterwards so the on-screen layout
-    // (one scrollable viewport) is unchanged.
-    var _printH = null;
+    // Lift the report out of the iframe for printing. Sizing the frame was
+    // tried and does not work: an iframe is painted as one unit and clipped
+    // at the page boundary regardless of height. Only content in THIS
+    // document gets paginated, so copy the report's <style> blocks and body
+    // into #printhost, print, then throw the copy away.
     window.addEventListener('beforeprint', function(){
       var f = document.getElementById('report');
       if (!f || f.style.display === 'none') return;
       try {
         var d = f.contentDocument;
-        if (!d) return;
-        _printH = f.style.height;
-        f.style.height = Math.max(
-          d.documentElement.scrollHeight, d.body ? d.body.scrollHeight : 0) + 'px';
-      } catch (e) { /* same-origin only; srcdoc is, but fail soft */ }
+        if (!d || !d.body) return;
+        var host = document.getElementById('printhost');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'printhost';
+          document.body.appendChild(host);
+        }
+        // Scope the report's rules to #printhost. Copied verbatim, its own
+        // body rule (padding 24px, max-width 960px, margin auto) would apply
+        // to the SHELL's body and add a trailing blank page.
+        // NO BACKTICKS anywhere in here: this whole block is inside a
+        // template literal, and a backtick ends it. Cost three debug rounds.
+        var css = '';
+        Array.prototype.forEach.call(d.querySelectorAll('style'), function(n){
+          css += n.textContent.split('body{').join('#printhost{')
+                                .split('body {').join('#printhost {');
+        });
+        host.innerHTML = '<style>' + css + '</style>' + d.body.innerHTML;
+      } catch (e) { /* srcdoc is same-origin, but fail soft rather than block print */ }
     });
     window.addEventListener('afterprint', function(){
-      var f = document.getElementById('report');
-      if (f && _printH !== null) { f.style.height = _printH; _printH = null; }
+      var host = document.getElementById('printhost');
+      if (host) host.innerHTML = '';
     });
 
     function openReport(){
