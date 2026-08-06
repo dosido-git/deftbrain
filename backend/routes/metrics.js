@@ -268,6 +268,18 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     #msg{font-size:12px;margin-left:auto;color:#cbd5e1}
     iframe{width:100%;border:0;display:block;height:calc(100vh - 52px)}
     #login{padding:48px 16px;text-align:center;color:#666;font-size:14px}
+    /* Printing. The report lives in an iframe (srcdoc) so its styles stay
+       isolated from this shell — but an iframe is a fixed box, and a browser
+       prints only what fits inside that box. At height:calc(100vh - 52px)
+       that is exactly one screenful: page 1 came out as the toolbar plus a
+       blank rectangle, and the report itself was clipped mid-table.
+       On print: drop the chrome and let the iframe be its full content
+       height, which beforeprint() below measures and sets. */
+    @media print {
+      header, #login { display: none !important; }
+      body { background: #fff; }
+      iframe { height: auto !important; min-height: 0 !important; }
+    }
   </style></head><body>
   <header>
     <b>📊 DeftBrain metrics</b>
@@ -315,6 +327,27 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
         frame.style.display='none';login.style.display='block';login.textContent='Could not load: '+e.message;say(e.message);
       });
     }
+    // An iframe cannot size itself to its content, and CSS cannot do it either
+    // — it needs a measurement from inside the frame. Do it just before the
+    // print dialog opens, and put it back afterwards so the on-screen layout
+    // (one scrollable viewport) is unchanged.
+    var _printH = null;
+    window.addEventListener('beforeprint', function(){
+      var f = document.getElementById('report');
+      if (!f || f.style.display === 'none') return;
+      try {
+        var d = f.contentDocument;
+        if (!d) return;
+        _printH = f.style.height;
+        f.style.height = Math.max(
+          d.documentElement.scrollHeight, d.body ? d.body.scrollHeight : 0) + 'px';
+      } catch (e) { /* same-origin only; srcdoc is, but fail soft */ }
+    });
+    window.addEventListener('afterprint', function(){
+      var f = document.getElementById('report');
+      if (f && _printH !== null) { f.style.height = _printH; _printH = null; }
+    });
+
     function openReport(){
       var k=keyEl.value.trim();
       if(!k){say('enter a key');return;}
