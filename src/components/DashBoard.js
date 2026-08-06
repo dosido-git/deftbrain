@@ -377,17 +377,27 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         .db-ex:not([open]) .db-ex-hide{display:none}
         .db-ex-caret{transition:transform .2s}
         .db-ex[open] .db-ex-caret{transform:rotate(180deg)}
-        /* PRINT. Two problems on paper, both worse in landscape because the
-           page is shorter: a category heading printed alone at the foot of a
-           page with its list overleaf, and single tool rows split across the
-           break. Neither is a layout bug on screen - only print paginates. */
+        /* PRINT. Measured three ways before settling here.
+
+           1. break-after:avoid on the heading — Chrome ignores it next to the
+              two-column grid, headings still orphaned. 11pp landscape.
+           2. break-inside:avoid on the whole group — no orphans, but every
+              group that did not fit the remainder jumped to a fresh page.
+              11pp -> 14pp landscape, 15 -> 19 portrait. MORE white, not less.
+           3. Neither. Groups break where they fall. Fewest pages, least total
+              whitespace; the cost is a heading occasionally sitting last on a
+              page with its list overleaf.
+
+           (3) wins on the thing actually complained about, so no break rules
+           on groups. Individual tool rows already carry an inline
+           breakInside:'avoid', so a single tool never splits.
+
+           What IS hidden is the crawlable tool index — a collapsed <details>
+           for crawlers, injected by prerender into the built HTML, which
+           printed as an almost entirely blank final page. It does not exist
+           on the dev server, so this rule only bites in production. */
         @media print {
-          .db-cat-heading { break-after: avoid; page-break-after: avoid; }
-          .db-cat-group   { break-before: auto; }
-          .db-tool-row    { break-inside: avoid; page-break-inside: avoid; }
-          /* The strip is navigation. On paper it cannot be scrolled or
-             clicked, and it forces a wide un-breakable row. */
-          .db-nav-strip { display: none !important; }
+          .db-tool-index { display: none !important; }
         }`}</style>
 
       {/* ═══════════ HEADER ═══════════ */}
