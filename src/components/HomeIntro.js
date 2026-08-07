@@ -153,10 +153,10 @@ const HOW = [
 const TRUST = [
   { icon: '🔒', title: 'Private by design',        body: 'No account, and nothing you type is stored. There is no database.' },
   { icon: '💬', title: 'No prompt writing',        body: 'Labelled fields, not a blank box. You never have to phrase it.' },
-  { icon: '📖', title: 'Plain language',           body: 'No jargon, and no filler to pad the answer out.' },
-  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several will tell you not to act. That is the useful answer.' },
+  { icon: '📖', title: 'Plain language',           body: 'No jargon, and no filler to pad the answer.' },
+  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several will tell you not to act if that is the useful answer.' },
   { icon: '🌍', title: 'Works where you are',      body: '13 languages, and local law and currency where it matters.' },
-  { icon: '🆓', title: 'Free, with no catch',      body: 'No trial, no card, no upsell. Every one, every time.' },
+  { icon: '🆓', title: 'Free, with no catch',      body: 'No trial, no card, no upsell.' },
 ];
 
 // PLACEHOLDER. Swap for real quotes once the feedback sink has any; until
@@ -218,14 +218,17 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
           fontSize: `clamp(${d(22)}px, 3.1vw, ${d(34)}px)`,
           lineHeight: 1.24, letterSpacing: '-0.2px',
-          margin: `${d(7)}px 0 0`, maxWidth: d(440),
+          // Tuned to the break: "But you don't have to figure" measures 396px
+          // at this size, so anything under ~400 pushes it to three lines and
+          // strands "alone." on its own.
+          margin: `${d(7)}px 0 0`, maxWidth: d(500),
         }}>
-          You don&rsquo;t have to figure everything out alone.
+          But you don&rsquo;t have to figure everything out alone.
         </p>
         <p style={{ maxWidth: MEASURE, marginTop: d(15), fontSize: b(15.5), lineHeight: 1.62, color: CLR.warm700 }}>
           When you&rsquo;re facing an important decision, confusing paperwork, a difficult
-          conversation, or simply don&rsquo;t know what to do next, DeftBrain helps you think
-          it through — one thoughtful question at a time.
+          conversation, or simply don&rsquo;t know where to turn, DeftBrain helps you think
+          things through — one thoughtful question at a time.
         </p>
 
         <form onSubmit={askSubmit} style={{ marginTop: d(17), maxWidth: MEASURE }}>
@@ -292,13 +295,13 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           <div style={{ maxWidth: 620 }}>
             <SectionTitle>Everyone gets stuck.</SectionTitle>
             <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.6, color: CLR.warm700 }}>
-              Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
-              Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
-              Sometimes it&rsquo;s simply not knowing where to begin.
+              It could be a lease, a medical appointment, a suspicious email.
+              Sometimes it&rsquo;s knowing what to say. Sometimes it&rsquo;s simply not
+              knowing where to begin.
             </p>
             <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.6, color: CLR.gold700, fontWeight: 600 }}>
-              Most people don&rsquo;t need more information. They need someone to help them
-              think clearly. That&rsquo;s why DeftBrain exists.
+              Most people don&rsquo;t need more information. They need help thinking
+              clearly. That&rsquo;s why DeftBrain exists.
             </p>
           </div>
         </div>
@@ -317,7 +320,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
             </p>
             <p style={{ marginTop: d(10), maxWidth: MEASURE, fontSize: b(14.5), lineHeight: 1.7, color: CLR.warm700 }}>
               Most websites give you information. Most chatbots begin with a blank page.
-              DeftBrain begins with the questions someone who knew this problem would ask you.
+              DeftBrain begins with the questions someone knew to ask.
             </p>
 
             {/* The spine, laid out as the flow it describes. Arrows are
@@ -531,7 +534,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               Not every visit begins with a problem.<br />Sometimes it begins with curiosity.
             </SectionTitle>
             <p style={{ marginTop: d(10), fontSize: b(14), lineHeight: 1.7, color: CLR.warm700 }}>
-              Explore the ones built to help you imagine, laugh, discover, and think differently.
+              Explore tools built to help you imagine, laugh, discover, and think differently.
             </p>
           </div>
           {/* Two fixed columns, not auto-fit: four tiles want to be a 2x2
