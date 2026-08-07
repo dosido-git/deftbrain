@@ -159,6 +159,22 @@ const HOW = [
   { n: 3, tint: CLR.navy500, title: 'Leave with clarity and next steps.', body: 'Clear advice, options to consider, and actions you can take.' },
 ];
 
+// The three objections a first-time visitor has with their hands on the
+// keyboard: do I have to sign up, do I have to know how to phrase this, is
+// this going to cost me. They are answered beside the box rather than five
+// sections below it, in a compressed form — TRUST below keeps the full
+// versions, because a reason and its evidence are different jobs.
+//
+// The other three trust claims are deliberately NOT here. Plain language,
+// honest about uncertainty and works where you are are all about whether the
+// ANSWER is any good, which is not the question being asked at this moment,
+// and six entries beside the hero would be a wall.
+const ASSURE = [
+  { icon: '🔒', title: 'Private by design',   body: 'No account. Nothing you type is stored.' },
+  { icon: '💬', title: 'No prompt writing',   body: 'Labeled fields, not a blank box.' },
+  { icon: '🆓', title: 'Free, with no catch', body: 'No trial, no card, no upsell.' },
+];
+
 // Every claim here is verifiable in the codebase. Nothing aspirational.
 const TRUST = [
   { icon: '🔒', title: 'Private by design',        body: 'No account, and nothing you type is stored. There is no database.' },
@@ -274,6 +290,14 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section data-db-section="hero" style={{ paddingBlock: `${d(10)}px ${d(28)}px` }}>
+        {/* Two columns on a desktop: the whole right-hand side of the hero was
+            empty, and the reassurances belong at the moment someone is about
+            to type, not five sections below it. items-end so the list sits
+            level with the foot of the copy rather than floating beside the
+            headline. Below lg it stacks and follows the browse link, where
+            three short lines cost little. */}
+        <div className="flex flex-col lg:flex-row lg:items-end" style={{ gap: d(44) }}>
+          <div style={{ flex: '1 1 auto', minWidth: 0 }}>
         <h2 style={{
           fontFamily: SERIF, fontWeight: 700, color: CLR.navy700,
           fontSize: `clamp(${d(30)}px, 4.3vw, ${d(48)}px)`,
@@ -348,6 +372,38 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           </div>
         </form>
 
+          </div>
+
+          {/* Positioned right, but the text stays left-aligned. Right-aligned
+              multi-line copy gives every line a different starting point and
+              the eye has to hunt for it on each return — a real readability
+              cost for no gain once the block is already on the right. */}
+          {/* flex-basis auto with a max-width, NOT `flex: 0 1 300px`: basis
+              resolves against the main axis, so once the row stacks on a phone
+              that 300px became a HEIGHT and padded 110px of content out to
+              300. Width is capped instead, which means the same thing on a
+              desktop and nothing at all on a phone. */}
+          <ul style={{
+            flex: '0 1 auto', maxWidth: 320, listStyle: 'none', margin: 0, padding: 0,
+            display: 'grid', gap: d(15),
+          }}>
+            {ASSURE.map(a => (
+              <li key={a.title} className="flex items-start" style={{ gap: d(9) }}>
+                <span aria-hidden="true" style={{ fontSize: b(14), lineHeight: 1.3, flexShrink: 0 }}>{a.icon}</span>
+                <div>
+                  <p style={{ fontSize: b(13), fontWeight: 700, color: CLR.navy700, margin: 0 }}>{a.title}</p>
+                  <p style={{ fontSize: cap(12.5), lineHeight: 1.45, color: CLR.warm500, margin: `${d(2)}px 0 0` }}>{a.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+          {/* Sits below the two-column row, not inside the left one, so
+             items-end lands the assurances on the search field's bottom
+             edge rather than this link's. The alternative was hard-coding
+             an offset equal to this element's height, which breaks the
+             moment the element changes. */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: d(6) }}>
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
