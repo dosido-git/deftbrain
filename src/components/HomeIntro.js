@@ -214,6 +214,63 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
 
   return (
     <div className="db-home-intro">
+      <style>{`
+        /* ── Why the printed page did not look like the screen ──────────
+           Print lays out at about 720px (US Letter, less margins), which is
+           BELOW Tailwind's lg: breakpoint of 1024px. Media queries in print
+           evaluate against the page box, so every lg:flex-row and
+           lg:grid-cols-3 on this page silently fell back to its stacked
+           phone layout: the illustration dropped below the copy and landed
+           on a page of its own, and the three cards became three full-width
+           blocks with acres of white either side.
+
+           These rules restore the desktop arrangement explicitly, since the
+           breakpoint can never match on paper. Type stays at screen size —
+           matching the screen's 1152px layout exactly would mean scaling the
+           whole page to about 62%, which puts body copy near 8pt. */
+        @media print {
+          .db-hi-why      { flex-direction: row !important; align-items: center !important; }
+          .db-hi-why > div { flex: 1 1 auto !important; min-width: 0; }
+          /* 38%, not the 44% that first looked right: the three-step row
+             below cannot shrink past its content, so a wider image left the
+             third step running underneath it. Wrapping is the safety net. */
+          .db-hi-why > img { flex: 0 0 38% !important; max-width: 38% !important; }
+          .db-hi-steps     { flex-wrap: wrap !important; }
+          .db-hi-cards    { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+          .db-hi-curious  { flex-direction: row !important; align-items: center !important; }
+
+          /* Stacked, the tiles grid stretched its rows to fill the column —
+             that is where the empty half-page inside each curiosity tile
+             came from. */
+          .db-hi-curious-tiles       { align-content: start !important; }
+          .db-hi-curious-tiles > *   { align-self: start !important; }
+
+          /* A card split across a page break is worse than a short page. Only
+             the three cards get this: applying it to every section pushes the
+             page count UP, which is the thing being complained about. */
+          .db-hi-cards > div,
+          .db-hi-curious,
+          .db-hi-closing     { break-inside: avoid; }
+
+          /* NOT break-inside: avoid on the categories section, tempting as it
+             looks: "Wherever life takes you…" does strand itself at the foot
+             of a page, but keeping the section whole pushes the three cards
+             past the remaining space and leaves most of the next page empty.
+             A stranded heading costs a line. This costs half a page. */
+
+          /* Decorative, and at print width the 148px it occupies is the
+             difference between the curiosity tiles reading and not. */
+          .db-hi-brain       { display: none !important; }
+
+          /* On screen these carry no underline; print should match. */
+          .db-home-intro a { text-decoration: none !important; }
+
+          /* An empty text field and a scroll-to-catalog button mean nothing
+             on paper. */
+          .db-home-intro form,
+          .db-home-intro button[type="submit"] { display: none !important; }
+        }
+      `}</style>
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section style={{ paddingBlock: `${d(10)}px ${d(28)}px` }}>
@@ -319,7 +376,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           rather than with the box above. items-center ranges it against
           the whole of "Why DeftBrain?" and the three steps. */}
       <section style={{ marginBottom: SECTION }}>
-        <div className="flex flex-col lg:flex-row lg:items-center gap-8">
+        <div className="db-hi-why flex flex-col lg:flex-row lg:items-center gap-8">
           <div style={{ flex: '1 1 480px', minWidth: 0 }}>
             <SectionTitle>Why DeftBrain?</SectionTitle>
             <p style={{ marginTop: d(10), fontSize: b(15), fontWeight: 600, color: CLR.warm800 }}>
@@ -333,7 +390,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
             {/* The spine, laid out as the flow it describes. Arrows are
                 decorative and drop out when the row stacks on a phone —
                 a "→" pointing down a column is a lie about the layout. */}
-            <div className="flex flex-col sm:flex-row sm:items-center" style={{ marginTop: d(22), gap: d(16) }}>
+            <div className="db-hi-steps flex flex-col sm:flex-row sm:items-center" style={{ marginTop: d(22), gap: d(16) }}>
               {STEPS.map((s, i) => (
                 <React.Fragment key={s.l2}>
                   <div className="flex items-center flex-shrink-0" style={{ gap: d(13) }}>
@@ -390,7 +447,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
 
       {/* ── Wherever life takes you — real categories, real counts ─────── */}
       {categories.length > 0 && (
-        <section style={{ marginBottom: SECTION }}>
+        <section className="db-hi-cats" style={{ marginBottom: SECTION }}>
           <SectionTitle>Wherever life takes you&hellip;</SectionTitle>
           {/* Tiles, not pills, and the one place that deliberately inverts the
               density pass: the icon gets BIGGER while the label gets smaller.
@@ -437,7 +494,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       )}
 
       {/* ── How it works · trust · stories ─────────────────────────────── */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ marginBottom: SECTION }}>
+      <section className="db-hi-cards grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ marginBottom: SECTION }}>
         <Card>
           <SectionTitle style={{ fontSize: d(19) }}>How it works</SectionTitle>
           {/* Numbered spine with a rule running behind it, so three steps read
@@ -520,13 +577,14 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
         background: CLR.lavender, borderRadius: d(18),
         padding: `${d(26)}px ${d(28)}px`, marginBottom: SECTION,
       }}>
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+        <div className="db-hi-curious flex flex-col lg:flex-row lg:items-center gap-4">
           {/* Decorative, so alt="" — the heading beside it already says this.
               multiply is load-bearing: the asset's background was lifted to
               pure white precisely so this blend erases it and the lavender
               runs straight through. Swap the file for one with a coloured or
               off-white background and it will reappear as a grey box. */}
           <img
+            className="db-hi-brain"
             src="/illustrations/thinking-brain.png"
             width={250} height={180}
             loading="lazy" decoding="async"
@@ -547,7 +605,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           {/* Two fixed columns, not auto-fit: four tiles want to be a 2x2
               block, and auto-fit kept resolving to three and orphaning
               "More" on a row of its own. */}
-          <div style={{
+          <div className="db-hi-curious-tiles" style={{
             flex: '1 1 340px', display: 'grid', gap: d(9),
             gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           }}>
@@ -578,7 +636,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       </section>
 
       {/* ── Closing ────────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="db-hi-closing" style={{
         background: CLR.navy600, borderRadius: d(18),
         padding: `${d(26)}px ${d(30)}px`, marginBottom: d(28),
       }}>
