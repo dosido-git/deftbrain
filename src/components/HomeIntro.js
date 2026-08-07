@@ -242,7 +242,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               autoComplete="off"
               style={{
                 flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
-                padding: `${d(13)}px ${d(12)}px`, fontSize: b(15.5),
+                padding: `${d(9)}px ${d(12)}px`, fontSize: b(15.5),
                 color: CLR.warm800, fontFamily: 'inherit',
               }}
             />
@@ -262,8 +262,12 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
               review should not have to scroll past all of it. */}
+          {/* Blue, not gold: gold is the emphasis colour for prose on this
+              page, and a gold link a line under a gold sentence reads as more
+              of the same rather than as somewhere to go. 4.7:1 on the sand
+              background, so it still clears AA at this size. */}
           <button onClick={onBrowse} className="hover:underline inline-flex items-center min-h-[44px]"
-            style={{ color: CLR.gold700, fontSize: b(14), fontWeight: 600, background: 'none' }}>
+            style={{ color: CLR.blue, fontSize: b(14), fontWeight: 600, background: 'none' }}>
             or browse all {toolCount} {UNIT.many} &darr;
           </button>
           {/* Dropped the "search ⌘K" link that used to sit here: with a text
@@ -272,44 +276,40 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         </div>
       </section>
 
-      {/* ── Everyone gets stuck + Why, sharing one illustration column ───
-          Two sections, one column. The signpost used to sit inside "Why"
-          alone, which pinned its top halfway down the page; giving both
-          sections a shared right-hand column lets it start level with the
-          "Everyone gets stuck" box and run the height of the pair.
-          items-start is what does the aligning — items-center would recentre
-          it against the taller column and undo the point. */}
-      <div className="flex flex-col lg:flex-row lg:items-start gap-8" style={{ marginBottom: SECTION }}>
-        <div style={{ flex: '1 1 600px', minWidth: 0 }}>
-          <section style={{
-            background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
-            borderRadius: d(18), padding: `${d(22)}px ${d(26)}px`, marginBottom: d(34),
+      <section style={{
+        background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
+        borderRadius: d(18), padding: `${d(22)}px ${d(26)}px`, marginBottom: d(34),
+      }}>
+        <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(22) }}>
+          <span aria-hidden="true" style={{
+            width: 78, height: 78, flexShrink: 0, borderRadius: '50%', padding: 18,
+            border: `1px solid ${CLR.sand300}`, color: CLR.gold500,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(22) }}>
-              <span aria-hidden="true" style={{
-                width: 78, height: 78, flexShrink: 0, borderRadius: '50%', padding: 18,
-                border: `1px solid ${CLR.sand300}`, color: CLR.gold500,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <IconPeople />
-              </span>
-              <div style={{ maxWidth: 620 }}>
-                <SectionTitle>Everyone gets stuck.</SectionTitle>
-                <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.6, color: CLR.warm700 }}>
-                  Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
-                  Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
-                  Sometimes it&rsquo;s simply not knowing where to begin.
-                </p>
-                <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.6, color: CLR.gold700, fontWeight: 600 }}>
-                  Most people don&rsquo;t need more information. They need someone to help them
-                  think clearly. That&rsquo;s why DeftBrain exists.
-                </p>
-              </div>
-            </div>
-          </section>
+            <IconPeople />
+          </span>
+          <div style={{ maxWidth: 620 }}>
+            <SectionTitle>Everyone gets stuck.</SectionTitle>
+            <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.6, color: CLR.warm700 }}>
+              Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
+              Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
+              Sometimes it&rsquo;s simply not knowing where to begin.
+            </p>
+            <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.6, color: CLR.gold700, fontWeight: 600 }}>
+              Most people don&rsquo;t need more information. They need someone to help them
+              think clearly. That&rsquo;s why DeftBrain exists.
+            </p>
+          </div>
+        </div>
+      </section>
 
-          {/* ── Why: better questions, and the three-step spine ────────────── */}
-          <section>
+      {/* ── Why: better questions, the spine, and the illustration ─────
+          The signpost illustrates this section, so it sits level with it
+          rather than with the box above. items-center ranges it against
+          the whole of "Why DeftBrain?" and the three steps. */}
+      <section style={{ marginBottom: SECTION }}>
+        <div className="flex flex-col lg:flex-row lg:items-center gap-8">
+          <div style={{ flex: '1 1 480px', minWidth: 0 }}>
             <SectionTitle>Why DeftBrain?</SectionTitle>
             <p style={{ marginTop: d(10), fontSize: b(15), fontWeight: 600, color: CLR.warm800 }}>
               Better questions lead to better decisions.
@@ -350,7 +350,6 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
                 </React.Fragment>
               ))}
             </div>
-          </section>
         </div>
 
           {/* The dissolve is baked into the asset's alpha channel, not applied
@@ -375,7 +374,8 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               flex: '0 1 400px', width: '100%', maxWidth: 400, height: 'auto', display: 'block',
             }}
           />
-      </div>
+        </div>
+      </section>
 
       {/* ── Wherever life takes you — real categories, real counts ─────── */}
       {categories.length > 0 && (
@@ -400,8 +400,8 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
                 className="transition-colors hover:bg-white"
                 style={{
                   background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: d(14),
-                  padding: `${d(14)}px ${d(8)}px ${d(12)}px`, minHeight: 44,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: d(7),
+                  padding: `${d(10)}px ${d(6)}px ${d(9)}px`, minHeight: 44,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: d(5),
                 }}>
                 <span aria-hidden="true" style={{
                   width: 46, height: 46, borderRadius: '50%', background: CLR.sand50,
