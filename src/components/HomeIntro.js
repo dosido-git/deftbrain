@@ -80,6 +80,7 @@ const CLR = {
   navy500: '#2c4a6e',
   navy600: '#1e3550',
   navy700: '#16283c',
+  navy800: '#0f2540',   // the designer's primary navy
   gold500: '#c8872e',
   gold700: '#8a5d1c',
   warm500: '#8a8275',
@@ -262,12 +263,12 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
               review should not have to scroll past all of it. */}
-          {/* Blue, not gold: gold is the emphasis colour for prose on this
+          {/* Navy, not gold: gold is the emphasis colour for prose on this
               page, and a gold link a line under a gold sentence reads as more
-              of the same rather than as somewhere to go. 4.7:1 on the sand
-              background, so it still clears AA at this size. */}
+              of the same rather than as somewhere to go. 14.6:1 on the sand
+              background. */}
           <button onClick={onBrowse} className="hover:underline inline-flex items-center min-h-[44px]"
-            style={{ color: CLR.blue, fontSize: b(14), fontWeight: 600, background: 'none' }}>
+            style={{ color: CLR.navy800, fontSize: b(14), fontWeight: 600, background: 'none' }}>
             or browse all {toolCount} {UNIT.many} &darr;
           </button>
           {/* Dropped the "search ⌘K" link that used to sit here: with a text
