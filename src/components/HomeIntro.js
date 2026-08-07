@@ -295,7 +295,29 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           things through — one thoughtful question at a time.
         </p>
 
-        <form onSubmit={askSubmit} style={{ marginTop: d(17), maxWidth: MEASURE }}>
+        {/* The page's other half-sentence. "But you don't have to figure
+            everything out alone" and "Let's think it through together" are
+            companions — one says you are not alone, the other says we will
+            do this together — and the second used to live only in the
+            closing band, five sections down, where a first-time visitor
+            reaches it after deciding whether they are interested.
+
+            Gold serif, like the subheading, so the two emotional lines
+            bracket the grey explanation between them and the thread is
+            visible at a glance. Placed immediately above the search box
+            rather than appended to the paragraph: it is an invitation, and
+            it should sit against the thing that accepts it.
+
+            It still closes the page too. That is a refrain, not a
+            duplicate — said once as a promise, once as an invitation. */}
+        <p style={{
+          fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
+          fontSize: d(21), lineHeight: 1.3, margin: `${d(18)}px 0 0`,
+        }}>
+          Let&rsquo;s think it through together.
+        </p>
+
+        <form onSubmit={askSubmit} style={{ marginTop: d(10), maxWidth: MEASURE }}>
           <label htmlFor="db-ask" className="sr-only">What do you need help with?</label>
           <div className="flex items-stretch" style={{
             background: '#fff', border: `1.5px solid ${CLR.sand300}`,
