@@ -90,6 +90,32 @@ if (fs.existsSync(TOOLS_JS)) {
   failures.push(`WARN: ${TOOLS_JS} not found — skipping prerender check`);
 }
 
+// --- 7. Static assets survived the build -------------------------------------
+// prerender.js deletes stray directories from build/ (legacy directory-based
+// prerender output created trailing-slash duplicate URLs). Its protected list
+// was once hardcoded, so public/illustrations/ was silently wiped on every
+// build and the homepage signpost 404'd in production while working locally.
+// The list is now derived from public/, and this check is the regression
+// guard: every file shipped in public/ must survive into build/.
+let assetCount = 0;
+const PUBLIC = path.join(ROOT, 'public');
+// index.html is transformed by CRA, not copied; .DS_Store is Finder noise.
+const SKIP_ASSETS = new Set(['index.html', '.DS_Store']);
+function walkPublic(dir, rel = '') {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (SKIP_ASSETS.has(entry.name)) continue;
+    const relPath = rel ? `${rel}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) walkPublic(path.join(dir, entry.name), relPath);
+    else {
+      if (!fs.existsSync(path.join(BUILD, relPath))) {
+        failures.push(`ASSET DROPPED: public/${relPath} is not in build/ — check the protectedDirs cleanup in scripts/prerender.js`);
+      }
+      assetCount++;
+    }
+  }
+}
+if (fs.existsSync(PUBLIC)) walkPublic(PUBLIC);
+
 // --- Copy-count consistency ---------------------------------------------------
 // The public tool count still appears in some static copy (About page thesis
 // line, the DashBoard "Browse all X tools" button, 404/dead-link fallbacks —
@@ -127,5 +153,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `✅ verify-build OK — ${categories.length} categories, ${specCount} guide specs, ${toolCount} tools.`
+  `✅ verify-build OK — ${categories.length} categories, ${specCount} guide specs, ${toolCount} tools, ${assetCount} static assets.`
 );

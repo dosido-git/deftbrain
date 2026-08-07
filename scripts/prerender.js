@@ -37,6 +37,7 @@ function findProjectRoot(start) {
 }
 const ROOT       = findProjectRoot(__dirname);
 const BUILD_DIR  = path.join(ROOT, 'build');
+const PUBLIC_DIR = path.join(ROOT, 'public');
 const TOOLS_FILE = path.join(ROOT, 'src', 'data', 'tools.js');
 const GUIDES_DIR = path.join(ROOT, 'guides');
 const SITE_NAME  = 'DeftBrain';
@@ -512,7 +513,18 @@ async function main() {
   // Directories named after tool IDs (e.g. build/SpiralStopper/index.html) cause
   // static servers to serve /SpiralStopper/ as 200, creating trailing-slash duplicates
   // that confuse Google. Flat files (build/SpiralStopper.html) have no slash variant.
-  const protectedDirs = new Set(['static', 'og', 'guides']);
+  // Protect build output plus EVERY directory that came from public/. The
+  // list used to be hardcoded ['static','og','guides'], which silently ate
+  // any new asset folder: public/illustrations/ was deleted on every build,
+  // so the signpost image 404'd in production while the same URL worked
+  // locally. Deriving it means adding a folder to public/ just works.
+  const publicDirs = fs.existsSync(PUBLIC_DIR)
+    ? fs.readdirSync(PUBLIC_DIR).filter(e => {
+        try { return fs.statSync(path.join(PUBLIC_DIR, e)).isDirectory(); }
+        catch { return false; }
+      })
+    : [];
+  const protectedDirs = new Set(['static', ...publicDirs]);
   for (const entry of fs.readdirSync(BUILD_DIR)) {
     if (protectedDirs.has(entry)) continue;
     const full = path.join(BUILD_DIR, entry);
