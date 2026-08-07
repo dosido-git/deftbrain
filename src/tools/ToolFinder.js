@@ -85,6 +85,21 @@ const ToolFinder = ({ tool }) => {
       setError(err.message || t('tf_err'));
     } }, [problem, callToolEndpoint, setError, setResults, setSessionHistory, t]);
 
+  // Arrive from the home page with the problem already typed: /ToolFinder?q=...
+  // The home hero is a text box now, so whatever was typed there should not
+  // have to be typed again. Runs once, and strips the param afterwards so a
+  // refresh or a back-navigation does not silently re-run the search.
+  const ranFromUrlRef = useRef(false);
+  useEffect(() => {
+    if (ranFromUrlRef.current) return;
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (!q || !q.trim()) return;
+    ranFromUrlRef.current = true;
+    setProblem(q);
+    findTools(q);
+    window.history.replaceState({}, '', window.location.pathname);
+  }, [findTools, setProblem]);
+
   const handleQuickPick = useCallback((label) => {
     setProblem(label);
     findTools(label);

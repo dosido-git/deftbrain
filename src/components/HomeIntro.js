@@ -29,8 +29,8 @@
  *
  * Light mode only, like the rest of the dashboard (see DashBoard.js CLR).
  */
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CLR = {
   sand50:  '#faf8f5',
@@ -88,13 +88,19 @@ const Card = ({ children, style }) => (
   }}>{children}</div>
 );
 
-const HomeIntro = ({ categories = [], toolCount = 0, onBrowse, searchRef }) => {
-  const focusSearch = (e) => {
+const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
+  const navigate = useNavigate();
+  const [ask, setAsk] = useState('');
+
+  // The hero asks a question, so it should accept an answer. Submitting hands
+  // the text to ToolFinder as ?q=, which runs it on arrival — the visitor
+  // types their problem once, on the first screen, and never retypes it.
+  // An empty submit still goes there rather than doing nothing, because the
+  // question is also the label on the way in.
+  const askSubmit = (e) => {
     e.preventDefault();
-    if (searchRef && searchRef.current) {
-      searchRef.current.focus();
-      searchRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    const q = ask.trim();
+    navigate(q ? `/ToolFinder?q=${encodeURIComponent(q)}` : '/ToolFinder');
   };
 
   return (
@@ -120,14 +126,36 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse, searchRef }) => {
           it through — one thoughtful question at a time.
         </p>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: 20 }}>
-          <Link to="/ToolFinder" className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
-            style={{
-              background: CLR.navy600, color: '#fff', borderRadius: 12,
-              padding: '13px 22px', fontSize: 15, fontWeight: 700, minHeight: 48,
-            }}>
-            What do you need help with? &rarr;
-          </Link>
+        <form onSubmit={askSubmit} style={{ marginTop: 20, maxWidth: 620 }}>
+          <label htmlFor="db-ask" className="sr-only">What do you need help with?</label>
+          <div className="flex items-stretch" style={{
+            background: '#fff', border: `1.5px solid ${CLR.sand300}`,
+            borderRadius: 14, overflow: 'hidden',
+          }}>
+            <span aria-hidden="true" style={{
+              display: 'flex', alignItems: 'center', paddingInlineStart: 14, fontSize: 15,
+            }}>🔍</span>
+            <input
+              id="db-ask" type="text" value={ask} onChange={(e) => setAsk(e.target.value)}
+              placeholder="What do you need help with?"
+              autoComplete="off"
+              style={{
+                flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
+                padding: '15px 12px', fontSize: 15.5, color: CLR.warm800, fontFamily: 'inherit',
+              }}
+            />
+            <button type="submit" aria-label="Find the right tool"
+              className="transition-opacity hover:opacity-90 flex-shrink-0"
+              style={{
+                background: CLR.navy600, color: '#fff', border: 0,
+                padding: '0 20px', fontSize: 16, fontWeight: 700, cursor: 'pointer', minWidth: 56,
+              }}>
+              &rarr;
+            </button>
+          </div>
+        </form>
+
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: 14 }}>
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
               review should not have to scroll past all of it. */}
@@ -135,10 +163,9 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse, searchRef }) => {
             style={{ color: CLR.gold700, fontSize: 14, fontWeight: 600, background: 'none' }}>
             or browse all {toolCount} tools &darr;
           </button>
-          <button onClick={focusSearch} className="hover:underline inline-flex items-center min-h-[44px]"
-            style={{ color: CLR.warm500, fontSize: 13.5, fontWeight: 600, background: 'none' }}>
-            search &#8984;K
-          </button>
+          {/* Dropped the "search ⌘K" link that used to sit here: with a text
+              box directly above it, two search affordances a line apart is one
+              too many. ⌘K still works — the catalog box below owns it. */}
         </div>
       </section>
 
