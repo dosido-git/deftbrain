@@ -10,15 +10,13 @@
  * Order is deliberate and each block answers one question:
  *   hero          what is this, and what do I do first    (search IS the CTA)
  *   gets stuck    is it for someone like me
- *   why           why would a form beat a chatbox
+ *   why           why would a form beat a chatbox         (+ the three-step spine)
  *   categories    how much is here                        (real names, real counts)
- *   how/trust     what happens, and can I trust it
+ *   how/trust/    what happens, can I trust it, who else  (three columns)
  *   curiosity     what if I do not have a problem
  *   closing       one more way in
  *
  * Deliberate departures from the mockup, agreed before building:
- *   - "tools", not "experiences". Vaguer word, and it is what every listing,
- *     the schema, llms.txt and search all say.
  *   - Two font families, not three. The mockup added Source Serif 3 for one
  *     role; Playfair already covers it and a third family is real payload.
  *   - Category names and counts come from the live catalog, not the mockup's
@@ -31,6 +29,38 @@
  */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
+// ── Density ────────────────────────────────────────────────────────────────
+// The mockup was drawn on a fixed 1024px artboard. Rendered 1:1 in a real
+// browser it read about a fifth too large — the page wanted two zoom-outs in
+// Firefox, one in Safari, to sit right.
+//
+// Two tracks rather than one blunt multiplier. Display type and spacing take
+// the full reduction, because that is what actually reads as "too big": the
+// headings and the air around them. Body copy takes a gentler one and never
+// drops below 13px, since "looks right zoomed out" and "is still readable"
+// stop agreeing somewhere around 12px, and the people this site is for are
+// often reading it stressed, on a phone, about a lease.
+//
+// Retune the whole page from these two lines.
+const d = (n) => +(n * 0.82).toFixed(1);               // display type + spacing
+const b = (n) => Math.max(13, +(n * 0.92).toFixed(1)); // reading copy, with a floor
+// Captions carry no argument — counts, attributions, one-line blurbs. They can
+// go below the reading floor without costing anyone the thread, and if they
+// could not they would floor at 13 too and stop reading as secondary at all.
+const cap = (n) => Math.max(11, +(n * 0.92).toFixed(1));
+
+// ── What we call the things ────────────────────────────────────────────────
+// "Tools" is accurate but cold, and it describes the mechanism rather than
+// what the visitor gets. "Experiences" (the mockup's word) is vaguer still.
+// "Helpers" is the word the hero copy already reaches for — "DeftBrain helps
+// you think it through" — and it survives every slot: browse all 125 helpers,
+// 18 helpers, see all helpers. Change it here and the page follows.
+//
+// Scoped to this page for now. The catalog, schema, llms.txt, sitemaps and
+// the About-page count check all still say "tools"; renaming those is a
+// separate pass with a much wider blast radius.
+const UNIT = { one: 'helper', many: 'helpers' };
 
 const CLR = {
   sand50:  '#faf8f5',
@@ -45,16 +75,58 @@ const CLR = {
   warm500: '#8a8275',
   warm700: '#5a544a',
   warm800: '#3d3935',
+  // Accents lifted from the designer's palette, used only as icon tints.
+  green:   '#5a7f6a',
+  blue:    '#4c6fae',
+  lavender:'#ede7f6',
 };
 
 const SERIF = "'Playfair Display', Georgia, serif";
 
+// ── Step icons ─────────────────────────────────────────────────────────────
+// Inline SVG rather than emoji, only here. The mockup's three-step spine is
+// carried by the icons — matched weight, matched corners, one tint each — and
+// emoji cannot hold that line: they arrive at whatever weight and palette the
+// visitor's OS ships. Three hand-written paths, no icon dependency (the
+// no-lucide-react rule stands; nothing is imported). Everything else on the
+// page, categories included, still uses the catalog's emoji.
+const stroke = {
+  fill: 'none', stroke: 'currentColor', strokeWidth: 1.7,
+  strokeLinecap: 'round', strokeLinejoin: 'round',
+};
+const IconAsk = () => (
+  <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">
+    <path {...stroke} d="M20.5 11.6a8 8 0 0 1-8 7.9 8.6 8.6 0 0 1-3.7-.8l-5 1.5 1.6-4.7a7.7 7.7 0 0 1-1.1-3.9 8 8 0 0 1 8.2-7.9 8 8 0 0 1 8 7.9Z" />
+    <path {...stroke} d="M10.1 9.6a2.2 2.2 0 0 1 4.3.7c0 1.4-2.1 1.9-2.1 3.1" />
+    <circle cx="12.3" cy="15.6" r="0.75" fill="currentColor" />
+  </svg>
+);
+const IconClear = () => (
+  <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">
+    <path {...stroke} d="M12 3.2a5.9 5.9 0 0 0-3.5 10.6c.6.5.9 1.1 1 1.7l.1.5h4.8l.1-.5c.1-.6.4-1.2 1-1.7A5.9 5.9 0 0 0 12 3.2Z" />
+    <path {...stroke} d="M9.6 18.4h4.8M10.5 20.8h3" />
+  </svg>
+);
+const IconSteps = () => (
+  <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true">
+    <path {...stroke} d="M10.2 6.4h9.4M10.2 12h9.4M10.2 17.6h9.4" />
+    <path {...stroke} d="m3.6 6.1 1.3 1.3 2.2-2.3M3.6 11.7l1.3 1.3 2.2-2.3M3.6 17.3l1.3 1.3 2.2-2.3" />
+  </svg>
+);
+
 // The three-step spine. Named as outcomes, not features — the point is what
 // the reader ends up with, not what the software does.
 const STEPS = [
-  { icon: '❓', title: 'Thoughtful questions', body: 'The form already knows what to ask about your problem.' },
-  { icon: '💡', title: 'Clear understanding',  body: 'Plain language, and honest about what is uncertain.' },
-  { icon: '📋', title: 'Practical next steps', body: 'Something you can act on — a letter, a script, a checklist.' },
+  { Icon: IconAsk,   tint: CLR.green,   bg: '#eaf1ec', l1: 'Thoughtful', l2: 'Questions' },
+  { Icon: IconClear, tint: CLR.gold500, bg: '#fbf1de', l1: 'Clear',      l2: 'Understanding' },
+  { Icon: IconSteps, tint: CLR.blue,    bg: '#e8eef7', l1: 'Practical',  l2: 'Next Steps' },
+];
+
+// What actually happens, in order, from the visitor's side of the screen.
+const HOW = [
+  { n: 1, tint: CLR.green,   title: 'Describe your situation.',        body: 'Tell us what’s going on, in your own words.' },
+  { n: 2, tint: CLR.gold500, title: 'Answer a few thoughtful questions.', body: 'We’ll ask what matters so we understand your context.' },
+  { n: 3, tint: CLR.navy500, title: 'Leave with clarity and next steps.', body: 'Clear advice, options to consider, and actions you can take.' },
 ];
 
 // Every claim here is verifiable in the codebase. Nothing aspirational.
@@ -62,9 +134,9 @@ const TRUST = [
   { icon: '🔒', title: 'Private by design',        body: 'No account, and nothing you type is stored. There is no database.' },
   { icon: '💬', title: 'No prompt writing',        body: 'Labelled fields, not a blank box. You never have to phrase it.' },
   { icon: '📖', title: 'Plain language',           body: 'No jargon, and no filler to pad the answer out.' },
-  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several tools will tell you not to act. That is the useful answer.' },
+  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several will tell you not to act. That is the useful answer.' },
   { icon: '🌍', title: 'Works where you are',      body: '13 languages, and local law and currency where it matters.' },
-  { icon: '🆓', title: 'Free, with no catch',      body: 'No trial, no card, no upsell. Every tool, every time.' },
+  { icon: '🆓', title: 'Free, with no catch',      body: 'No trial, no card, no upsell. Every one, every time.' },
 ];
 
 // PLACEHOLDER. Swap for real quotes once the feedback sink has any; until
@@ -83,9 +155,16 @@ const CURIOUS = [
 
 const Card = ({ children, style }) => (
   <div style={{
-    background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: 16,
-    padding: '20px 22px', ...style,
+    background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: d(16),
+    padding: `${d(20)}px ${d(22)}px`, ...style,
   }}>{children}</div>
+);
+
+const SectionTitle = ({ children, style }) => (
+  <h3 style={{
+    fontFamily: SERIF, fontSize: d(21), fontWeight: 700,
+    color: CLR.navy700, margin: 0, ...style,
+  }}>{children}</h3>
 );
 
 const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
@@ -107,33 +186,35 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
     <div className="db-home-intro">
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section style={{ paddingBlock: '8px 28px' }}>
+      <section style={{ paddingBlock: `${d(8)}px ${d(28)}px` }}>
         <h2 style={{
           fontFamily: SERIF, fontWeight: 700, color: CLR.navy700,
-          fontSize: 'clamp(30px, 5.2vw, 48px)', lineHeight: 1.12, letterSpacing: '-0.5px', margin: 0,
+          fontSize: `clamp(${d(30)}px, 4.3vw, ${d(48)}px)`,
+          lineHeight: 1.12, letterSpacing: '-0.5px', margin: 0,
         }}>
           Life doesn&rsquo;t come with instructions.
         </h2>
         <p style={{
           fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
-          fontSize: 'clamp(22px, 3.8vw, 34px)', lineHeight: 1.2, letterSpacing: '-0.2px', margin: '6px 0 0',
+          fontSize: `clamp(${d(22)}px, 3.1vw, ${d(34)}px)`,
+          lineHeight: 1.2, letterSpacing: '-0.2px', margin: `${d(6)}px 0 0`,
         }}>
           You don&rsquo;t have to figure everything out alone.
         </p>
-        <p style={{ maxWidth: 620, marginTop: 16, fontSize: 15.5, lineHeight: 1.6, color: CLR.warm700 }}>
+        <p style={{ maxWidth: 560, marginTop: d(16), fontSize: b(15.5), lineHeight: 1.6, color: CLR.warm700 }}>
           When you&rsquo;re facing an important decision, confusing paperwork, a difficult
           conversation, or simply don&rsquo;t know what to do next, DeftBrain helps you think
           it through — one thoughtful question at a time.
         </p>
 
-        <form onSubmit={askSubmit} style={{ marginTop: 20, maxWidth: 620 }}>
+        <form onSubmit={askSubmit} style={{ marginTop: d(20), maxWidth: 560 }}>
           <label htmlFor="db-ask" className="sr-only">What do you need help with?</label>
           <div className="flex items-stretch" style={{
             background: '#fff', border: `1.5px solid ${CLR.sand300}`,
-            borderRadius: 14, overflow: 'hidden',
+            borderRadius: d(14), overflow: 'hidden',
           }}>
             <span aria-hidden="true" style={{
-              display: 'flex', alignItems: 'center', paddingInlineStart: 14, fontSize: 15,
+              display: 'flex', alignItems: 'center', paddingInlineStart: d(14), fontSize: b(15),
             }}>🔍</span>
             <input
               id="db-ask" type="text" value={ask} onChange={(e) => setAsk(e.target.value)}
@@ -141,27 +222,29 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               autoComplete="off"
               style={{
                 flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
-                padding: '15px 12px', fontSize: 15.5, color: CLR.warm800, fontFamily: 'inherit',
+                padding: `${d(15)}px ${d(12)}px`, fontSize: b(15.5),
+                color: CLR.warm800, fontFamily: 'inherit',
               }}
             />
-            <button type="submit" aria-label="Find the right tool"
+            <button type="submit" aria-label={`Find the right ${UNIT.one}`}
               className="transition-opacity hover:opacity-90 flex-shrink-0"
               style={{
                 background: CLR.navy600, color: '#fff', border: 0,
-                padding: '0 20px', fontSize: 16, fontWeight: 700, cursor: 'pointer', minWidth: 56,
+                padding: `0 ${d(20)}px`, fontSize: b(16), fontWeight: 700,
+                cursor: 'pointer', minWidth: d(56),
               }}>
               &rarr;
             </button>
           </div>
         </form>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: 14 }}>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: d(14) }}>
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
               review should not have to scroll past all of it. */}
           <button onClick={onBrowse} className="hover:underline inline-flex items-center min-h-[44px]"
-            style={{ color: CLR.gold700, fontSize: 14, fontWeight: 600, background: 'none' }}>
-            or browse all {toolCount} tools &darr;
+            style={{ color: CLR.gold700, fontSize: b(14), fontWeight: 600, background: 'none' }}>
+            or browse all {toolCount} {UNIT.many} &darr;
           </button>
           {/* Dropped the "search ⌘K" link that used to sit here: with a text
               box directly above it, two search affordances a line apart is one
@@ -172,20 +255,18 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
       {/* ── Everyone gets stuck ────────────────────────────────────────── */}
       <section style={{
         background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
-        borderRadius: 18, padding: '22px 24px', marginBottom: 26,
+        borderRadius: d(18), padding: `${d(22)}px ${d(24)}px`, marginBottom: d(26),
       }}>
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-          <span style={{ fontSize: 30, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">👥</span>
+          <span style={{ fontSize: d(30), lineHeight: 1, flexShrink: 0 }} aria-hidden="true">👥</span>
           <div>
-            <h3 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-              Everyone gets stuck.
-            </h3>
-            <p style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.65, color: CLR.warm700 }}>
+            <SectionTitle>Everyone gets stuck.</SectionTitle>
+            <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.65, color: CLR.warm700 }}>
               Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
               Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
               Sometimes it&rsquo;s simply not knowing where to begin.
             </p>
-            <p style={{ marginTop: 10, fontSize: 14.5, lineHeight: 1.65, color: CLR.gold700, fontWeight: 600 }}>
+            <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.65, color: CLR.gold700, fontWeight: 600 }}>
               Most people don&rsquo;t need more information. They need someone to help them
               think clearly. That&rsquo;s why DeftBrain exists.
             </p>
@@ -193,19 +274,49 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         </div>
       </section>
 
-      {/* ── Why: better questions ──────────────────────────────────────── */}
-      <section style={{ marginBottom: 26 }}>
-        <h3 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-          Why DeftBrain?
-        </h3>
-        <p style={{ marginTop: 6, fontSize: 15, fontWeight: 600, color: CLR.warm800 }}>
-          Better questions lead to better decisions.
-        </p>
-        <div className="flex flex-col lg:flex-row lg:items-start gap-5" style={{ marginTop: 8 }}>
-          <p style={{ maxWidth: 660, fontSize: 14.5, lineHeight: 1.65, color: CLR.warm700, flex: '1 1 340px' }}>
-            Most websites give you information. Most chatbots begin with a blank page.
-            DeftBrain begins with the questions someone who knew this problem would ask you.
-          </p>
+      {/* ── Why: better questions, and the three-step spine ────────────── */}
+      <section style={{ marginBottom: d(26) }}>
+        <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+          <div style={{ flex: '1 1 420px', minWidth: 0 }}>
+            <SectionTitle>Why DeftBrain?</SectionTitle>
+            <p style={{ marginTop: d(6), fontSize: b(15), fontWeight: 600, color: CLR.warm800 }}>
+              Better questions lead to better decisions.
+            </p>
+            <p style={{ marginTop: d(8), maxWidth: 560, fontSize: b(14.5), lineHeight: 1.65, color: CLR.warm700 }}>
+              Most websites give you information. Most chatbots begin with a blank page.
+              DeftBrain begins with the questions someone who knew this problem would ask you.
+            </p>
+
+            {/* The spine, laid out as the flow it describes. Arrows are
+                decorative and drop out when the row stacks on a phone —
+                a "→" pointing down a column is a lie about the layout. */}
+            <div className="flex flex-col sm:flex-row sm:items-center" style={{ marginTop: d(20), gap: d(10) }}>
+              {STEPS.map((s, i) => (
+                <React.Fragment key={s.l2}>
+                  <div className="flex items-center flex-shrink-0" style={{ gap: d(10) }}>
+                    <span style={{
+                      width: d(44), height: d(44), flexShrink: 0, borderRadius: '50%',
+                      background: s.bg, color: s.tint, padding: d(10),
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <s.Icon />
+                    </span>
+                    <span style={{
+                      fontSize: b(13), fontWeight: 700, color: CLR.navy700,
+                      lineHeight: 1.25, letterSpacing: '-0.1px',
+                    }}>
+                      {s.l1}<br />{s.l2}
+                    </span>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <span aria-hidden="true" className="hidden sm:inline flex-shrink-0"
+                      style={{ color: CLR.warm500, fontSize: b(15), lineHeight: 1 }}>&rarr;</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
           {/* 2.05 MB source down to 198 KB / 99 KB. srcSet so a phone does not
               pull the desktop file; lazy + async so it never blocks the hero,
               and width/height so it reserves its space and cannot shift the
@@ -213,69 +324,110 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           <img
             src="/illustrations/clarity-signpost.jpg"
             srcSet="/illustrations/clarity-signpost-sm.jpg 760w, /illustrations/clarity-signpost.jpg 1200w"
-            sizes="(max-width: 1023px) 100vw, 420px"
+            sizes="(max-width: 1023px) 100vw, 380px"
             width={1200} height={800}
             loading="lazy" decoding="async"
             alt="A signpost beside a winding path at sunrise, pointing to Clarity, Confidence and Next Steps."
             style={{
-              flex: '0 1 420px', width: '100%', maxWidth: 420, height: 'auto',
-              borderRadius: 14, border: `1px solid ${CLR.sand200}`, display: 'block',
+              flex: '0 1 380px', width: '100%', maxWidth: 380, height: 'auto',
+              borderRadius: d(14), border: `1px solid ${CLR.sand200}`, display: 'block',
             }}
           />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" style={{ marginTop: 16 }}>
-          {STEPS.map((s, i) => (
-            <Card key={s.title}>
-              <div className="flex items-center gap-2" style={{ marginBottom: 6 }}>
-                <span style={{ fontSize: 18, lineHeight: 1 }} aria-hidden="true">{s.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 800, color: CLR.gold500 }}>STEP {i + 1}</span>
-              </div>
-              <p style={{ fontSize: 14.5, fontWeight: 700, color: CLR.navy700, margin: 0 }}>{s.title}</p>
-              <p style={{ marginTop: 4, fontSize: 13.5, lineHeight: 1.55, color: CLR.warm700 }}>{s.body}</p>
-            </Card>
-          ))}
         </div>
       </section>
 
       {/* ── Wherever life takes you — real categories, real counts ─────── */}
       {categories.length > 0 && (
-        <section style={{ marginBottom: 26 }}>
-          <h3 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-            Wherever life takes you&hellip;
-          </h3>
-          <div className="flex flex-wrap gap-2" style={{ marginTop: 14 }}>
+        <section style={{ marginBottom: d(26) }}>
+          <SectionTitle>Wherever life takes you&hellip;</SectionTitle>
+          {/* Tiles, not pills, and the one place that deliberately inverts the
+              density pass: the icon gets BIGGER while the label gets smaller.
+              A wall of fourteen is scanned by shape, not read, so the emoji is
+              doing the work and the words are only confirming it. Sizes here
+              are literal, not d()/b(), because shrinking them is exactly wrong.
+
+              Column count via clamp inside minmax rather than a fixed track:
+              auto-fit alone cannot be both 3-up on a phone and 7-up on a
+              desktop, and 7-up is what makes fourteen land as two full rows
+              instead of a ragged 11 + 3. */}
+          <div style={{
+            marginTop: d(14), display: 'grid', gap: d(10),
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(104px, 11vw, 150px), 1fr))',
+          }}>
             {categories.map(c => (
               <button key={c.name} onClick={() => c.onSelect && c.onSelect(c.name)}
-                className="inline-flex items-center gap-2 transition-colors hover:bg-white"
+                className="transition-colors hover:bg-white"
                 style={{
-                  background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: 12,
-                  padding: '9px 13px', minHeight: 44,
+                  background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: d(14),
+                  padding: `${d(14)}px ${d(8)}px ${d(12)}px`, minHeight: 44,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: d(7),
                 }}>
-                <span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden="true">{c.emoji}</span>
-                <span style={{ fontSize: 13.5, fontWeight: 700, color: CLR.navy700 }}>{c.name}</span>
-                <span style={{ fontSize: 12, color: CLR.warm500 }}>{c.count}</span>
+                <span aria-hidden="true" style={{
+                  width: 46, height: 46, borderRadius: '50%', background: CLR.sand50,
+                  border: `1px solid ${CLR.sand200}`, display: 'flex', flexShrink: 0,
+                  alignItems: 'center', justifyContent: 'center',
+                  fontSize: 24, lineHeight: 1,
+                }}>{c.emoji}</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 700, color: CLR.navy700,
+                  lineHeight: 1.25, textAlign: 'center',
+                }}>{c.name}</span>
+                <span style={{ fontSize: 11, color: CLR.warm500, lineHeight: 1 }}>
+                  {c.count} {UNIT.many}
+                </span>
               </button>
             ))}
           </div>
-          <p style={{ marginTop: 12, fontSize: 13.5, color: CLR.warm500 }}>
-            {toolCount} tools, each built for one specific problem.
+          <p style={{ marginTop: d(12), fontSize: b(13.5), color: CLR.warm500 }}>
+            {toolCount} {UNIT.many}, each built for one specific problem.
           </p>
         </section>
       )}
 
-      {/* ── Trust + stories ────────────────────────────────────────────── */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ marginBottom: 26 }}>
+      {/* ── How it works · trust · stories ─────────────────────────────── */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ marginBottom: d(26) }}>
         <Card>
-          <h3 style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-            Built around trust
-          </h3>
-          <div style={{ marginTop: 12, display: 'grid', gap: 11 }}>
+          <SectionTitle style={{ fontSize: d(19) }}>How it works</SectionTitle>
+          {/* Numbered spine with a rule running behind it, so three steps read
+              as one sequence rather than three unrelated notes. The rule is
+              drawn per-item and skipped on the last so it stops at step 3. */}
+          <ol style={{ marginTop: d(14), padding: 0, listStyle: 'none', display: 'grid', gap: d(14) }}>
+            {HOW.map((h, i) => (
+              <li key={h.n} className="flex items-start" style={{ gap: d(12), position: 'relative' }}>
+                {i < HOW.length - 1 && (
+                  <span aria-hidden="true" style={{
+                    position: 'absolute', insetInlineStart: d(13), top: d(28),
+                    width: 1, bottom: -d(14), background: CLR.sand200,
+                  }} />
+                )}
+                <span style={{
+                  width: d(27), height: d(27), flexShrink: 0, borderRadius: '50%',
+                  background: h.tint, color: '#fff', fontSize: b(12), fontWeight: 800,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  position: 'relative', zIndex: 1,
+                }}>{h.n}</span>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: b(13.5), fontWeight: 700, color: CLR.navy700, margin: 0, lineHeight: 1.35 }}>
+                    {h.title}
+                  </p>
+                  <p style={{ fontSize: b(13), lineHeight: 1.5, color: CLR.warm700, margin: `${d(3)}px 0 0` }}>
+                    {h.body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Card>
+
+        <Card>
+          <SectionTitle style={{ fontSize: d(19) }}>Built around trust</SectionTitle>
+          <div style={{ marginTop: d(12), display: 'grid', gap: d(11) }}>
             {TRUST.map(t => (
               <div key={t.title} className="flex items-start gap-2.5">
-                <span style={{ fontSize: 15, lineHeight: 1.3, flexShrink: 0 }} aria-hidden="true">{t.icon}</span>
+                <span style={{ fontSize: b(15), lineHeight: 1.3, flexShrink: 0 }} aria-hidden="true">{t.icon}</span>
                 <div>
-                  <p style={{ fontSize: 13.5, fontWeight: 700, color: CLR.navy700, margin: 0 }}>{t.title}</p>
-                  <p style={{ fontSize: 13, lineHeight: 1.5, color: CLR.warm700, margin: '2px 0 0' }}>{t.body}</p>
+                  <p style={{ fontSize: b(13.5), fontWeight: 700, color: CLR.navy700, margin: 0 }}>{t.title}</p>
+                  <p style={{ fontSize: b(13), lineHeight: 1.5, color: CLR.warm700, margin: `${d(2)}px 0 0` }}>{t.body}</p>
                 </div>
               </div>
             ))}
@@ -283,24 +435,23 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         </Card>
 
         <Card>
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <h3 style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-              Real stories from real people
-            </h3>
+          <div className="flex flex-col gap-1.5">
+            <SectionTitle style={{ fontSize: d(19) }}>Real stories from real people</SectionTitle>
             {/* Says so in the UI. There is no feedback in the sink yet, and a
                 site that promises honesty cannot quietly invent customers. */}
             <span style={{
-              fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: CLR.gold700,
-              border: `1px solid ${CLR.sand300}`, borderRadius: 999, padding: '2px 8px',
+              fontSize: cap(10), fontWeight: 800, letterSpacing: '0.08em', color: CLR.gold700,
+              border: `1px solid ${CLR.sand300}`, borderRadius: 999,
+              padding: `${d(2)}px ${d(8)}px`, alignSelf: 'flex-start',
             }}>PLACEHOLDER — AWAITING REAL FEEDBACK</span>
           </div>
-          <div style={{ marginTop: 12, display: 'grid', gap: 12 }}>
+          <div style={{ marginTop: d(12), display: 'grid', gap: d(12) }}>
             {STORIES.map((s, i) => (
               <figure key={i} style={{ margin: 0 }}>
-                <blockquote style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: CLR.warm800 }}>
+                <blockquote style={{ margin: 0, fontSize: b(13.5), lineHeight: 1.55, color: CLR.warm800 }}>
                   &ldquo;{s.quote}&rdquo;
                 </blockquote>
-                <figcaption style={{ marginTop: 3, fontSize: 12, color: CLR.warm500 }}>
+                <figcaption style={{ marginTop: d(3), fontSize: cap(12), color: CLR.warm500 }}>
                   {s.who} &middot; {s.role}
                 </figcaption>
               </figure>
@@ -310,16 +461,32 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
       </section>
 
       {/* ── Curiosity ──────────────────────────────────────────────────── */}
+      {/* Lavender, from the designer's palette, and the only place it appears:
+          this is the one section that is not about being stuck, and the shift
+          in colour is what says so before the heading does. */}
       <section style={{
-        background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
-        borderRadius: 18, padding: '20px 22px', marginBottom: 26,
+        background: CLR.lavender, borderRadius: d(18),
+        padding: `${d(18)}px ${d(22)}px`, marginBottom: d(26),
       }}>
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-          <div style={{ flex: '1 1 260px' }}>
-            <h3 style={{ fontFamily: SERIF, fontSize: 19, fontWeight: 700, color: CLR.navy700, margin: 0 }}>
-              Not every visit begins with a problem.
-            </h3>
-            <p style={{ marginTop: 6, fontSize: 14, lineHeight: 1.6, color: CLR.warm700 }}>
+          {/* Decorative, so alt="" — the heading beside it already says this.
+              multiply is load-bearing: the asset's background was lifted to
+              pure white precisely so this blend erases it and the lavender
+              runs straight through. Swap the file for one with a coloured or
+              off-white background and it will reappear as a grey box. */}
+          <img
+            src="/illustrations/thinking-brain.png"
+            width={250} height={180}
+            loading="lazy" decoding="async"
+            alt=""
+            style={{
+              width: d(180), height: 'auto', flexShrink: 0,
+              display: 'block', mixBlendMode: 'multiply',
+            }}
+          />
+          <div style={{ flex: '1 1 240px' }}>
+            <SectionTitle style={{ fontSize: d(19) }}>Not every visit begins with a problem.</SectionTitle>
+            <p style={{ marginTop: d(6), fontSize: b(14), lineHeight: 1.6, color: CLR.warm700 }}>
               Sometimes it begins with curiosity.
             </p>
           </div>
@@ -328,11 +495,11 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               <Link key={c.id} to={`/${c.id}`}
                 className="transition-colors hover:bg-white"
                 style={{
-                  background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: 12,
-                  padding: '10px 14px', minHeight: 44, display: 'inline-block',
+                  background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: d(12),
+                  padding: `${d(10)}px ${d(14)}px`, minHeight: 44, display: 'inline-block',
                 }}>
-                <span style={{ display: 'block', fontSize: 13.5, fontWeight: 700, color: CLR.navy700 }}>{c.name}</span>
-                <span style={{ display: 'block', fontSize: 12, color: CLR.warm500 }}>{c.blurb}</span>
+                <span style={{ display: 'block', fontSize: b(13.5), fontWeight: 700, color: CLR.navy700 }}>{c.name}</span>
+                <span style={{ display: 'block', fontSize: cap(12), color: CLR.warm500 }}>{c.blurb}</span>
               </Link>
             ))}
           </div>
@@ -341,21 +508,22 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
 
       {/* ── Closing ────────────────────────────────────────────────────── */}
       <section style={{
-        background: CLR.navy600, borderRadius: 18, padding: '22px 24px', marginBottom: 22,
+        background: CLR.navy600, borderRadius: d(18),
+        padding: `${d(22)}px ${d(24)}px`, marginBottom: d(22),
       }}>
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
           <div>
-            <p style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 700, color: '#fff', margin: 0 }}>
+            <p style={{ fontFamily: SERIF, fontSize: d(20), fontWeight: 700, color: '#fff', margin: 0 }}>
               Whatever brought you here&hellip;
             </p>
-            <p style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 700, color: '#e8be7a', margin: '2px 0 0' }}>
+            <p style={{ fontFamily: SERIF, fontSize: d(20), fontWeight: 700, color: '#e8be7a', margin: `${d(2)}px 0 0` }}>
               Let&rsquo;s think it through together.
             </p>
           </div>
           <Link to="/ToolFinder" className="inline-flex items-center gap-2 transition-opacity hover:opacity-90 flex-shrink-0"
             style={{
-              background: '#e8be7a', color: CLR.navy700, borderRadius: 12,
-              padding: '12px 22px', fontSize: 15, fontWeight: 800, minHeight: 48,
+              background: '#e8be7a', color: CLR.navy700, borderRadius: d(12),
+              padding: `${d(12)}px ${d(22)}px`, fontSize: b(15), fontWeight: 800, minHeight: 48,
             }}>
             Start here &rarr;
           </Link>
