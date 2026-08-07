@@ -502,7 +502,23 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // The denominator is home page views, because the home page is the only
     // one carrying markers today. Give another page markers and this needs
     // splitting by path, or the percentages quietly become nonsense.
-    const homeViews = pv.filter(e => e.path === '/').length;
+    // The denominator MUST be home views since the markers went live, not all
+    // home views in the range. Dividing by the whole range makes every section
+    // look unreached for as long as the window still contains pre-marker
+    // traffic — the first report read "hero: 7% of home views", which is not a
+    // finding about the hero, it is 28 of 30 views having happened before the
+    // instrumentation existed. Same failure mode as the per-country interaction
+    // column, which shipped wrong once for exactly this reason.
+    //
+    // Self-calibrating: the earliest section_view IS the deploy, so no date to
+    // hardcode and nothing to update the next time markers move.
+    const firstMarkerAt = events.reduce((min, e) =>
+      e.event === 'section_view' && e.at && (!min || e.at < min) ? e.at : min, null);
+    const homeViewsAll = pv.filter(e => e.path === '/').length;
+    const homeViews = firstMarkerAt
+      ? pv.filter(e => e.path === '/' && (e.at || '') >= firstMarkerAt).length
+      : 0;
+    const homeViewsBefore = homeViewsAll - homeViews;
     const secSeen = {};
     for (const e of events) {
       if (e.event !== 'section_view') continue;
@@ -519,7 +535,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const secMax = Math.max(1, ...secOrdered.map(([, r]) => r.n), 1);
     const secRows = secOrdered.map(([name, r], i) => {
       const prev = i > 0 ? secOrdered[i - 1][1].n : null;
-      const drop = prev && prev > r.n
+      // A "-50% drop" between 2 and 1 is arithmetic, not attention. Below a
+      // handful of views the percentage says more than the data supports, so
+      // it is withheld rather than dressed up.
+      const drop = prev && prev > r.n && prev >= 8
         ? ` <span style="color:#b45309">\u2212${Math.round((1 - r.n / prev) * 100)}%</span>`
         : '';
       return barRow(name, r.n, secMax, `${pct(r.n, homeViews)} of home views${drop}`);
@@ -655,7 +674,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace('past ', ''))} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>How far down the home page people get</h2>
-    <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber figure is the drop from the row above. Percentages are of the ${homeViews} home page view(s) in this range.</p>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
