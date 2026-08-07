@@ -277,38 +277,44 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         </div>
       </section>
 
-      {/* ── Everyone gets stuck ────────────────────────────────────────── */}
-      <section style={{
-        background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
-        borderRadius: d(18), padding: `${d(30)}px ${d(32)}px`, marginBottom: SECTION,
-      }}>
-        <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(28) }}>
-          <span aria-hidden="true" style={{
-            width: 92, height: 92, flexShrink: 0, borderRadius: '50%', padding: 22,
-            border: `1px solid ${CLR.sand300}`, color: CLR.gold500,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+      {/* ── Everyone gets stuck + Why, sharing one illustration column ───
+          Two sections, one column. The signpost used to sit inside "Why"
+          alone, which pinned its top halfway down the page; giving both
+          sections a shared right-hand column lets it start level with the
+          "Everyone gets stuck" box and run the height of the pair.
+          items-start is what does the aligning — items-center would recentre
+          it against the taller column and undo the point. */}
+      <div className="flex flex-col lg:flex-row lg:items-start gap-8" style={{ marginBottom: SECTION }}>
+        <div style={{ flex: '1 1 600px', minWidth: 0 }}>
+          <section style={{
+            background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
+            borderRadius: d(18), padding: `${d(30)}px ${d(32)}px`, marginBottom: SECTION,
           }}>
-            <IconPeople />
-          </span>
-          <div style={{ maxWidth: 620 }}>
-            <SectionTitle>Everyone gets stuck.</SectionTitle>
-            <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.7, color: CLR.warm700 }}>
-              Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
-              Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
-              Sometimes it&rsquo;s simply not knowing where to begin.
-            </p>
-            <p style={{ marginTop: d(14), fontSize: b(14.5), lineHeight: 1.7, color: CLR.gold700, fontWeight: 600 }}>
-              Most people don&rsquo;t need more information. They need someone to help them
-              think clearly. That&rsquo;s why DeftBrain exists.
-            </p>
-          </div>
-        </div>
-      </section>
+            <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(28) }}>
+              <span aria-hidden="true" style={{
+                width: 92, height: 92, flexShrink: 0, borderRadius: '50%', padding: 22,
+                border: `1px solid ${CLR.sand300}`, color: CLR.gold500,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <IconPeople />
+              </span>
+              <div style={{ maxWidth: 620 }}>
+                <SectionTitle>Everyone gets stuck.</SectionTitle>
+                <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.7, color: CLR.warm700 }}>
+                  Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
+                  Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
+                  Sometimes it&rsquo;s simply not knowing where to begin.
+                </p>
+                <p style={{ marginTop: d(14), fontSize: b(14.5), lineHeight: 1.7, color: CLR.gold700, fontWeight: 600 }}>
+                  Most people don&rsquo;t need more information. They need someone to help them
+                  think clearly. That&rsquo;s why DeftBrain exists.
+                </p>
+              </div>
+            </div>
+          </section>
 
-      {/* ── Why: better questions, and the three-step spine ────────────── */}
-      <section style={{ marginBottom: SECTION }}>
-        <div className="flex flex-col lg:flex-row lg:items-center gap-8">
-          <div style={{ flex: '1 1 420px', minWidth: 0 }}>
+          {/* ── Why: better questions, and the three-step spine ────────────── */}
+          <section>
             <SectionTitle>Why DeftBrain?</SectionTitle>
             <p style={{ marginTop: d(10), fontSize: b(15), fontWeight: 600, color: CLR.warm800 }}>
               Better questions lead to better decisions.
@@ -349,7 +355,8 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
                 </React.Fragment>
               ))}
             </div>
-          </div>
+          </section>
+        </div>
 
           {/* 2.05 MB source down to 198 KB / 99 KB. srcSet so a phone does not
               pull the desktop file; lazy + async so it never blocks the hero,
@@ -358,7 +365,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           <img
             src="/illustrations/clarity-signpost.jpg"
             srcSet="/illustrations/clarity-signpost-sm.jpg 760w, /illustrations/clarity-signpost.jpg 1200w"
-            sizes="(max-width: 1023px) 100vw, 380px"
+            sizes="(max-width: 1023px) 100vw, 400px"
             width={1200} height={800}
             loading="lazy" decoding="async"
             alt="A signpost beside a winding path at sunrise, pointing to Clarity, Confidence and Next Steps."
@@ -370,8 +377,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               WebkitMaskImage: MASK, maskImage: MASK,
             }}
           />
-        </div>
-      </section>
+      </div>
 
       {/* ── Wherever life takes you — real categories, real counts ─────── */}
       {categories.length > 0 && (
@@ -567,7 +573,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         background: CLR.navy600, borderRadius: d(18),
         padding: `${d(26)}px ${d(30)}px`, marginBottom: d(28),
       }}>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(26) }}>
           <div>
             <p style={{ fontFamily: SERIF, fontSize: d(20), fontWeight: 700, color: '#fff', margin: 0 }}>
               Whatever brought you here&hellip;
@@ -576,25 +582,26 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               Let&rsquo;s think it through together.
             </p>
           </div>
-          {/* Button and mark travel together, or justify-between spreads all
-              three children and strands the CTA in the middle of the band. */}
-          <div className="flex items-center flex-shrink-0" style={{ gap: d(20) }}>
-            <Link to="/ToolFinder" className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
-              style={{
-                background: '#e8be7a', color: CLR.navy700, borderRadius: d(12),
-                padding: `${d(12)}px ${d(22)}px`, fontSize: b(15), fontWeight: 800, minHeight: 48,
-              }}>
-              Start here &rarr;
-            </Link>
-            {/* Decorative — the wordmark above already names us, and a second
-                "DeftBrain" read aloud after the CTA helps nobody. Hidden below
-                sm, where the row stacks and it would only add height. */}
-            <img src="/pBrain-r.png" alt="" width={560} height={366}
-              loading="lazy" decoding="async"
-              className="hidden sm:block flex-shrink-0"
-              style={{ height: d(62), width: 'auto' }}
-            />
-          </div>
+          {/* The CTA follows the sentence it answers, rather than being
+              flung to the far edge by justify-between. The mark takes the
+              edge instead, via an auto inline-start margin. */}
+          <Link to="/ToolFinder" className="inline-flex items-center gap-2 transition-opacity hover:opacity-90 flex-shrink-0"
+            style={{
+              background: '#e8be7a', color: CLR.navy700, borderRadius: d(12),
+              padding: `${d(12)}px ${d(22)}px`, fontSize: b(15), fontWeight: 800, minHeight: 48,
+            }}>
+            Start here &rarr;
+          </Link>
+          {/* Decorative — the wordmark above already names us, and a second
+              "DeftBrain" read aloud after the CTA helps nobody. Hidden below
+              sm, where the row stacks and it would only add height. Faces
+              left, back into the band, so it looks at the page and not off
+              the edge of it. */}
+          <img src="/pBrain-l.png" alt="" width={560} height={366}
+            loading="lazy" decoding="async"
+            className="hidden sm:block flex-shrink-0"
+            style={{ height: d(62), width: 'auto', marginInlineStart: 'auto' }}
+          />
         </div>
       </section>
     </div>
