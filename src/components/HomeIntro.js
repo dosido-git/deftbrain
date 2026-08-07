@@ -53,11 +53,16 @@ const cap = (n) => Math.max(11, +(n * 0.92).toFixed(1));
 // Air, not size, is what stops display type shouting. The first density pass
 // shrank the type and kept the old tight rhythm, which made the page read as
 // small AND loud at once. The mockup holds nearly the same type sizes but
-// gives every section room and every heading a short measure, so the words
-// land instead of announcing themselves. MEASURE caps the reading column —
-// display lines wrap at a comfortable length rather than running the full
-// width of a desktop.
+// gives every section room, so the words land instead of announcing
+// themselves.
 const SECTION = d(52);
+// Two measures, because display type and reading copy want different ones.
+// The headline is 726px on one line and the subheading 706px, so DISPLAY
+// gives both the room to sit on a single line on a desktop and to wrap on
+// their own terms below that. MEASURE stays narrow: at DISPLAY the body
+// paragraph would run to about a hundred characters a line, well past the
+// point where the eye starts losing its place returning to the left.
+const DISPLAY = 740;
 const MEASURE = 500;
 
 // ── What we call the things ────────────────────────────────────────────────
@@ -210,7 +215,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         <h2 style={{
           fontFamily: SERIF, fontWeight: 700, color: CLR.navy700,
           fontSize: `clamp(${d(30)}px, 4.3vw, ${d(48)}px)`,
-          lineHeight: 1.17, letterSpacing: '-0.5px', margin: 0, maxWidth: MEASURE,
+          lineHeight: 1.17, letterSpacing: '-0.5px', margin: 0, maxWidth: DISPLAY,
         }}>
           Life doesn&rsquo;t come with instructions.
         </h2>
@@ -218,10 +223,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
           fontSize: `clamp(${d(22)}px, 3.1vw, ${d(34)}px)`,
           lineHeight: 1.24, letterSpacing: '-0.2px',
-          // Tuned to the break: "But you don't have to figure" measures 396px
-          // at this size, so anything under ~400 pushes it to three lines and
-          // strands "alone." on its own.
-          margin: `${d(7)}px 0 0`, maxWidth: d(500),
+          margin: `${d(7)}px 0 0`, maxWidth: DISPLAY,
         }}>
           But you don&rsquo;t have to figure everything out alone.
         </p>
