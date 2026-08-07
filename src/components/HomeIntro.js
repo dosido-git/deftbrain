@@ -174,10 +174,28 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse, searchRef }) => {
         <p style={{ marginTop: 6, fontSize: 15, fontWeight: 600, color: CLR.warm800 }}>
           Better questions lead to better decisions.
         </p>
-        <p style={{ maxWidth: 660, marginTop: 8, fontSize: 14.5, lineHeight: 1.65, color: CLR.warm700 }}>
-          Most websites give you information. Most chatbots begin with a blank page.
-          DeftBrain begins with the questions someone who knew this problem would ask you.
-        </p>
+        <div className="flex flex-col lg:flex-row lg:items-start gap-5" style={{ marginTop: 8 }}>
+          <p style={{ maxWidth: 660, fontSize: 14.5, lineHeight: 1.65, color: CLR.warm700, flex: '1 1 340px' }}>
+            Most websites give you information. Most chatbots begin with a blank page.
+            DeftBrain begins with the questions someone who knew this problem would ask you.
+          </p>
+          {/* 2.05 MB source down to 198 KB / 99 KB. srcSet so a phone does not
+              pull the desktop file; lazy + async so it never blocks the hero,
+              and width/height so it reserves its space and cannot shift the
+              layout as it arrives. */}
+          <img
+            src="/illustrations/clarity-signpost.jpg"
+            srcSet="/illustrations/clarity-signpost-sm.jpg 760w, /illustrations/clarity-signpost.jpg 1200w"
+            sizes="(max-width: 1023px) 100vw, 420px"
+            width={1200} height={800}
+            loading="lazy" decoding="async"
+            alt="A signpost beside a winding path at sunrise, pointing to Clarity, Confidence and Next Steps."
+            style={{
+              flex: '0 1 420px', width: '100%', maxWidth: 420, height: 'auto',
+              borderRadius: 14, border: `1px solid ${CLR.sand200}`, display: 'block',
+            }}
+          />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" style={{ marginTop: 16 }}>
           {STEPS.map((s, i) => (
             <Card key={s.title}>
