@@ -382,7 +382,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
             <SectionTitle>Everyone gets stuck.</SectionTitle>
             <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.6, color: CLR.warm700 }}>
               It could be a lease, a medical appointment, a suspicious email.
-              Sometimes it&rsquo;s knowing what to say. Sometimes it&rsquo;s simply not
+              Sometimes it&rsquo;s knowing what to say. Sometimes it&rsquo;s simply
               knowing where to begin.
             </p>
             <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.6, color: CLR.gold700, fontWeight: 600 }}>
