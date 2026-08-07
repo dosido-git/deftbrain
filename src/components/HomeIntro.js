@@ -162,9 +162,9 @@ const HOW = [
 // Every claim here is verifiable in the codebase. Nothing aspirational.
 const TRUST = [
   { icon: '🔒', title: 'Private by design',        body: 'No account, and nothing you type is stored. There is no database.' },
-  { icon: '💬', title: 'No prompt writing',        body: 'Labelled fields, not a blank box. You never have to phrase it.' },
+  { icon: '💬', title: 'No prompt writing',        body: 'Labeled fields, not a blank box. You never have to phrase it.' },
   { icon: '📖', title: 'Plain language',           body: 'No jargon, and no filler to pad the answer.' },
-  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several will tell you not to act if that is the useful answer.' },
+  { icon: '⚖️', title: 'Honest about uncertainty', body: 'Several will tell you not to act if that is the best answer.' },
   { icon: '🌍', title: 'Works where you are',      body: '13 languages, and local law and currency where it matters.' },
   { icon: '🆓', title: 'Free, with no catch',      body: 'No trial, no card, no upsell.' },
 ];
