@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
-import HeroPitch from './HeroPitch';
 import LocaleSelectors from './LocaleSelectors';
+import HomeIntro from './HomeIntro';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
 import IdeaPrompt from './IdeaPrompt';
@@ -420,56 +420,32 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             <LocaleSelectors dark={false} />
           </div>
         </div>
-        <div className="mt-4">
-          {!isSearching && <HeroPitch isDark={false} />}
-        </div>
-        {/* The fold's next step. The catalog is the product, but it starts
-            2+ screens down on mobile — without this, a visitor who doesn't
-            scroll past the demos never learns the breadth exists. */}
-        {/* CTA hierarchy, inverted 2026-08-05 after a usability review.
-            It used to read: filled navy "Browse Categories" button, then a
-            text link prefixed with the word "or" pointing at the router. The
-            markup literally told every visitor that browsing is the main path
-            and describing your problem is the fallback — which is backwards.
-            A first-time visitor has a problem, not a taxonomy.
-
-            The router is also the right thing to put first mechanically: it
-            runs on MODELS.FAST with max_tokens 2000, so it answers in seconds,
-            against 26-95s for the tools it routes to.
-
-            Browsing stays visible rather than hidden — "125 tools" is itself
-            a credibility signal, and a router alone gives no sense of scope. */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4">
-          <Link
-            to="/ToolFinder"
-            className="px-4 py-2 rounded-xl text-[13px] font-bold text-white transition-opacity hover:opacity-90 inline-flex items-center min-h-[44px]"
-            style={{ background: CLR.navy500 }}
-          >
-            What do you need help with? &rarr;
-          </Link>
-          {/* inline-flex + min-h lifts the hit box to 44px without changing the
-              type size — it measured 20px tall, under WCAG 2.2 AA's 24px floor,
-              on the fold. -my-2 keeps the visual gap unchanged. */}
-          <button
-            onClick={() => catalogRef.current && catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            className="text-[13px] font-semibold hover:underline inline-flex items-center min-h-[44px] -my-2"
-            style={{ color: CLR.gold700 }}
-          >
-            or browse all {toolsWithCategories.length} tools &darr;
-          </button>
-          {/* Search + sort share this row rather than owning one below it.
-              Apart they were two half-empty rows: the button ended ~740px
-              short of the search box, which started ~900px from the left
-              edge. Together they cost one row instead of two, and the space
-              between them is now intentional rather than left over.
-              `ms-auto` right-aligns them; below sm the row wraps and they
-              take their own line, which is the old layout anyway.
-              This row is NOT inside the !isSearching guard, so the search
-              box stays mounted and never disappears mid-query. */}
-          <div className="flex items-center gap-2 ms-auto flex-shrink-0">
-            <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-            <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+        {/* The rethought intro. Replaces HeroPitch's rotating triplet and the
+            two-CTA row: both assumed a visitor already knew they wanted a
+            tool. Hidden while searching — someone mid-query wants results,
+            not the pitch. Categories and the count come from the live
+            catalog, so there is one source of truth. */}
+        {!isSearching && (
+          <div className="mt-4">
+            <HomeIntro
+              toolCount={toolsWithCategories.length}
+              searchRef={searchRef}
+              onBrowse={() => catalogRef.current &&
+                catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              categories={CATEGORY_META
+                .map(cm => ({ ...cm, count: categoryCounts[cm.name] || 0, onSelect: selectCategory }))
+                .filter(c => c.count > 0)}
+            />
           </div>
+        )}
+
+        {/* Search + sort. NOT inside the !isSearching guard — the box must stay
+            mounted or it vanishes mid-query, which is why it sits here rather
+            than in HomeIntro. Right-aligned on its own row now that the intro
+            owns the full width above it. */}
+        <div className="flex items-center justify-end gap-2 mt-4">
+          <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
         </div>
       </header>
 
