@@ -29,6 +29,11 @@
  */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+// "120+", not "125". The decade floor is computed from the catalog, so the
+// copy stays true as tools land or merge and never needs revisiting — the
+// same label NotFound and ToolRenderer use, and the one verify-build pins
+// the static HTML to. This page was the last surface printing a raw count.
+import { TOOL_COUNT_LABEL } from '../data/toolCount';
 
 // ── Density ────────────────────────────────────────────────────────────────
 // The mockup was drawn on a fixed 1024px artboard. Rendered 1:1 in a real
@@ -69,7 +74,7 @@ const MEASURE = 500;
 // "Tools" is accurate but cold, and it describes the mechanism rather than
 // what the visitor gets. "Experiences" (the mockup's word) is vaguer still.
 // "Helpers" is the word the hero copy already reaches for — "DeftBrain helps
-// you think it through" — and it survives every slot: browse all 125 helpers,
+// you think it through" — and it survives every slot: browse all 120+ helpers,
 // 18 helpers, see all helpers. Change it here and the page follows.
 //
 // Scoped to this page for now. The catalog, schema, llms.txt, sitemaps and
@@ -192,7 +197,7 @@ const SectionTitle = ({ children, style }) => (
   }}>{children}</h3>
 );
 
-const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
+const HomeIntro = ({ categories = [], onBrowse }) => {
   const navigate = useNavigate();
   const [ask, setAsk] = useState('');
 
@@ -274,7 +279,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               background. */}
           <button onClick={onBrowse} className="hover:underline inline-flex items-center min-h-[44px]"
             style={{ color: CLR.navy800, fontSize: b(14), fontWeight: 600, background: 'none' }}>
-            or browse all {toolCount} {UNIT.many} &darr;
+            or browse all {TOOL_COUNT_LABEL} {UNIT.many} &darr;
           </button>
           {/* Dropped the "search ⌘K" link that used to sit here: with a text
               box directly above it, two search affordances a line apart is one
@@ -426,7 +431,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
             ))}
           </div>
           <p style={{ marginTop: d(12), fontSize: b(13.5), color: CLR.warm500 }}>
-            {toolCount} {UNIT.many}, each built for one specific problem.
+            {TOOL_COUNT_LABEL} {UNIT.many}, each built for one specific problem.
           </p>
         </section>
       )}
