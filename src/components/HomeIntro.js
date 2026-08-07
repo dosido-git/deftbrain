@@ -93,11 +93,6 @@ const CLR = {
 
 const SERIF = "'Playfair Display', Georgia, serif";
 
-// Feathers the illustration's rectangle away so it sits in the page rather
-// than on it. Off-centre to the right because that is where the signpost is —
-// the subject stays solid while the sky and foreground dissolve.
-const MASK = 'radial-gradient(116% 106% at 72% 46%, #000 44%, transparent 84%)';
-
 // ── Step icons ─────────────────────────────────────────────────────────────
 // Inline SVG rather than emoji, only here. The mockup's three-step spine is
 // carried by the icons — matched weight, matched corners, one tint each — and
@@ -210,7 +205,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
     <div className="db-home-intro">
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section style={{ paddingBlock: `${d(14)}px ${d(46)}px` }}>
+      <section style={{ paddingBlock: `${d(10)}px ${d(28)}px` }}>
         <h2 style={{
           fontFamily: SERIF, fontWeight: 700, color: CLR.navy700,
           fontSize: `clamp(${d(30)}px, 4.3vw, ${d(48)}px)`,
@@ -222,17 +217,17 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
           fontSize: `clamp(${d(22)}px, 3.1vw, ${d(34)}px)`,
           lineHeight: 1.24, letterSpacing: '-0.2px',
-          margin: `${d(10)}px 0 0`, maxWidth: d(440),
+          margin: `${d(7)}px 0 0`, maxWidth: d(440),
         }}>
           You don&rsquo;t have to figure everything out alone.
         </p>
-        <p style={{ maxWidth: MEASURE, marginTop: d(22), fontSize: b(15.5), lineHeight: 1.7, color: CLR.warm700 }}>
+        <p style={{ maxWidth: MEASURE, marginTop: d(15), fontSize: b(15.5), lineHeight: 1.62, color: CLR.warm700 }}>
           When you&rsquo;re facing an important decision, confusing paperwork, a difficult
           conversation, or simply don&rsquo;t know what to do next, DeftBrain helps you think
           it through — one thoughtful question at a time.
         </p>
 
-        <form onSubmit={askSubmit} style={{ marginTop: d(26), maxWidth: MEASURE }}>
+        <form onSubmit={askSubmit} style={{ marginTop: d(17), maxWidth: MEASURE }}>
           <label htmlFor="db-ask" className="sr-only">What do you need help with?</label>
           <div className="flex items-stretch" style={{
             background: '#fff', border: `1.5px solid ${CLR.sand300}`,
@@ -247,7 +242,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               autoComplete="off"
               style={{
                 flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
-                padding: `${d(15)}px ${d(12)}px`, fontSize: b(15.5),
+                padding: `${d(13)}px ${d(12)}px`, fontSize: b(15.5),
                 color: CLR.warm800, fontFamily: 'inherit',
               }}
             />
@@ -263,7 +258,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           </div>
         </form>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: d(18) }}>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-3" style={{ marginTop: d(6) }}>
           {/* The fast path a returning visitor needs. The mockup put two full
               sections above the catalog; someone coming back to finish a lease
               review should not have to scroll past all of it. */}
@@ -288,11 +283,11 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
         <div style={{ flex: '1 1 600px', minWidth: 0 }}>
           <section style={{
             background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
-            borderRadius: d(18), padding: `${d(30)}px ${d(32)}px`, marginBottom: SECTION,
+            borderRadius: d(18), padding: `${d(22)}px ${d(26)}px`, marginBottom: d(34),
           }}>
-            <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(28) }}>
+            <div className="flex flex-col sm:flex-row sm:items-center" style={{ gap: d(22) }}>
               <span aria-hidden="true" style={{
-                width: 92, height: 92, flexShrink: 0, borderRadius: '50%', padding: 22,
+                width: 78, height: 78, flexShrink: 0, borderRadius: '50%', padding: 18,
                 border: `1px solid ${CLR.sand300}`, color: CLR.gold500,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -300,12 +295,12 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
               </span>
               <div style={{ maxWidth: 620 }}>
                 <SectionTitle>Everyone gets stuck.</SectionTitle>
-                <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.7, color: CLR.warm700 }}>
+                <p style={{ marginTop: d(8), fontSize: b(14.5), lineHeight: 1.6, color: CLR.warm700 }}>
                   Sometimes it&rsquo;s a lease. Sometimes it&rsquo;s a medical appointment.
                   Sometimes it&rsquo;s a suspicious email. Sometimes it&rsquo;s knowing what to say.
                   Sometimes it&rsquo;s simply not knowing where to begin.
                 </p>
-                <p style={{ marginTop: d(14), fontSize: b(14.5), lineHeight: 1.7, color: CLR.gold700, fontWeight: 600 }}>
+                <p style={{ marginTop: d(10), fontSize: b(14.5), lineHeight: 1.6, color: CLR.gold700, fontWeight: 600 }}>
                   Most people don&rsquo;t need more information. They need someone to help them
                   think clearly. That&rsquo;s why DeftBrain exists.
                 </p>
@@ -327,7 +322,7 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
             {/* The spine, laid out as the flow it describes. Arrows are
                 decorative and drop out when the row stacks on a phone —
                 a "→" pointing down a column is a lie about the layout. */}
-            <div className="flex flex-col sm:flex-row sm:items-center" style={{ marginTop: d(30), gap: d(16) }}>
+            <div className="flex flex-col sm:flex-row sm:items-center" style={{ marginTop: d(22), gap: d(16) }}>
               {STEPS.map((s, i) => (
                 <React.Fragment key={s.l2}>
                   <div className="flex items-center flex-shrink-0" style={{ gap: d(13) }}>
@@ -358,23 +353,26 @@ const HomeIntro = ({ categories = [], toolCount = 0, onBrowse }) => {
           </section>
         </div>
 
-          {/* 2.05 MB source down to 198 KB / 99 KB. srcSet so a phone does not
-              pull the desktop file; lazy + async so it never blocks the hero,
-              and width/height so it reserves its space and cannot shift the
-              layout as it arrives. */}
+          {/* The dissolve is baked into the asset's alpha channel, not applied
+              as a CSS mask. A mask cannot do this job: one radial gradient
+              cannot both keep an off-centre subject solid and reach zero alpha
+              at every edge, so the earlier attempt left a hard step down the
+              right-hand side. Multi-gradient masks can, but mask-composite
+              still varies across engines and this page is read in Firefox and
+              Safari as much as Chrome. Alpha in the file works everywhere.
+              Left, top and bottom dissolve; the right stays flush, landing on
+              the content column's own margin so it reads as a bleed.
+              WebP because alpha in PNG would have cost megabytes — as it is,
+              97 KB / 60 KB, half what the opaque JPEGs weighed. */}
           <img
-            src="/illustrations/clarity-signpost.jpg"
-            srcSet="/illustrations/clarity-signpost-sm.jpg 760w, /illustrations/clarity-signpost.jpg 1200w"
+            src="/illustrations/clarity-signpost.webp"
+            srcSet="/illustrations/clarity-signpost-sm.webp 760w, /illustrations/clarity-signpost.webp 1200w"
             sizes="(max-width: 1023px) 100vw, 400px"
             width={1200} height={800}
             loading="lazy" decoding="async"
             alt="A signpost beside a winding path at sunrise, pointing to Clarity, Confidence and Next Steps."
             style={{
               flex: '0 1 400px', width: '100%', maxWidth: 400, height: 'auto', display: 'block',
-              // Bordered card in, soft edge out. The mockup lets the
-              // illustration dissolve into the page rather than sit in a box,
-              // and the box was reading as a screenshot pasted onto the page.
-              WebkitMaskImage: MASK, maskImage: MASK,
             }}
           />
       </div>
