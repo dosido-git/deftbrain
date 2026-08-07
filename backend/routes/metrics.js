@@ -491,6 +491,40 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
     const taken = events.filter(e => ['print', 'copy', 'share'].includes(e.event));
+
+    // ── Section funnel: how far down a page people actually get. ──
+    // Answers the question the copy review could not: does a first-time
+    // visitor ever reach the closing call-to-action, or decide long before
+    // it? Percentage-of-document depth would have been useless here — the
+    // home page carries the whole catalog below the intro, so the closer
+    // sits about a sixth of the way down.
+    //
+    // The denominator is home page views, because the home page is the only
+    // one carrying markers today. Give another page markers and this needs
+    // splitting by path, or the percentages quietly become nonsense.
+    const homeViews = pv.filter(e => e.path === '/').length;
+    const secSeen = {};
+    for (const e of events) {
+      if (e.event !== 'section_view') continue;
+      const name = e.props && e.props.section;
+      if (!name) continue;
+      const rec = secSeen[name] || (secSeen[name] = { n: 0, idx: 999 });
+      rec.n++;
+      // idx is the marker's position on the page, sent by the client so the
+      // funnel can be ordered without this file knowing the page's layout.
+      const i = e.props.idx;
+      if (typeof i === 'number' && i < rec.idx) rec.idx = i;
+    }
+    const secOrdered = Object.entries(secSeen).sort((a, b) => a[1].idx - b[1].idx);
+    const secMax = Math.max(1, ...secOrdered.map(([, r]) => r.n), 1);
+    const secRows = secOrdered.map(([name, r], i) => {
+      const prev = i > 0 ? secOrdered[i - 1][1].n : null;
+      const drop = prev && prev > r.n
+        ? ` <span style="color:#b45309">\u2212${Math.round((1 - r.n / prev) * 100)}%</span>`
+        : '';
+      return barRow(name, r.n, secMax, `${pct(r.n, homeViews)} of home views${drop}`);
+    }).join('');
+    const closingSeen = (secSeen.closing && secSeen.closing.n) || 0;
     const helpfulYes = feedback.filter(f => f.helpful).length;
 
     // ── per tool ──
@@ -615,10 +649,14 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
       ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete', deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
       ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
+      ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
     ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace('past ', ''))} (${prevMetrics.events} events in that window)</p>` : ''}
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
+    <h2>How far down the home page people get</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber figure is the drop from the row above. Percentages are of the ${homeViews} home page view(s) in this range.</p>
+    <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>

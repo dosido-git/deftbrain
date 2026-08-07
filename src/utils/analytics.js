@@ -114,6 +114,50 @@ export function track(event, props = {}) {
   send({ event, props });
 }
 
+// ── Section depth: which parts of a page people actually reach. ──
+// Percentage-of-document depth would mislead here. The home page carries the
+// whole catalog below the intro, so the closing call-to-action sits about a
+// sixth of the way down a document that prints to eighteen pages — "reached
+// 50%" would say nothing about whether anyone saw it. Named markers answer
+// the question instead: an element opts in with data-db-section, and the
+// first time any part of it is on screen we report it once per page load.
+//
+// idx is the element's position among the markers on that page, so the
+// dashboard can order the funnel without the backend having to know the
+// running order of a page it never sees.
+function armSectionMarkers() {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const seen = new Set();
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const name = e.target.getAttribute('data-db-section');
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      io.unobserve(e.target);
+      track('section_view', { section: String(name).slice(0, 40), idx: e.target.__dbIdx });
+    }
+  }, { threshold: 0.01 });
+
+  // React has usually not painted when a route change fires, and some blocks
+  // arrive later still, so rescan a couple of times rather than once. Already
+  // observed nodes are skipped; nodes from a previous route are gone with it.
+  const scan = () => {
+    try {
+      document.querySelectorAll('[data-db-section]').forEach((el, i) => {
+        if (el.__dbObserved) return;
+        el.__dbObserved = true;
+        el.__dbIdx = i;
+        io.observe(el);
+      });
+    } catch (_) {}
+  };
+  const rescan = () => { seen.clear(); scan(); setTimeout(scan, 400); setTimeout(scan, 1500); };
+  rescan();
+  return rescan;
+}
+let rescanSections = null;
+
 // ── Auto-track pageviews across client-side routing, without touching the
 //    router. Patches history.pushState/replaceState + popstate so every SPA
 //    navigation fires one page_view. Guarded so it only installs once. ──
@@ -124,6 +168,7 @@ function pageView() {
   if (p === lastPath) return;
   lastPath = p;
   track('page_view', visitContext());
+  if (rescanSections) rescanSections();
 }
 
 // ── Human-session signal: fire `interact` ONCE per session on the first real
@@ -152,6 +197,7 @@ if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   operatorFlagFromUrl();
   pageView();
   armInteractSignal();
+  rescanSections = armSectionMarkers();
   const wrap = (method) => {
     const orig = window.history[method];
     window.history[method] = function () {

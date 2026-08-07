@@ -273,7 +273,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       `}</style>
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section style={{ paddingBlock: `${d(10)}px ${d(28)}px` }}>
+      <section data-db-section="hero" style={{ paddingBlock: `${d(10)}px ${d(28)}px` }}>
         <h2 style={{
           fontFamily: SERIF, fontWeight: 700, color: CLR.navy700,
           fontSize: `clamp(${d(30)}px, 4.3vw, ${d(48)}px)`,
@@ -366,7 +366,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
         </div>
       </section>
 
-      <section style={{
+      <section data-db-section="gets-stuck" style={{
         background: CLR.sand100, border: `1px solid ${CLR.sand200}`,
         borderRadius: d(18), padding: `${d(22)}px ${d(26)}px`, marginBottom: d(34),
       }}>
@@ -397,7 +397,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           The signpost illustrates this section, so it sits level with it
           rather than with the box above. items-center ranges it against
           the whole of "Why DeftBrain?" and the three steps. */}
-      <section style={{ marginBottom: SECTION }}>
+      <section data-db-section="why" style={{ marginBottom: SECTION }}>
         <div className="db-hi-why flex flex-col lg:flex-row lg:items-center gap-8">
           <div style={{ flex: '1 1 480px', minWidth: 0 }}>
             <SectionTitle>Why DeftBrain?</SectionTitle>
@@ -469,7 +469,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
 
       {/* ── Wherever life takes you — real categories, real counts ─────── */}
       {categories.length > 0 && (
-        <section className="db-hi-cats" style={{ marginBottom: SECTION }}>
+        <section data-db-section="categories" className="db-hi-cats" style={{ marginBottom: SECTION }}>
           <SectionTitle>Wherever life takes you&hellip;</SectionTitle>
           {/* Tiles, not pills, and the one place that deliberately inverts the
               density pass: the icon gets BIGGER while the label gets smaller.
@@ -516,7 +516,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       )}
 
       {/* ── How it works · trust · stories ─────────────────────────────── */}
-      <section className="db-hi-cards grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ marginBottom: SECTION }}>
+      <section data-db-section="how-trust-stories" className="db-hi-cards grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ marginBottom: SECTION }}>
         <Card>
           <SectionTitle style={{ fontSize: d(19) }}>How it works</SectionTitle>
           {/* Numbered spine with a rule running behind it, so three steps read
@@ -595,7 +595,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       {/* Lavender, from the designer's palette, and the only place it appears:
           this is the one section that is not about being stuck, and the shift
           in colour is what says so before the heading does. */}
-      <section style={{
+      <section data-db-section="curiosity" style={{
         background: CLR.lavender, borderRadius: d(18),
         padding: `${d(26)}px ${d(28)}px`, marginBottom: SECTION,
       }}>
@@ -658,7 +658,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
       </section>
 
       {/* ── Closing ────────────────────────────────────────────────────── */}
-      <section className="db-hi-closing" style={{
+      <section data-db-section="closing" className="db-hi-closing" style={{
         background: CLR.navy600, borderRadius: d(18),
         padding: `${d(26)}px ${d(30)}px`, marginBottom: d(28),
       }}>
