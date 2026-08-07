@@ -26,13 +26,15 @@ See `audit/CONVENTIONS.md` for full patterns and worked examples. The rules belo
 
 ## Verification gates (must pass before push)
 
-A blocking pre-push hook runs these five gates in sequence. Run them after any change and iterate until all pass:
+A blocking pre-push hook runs these seven gates in sequence. Run them after any change and iterate until all pass:
 
 1. `npm run check:syntax`
 2. `audit` — runs with `--max-warnings=0`; **zero tolerance**, one stray warning blocks the push
 3. `node scripts/scan-guard-keys.js` — AST-based guard-key mismatch detector
 4. `scripts/diff-audit.py` — differential name-keyed audit (`PF-*` rules eslint doesn't cover), scoped to the tool/route files the push introduces vs the remote base; blocks only on NEW issues, not pre-existing ones
 5. `node scripts/localization-audit.js` — localization gate (see below); runs over the `LOCALIZED_TOOLS` allowlist of fully-localized tools, protecting them from regression without blocking work on not-yet-localized tools
+6. `node scripts/primer-audit.js` — preamble completeness (`edge` stays optional, reported as a TODO)
+7. `node scripts/generate-sitemap.js --check` — sitemap lastmod state. Fails if the committed `src/data/sitemap-lastmod.json` no longer matches the committed content. **Fix: run `node scripts/generate-sitemap.js`, then commit `public/sitemap-app.xml` + `src/data/sitemap-lastmod.json` alongside your change.** The state file is only meaningful if it travels with the content it describes — Railway builds from git, so a stale state re-stamps every URL with the deploy date
 
 Companion tooling: `scripts/fix-guard-keys.js` (codemod for guard-key fixes); `audit/audit_v2-3-2.py` (frontend warning audit); `audit/backend_audit_v1_7.py` (backend-route audit).
 

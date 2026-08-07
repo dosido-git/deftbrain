@@ -24,3 +24,12 @@ node scripts/localization-audit.js
 # blind spot in audit/OPPORTUNITIES.md: the capability exists and nothing reaches
 # it. `edge` stays optional and is reported as a TODO, never a failure.
 node scripts/primer-audit.js
+
+# Gate 7 — sitemap lastmod state. generate-sitemap.js content-hashes each URL so
+# a lastmod only moves when that page really changed; the file recording those
+# hashes is only meaningful if it travels with the content it describes. It did
+# not, for three weeks, and nothing said so: Railway builds from git, so every
+# deploy found the state stale, re-stamped all 41 URLs with the deploy date, and
+# reproduced the "everything changed today, daily" pattern the hashing exists to
+# avoid. --check recomputes without writing and fails if they disagree.
+node scripts/generate-sitemap.js --check

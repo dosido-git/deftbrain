@@ -78,12 +78,25 @@ const toolObjects = (() => {
   return map;
 })();
 
-let bumped = 0;
+// --check recomputes every hash and reports whether the COMMITTED state still
+// matches the COMMITTED content, without writing anything. Run as a pre-push
+// gate, it catches the failure that went unnoticed for three weeks: this file
+// is only meaningful if it travels with the content it describes. Railway
+// builds from git, so a stale state means every deploy finds all 41 hashes
+// mismatched and stamps the deploy date on all of them — the exact "everything
+// changed today, daily" pattern that gets lastmod ignored.
+//
+// It catches both ways in: built locally and forgot to commit the state, and
+// edited a tool without ever building. Either way the answer is the same —
+// run the generator, commit the result.
+const CHECK = process.argv.includes('--check');
+
+const bumped = [];
 function lastmodFor(key, hash) {
   const prev = lastmodState[key];
   if (prev && prev.hash === hash) return prev.lastmod;
   lastmodState[key] = { hash, lastmod: TODAY };
-  bumped++;
+  bumped.push(key);
   return TODAY;
 }
 
@@ -108,8 +121,23 @@ const keepFiles = [keepListPath, path.join(__dirname, '..', 'guides', 'keep-list
 const homepageLastmod = lastmodFor('homepage',
   sha(keepFiles.join('') + indexableToolIds.map(id => lastmodState[`tool:${id}`].hash).join('')));
 
+if (CHECK) {
+  if (bumped.length === 0) {
+    console.log(`✅ sitemap-state: committed lastmod state matches content (${Object.keys(lastmodState).length} URLs).`);
+    process.exit(0);
+  }
+  console.error(`\n❌ sitemap-state: ${bumped.length} URL(s) have content that no longer matches the committed lastmod state:\n`);
+  for (const k of bumped.slice(0, 12)) console.error(`     ${k}`);
+  if (bumped.length > 12) console.error(`     … and ${bumped.length - 12} more`);
+  console.error(`\n   Those dates would be stamped with the deploy date on every Railway build`);
+  console.error(`   until the state is committed, which teaches Google to ignore lastmod.\n`);
+  console.error(`   Fix:  node scripts/generate-sitemap.js`);
+  console.error(`         git add public/sitemap-app.xml src/data/sitemap-lastmod.json\n`);
+  process.exit(1);
+}
+
 fs.writeFileSync(STATE_PATH, JSON.stringify(lastmodState, null, 1) + '\n');
-console.log(`lastmod: ${bumped} URL(s) bumped to ${TODAY}; others keep their prior dates`);
+console.log(`lastmod: ${bumped.length} URL(s) bumped to ${TODAY}; others keep their prior dates`);
 
 // ── Static pages (not tools, not guides — top-level standalone HTML) ──
 // Extensible: append new entries as they ship (terms, contact, about, etc.)
