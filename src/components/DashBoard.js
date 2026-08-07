@@ -145,7 +145,10 @@ function fuzzyMatch(query, target) {
 // ════════════════════════════════════════════════════════════
 export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [sortMode, setSortMode]             = useState('alpha');
+  // 'category' | 'alpha' | 'recent'. Was a two-state toggle whose second
+  // state claimed to be "Most Used" — see recencyRank for why that was never
+  // something this app could know.
+  const [sortMode, setSortMode]             = useState('category');
   const [favorites, setFavorites]           = useState(() => loadFromStorage(STORAGE_KEYS.favorites));
   const [recents, setRecents]               = useState(() => loadFromStorage(STORAGE_KEYS.recents));
   const searchRef     = useRef(null);
@@ -182,11 +185,15 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
     return () => { document.body.style.background = previous; };
   }, []);
 
-  // Usage frequency from recents
-  const usageFrequency = useMemo(() => {
-    const freq = {};
-    recents.forEach((id, idx) => { freq[id] = (freq[id] || 0) + (recents.length - idx); });
-    return freq;
+  // Recency rank, NOT frequency. `recents` is written deduplicated and capped
+  // at 20 (see openTool), so a tool opened fifty times and one opened once are
+  // indistinguishable — there is no visit count anywhere in this app. This was
+  // called usageFrequency and drove a control labelled "Most Used", which was
+  // a claim the data could not support.
+  const recencyRank = useMemo(() => {
+    const rank = {};
+    recents.forEach((id, idx) => { rank[id] = idx; });
+    return rank;
   }, [recents]);
 
   // ── Spotlight: 6 under-discovered tools (not on the SEO keep-list = the
@@ -262,8 +269,22 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
 
     list = [...list];
     const strip = s => String(s || '').replace(/^The\s+/i, '');
-    if (sortMode === 'mostUsed') {
-      list.sort((a, b) => (usageFrequency[b.id] || 0) - (usageFrequency[a.id] || 0));
+    const byTitle = (a, b) => strip(a.title).localeCompare(strip(b.title));
+    if (sortMode === 'recent') {
+      // Everything unvisited ties, so fall through to the alphabet rather than
+      // leaving 100+ tools in whatever order the catalog happens to define.
+      // The old comparator returned 0 for every such pair, which is why this
+      // mode did nothing at all for anyone who had not used the site before.
+      list.sort((a, b) => {
+        const ra = recencyRank[a.id] ?? Infinity;
+        const rb = recencyRank[b.id] ?? Infinity;
+        return ra === rb ? byTitle(a, b) : ra - rb;
+      });
+    } else if (sortMode === 'alpha') {
+      // A genuine flat A–Z across the whole catalog. This did not exist
+      // before: the mode CALLED "A–Z" sorted by category first and was only
+      // alphabetical within a category.
+      list.sort(byTitle);
     } else {
       const catOrder = {};
       CATEGORY_META.forEach((cm, i) => { catOrder[cm.name] = i; });
@@ -271,11 +292,11 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         const aCat = catOrder[a.primaryCategory] ?? 999;
         const bCat = catOrder[b.primaryCategory] ?? 999;
         if (aCat !== bCat) return aCat - bCat;
-        return strip(a.title).localeCompare(strip(b.title));
+        return byTitle(a, b);
       });
     }
     return list;
-  }, [toolsWithCategories, activeCategory, searchTerm, favorites, sortMode, usageFrequency]);
+  }, [toolsWithCategories, activeCategory, searchTerm, favorites, sortMode, recencyRank]);
 
   // Group tools by category for the "All" view.
   //
@@ -292,7 +313,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
   // `showCategoryHeadings` is false whenever there is a search term, so
   // command-K renders the flat `filteredTools`, which is one entry per tool
   // (it is a .filter() over a .map() of allTools; nothing duplicates).
-  const showCategoryHeadings = activeCategory === 'All' && sortMode === 'alpha' && !searchTerm.trim();
+  const showCategoryHeadings = activeCategory === 'All' && sortMode === 'category' && !searchTerm.trim();
   const groupedTools = useMemo(() => {
     if (!showCategoryHeadings) return null;
     const groups = [];
@@ -443,7 +464,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
             owns the full width above it. */}
         <div className="flex items-center justify-end gap-2 mt-4">
           <SearchBox searchRef={searchRef} searchTerm={searchTerm} setSearchTerm={setSearchTerm} setActiveCategory={setActiveCategory} />
-          <SortBtn sortMode={sortMode} setSortMode={setSortMode} />
+          <SortBtn sortMode={sortMode} setSortMode={setSortMode} hasRecents={recents.length > 0} />
         </div>
       </header>
 
@@ -774,12 +795,12 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               )}
               <div className="flex-1 h-px" style={{ background: CLR.sand200, minWidth: 20 }} />
             </div>
-            <ToolColumns tools={group.tools} favorites={favorites}
+            <ToolColumns catalog tools={group.tools} favorites={favorites}
               onToggleFavorite={toggleFavorite} onNavigate={recordRecent} showCategory={false} />
           </div>
         ))
       ) : (
-        <ToolColumns tools={filteredTools} favorites={favorites}
+        <ToolColumns catalog tools={filteredTools} favorites={favorites}
           onToggleFavorite={toggleFavorite} onNavigate={recordRecent}
           showCategory={isSearching || activeCategory === 'All'} />
       )}
@@ -880,17 +901,58 @@ function SearchBox({ searchRef, searchTerm, setSearchTerm, setActiveCategory }) 
   );
 }
 
-function SortBtn({ sortMode, setSortMode }) {
+// Three named orderings, shown at once, rather than a two-state toggle whose
+// label named the CURRENT state ("A–Z" while already sorted A–Z) in a control
+// that reads as naming its action. Nobody could tell what clicking would do,
+// and one of the two states described something the app could not measure.
+//
+// A radiogroup, not a row of buttons: these are mutually exclusive options,
+// and aria-checked is what tells a screen reader which one is live. The old
+// control exposed no state at all beyond a title attribute, which never
+// reaches a touch device.
+const SORT_OPTIONS = [
+  { id: 'category', label: 'Category', hint: 'Grouped by category, A–Z within each' },
+  { id: 'alpha',    label: 'A–Z',      hint: 'Every tool, alphabetical' },
+  { id: 'recent',   label: 'Recent',   hint: 'The tools you opened most recently' },
+];
+
+function SortBtn({ sortMode, setSortMode, hasRecents }) {
   return (
-    <button
-      onClick={() => setSortMode(prev => prev === 'alpha' ? 'mostUsed' : 'alpha')}
-      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
-      style={{ color: CLR.warm700 }}
-      title={sortMode === 'alpha' ? 'Sorted A–Z' : 'Sorted by most used'}
+    <div
+      role="radiogroup"
+      aria-label="Sort tools"
+      className="flex items-center rounded-lg overflow-hidden flex-shrink-0"
+      style={{ border: `1px solid ${CLR.sand200}`, background: '#fff' }}
     >
-      <span className="text-xs">↕️</span>
-      {sortMode === 'alpha' ? 'A–Z' : 'Most Used'}
-    </button>
+      {SORT_OPTIONS.map((o, i) => {
+        const active = sortMode === o.id;
+        // Recent has nothing to order until this browser has opened something.
+        // Disabled and explained, rather than silently returning the list
+        // untouched — which is exactly how the old version behaved for every
+        // first-time visitor.
+        const disabled = o.id === 'recent' && !hasRecents;
+        return (
+          <button
+            key={o.id}
+            role="radio"
+            aria-checked={active}
+            aria-disabled={disabled || undefined}
+            disabled={disabled}
+            onClick={() => !disabled && setSortMode(o.id)}
+            title={disabled ? 'Nothing opened yet on this device' : o.hint}
+            className="px-2.5 py-1.5 text-[11px] font-semibold transition-colors"
+            style={{
+              background: active ? CLR.navy600 : 'transparent',
+              color: active ? '#fff' : disabled ? CLR.sand300 : CLR.warm700,
+              cursor: disabled ? 'default' : 'pointer',
+              borderInlineStart: i ? `1px solid ${CLR.sand200}` : 'none',
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -941,7 +1003,12 @@ function TilePill({ label, emoji, count, isActive, onClick, hideCount = false, h
 // (down the left, then down the right) and mobile single-column stacking
 // are preserved.
 // ════════════════════════════════════════════════════════════
-function ToolColumns({ tools, favorites, onToggleFavorite, onNavigate, showCategory }) {
+// `catalog` marks the real catalog list, as opposed to the Spotlight band —
+// which renders through this same component, so a class applied here without
+// the flag would tag both. Nothing styles db-catalog; it exists so the list
+// the sort control actually governs can be identified, by a test or by anyone
+// reading the DOM.
+function ToolColumns({ tools, favorites, onToggleFavorite, onNavigate, showCategory, catalog }) {
   const row = (tool) => (
     <ToolRow key={tool.id} tool={tool}
       isFavorite={favorites.includes(tool.id)}
@@ -949,10 +1016,11 @@ function ToolColumns({ tools, favorites, onToggleFavorite, onNavigate, showCateg
       onNavigate={onNavigate}
       showCategory={showCategory} />
   );
-  if (tools.length <= 3) return <div>{tools.map(row)}</div>;
+  const mark = catalog ? 'db-catalog ' : '';
+  if (tools.length <= 3) return <div className={mark.trim() || undefined}>{tools.map(row)}</div>;
   const mid = Math.ceil(tools.length / 2);
   return (
-    <div className="md:grid md:grid-cols-2 md:gap-x-4">
+    <div className={`${mark}md:grid md:grid-cols-2 md:gap-x-4`}>
       <div>{tools.slice(0, mid).map(row)}</div>
       <div>{tools.slice(mid).map(row)}</div>
     </div>
