@@ -43,3 +43,10 @@ node scripts/generate-sitemap.js --check
 # judgement: 11% of URLs crying wolf can cost the signal for all of them.
 # Reads source only, so this needs no build.
 node scripts/generate-guides-sitemap.js --check
+
+# Gate 8 — every rename in audit/RENAMES.md has a server-side 301. Recall →
+# TheCrux shipped with a CLIENT-side alias only, which a crawler never reaches:
+# the server 404s first and the React redirect never runs. /Recall returned 404
+# for three weeks and nothing said so, because a client-side alias looks like a
+# working redirect when you click it yourself. Source-only, no build needed.
+node scripts/check-renames.js

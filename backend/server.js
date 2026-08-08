@@ -293,6 +293,14 @@ const LEGACY_REDIRECTS = {
   '/WhatIf':                     '/WhichLife',
   '/what-if':                    '/WhichLife',
 
+  // Renamed 2026-07-16 (c8d966b) — broadened beyond lectures. The rename
+  // shipped with a CLIENT-side alias only (TOOL_ALIASES in ToolRenderer.js),
+  // which a crawler never reaches: the server 404s first and the React
+  // redirect never runs. Confirmed live — /Recall returned 404, not 301 — so
+  // every old link and any accrued signal was being dropped on the floor.
+  '/Recall':                     '/TheCrux',
+  '/recall':                     '/TheCrux',
+
   // Kebab-case variants Google has crawled. The case-insensitive middleware
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
   // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name
