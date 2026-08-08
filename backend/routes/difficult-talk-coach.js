@@ -113,7 +113,18 @@ CRITICAL RULES
 3. ANTICIPATED RESPONSES: This is the most valuable section. Generate exactly 3 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.`;
 
     // ── Scripts, part 1: the two openings that lead with the relationship ──
-    const promptApproachesA = `${COACH_INTRO}
+    // One approach per call. Two-in-one-call left the route at 62s, still on the
+    // wrong side of the browser limit, and an approach is a self-contained unit
+    // — opening, points, phrases, closing, three anticipated responses — so
+    // there is nothing to gain by generating them together and a third of the
+    // wall-clock to lose.
+    const APPROACH_ANGLES = [
+      { key: 'collaborative', brief: 'COLLABORATIVE — opens from shared interest and curiosity about their side, then arrives at the ask.' },
+      { key: 'direct',        brief: 'DIRECT — names the issue and the ask plainly in the first breath, warmly but without preamble.' },
+      { key: 'boundary',      brief: 'BOUNDARY — states the boundary and what happens if it is not respected, calmly and without threat.' },
+    ];
+
+    const approachPrompt = (angle, index) => `${COACH_INTRO}
 
 ${conversationContext}
 
@@ -121,14 +132,13 @@ ${conversationContext}
 ANALYSIS INSTRUCTIONS
 ══════════════════════════════════════════════════
 
-STEP 3 — CONVERSATION APPROACHES (2 of 3)
-Generate EXACTLY 2 approaches, FULLY ADAPTED to this specific relationship, topic, and power dynamic. Do NOT use generic advice — every word should reflect the specific situation described.
+STEP 3 — CONVERSATION APPROACH (${index + 1} of ${APPROACH_ANGLES.length})
+Generate EXACTLY 1 approach, FULLY ADAPTED to this specific relationship, topic, and power dynamic. Do NOT use generic advice — every word should reflect the specific situation described.
 
-Your two approaches, and only these two:
-  1. COLLABORATIVE — opens from shared interest and curiosity about their side, then arrives at the ask.
-  2. DIRECT — names the issue and the ask plainly in the first breath, warmly but without preamble.
+Your approach, and only this one:
+  ${angle.brief}
 
-A third approach (boundary-and-consequence) is being written separately. Do not write it, and do not reference it.
+The other approaches (${APPROACH_ANGLES.filter(a => a.key !== angle.key).map(a => a.key).join(', ')}) are being written separately. Do not write them, and do not reference them.
 
 ${APPROACH_RULES}
 
@@ -142,10 +152,10 @@ ${APPROACH_SCHEMA}
   ]
 }
 
-Return ONLY the JSON object with EXACTLY the one key shown above, containing EXACTLY 2 approaches. No markdown, no preamble.`;
+Return ONLY the JSON object with EXACTLY the one key shown above, containing EXACTLY 1 approach. No markdown, no preamble.`;
 
-    // ── Scripts, part 2: the firm approach plus the copy-paste messages ──
-    const promptApproachesB = `${COACH_INTRO}
+    // ── The copy-paste messages, independent of which approach they pick ──
+    const promptMessages = `${COACH_INTRO}
 
 ${conversationContext}
 
@@ -153,16 +163,8 @@ ${conversationContext}
 ANALYSIS INSTRUCTIONS
 ══════════════════════════════════════════════════
 
-STEP 3 — CONVERSATION APPROACHES (3 of 3)
-Generate EXACTLY 1 approach, FULLY ADAPTED to this specific relationship, topic, and power dynamic:
-  3. BOUNDARY — states the boundary and what happens if it is not respected, calmly and without threat.
-
-Two other approaches (collaborative, direct) are being written separately. Do not write them.
-
-${APPROACH_RULES}
-
 STEP 8 — FIRMNESS-LEVEL MESSAGES
-Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
+Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches (which are being written separately) — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
 - Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
 - Balanced (RECOMMENDED): Direct, respectful, no apologies. No softening.
 - Firm: Unambiguous. Includes consequences if boundary isn't respected. Non-negotiable.
@@ -176,10 +178,6 @@ OUTPUT FORMAT — Return ONLY valid JSON
 ══════════════════════════════════════════════════
 
 {
-  "conversation_approaches": [
-${APPROACH_SCHEMA}
-  ],
-
   "firmness_messages": [
     {
       "level": "gentle",
@@ -215,7 +213,7 @@ ${APPROACH_SCHEMA}
 
 The "level" values must stay exactly gentle, balanced, firm — lowercase English, never translated; the interface switches on them.
 
-Return ONLY the JSON object with EXACTLY the 3 keys shown above, with conversation_approaches containing EXACTLY 1 approach. No markdown, no preamble.`;
+Return ONLY the JSON object with EXACTLY the 2 keys shown above. No markdown, no preamble.`;
 
     // The analysis half is split too — after the scripts half came down, this
     // became the floor at 67s. Reading the situation and preparing for it are
@@ -362,19 +360,19 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
     // withLanguage() calls against Anthropic calls in the file.
     const systemBase = `You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items. ${NO_QUOTE_RULE}`;
 
-    const [approachesA, approachesB, readPart, preparePart] = await Promise.all([
+    const [approachParts, messagesPart, readPart, preparePart] = await Promise.all([
+      Promise.all(APPROACH_ANGLES.map((angle, i) => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(systemBase, userLanguage),
+        messages: [{ role: 'user', content: approachPrompt(angle, i) }]
+      }, { label: `DifficultTalkCoach-approach-${angle.key}` }))),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 5000,
+        max_tokens: 2500,
         system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: promptApproachesA }]
-      }, { label: 'DifficultTalkCoach-approaches-a' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4500,
-        system: withLanguage(systemBase, userLanguage),
-        messages: [{ role: 'user', content: promptApproachesB }]
-      }, { label: 'DifficultTalkCoach-approaches-b' }),
+        messages: [{ role: 'user', content: promptMessages }]
+      }, { label: 'DifficultTalkCoach-messages' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 3000,
@@ -388,17 +386,15 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
         messages: [{ role: 'user', content: promptPrepare }]
       }, { label: 'DifficultTalkCoach-prepare' }),
     ]);
-    // conversation_approaches is the one key both scripts calls emit, so it is
-    // concatenated rather than overwritten — collaborative and direct first,
-    // then boundary, which is the escalating order the tool has always shown.
+    // Every approach call emits conversation_approaches, so they concatenate in
+    // APPROACH_ANGLES order — collaborative, direct, boundary, which is the
+    // escalating order the tool has always shown.
     const parsed = {
       ...readPart,
       ...preparePart,
-      ...approachesB,
-      conversation_approaches: [
-        ...(Array.isArray(approachesA.conversation_approaches) ? approachesA.conversation_approaches : []),
-        ...(Array.isArray(approachesB.conversation_approaches) ? approachesB.conversation_approaches : []),
-      ],
+      ...messagesPart,
+      conversation_approaches: approachParts.flatMap(part =>
+        Array.isArray(part.conversation_approaches) ? part.conversation_approaches : []),
     };
     // The interface prints body_language_guidance's key/value pairs straight
     // into JSX, so a nested object there is a blank-page crash, not a typo.
