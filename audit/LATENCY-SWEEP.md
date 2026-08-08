@@ -8,10 +8,10 @@ Safari abandons a fetch at roughly 60s and reports "Load failed"; the tool looks
 broken while the server is still working. 45s is the warn line, because a slightly
 bigger input than the fixture crosses from one band to the other.
 
-**Nothing on the worklist is over 60s any more.** The 18 routes the 2026-08-07
-sweep flagged now run 31–57s; 8 of them sit in the 45–60s warn band. Two things
-found along the way are NOT fixed and are written up at the bottom: `pre-mortem`
-at 100s, and four golden fixtures that cannot reach their own endpoint.
+**Nothing measured is over 60s any more.** The 18 routes the 2026-08-07 sweep
+flagged now run 31–57s; 8 of them sit in the 45–60s warn band. The two things
+that run flagged as unmeasured are fixed too — `pre-mortem` (100s → 44s) and
+four golden fixtures that could not reach their own endpoint.
 
 ## The 18, before and after
 
@@ -88,28 +88,46 @@ the first match and gutted two unrelated prompts. The key diff caught it (33 key
 missing) before it went anywhere. Anchor edits relative to the target route's own
 `router.post` line.
 
+## The eight that were never measured
+
+The 2026-08-07 run filed eight tools under "not measured" — four HTTP 404s and
+four connection errors. Unknown is not the same as fine, and both halves turned
+out to matter.
+
+**`pre-mortem` was the slowest route in the catalog at 100s**, hidden by a
+connection error mid-run. Split into the fictional memo and the actionable half:
+**100s → 44s**. That split also enforces the route's REAL-WORLD BOUNDARY
+structurally — the prevention half never sees the invented competitors and
+venues, so it cannot leak them into a step the user is meant to act on. Fixed a
+live enum bug on the way: `probability` was not pinned to English and the UI
+does `PROB_CONFIG[fm.probability] || PROB_CONFIG.medium`, so every non-English
+user saw all five failure modes rendered as medium.
+
+**The four 404s were a fixture bug, and it was disabling `check:golden` too.**
+The `endpoint` field carried a human annotation — `"/api/pep (generate)"` — so
+every request went to a URL containing " (generate)". `npm run check:golden pep`
+had been reporting FAIL on all three cases for that reason alone, since the
+fixture was written. Eight cases across `fake-review-detective`,
+`one-percenter`, `pep` and `spiral-stopper` had verified nothing, ever.
+
+The annotation was redundant in seven of the eight — those routes dispatch on
+`req.body.action`, which the fixture's own `input` already carries. The eighth,
+`one-percenter`, genuinely streams; the scripts now detect that from the
+content-type rather than from the fixture, and `check-golden` reads the `parsed`
+payload off the stream's done event. `latency-sweep` got the matching fix, which
+is the one that mattered more: **a streaming endpoint returns 200 and then
+reports its failure inside the stream**, so status alone would have scored a
+broken run as a fast one — the same class of bug as the 429s this script was
+written to stop counting as 0-second successes.
+
+All eight now pass, so nothing had drifted underneath. First-ever latency
+numbers, serial: `pep` 41 / 36 / 6s, `fake-review-detective` 47 / 25s,
+`spiral-stopper` 36 / 27s, `one-percenter` 22s. None over the limit.
+
 ## Still open
 
-**`pre-mortem` — 100s.** It was in the old "not measured" bucket (connection
-error mid-run), so it never made the worklist. It is measurable now and it is the
-slowest route in the catalog. Not touched here.
-
-**Four golden fixtures cannot reach their own endpoint, and `check:golden` is
-failing silently past them.** The `endpoint` field carries a human annotation:
-
-```
-"endpoint": "/api/pep (generate)"
-```
-
-which POSTs to a URL containing " (generate)" and 404s. This affects the sweep
-*and* `check:golden` — `npm run check:golden pep` reports FAIL on all three cases
-for this reason alone. The annotation belongs in the case `name`. Four tools have
-had no working golden: `fake-review-detective`, `one-percenter`, `pep`,
-`spiral-stopper`. Their recorded `output` has never been compared against
-anything, so fixing the URL may well surface real drift underneath.
-
-**The rest of the catalog has not been re-measured** since 2026-08-07. The 45-60s
-band from that run (giftology 59, upsell-shield 57, bill-rescue 57,
+**The rest of the catalog has not been re-measured** since 2026-08-07. The
+45-60s band from that run (giftology 59, upsell-shield 57, bill-rescue 57,
 ticket-tackler 56, leverage-logic 55, …) is unchanged except where the grounding
 fix touched it — bill-rescue, renters-deposit-saver and ticket-tackler each lose
 up to 25s on their cold path.
@@ -117,7 +135,7 @@ up to 25s on their cold path.
 ## Caveats
 
 - Single measurements vary by roughly 20% run to run; re-measure before concluding a fix worked.
-- Concurrency 3 inflates by roughly 8% against serial. The after-column above was measured at concurrency 3, so it is, if anything, pessimistic.
+- **Concurrency does not inflate by a predictable 8% — under contention it can inflate by an order of magnitude.** A concurrency-2 run of `pep` produced 980s and 930s on two cases that measure 36s and 6s serially, with no retries in the backend log. Numbers that look like a catastrophically broken route are worth re-running at `--concurrency 1` before you believe them. The after-column above was measured at concurrency 3, so it is, if anything, pessimistic.
 - **Neither "SSE stream" in the previous version of this file is a stream.**
   `contract-decoder/stream` and `sleep-architect/stream` both end in `res.json` —
   the name is vestigial. Their durations mean exactly what every other row means.
