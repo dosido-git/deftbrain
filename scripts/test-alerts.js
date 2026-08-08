@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * test-crash-alert — prove a render-crash alert actually reaches err@deftbrain.com.
+ * test-alerts — prove the alert emails actually reach err@deftbrain.com.
  * ────────────────────────────────────────────────────────────────────────────
  * There are three separate things that can be broken, and they fail in
  * different places, so this tests them separately.
@@ -19,15 +19,15 @@
  *                          they should? Needs a running server.
  *
  * USAGE
- *   node scripts/test-crash-alert.js --guards
+ *   node scripts/test-alerts.js --guards
  *       Guard logic only. No key, no network, nothing sent.
  *
- *   RESEND_API_KEY=re_xxx node scripts/test-crash-alert.js --send
+ *   RESEND_API_KEY=re_xxx node scripts/test-alerts.js --send
  *       Sends ONE real email. This is the real test of #1.
  *       Take the key from Railway → Variables. Paste it into your shell, not
  *       into a file — this script never writes it anywhere and never logs it.
  *
- *   node scripts/test-crash-alert.js --endpoint http://localhost:3001
+ *   node scripts/test-alerts.js --endpoint http://localhost:3001
  *       Posts synthetic beacons at a running server and checks the wiring.
  *       Add --send-from-server (and set the key on the SERVER) to let that
  *       server actually mail.
@@ -58,7 +58,7 @@ const check = (ok, label, detail) => {
 
 // ── 2. Guards ───────────────────────────────────────────────────────────────
 function testGuards() {
-  console.log('\nGUARDS (no key, nothing sent)\n');
+  console.log('\nGUARDS — render crashes and tool errors (no key, nothing sent)\n');
   process.env.RESEND_API_KEY = 'test-key-never-sent';
   const sent = [];
   const realFetch = global.fetch;
@@ -67,8 +67,9 @@ function testGuards() {
   let logLines = 0;
   console.error = () => { logLines++; };
 
-  const { reportRenderCrash, fingerprintOf, _resetCrashAlertState } =
-    require(path.join(__dirname, '..', 'backend', 'lib', 'crashAlert'));
+  const { reportRenderCrash, reportToolError, classifyError, fingerprintOf, _resetAlertState } =
+    require(path.join(__dirname, '..', 'backend', 'lib', 'alerts'));
+  const _resetCrashAlertState = _resetAlertState;
 
   console.error = realErr;
   check(fingerprintOf('X', 'bad at 3') === fingerprintOf('X', 'bad at 47'),
@@ -98,6 +99,46 @@ function testGuards() {
   const noKey = reportRenderCrash({ tool: 'Z', message: 'no key' });
   check(noKey.reason === 'no-key' && sent.length === 0, 'no key degrades quietly');
 
+  // ── tool_error: rate-based, so the rules are different ──
+  console.log('');
+  process.env.RESEND_API_KEY = 'test-key-never-sent';
+
+  check(classifyError('Server error: 500') === 'server', 'a 500 classifies as server');
+  check(classifyError('Load failed') === 'network', '"Load failed" classifies as network');
+  check(classifyError('Failed to fetch') === 'network', '"Failed to fetch" classifies as network');
+  check(classifyError('Server error: 429 too many requests') === 'limit', 'a 429 classifies as limit');
+
+  _resetCrashAlertState(); sent.length = 0;
+  const one = reportToolError({ tool: 'A', message: 'Server error: 500' });
+  check(one.reason === 'below-threshold' && sent.length === 0,
+    'ONE server error is silent — that is the whole point', `hits ${one.hits}`);
+  reportToolError({ tool: 'A', message: 'Server error: 500' });
+  const third = reportToolError({ tool: 'A', message: 'Server error: 500' });
+  check(third.reason === 'threshold-crossed' && sent.length === 1,
+    'the 3rd server error in the window mails once', `hits ${third.hits}`);
+  const fourth = reportToolError({ tool: 'A', message: 'Server error: 500' });
+  check(fourth.reason === 'cooldown' && sent.length === 1,
+    'it does not mail again on every subsequent failure');
+
+  _resetCrashAlertState(); sent.length = 0;
+  for (let i = 0; i < 9; i++) reportToolError({ tool: 'B', message: 'Load failed' });
+  check(sent.length === 0, 'network errors stay silent below their higher bar', '9 of 10');
+  reportToolError({ tool: 'B', message: 'Load failed' });
+  check(sent.length === 1, 'the 10th network error mails — that is a latency regression');
+
+  _resetCrashAlertState(); sent.length = 0;
+  // Each fingerprint must actually CROSS its threshold, or this asserts nothing:
+  // 40 tools with one failure each is 40 fingerprints all sitting below the bar.
+  for (let i = 0; i < 40; i++) {
+    for (let n = 0; n < 3; n++) reportToolError({ tool: `E${i}`, message: 'Server error: 500' });
+  }
+  const errorAlerts = sent.length;
+  reportRenderCrash({ tool: 'CrashDuringErrorStorm', message: 'Objects are not valid' });
+  check(errorAlerts === 5, 'error alerts take exactly half the hourly cap, no more', `${errorAlerts} of 10`);
+  check(sent.length === errorAlerts + 1,
+    'a render crash still gets through during an error storm');
+
+  delete process.env.RESEND_API_KEY;
   global.fetch = realFetch;
 }
 
@@ -108,7 +149,7 @@ async function testSend() {
   if (!key) {
     console.log('  RESEND_API_KEY is not set in this shell.');
     console.log('  Copy it from Railway → Variables and prefix the command:');
-    console.log('    RESEND_API_KEY=re_xxx node scripts/test-crash-alert.js --send');
+    console.log('    RESEND_API_KEY=re_xxx node scripts/test-alerts.js --send');
     failures++;
     return;
   }
@@ -126,7 +167,7 @@ async function testSend() {
       text: [
         'This is a TEST of the render-crash alerting path. No tool actually crashed.',
         '',
-        'Sent by scripts/test-crash-alert.js --send.',
+        'Sent by scripts/test-alerts.js --send.',
         '',
         'If this arrived, the sender is verified and real alerts will reach you.',
         'A real one looks like this:',
@@ -156,29 +197,44 @@ async function testSend() {
 // ── 3. The wiring, against a running server ─────────────────────────────────
 async function testEndpoint(base) {
   console.log(`\nWIRING (against ${base})\n`);
-  const post = (uaLabel, ua, props, p) =>
+  const post = (uaLabel, ua, event, props, p) =>
     fetch(`${base}/api/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'User-Agent': ua },
-      body: JSON.stringify({ event: 'tool_render_error', path: p, props }),
+      body: JSON.stringify({ event, path: p, props }),
     }).then(r => ({ uaLabel, status: r.status }))
       .catch(e => ({ uaLabel, status: 'ERR', err: e.message }));
 
   const stamp = Date.now(); // keeps this run's fingerprints distinct from the last
-  const a = await post('browser', BROWSER_UA,
+  const a = await post('browser', BROWSER_UA, 'tool_render_error',
     { tool: 'TestTool', message: `synthetic crash ${stamp} at index 1`, where: 'at Results' }, '/TestTool');
-  const b = await post('browser', BROWSER_UA,
+  const b = await post('browser', BROWSER_UA, 'tool_render_error',
     { tool: 'TestTool', message: `synthetic crash ${stamp} at index 9`, where: 'at Results' }, '/TestTool');
-  const c = await post('bot', 'Googlebot/2.1',
+  const c = await post('bot', 'Googlebot/2.1', 'tool_render_error',
     { tool: 'BotShouldNotAlert', message: `bot crash ${stamp}` }, '/BotShouldNotAlert');
 
-  check(a.status === 204, 'beacon accepted', `HTTP ${a.status}`);
+  check(a.status === 204, 'render-crash beacon accepted', `HTTP ${a.status}`);
   check(b.status === 204, 'duplicate beacon accepted (and deduped server-side)', `HTTP ${b.status}`);
   check(c.status === 204, 'bot beacon accepted but excluded before the mailer', `HTTP ${c.status}`);
+
+  // tool_error is rate-based, so one beacon proves nothing — send enough to
+  // cross the server threshold, and one lone network error that must NOT alert.
+  let lastErr;
+  for (let i = 0; i < 3; i++) {
+    lastErr = await post('browser', BROWSER_UA, 'tool_error',
+      { tool: 'TestTool', message: `Server error: 500 synthetic ${stamp}` }, '/TestTool');
+  }
+  const lone = await post('browser', BROWSER_UA, 'tool_error',
+    { tool: 'LonelyTool', message: 'Load failed' }, '/LonelyTool');
+  check(lastErr.status === 204, 'tool_error beacons accepted (3, crossing the server threshold)', `HTTP ${lastErr.status}`);
+  check(lone.status === 204, 'a single network error accepted and stays silent', `HTTP ${lone.status}`);
+
   console.log('\n  Now check the SERVER log:');
-  console.log('    • no "[crash-alert]" line  → sent cleanly (or no key set there)');
+  console.log('    • no "[alerts]" line  → sent cleanly (or no key set there)');
   console.log('    • "Resend rejected … HTTP 401/403" → key wrong or sender unverified');
-  console.log(`  And the dashboard: TestTool should show render err = 2, BotShouldNotAlert absent.`);
+  console.log('  Expected mail from this run: 1 render crash + 1 server-error alert.');
+  console.log('  NOT expected: anything for LonelyTool (1 network error is below the bar),');
+  console.log('  and nothing at all for BotShouldNotAlert.');
 }
 
 (async () => {

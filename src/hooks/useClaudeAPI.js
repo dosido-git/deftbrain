@@ -92,6 +92,12 @@ export const useClaudeAPI = () => {
     const { onChunk, onDone, onError } = callbacks;
     setLoading(true);
     setError(null);
+    // Streaming tools fired no beacons at all until 2026-08-08, so they were
+    // absent from the funnel entirely — no runs, no completes, no errors, and
+    // therefore no alert could ever fire for one. Same three events as
+    // callToolEndpoint so they share the dashboard's columns.
+    const _t0 = Date.now();
+    track('tool_run', { tool: endpoint });
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
@@ -123,6 +129,9 @@ export const useClaudeAPI = () => {
           try {
             const parsed = JSON.parse(line.slice(6));
             if (parsed.error) {
+              // An error delivered INSIDE the stream: the response was 200 and
+              // the failure arrived as a frame, so nothing else would count it.
+              track('tool_error', { tool: endpoint, message: String(parsed.error || '').slice(0, 80) });
               if (onError) onError(parsed.error);
               setLoading(false);
               return;
@@ -135,6 +144,7 @@ export const useClaudeAPI = () => {
               // Second arg: server-side validated/repaired object, when the
               // route provides one (e.g. one-percenter) — callers may prefer
               // it over parsing the accumulated text themselves.
+              track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
               if (onDone) onDone(accumulated, parsed.parsed);
               setLoading(false);
               return;
@@ -146,9 +156,11 @@ export const useClaudeAPI = () => {
       }
 
       // Stream ended without a done event — treat accumulated as final
+      track('tool_complete', { tool: endpoint, ms: Date.now() - _t0 });
       if (onDone) onDone(accumulated);
 
     } catch (err) {
+      track('tool_error', { tool: endpoint, message: String(err.message || '').slice(0, 80) });
       setError(err.message);
       if (onError) onError(err.message);
     } finally {

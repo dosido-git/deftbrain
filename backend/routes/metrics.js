@@ -6,7 +6,7 @@ const nodePath = require('path');
 const geoip = require('geoip-lite');
 const crypto = require('crypto');
 const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacenterIp');
-const { reportRenderCrash } = require('../lib/crashAlert');
+const { reportRenderCrash, reportToolError } = require('../lib/alerts');
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -146,20 +146,26 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
   });
   // A render crash is the one beacon worth waking someone for: the response was
   // a valid 200 and the user still got a white screen, so nothing else in the
-  // stack reports it. Deduped, cooled down and hard-capped inside crashAlert —
+  // stack reports it. Deduped, cooled down and hard-capped inside lib/alerts —
   // this endpoint is public, so it must never become an email amplifier. Runs
   // after isExcluded, so bot traffic can't trigger mail. Never blocks the 204.
-  if (event === 'tool_render_error') {
+  if (event === 'tool_render_error' || event === 'tool_error') {
     try {
-      reportRenderCrash({
+      const common = {
         tool: props && props.tool,
         message: props && props.message,
-        where: props && props.where,
         path,
         userAgent: String(req.headers['user-agent'] || '').slice(0, 200),
-      });
+      };
+      if (event === 'tool_render_error') {
+        reportRenderCrash({ ...common, where: props && props.where });
+      } else {
+        // Rate-based, not first-occurrence: one failed request is usually one
+        // user's connection. See lib/alerts for why the two differ.
+        reportToolError(common);
+      }
     } catch (err) {
-      console.error('[crash-alert] reporting failed:', err.message);
+      console.error('[alerts] reporting failed:', err.message);
     }
   }
   return res.status(204).end();
