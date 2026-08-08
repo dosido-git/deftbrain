@@ -18,13 +18,16 @@ router.post('/conflict-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Please provide the message (at least 10 characters)' });
     }
 
-    const lang = withLanguage('', userLanguage);
     const emotionsText = emotionalState?.length > 0 ? emotionalState.join(', ') : 'not specified';
     const goalsText = goals?.length > 0 ? goals.map(g => g.replace(/_/g, ' ')).join(', ') : 'respond thoughtfully';
 
     const systemPrompt = 'You are an expert conflict resolution coach with deep knowledge of manipulation tactics, attachment theory, and de-escalation. CRITICAL: Return ONLY valid JSON. ' + NO_QUOTE_RULE;
 
-    const prompt = `Expert conflict resolution coach. Analyze this ${isThread ? 'conversation thread' : 'message'} and prevent reactive texting.
+    // One 12-key schema at max_tokens 6000 measured 79-84s — past the ~60s where
+    // Safari abandons the fetch. Reading the message and writing the reply are a
+    // clean seam: disjoint top-level keys, same brief, merged back to the
+    // original response shape (frontend untouched).
+    const brief = `Expert conflict resolution coach. Analyze this ${isThread ? 'conversation thread' : 'message'} and prevent reactive texting.
 
 ${isThread ? 'CONVERSATION THREAD' : 'MESSAGE RECEIVED'}:
 "${receivedMessage}"
@@ -37,24 +40,26 @@ Goals: ${goalsText}
 ${actualGoal ? `Desired outcome: "${actualGoal}"` : ''}
 ${userDraft ? `\n⚠️ REACTIVE DRAFT they want to send: "${userDraft}"` : ''}
 
-MANIPULATION DETECTION (CRITICAL — analyze the INCOMING message for these):
-Scan for: gaslighting ("that never happened", "you're imagining things"), DARVO (deny-attack-reverse victim/offender), guilt-tripping ("after everything I've done"), stonewalling threats ("fine, I just won't talk"), passive aggression, love-bombing after conflict, false equivalence ("you do it too"), blame-shifting, silent treatment threats, catastrophizing ("you ALWAYS/NEVER"), weaponized vulnerability ("I guess I'm just a terrible person"), triangulation ("everyone agrees with me"), dismissiveness ("you're overreacting"), financial/emotional threats.
-If tactics found, name them clearly with the exact phrase that triggered detection and a healthy counter-response.
-
-ENHANCED LANDMINE DETECTION:
-- Phrase landmines: specific words/phrases that will escalate THIS situation
-- Timing landmines: "don't respond while driving", "not at 2am", "not right after work"
-- Channel landmines: "this conversation shouldn't happen over text", "call instead", "wait for in-person"
-
-${userDraft ? `DRAFT ANALYSIS: "${userDraft}"\nDetect: angry tone, sarcasm, passive-aggression, generalizations (always/never), counter-accusations, dismissiveness, escalation signals.` : ''}
-
 RELATIONSHIP RULES:
 ${relationship === 'Partner' ? 'Partner: high stakes. Repair crucial. No "winning." Long-term health.' : ''}
 ${relationship === 'Ex' ? 'Ex: minimize contact. Gray rock. Ask: "Do I need to respond at all?"' : ''}
 ${relationship === 'Family' ? "Family: can't exit. Boundaries essential. Consider therapy for chronic patterns." : ''}
 ${relationship === 'Coworker' ? 'Coworker: professional. Document if needed. No personal attacks.' : ''}
 
-Return ONLY valid JSON:
+You are producing ONE PART of the analysis. Another coach is producing the other part — return only your own keys.`;
+
+    // ── Part A: what is actually going on in the message (and the draft) ──
+    const readPrompt = `${brief}
+
+YOUR PART: diagnose the incoming message, the tactics in it, and the user's draft.
+
+MANIPULATION DETECTION (CRITICAL — analyze the INCOMING message for these):
+Scan for: gaslighting ("that never happened", "you're imagining things"), DARVO (deny-attack-reverse victim/offender), guilt-tripping ("after everything I've done"), stonewalling threats ("fine, I just won't talk"), passive aggression, love-bombing after conflict, false equivalence ("you do it too"), blame-shifting, silent treatment threats, catastrophizing ("you ALWAYS/NEVER"), weaponized vulnerability ("I guess I'm just a terrible person"), triangulation ("everyone agrees with me"), dismissiveness ("you're overreacting"), financial/emotional threats.
+If tactics found, name them clearly with the exact phrase that triggered detection and a healthy counter-response.
+
+${userDraft ? `DRAFT ANALYSIS: "${userDraft}"\nDetect: angry tone, sarcasm, passive-aggression, generalizations (always/never), counter-accusations, dismissiveness, escalation signals.` : ''}
+
+Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "message_analysis": {
     "emotional_temperature": "high | medium | low",
@@ -82,7 +87,26 @@ Return ONLY valid JSON:
     "problematic_phrases": [{"phrase": "...", "issue": "...", "better_version": "..."}],
     "escalation_risk": {"level": "low | medium | high | extreme", "why": "..."},
     "overall_assessment": "..."
-  },
+  }
+}
+
+RULES:
+1. manipulation_tactics: ALWAYS analyze incoming message. Return [] only if genuinely no tactics detected. AT MOST 4.
+2. ${userDraft ? 'A draft was provided — analyze it BRUTALLY HONESTLY.' : 'No draft was provided — return draft_analysis with empty arrays and short strings saying no draft was submitted.'}
+3. Keep every string field to one or two sentences.`;
+
+    // ── Part B: what to send, when, and what to avoid ──
+    const respondPrompt = `${brief}
+
+YOUR PART: the replies to send, what not to say, and when/where to say it.
+
+ENHANCED LANDMINE DETECTION:
+- Phrase landmines: specific words/phrases that will escalate THIS situation
+- Timing landmines: "don't respond while driving", "not at 2am", "not right after work"
+- Channel landmines: "this conversation shouldn't happen over text", "call instead", "wait for in-person"
+
+Return ONLY valid JSON with EXACTLY these eight top-level keys:
+{
   "response_strategies": [
     {
       "strategy": "Name",
@@ -106,22 +130,29 @@ Return ONLY valid JSON:
 }
 
 RULES:
-1. manipulation_tactics: ALWAYS analyze incoming message. Return [] only if genuinely no tactics detected.
-2. If draft provided, analyze BRUTALLY HONESTLY
-3. High emotions = recommend mandatory delay
-4. Generate 3-4 response strategies, all de-escalating
-5. what_NOT_to_say: 3-4 specific phrases personalized to THIS conflict
-6. timing_landmines + channel_landmines: always include at least 1-2 each
-7. Protect the relationship over being "right"
+1. High emotions = recommend mandatory delay
+2. Generate 3-4 response strategies, all de-escalating
+3. what_NOT_to_say: 3-4 specific phrases personalized to THIS conflict
+4. timing_landmines + channel_landmines: always include at least 1-2 each
+5. Protect the relationship over being "right"
+6. Keep every string field to one or two sentences, except response_text and suggested_apology which are the real messages.`;
 
-${lang}`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'conflict-coach' });
+    const system = systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion);
+    const [readPart, respondPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system,
+        messages: [{ role: 'user', content: withLanguage(readPrompt, userLanguage) }],
+      }, { label: 'conflict-coach:read' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system,
+        messages: [{ role: 'user', content: withLanguage(respondPrompt, userLanguage) }],
+      }, { label: 'conflict-coach:respond' }),
+    ]);
+    const parsed = { ...respondPart, ...readPart };
     res.json(parsed);
   } catch (error) {
     console.error('❌ Conflict Coach V3 error:', error.message);

@@ -17,7 +17,11 @@ router.post('/party-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const systemPrompt = `You are an event experience designer — part party planner, part social psychologist, part improv director. You don't plan parties. You engineer memorable experiences that feel effortless.`;
 
-    const userPrompt = `THE OCCASION: ${occasion}
+    // One 10-key schema at max_tokens 5000 measured 82s — past the ~60s where
+    // Safari abandons the fetch. The timeline alone is 8 entries x 5 fields, so
+    // it goes in one half and everything else in the other; the halves emit
+    // disjoint top-level keys and merge back to the original response shape.
+    const brief = `THE OCCASION: ${occasion}
 GUEST COUNT: ${guestCount || 'not specified'}
 GUEST MIX: ${guestMix || 'not specified'}
 SPACE: ${space || 'not specified'}
@@ -26,7 +30,14 @@ VIBE: ${vibe || 'fun and relaxed'}
 DURATION: ${duration || '3-4 hours'}
 ${constraints ? `CONSTRAINTS: ${constraints}` : ''}
 
-Design the event. Return ONLY valid JSON:
+You are writing ONE PART of the event design. Another designer is handling the other part — cover only your own keys, and do not restate theirs.`;
+
+    // ── Part A: the read and the minute-by-minute arc ──
+    const arcPrompt = `${brief}
+
+YOUR PART: the read on the gathering, the energy arc, the timeline, and the exit.
+
+Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "event_read": "1-2 sentences showing you understand the social challenge of this specific gathering.",
 
@@ -42,6 +53,21 @@ Design the event. Return ONLY valid JSON:
     }
   ],
 
+  "the_exit": {
+    "signal": "How to signal the event is winding down without saying 'get out'",
+    "script": "The exact thing to say when it's time"
+  }
+}
+
+Generate AT MOST 8 timeline entries (6-8) spanning the stated duration. Keep every field to one concise sentence — the_exit.script may be 2-4 short sentences. Never place a double-quote (") character inside any string value — it breaks the JSON. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
+
+    // ── Part B: the mechanics that make the arc happen ──
+    const elementsPrompt = `${brief}
+
+YOUR PART: the mixing mechanics, the food and music, the budget, and what can go wrong.
+
+Return ONLY valid JSON with EXACTLY these six top-level keys:
+{
   "mixing_strategies": [
     {
       "strategy": "Name of the mixing technique",
@@ -69,11 +95,6 @@ Design the event. Return ONLY valid JSON:
     "wind_down": "Genre/vibe for closing"
   },
 
-  "the_exit": {
-    "signal": "How to signal the event is winding down without saying 'get out'",
-    "script": "The exact thing to say when it's time"
-  },
-
   "budget_breakdown": {
     "total_estimate": "Rough total for the budget level they stated",
     "biggest_expense": "Where the money goes",
@@ -90,14 +111,25 @@ Design the event. Return ONLY valid JSON:
   ]
 }
 
-Generate AT MOST 8 timeline entries (6-8), 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Keep every field to one concise sentence — the_exit.script may be 2-4 short sentences. Express all money amounts (total_estimate, biggest_expense, etc.) in the user's local currency — never assume US dollars. Never place a double-quote (") character inside any string value — it breaks the JSON. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
+Generate 2 mixing strategies, 4 conversation starters, 2 free_upgrades, and 3 disaster_prevention items. Keep every field to one concise sentence. Express all money amounts (total_estimate, biggest_expense, etc.) in the user's local currency — never assume US dollars. Never place a double-quote (") character inside any string value — it breaks the JSON. Return ONLY the JSON object — no markdown, no backticks, no explanation. All array fields must be arrays, not strings.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'party-architect' });
+    const locale = withLocaleContext(userLocale, userCurrency, userRegion);
+    const [arcPart, elementsPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(systemPrompt, userLanguage) + locale,
+        messages: [{ role: 'user', content: arcPrompt }],
+      }, { label: 'party-architect:arc' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(systemPrompt, userLanguage) + locale,
+        messages: [{ role: 'user', content: elementsPrompt }],
+      }, { label: 'party-architect:elements' }),
+    ]);
+
+    const parsed = { ...elementsPart, ...arcPart };
 
     // Sanitize: coerce any array fields that came back as strings
     const toArray = (val) => {

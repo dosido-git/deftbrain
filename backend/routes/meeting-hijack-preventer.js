@@ -66,9 +66,13 @@ ${decisionFramework === 'Disagree & Commit' ? 'Allow dissent, but require commit
 ${decisionFramework === 'Leader Decides' ? 'Leader makes final call after hearing input. Script for collecting input efficiently.' : ''}
 `;
 
-    const prompt = `You are an expert meeting facilitator specializing in inclusive, neurodivergent-friendly meeting structures.
+    // One 9-key schema at max_tokens 6000 measured 102s — past the ~60s where
+    // Safari abandons the fetch. The two halves below share the same brief and
+    // emit disjoint top-level keys, so they generate in parallel and merge back
+    // to the original response shape (frontend untouched).
+    const sharedContext = `You are an expert meeting facilitator specializing in inclusive, neurodivergent-friendly meeting structures.
 
-Create a highly structured meeting agenda that prevents hijacking and ensures all voices are heard.
+You are writing ONE PART of a highly structured meeting agenda that prevents hijacking and ensures all voices are heard. Another writer is handling the other part — cover only your own keys.
 
 MEETING DETAILS:
 - Goal: ${meetingGoal || 'See template'}
@@ -78,18 +82,82 @@ MEETING DETAILS:
 - Format: ${isVirtual ? `Virtual (${virtualPlatform})` : 'In-person'}${challengeContext}
 ${templateGuidance}${virtualContext}${decisionContext}
 
+TONE GUIDELINES:
+- Scripts should be warm but direct
+- Never condescending or parental
+- Assume good intent from all participants
+- Prioritize psychological safety
+- Use "we" language, not "you" (less accusatory)
+- Neurodivergent-friendly: clear expectations, predictable structure
+${isVirtual ? '- Virtual-friendly: acknowledge technology challenges with empathy' : ''}
+
+Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}
+
+Never place a double-quote (") character inside any string value — it breaks the JSON.`;
+
+    // ── Part A: the agenda itself, the decision process, roles, prep ──
+    const structurePrompt = `${sharedContext}
+
+${useTemplate ? `BASE YOUR AGENDA ON THIS TEMPLATE WHILE ADAPTING TO THE SPECIFICS:
+
+${selectedTemplate === 'sprint-planning' ? `Sprint Planning Template:
+- Review sprint goal (5 min)
+- Review backlog items (20 min)
+- Story point estimation (30 min)
+- Capacity planning (15 min)
+- Commit to sprint (10 min)
+- Buffer (10 min)` : ''}
+
+${selectedTemplate === 'retrospective' ? `Retrospective Template:
+- Set the stage (5 min)
+- Gather data: What went well? (15 min)
+- Gather data: What didn't go well? (15 min)
+- Generate insights (15 min)
+- Decide what to do (10 min)
+- Close (5 min)
+- Buffer (5 min)` : ''}
+
+${selectedTemplate === 'brainstorm' ? `Brainstorming Template:
+- Problem statement (5 min)
+- Silent ideation (10 min)
+- Idea sharing round-robin (20 min)
+- Idea clustering (10 min)
+- Dot voting/prioritization (10 min)
+- Next steps (5 min)
+- Buffer (5 min)` : ''}
+
+${selectedTemplate === 'decision' ? `Decision-Making Template:
+- Frame the decision (10 min)
+- Present options (15 min)
+- Discuss pros/cons (20 min)
+- Apply decision framework (10 min)
+- Document decision (5 min)
+- Buffer (5 min)` : ''}
+
+${selectedTemplate === 'standup' ? `Daily Standup Template:
+- Opening (1 min)
+- Round-robin updates: Yesterday/Today/Blockers (10 min)
+- Parking lot quick capture (2 min)
+- Close (2 min)` : ''}
+
+${selectedTemplate === 'one-on-one' ? `One-on-One Template:
+- Check-in/rapport (5 min)
+- Progress on goals (10 min)
+- Challenges/support needed (10 min)
+- Forward planning (5 min)
+- Buffer (5 min)` : ''}
+` : ''}
+
+YOUR PART: the timed agenda, the decision process, the speaking roles, the prep checklist.
+
 CRITICAL REQUIREMENTS:
 1. Time-box EVERY agenda item with specific minute allocations
 2. Reserve 5-10% of total time as buffer
 3. Provide explicit speaking order where applicable
-4. Include facilitator scripts that are kind but firm
-5. Create strategies for parking lot methodology
-6. Address the known challenges with specific prevention/response tactics
-7. ${isVirtual ? `Include ${virtualPlatform}-specific virtual meeting protocols` : 'Include in-person meeting best practices'}
-8. Define decision-making process based on ${decisionFramework} framework
-9. Generate meeting artifacts: action items template, minutes template, follow-up email
+4. Define decision-making process based on ${decisionFramework} framework
+5. ${isVirtual ? `Assume a ${virtualPlatform} virtual meeting when assigning roles and prep steps` : 'Assume an in-person meeting when assigning roles and prep steps'}
 
-OUTPUT FORMAT (valid JSON):
+OUTPUT FORMAT (valid JSON) — your response MUST contain ALL FOUR of these top-level keys and NOTHING else:
 {
   "meeting_structure": {
     "total_duration": ${duration},
@@ -107,24 +175,6 @@ OUTPUT FORMAT (valid JSON):
     "buffer_time": ${Math.floor(duration * 0.1)},
     "parking_lot_instructions": "Write tangent topics on sticky notes ${isVirtual ? 'or in shared doc/chat' : 'or whiteboard'}. Address at end if time permits, or schedule follow-up."
   },
-
-  "facilitator_scripts": {
-    "opening": "Exact words to start meeting with warmth and clarity${isVirtual ? ', including virtual meeting setup' : ''}",
-    "redirecting_tangent": "Kind but firm phrase when discussion goes off-topic",
-    "managing_dominance": "Tactful way to redirect dominant speaker and invite others",
-    "encouraging_quiet_voices": "Gentle invitation for quieter participants without putting them on spot",
-    "time_warning": "How to signal time is running low without creating anxiety",
-    "parking_lot_response": "What to say when parking an idea to validate it while staying on track",
-    "closing": "How to wrap up with clear next steps and appreciation"
-  },
-  ${isVirtual ? `
-  "virtual_meeting_protocols": {
-    "mute_management": "When to mute/unmute and how the facilitator manages it on ${virtualPlatform}",
-    "screen_sharing": "Who shares, how to hand off, and how to avoid dead air on ${virtualPlatform}",
-    "chat_usage": "What the chat is for (questions, links, parking lot) and who monitors it",
-    "raise_hand": "How to use the raise-hand feature so quiet voices get a turn",
-    "breakout_rooms": "If and how breakout rooms are used, and how to bring people back"
-  },` : ''}
 
   "decision_making_structure": {
     "when_to_use": "Explain when in the meeting to apply this framework",
@@ -151,7 +201,7 @@ OUTPUT FORMAT (valid JSON):
       "responsibility": "Handle technical issues, manage breakout rooms, monitor chat"
     }` : ''}
   ],
-  
+
   "preparation_checklist": [
     "Send agenda 24 hours in advance",
     "Assign roles before meeting starts",
@@ -160,8 +210,47 @@ OUTPUT FORMAT (valid JSON):
     "Prepare any materials participants need to review",
     ${isVirtual ? '"Share screen/presentation files in advance",' : ''}
     "Review facilitator scripts"
-  ],
-  
+  ]
+}
+
+LIMITS (keep the response compact so it never gets cut off):
+- agenda_items: AT MOST 12 items, each a substantial time block that sums (with buffer_time) to ${duration} minutes
+- Keep every string field to ONE short sentence
+
+Return ONLY valid JSON.`;
+
+    // ── Part B: the words the facilitator says, and the artifacts ──
+    const scriptsPrompt = `${sharedContext}
+
+YOUR PART: the facilitator's exact words, the anti-hijack tactics, and the take-away artifacts.
+
+CRITICAL REQUIREMENTS:
+1. Include facilitator scripts that are kind but firm
+2. Create strategies for parking lot methodology
+3. Address the known challenges with specific prevention/response tactics
+4. ${isVirtual ? `Include ${virtualPlatform}-specific virtual meeting protocols` : 'Reflect in-person meeting best practices'}
+5. Generate meeting artifacts: action items template, minutes template, follow-up email
+
+OUTPUT FORMAT (valid JSON) — your response MUST contain ALL of these top-level keys and NOTHING else:
+{
+  "facilitator_scripts": {
+    "opening": "Exact words to start meeting with warmth and clarity${isVirtual ? ', including virtual meeting setup' : ''}",
+    "redirecting_tangent": "Kind but firm phrase when discussion goes off-topic",
+    "managing_dominance": "Tactful way to redirect dominant speaker and invite others",
+    "encouraging_quiet_voices": "Gentle invitation for quieter participants without putting them on spot",
+    "time_warning": "How to signal time is running low without creating anxiety",
+    "parking_lot_response": "What to say when parking an idea to validate it while staying on track",
+    "closing": "How to wrap up with clear next steps and appreciation"
+  },
+  ${isVirtual ? `
+  "virtual_meeting_protocols": {
+    "mute_management": "When to mute/unmute and how the facilitator manages it on ${virtualPlatform}",
+    "screen_sharing": "Who shares, how to hand off, and how to avoid dead air on ${virtualPlatform}",
+    "chat_usage": "What the chat is for (questions, links, parking lot) and who monitors it",
+    "raise_hand": "How to use the raise-hand feature so quiet voices get a turn",
+    "breakout_rooms": "If and how breakout rooms are used, and how to bring people back"
+  },` : ''}
+
   "anti_hijack_strategies": [
     {
       "scenario": "Someone monopolizes discussion",
@@ -175,7 +264,7 @@ OUTPUT FORMAT (valid JSON):
     }
     // Include 3-5 strategies based on the known challenges
   ],
-  
+
   "meeting_artifacts": {
     "action_items_template": "Format for tracking action items:
 
@@ -189,7 +278,7 @@ ACTION ITEMS FROM [MEETING NAME] - [DATE]
 
 Next Review: [Date]
 ",
-    
+
     "meeting_minutes_template": "Template for meeting minutes:
 
 MEETING MINUTES
@@ -204,7 +293,7 @@ AGENDA ITEMS COVERED:
 1. [Topic] - [Summary of discussion]
    - Key points discussed
    - Decisions made
-   
+
 2. [Topic] - [Summary]
 
 DECISIONS MADE:
@@ -260,83 +349,27 @@ Next Review: [When to revisit if needed]"
   "success_metrics": "Meeting is successful if: (1) ${decisionFramework === 'Decision-making' ? 'Decision is made with clear next steps' : 'Stated goal is achieved'}, (2) All participants contributed at least once, (3) Time limit was respected, (4) Clear next steps and ownership defined, (5) No one felt dominated or excluded, (6) Parking lot items are documented."
 }
 
-TONE GUIDELINES:
-- Scripts should be warm but direct
-- Never condescending or parental
-- Assume good intent from all participants
-- Prioritize psychological safety
-- Use "we" language, not "you" (less accusatory)
-- Neurodivergent-friendly: clear expectations, predictable structure
-${isVirtual ? '- Virtual-friendly: acknowledge technology challenges with empathy' : ''}
-
-${useTemplate ? `BASE YOUR AGENDA ON THIS TEMPLATE WHILE ADAPTING TO THE SPECIFICS:
-
-${selectedTemplate === 'sprint-planning' ? `Sprint Planning Template:
-- Review sprint goal (5 min)
-- Review backlog items (20 min)
-- Story point estimation (30 min)
-- Capacity planning (15 min)
-- Commit to sprint (10 min)
-- Buffer (10 min)` : ''}
-
-${selectedTemplate === 'retrospective' ? `Retrospective Template:
-- Set the stage (5 min)
-- Gather data: What went well? (15 min)
-- Gather data: What didn't go well? (15 min)
-- Generate insights (15 min)
-- Decide what to do (10 min)
-- Close (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'brainstorm' ? `Brainstorming Template:
-- Problem statement (5 min)
-- Silent ideation (10 min)
-- Idea sharing round-robin (20 min)
-- Idea clustering (10 min)
-- Dot voting/prioritization (10 min)
-- Next steps (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'decision' ? `Decision-Making Template:
-- Frame the decision (10 min)
-- Present options (15 min)
-- Discuss pros/cons (20 min)
-- Apply decision framework (10 min)
-- Document decision (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'standup' ? `Daily Standup Template:
-- Opening (1 min)
-- Round-robin updates: Yesterday/Today/Blockers (10 min)
-- Parking lot quick capture (2 min)
-- Close (2 min)` : ''}
-
-${selectedTemplate === 'one-on-one' ? `One-on-One Template:
-- Check-in/rapport (5 min)
-- Progress on goals (10 min)
-- Challenges/support needed (10 min)
-- Forward planning (5 min)
-- Buffer (5 min)` : ''}
-` : ''}
-
-Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}
-
 LIMITS (keep the response compact so it never gets cut off):
-- agenda_items: AT MOST 12 items, each a substantial time block that sums (with buffer_time) to ${duration} minutes
 - anti_hijack_strategies: 3-5 strategies
 - Keep every string field to ONE short sentence (the artifact templates are the only multi-line fields)
-- Never place a double-quote (") character inside any string value — it breaks the JSON
 
 Return ONLY valid JSON.`;
 
-    const results = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{
-        role: 'user',
-        content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)
-      }]
-    }, { label: 'meeting-hijack-preventer' });
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [structurePart, scriptsPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: withLanguage(structurePrompt, userLanguage) + locale }]
+      }, { label: 'meeting-hijack-preventer:structure' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: withLanguage(scriptsPrompt, userLanguage) + locale }]
+      }, { label: 'meeting-hijack-preventer:scripts' }),
+    ]);
+
+    const results = { ...scriptsPart, ...structurePart };
 
     if (!results.meeting_structure || !results.facilitator_scripts) {
       return res.status(500).json({ error: 'Could not generate meeting structure. Please try again.' });

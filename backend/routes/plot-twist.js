@@ -21,7 +21,13 @@ router.post('/plot-twist', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? values.join(', ')
       : 'Not specified';
 
-    const basePrompt = `You are a decision clarity coach — part therapist, part strategist. Your job is NOT to tell people what to decide. It's to show them angles they're missing so the answer becomes obvious to THEM.
+    // One 8-key schema at max_tokens 5500 measured 67s — past the ~60s where
+    // Safari abandons the fetch. The per-option frameworks (pre-mortem, 10/10/10,
+    // opportunity cost, reversibility, values) are the whole cost and stay
+    // together so the matrix cannot contradict the write-ups; the coaching keys
+    // go in the other half. Disjoint top-level keys, merged back to the original
+    // response shape (frontend untouched).
+    const brief = `You are a decision clarity coach — part therapist, part strategist. Your job is NOT to tell people what to decide. It's to show them angles they're missing so the answer becomes obvious to THEM.
 
 THE DECISION:
 """
@@ -36,7 +42,14 @@ WHAT MATTERS MOST: ${valuesText}
 DEADLINE: ${deadline || 'No specific deadline'}
 WHY THEY'RE STUCK: ${stuckReason || 'Not specified'}
 
-RUN THIS DECISION THROUGH EVERY FRAMEWORK BELOW:
+If they only gave one option (not a choice between things), treat the implicit second option as "stay with the status quo / do nothing."
+
+You are producing ONE PART of the analysis. Another coach is producing the other part — return only your own keys.`;
+
+    // ── Part A: run every option through the frameworks, then score them ──
+    const optionsPrompt = `${brief}
+
+YOUR PART: put each option through the frameworks below and score them against each other.
 
 1. PRE-MORTEM (for each option):
    Imagine you chose this option and it went badly. What went wrong? Why did it fail? This surfaces hidden risks your optimism is blocking.
@@ -53,24 +66,8 @@ RUN THIS DECISION THROUGH EVERY FRAMEWORK BELOW:
 5. VALUES ALIGNMENT:
    Given what they said matters to them (or what you can infer), how well does each option align? Score each option against their stated/implied values.
 
-6. THE REAL QUESTION:
-   Often the stated decision isn't the actual decision. What's the deeper question they're really wrestling with? (e.g., "Should I take this job?" might really be "Am I allowed to prioritize money over passion?")
-
-7. STUCK PATTERN:
-   Based on why they're stuck, identify the cognitive pattern keeping them frozen. Is it fear of regret? Analysis paralysis? Sunk cost? People-pleasing? Fear of the unknown? Name it clearly.
-
-OUTPUT FORMAT — Return ONLY valid JSON:
+OUTPUT FORMAT — Return ONLY valid JSON with EXACTLY these two top-level keys:
 {
-  "decision_summary": "1-sentence restatement of the decision in clearer terms",
-
-  "the_real_question": "The deeper question beneath the surface decision",
-
-  "stuck_pattern": {
-    "pattern": "name of the cognitive pattern (e.g., 'Fear of regret', 'Sunk cost fallacy', 'Analysis paralysis')",
-    "explanation": "How this pattern is operating in their specific situation",
-    "unlock": "The reframe that typically breaks this pattern"
-  },
-
   "options_analysis": [
     {
       "option": "Option name/description",
@@ -102,6 +99,39 @@ OUTPUT FORMAT — Return ONLY valid JSON:
         "scores": [8, 7, 9, 4, 7]
       }
     ]
+  }
+}
+
+IMPORTANT RULES:
+- Be direct and insightful, not wishy-washy.
+- comparison_matrix scores are 1-10, and its Reversibility and Values fit columns must match the reversibility.score and values_alignment.score you gave the same option above.
+- Include AT MOST 4 options and 4-6 dimensions. comparison_matrix.scores must list the SAME options, in the same order, as options_analysis.
+- Keep all text practical and specific to THEIR situation, not generic. Keep every field to one concise sentence.
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.
+
+Return ONLY the JSON object. No markdown fences, no preamble.`;
+
+    // ── Part B: name the real decision and what is freezing them ──
+    const framingPrompt = `${brief}
+
+YOUR PART: the reframe — what they are really deciding, why they are frozen, and what unsticks them.
+
+6. THE REAL QUESTION:
+   Often the stated decision isn't the actual decision. What's the deeper question they're really wrestling with? (e.g., "Should I take this job?" might really be "Am I allowed to prioritize money over passion?")
+
+7. STUCK PATTERN:
+   Based on why they're stuck, identify the cognitive pattern keeping them frozen. Is it fear of regret? Analysis paralysis? Sunk cost? People-pleasing? Fear of the unknown? Name it clearly.
+
+OUTPUT FORMAT — Return ONLY valid JSON with EXACTLY these six top-level keys:
+{
+  "decision_summary": "1-sentence restatement of the decision in clearer terms",
+
+  "the_real_question": "The deeper question beneath the surface decision",
+
+  "stuck_pattern": {
+    "pattern": "name of the cognitive pattern (e.g., 'Fear of regret', 'Sunk cost fallacy', 'Analysis paralysis')",
+    "explanation": "How this pattern is operating in their specific situation",
+    "unlock": "The reframe that typically breaks this pattern"
   },
 
   "gut_check": "Based on how they described the situation (word choice, what they emphasized, what they minimized), what does their gut seem to already know? Don't be afraid to call it out.",
@@ -116,21 +146,29 @@ OUTPUT FORMAT — Return ONLY valid JSON:
 }
 
 IMPORTANT RULES:
-- Be direct and insightful, not wishy-washy. If the analysis clearly favors one option, say so — but frame it as "the analysis suggests" not "you should."
+- Be direct and insightful, not wishy-washy. If the situation clearly favors one option, say so — but frame it as "the analysis suggests" not "you should."
 - The gut_check should be genuinely perceptive — read between the lines of how they described things.
-- If they only gave one option (not a choice between things), treat the implicit second option as "stay with the status quo / do nothing."
-- comparison_matrix scores are 1-10. Include AT MOST 4 options and 4-6 dimensions.
 - the_real_question should be genuinely insightful, not a restatement.
 - Keep all text practical and specific to THEIR situation, not generic. Keep every field to one concise sentence (two_year_letter may be 2-4 short sentences).
 - Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.
 
 Return ONLY the JSON object. No markdown fences, no preamble.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5500,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'plot-twist' });
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [optionsPart, framingPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: withLanguage(optionsPrompt, userLanguage) + locale }],
+      }, { label: 'plot-twist:options' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        messages: [{ role: 'user', content: withLanguage(framingPrompt, userLanguage) + locale }],
+      }, { label: 'plot-twist:framing' }),
+    ]);
+    const parsed = { ...optionsPart, ...framingPart };
+    if (!Array.isArray(parsed.options_analysis)) parsed.options_analysis = [];
     if (!parsed.decision_summary || !parsed.stuck_pattern) {
       return res.status(500).json({ error: 'Could not analyze this decision. Please try again.' });
     }
