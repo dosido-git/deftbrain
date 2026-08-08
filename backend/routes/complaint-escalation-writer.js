@@ -25,7 +25,12 @@ router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (re
     // one 7-section schema at max_tokens 10000 ran ~6 min worst-case on rich
     // inputs. Stages (the letter-writing bulk) and strategy now run in
     // parallel; the merge reproduces the original response shape.
-    const promptStages = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
+    // escalation_stages is the whole of this call — five full letters, and the
+    // golden case measured 62-69s against the ~60s where Safari abandons the
+    // fetch. There is nothing to trade it against, so the ladder itself is
+    // split: the stages are independent documents and the keys stay disjoint,
+    // so the two halves merge straight back into one escalation_stages object.
+    const promptStagesEarly = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
 INDUSTRY: ${industry || 'Unknown — infer from the company name'}
@@ -67,7 +72,33 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "letter_body": "Shorter, more direct letter referencing failed previous attempts",
       "target_contacts": [{ "title": "Executive title", "email_pattern": "Likely email format", "why": "Why this person" }],
       "timing": "When to send relative to Stage 2"
-    },
+    }
+  }
+}
+
+Write ONLY the first three rungs of the ladder (stage_1_direct, stage_2_regulatory, stage_3_executive). The remaining stages are being written separately — do not include them, and do not renumber the ones you do write.
+
+Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.
+Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
+
+    const promptStagesLate = `You are an elite consumer advocacy strategist who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
+
+COMPANY: ${company}
+INDUSTRY: ${industry || 'Unknown — infer from the company name'}
+ISSUE: ${issue}
+PREVIOUS ATTEMPTS: ${previousAttempts || 'None mentioned'}
+DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reasonable resolution'}
+AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
+HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
+
+TONE: ${toneInstructions[tone] || toneInstructions.firm}
+
+REGULATORY CURRENCY: regulations change and get struck down — a letter citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
+
+Build the complete 5-stage escalation ladder for THIS situation. Every letter body stays 2-4 sentences, ready to send verbatim.
+
+{
+  "escalation_stages": {
     "stage_4_public": {
       "title": "Public Pressure Campaign",
       "social_media_post": "Ready-to-post text under 280 characters for X/Twitter",
@@ -85,6 +116,8 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
     }
   }
 }
+
+Write ONLY the last two rungs of the ladder (stage_4_public, stage_5_financial_legal). The remaining stages are being written separately — do not include them, and do not renumber the ones you do write.
 
 Never place a double-quote (") character inside any JSON string value — quoted phrases from the situation or dialogue must be written plainly or with single quotes, or the JSON breaks.
 Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
@@ -154,13 +187,19 @@ Never place a double-quote (") character inside any JSON string value — quoted
 Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
 
 
-    const [stagesPart, strategyPart] = await Promise.all([
+    const [stagesEarly, stagesLate, strategyPart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 6000,
+        max_tokens: 3500,
         system: withLanguage('You are an elite consumer advocacy strategist. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: promptStages }]
+        messages: [{ role: 'user', content: promptStagesEarly }]
       }, { label: 'ComplaintEscalation-stages' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage('You are an elite consumer advocacy strategist. Return ONLY valid JSON matching the exact schema requested.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: promptStagesLate }]
+      }, { label: 'ComplaintEscalation-stages-late' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
@@ -168,7 +207,12 @@ Return ONLY valid JSON with EXACTLY the keys shown (no markdown, no preamble).`;
         messages: [{ role: 'user', content: promptStrategy }]
       }, { label: 'ComplaintEscalation-strategy' }),
     ]);
-    const parsed = { ...strategyPart, ...stagesPart };
+    // The two halves each return an escalation_stages object holding their own
+    // rungs; disjoint keys, so one spread rebuilds the full five-stage ladder.
+    const parsed = {
+      ...strategyPart,
+      escalation_stages: { ...(stagesEarly.escalation_stages || {}), ...(stagesLate.escalation_stages || {}) },
+    };
 
     // The UI renders each timeline value directly as text. If the model nests
     // an object/array here (seen live: {actions: [...]} — crashed React to a

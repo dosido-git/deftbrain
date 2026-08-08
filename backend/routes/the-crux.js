@@ -203,17 +203,17 @@ router.post('/the-crux/test-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
 TEST PREP MODE: Generate ${count} practice questions testing understanding, not just recall. MC: one clearly wrong, one tempting wrong, one close-but-wrong. Short answer: requires attendance. Essay: synthesis and argument. Difficulty: ${diff === 'easy' ? 'basic recall' : diff === 'hard' ? 'application and synthesis' : 'mixed'}. Types: ${types.join(', ')}.`;
 
-    const userPrompt = `LECTURE CONTENT:
-${subject ? `Subject: ${subject}` : ''}
-${lectureTitle ? `Topic: ${lectureTitle}` : ''}
+    // The questions array is the whole cost — up to 20 entries of 8 fields, and
+    // the golden case measured 65-67s against the ~60s where Safari abandons the
+    // fetch. Nothing else in the schema is big enough to trade against it, so
+    // the array is partitioned by which part of the lecture each half draws
+    // from. Both calls still see the whole transcript (essay questions need it
+    // for synthesis); only their sourcing brief differs, which is what keeps
+    // them from writing the same question twice.
+    const countA = Math.ceil(count / 2);
+    const countB = count - countA;
 
-${transcript.substring(0, 30000)}
-
-Generate ${count} practice questions. Return ONLY valid JSON:
-
-{
-  "questions": [
-    {
+    const questionShape = `    {
       "number": 1,
       "type": "multiple_choice | short_answer | essay | true_false | fill_blank",
       "difficulty": "easy | medium | hard",
@@ -227,7 +227,41 @@ Generate ${count} practice questions. Return ONLY valid JSON:
       } or null,
       "points_hint": "What a grader would look for in the answer",
       "source_concept": "Which lecture concept this tests"
-    }
+    }`;
+
+    const lectureBlock = `LECTURE CONTENT:
+${subject ? `Subject: ${subject}` : ''}
+${lectureTitle ? `Topic: ${lectureTitle}` : ''}
+
+${transcript.substring(0, 30000)}`;
+
+    const CRUX_LIMITS = 'Keep every field to one concise sentence. Never place a double-quote (") character inside any string value (paraphrase quoted passages, do not use quote marks) — it breaks the JSON.';
+
+    const promptFirstHalf = `${lectureBlock}
+
+Generate exactly ${countA} practice questions, drawn from the FIRST HALF of the lecture content above. Another writer is covering the second half — do not write questions about it. Number them 1 to ${countA}.
+
+Return ONLY valid JSON with EXACTLY this one top-level key:
+
+{
+  "questions": [
+${questionShape}
+  ]
+}
+
+LIMITS: ${CRUX_LIMITS}`;
+
+    const promptSecondHalf = `${lectureBlock}
+
+Generate exactly ${countB} practice questions, drawn from the SECOND HALF of the lecture content above. Another writer is covering the first half — do not write questions about it. Number them 1 to ${countB}. Essay questions may synthesise across the whole lecture, but must be anchored in the second half.
+
+Then write the study tips for the lecture as a whole.
+
+Return ONLY valid JSON with EXACTLY these two top-level keys:
+
+{
+  "questions": [
+${questionShape}
   ],
 
   "study_tips": [
@@ -235,14 +269,33 @@ Generate ${count} practice questions. Return ONLY valid JSON:
   ]
 }
 
-LIMITS: study_tips AT MOST 5. Keep every field to one concise sentence. Never place a double-quote (") character inside any string value (paraphrase quoted passages, do not use quote marks) — it breaks the JSON.`;
+LIMITS: study_tips AT MOST 5. ${CRUX_LIMITS}`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'the-crux-3' });
+    // Each call wraps its own withLanguage — the S7.4 parity check counts
+    // withLanguage() calls against Anthropic calls in the file.
+    const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [firstHalf, secondHalf] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: promptFirstHalf }],
+      }, { label: 'the-crux-3-first' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: promptSecondHalf }],
+      }, { label: 'the-crux-3-second' }),
+    ]);
+    // Each half numbers from 1; restore one continuous run in lecture order.
+    const parsed = {
+      ...secondHalf,
+      questions: [
+        ...(Array.isArray(firstHalf.questions) ? firstHalf.questions : []),
+        ...(Array.isArray(secondHalf.questions) ? secondHalf.questions : []),
+      ].map((q, i) => ({ ...q, number: i + 1 })),
+    };
     if (!parsed.questions) {
       return res.status(500).json({ error: 'Could not process this. Please try again.' });
     }

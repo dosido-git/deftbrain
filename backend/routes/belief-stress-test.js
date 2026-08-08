@@ -13,7 +13,11 @@ router.post('/belief-stress-test', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const { belief, context, userLanguage } = req.body;
   if (!belief?.trim()) return res.status(400).json({ error: 'Name a belief to stress-test.' });
 
-    const userPrompt = `BELIEF STRESS TEST
+    // One 6-key schema at max_tokens 5000 measured 60-70s — past the ~60s where
+    // Safari abandons the fetch. Breaking the belief and rebuilding it are two
+    // jobs over the same statement, with no shared keys; they run in parallel
+    // and merge back to the original response shape (frontend untouched).
+    const brief = `BELIEF STRESS TEST
 
 THE BELIEF: "${belief.trim()}"
 ${context?.trim() ? `THEIR CONTEXT: ${context.trim()}` : ''}
@@ -22,7 +26,14 @@ Stress-test this belief across multiple dimensions. Find where it holds and wher
 
 PERCENTAGES: recompute every percentage from its actual numerator and denominator before stating it, and name both inline (e.g. '45k of the 95k lower salary = 47%').
 
-Return ONLY valid JSON:
+You are producing ONE PART of the analysis. Another analyst is producing the other part — return only your own keys.`;
+
+    // ── Part A: where it holds, and where it breaks ──
+    const testPrompt = `${brief}
+
+YOUR PART: state the belief fairly, then find the cases that break it.
+
+Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "belief_as_understood": "The belief restated clearly and charitably",
   "belief_type": "empirical | moral | strategic | psychological | social",
@@ -40,8 +51,20 @@ Return ONLY valid JSON:
       "what_it_reveals": "What this test specifically reveals about the belief's limits or hidden assumptions",
       "severity": "fatal | significant | minor"
     }
-  ],
+  ]
+}
 
+Generate 3-6 stress tests, ordered by severity (fatal first). belief_type and severity must be the exact English values listed.`;
+
+    // ── Part B: what is underneath it, and what survives ──
+    const rebuildPrompt = `${brief}
+
+YOUR PART: what the belief is really doing, the version that survives scrutiny, and the verdict.
+
+Assume the other analyst is finding the cases where this belief breaks — write the upgrade and the verdict as though those failure cases exist, without listing them yourself.
+
+Return ONLY valid JSON with EXACTLY these three top-level keys:
+{
   "the_hidden_structure": {
     "what_its_really_saying": "The deeper claim underneath the surface statement of the belief",
     "the_psychological_function": "What function this belief serves for the person who holds it — separate from whether it's true",
@@ -62,14 +85,24 @@ Return ONLY valid JSON:
   }
 }
 
-Generate 3-6 stress tests, ordered by severity (fatal first).`;
+verdict.rating must be one of the exact English values listed — the interface switches on it.`;
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or restated beliefs plainly or with single quotes, or it breaks the JSON.',
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'belief-stress-test' });
+    const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or restated beliefs plainly or with single quotes, or it breaks the JSON.';
+    const [testPart, rebuildPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: testPrompt }],
+      }, { label: 'belief-stress-test:tests' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(PERSONALITY, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: rebuildPrompt }],
+      }, { label: 'belief-stress-test:rebuild' }),
+    ]);
+    const parsed = { ...rebuildPart, ...testPart };
     if (!parsed.belief_as_understood) {
       return res.status(500).json({ error: 'Could not stress-test this belief. Please try again.' });
     }
