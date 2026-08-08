@@ -7,6 +7,7 @@ const geoip = require('geoip-lite');
 const crypto = require('crypto');
 const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacenterIp');
 const { reportRenderCrash, reportToolError } = require('../lib/alerts');
+const { LOG_FILE, logMetric } = require('../lib/metricsSink');
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -110,16 +111,8 @@ function isExcluded(req) {
 // Lenient — these are tiny fire-and-forget beacons, NOT token-spending LLM calls.
 const METRIC_LIMITS = { perMinute: 60, perDay: 5000 };
 
-// Local append-only sink. Defaults to repo root; override with METRICS_LOG_FILE.
-const LOG_FILE = process.env.METRICS_LOG_FILE
-  || nodePath.join(__dirname, '..', '..', 'metrics.jsonl');
-
-function logMetric(kind, data) {
-  const line = JSON.stringify({ kind, ...data, at: new Date().toISOString() });
-  // Never throw into the request path; both sinks are best-effort.
-  try { console.log('METRIC ' + line); } catch (_) { /* noop */ }
-  try { fs.appendFile(LOG_FILE, line + '\n', () => {}); } catch (_) { /* noop */ }
-}
+// Sink moved to lib/metricsSink so middleware can write to it too (the
+// completeness observer has no business importing a route module).
 
 // Funnel events. Body: { event, ...props } (path/ts added client-side).
 router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
@@ -522,6 +515,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // while rendering it. `tool_complete` fires before render, so without this
     // a white-screen crash counted as a success. See ToolErrorBoundary.
     const renderErrors = events.filter(e => e.event === 'tool_render_error');
+    // A 200 that rendered as empty cards. Not a crash and not an error — the
+    // third way a user gets nothing useful. See lib/completeness.
+    const thinResults = events.filter(e => e.event === 'tool_thin_result');
     const delivered = Math.max(0, completes.length - renderErrors.length);
     const taken = events.filter(e => ['print', 'copy', 'share'].includes(e.event));
 
@@ -581,12 +577,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // ── per tool ──
     const tools = {};
-    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, renderErrors: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
+    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, renderErrors: 0, thin: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
     for (const e of pv) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'views'); }
     for (const e of runs) bump(toolOf(e), 'runs');
     for (const e of completes) { const t = toolOf(e); bump(t, 'completes'); if (e.props && e.props.ms) tools[t].ms.push(e.props.ms); }
     for (const e of errors) bump(toolOf(e), 'errors');
     for (const e of renderErrors) bump(toolOf(e), 'renderErrors');
+    for (const e of thinResults) bump(toolOf(e), 'thin');
     for (const e of taken) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'taken'); }
     for (const f of feedback) bump(f.tool || '?', f.helpful ? 'yes' : 'no');
     const toolRows = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs).slice(0, 40)
@@ -597,7 +594,8 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         const rx = v.renderErrors
           ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
           : '<td>0</td>';
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td>${rx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+        const tx = v.thin ? `<td style="color:#b45309;font-weight:700">${v.thin}</td>` : '<td>0</td>';
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td>${rx}${tx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       }).join('');
 
     // ── sources (session-scoped ref context) ──
@@ -705,7 +703,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('sessions', sessions.length, null, deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
       ${card('interactive', interactiveSessions, pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human', deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
       ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
-      ${card('tool runs', runs.length, pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
+      ${card('tool runs', runs.length, pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
       ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
@@ -716,7 +714,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
-    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=10 style="color:#888">No data yet.</td></tr>'}</table>
+    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>

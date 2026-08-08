@@ -59,6 +59,10 @@ const ERROR_THRESHOLDS = {
   server: Number(process.env.TOOL_ERROR_THRESHOLD_SERVER) || 3,
   network: Number(process.env.TOOL_ERROR_THRESHOLD_NETWORK) || 10,
   limit: Number(process.env.TOOL_ERROR_THRESHOLD_LIMIT) || 20,
+  // A thin result is a heuristic (see lib/completeness), so the bar is higher
+  // than a hard server error: one is a legitimate empty section, five in a
+  // window is a tool quietly rendering blank cards.
+  thin: Number(process.env.TOOL_ERROR_THRESHOLD_THIN) || 5,
 };
 // Render crashes are rarer and always real, so tool_error alerts may take at
 // most half the hourly cap — a noisy error class must never crowd out a crash.
@@ -218,11 +222,11 @@ function send(key, subject, text) {
  * the weather rather than a bug.
  * @returns {{ mailed: boolean, reason: string, hits: number, klass: string }}
  */
-function reportToolError({ tool, message, path, userAgent } = {}) {
+function reportToolError({ tool, message, path, userAgent, forceClass } = {}) {
   const now = Date.now();
   rollWindow(now);
 
-  const klass = classifyError(message);
+  const klass = forceClass || classifyError(message);
   if (klass === 'network' && !NETWORK_ALERTS_ON) {
     return { mailed: false, reason: 'network-alerts-off', hits: 0, klass };
   }
@@ -267,6 +271,7 @@ function reportToolError({ tool, message, path, userAgent } = {}) {
   const mins = Math.round(ERROR_WINDOW_MS / 60000);
 
   const meaning = {
+    thin: 'The response was a valid 200 but arrived missing a large share of its sections, so the user saw empty cards. Not a crash and not a 500 — check the prompt and the route guard for that endpoint, and whether a recent split dropped a sub-schema.',
     server: 'The backend refused or failed. This is a defect — check the route guard, a truncation at max_tokens, or a three-way sync break.',
     network: `The request never completed for the user. A spike in this class usually means the route went back over the browser's ~60s limit — re-run scripts/latency-sweep.js against it.`,
     limit: 'Users are being rate-limited. Either genuine abuse, or a limit set tighter than real usage needs.',
@@ -284,12 +289,12 @@ function reportToolError({ tool, message, path, userAgent } = {}) {
     ``,
     meaning,
     ``,
-    `This is tool_error — the user got no answer at all, as opposed to a render`,
-    `crash where they got a white screen. Silent below ${threshold} in ${mins}m by design;`,
-    `single failures are usually one user's connection, not a bug.`,
+    klass === 'thin'
+      ? `Silent below ${threshold} in ${mins}m by design — a single empty section is often a correct answer.`
+      : `This is tool_error — the user got no answer at all, as opposed to a render\ncrash where they got a white screen. Silent below ${threshold} in ${mins}m by design;\nsingle failures are usually one user's connection, not a bug.`,
   ].join('\n');
 
-  send(key, `⚠️ ${hits}× ${klass} error: ${esc(tool) || 'unknown tool'}`, body);
+  send(key, `${klass === 'thin' ? '🕳️' : '⚠️'} ${hits}× ${klass}: ${esc(tool) || 'unknown tool'}`, body);
   return { mailed: true, reason: 'threshold-crossed', hits, klass };
 }
 
@@ -303,9 +308,25 @@ function _resetAlertState() {
   suppressedThisWindow = 0;
 }
 
+/**
+ * A valid 200 that came back missing most of its sections. Shares the whole
+ * rate/cooldown/cap machinery with tool_error — it is the same kind of signal
+ * (only meaningful as a rate) and must draw from the same budget.
+ */
+function reportThinResult({ tool, missing, expected, path } = {}) {
+  return reportToolError({
+    tool,
+    path,
+    message: `thin result: ${missing.length}/${expected} sections empty (${missing.slice(0, 6).join(', ')})`,
+    userAgent: '',
+    forceClass: 'thin',
+  });
+}
+
 module.exports = {
   reportRenderCrash,
   reportToolError,
+  reportThinResult,
   classifyError,
   fingerprintOf,
   _resetAlertState,

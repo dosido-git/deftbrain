@@ -5,6 +5,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const { rateLimit, DEFAULT_LIMITS } = require('./lib/rateLimiter');
+const { observeJson } = require('./lib/completeness');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -132,6 +133,39 @@ app.use('/api', (req, res, next) => {
   // Only rate-limit POST requests (the ones that cost money)
   if (req.method !== 'POST') return next();
   rateLimit(DEFAULT_LIMITS)(req, res, next);
+});
+
+// ── Completeness observer ──
+// The third failure a user can have, after "no answer" and "white screen": a
+// valid 200 that renders as a page of empty cards. Nothing throws, so nothing
+// else counts it. See lib/completeness for why this OBSERVES and never guards.
+//
+// Mounted here at app level, deliberately NOT as router.use inside routes/* —
+// that mounts at '/' and runs on every route, which is how the rate-limit leak
+// happened. Wraps res.json only, so streaming responses (res.write) are
+// untouched. Every step is wrapped in try/catch: an observer must never be
+// able to break the response it is observing.
+app.use('/api', (req, res, next) => {
+  if (req.method !== 'POST') return next();
+  const originalJson = res.json.bind(res);
+  res.json = (payload) => {
+    try {
+      // Inside app.use('/api', …) req.path is stripped of the mount point, so
+      // it reads '/plot-twist' where the goldens say '/api/plot-twist'. Rebuild
+      // the full path or nothing ever matches a baseline and the observer is
+      // silently inert — which would look exactly like "no problems found".
+      observeJson({
+        fullPath: (req.baseUrl || '') + req.path,
+        action: req.body && req.body.action,
+        payload,
+        statusCode: res.statusCode,
+      });
+    } catch (err) {
+      console.error('[completeness] observer failed (response unaffected):', err.message);
+    }
+    return originalJson(payload);
+  };
+  next();
 });
 
 // ── Case-insensitive tool route redirect ──

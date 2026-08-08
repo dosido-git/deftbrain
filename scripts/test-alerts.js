@@ -57,7 +57,7 @@ const check = (ok, label, detail) => {
 };
 
 // ── 2. Guards ───────────────────────────────────────────────────────────────
-function testGuards() {
+async function testGuards() {
   console.log('\nGUARDS — render crashes and tool errors (no key, nothing sent)\n');
   process.env.RESEND_API_KEY = 'test-key-never-sent';
   const sent = [];
@@ -137,6 +137,75 @@ function testGuards() {
   check(errorAlerts === 5, 'error alerts take exactly half the hourly cap, no more', `${errorAlerts} of 10`);
   check(sent.length === errorAlerts + 1,
     'a render crash still gets through during an error storm');
+
+  // ── completeness observer: must flag a gutted payload and NOTHING else ──
+  console.log('');
+  const { assess, observeJson, buildIndex, _setIndexForTest, _resetIndex } =
+    require(path.join(__dirname, '..', 'backend', 'lib', 'completeness'));
+  const idx = buildIndex(path.join(__dirname, '..', 'audit'));
+  _setIndexForTest(idx);
+  check(idx.size > 100, 'baselines built from the golden samples', `${idx.size} shape keys`);
+  check(idx.has('/api/pep::generate') && idx.has('/api/pep::forecast'),
+    'action-dispatch endpoints get one baseline per action');
+
+  // Pick a real baseline with plenty of keys and drive it both ways.
+  const [probeKey, probeKeys] = [...idx.entries()].filter(([, v]) => v.length >= 6)[0];
+  const [probeEndpoint, probeAction] = probeKey.split('::');
+  const full = Object.fromEntries(probeKeys.map(k => [k, 'something']));
+  const gutted = Object.fromEntries(probeKeys.slice(0, Math.ceil(probeKeys.length / 3)).map(k => [k, 'x']));
+
+  const okRes = assess(probeEndpoint, probeAction || undefined, full);
+  check(okRes && !okRes.thin, 'a complete answer is NOT flagged', `${probeEndpoint} ${probeKeys.length} keys`);
+  const thinRes = assess(probeEndpoint, probeAction || undefined, gutted);
+  check(thinRes && thinRes.thin, 'an answer missing most sections IS flagged',
+    thinRes ? `${thinRes.missing.length}/${thinRes.expected} missing` : 'no result');
+
+  const oneMissing = { ...full };
+  delete oneMissing[probeKeys[0]];
+  const oneRes = assess(probeEndpoint, probeAction || undefined, oneMissing);
+  check(oneRes && !oneRes.thin, 'ONE missing section is not enough to flag — legit empties exist');
+
+  check(assess('/api/does-not-exist', undefined, { a: 1 }) === null,
+    'no baseline means no opinion, not a false alarm');
+  check(assess(probeEndpoint, probeAction || undefined, { error: 'boom' }) === null,
+    'an error response is left to the error path, not double-counted');
+  check(assess(probeEndpoint, probeAction || undefined, null) === null,
+    'a non-object payload is ignored safely');
+
+  // The full chain: observeJson → metric written → rate-based alert fed.
+  // Proving this without a six-minute model call is why observeJson exists.
+  process.env.METRICS_LOG_FILE = require('os').tmpdir() + '/db-completeness-test.jsonl';
+  try { require('fs').unlinkSync(process.env.METRICS_LOG_FILE); } catch { /* first run */ }
+  process.env.RESEND_API_KEY = 'test-key-never-sent';
+  _resetCrashAlertState(); sent.length = 0;
+
+  const healthy = observeJson({ fullPath: probeEndpoint, action: probeAction || undefined, payload: full, statusCode: 200 });
+  check(healthy.observed && !healthy.thin, 'observeJson: a healthy response records nothing');
+
+  let thinCalls = 0;
+  for (let i = 0; i < 5; i++) {
+    const r = observeJson({ fullPath: probeEndpoint, action: probeAction || undefined, payload: gutted, statusCode: 200 });
+    if (r.thin) thinCalls++;
+  }
+  check(thinCalls === 5, 'observeJson: every thin response is recorded', `${thinCalls}/5`);
+
+  // The sink appends asynchronously (fs.appendFile with a noop callback), so a
+  // synchronous read here races the flush and sees an empty file.
+  await new Promise(r => setTimeout(r, 250));
+  const written = require('fs').readFileSync(process.env.METRICS_LOG_FILE, 'utf8')
+    .trim().split('\n').filter(Boolean).map(JSON.parse);
+  check(written.length === 5 && written.every(r => r.event === 'tool_thin_result'),
+    'each one lands in the metrics sink as tool_thin_result', `${written.length} row(s)`);
+  check(written[0].props.missing.length > 0 && written[0].props.expected > 0,
+    'the metric carries which sections were missing', JSON.stringify(written[0].props.missing.slice(0, 3)));
+  check(sent.length === 1,
+    'and the 5th crosses the thin threshold, mailing exactly once', `${sent.length} email(s) for 5 thin responses`);
+
+  const nonOk = observeJson({ fullPath: probeEndpoint, action: probeAction || undefined, payload: gutted, statusCode: 500 });
+  check(!nonOk.observed, 'a non-200 is left alone — that is the error path, not this one');
+
+  delete process.env.METRICS_LOG_FILE;
+  _resetIndex();
 
   delete process.env.RESEND_API_KEY;
   global.fetch = realFetch;
@@ -239,7 +308,7 @@ async function testEndpoint(base) {
 
 (async () => {
   const wantGuards = has('--guards') || (!has('--send') && !has('--endpoint'));
-  if (wantGuards) testGuards();
+  if (wantGuards) await testGuards();
   if (has('--send')) await testSend();
   if (has('--endpoint')) await testEndpoint(String(val('--endpoint', 'http://localhost:3001')).replace(/\/$/, ''));
 
