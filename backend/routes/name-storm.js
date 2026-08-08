@@ -421,23 +421,25 @@ CRITICAL RULES:
 7. Return ONLY the JSON. No markdown, no preamble.
 8. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const [genA, genB] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 5000,
-        messages: [{ role: 'user', content: genPrompt(cats.slice(0, 3)) }],
-      }, { label: 'NameStorm-genA' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        messages: [{ role: 'user', content: genPrompt(cats.slice(3)) }],
-      }, { label: 'NameStorm-genB' }),
-    ]);
+    // Generation is the long pole of the three stages (pick → generate →
+    // curate, and curate cannot start until every name exists). Two calls split
+    // 3/rest at 5000/3500 left the run at 61s, past the ~60s where Safari
+    // abandons the fetch. Three even chunks at 3000 each cut the pole by a
+    // third; the category partition still guarantees no name is generated twice.
+    const chunkCount = Math.min(3, cats.length);
+    const chunkSize = Math.ceil(cats.length / chunkCount);
+    const chunks = [];
+    for (let i = 0; i < cats.length; i += chunkSize) chunks.push(cats.slice(i, i + chunkSize));
 
-    const namesByCategory = [
-      ...(Array.isArray(genA.names_by_category) ? genA.names_by_category : []),
-      ...(Array.isArray(genB.names_by_category) ? genB.names_by_category : []),
-    ];
+    const gens = await Promise.all(chunks.map((chunk, i) => callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: genPrompt(chunk) }],
+    }, { label: `NameStorm-gen${i + 1}` })));
+
+    // Chunks are contiguous slices, so concatenating keeps the category order
+    // the pick stage chose.
+    const namesByCategory = gens.flatMap(g => (Array.isArray(g.names_by_category) ? g.names_by_category : []));
 
     // Stage 3 — small curation call across ALL generated names.
     const compactList = namesByCategory.flatMap(cat =>

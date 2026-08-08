@@ -122,7 +122,13 @@ ${contextBlocks}`;
     // max_tokens 7500) ran 380s+ on realistic 7-day logs. Two disjoint-key
     // calls sharing the same context roughly halve wall-clock; response shape
     // is unchanged after the merge.
-    const promptAssess = `${sharedHeader}
+    // Parallel-split: the original single mega-schema call (~15 sections at
+    // max_tokens 7500) ran 380s+ on realistic 7-day logs. Two disjoint-key calls
+    // brought that to 61s — still past the ~60s where Safari abandons the fetch,
+    // so the same two schemas are regrouped (programmatically, never re-typed)
+    // into four. Keys stay disjoint, so the merge still reproduces the original
+    // response shape exactly.
+    const prompt_signal = `${sharedHeader}
 
 Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be present — never omit trailing keys:
 
@@ -135,7 +141,6 @@ Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be 
     "trajectory": "declining | stable | improving",
     "crash_severity_predicted": "severe | moderate | mild"
   },
-
   "your_crash_pattern": {
     "pattern_recognition": "Describe their SPECIFIC pattern with numbers — one sentence",
     "identified_indicators": [
@@ -152,36 +157,6 @@ Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be 
       "biometrics": "concerning | watch | normal | not available"
     }
   },
-
-  "biometric_analysis": {
-    "hrv_signal": "What their HRV data shows, or what HRV tracking would reveal if not logged — one sentence",
-    "resting_hr_signal": "Resting heart rate pattern and what it indicates — one sentence",
-    "sleep_data_signal": "What logged sleep hours show vs subjective sleep scores — one sentence",
-    "activity_signal": "Step count / activity pattern and what it indicates — one sentence",
-    "recommendation": "What biometric to start tracking or watch most closely — one sentence"
-  },
-
-  "medication_correlation": {
-    "caffeine_impact": "Analysis of caffeine intake patterns and correlation with sleep/energy — one sentence",
-    "alcohol_impact": "Analysis of alcohol intake and correlation with next-day metrics — one sentence",
-    "medication_notes": "Any medication changes noted and their potential impact on patterns — one sentence",
-    "substance_recommendation": "Specific actionable advice about caffeine/alcohol timing or amounts — one sentence"
-  },
-
-  "menstrual_cycle_correlation": {
-    "current_phase": "follicular | ovulation | luteal | menstrual | not tracked",
-    "energy_pattern": "How cycle phase affects their energy based on logged data — one sentence",
-    "crash_risk_adjustment": "How cycle phase modifies crash risk prediction — one sentence",
-    "cycle_optimized_interventions": "Specific advice for current phase — one sentence"
-  },
-
-  "weather_sensitivity_analysis": {
-    "barometric_pressure_correlation": "Correlation between weather and symptoms if data available — one sentence",
-    "seasonal_pattern": "Any seasonal energy patterns detected — one sentence",
-    "weather_triggered_crashes": "Weather-related crash patterns if any — one sentence",
-    "recommendation": "Actionable weather-related advice — one sentence"
-  },
-
   "warning_signs_present": [
     {
       "sign": "Warning sign name. Nothing else.",
@@ -191,7 +166,6 @@ Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be 
       "days_until_crash_if_persists": 3
     }
   ],
-
   "intervention_escalation": {
     "current_level": "red | orange | yellow | green",
     "level_definitions": {
@@ -206,6 +180,8 @@ Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be 
   }
 }
 
+Your response MUST contain ALL 4 top-level keys: burnout_risk_assessment, your_crash_pattern, warning_signs_present, intervention_escalation — and nothing else. The rest of the report is being written separately.
+
 ${ANALYSIS_PRINCIPLES}
 
 SIZE LIMITS (keep the response bounded):
@@ -215,7 +191,50 @@ Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70
 
 Return ONLY the JSON object.`;
 
-    const promptRecover = `${sharedHeader}
+    const prompt_correlations = `${sharedHeader}
+
+Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be present — never omit trailing keys:
+
+{
+  "biometric_analysis": {
+    "hrv_signal": "What their HRV data shows, or what HRV tracking would reveal if not logged — one sentence",
+    "resting_hr_signal": "Resting heart rate pattern and what it indicates — one sentence",
+    "sleep_data_signal": "What logged sleep hours show vs subjective sleep scores — one sentence",
+    "activity_signal": "Step count / activity pattern and what it indicates — one sentence",
+    "recommendation": "What biometric to start tracking or watch most closely — one sentence"
+  },
+  "medication_correlation": {
+    "caffeine_impact": "Analysis of caffeine intake patterns and correlation with sleep/energy — one sentence",
+    "alcohol_impact": "Analysis of alcohol intake and correlation with next-day metrics — one sentence",
+    "medication_notes": "Any medication changes noted and their potential impact on patterns — one sentence",
+    "substance_recommendation": "Specific actionable advice about caffeine/alcohol timing or amounts — one sentence"
+  },
+  "menstrual_cycle_correlation": {
+    "current_phase": "follicular | ovulation | luteal | menstrual | not tracked",
+    "energy_pattern": "How cycle phase affects their energy based on logged data — one sentence",
+    "crash_risk_adjustment": "How cycle phase modifies crash risk prediction — one sentence",
+    "cycle_optimized_interventions": "Specific advice for current phase — one sentence"
+  },
+  "weather_sensitivity_analysis": {
+    "barometric_pressure_correlation": "Correlation between weather and symptoms if data available — one sentence",
+    "seasonal_pattern": "Any seasonal energy patterns detected — one sentence",
+    "weather_triggered_crashes": "Weather-related crash patterns if any — one sentence",
+    "recommendation": "Actionable weather-related advice — one sentence"
+  }
+}
+
+Your response MUST contain ALL 4 top-level keys: biometric_analysis, medication_correlation, menstrual_cycle_correlation, weather_sensitivity_analysis — and nothing else. The rest of the report is being written separately.
+
+${ANALYSIS_PRINCIPLES}
+
+SIZE LIMITS (keep the response bounded):
+- warning_signs_present: 2-4 items
+
+Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
+
+Return ONLY the JSON object.`;
+
+    const prompt_prevent = `${sharedHeader}
 
 Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be present — never omit trailing keys:
 
@@ -231,7 +250,6 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
       "reframe": "Alternative way to think about this — one sentence"
     }
   ],
-
   "capacity_reality_check": {
     "your_current_capacity": "Percentage or description — one sentence",
     "what_this_means": "Practical implications — one sentence",
@@ -239,7 +257,30 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
     "rest_day_scheduling": "When to schedule recovery — one sentence",
     "future_crash_prevention": "Proactive planning advice — one sentence"
   },
+  "poor_interoception_support": {
+    "objective_data": "Summary of their actual numbers vs what they might feel — one sentence",
+    "trust_the_data": "Direct statement about what the data shows — one sentence",
+    "for_doubters": "Challenge to their denial — one sentence"
+  }
+}
 
+Your response MUST contain ALL 3 top-level keys: preventive_interventions, capacity_reality_check, poor_interoception_support — and nothing else. The rest of the report is being written separately.
+
+${ANALYSIS_PRINCIPLES}
+
+SIZE LIMITS (keep the response bounded):
+- preventive_interventions: 3-5 items
+- recovery_protocol.who_to_notify: 1-3 items
+
+Ground every severity/likelihood judgment in the same logs so it stays consistent with the data.
+
+Return ONLY the JSON object.`;
+
+    const prompt_recover = `${sharedHeader}
+
+Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be present — never omit trailing keys:
+
+{
   "if_youre_already_crashed": {
     "likelihood": "high | moderate | low",
     "recognition": "Signs they might already be in burnout based on their data — one sentence",
@@ -262,7 +303,6 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
     },
     "what_not_to_do": "Common mistakes to avoid during recovery — one sentence"
   },
-
   "recovery_protocol": {
     "who_to_notify": [
       {
@@ -283,13 +323,6 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
       "if_relapse_starting": "Immediate action plan — one sentence"
     }
   },
-
-  "poor_interoception_support": {
-    "objective_data": "Summary of their actual numbers vs what they might feel — one sentence",
-    "trust_the_data": "Direct statement about what the data shows — one sentence",
-    "for_doubters": "Challenge to their denial — one sentence"
-  },
-
   "personalized_recovery_estimate": {
     "if_you_act_now": "Best case scenario with immediate action — one sentence",
     "if_you_wait_1_week": "What happens if they delay — one sentence",
@@ -297,6 +330,8 @@ Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be pr
     "cost_benefit": "Clear math: days lost now vs days lost later — one sentence"
   }
 }
+
+Your response MUST contain ALL 3 top-level keys: if_youre_already_crashed, recovery_protocol, personalized_recovery_estimate — and nothing else. The rest of the report is being written separately.
 
 ${ANALYSIS_PRINCIPLES}
 
@@ -308,22 +343,17 @@ Ground every severity/likelihood judgment in the same logs so it stays consisten
 
 Return ONLY the JSON object.`;
 
-    const [assessPart, recoverPart] = await Promise.all([
+    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const parts = await Promise.all([prompt_signal, prompt_correlations, prompt_prevent, prompt_recover].map((prompt, i) =>
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 4500,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: promptAssess }]
-      }, { label: 'crash-predictor-analyze-assess' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-        messages: [{ role: 'user', content: promptRecover }]
-      }, { label: 'crash-predictor-analyze-recover' }),
-    ]);
+        max_tokens: 3000,
+        system,
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: `crash-predictor-${['signal', 'correlations', 'prevent', 'recover'][i]}` })));
 
-    const parsed = { ...recoverPart, ...assessPart };
+    // Top-level keys are disjoint across the four groups.
+    const parsed = Object.assign({}, ...parts);
 
     if (!parsed.burnout_risk_assessment) {
       throw new Error('Invalid response structure');
