@@ -94,9 +94,28 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
       const historyBlock = buildHistoryBlock(pastSessions);
       const voiceNote = voice ? `\nTONE: ${getVoiceInstruction(voice)}` : '';
 
-      let schema;
+      // ── Parallel split ──────────────────────────────────────────────
+      // This was one 5000-token call, and its latency scaled with task count:
+      // 8 tasks took 52s, 14 took 82s. Safari abandons a fetch at around 60s
+      // and reports "Load failed", so past roughly ten tasks the tool looked
+      // dead to the user while the server was still working on an answer it
+      // would go on to deliver to nobody.
+      //
+      // The per-task arrays are the bulk AND the part that grows — ranking 14
+      // tasks means 14 objects of six fields, plus the anxiety split. The
+      // narrative half is near enough fixed size. Splitting them makes
+      // wall-clock the slower half instead of the sum. Disjoint keys, merged
+      // on return; each half gets more headroom than the whole had before.
+      const prioritiesSchema = `{
+  ${PRIORITY_SCHEMA}
+}`;
+      const anxietySchema    = `{
+  ${ANXIETY_SCHEMA}
+}`;
+
+      let planSchema;
       if (timeframe === 'right_now') {
-        schema = `{
+        planSchema = `{
   "grounding_message": "Warm, specific message for their emotional state. 1-3 sentences.",
   "reality_check": "Honest summary: 'Of your X tasks, only Y actually need to happen today...' — one sentence",
   "tasks_analyzed": ${tasks.length},
@@ -104,22 +123,18 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "can_wait": "number that can wait without real consequences",
   "estimated_time": "realistic time for ONLY the must-dos — one sentence",
   "todays_actual_must_dos": ["Task — brief reason it can't wait"],
-  ${ANXIETY_SCHEMA},
-  ${PRIORITY_SCHEMA},
   "guilt_free_deferrals": ["FULL SENTENCE: task name + specific reasoning + timeline. e.g. 'Your apartment does not need to be clean today. Nobody is coming over. It can wait until Saturday.'"],
   "energy_plan": "Realistic plan for their energy/time. Include breaks. Be specific. — one sentence",
   "overcommitment_warning": "Only if 4+ tasks are genuinely critical, otherwise null — one sentence"
 }`;
       } else if (timeframe === 'this_week') {
-        schema = `{
+        planSchema = `{
   "grounding_message": "Warm, specific message. 1-3 sentences.",
   "reality_check": "Honest summary of their week — is this doable? — one sentence",
   "tasks_analyzed": ${tasks.length},
   "actual_crisis_tasks": "number truly time-sensitive this week — one sentence",
   "can_wait": "number that can wait beyond this week",
   "todays_actual_must_dos": ["1-3 things that must happen TODAY"],
-  ${ANXIETY_SCHEMA},
-  ${PRIORITY_SCHEMA},
   "weekly_plan": [
     {
       "day_label": "Monday|Tuesday|etc.",
@@ -134,15 +149,13 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
   "overcommitment_warning": "If too much for one week — say so. Otherwise null. — one sentence"
 }`;
       } else {
-        schema = `{
+        planSchema = `{
   "grounding_message": "Warm message acknowledging sustained difficulty. 1-3 sentences.",
   "reality_check": "Honest big-picture summary. — one sentence",
   "tasks_analyzed": ${tasks.length},
   "actual_crisis_tasks": "truly time-sensitive in next few weeks — one sentence",
   "can_wait": "can wait beyond this period or be dropped",
   "todays_actual_must_dos": ["1-2 things that must happen TODAY"],
-  ${ANXIETY_SCHEMA},
-  ${PRIORITY_SCHEMA},
   "multi_week_plan": [
     {
       "week_label": "Week 1 (This Week)|Week 2|etc.",
@@ -160,9 +173,7 @@ router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) =
 }`;
       }
 
-      const prompt = `TRIAGE THESE TASKS:
-
-TASKS:
+      const context = `TASKS:
 ${taskList}
 
 PERSON'S STATE:
@@ -174,23 +185,64 @@ ${historyBlock}${voiceNote}
 RULES:
 - Most tasks are NOT critical. Be strict.
 - "I feel like I should" is NOT urgency. "Something irreversible happens" IS urgency.
-- Low energy → fewer tasks, more breaks.
+- Low energy → fewer tasks, more breaks.`;
+
+      const prioritiesPrompt = `TRIAGE THESE TASKS — rank every one of them.
+
+${context}
+
+Return ONLY valid JSON:
+${prioritiesSchema}`;
+
+      const anxietyPrompt = `TRIAGE THESE TASKS — separate real urgency from anxiety.
+
+${context}
+
+Return ONLY valid JSON:
+${anxietySchema}`;
+
+      const planPrompt = `TRIAGE THESE TASKS — the plan, and the reassurance around it.
+
+${context}
 - Grounding message should be warm and specific to their emotional state.
 - guilt_free_deferrals must be FULL SENTENCES explaining WHY it's safe to wait.
 
 Return ONLY valid JSON:
-${schema}`;
+${planSchema}`;
 
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisPrioritize' });
-      if (!parsed.objective_priorities && !parsed.triage) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      // Three ways, not two. A two-way split got 14 tasks from 82s to 60s —
+      // still on Safari's threshold, so the tool would keep failing for the
+      // long lists that need it most. Ranking is the single heaviest key and
+      // deserves a call to itself.
+      const [prioritiesPart, anxietyPart, planPart] = await Promise.all([
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 3000,
+          system: withLanguage(SYSTEM_PROMPT, userLanguage),
+          messages: [{ role: 'user', content: prioritiesPrompt }],
+        }, { label: 'CrisisPrioritize-priorities' }),
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 1800,
+          system: withLanguage(SYSTEM_PROMPT, userLanguage),
+          messages: [{ role: 'user', content: anxietyPrompt }],
+        }, { label: 'CrisisPrioritize-anxiety' }),
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: 3500,
+          system: withLanguage(SYSTEM_PROMPT, userLanguage),
+          messages: [{ role: 'user', content: planPrompt }],
+        }, { label: 'CrisisPrioritize-plan' }),
+      ]);
+      const parsed = { ...planPart, ...anxietyPart, ...prioritiesPart };
+
+      // objective_priorities is top-level and always present in rankSchema, so
+      // it is a valid guard key (S7.13). The old guard also accepted `triage`,
+      // which no schema here has ever produced.
+      if (!parsed.objective_priorities) {
+        return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+      }
+      return res.json(parsed);
     }
 
     // ─── QUICK DUMP (paste paragraph → extract tasks) ───
