@@ -84,10 +84,32 @@ router.post('/plaintalk', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     // DISJOINT top-level keys — "sections" (carries the whole document,
     // verbatim + translation) vs everything else — run via Promise.all and
     // merged back into the ORIGINAL response shape. Frontend unchanged.
-    const promptSections = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+    // The document itself is what makes this half expensive — it is carried
+    // twice, verbatim and translated. For a long document that is unbounded, so
+    // a long one is cut at a paragraph boundary near its midpoint and the two
+    // pieces are translated in parallel. Each call sees only its own piece, so
+    // "every sentence appears in exactly one section" survives by construction;
+    // the merge concatenates in order and renumbers the ids.
+    const SPLIT_MIN_CHARS = 3000;
+    function documentHalves(doc) {
+      if (!doc || doc.length < SPLIT_MIN_CHARS) return null;
+      const paras = doc.split(/\n\s*\n/).filter(x => x.trim());
+      if (paras.length < 2) return null;
+      const target = doc.length / 2;
+      let run = 0, cut = 1, best = Infinity;
+      for (let i = 0; i < paras.length - 1; i++) {
+        run += paras[i].length + 2;
+        const dist = Math.abs(run - target);
+        if (dist < best) { best = dist; cut = i + 1; }
+      }
+      return [paras.slice(0, cut).join('\n\n'), paras.slice(cut).join('\n\n')];
+    }
+    const halves = contentBlocks.length ? null : documentHalves(trimmed);
+
+    const sectionsPrompt = (docText, partNote) => withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
-${trimmed ? `---\n${trimmed}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}
+${docText ? `---\n${docText}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}${partNote}
 ${typeHint}${focusHint}${legalHint}
 
 INSTRUCTIONS:
@@ -114,7 +136,7 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 
 CRITICAL RULES:
 - Your response MUST contain ALL 1 keys: sections.
-- "sections" MUST cover the ENTIRE text — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
+- "sections" MUST cover the ENTIRE text you were given (and only that text) — break it into logical chunks of 1-3 paragraphs each. Every sentence of the original must appear in exactly one section.
 - "original" in each section must be VERBATIM from the input text — do not paraphrase. ONE permitted deviation: replace any double-quote characters from the source with single quotes (') so the JSON stays valid.
 - "translation" must be genuinely plain — imagine explaining to a smart 14-year-old
 - "importance" should be "high" for anything that creates obligations, costs, risks, or deadlines
@@ -127,7 +149,11 @@ CRITICAL RULES:
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
 - Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const promptAnalysis = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+    // The analysis half was itself the floor once grounding came off the
+    // critical path (59s on a 621-character fixture). Split again: what the
+    // document IS and what it means for the reader, vs how it is built and what
+    // its jargon means. Disjoint keys, merged back to the original shape.
+    const promptSummary = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
 
 ANALYZE THIS TEXT:
 ${trimmed ? `---\n${trimmed}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}
@@ -159,15 +185,45 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
     "action_items": ["Things the reader should DO based on this text"],
     "deadlines": ["Any time-sensitive dates, periods, or windows mentioned"]
   },
+  "specialist_suggestion": {
+    "tool": "OfferDissector|DoctorVisitTranslator|BillGuiltEraser|ComplaintEscalationWriter|null",
+    "reason": "Why this specialist tool would help with this specific text, or null if none applies"
+  }
+}
+
+CRITICAL RULES:
+- Your response MUST contain ALL 6 keys: detected_type, detected_type_label, confidence, reading_level, overview, specialist_suggestion.
+- "overview" is the part the reader acts on — put the real answer to their question in "what_matters_to_you".
+- If the text is literary/creative, adapt: "persuasion_techniques" becomes style/voice analysis
+- For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
+- For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
+- For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
+- Be thorough but never pad — only include what's genuinely useful
+- LIMITS: keep every short field to ONE concise sentence. This half no longer shares a token budget with the rest of the report, and without that discipline it runs long and truncates, which 500s the whole tool.
+- Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
+- Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.
+- Another analyst is writing the rest of the report — return ONLY your own keys.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+
+    const promptStructure = withLanguage(`You are PlainTalk, a universal text comprehension expert. Your job: take complex text and make it completely understandable.
+
+ANALYZE THIS TEXT:
+${trimmed ? `---\n${trimmed}\n---` : 'The document is attached above as a PDF. Read it in full and analyze its contents.'}
+${typeHint}${focusHint}${legalHint}
+
+INSTRUCTIONS:
+
+1. AUTO-DETECT the text type if not specified. Categories: legal, medical, academic, financial, technical, literary, political, bureaucratic, scientific, general.
+
+2. Produce a complete analysis with these sections:
+
+Return ONLY valid JSON (no markdown, no code fences, no preamble):
+
+{
   "structure": {
     "architecture": "How the overall text is organized and why (e.g., 'Standard employment contract: definitions → terms → restrictions → termination')",
     "persuasion_techniques": ["Any rhetorical, legal, or structural techniques used to influence the reader"],
     "what_they_buried": "Anything important that was placed in a non-obvious location or wrapped in complex language",
     "internal_contradictions": ["Any places where the text contradicts itself or creates ambiguity"]
-  },
-  "specialist_suggestion": {
-    "tool": "OfferDissector|DoctorVisitTranslator|BillGuiltEraser|ComplaintEscalationWriter|null",
-    "reason": "Why this specialist tool would help with this specific text, or null if none applies"
   },
   "type_insights": {
     "type": "Matches detected_type — legal|medical|academic|financial|technical|literary|political|bureaucratic|scientific|general",
@@ -182,36 +238,59 @@ Return ONLY valid JSON (no markdown, no code fences, no preamble):
 }
 
 CRITICAL RULES:
-- Your response MUST contain ALL 9 keys: detected_type, detected_type_label, confidence, reading_level, overview, structure, specialist_suggestion, type_insights, jargon_glossary.
+- Your response MUST contain ALL 3 keys: structure, type_insights, jargon_glossary.
+- "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
+- "jargon_glossary" should include 5-12 domain-specific terms used in the text (at most 12), each definition ONE short sentence under 15 words. A 3000-token budget truncated this call outright in German, which 500s the whole tool — brevity here is a hard requirement, not a preference.
 - If the text is literary/creative, adapt: "persuasion_techniques" becomes style/voice analysis
 - For medical text: flag anything requiring patient action, consent implications, or risk disclosures. "urgency" should reflect how quickly the reader needs medical attention or follow-up.
 - For legal text: explicitly note any asymmetric obligations (one party has more rights/fewer obligations). "vs_standard" should compare clauses to typical industry practice. "negotiable_items" should list clauses commonly pushed back on.
 - For financial text: identify who bears risk, what fees are hidden, and what the total cost of compliance is
-- "type_insights" must ALWAYS be populated — adapt the fields to the document type. This is the most valuable section for the reader.
-- "jargon_glossary" should include 5-15 domain-specific terms used in the text
 - Be thorough but never pad — only include what's genuinely useful
-- LIMITS: at most 15 jargon_glossary terms. Keep short fields to one concise sentence.
+- LIMITS: keep every short field to ONE concise sentence. This half no longer shares a token budget with the rest of the report, and without that discipline it runs long and truncates, which 500s the whole tool.
 - Recompute any sum, total, or multiplication you state (e.g. monthly cost × months) from its parts before writing it — stated numbers must reconcile with each other and with the document.
-- Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+- Never place a double-quote (") character inside any JSON string value — paraphrase quoted phrases or use single quotes; a literal " breaks the JSON.
+- Another analyst is writing the rest of the report — return ONLY your own keys.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    // Two half-size generations in parallel ≈ halve wall-clock. max_tokens
-    // split 7500/4500 (sum = original 12000): "sections" carries the document
-    // twice (verbatim + translation); analysis half measured ~3.2-3.4k tokens
-    // on the probe doc (EN/DE) — 3000 truncated it, 4500 leaves DE headroom.
-    const [sectionsHalf, analysisHalf] = await Promise.all([
+    // Every call runs concurrently, so the wall-clock is the slowest one rather
+    // than the sum. max_tokens is per call: the sections budget follows how much
+    // document each call actually carries.
+    const PART_1 = '\n\nTHIS IS PART 1 OF 2 of a longer document. The text above is your part in full — analyze only it, do not summarize or reference the rest, and do not add an introduction or conclusion about the whole document.';
+    const PART_2 = '\n\nTHIS IS PART 2 OF 2 of a longer document. The text above is your part in full — analyze only it, do not summarize or reference the rest, and do not add an introduction or conclusion about the whole document.';
+
+    const sectionCalls = halves
+      ? [
+          { prompt: sectionsPrompt(halves[0], PART_1), tokens: 5000, label: 'plain-talk-sections-1' },
+          { prompt: sectionsPrompt(halves[1], PART_2), tokens: 5000, label: 'plain-talk-sections-2' },
+        ]
+      : [{ prompt: sectionsPrompt(trimmed, ''), tokens: 7500, label: 'plain-talk' }];
+
+    const results = await Promise.all([
+      ...sectionCalls.map(c => callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: c.tokens,
+        messages: messagesFor(c.prompt)
+      }, { label: c.label })),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 7500,
-        messages: messagesFor(promptSections)
-      }, { label: 'plain-talk' }),
+        max_tokens: 3000,
+        messages: messagesFor(promptSummary)
+      }, { label: 'plain-talk-summary' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 4500,
-        messages: messagesFor(promptAnalysis)
-      }, { label: 'plain-talk-analysis' })
+        max_tokens: 4000,
+        messages: messagesFor(promptStructure)
+      }, { label: 'plain-talk-structure' }),
     ]);
+    const sectionParts = results.slice(0, sectionCalls.length);
+    const analysisParts = results.slice(sectionCalls.length);
+
     // Disjoint top-level keys — merge back into the original response shape.
-    const parsed = { ...sectionsHalf, ...analysisHalf };
+    // sections is the one key more than one call can emit, so it is
+    // concatenated in document order and the ids renumbered across the join.
+    const parsed = Object.assign({}, ...analysisParts);
+    parsed.sections = sectionParts
+      .flatMap(part => (Array.isArray(part.sections) ? part.sections : []))
+      .map((sec, i) => ({ ...sec, id: `sec_${i + 1}` }));
     // full_translation is no longer model-generated (it fully duplicated the
     // per-section translations, ~tripling output size and hanging real-sized
     // documents — audit 2026-07-19). Sections must cover the entire text, so

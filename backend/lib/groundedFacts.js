@@ -48,54 +48,78 @@ function normalizeKeyPart(s) {
  * @param {string} opts.userPrompt the verification request (ask for ONLY valid JSON)
  * @param {function} opts.render   parsed JSON → facts block string ('' if unusable)
  * @param {number} [opts.ttlMs]    default 14 days
- * @param {number} [opts.maxTokens] default 2500 (1500 truncated on Arabic — 2026-07-23 audit)
+ * @param {number} [opts.maxTokens] default 6000. Was 2500, which truncated the
+ *   search summary outright at max_uses 3 or 2 — so even a pre-pass that beat
+ *   the old timeout threw and cached nothing. Nothing waits on this call now,
+ *   so the budget is free; 6000/max_uses 3 returns 9 verified rules in ~72s.
  * @param {string} [opts.system]   override the default verifier system prompt
  * @returns {Promise<string>} facts block, or '' on any failure
  */
-// timeoutMs bounds the COLD path. This pre-pass runs before the main
-// generation, so its duration is added to every uncached request — and the
-// cache is in-memory, emptied on every deploy, so the first user for a
-// jurisdiction after each deploy pays it in full. plain-talk measured 100s end
-// to end and bill-rescue 57s (that one already noted as "warm"), against the
-// ~60s where Safari abandons a fetch and shows "Load failed".
+// STALE-WHILE-REVALIDATE. This pre-pass used to be awaited, which put its full
+// duration on every uncached request — and the cache is in-memory, emptied on
+// every deploy, so the first user per jurisdiction after each deploy paid it.
+// The 2026-08-07 fix bounded it at 25s; measuring the search itself then showed
+// why that never helped: it takes ~50s regardless of max_uses (3 → 52s, 2 →
+// 52s, 1 → 49s), so the bound fired every single time. Every cold request paid
+// 25s and got an EMPTY block back — the verified-law feature had quietly
+// stopped landing anywhere.
 //
-// Failing open is already this module's contract — it returns '' and the
-// caller's hedge rules take over — so a slow search is treated the same as a
-// failed one. An unverified answer beats no answer.
-async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 2500, system, timeoutMs = 25000 }) {
-  const hit = cache.get(cacheKey);
-  if (hit && hit.expires > Date.now()) return hit.block;
-  if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
+// So the request no longer waits. A cached block is returned immediately; a
+// missing or expired one returns what we have (possibly '') and kicks the
+// search off in the background, so the NEXT request for that jurisdiction is
+// grounded. That is strictly better on both axes than the bounded await: 25s
+// comes off the cold path AND grounding starts landing again.
+//
+// Cost: the first user per jurisdiction after a deploy gets the unverified
+// hedge instead of verified law. Failing open is already this module's
+// contract — the caller's hedge rules take over — so this is the same
+// degradation, just without the 25s wait attached to it.
 
-  const p = (async () => {
-    let timer;
-    try {
-      const facts = await Promise.race([
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: maxTokens,
-          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-          system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label }),
-        new Promise((_, reject) => {
-          timer = setTimeout(() => reject(new Error(`grounding exceeded ${timeoutMs}ms`)), timeoutMs);
-        }),
-      ]);
-      const block = render(stripCites(facts)) || '';
-      store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS);
-      return block;
-    } catch (err) {
-      console.error(`[${label}] grounding pre-pass failed, proceeding unverified:`, err.message);
-      store(cacheKey, '', FAILURE_TTL_MS);
-      return '';
-    } finally {
-      clearTimeout(timer);
-      inFlight.delete(cacheKey);
-    }
-  })();
-  inFlight.set(cacheKey, p);
-  return p;
+async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, system, timeoutMs = 120000 }) {
+  const hit = cache.get(cacheKey);
+  const fresh = hit && hit.expires > Date.now();
+
+  // Refresh whenever we have nothing fresh and nothing already running. Never
+  // awaited — the caller gets today's answer now, the cache gets tomorrow's.
+  if (!fresh && !inFlight.has(cacheKey)) {
+    const p = (async () => {
+      let timer;
+      try {
+        const facts = await Promise.race([
+          callClaudeWithRetry({
+            model: MODELS.SMART,
+            max_tokens: maxTokens,
+            tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+            system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
+            messages: [{ role: 'user', content: userPrompt }],
+          }, { label }),
+          // Nothing is waiting on this, so the bound only stops a hung search
+          // from pinning the in-flight slot forever.
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`grounding exceeded ${timeoutMs}ms`)), timeoutMs);
+          }),
+        ]);
+        const block = render(stripCites(facts)) || '';
+        store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS);
+        if (block) console.log(`[${label}] grounding refreshed in background — later requests for this jurisdiction are verified`);
+        return block;
+      } catch (err) {
+        console.error(`[${label}] background grounding failed, staying unverified:`, err.message);
+        store(cacheKey, hit ? hit.block : '', FAILURE_TTL_MS);
+        return '';
+      } finally {
+        clearTimeout(timer);
+        inFlight.delete(cacheKey);
+      }
+    })();
+    inFlight.set(cacheKey, p);
+    // Best-effort by design: an unhandled rejection here must never take the
+    // process down, and the caller is deliberately not awaiting it.
+    p.catch(() => {});
+  }
+
+  // Stale beats nothing: an expired block is still the last verified law we saw.
+  return hit ? hit.block : '';
 }
 
 function store(key, block, ttlMs) {

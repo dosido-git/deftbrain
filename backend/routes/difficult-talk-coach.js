@@ -51,14 +51,14 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
       return goalMap[g] || g;
     }).join(', ');
 
-    // Split into two parallel calls (jargon-assassin pattern, 2026-07-19):
-    // the single 10-step schema at max_tokens 12000 never returned (<380s)
-    // for realistic inputs. Call A generates the exact-words bulk (approaches,
-    // firmness messages, pushback scripts); call B the analysis/support keys.
-    // Both see the same context; the merge reproduces the original shape.
-    const promptScripts = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.
-
-═══════════════════════════════════════════════
+    // The 2026-07 two-way split rescued this route from never returning, but the
+    // scripts half stayed the floor: 3 full conversation approaches, 3 firmness
+    // messages and 5 pushback scripts out of one call at max_tokens 8000, still
+    // 98s against the ~60s where Safari abandons the fetch. So the scripts half
+    // is itself split, and the approaches are partitioned by strategic angle —
+    // pinned rather than left to the model, because that is what guarantees the
+    // two calls cannot generate the same approach twice.
+    const conversationContext = `═══════════════════════════════════════════════
 CONVERSATION CONTEXT
 ═══════════════════════════════════════════════
 
@@ -70,40 +70,11 @@ GOALS: ${goalsList}
 BIGGEST FEAR: ${biggestFear || 'Not specified'}
 SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
 THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
-PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}
+PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}`;
 
-══════════════════════════════════════════════════
-ANALYSIS INSTRUCTIONS
-══════════════════════════════════════════════════
+    const COACH_INTRO = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.`;
 
-STEP 3 — CONVERSATION APPROACHES
-Generate 3 distinct approaches. Each should be FULLY ADAPTED to this specific relationship, topic, and power dynamic. Do NOT use generic advice — every word should reflect the specific situation described.
-
-Each approach must include:
-- A complete opening (the exact first 2-3 sentences — this is the hardest part)
-- exactly 3 main points to cover, in order of importance
-- Specific phrases calibrated to this relationship (not generic I-statements)
-- A closing that locks in next steps or agreement
-- exactly 3 anticipated responses from the other person with strategic counters
-- What NOT to say (specific to this situation)
-
-STEP 8 — FIRMNESS-LEVEL MESSAGES
-Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
-- Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
-- Balanced (RECOMMENDED): Direct, respectful, no apologies. No softening.
-- Firm: Unambiguous. Includes consequences if boundary isn't respected. Non-negotiable.
-CRITICAL: Remove ALL apologetic qualifiers from each message. Track what was removed in a "removes" array. Messages should be STATEMENTS not questions.
-
-STEP 9 — PUSHBACK SCRIPTS BY REACTION TYPE
-Generate standalone scripts organized by how the other person might react: guilt_trip, anger, negotiation, silent_treatment, deflection. Each script is 1-2 sentences the user can say verbatim regardless of which approach they chose. These restate the boundary without re-explaining or defending.
-
-══════════════════════════════════════════════════
-OUTPUT FORMAT — Return ONLY valid JSON
-══════════════════════════════════════════════════
-
-{
-  "conversation_approaches": [
-    {
+    const APPROACH_SCHEMA = `    {
       "approach_name": "Name",
       "when_to_use": "Specific scenario when this approach is best",
       "tone": "Tone description",
@@ -123,7 +94,90 @@ OUTPUT FORMAT — Return ONLY valid JSON
       ],
       "what_NOT_to_say": ["Specific phrases to avoid in this situation and why"],
       "body_language": ["2-3 physical presence tips specific to this approach"]
-    }
+    }`;
+
+    const APPROACH_RULES = `Each approach must include:
+- A complete opening (the exact first 2-3 sentences — this is the hardest part)
+- exactly 3 main points to cover, in order of importance
+- Specific phrases calibrated to this relationship (not generic I-statements)
+- A closing that locks in next steps or agreement
+- exactly 3 anticipated responses from the other person with strategic counters
+- What NOT to say (specific to this situation)
+
+CRITICAL RULES
+
+1. SPECIFICITY: Every piece of advice must be tailored to THIS topic, THIS relationship, THIS power dynamic. If you could copy-paste your advice to a different situation and it would still work, it's too generic. Make it specific.
+
+2. REALISTIC SCRIPTS: The opening lines and phrases should sound like things a real human would actually say in conversation — not therapy-speak, not corporate HR language. Natural, specific, authentic.
+
+3. ANTICIPATED RESPONSES: This is the most valuable section. Generate exactly 3 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.`;
+
+    // ── Scripts, part 1: the two openings that lead with the relationship ──
+    const promptApproachesA = `${COACH_INTRO}
+
+${conversationContext}
+
+══════════════════════════════════════════════════
+ANALYSIS INSTRUCTIONS
+══════════════════════════════════════════════════
+
+STEP 3 — CONVERSATION APPROACHES (2 of 3)
+Generate EXACTLY 2 approaches, FULLY ADAPTED to this specific relationship, topic, and power dynamic. Do NOT use generic advice — every word should reflect the specific situation described.
+
+Your two approaches, and only these two:
+  1. COLLABORATIVE — opens from shared interest and curiosity about their side, then arrives at the ask.
+  2. DIRECT — names the issue and the ask plainly in the first breath, warmly but without preamble.
+
+A third approach (boundary-and-consequence) is being written separately. Do not write it, and do not reference it.
+
+${APPROACH_RULES}
+
+══════════════════════════════════════════════════
+OUTPUT FORMAT — Return ONLY valid JSON
+══════════════════════════════════════════════════
+
+{
+  "conversation_approaches": [
+${APPROACH_SCHEMA}
+  ]
+}
+
+Return ONLY the JSON object with EXACTLY the one key shown above, containing EXACTLY 2 approaches. No markdown, no preamble.`;
+
+    // ── Scripts, part 2: the firm approach plus the copy-paste messages ──
+    const promptApproachesB = `${COACH_INTRO}
+
+${conversationContext}
+
+══════════════════════════════════════════════════
+ANALYSIS INSTRUCTIONS
+══════════════════════════════════════════════════
+
+STEP 3 — CONVERSATION APPROACHES (3 of 3)
+Generate EXACTLY 1 approach, FULLY ADAPTED to this specific relationship, topic, and power dynamic:
+  3. BOUNDARY — states the boundary and what happens if it is not respected, calmly and without threat.
+
+Two other approaches (collaborative, direct) are being written separately. Do not write them.
+
+${APPROACH_RULES}
+
+STEP 8 — FIRMNESS-LEVEL MESSAGES
+Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
+- Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
+- Balanced (RECOMMENDED): Direct, respectful, no apologies. No softening.
+- Firm: Unambiguous. Includes consequences if boundary isn't respected. Non-negotiable.
+CRITICAL: Remove ALL apologetic qualifiers from each message — "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in a "removes" array. Messages should be STATEMENTS not questions.
+
+STEP 9 — PUSHBACK SCRIPTS BY REACTION TYPE
+Generate standalone scripts organized by how the other person might react: guilt_trip, anger, negotiation, silent_treatment, deflection. Each script is 1-2 sentences the user can say verbatim regardless of which approach they chose. These restate the boundary without re-explaining or defending.
+
+══════════════════════════════════════════════════
+OUTPUT FORMAT — Return ONLY valid JSON
+══════════════════════════════════════════════════
+
+{
+  "conversation_approaches": [
+${APPROACH_SCHEMA}
   ],
 
   "firmness_messages": [
@@ -159,37 +213,25 @@ OUTPUT FORMAT — Return ONLY valid JSON
   }
 }
 
-══════════════════════════════════════════════════
-CRITICAL RULES
-══════════════════════════════════════════════════
+The "level" values must stay exactly gentle, balanced, firm — lowercase English, never translated; the interface switches on them.
+
+Return ONLY the JSON object with EXACTLY the 3 keys shown above, with conversation_approaches containing EXACTLY 1 approach. No markdown, no preamble.`;
+
+    // The analysis half is split too — after the scripts half came down, this
+    // became the floor at 67s. Reading the situation and preparing for it are
+    // independent jobs over the same brief, with no shared keys.
+    const ANALYSIS_RULES = `CRITICAL RULES
 
 1. SPECIFICITY: Every piece of advice must be tailored to THIS topic, THIS relationship, THIS power dynamic. If you could copy-paste your advice to a different situation and it would still work, it's too generic. Make it specific.
 
-2. REALISTIC SCRIPTS: The opening lines and phrases should sound like things a real human would actually say in conversation — not therapy-speak, not corporate HR language. Natural, specific, authentic.
+2. EMOTIONAL HONESTY: If the user's situation is one where the conversation is likely to go badly no matter what, say so. If their goals are unrealistic, gently recalibrate. Don't promise good outcomes — promise the user is doing the right thing by having the conversation.
 
-3. ANTICIPATED RESPONSES: This is the most valuable section. Generate exactly 3 per approach. Include the responses the user is AFRAID of (the ones connected to their stated fears), not just easy softballs.
+3. NO GENERIC FILLER: Body language advice like "maintain eye contact" and "keep arms uncrossed" adds no value. Tell them something specific to their situation.`;
 
-6. FIRMNESS MESSAGES: These must be complete, standalone messages the user can literally copy-paste and send. They are different from the conversation approaches. Remove ALL apologetic qualifiers: "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in the "removes" array.
+    // ── Analysis, part 1: what you are walking into ──
+    const promptRead = `${COACH_INTRO}
 
-7. PUSHBACK SCRIPTS: Write response scripts for each reaction type. Each should be 1-2 sentences the user can say verbatim. Scripts should restate the boundary without re-explaining or defending.
-
-Return ONLY the JSON object with EXACTLY the keys shown above. No markdown, no preamble.`;
-
-    const promptAnalysis = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.
-
-═══════════════════════════════════════════════
-CONVERSATION CONTEXT
-═══════════════════════════════════════════════
-
-TOPIC: ${topic}
-RELATIONSHIP: ${relationship}
-COMMUNICATION STYLE PREFERENCE: ${communicationStyle || 'Direct'}
-EXPECTED RESISTANCE LEVEL: ${resistanceLevel || 50}/100
-GOALS: ${goalsList}
-BIGGEST FEAR: ${biggestFear || 'Not specified'}
-SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
-THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
-PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}
+${conversationContext}
 
 ══════════════════════════════════════════════════
 ANALYSIS INSTRUCTIONS
@@ -209,20 +251,8 @@ Based on the topic, relationship, and the user's stated fear, identify exactly 3
 - What the instinctive (bad) response would be
 - What the strategic (good) response is, and why it works
 
-STEP 4 — BODY LANGUAGE & DELIVERY
-Provide body language and tone guidance SPECIFIC to this relationship and setting. A conversation with a boss requires different physical presence than with a spouse. An assertive boundary-setting conversation requires different energy than a vulnerable apology. Tailor everything.
-
 STEP 5 — DE-ESCALATION TOOLKIT
 Provide de-escalation strategies SPECIFIC to the likely defense mechanisms you identified. If this person is likely to cry, the de-escalation is different than if they're likely to get angry or go silent.
-
-STEP 6 — PREPARATION PLAN
-Give a concrete preparation plan: what to do in the hour before, how to set up the conversation (timing, location, framing), and what to have ready.
-
-STEP 7 — VALIDATION & REALITY CHECK
-Write 2-3 sentences affirming that what the user is asking for is reasonable. Reference their specific situation. Then write a reality check: prepare them for the other person's likely reaction (especially connected to their stated fears). Normalize that reaction and remind them it doesn't mean they're wrong.
-
-STEP 10 — FOLLOW-UP GUIDANCE
-Write 2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.
 
 ══════════════════════════════════════════════════
 OUTPUT FORMAT — Return ONLY valid JSON
@@ -247,15 +277,51 @@ OUTPUT FORMAT — Return ONLY valid JSON
     }
   ],
 
-  "body_language_guidance": {
-  },
-
   "deescalation_toolkit": {
     "for_their_likely_defense": "Specific strategies for the defense mechanisms you predicted — not generic phrases",
     "tension_lowering_phrases": ["4-5 phrases calibrated to this specific relationship and topic"],
     "if_they_shut_down": "What to do if they go completely silent or refuse to engage",
     "if_they_escalate": "What to do if they raise their voice, attack, or get aggressive",
     "exit_protocol": "When to end the conversation and exactly how to do it gracefully"
+  }
+}
+
+${ANALYSIS_RULES}
+
+Return ONLY the JSON object with EXACTLY the 3 keys shown above. No markdown, no preamble.`;
+
+    // ── Analysis, part 2: how to show up, and what happens afterwards ──
+    const promptPrepare = `${COACH_INTRO}
+
+${conversationContext}
+
+══════════════════════════════════════════════════
+ANALYSIS INSTRUCTIONS
+══════════════════════════════════════════════════
+
+STEP 4 — BODY LANGUAGE & DELIVERY
+Provide body language and tone guidance SPECIFIC to this relationship and setting. A conversation with a boss requires different physical presence than with a spouse. An assertive boundary-setting conversation requires different energy than a vulnerable apology. Tailor everything.
+
+STEP 6 — PREPARATION PLAN
+Give a concrete preparation plan: what to do in the hour before, how to set up the conversation (timing, location, framing), and what to have ready.
+
+STEP 7 — VALIDATION & REALITY CHECK
+Write 2-3 sentences affirming that what the user is asking for is reasonable. Reference their specific situation. Then write a reality check: prepare them for the other person's likely reaction (especially connected to their stated fears). Normalize that reaction and remind them it doesn't mean they're wrong.
+
+STEP 10 — FOLLOW-UP GUIDANCE
+Write 2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.
+
+══════════════════════════════════════════════════
+OUTPUT FORMAT — Return ONLY valid JSON
+══════════════════════════════════════════════════
+
+{
+  "body_language_guidance": {
+    "posture": "Specific physical stance for THIS setting and relationship",
+    "eye_contact": "What to do with your gaze, specific to this dynamic",
+    "voice": "Pace, volume and tone calibrated to this conversation",
+    "hands": "What to do with your hands so you read as calm, not defensive",
+    "if_you_freeze": "The physical reset to use if your body locks up mid-conversation"
   },
 
   "preparation_plan": {
@@ -283,41 +349,66 @@ OUTPUT FORMAT — Return ONLY valid JSON
   "reassurance_badges": ["This is reasonable", "You're not being mean", "Their discomfort ≠ you're wrong"]
 }
 
-══════════════════════════════════════════════════
-CRITICAL RULES
-══════════════════════════════════════════════════
+${ANALYSIS_RULES}
 
-1. SPECIFICITY: Every piece of advice must be tailored to THIS topic, THIS relationship, THIS power dynamic. If you could copy-paste your advice to a different situation and it would still work, it's too generic. Make it specific.
+4. REASSURANCE BADGES: Generate 3 short affirmation phrases (5-8 words each) specific to this situation. These are small psychological anchors the user can refer back to.
 
-4. EMOTIONAL HONESTY: If the user's situation is one where the conversation is likely to go badly no matter what, say so. If their goals are unrealistic, gently recalibrate. Don't promise good outcomes — promise the user is doing the right thing by having the conversation.
+5. BODY LANGUAGE GUIDANCE: every value is a plain sentence — never a nested object or list. The interface prints these key/value pairs directly.
 
-5. NO GENERIC FILLER: Body language advice like "maintain eye contact" and "keep arms uncrossed" adds no value. Tell them something specific to their situation.
-
-8. REASSURANCE BADGES: Generate 3 short affirmation phrases (5-8 words each) specific to this situation. These are small psychological anchors the user can refer back to.
-
-Return ONLY the JSON object with EXACTLY the keys shown above. No markdown, no preamble.`;
+Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no preamble.`;
 
 
-    const systemPrompt = withLanguage(
-      `You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items. ${NO_QUOTE_RULE}`,
-      userLanguage
-    );
+    // withLanguage is applied per call, not shared: the S7.4 parity check counts
+    // withLanguage() calls against Anthropic calls in the file.
+    const systemBase = `You are an expert communication coach and conflict resolution specialist. Return ONLY valid JSON matching the exact schema requested. No markdown, no preamble. LENGTH DISCIPLINE (critical): every field is at most 1-2 sentences, EXCEPT validation, reality_check, and follow_up_guidance which are 2-3 sentences. Scripts and phrases are what a person would actually say — tight, not speeches. Do not pad, restate, or repeat content across fields. Respect the exact array counts in the schema; never add extra items. ${NO_QUOTE_RULE}`;
 
-    const [scriptsPart, analysisPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 8000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: promptScripts }]
-      }, { label: 'DifficultTalkCoach-scripts' }),
+    const [approachesA, approachesB, readPart, preparePart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 5000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: promptAnalysis }]
-      }, { label: 'DifficultTalkCoach-analysis' }),
+        system: withLanguage(systemBase, userLanguage),
+        messages: [{ role: 'user', content: promptApproachesA }]
+      }, { label: 'DifficultTalkCoach-approaches-a' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 4500,
+        system: withLanguage(systemBase, userLanguage),
+        messages: [{ role: 'user', content: promptApproachesB }]
+      }, { label: 'DifficultTalkCoach-approaches-b' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(systemBase, userLanguage),
+        messages: [{ role: 'user', content: promptRead }]
+      }, { label: 'DifficultTalkCoach-read' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(systemBase, userLanguage),
+        messages: [{ role: 'user', content: promptPrepare }]
+      }, { label: 'DifficultTalkCoach-prepare' }),
     ]);
-    const parsed = { ...analysisPart, ...scriptsPart };
+    // conversation_approaches is the one key both scripts calls emit, so it is
+    // concatenated rather than overwritten — collaborative and direct first,
+    // then boundary, which is the escalating order the tool has always shown.
+    const parsed = {
+      ...readPart,
+      ...preparePart,
+      ...approachesB,
+      conversation_approaches: [
+        ...(Array.isArray(approachesA.conversation_approaches) ? approachesA.conversation_approaches : []),
+        ...(Array.isArray(approachesB.conversation_approaches) ? approachesB.conversation_approaches : []),
+      ],
+    };
+    // The interface prints body_language_guidance's key/value pairs straight
+    // into JSX, so a nested object there is a blank-page crash, not a typo.
+    if (parsed.body_language_guidance && typeof parsed.body_language_guidance === 'object') {
+      for (const [k, v] of Object.entries(parsed.body_language_guidance)) {
+        if (v !== null && typeof v === 'object') {
+          parsed.body_language_guidance[k] = Array.isArray(v) ? v.filter(x => typeof x === 'string').join(' ') : Object.values(v).filter(x => typeof x === 'string').join(' ');
+        }
+      }
+    }
 
     if (!parsed.situation_reading && !parsed.scripts) {
       return res.status(500).json({ error: 'Could not coach this conversation. Please try again.' });

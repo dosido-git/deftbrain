@@ -137,7 +137,17 @@ RESOURCES FOR ${location}:
 
     // Sub-schemas below are EXACT copies of the original mega-schema key blocks
     // (only regrouped) — do not re-word; the frontend renders these fields verbatim.
-    const schemaA = `{
+        // Sub-schemas below are EXACT copies of the original mega-schema key blocks
+    // (only regrouped, programmatically) — do not re-word; the frontend renders
+    // these fields verbatim.
+    //
+    // Regrouped from two calls into four on 2026-08-08. Two was not enough on
+    // either axis: the golden Spanish case measured 90s against the ~60s where
+    // Safari abandons the fetch, and it also 500s outright on some runs —
+    // "[lease-trap-detector-core] Response truncated at max_tokens=5000". Four
+    // calls give each group its own budget, so the same total output no longer
+    // has to fit one ceiling, and the wall-clock is the slowest quarter.
+    const schemaRisk = `{
   "overall_assessment": {
     "risk_level": "high | medium | low",
     "major_concerns_count": number,
@@ -158,6 +168,20 @@ RESOURCES FOR ${location}:
       "negotiation_script": "specific language to use when pushing back — 2 short sentences"
     }
   ],
+  "negotiation_strategy": {
+    "opening_email": "email/letter opening to send to landlord — 2-3 short sentences",
+    "key_points": ["prioritized list of negotiation points"],
+    "stand_firm_on": ["non-negotiable items"],
+    "if_they_say_scripts": [
+      {
+        "landlord_says": "common landlord pushback — one sentence",
+        "you_respond": "effective response — one sentence"
+      }
+    ]
+  }
+}`;
+
+    const schemaFlags = `{
   "yellow_flags": [
     {
       "lease_reference": "Section/paragraph/page reference. Nothing else.",
@@ -173,21 +197,10 @@ RESOURCES FOR ${location}:
       "clause_text": "good clause from the lease — one sentence",
       "why_good": "why this protects the tenant — one sentence"
     }
-  ],
-  "negotiation_strategy": {
-    "opening_email": "email/letter opening to send to landlord — 2-3 short sentences",
-    "key_points": ["prioritized list of negotiation points"],
-    "stand_firm_on": ["non-negotiable items"],
-    "if_they_say_scripts": [
-      {
-        "landlord_says": "common landlord pushback — one sentence",
-        "you_respond": "effective response — one sentence"
-      }
-    ]
-  }
+  ]
 }`;
 
-    const schemaB = `{
+    const schemaMoney = `{
   "financial_summary": {
     "monthly_rent": "base rent amount from lease — one sentence",
     "security_deposit": "deposit amount — one sentence",
@@ -199,13 +212,6 @@ RESOURCES FOR ${location}:
     "worst_case_penalties": "total exposure if all penalties triggered (late fees, early termination, etc.) — one sentence",
     "financial_red_flags": ["brief financial concerns"]
   },
-  "noticed": [
-    {
-      "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant real money or strips a protection they would otherwise have. A term that is standard, or that already favours the tenant, is NEVER worth raising however true it is — normal venue, an ordinary late fee, a refundable pet deposit, a routine notice period are all fine and must be left alone. Do not reach: if you are describing an omission rather than a harm, leave it out. Two entries is a lot; zero is the expected answer for an unremarkable lease and an empty array is the correct response, not a failure.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: BillRescue or RentersDepositSaver or ComplaintEscalationWriter or MoneyDiplomat or JargonAssassin or VelvetHammer or DifficultTalkCoach",
-      "why": "One short sentence on what that tool would do about it"
-    }
-  ],
   "security_deposit_analysis": {
     "lease_deposit_amount": "what the lease charges (number)",
     "legal_maximum": "maximum allowed by law in ${location} — one sentence",
@@ -216,6 +222,25 @@ RESOURCES FOR ${location}:
     "walkthrough_required": true/false,
     "issues_found": ["deposit-related problems in this lease, including deduction concerns"]
   },
+  "unusual_fees": [
+    {
+      "fee_name": "name of the fee — 3-6 words",
+      "amount": "fee amount in the user's local currency",
+      "is_typical": true/false,
+      "is_legal": "yes | no | depends on jurisdiction",
+      "negotiation_strategy": "how to push back on this fee — one sentence"
+    }
+  ]
+}`;
+
+    const schemaGaps = `{
+  "noticed": [
+    {
+      "what": "Something concrete this specific lease contains that the tenant did NOT ask about, stated plainly with the actual figure or clause. Include it ONLY if it costs the tenant real money or strips a protection they would otherwise have. A term that is standard, or that already favours the tenant, is NEVER worth raising however true it is — normal venue, an ordinary late fee, a refundable pet deposit, a routine notice period are all fine and must be left alone. Do not reach: if you are describing an omission rather than a harm, leave it out. Two entries is a lot; zero is the expected answer for an unremarkable lease and an empty array is the correct response, not a failure.",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: BillRescue or RentersDepositSaver or ComplaintEscalationWriter or MoneyDiplomat or JargonAssassin or VelvetHammer or DifficultTalkCoach",
+      "why": "One short sentence on what that tool would do about it"
+    }
+  ],
   "unenforceable_clauses": [
     {
       "lease_reference": "Section/paragraph/page reference. Nothing else.",
@@ -233,15 +258,6 @@ RESOURCES FOR ${location}:
       "how_to_add": "specific language to request adding — one sentence"
     }
   ],
-  "unusual_fees": [
-    {
-      "fee_name": "name of the fee — 3-6 words",
-      "amount": "fee amount in the user's local currency",
-      "is_typical": true/false,
-      "is_legal": "yes | no | depends on jurisdiction",
-      "negotiation_strategy": "how to push back on this fee — one sentence"
-    }
-  ],
   "resources": [
     {
       "resource": "organization name or type. Nothing else.",
@@ -251,6 +267,7 @@ RESOURCES FOR ${location}:
   ]
 }`;
 
+    
     const criticalRules = `CRITICAL RULES:
 - Every flag MUST include a lease_reference citing the section, paragraph, page, or clause number
 - Cite SPECIFIC laws and statutes for ${location}
@@ -268,33 +285,30 @@ OUTPUT FORMAT
 
 Return ONLY valid JSON (no markdown, no preamble):`;
 
-    const promptA = `${sharedContext}
+    const promptFor = (schema, keyList) => `${sharedContext}
 
 ${outputHeader}
 
-${schemaA}
+${schema}
 
-Your response MUST contain ALL 5 top-level keys: overall_assessment, red_flags, yellow_flags, green_flags, negotiation_strategy.
-
-${criticalRules}`;
-
-    const promptB = `${sharedContext}
-
-${outputHeader}
-
-${schemaB}
-
-Your response MUST contain ALL 7 top-level keys: noticed, financial_summary, security_deposit_analysis, unenforceable_clauses, missing_protections, unusual_fees, resources.
+Your response MUST contain ALL ${keyList.length} top-level keys: ${keyList.join(', ')}. Return nothing else — the rest of the report is being written separately.
 
 ${criticalRules}`;
 
-    // Grounded VERIFIED CURRENT TENANT LAW block is appended to BOTH split
+    const GROUPS = [
+      { label: 'risk',      schema: schemaRisk,  keys: ['overall_assessment', 'red_flags', 'negotiation_strategy'] },
+      { label: 'flags',     schema: schemaFlags, keys: ['yellow_flags', 'green_flags'] },
+      { label: 'money',     schema: schemaMoney, keys: ['financial_summary', 'security_deposit_analysis', 'unusual_fees'] },
+      { label: 'gaps',      schema: schemaGaps,  keys: ['noticed', 'unenforceable_clauses', 'missing_protections', 'resources'] },
+    ];
+
+    // Grounded VERIFIED CURRENT TENANT LAW block is appended to ALL split
     // prompts; its override rule lives in the shared LEGAL RESEARCH REQUIREMENTS
-    // text, which both prompts also carry.
+    // text, which every prompt also carries.
     const verifiedLawBlock = await groundTenantLawFacts({ location, userLanguage });
 
     // contentBlocks (optional PDF document block + instruction text) is shared by
-    // both calls; each call appends its own prompt as the final text block — same
+    // every call; each call appends its own prompt as the final text block — same
     // array shape as the original single call. withLanguage does string
     // interpolation, which would stringify the array and destroy the PDF for
     // non-English users. The output-language directive already lives in `system` below.
@@ -305,25 +319,18 @@ ${criticalRules}`;
 
     let parsed;
     try {
-      const [core, extras] = await Promise.all([
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          // Single-call budget was 10000 (7000 truncated on EVERY non-Latin-script
-          // call — 2026-07-23 audit). Split halves get 5000 each; sum unchanged.
-          max_tokens: 5000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-          messages: messagesFor(promptA),
-        }, { label: 'lease-trap-detector-core' }),
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 5000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-          messages: messagesFor(promptB),
-        }, { label: 'lease-trap-detector-financial' }),
-      ]);
-      // Top-level keys are disjoint across the two schemas — merging reconstructs
-      // the original response shape exactly.
-      parsed = { ...extras, ...core };
+      const groups = await Promise.all(GROUPS.map(g => callClaudeWithRetry({
+        model: MODELS.SMART,
+        // Single-call budget was 10000, then 5000 per half — which truncated on
+        // real Spanish leases. Four groups at 4000 is more headroom per key than
+        // either, and no group has to carry another group's output.
+        max_tokens: 4000,
+        system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: messagesFor(promptFor(g.schema, g.keys)),
+      }, { label: `lease-trap-detector-${g.label}` })));
+      // Top-level keys are disjoint across the four schemas — merging
+      // reconstructs the original response shape exactly.
+      parsed = Object.assign({}, ...groups);
     } catch (err) {
       return handleAiError(res, err, 'The analysis came out too detailed to complete in one pass. Try again — or paste just the sections you care about most.');
     }
