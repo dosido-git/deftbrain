@@ -23,7 +23,12 @@ router.post('/dream-pattern-spotter-single', rateLimit(DEFAULT_LIMITS), async (r
       ? `Life context: ${lifeContext}`
       : 'No life context provided';
 
-    const prompt = `You are a depth psychology analyst and sleep scientist trained in Jungian, Freudian, modern neuroscience, trauma psychology, and lucid dreaming techniques.
+    // One 10-key schema at max_tokens 6000 measured 75-79s — past the ~60s where
+    // Safari abandons the fetch. The clinical half also carries most of the
+    // reference material (nightmare criteria, IRT, lucid dream signs, reality
+    // checks), so splitting it off shortens both prompts as well as the output.
+    // Disjoint top-level keys, merged back to the original response shape.
+    const brief = `You are a depth psychology analyst and sleep scientist trained in Jungian, Freudian, modern neuroscience, trauma psychology, and lucid dreaming techniques.
 
 DREAM:
 Date: ${date}
@@ -37,14 +42,23 @@ CRITICAL FRAMEWORK:
 - Dreams reflect subconscious processing, emotions, and memory consolidation
 - MULTIPLE interpretation possibilities from different schools
 - NEVER definitive ("this means X") - always tentative ("could suggest")
-- Assess for nightmare patterns, PTSD indicators, lucid dreaming potential
 - Ground in psychology and sleep research
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
 - Keep every string field to a single sentence unless a length is stated. Never pad or restate.
-- Hard caps: themes ≤ 3, symbols ≤ 4 (≤ 2 interpretation_options each), dream_signs_identified ≤ 3, reality_check_recommendations ≤ 2, ptsd_indicators ≤ 3, intervention_suggestions ≤ 2, life_event_connections ≤ 3, reflection_questions ≤ 4, clinical_priority_areas ≤ 3, recommended_interventions ≤ 3.
 
-Return ONLY this JSON structure (NO markdown):
+Keep enum values exactly as listed, in English (type, intensity, severity, category, lucid_potential) — the interface switches on them. Never append annotations or translations to enum values.
+
+Your response must be complete, valid JSON that closes every bracket — do not truncate.
+
+Never place a double-quote (") character inside any JSON string value — write quoted dream phrases or examples plainly or with single quotes, or it breaks the JSON.
+
+You are producing ONE PART of the analysis. Another analyst is producing the other part — return only your own keys, and return ONLY the JSON object (NO markdown).`;
+
+    // ── Part A: what the dream is made of and what it may be working through ──
+    const interpretationPrompt = `${brief}
+
+YOUR PART: classification, themes, symbols, the emotional content, and what in waking life it may connect to.
 
 {
   "dream_classification": {
@@ -52,7 +66,7 @@ Return ONLY this JSON structure (NO markdown):
     "intensity": "low | moderate | high",
     "nightmare_assessment": "If nightmare: severity and characteristics, else: not a nightmare — 1-2 sentences"
   },
-  
+
   "themes": [
     {
       "theme": "Theme name — 3-6 words",
@@ -65,7 +79,7 @@ Return ONLY this JSON structure (NO markdown):
       }
     }
   ],
-  
+
   "symbols": [
     {
       "symbol": "Specific symbol — one sentence",
@@ -78,43 +92,7 @@ Return ONLY this JSON structure (NO markdown):
       "reflection_prompt": "Question for dreamer — one sentence"
     }
   ],
-  
-  "lucid_dreaming_analysis": {
-    "dream_signs_identified": [
-      {
-        "sign": "Impossible or improbable element (e.g., 'can fly', 'dead person alive', 'teleportation') — one sentence",
-        "category": "impossibility | improbability | anomaly | emotion",
-        "how_to_use": "If this appears again, do reality check — one sentence"
-      }
-    ],
-    "reality_check_recommendations": [
-      "Specific reality check for identified dream signs"
-    ],
-    "lucid_potential": "low | moderate | high"
-  },
-  
-  "nightmare_analysis": {
-    "is_nightmare": true/false,
-    "severity": "mild | moderate | severe | not applicable",
-    "nightmare_type": "Anxiety nightmare | Trauma nightmare | Idiopathic nightmare | Not nightmare",
-    "ptsd_indicators": [
-      "If applicable: trauma re-experiencing, hyperarousal, avoidance themes"
-    ],
-    "intervention_suggestions": [
-      "Imagery Rehearsal Therapy steps",
-      "Nightmare rescripting technique",
-      "When to seek professional help"
-    ],
-    "professional_help_recommended": true/false
-  },
-  
-  "sleep_quality_analysis": {
-    "rem_sleep_indicators": "Vivid dreams suggest REM sleep occurred — one sentence",
-    "sleep_quality_correlation": "If sleep data provided: how quality affects dreams — one sentence",
-    "dream_recall_factors": "What affects remembering this dream — one sentence",
-    "sleep_disruption_patterns": "If applicable: how sleep issues show in dream — one sentence"
-  },
-  
+
   "emotional_significance": {
     "dominant_emotions": ["emotion1", "emotion2"],
     "emotional_processing": "What emotions being processed — one sentence",
@@ -129,6 +107,60 @@ Return ONLY this JSON structure (NO markdown):
     }
   ],
 
+  "reflection_questions": [
+    "Open question for journaling or therapy"
+  ]
+}
+
+ARRAY CAPS (hard limits — keep the response compact):
+- themes: max 3 items
+- symbols: max 4 items
+- interpretation_options: max 2 items per symbol
+- life_event_connections: max 3 items (empty array if no life context to connect)
+- reflection_questions: max 4 items`;
+
+    // ── Part B: the clinical read — nightmares, lucidity, sleep, hand-off ──
+    const clinicalPrompt = `${brief}
+
+YOUR PART: the assessments — nightmare and PTSD screening, lucid dreaming potential, sleep quality, the overall insights, and the therapist hand-off.
+
+{
+  "lucid_dreaming_analysis": {
+    "dream_signs_identified": [
+      {
+        "sign": "Impossible or improbable element (e.g., 'can fly', 'dead person alive', 'teleportation') — one sentence",
+        "category": "impossibility | improbability | anomaly | emotion",
+        "how_to_use": "If this appears again, do reality check — one sentence"
+      }
+    ],
+    "reality_check_recommendations": [
+      "Specific reality check for identified dream signs"
+    ],
+    "lucid_potential": "low | moderate | high"
+  },
+
+  "nightmare_analysis": {
+    "is_nightmare": true/false,
+    "severity": "mild | moderate | severe | not applicable",
+    "nightmare_type": "Anxiety nightmare | Trauma nightmare | Idiopathic nightmare | Not nightmare",
+    "ptsd_indicators": [
+      "If applicable: trauma re-experiencing, hyperarousal, avoidance themes"
+    ],
+    "intervention_suggestions": [
+      "Imagery Rehearsal Therapy steps",
+      "Nightmare rescripting technique",
+      "When to seek professional help"
+    ],
+    "professional_help_recommended": true/false
+  },
+
+  "sleep_quality_analysis": {
+    "rem_sleep_indicators": "Vivid dreams suggest REM sleep occurred — one sentence",
+    "sleep_quality_correlation": "If sleep data provided: how quality affects dreams — one sentence",
+    "dream_recall_factors": "What affects remembering this dream — one sentence",
+    "sleep_disruption_patterns": "If applicable: how sleep issues show in dream — one sentence"
+  },
+
   "insights": {
     "overall_assessment": "Big-picture reading of this dream — 2-3 sentences",
     "therapeutic_value": "What exploring this dream could offer — 1-2 sentences",
@@ -137,10 +169,6 @@ Return ONLY this JSON structure (NO markdown):
     "nightmare_prognosis": "If nightmare: likely trajectory with/without intervention, else: not applicable — one sentence",
     "sleep_health_assessment": "What this dream suggests about sleep health — one sentence"
   },
-
-  "reflection_questions": [
-    "Open question for journaling or therapy"
-  ],
 
   "therapist_export_summary": {
     "classification": "Clinical-style dream classification — one sentence",
@@ -155,20 +183,11 @@ Return ONLY this JSON structure (NO markdown):
 }
 
 ARRAY CAPS (hard limits — keep the response compact):
-- themes: max 5 items
-- symbols: max 5 items
-- interpretation_options: max 3 items per symbol
 - dream_signs_identified: max 3 items
-- reality_check_recommendations: max 3 items
+- reality_check_recommendations: max 2 items
 - ptsd_indicators: max 3 items (empty array if not applicable)
-- intervention_suggestions: max 3 items
-- life_event_connections: max 3 items (empty array if no life context to connect)
-- reflection_questions: max 4 items
+- intervention_suggestions: max 2 items
 - clinical_priority_areas / recommended_interventions: max 3 items each
-
-Keep enum values exactly as listed, in English (type, intensity, severity, category, lucid_potential) — the interface switches on them. Never append annotations or translations to enum values.
-
-Your response must be complete, valid JSON that closes every bracket — do not truncate.
 
 NIGHTMARE ASSESSMENT CRITERIA:
 - Wakes dreamer from sleep
@@ -212,17 +231,23 @@ SLEEP QUALITY FACTORS:
 - Alcohol/drugs = suppressed REM, rebound effect
 - Sleep fragmentation = less dream recall
 
-Generate psychological insights that promote understanding and healing.
+Generate psychological insights that promote understanding and healing.`;
 
-Never place a double-quote (") character inside any JSON string value — write quoted dream phrases or examples plainly or with single quotes, or it breaks the JSON.
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [interpretation, clinical] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: withLanguage(interpretationPrompt, userLanguage) + locale }]
+      }, { label: 'dream-pattern-spotter:interpretation' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: withLanguage(clinicalPrompt, userLanguage) + locale }]
+      }, { label: 'dream-pattern-spotter:clinical' }),
+    ]);
 
-Return ONLY the JSON object.`;
-
-    const results = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 6000,
-      messages: [{role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)}]
-    }, { label: 'dream-pattern-spotter' });
+    const results = { ...clinical, ...interpretation };
 
     if (!results.themes || !results.symbols) {
       return res.status(500).json({ error: 'Could not analyze your dream. Please try again.' });

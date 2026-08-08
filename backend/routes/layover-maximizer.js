@@ -36,7 +36,12 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.`;
 
-    const userPrompt = `LAYOVER ANALYSIS:
+    // One 12-key schema at max_tokens 4000 measured 67-68s — past the ~60s where
+    // Safari abandons the fetch. The tool already asks two questions (do I leave,
+    // or do I stay?), so that is the seam. The time math and the verdict it
+    // decides stay in the same call, or the two halves could disagree about how
+    // long the traveller actually has. Merged back to the original shape.
+    const brief = `LAYOVER ANALYSIS:
 Airport: ${airport}
 Layover duration: ${layoverHours} hours
 ${nationality ? `Nationality/passport: ${nationality}` : ''}
@@ -47,7 +52,14 @@ ${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : ''}
 ${arrivalTime ? `Arrival time: ${arrivalTime}` : ''}
 ${travelStyle ? `Travel style: ${travelStyle}` : ''}
 
-Return ONLY valid JSON:
+You are answering ONE HALF of this question. Another planner is answering the other half — return only your own keys.`;
+
+    // ── Part A: can they leave, and what does the clock actually allow ──
+    const leavePrompt = `${brief}
+
+YOUR PART: the verdict, the time arithmetic behind it, and the plan for leaving the airport.
+
+Return ONLY valid JSON with EXACTLY these nine top-level keys:
 {
   "airport_name": "Full airport name — 3-6 words",
   "airport_code": "IATA code — one sentence",
@@ -99,6 +111,18 @@ Return ONLY valid JSON:
     "warnings": ["Any important warnings about leaving (visa, bags, terminal change, etc.)"]
   },
 
+  "terminal_change_warning": "If arriving and departing from different terminals, explain how to transfer and how long it takes. null if same terminal or unknown. — one sentence"
+}
+
+AT MOST 3 transit_options, 4 stops, 3 warnings.`;
+
+    // ── Part B: what the airport itself offers if they stay ──
+    const stayPrompt = `${brief}
+
+YOUR PART: what is inside the airport, for a traveller who stays airside.
+
+Return ONLY valid JSON with EXACTLY these two top-level keys:
+{
   "stay_in_airport": {
     "terminal_info": "Which terminal(s) you'll be in and whether you can move between them — one sentence",
     "food": [
@@ -131,17 +155,27 @@ Return ONLY valid JSON:
     }
   },
 
-  "terminal_change_warning": "If arriving and departing from different terminals, explain how to transfer and how long it takes. null if same terminal or unknown. — one sentence",
-
   "pro_tips": ["3-5 airport-specific pro tips that frequent travelers would know"]
-}`;
+}
 
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'layover-maximizer' });
+AT MOST 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
+
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [leavePart, stayPart] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage(systemPrompt, userLanguage) + locale,
+        messages: [{ role: 'user', content: leavePrompt }],
+      }, { label: 'layover-maximizer:leave' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(systemPrompt, userLanguage) + locale,
+        messages: [{ role: 'user', content: stayPrompt }],
+      }, { label: 'layover-maximizer:stay' }),
+    ]);
+    const parsed = { ...stayPart, ...leavePart };
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }
