@@ -6,6 +6,7 @@ const nodePath = require('path');
 const geoip = require('geoip-lite');
 const crypto = require('crypto');
 const { isDatacenterIp, rangeCount: DC_RANGE_COUNT } = require('../lib/datacenterIp');
+const { reportRenderCrash } = require('../lib/crashAlert');
 function keyMatches(provided, expected) {
   if (!expected || typeof provided !== 'string') return false;
   const a = Buffer.from(provided), b = Buffer.from(expected);
@@ -143,6 +144,24 @@ router.post('/events', rateLimit(METRIC_LIMITS, 'metrics:'), (req, res) => {
     ...(sawGuide === true ? { sawGuide: true } : {}),
     ...(location ? { location } : {}),
   });
+  // A render crash is the one beacon worth waking someone for: the response was
+  // a valid 200 and the user still got a white screen, so nothing else in the
+  // stack reports it. Deduped, cooled down and hard-capped inside crashAlert —
+  // this endpoint is public, so it must never become an email amplifier. Runs
+  // after isExcluded, so bot traffic can't trigger mail. Never blocks the 204.
+  if (event === 'tool_render_error') {
+    try {
+      reportRenderCrash({
+        tool: props && props.tool,
+        message: props && props.message,
+        where: props && props.where,
+        path,
+        userAgent: String(req.headers['user-agent'] || '').slice(0, 200),
+      });
+    } catch (err) {
+      console.error('[crash-alert] reporting failed:', err.message);
+    }
+  }
   return res.status(204).end();
 });
 
