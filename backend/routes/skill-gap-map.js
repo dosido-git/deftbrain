@@ -41,12 +41,19 @@ ${hoursCtx}`;
 
 NUMBERS: restate the user's own figures VERBATIM. If you derive a new number from theirs (a percentage change, a ratio), show the inputs inline — e.g. "churn 14%→9% (a ~36% relative drop)" — and double-check the arithmetic; a resume line with a wrong derived number is worse than none.`;
 
-    const gapsPrompt = withLanguage(`${sharedIntro}
+    // skill_gaps is 15 fields per entry and was the whole latency cost: one call
+    // for 8-12 of them measured 62s, past the ~60s where Safari abandons a fetch
+    // and reports "Load failed". Splitting it needs the two halves to not
+    // produce the same gap twice, and the schema already has the seam — the
+    // category enum. Partitioning by category gives each call a self-contained
+    // brief with no overlap by construction, so no coordinating pick stage is
+    // needed and the arrays simply concatenate.
+    const gapsPromptFor = (label, cats) => withLanguage(`${sharedIntro}
 
 INSTRUCTIONS:
-1. Identify 8-12 specific skill gaps between these roles
+1. Identify 3-6 specific skill gaps between these roles — ONLY in these categories: ${label}. Ignore every other kind of gap; another pass covers those. The ones that actually block the move, not every difference you can name.
 2. For each, assess impact (how much it matters for getting hired) and effort (how hard/long to learn)
-3. Categorize as: technical, soft skill, domain knowledge, tool/platform, credential, or network
+3. The "category" field MUST be one of: ${cats}
 4. Rank by impact-to-effort ratio (best ROI first)
 5. Be specific to THIS transition, not generic career advice
 6. Account for skills the user likely already has from their current role
@@ -75,6 +82,9 @@ Return ONLY valid JSON. Your response MUST contain ALL 1 top-level key: skill_ga
 }
 
 ${sharedTail}`, userLanguage);
+
+    const gapsHardPrompt = gapsPromptFor('technical skills, tools/platforms, and credentials', 'technical|tool_platform|credential');
+    const gapsHumanPrompt = gapsPromptFor('soft skills, domain knowledge, and network', 'soft_skill|domain_knowledge|network');
 
     const contextPrompt = withLanguage(`${sharedIntro}
 
@@ -119,19 +129,23 @@ Return ONLY valid JSON. Your response MUST contain ALL 5 top-level keys: transit
 
 ${sharedTail}`, userLanguage);
 
-    const [gapsPart, contextPart] = await Promise.all([
+    // Three calls, not two. The gaps half alone was the long pole at 62s; each
+    // category group now emits roughly half the array, so wall-clock is the
+    // slowest of three rather than the old single mega-array. 3000 each is
+    // ample for 3-6 gaps (the undivided call needed 5000 for 8-12).
+    const [gapsHardPart, gapsHumanPart, contextPart] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
-        // skill_gaps[] (~10 fields × 6-10 gaps) is the largest schema here. 3000 truncated
-        // mid-array → parse-fail → 500; 5000 (with the other five sections in the same call)
-        // was still too tight (the golden marketing-to-PM case truncated at ~4800 tokens →
-        // retry loop → timeout — caught by check:golden 2026-06-28). Post-split this call
-        // emits ONLY skill_gaps (measured ~13k chars ≈ 4.4k tokens in German), so 5000
-        // keeps real headroom for the array alone.
-        max_tokens: 5000,
+        max_tokens: 3000,
         system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
-        messages: [{ role: 'user', content: gapsPrompt }]
-      }, { label: 'SkillGapMap:gaps' }),
+        messages: [{ role: 'user', content: gapsHardPrompt }]
+      }, { label: 'SkillGapMap:gaps-hard' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 3000,
+        system: withLanguage('You are a career transition strategist who gives brutally specific advice. No generic platitudes. Every recommendation is actionable and specific to this exact transition. You never fabricate URLs — you describe resources by name, author, or search term. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion) + NO_QUOTE_RULE,
+        messages: [{ role: 'user', content: gapsHumanPrompt }]
+      }, { label: 'SkillGapMap:gaps-human' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
         // Summary + transferables + hidden + quick_wins + readiness — measured ~9k chars
@@ -143,8 +157,14 @@ ${sharedTail}`, userLanguage);
       }, { label: 'SkillGapMap:context' })
     ]);
 
-    // Disjoint keys — gaps half wins on any accidental overlap since the guard reads it.
-    const parsed = { ...contextPart, ...gapsPart };
+    // The two gap calls partition by category, so their arrays concatenate
+    // rather than overwrite. Re-rank by ROI across the merged set — each call
+    // only ranked within its own categories — and renumber the ids, which are
+    // positional and would otherwise collide (both halves start at gap_1).
+    const mergedGaps = [...(gapsHardPart.skill_gaps || []), ...(gapsHumanPart.skill_gaps || [])]
+      .sort((a, b) => (Number(b.roi_score) || 0) - (Number(a.roi_score) || 0))
+      .map((g, i) => ({ ...g, id: `gap_${i + 1}` }));
+    const parsed = { ...contextPart, skill_gaps: mergedGaps };
 
     if (!parsed.gaps && !parsed.skill_gaps) {
       return res.status(500).json({ error: 'Could not map your skill gaps. Please try again.' });

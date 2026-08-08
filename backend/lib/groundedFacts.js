@@ -52,20 +52,36 @@ function normalizeKeyPart(s) {
  * @param {string} [opts.system]   override the default verifier system prompt
  * @returns {Promise<string>} facts block, or '' on any failure
  */
-async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 2500, system }) {
+// timeoutMs bounds the COLD path. This pre-pass runs before the main
+// generation, so its duration is added to every uncached request — and the
+// cache is in-memory, emptied on every deploy, so the first user for a
+// jurisdiction after each deploy pays it in full. plain-talk measured 100s end
+// to end and bill-rescue 57s (that one already noted as "warm"), against the
+// ~60s where Safari abandons a fetch and shows "Load failed".
+//
+// Failing open is already this module's contract — it returns '' and the
+// caller's hedge rules take over — so a slow search is treated the same as a
+// failed one. An unverified answer beats no answer.
+async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 2500, system, timeoutMs = 25000 }) {
   const hit = cache.get(cacheKey);
   if (hit && hit.expires > Date.now()) return hit.block;
   if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
 
   const p = (async () => {
+    let timer;
     try {
-      const facts = await callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: maxTokens,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
-        system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
-        messages: [{ role: 'user', content: userPrompt }],
-      }, { label });
+      const facts = await Promise.race([
+        callClaudeWithRetry({
+          model: MODELS.SMART,
+          max_tokens: maxTokens,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+          system: system || 'You verify current legal and regulatory facts with web search. Prefer official sources (legislature, courts, regulators, government portals). Note effective dates and any recent changes or repeals. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value — write quoted rule text plainly or with single quotes, or it breaks the JSON.',
+          messages: [{ role: 'user', content: userPrompt }],
+        }, { label }),
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`grounding exceeded ${timeoutMs}ms`)), timeoutMs);
+        }),
+      ]);
       const block = render(stripCites(facts)) || '';
       store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS);
       return block;
@@ -74,6 +90,7 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
       store(cacheKey, '', FAILURE_TTL_MS);
       return '';
     } finally {
+      clearTimeout(timer);
       inFlight.delete(cacheKey);
     }
   })();
