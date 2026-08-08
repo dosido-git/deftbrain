@@ -9,7 +9,7 @@
   "cases": [
     {
       "name": "score-de",
-      "endpoint": "/api/fake-review-detective (action=score)",
+      "endpoint": "/api/fake-review-detective",
       "input": {
         "action": "score",
         "reviews": [
@@ -239,7 +239,7 @@
     },
     {
       "name": "analyze-de-label-and-truncation-guard",
-      "endpoint": "/api/fake-review-detective (action=analyze)",
+      "endpoint": "/api/fake-review-detective",
       "input": {
         "action": "analyze",
         "reviews": [

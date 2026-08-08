@@ -9,7 +9,7 @@
   "cases": [
     {
       "name": "de-spiral-work-email-catastrophizing",
-      "endpoint": "/api/spiral-stopper (spiral)",
+      "endpoint": "/api/spiral-stopper",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -74,7 +74,7 @@
     },
     {
       "name": "de-recover-burnout-crash",
-      "endpoint": "/api/spiral-stopper (recover)",
+      "endpoint": "/api/spiral-stopper",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",

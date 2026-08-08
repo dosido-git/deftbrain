@@ -9,7 +9,7 @@
   "cases": [
     {
       "name": "de-phone-in-bed-routine",
-      "endpoint": "/api/one-percenter (SSE)",
+      "endpoint": "/api/one-percenter",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -35,7 +35,8 @@
           "why_those_are_second_order": "Früher schlafen ist unmöglich, solange das Scrollen bis Mitternacht anhält — und das Scrollen ist eine Folge des reaktiven Tages, nicht die Ursache. Das Frühstück scheitert nicht an Willensstärke, sondern daran, dass 30 Minuten Handy den Zeitpuffer bereits aufgefressen haben. Alle anderen Probleme lösen sich nachgelagert, sobald der Morgenmechanismus geändert ist."
         },
         "the_year_from_now": "Im Juli 2027 wachst du auf und der erste Gedanke gehört dir — nicht einem Algorithmus. Du isst jeden Morgen etwas, kommst ausgeruht zur Arbeit und bemerkst, dass du in Meetings Themen setzt statt nur reagierst. Das Scrollen bis Mitternacht ist auf eine Stunde pro Woche geschrumpft, nicht weil du dich gezwungen hast, sondern weil du abends schlicht nicht mehr so ausgehungert nach Stimulation bist. Kollegen fragen dich, was du anders machst."
-      }
+      },
+      "_transport": "sse"
     }
   ]
 }

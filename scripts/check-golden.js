@@ -70,12 +70,34 @@ async function post(endpoint, input) {
       signal: ctrl.signal,
     });
     const text = await res.text();
-    let json = null;
-    try { json = JSON.parse(text); } catch { /* leave null */ }
+    const json = /text\/event-stream/i.test(res.headers.get('content-type') || '')
+      ? parseSse(text)
+      : (() => { try { return JSON.parse(text); } catch { return null; } })();
     return { status: res.status, json };
   } finally {
     clearTimeout(timer);
   }
+}
+
+// A streaming endpoint (one-percenter) answers in `data: {...}` frames rather
+// than one JSON body. The server validates and repairs the model's JSON before
+// the final frame, so the `parsed` payload on the done event is the real
+// answer; concatenated `chunk` deltas are the fallback for older servers.
+// Detected from the content-type, not from the fixture — a golden should not
+// have to describe the transport.
+function parseSse(text) {
+  let assembled = '';
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.startsWith('data:')) continue;
+    let frame;
+    try { frame = JSON.parse(line.slice(5).trim()); } catch { continue; }
+    if (frame && typeof frame === 'object') {
+      if (frame.parsed && typeof frame.parsed === 'object') return frame.parsed;
+      if (frame.error) return { error: frame.error };
+      if (typeof frame.chunk === 'string') assembled += frame.chunk;
+    }
+  }
+  try { return JSON.parse(assembled.replace(/^```(?:json)?\s*|\s*```$/g, '').trim()); } catch { return null; }
 }
 
 const isDiagram = (o) => o && typeof o === 'object' && typeof o.html === 'string' && 'type' in o;

@@ -9,7 +9,7 @@
   "cases": [
     {
       "name": "de-generate-low-energy",
-      "endpoint": "/api/pep (generate)",
+      "endpoint": "/api/pep",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -139,7 +139,7 @@
     },
     {
       "name": "de-forecast-guard",
-      "endpoint": "/api/pep (forecast)",
+      "endpoint": "/api/pep",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",
@@ -230,7 +230,7 @@
     },
     {
       "name": "de-recharge-insights-dashboard-tiles",
-      "endpoint": "/api/pep (recharge-insights)",
+      "endpoint": "/api/pep",
       "input": {
         "userLanguage": "de",
         "userLocale": "de-DE",

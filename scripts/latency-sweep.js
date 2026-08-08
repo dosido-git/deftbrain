@@ -84,10 +84,15 @@ async function time(c) {
       body: JSON.stringify(c.input),
     });
     const body = await res.text();
+    // A streaming endpoint returns 200 and then reports its failure inside the
+    // stream, so status alone would score a broken run as a fast one.
+    const streamed = /text\/event-stream/i.test(res.headers.get('content-type') || '');
+    const streamFailed = streamed && (/"error"/.test(body) || !/"done"\s*:\s*true/.test(body));
     // A non-200 is NOT a fast tool. 429 and 400 both return in milliseconds and
     // will quietly masquerade as the best result in the run if counted.
-    return { ...c, ms: Date.now() - t0, status: res.status, measured: res.status === 200,
-             detail: res.status === 200 ? '' : body.slice(0, 60) };
+    const ok = res.status === 200 && !streamFailed;
+    return { ...c, ms: Date.now() - t0, status: streamFailed ? 'STREAM' : res.status, measured: ok,
+             detail: ok ? '' : body.slice(0, 60).replace(/\s+/g, ' ') };
   } catch (e) {
     return { ...c, ms: Date.now() - t0, status: 'ERR', error: String(e.message || e).slice(0, 60) };
   }
