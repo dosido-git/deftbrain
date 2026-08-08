@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { tools } from '../data/tools';
 import ToolPageWrapper from './ToolPageWrapper';
+import ToolErrorBoundary from './ToolErrorBoundary';
 import NotFound from './NotFound';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useDocumentHead } from '../hooks/useDocumentHead';
@@ -65,7 +66,11 @@ const ToolRenderer = ({ college }) => {
           <p className="text-blue-600 font-mono text-[10px] tracking-widest uppercase">Loading…</p>
         </div>
       }>
-<ToolComponent college={college} tool={toolData} />
+        {/* Every tool page routes through here, so this is the one place a
+            render crash can be caught and reported (tool_render_error). */}
+        <ToolErrorBoundary toolId={toolId}>
+          <ToolComponent college={college} tool={toolData} />
+        </ToolErrorBoundary>
       </Suspense>
     </ToolPageWrapper>
   );

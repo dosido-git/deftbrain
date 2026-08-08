@@ -87,7 +87,10 @@ function isExcluded(req) {
 //
 // Two endpoints capture the only things we need at validation stage:
 //   POST /api/events    — funnel beacons (page_view, tool_view, tool_run,
-//                         tool_complete) so we can see drop-off.
+//                         tool_complete, tool_error, tool_render_error) so we
+//                         can see drop-off. tool_complete means the SERVER
+//                         answered; subtract tool_render_error for the number
+//                         of users who actually saw an answer.
 //   POST /api/feedback  — explicit "did this help?" with an optional note,
 //                         the highest-signal evidence that a tool addresses a
 //                         real concern.
@@ -490,6 +493,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     const runs = events.filter(e => e.event === 'tool_run');
     const completes = events.filter(e => e.event === 'tool_complete');
     const errors = events.filter(e => e.event === 'tool_error');
+    // A 200 the user never actually saw: the response parsed, then React threw
+    // while rendering it. `tool_complete` fires before render, so without this
+    // a white-screen crash counted as a success. See ToolErrorBoundary.
+    const renderErrors = events.filter(e => e.event === 'tool_render_error');
+    const delivered = Math.max(0, completes.length - renderErrors.length);
     const taken = events.filter(e => ['print', 'copy', 'share'].includes(e.event));
 
     // ── Section funnel: how far down a page people actually get. ──
@@ -548,17 +556,23 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
 
     // ── per tool ──
     const tools = {};
-    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
+    const bump = (t, k, n) => { tools[t] = tools[t] || { views: 0, runs: 0, completes: 0, errors: 0, renderErrors: 0, taken: 0, yes: 0, no: 0, ms: [] }; tools[t][k] += (n == null ? 1 : n); };
     for (const e of pv) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'views'); }
     for (const e of runs) bump(toolOf(e), 'runs');
     for (const e of completes) { const t = toolOf(e); bump(t, 'completes'); if (e.props && e.props.ms) tools[t].ms.push(e.props.ms); }
     for (const e of errors) bump(toolOf(e), 'errors');
+    for (const e of renderErrors) bump(toolOf(e), 'renderErrors');
     for (const e of taken) { const seg = (e.path || '').split('/')[1]; if (seg && /^[A-Z]/.test(seg)) bump(seg, 'taken'); }
     for (const f of feedback) bump(f.tool || '?', f.helpful ? 'yes' : 'no');
     const toolRows = Object.entries(tools).sort((a, b) => b[1].runs - a[1].runs).slice(0, 40)
       .map(([t, v]) => {
         const avgMs = v.ms.length ? Math.round(v.ms.reduce((a, b) => a + b, 0) / v.ms.length / 100) / 10 : null;
-        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${v.completes}</td><td>${v.errors}</td><td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
+        // A render error is louder than a server error: the request looked
+        // fine and the user still got nothing, so it stays red at any count.
+        const rx = v.renderErrors
+          ? `<td style="color:#b91c1c;font-weight:700">${v.renderErrors}</td>`
+          : '<td>0</td>';
+        return `<tr><td>${escH(t)}</td><td>${v.views}</td><td>${v.runs}</td><td>${pct(v.runs, v.views)}</td><td>${Math.max(0, v.completes - v.renderErrors)}</td><td>${v.errors}</td>${rx}<td>${avgMs != null ? avgMs + 's' : '—'}</td><td>${v.taken}</td><td>${v.yes + v.no ? pct(v.yes, v.yes + v.no) : '—'}</td></tr>`;
       }).join('');
 
     // ── sources (session-scoped ref context) ──
@@ -666,7 +680,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('sessions', sessions.length, null, deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
       ${card('interactive', interactiveSessions, pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human', deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
       ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
-      ${card('tool runs', runs.length, pct(completes.length, runs.length) + ' complete', deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
+      ${card('tool runs', runs.length, pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
       ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
@@ -677,7 +691,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
-    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>completes</th><th>errors</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=9 style="color:#888">No data yet.</td></tr>'}</table>
+    <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=10 style="color:#888">No data yet.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
