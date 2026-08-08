@@ -23,6 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT       = path.join(__dirname, '..');
 const GUIDES_DIR = path.join(ROOT, 'build', 'guides');
@@ -70,19 +71,91 @@ function extractMeta(html) {
   };
 }
 
-function buildHubEntries() {
-  // Hubs regenerate on every build; use today's date as lastmod.
-  const today = new Date().toISOString().split('T')[0];
-  const hubs = [];
-  for (const cat of CATEGORIES) {
-    hubs.push({
-      loc:        `${BASE_URL}/guides/${cat}`,
-      lastmod:    today,
-      changefreq: 'weekly',
-      priority:   '0.9',
-    });
+// ── Honest hub lastmod (2026-08-08) ──
+// This used to stamp `new Date()` on all 18 hubs every build. With ~daily
+// deploys that meant every hub claimed to have changed that day, every day,
+// since they shipped — while the 108 article URLs alongside them carried real
+// article:modified_time dates. Google uses lastmod only while it is
+// "consistently and verifiably accurate"; a sitemap that cries wolf on 11% of
+// its URLs is how a site gets its lastmod discounted altogether.
+//
+// Same fix as sitemap-app.xml (e2a3c575): content-hash each hub into a
+// COMMITTED state file, and only advance its date when the hash moves.
+//
+// Hashed from SOURCE, not from the rendered page. The rendered HTML would be
+// more precise, but it only exists after a full build, and a pre-push gate
+// cannot afford one. The three source inputs that determine a hub are:
+//   · the category's guide specs (guides/<cat>/*.js) — the cards it lists
+//   · guides/keep-list.json — which of them are advertised
+//   · build-guides-indexes.js — CATEGORY_META and the hub template itself
+// Hashing the generator means any template edit bumps all 18. That is honest
+// (it does change all 18 pages) and rare, and it errs toward over-reporting a
+// real change rather than inventing a daily one.
+const STATE_PATH = path.join(ROOT, 'src', 'data', 'guides-lastmod.json');
+const TODAY = new Date().toISOString().split('T')[0];
+const sha = (str) => crypto.createHash('sha1').update(str).digest('hex');
+
+let hubState = {};
+try { hubState = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); } catch { /* first run */ }
+
+function hubContentHash(cat, generatorHash, keepData) {
+  const specDir = path.join(ROOT, 'guides', cat);
+  let specs = [];
+  if (fs.existsSync(specDir)) {
+    specs = fs.readdirSync(specDir).filter(f => f.endsWith('.js')).sort()
+      .map(f => `${f}:${sha(fs.readFileSync(path.join(specDir, f), 'utf8'))}`);
   }
-  return hubs;
+  const keep = (keepData.keep && keepData.keep[cat] ? [...keepData.keep[cat]].sort() : []).join(',');
+  return sha([cat, generatorHash, keep, ...specs].join('|'));
+}
+
+// Returns the committed date when the hash is unchanged, otherwise today's.
+function hubLastmod(cat, hash) {
+  const prev = hubState[cat];
+  if (prev && prev.hash === hash) return prev.lastmod;
+  hubState[cat] = { hash, lastmod: TODAY };
+  return TODAY;
+}
+
+function hubHashes() {
+  const generatorHash = sha(fs.readFileSync(path.join(__dirname, 'build-guides-indexes.js'), 'utf8'));
+  const keepData = JSON.parse(fs.readFileSync(path.join(ROOT, 'guides', 'keep-list.json'), 'utf8'));
+  return Object.fromEntries(CATEGORIES.map(cat => [cat, hubContentHash(cat, generatorHash, keepData)]));
+}
+
+function buildHubEntries() {
+  const hashes = hubHashes();
+  return CATEGORIES.map(cat => ({
+    loc:        `${BASE_URL}/guides/${cat}`,
+    lastmod:    hubLastmod(cat, hashes[cat]),
+    changefreq: 'weekly',
+    priority:   '0.9',
+  }));
+}
+
+// --check recomputes every hub hash and reports whether the COMMITTED state
+// still describes the committed content. Reads only source, so it runs in the
+// pre-push hook without a build. A stale state means the next Railway deploy
+// re-stamps those hubs with the deploy date — the exact "everything changed
+// today, daily" pattern this replaced.
+function runCheck() {
+  const hashes = hubHashes();
+  const bumped = CATEGORIES.filter(cat => !hubState[cat] || hubState[cat].hash !== hashes[cat]);
+  if (bumped.length === 0) {
+    console.log(`✅ guides-sitemap-state: committed lastmod state matches content (${CATEGORIES.length} hubs).`);
+    return 0;
+  }
+  console.error(`\n❌ guides-sitemap-state: ${bumped.length} hub(s) have content that no longer matches the committed lastmod state:\n`);
+  bumped.forEach(cat => console.error(`   /guides/${cat}`));
+  console.error(`\n   Every deploy will re-stamp these with the deploy date until the state is`);
+  console.error(`   committed, which teaches Google to ignore lastmod site-wide.\n`);
+  console.error(`   Fix: npm run build   (or: node scripts/generate-guides-sitemap.js --write-state)`);
+  console.error(`        git add src/data/guides-lastmod.json\n`);
+  return 1;
+}
+
+function writeState() {
+  fs.writeFileSync(STATE_PATH, JSON.stringify(hubState, null, 1) + '\n');
 }
 
 function urlEntry(e) {
@@ -95,6 +168,16 @@ function urlEntry(e) {
 }
 
 function main() {
+  // --check and --write-state read SOURCE only, so they run before the guard
+  // below that requires a completed build.
+  if (process.argv.includes('--check')) process.exit(runCheck());
+  if (process.argv.includes('--write-state')) {
+    buildHubEntries();
+    writeState();
+    console.log(`✓ Wrote hub lastmod state for ${CATEGORIES.length} hubs to ${path.relative(process.cwd(), STATE_PATH)}`);
+    return;
+  }
+
   // Fail fast if build-guides-indexes.js didn't run. Without this, walk()
   // returns [] silently and we ship a stub sitemap with only hub entries.
   if (!fs.existsSync(GUIDES_DIR)) {
@@ -170,6 +253,9 @@ function main() {
     `\n</urlset>\n`;
 
   fs.writeFileSync(OUTPUT, xml);
+  // Persist any hub whose hash moved, so the next build reuses the date rather
+  // than inventing a new one. Must be committed alongside the content change.
+  writeState();
 
   console.log(`✓ Wrote ${allEntries.length} URLs to ${path.relative(process.cwd(), OUTPUT)}`);
   console.log(`  • ${hubEntries.length} hub pages (priority 0.9)`);

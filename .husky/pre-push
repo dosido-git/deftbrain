@@ -33,3 +33,13 @@ node scripts/primer-audit.js
 # reproduced the "everything changed today, daily" pattern the hashing exists to
 # avoid. --check recomputes without writing and fails if they disagree.
 node scripts/generate-sitemap.js --check
+
+# ...and the same gate for the GUIDES sitemap, which was left out of the 2026-07
+# fix and kept the bug for another three weeks. Its 18 category hubs stamped
+# new Date() unconditionally on every build — 46 deploy days in 45, so all 18
+# claimed to have changed that day, every day, while the 108 article URLs beside
+# them carried honest article:modified_time dates. Google uses lastmod only
+# while it stays "consistently and verifiably accurate", and that is a site-wide
+# judgement: 11% of URLs crying wolf can cost the signal for all of them.
+# Reads source only, so this needs no build.
+node scripts/generate-guides-sitemap.js --check

@@ -1,0 +1,74 @@
+{
+ "apologies": {
+  "hash": "97c79133adddb148390febb07a416009f367b0e5",
+  "lastmod": "2026-08-08"
+ },
+ "career": {
+  "hash": "e71ca32c86af0cc7b80744c16eb72b41f0bcaf33",
+  "lastmod": "2026-08-08"
+ },
+ "conversations": {
+  "hash": "5569e11e7d832b2ce053a4e3c12ef19ab97849ae",
+  "lastmod": "2026-08-08"
+ },
+ "cooking": {
+  "hash": "cfbb27b6536ef295307381988ad920dfe14af32f",
+  "lastmod": "2026-08-08"
+ },
+ "decisions": {
+  "hash": "26826402ee43ff8d56d5e59d91cb7d0b374e5cdb",
+  "lastmod": "2026-08-08"
+ },
+ "health": {
+  "hash": "35e3005b65dc61d60537aa94367c98325bfa6d82",
+  "lastmod": "2026-08-08"
+ },
+ "home": {
+  "hash": "e90829930b5796d01b2882c95e1d45cce1f9a037",
+  "lastmod": "2026-08-08"
+ },
+ "learning": {
+  "hash": "b39c01c1d6d018d2c6254c776a2fd4a46b0dca23",
+  "lastmod": "2026-08-08"
+ },
+ "meetings": {
+  "hash": "b604abcc1b3f4f8f9039c6591108ab57b8bdfd60",
+  "lastmod": "2026-08-08"
+ },
+ "money": {
+  "hash": "404e50e3e0b5455e75d4cd30d494e1754f61f0f3",
+  "lastmod": "2026-08-08"
+ },
+ "pets": {
+  "hash": "2a78bace5656552dbaf6688aa38d93db35e825a9",
+  "lastmod": "2026-08-08"
+ },
+ "planning": {
+  "hash": "d8d5eb63d932623650e1c60970b99d603b802346",
+  "lastmod": "2026-08-08"
+ },
+ "practical": {
+  "hash": "922816874786c386d157090e0859280aac220ecf",
+  "lastmod": "2026-08-08"
+ },
+ "presentations": {
+  "hash": "d63d3968dbc60964b70251abe06183194045a75b",
+  "lastmod": "2026-08-08"
+ },
+ "speeches": {
+  "hash": "4db743c8a3bd8a793e3c23764e67deb0c0b11e39",
+  "lastmod": "2026-08-08"
+ },
+ "travel": {
+  "hash": "30e8ad597ab2e4ba71dbb04d0c04de7498aff2cf",
+  "lastmod": "2026-08-08"
+ },
+ "wellness": {
+  "hash": "e799d070605157491aeb86b65043e7c95c5d1c82",
+  "lastmod": "2026-08-08"
+ },
+ "workplace": {
+  "hash": "5bbb5b88780a537901fd6044d768cfe895105bbc",
+  "lastmod": "2026-08-08"
+ }
+}
