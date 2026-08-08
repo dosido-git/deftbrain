@@ -24,7 +24,8 @@ REAL-WORLD BOUNDARY: assumptions_autopsy, how_to_verify, and the_one_thing may O
 
 Return ONLY valid JSON.`;
 
-function buildUserPrompt(plan, planType, stakes, assumptions) {
+// The plan brief is identical for both halves; only the assignment differs.
+function buildBrief(plan, planType, stakes, assumptions) {
   const lines = [
     `You are writing the post-mortem for the following plan. Assume it has already failed.`,
     ``,
@@ -36,8 +37,17 @@ function buildUserPrompt(plan, planType, stakes, assumptions) {
   if (stakes)   lines.push(`\nWHAT'S AT STAKE: ${stakes}`);
   if (assumptions) lines.push(`\nASSUMPTIONS THE PERSON IS MAKING: ${assumptions}`);
 
-  lines.push(`
-Return a JSON object with this exact shape:
+  lines.push(`\nYou are writing ONE HALF of this document. Another analyst is writing the other half — return only your own keys.`);
+  return lines.join('\n');
+}
+
+// ── Half A: the fictional memo. Invented entities live here and nowhere else ──
+function buildMemoPrompt(brief) {
+  return `${brief}
+
+YOUR HALF: the post-mortem memo itself — the story of how it failed.
+
+Return a JSON object with this exact shape, and this one top-level key:
 
 {
   "the_postmortem": {
@@ -53,7 +63,27 @@ Return a JSON object with this exact shape:
     ],
     "the_fatal_assumption": "The single most dangerous assumption that proved false",
     "point_of_no_return": "The moment when failure became inevitable — what decision or event crossed the line"
-  },
+  }
+}
+
+Rules:
+- warning_signs_ignored: 2–4 items
+- Be specific to THIS plan — do not give generic startup advice
+- Keep every field concise (narrative may be 2–3 short paragraphs; everything else one sentence)
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON
+
+Return ONLY the valid JSON object. No markdown, no preamble.`;
+}
+
+// ── Half B: the actionable half. Sees the plan, never the invented narrative ──
+function buildPreventionPrompt(brief) {
+  return `${brief}
+
+YOUR HALF: what actually threatens this plan, and what to do about it before committing.
+
+Return a JSON object with this exact shape, and these four top-level keys:
+
+{
   "failure_modes": [
     {
       "mode": "Short name for this failure mode",
@@ -64,7 +94,7 @@ Return a JSON object with this exact shape:
     }
   ],
   "the_most_likely": {
-    "failure_mode": "Name of the single most likely way this fails",
+    "failure_mode": "Name of the single most likely way this fails — must be one of the modes you listed above, named identically",
     "the_prevention": "One concrete, specific thing the person can do right now to prevent this"
   },
   "assumptions_autopsy": [
@@ -79,14 +109,15 @@ Return a JSON object with this exact shape:
 
 Rules:
 - failure_modes: 3–5 items, mix of probability levels
-- warning_signs_ignored: 2–4 items
 - assumptions_autopsy: 3–5 items (include both stated and unstated assumptions)
 - Be specific to THIS plan — do not give generic startup advice
 - The_one_thing must be a concrete action, not a platitude
-- Keep every field concise (narrative may be 2–3 short paragraphs; everything else one sentence)
-- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON`);
+- Every field here is ACTIONABLE and must reference only businesses, agencies, people and facts the user supplied. Invent nothing.
+- "probability" must be EXACTLY one of high, medium, low — lowercase English, never translated. The interface colour-codes it and falls back to medium for anything else. Every other string is written in the user's language as normal.
+- Keep every field to one concise sentence
+- Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON
 
-  return lines.join('\n');
+Return ONLY the valid JSON object. No markdown, no preamble.`;
 }
 
 // ── Route ─────────────────────────────────────────────────────────────────────
@@ -104,22 +135,37 @@ router.post('/pre-mortem', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   }
 
   try {
-    const data = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4500,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [
-        {
-          role: 'user',
-          content: buildUserPrompt(
-            plan.trim(),
-            planType?.trim() || null,
-            stakes?.trim()   || null,
-            assumptions?.trim() || null,
-          ),
-        },
-      ],
-    }, { label: 'pre-mortem' });
+    // One 5-key schema at max_tokens 4500 measured 100s — the slowest route in
+    // the catalog, and far past the ~60s where Safari abandons the fetch. The
+    // seam is the document's own: the fictional memo in one call, the
+    // actionable half in the other. Disjoint top-level keys, merged back to the
+    // original response shape (frontend untouched).
+    //
+    // It also enforces the REAL-WORLD BOUNDARY structurally rather than by
+    // instruction: the prevention half never sees the invented competitors and
+    // venues, so it cannot leak them into a step the user is meant to act on.
+    const brief = buildBrief(
+      plan.trim(),
+      planType?.trim() || null,
+      stakes?.trim()   || null,
+      assumptions?.trim() || null,
+    );
+    const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const [memoHalf, preventionHalf] = await Promise.all([
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(SYSTEM_PROMPT, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: buildMemoPrompt(brief) }],
+      }, { label: 'pre-mortem:memo' }),
+      callClaudeWithRetry({
+        model: MODELS.SMART,
+        max_tokens: 2500,
+        system: withLanguage(SYSTEM_PROMPT, userLanguage) + systemSuffix,
+        messages: [{ role: 'user', content: buildPreventionPrompt(brief) }],
+      }, { label: 'pre-mortem:prevention' }),
+    ]);
+    const data = { ...memoHalf, ...preventionHalf };
 
     if (!data.failure_modes || !Array.isArray(data.failure_modes)) {
       return res.status(500).json({ error: 'Could not generate pre-mortem. Please try again.' });
