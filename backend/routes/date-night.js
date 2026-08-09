@@ -89,6 +89,8 @@ const DATE_TYPE_LABELS = {
   stay_in: 'Stay-In — cozy night at home',
 };
 
+const durationMapFor = (d) => ({ quick: '~2 hours', standard: '~3-4 hours', long: '~5+ hours' }[d] || '~3-4 hours');
+
 const RESPONSE_SCHEMA = `{
   "vibe_title": "Creative, location-specific name for this evening",
   "vibe_description": "One sentence setting the mood",
@@ -102,11 +104,13 @@ const RESPONSE_SCHEMA = `{
       "pro_tip": "Insider tip",
       "dress_vibe": "Smart casual|Come as you are|Dress up a bit|Cozy layers",
       "plan_b": "Specific alternative if this stop has a wait or is closed",
+      "for_the_two_of_you": "One thing to DO or SAY together at this stop — a toast, a question, an exchange. Specific to this venue and to their occasion, never generic. One sentence.",
       "stop_number": 1
     }
   ],
   "total_estimated": 65,
   "buffer": 10,
+  "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner', 'Check the forecast', 'Buy tickets'). The one thing that breaks the evening if skipped.",
   "transportation": "How to get between stops with costs",
   "conversation_starters": ["3-5 prompts tailored to date type"],
   "overall_dress_code": "One sentence — what to wear",
@@ -172,13 +176,23 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
     if (action === 'regenerate') {
       const { budget, currency = '$', dateType, location, restrictions, startTime,
               dietary, duration, weather, previousTitle, pastDates, preferences,
-              partnerPrefs, favorites, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+              partnerPrefs, favorites, feel, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
       const sym = currency;
       const durationMap = { quick: '~2 hours', standard: '~3-4 hours', long: '~5+ hours' };
 
-      const prompt = `Create a COMPLETELY DIFFERENT date night. Previous: "${previousTitle || 'unknown'}". Different theme, venues, vibe.
+      // "Something different" told the model to shuffle. A direction tells it
+      // what to change TOWARD, which is the difference between a reroll and a
+      // choice the reader can predict before clicking.
+      const FEEL = {
+        relaxed:     'Make it MORE RELAXED: fewer stops, lower-key venues, less structure, more room to linger.',
+        romantic:    'Make it MORE ROMANTIC: prioritise atmosphere, intimacy and moments for just the two of them.',
+        adventurous: 'Make it MORE ADVENTUROUS: something they would not ordinarily do, further from the obvious.',
+      };
+      const feelLine = FEEL[feel] ? `\n${FEEL[feel]}` : '';
+
+      const prompt = `Create a COMPLETELY DIFFERENT date night. Previous: "${previousTitle || 'unknown'}". Different theme, venues, vibe.${feelLine}
 
 - Budget: ${sym}${budget}, Currency: ${sym}, Type: ${DATE_TYPE_LABELS[dateType] || dateType}
 - Location: ${location.trim()}, Start: ${startTime || '7:00 PM'}, Duration: ${durationMap[duration] || '~3-4 hours'}
@@ -198,6 +212,54 @@ Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
+    }
+
+    // ─── ADAPT ───
+    // "If something changes" — the three ways an evening actually goes wrong,
+    // answered in place rather than as a wall of alternatives up front. One
+    // action with a `change` rather than three endpoints: same inputs, same
+    // schema back, only the instruction differs.
+    if (action === 'adapt') {
+      const { change, budget, currency = '$', dateType, location, startTime, duration,
+              weather, dietary, restrictions, itinerary, userLanguage, userLocale,
+              userCurrency, userRegion } = req.body;
+
+      if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
+      const CHANGE = {
+        restaurant: 'The DINNER stop fell through — it is unavailable. Replace that one stop with a different place of the same kind at a similar price. Keep every other stop and the timings exactly as they are.',
+        indoors:    'The WEATHER has turned. Move the ending indoors: replace any outdoor stop with an indoor one nearby at a similar price, and keep the rest of the evening intact.',
+        timing:     'They are RUNNING LATE by about an hour. Rework the timings so the evening still finishes sensibly — shorten or drop the least essential stop rather than rushing all of them, and say which you changed.',
+      };
+      if (!CHANGE[change]) return res.status(400).json({ error: 'Unknown change.' });
+
+      const sym = currency;
+      const current = Array.isArray(itinerary) && itinerary.length
+        ? itinerary.map(x => `${x.time} — ${x.venue_name} (~${sym}${x.estimated_cost})`).join('\n')
+        : '(not supplied)';
+
+      const prompt = `${CHANGE[change]}
+
+CURRENT PLAN:
+${current}
+
+- Budget: ${sym}${budget}, Currency: ${sym}, Type: ${DATE_TYPE_LABELS[dateType] || dateType}
+- Location: ${location.trim()}, Start: ${startTime || '7:00 PM'}, Duration: ${durationMapFor(duration)}
+- Season: ${season} — ${seasonAdvice}
+${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
+${buildDietaryBlock(dietary)}
+
+Return the WHOLE revised evening. Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
+
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 3000,
+        system: withLanguage(`${SYSTEM_PROMPT}\n\nAll costs in ${sym}.`, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightAdapt' });
+      if (!parsed.itinerary) {
+        return res.status(500).json({ error: 'Could not rework the evening. Please try again.' });
+      }
+      return res.json(parsed);
     }
 
     // ─── SWAP ───

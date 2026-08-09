@@ -152,7 +152,6 @@ const DateNight = ({ tool }) => {
   const [results, setResults] = useState(null);
   const [swapping, setSwapping] = useState(null);
   const [expandedConvo, setExpandedConvo] = useState(false);
-  const [expandedPlanB, setExpandedPlanB] = useState(false);
 
   // ─── Live mode ───
   const [liveMode, setLiveMode] = useState(false);
@@ -177,6 +176,8 @@ const DateNight = ({ tool }) => {
   // ─── Checklist ───
   const [checklist, setChecklist] = useState(null);
   const [checklistLoading, setChecklistLoading] = useState(false);
+  const [adapting, setAdapting] = useState('');
+  const [feel, setFeel] = useState('');
   const [checklistChecked, setChecklistChecked] = useState({});
 
   // ─── Date Jar ───
@@ -276,7 +277,7 @@ const DateNight = ({ tool }) => {
 
   const resetResults = () => {
     setShowRate(false); setRateResult(null); setShareData(null);
-    setExpandedConvo(false); setExpandedPlanB(false); setStopRatings({}); setOverallRating(0);
+    setExpandedConvo(false); setStopRatings({}); setOverallRating(0);
     setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
     setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null);
   };
@@ -341,10 +342,10 @@ const DateNight = ({ tool }) => {
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
 
-  const regenerate = async () => {
+  const regenerate = async (direction = '') => {
     if (!results) return; resetResults();
     try {
-      const data = await callToolEndpoint('date-night', { action: 'regenerate', ...getPayload(), previousTitle: results.vibe_title });
+      const data = await callToolEndpoint('date-night', { action: 'regenerate', ...getPayload(), previousTitle: results.vibe_title, feel: direction || undefined });
       if (data) { setResults(data); saveToJournal(data); }
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
@@ -379,6 +380,19 @@ const DateNight = ({ tool }) => {
       if (data) setShareData(data);
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
     finally { setShareLoading(false); }
+  };
+
+  // "If something changes" — one endpoint, three directions. Sends the current
+  // itinerary so the model revises THIS evening rather than inventing another.
+  const handleAdapt = async (change) => {
+    setAdapting(change);
+    try {
+      const data = await callToolEndpoint('date-night', { action: 'adapt', change, itinerary: results?.itinerary,
+        budget, currency, dateType, location, startTime, duration, weather, dietary, restrictions,
+        userLocale, userCurrency, userRegion });
+      if (data?.itinerary) { setResults(data); resetResults(); }
+    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
+    finally { setAdapting(''); }
   };
 
   const handleChecklist = async () => {
@@ -534,6 +548,12 @@ const DateNight = ({ tool }) => {
               <dd className={`text-xs ${c.bufferText}`}>{t('dn_budget_left', { amount: `~${fm(bufferAmt)}` })}</dd>
             </div>
           )}
+          {results.one_thing_now && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_one_thing_now')}</dt>
+              <dd className={`text-xs font-bold ${c.roseText} text-end`}>{results.one_thing_now}</dd>
+            </div>
+          )}
           {results.transportation && (
             <div className="flex justify-between gap-4">
               <dt className={`text-xs ${c.textSecondary}`}>{t('dn_getting_around')}</dt>
@@ -584,6 +604,11 @@ const DateNight = ({ tool }) => {
                   </p>
                 )}
                 {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
+                {stop.for_the_two_of_you && (
+                  <p className={`text-[10px] ${c.roseText} mb-1`}>
+                    <span className="font-bold">{t('dn_for_the_two')}</span> {stop.for_the_two_of_you}
+                  </p>
+                )}
                 {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded} disabled:opacity-40`}>
@@ -617,13 +642,67 @@ const DateNight = ({ tool }) => {
       )}
 
       {/* Plan B + Tips */}
-      {results.plan_b && (
-        <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-          <button onClick={() => setExpandedPlanB(!expandedPlanB)} className="w-full p-4 flex justify-between text-start">
-            <span className={`text-sm font-bold ${c.text}`}>🔄 {t('dn_plan_b')}</span>
-            <span className={`text-xs ${c.textMuteded}`}>{expandedPlanB ? '▲' : '▼'}</span>
+      {/* ── If something changes ─────────────────────────────────────────
+          Plan B used to be one paragraph behind a toggle, sitting near the top
+          among everything else. It belongs here, at the point the reader
+          thinks "what if this goes wrong" — and as three repairs it can
+          actually make, not prose describing one. */}
+      {results.itinerary?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div>
+            <p className={`text-sm font-bold ${c.text}`}>{t('dn_if_changes')}</p>
+            <p className={`text-xs ${c.textMuteded}`}>{t('dn_plans_change')}</p>
+          </div>
+            { /* restaurant */ }
+            <div>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_dinner_gone')}</p>
+              <button onClick={() => handleAdapt('restaurant')} disabled={!!adapting || loading}
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
+                {adapting === 'restaurant' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_another_restaurant')}
+              </button>
+            </div>
+            { /* indoors */ }
+            <div>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_weather_bad')}</p>
+              <button onClick={() => handleAdapt('indoors')} disabled={!!adapting || loading}
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
+                {adapting === 'indoors' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_make_indoors')}
+              </button>
+            </div>
+            { /* timing */ }
+            <div>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_running_late')}</p>
+              <button onClick={() => handleAdapt('timing')} disabled={!!adapting || loading}
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
+                {adapting === 'timing' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_rework_timing')}
+              </button>
+            </div>
+          {results.plan_b && <p className={`text-xs ${c.textSecondary} pt-1 border-t ${c.border}`}>{results.plan_b}</p>}
+        </div>
+      )}
+
+      {/* ── Change the feel ──────────────────────────────────────────────
+          "Something different" was a reroll: you could not predict what you
+          would get. A direction is a choice the reader understands before
+          clicking. */}
+      {results.itinerary?.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+          <p className={`text-sm font-bold ${c.text}`}>{t('dn_change_feel')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[['relaxed','dn_feel_relaxed','dn_feel_relaxed_d'],
+              ['romantic','dn_feel_romantic','dn_feel_romantic_d'],
+              ['adventurous','dn_feel_adventurous','dn_feel_adventurous_d']].map(([v, lk, dk]) => (
+              <button key={v} onClick={() => setFeel(feel === v ? '' : v)}
+                className={`text-start p-3 rounded-xl border transition-colors ${feel === v ? c.chipOn : c.chipOff}`}>
+                <span className="block text-xs font-bold">{t(lk)}</span>
+                <span className="block text-[10px] opacity-80">{t(dk)}</span>
+              </button>
+            ))}
+          </div>
+          <button onClick={() => regenerate(feel)} disabled={loading || !feel}
+            className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnLive} disabled:opacity-40`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_reimagine')}
           </button>
-          {expandedPlanB && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}><p className={`text-sm ${c.textSecondary}`}>{results.plan_b}</p></div>}
         </div>
       )}
       {results.tips?.length > 0 && (
