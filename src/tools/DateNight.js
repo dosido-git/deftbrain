@@ -173,8 +173,6 @@ const DateNight = ({ tool }) => {
   const [surpriseMode, setSurpriseMode] = useState(false);
 
   // ─── Similar ───
-  const [similarResults, setSimilarResults] = useState(null);
-  const [similarLoading, setSimilarLoading] = useState(false);
 
   // ─── Checklist ───
   const [checklist, setChecklist] = useState(null);
@@ -240,8 +238,13 @@ const DateNight = ({ tool }) => {
   const br = budgetRange(currency);
   const fm = useCallback((a) => fmtMoney(a, currency), [currency]);
   const totalSpent = results?.total_estimated || 0;
+  // First stop through last, straight from the itinerary — the card states the
+  // evening's shape before any of its detail.
+  const itin = results?.itinerary || [];
+  const timeRange = itin.length
+    ? (itin.length > 1 ? `${itin[0].time} – ${itin[itin.length - 1].time}` : itin[0].time)
+    : '';
   const bufferAmt = results?.buffer || (budget - totalSpent);
-  const spentPct = budget > 0 ? Math.min(100, (totalSpent / budget) * 100) : 0;
   const isAnni = dateType === 'anniversary';
   const isFuture = !!plannedDate && plannedDate > new Date().toISOString().slice(0, 10);
   const daysUntil = isFuture ? Math.round((new Date(plannedDate) - new Date()) / 86400000) : 0;
@@ -272,7 +275,7 @@ const DateNight = ({ tool }) => {
   }, [setJournal, location, dateType, budget, currency]);
 
   const resetResults = () => {
-    setShowRate(false); setRateResult(null); setShareData(null); setSimilarResults(null);
+    setShowRate(false); setRateResult(null); setShareData(null);
     setExpandedConvo(false); setExpandedPlanB(false); setStopRatings({}); setOverallRating(0);
     setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
     setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null);
@@ -376,15 +379,6 @@ const DateNight = ({ tool }) => {
       if (data) setShareData(data);
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
     finally { setShareLoading(false); }
-  };
-
-  const handleSimilar = async (stop) => {
-    setSimilarLoading(true); setSimilarResults(null);
-    try {
-      const data = await callToolEndpoint('date-night', { action: 'similar', venueName: stop.venue_name, stopType: stop.stop_type, location, dateType, budget, currency, userLocale, userCurrency, userRegion });
-      if (data) setSimilarResults(data);
-    } catch (e) { setError(e.message || t('dn_err_request_failed')); }
-    finally { setSimilarLoading(false); }
   };
 
   const handleChecklist = async () => {
@@ -516,30 +510,50 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
-      {/* Dress code */}
-      {results.overall_dress_code && (
-        <div className={`${c.altCard} border rounded-xl p-3 text-center`}>
-          <p className={`text-xs font-bold ${c.text}`}>👗 {results.overall_dress_code}</p>
-        </div>
-      )}
-
-      {/* Budget bar */}
+      {/* ── At a glance ──────────────────────────────────────────────────
+          One summary card in place of three scattered ones: a centred dress
+          strip, a budget progress bar, and transportation buried at the bottom
+          of live mode. The bar is gone on purpose — "about $75 left" is more
+          reassuring than a filling rectangle, and it does not imply precision
+          the estimate does not have. */}
       <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-        <div className="flex justify-between mb-2">
-          <p className={`text-xs font-bold ${c.text}`}>💰 {t('dn_budget_used')}</p>
-          <p className={`text-sm font-bold ${c.text}`}>~{fm(totalSpent)} / {fm(budget)}</p>
-        </div>
-        <div className={`w-full h-3 rounded-full ${c.budgetBar} overflow-hidden`}>
-          <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${spentPct}%` }} />
-        </div>
-        {bufferAmt > 0 && <p className={`text-[10px] font-bold ${c.bufferText} mt-1 text-end`}>{t('dn_buffer', { amount: `~${fm(bufferAmt)}` })}</p>}
+        <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-3`}>{t('dn_at_a_glance')}</p>
+        <dl className="space-y-2">
+          {timeRange && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>🕕</dt>
+              <dd className={`text-xs font-bold ${c.text} text-end`}>{timeRange}</dd>
+            </div>
+          )}
+          <div className="flex justify-between gap-4">
+            <dt className={`text-xs ${c.textSecondary}`}>{t('dn_estimated_cost')}</dt>
+            <dd className={`text-sm font-bold ${c.text} text-end`}>{t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) })}</dd>
+          </div>
+          {bufferAmt > 0 && (
+            <div className="flex justify-end">
+              <dd className={`text-xs ${c.bufferText}`}>{t('dn_budget_left', { amount: `~${fm(bufferAmt)}` })}</dd>
+            </div>
+          )}
+          {results.transportation && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_getting_around')}</dt>
+              <dd className={`text-xs ${c.text} text-end`}>{results.transportation}</dd>
+            </div>
+          )}
+          {results.overall_dress_code && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_dress')}</dt>
+              <dd className={`text-xs ${c.text} text-end`}>{results.overall_dress_code}</dd>
+            </div>
+          )}
+        </dl>
       </div>
 
       {/* Milestone gesture */}
       {results.milestone_gesture && (
-        <div className={`${c.accentCard} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.roseText} mb-1`}>🎁 {t('dn_anniversary_gesture')}</p>
-          <p className={`text-sm ${c.text}`}>{results.milestone_gesture}</p>
+        <div className="px-1">
+          <p className={`text-xs font-bold ${c.roseText} mb-1`}>🎁 {t('dn_small_touch')}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{results.milestone_gesture}</p>
         </div>
       )}
 
@@ -564,14 +578,17 @@ const DateNight = ({ tool }) => {
                 <p className={`text-xs ${c.textSecondary} leading-relaxed mb-2`}>{stop.description}</p>
                 {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
                 {stop.what_worked && <p className={`text-[10px] ${c.roseText} mb-1`}>✨ {stop.what_worked}</p>}
-                {stop.pro_tip && <p className={`text-[10px] ${c.proTipText} mb-1`}>💡 {stop.pro_tip}</p>}
+                {stop.pro_tip && (
+                  <p className={`text-[10px] ${c.proTipText} mb-1`}>
+                    <span className="font-bold">{t('dn_good_to_know')}</span> {stop.pro_tip}
+                  </p>
+                )}
                 {stop.anniversary_touch && <p className={`text-[10px] ${c.roseText} mb-1`}>💍 {stop.anniversary_touch}</p>}
                 {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded} disabled:opacity-40`}>
                     {isSwap ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔄 {t('dn_swap')}</>}
                   </button>
-                  <button onClick={() => handleSimilar(stop)} disabled={similarLoading} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>💜 {t('dn_more_like_this')}</button>
                   <button onClick={() => toggleFavorite(stop)} className={`text-xs font-bold ${isFav(stop) ? c.roseText : c.textMuteded}`}>{isFav(stop) ? <>❤️ {t('dn_saved')}</> : <>🤍 {t('dn_save')}</>}</button>
                 </div>
               </div>
@@ -579,25 +596,6 @@ const DateNight = ({ tool }) => {
           );
         })}
       </div>
-
-      {/* Similar */}
-      {similarResults && (
-        <div className={`${c.altCard} border rounded-xl p-5 space-y-3`}>
-          <div className="flex justify-between">
-            <h3 className={`font-bold text-sm ${c.text}`}>💜 {t('dn_more_like', { name: similarResults.original })}</h3>
-            <button onClick={() => setSimilarResults(null)} className={`text-xs ${c.textMuteded}`}>✕</button>
-          </div>
-          {(similarResults.similar || []).map((s, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3`}>
-              <div className="flex justify-between">
-                <p className={`text-sm font-bold ${c.text}`}>{stopEmoji(s.stop_type)} {s.venue_name}</p>
-                <span className={`text-xs font-bold ${c.roseText}`}>~{fm(s.estimated_cost)}</span>
-              </div>
-              <p className={`text-xs ${c.textSecondary} mt-1`}>{s.why_similar}</p>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Conversation starters / nostalgia */}
       {(results.conversation_starters || results.nostalgia_prompts) && (
@@ -713,7 +711,7 @@ const DateNight = ({ tool }) => {
   // empty and is required by generate(), so it is the honest first signal.
   const hasInput = !!(results || dateType || lastTime.trim() || weather ||
                       dietary.length || rateResult || rutResult ||
-                      similarResults || checklist || shareData);
+                      checklist || shareData);
 
   return (
     <div className={`space-y-4 ${c.text}`}>
