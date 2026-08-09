@@ -185,10 +185,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     example: null,
     tips: []
   };
-  // FAQ lives top-level on the tool entry (focus-tools enrichment) — same
-  // content the prerendered static page renders, so crawler and user match.
-  const faq = Array.isArray(detectedTool?.faq) ? detectedTool.faq : [];
-
   // Theme-aware classes
   const isDark = theme === 'dark';
 
@@ -405,16 +401,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
             
             {/* Header */}
-            {/* "How to Use This Tool" was wrong about its own contents. Nothing
-                below tells you how to operate anything — it answers when this is
-                for you, what it needs, what you get back, and why it beats
-                muddling through. "Good to Know" also implies optionality: you
-                do not have to read it. */}
-            <h3 className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-6 flex items-center justify-center gap-2`}>
-              <span className="text-base">💡</span>
-              Good to Know
-            </h3>
-            
             {/* ── In a Nutshell ────────────────────────────────────────────
                 Now the sidebar's main content, not a disclosure. It used to be
                 collapsed while ~380 words of documentation sat open beneath it,
@@ -442,16 +428,19 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               </div>
             )}
 
-            {/* ── Helpful to Know ──────────────────────────────────────────
-                Was "Pro Tips". Same content, but these answer "does it handle
-                my situation?" rather than offering advice, so they stay visible
-                while the documentation does not. */}
+            {/* ── Good to Know ──────────────────────────────────────────
+                Collapsed. These answer "does it handle my situation?", which is
+                a question you only have once you have one — so it waits to be
+                asked rather than sitting open above the form. */}
             {guide.tips && guide.tips.length > 0 && (
-              <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase mb-3 tracking-wide`}>
-                  Helpful to Know
-                </h4>
-                <ul className="space-y-2">
+              <details className="group mb-6">
+                <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
+                  <div className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase tracking-wide flex items-center gap-2`}>
+                    Good to Know
+                    <span className="ms-auto text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200" aria-hidden="true">▼</span>
+                  </div>
+                </summary>
+                <ul className="space-y-2 mt-3">
                   {guide.tips.map((tip, index) => (
                     <li key={index} className="flex gap-2">
                       <span className={`${isDark ? 'text-yellow-400' : 'text-yellow-700'} mt-1 flex-shrink-0`}>•</span>
@@ -461,7 +450,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </details>
             )}
 
             {/* ── Before you go ────────────────────────────────────────────
@@ -482,68 +471,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               </div>
             )}
 
-            {/* ── How this tool works ──────────────────────────────────────
-                The documentation, demoted. What This Does repeated the nutshell
-                almost line for line in paragraph form — the nutshell made it
-                redundant rather than the other way round. It is kept, with the
-                pitfalls and the FAQ, behind one disclosure so the detail is
-                there for whoever wants it and costs nothing to whoever does not.
-                Rendered in the DOM either way, so it stays crawlable. */}
-            {(guide.overview || (guide.pitfalls && guide.pitfalls.length > 0) || faq.length > 0) && (
-              <details className="group">
-                <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
-                  <div className={`text-xs font-bold ${colors.textMuted} uppercase tracking-wide flex items-center gap-2`}>
-                    How {tool?.title || 'this tool'} works
-                    <span className={`ms-auto text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200`} aria-hidden="true">▼</span>
-                  </div>
-                </summary>
-
-                {guide.overview && (
-                  <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-4`}>
-                    {guide.overview}
-                  </p>
-                )}
-
-                {guide.pitfalls && guide.pitfalls.length > 0 && (
-                  <div className="mt-5">
-                    <h4 className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'} uppercase mb-3 tracking-wide`}>
-                      ⚠️ Avoid These Mistakes
-                    </h4>
-                    <ul className="space-y-2">
-                      {guide.pitfalls.map((pitfall, index) => (
-                        <li key={index} className="flex gap-2">
-                          <span className={`${isDark ? 'text-orange-400' : 'text-orange-700'} mt-1 flex-shrink-0`}>✗</span>
-                          <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                            {pitfall}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {faq.length > 0 && (
-                  <div className="mt-5">
-                    <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                      <span className="text-sm">❓</span>
-                      Frequently Asked Questions
-                    </h4>
-                    <div className="space-y-3">
-                      {faq.map((item, index) => (
-                        <details key={index} className={`rounded-lg border ${isDark ? 'border-zinc-700' : 'border-gray-200'} px-3 py-2`}>
-                          <summary className={`text-sm font-medium cursor-pointer ${colors.text} leading-snug`}>
-                            {item.q}
-                          </summary>
-                          <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-2`}>
-                            {item.a}
-                          </p>
-                        </details>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </details>
-            )}
           </div>
         </aside>
       </div>
