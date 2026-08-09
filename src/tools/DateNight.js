@@ -721,9 +721,16 @@ const DateNight = ({ tool }) => {
       {/* Header card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
         <div className="px-5 pt-5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between">
-            <div className="flex items-start justify-between gap-3">
-              <div>
+          {/* ONE flex row with exactly two children: the text column and the
+              reset. It used to be two nested rows, both `justify-between`, and
+              the outer one had a single child — so its justify-between did
+              nothing, the inner row shrank to its content, and the reset landed
+              a third of the way across the card instead of at its right edge. */}
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+            {/* min-w-0: a flex item defaults to min-width:auto and refuses to
+                shrink below its content, so on a 375px screen the tagline held
+                its width and shoved the reset button clean off the card. */}
+            <div className="min-w-0">
                 <div>
                   {/* The <h2> that repeated the wrapper's <h1> title is gone: a
                       visitor read the same words twice before reaching an
@@ -748,7 +755,7 @@ const DateNight = ({ tool }) => {
                       its own, full-strength headerColor with ink would reach
                       12.59:1 — but that is a convention change across 125
                       tools, not a call to make inside one file. */}
-                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border border-black/20 text-zinc-900 disabled:opacity-40">{t('try_example')}</button>
+                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 </div>
                 {results && !showInputs && (
                   <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }}
@@ -756,9 +763,9 @@ const DateNight = ({ tool }) => {
                     ↩ {t('start_over')}
                   </button>
                 )}
-              </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(hasInput) ? (
+            </div>
+            {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+            {(hasInput) ? (
                 <button onClick={() => { setResults(null); setShowInputs(true); resetResults();
                                          setDateType(''); setLocation(''); setLastTime('');
                                          setWeather(''); setDietary([]); setError(''); }}
@@ -766,7 +773,6 @@ const DateNight = ({ tool }) => {
                   🔄 {t('dn_new_date_night')}
                 </button>
               ) : null}
-            </div>
           </div>
         </div>
       </div>
