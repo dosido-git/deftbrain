@@ -170,7 +170,7 @@ const PaperworkPath = ({ tool }) => {
 
       {/* ═══ INPUT CARD ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-5">
+        <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>

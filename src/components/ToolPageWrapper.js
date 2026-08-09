@@ -55,6 +55,76 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         }
         /* Firefox: prevent page break between header and tool card */
         [data-print-main] > header { break-after: avoid !important; page-break-after: avoid !important; }
+        /* ── Dark mode must not survive onto paper ──────────────────────────
+           The DeftBrain Print button builds its own light document, so it has
+           always come out readable. Cmd+P prints the live DOM, and the rules
+           above only whitened [data-print-section] and its immediate child —
+           so every card INSIDE it kept bg-zinc-800 while its text stayed light,
+           and any pale-tinted card (the hero, the anniversary box, "Make it
+           even better") composited over white and turned light-on-light,
+           i.e. invisible. Compare the two PDFs from 2026-08-08.
+
+           This cannot be solved by flipping a theme token: dark mode here is
+           chosen in JavaScript -- isDark ? 'bg-zinc-800' : 'bg-white' -- so the
+           class names are already baked into the markup by the time CSS runs.
+           The surface is small and enumerable, so map it directly. */
+        [data-print-section] .bg-zinc-600,
+        [data-print-section] .bg-zinc-700,
+        [data-print-section] .bg-zinc-800,
+        [data-print-section] .bg-zinc-900,
+        [data-print-section] [class*="bg-zinc-700/"],
+        [data-print-section] [class*="bg-zinc-800/"] {
+          background-color: #ffffff !important;
+          background-image: none !important;
+        }
+        /* Light-on-dark text, now on white. Zinc 100–400 all become ink; 500+
+           is already mid-grey and stays legible as secondary text. */
+        [data-print-section] .text-white,
+        [data-print-section] .text-zinc-50,
+        [data-print-section] .text-zinc-100,
+        [data-print-section] .text-zinc-200,
+        [data-print-section] .text-zinc-300 { color: #18181b !important; }
+        [data-print-section] .text-zinc-400 { color: #52525b !important; }
+        /* ...except where white text is still correct. A saturated button
+           (bg-red-600, bg-emerald-600) keeps its colour on paper — the Print
+           button's output keeps those too — so inking its label would put dark
+           text on a dark fill. Only zinc backgrounds were whitened above, so
+           anything carrying a non-zinc bg- class is exempt. Must follow the
+           rule it overrides. */
+        [data-print-section] [class*="bg-"]:not([class*="bg-zinc"]):not([class*="bg-white"]).text-white {
+          color: #ffffff !important;
+        }
+        /* Accent text picked for a dark card. On white these land at 1.7–2.8:1
+           (cyan-400 on white is 1.81). The Print button's document already uses
+           the light-mode shades, so map each to its 700 counterpart to match. */
+        [data-print-section] .text-amber-300,
+        [data-print-section] .text-amber-400 { color: #b45309 !important; }
+        [data-print-section] .text-cyan-300,
+        [data-print-section] .text-cyan-400 { color: #0e7490 !important; }
+        [data-print-section] .text-emerald-300,
+        [data-print-section] .text-emerald-400 { color: #047857 !important; }
+        [data-print-section] .text-fuchsia-300,
+        [data-print-section] .text-fuchsia-400 { color: #a21caf !important; }
+        [data-print-section] .text-green-300,
+        [data-print-section] .text-green-400 { color: #15803d !important; }
+        [data-print-section] .text-lime-300,
+        [data-print-section] .text-lime-400 { color: #4d7c0f !important; }
+        [data-print-section] .text-orange-300,
+        [data-print-section] .text-orange-400 { color: #c2410c !important; }
+        [data-print-section] .text-red-300,
+        [data-print-section] .text-red-400 { color: #b91c1c !important; }
+        [data-print-section] .text-sky-300,
+        [data-print-section] .text-sky-400 { color: #0369a1 !important; }
+        [data-print-section] .text-yellow-300,
+        [data-print-section] .text-yellow-400 { color: #a16207 !important; }
+        /* Borders drawn for a dark ground disappear on white. */
+        [data-print-section] .border-zinc-600,
+        [data-print-section] .border-zinc-700,
+        [data-print-section] .border-zinc-800 { border-color: #d4d4d8 !important; }
+        /* Tinted cards (hero, budget, callouts) keep their colour — the Print
+           button's output keeps them too, and matching it is the goal. Their
+           TEXT is the part that breaks, and the rules above already fix it. */
+
         /* Suppress transitions during print capture */
         * { transition: none !important; animation: none !important; }
       }

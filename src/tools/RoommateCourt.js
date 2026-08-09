@@ -935,7 +935,7 @@ const RoommateCourt = ({ tool }) => {
 
       {/* ── Persistent header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
-        <div className="px-5 pt-5">
+        <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}>

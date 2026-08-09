@@ -1001,7 +1001,7 @@ const NameStorm = ({ tool }) => {
     <div className={`space-y-5 ${c.text}`}>
       {/* ═══ HEADER + MODE TOGGLE CARD ═══ */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-5">
+        <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">

@@ -720,7 +720,7 @@ const DateNight = ({ tool }) => {
 
       {/* Header card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm`}>
-        <div className="px-5 pt-5">
+        <div className="px-5 pt-2.5">
           {/* ONE flex row with exactly two children: the text column and the
               reset. It used to be two nested rows, both `justify-between`, and
               the outer one had a single child — so its justify-between did
@@ -757,12 +757,6 @@ const DateNight = ({ tool }) => {
                       tools, not a call to make inside one file. */}
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 </div>
-                {results && !showInputs && (
-                  <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); }}
-                    className={`ms-4 mt-0.5 px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${c.btnSecondary}`}>
-                    ↩ {t('start_over')}
-                  </button>
-                )}
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
             {(hasInput) ? (
