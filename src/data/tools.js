@@ -5444,7 +5444,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "'I dunno, what do you want to do?'",
-    give: "Your budget, currency, the vibe, and where you are.",
+    give: "Your budget, the vibe, and where you are.",
     get: "A full evening with a timeline, per-stop costs, and a buffer so you don't overshoot.",
     edge: "It plans to a hard budget with the buffer built in, so the plan survives contact with the bill.",
   },
@@ -5475,13 +5475,12 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       result: "Vibe: 'Neon Glow & Hidden Bars.' 7:00 PM: A standing yakitori bar in a narrow alley near Nonbei Yokocho (~¥2,500). 8:15 PM: A quiet Italian-Japanese fusion restaurant with handmade pasta (~¥3,500). 9:30 PM: Walk through the illuminated streets to Yoyogi Park's edge (free). Total: ~¥6,000, buffer: ~¥2,000 for drinks or dessert. Plus conversation starters, transit tips, and a Plan B ramen shop if the main spot is full."
     },
     tips: [
-      "Select your local currency first — presets and slider range adapt automatically",
-      "The budget buffer accounts for tips (where customary), transport surcharges, and impulse buys",
-      "First Date mode suggests venues with easy conversation and natural exit points",
-      "Stay-In mode includes delivery fees and tips in the budget",
-      "Hit 'Different' to get a completely different itinerary without changing your inputs",
-      "Add what you did last time so the AI avoids repeating it"
+      "First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.",
+      "Staying in? We'll account for delivery fees and tips.",
+      "Don't want a repeat? Tell us what you did last time.",
+      "Want a completely different plan? Choose 'Something different' without starting over."
     ],
+    beforeYouGo: "Hours, prices and availability can change. Confirm the details and make reservations where needed.",
     pitfalls: [
       "Venue suggestions are types, not specific business names — confirm availability before going",
       "Prices are estimates for the area — check actual menus and local pricing",

@@ -405,48 +405,30 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
             
             {/* Header */}
+            {/* "How to Use This Tool" was wrong about its own contents. Nothing
+                below tells you how to operate anything — it answers when this is
+                for you, what it needs, what you get back, and why it beats
+                muddling through. "Good to Know" also implies optionality: you
+                do not have to read it. */}
             <h3 className={`text-xs font-semibold ${colors.text} uppercase tracking-widest mb-6 flex items-center justify-center gap-2`}>
-              <span className={`text-base ${colors.accent}`}>📖</span>
-              How to Use This Tool
+              <span className="text-base">💡</span>
+              Good to Know
             </h3>
             
             {/* ── In a Nutshell ────────────────────────────────────────────
-                First thing under the header, above What This Does: it answers
-                "is this for me" in four lines, which is the question someone
-                asks before they will read the ~380 words below it.
+                Now the sidebar's main content, not a disclosure. It used to be
+                collapsed while ~380 words of documentation sat open beneath it,
+                which is backwards: these four lines are the orientation, and the
+                documentation is the optional part. So the nutshell is always
+                open and everything else moved into "How <tool> works" at the
+                bottom.
 
-                CLOSED by default. Open, it is orientation text you were handed;
-                closed, opening it is a small act of opting in. The cost is real
-                and deliberate — a first-time visitor may never open it, and they
-                are exactly who it was written for.
-
-                Optional: tools with no primer skip this entirely and the guide
-                card renders as it always has. */}
+                Optional: tools with no primer skip this entirely. */}
             {tool?.primer && (
-              <details className={`group -mt-2 mb-6 border-s-2 ${colors.accentBorder} ps-4`}>
-                {/* The flex row is an inner div, NOT the <summary> itself.
-                    Setting `display` on a <summary> to anything but `list-item`
-                    is known to cost the native disclosure behaviour in WebKit.
-                    The inner-wrapper pattern gets the same layout with
-                    `display: list-item` intact. `list-none` only sets
-                    list-style-type, so it hides the Firefox marker without
-                    touching display.
-
-                    py-2/-my-2 grows the tap row 24px -> 40px without moving the
-                    text — 24px only just clears WCAG 2.2 AA. */}
-                <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
-                  <div className={`text-xs font-bold ${colors.accent} uppercase tracking-wide flex items-center gap-2`}>
-                    In a Nutshell
-                    <span
-                      className={`ms-auto flex items-center gap-1 rounded-full border ${colors.accentBorder} ps-2 pe-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal group-hover:opacity-80 transition-opacity`}
-                      aria-hidden="true"
-                    >
-                      <span className="group-open:hidden">Show</span>
-                      <span className="hidden group-open:inline">Hide</span>
-                      <span className="text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200">▼</span>
-                    </span>
-                  </div>
-                </summary>
+              <div className={`-mt-2 mb-6 border-s-2 ${colors.accentBorder} ps-4`}>
+                <div className={`text-xs font-bold ${colors.accent} uppercase tracking-wide`}>
+                  In a Nutshell
+                </div>
                 <dl className="space-y-2.5 mt-3">
                   {[['When', tool.primer.when], ['You give', tool.primer.give],
                     ['You get', tool.primer.get], ['The edge', tool.primer.edge]]
@@ -457,33 +439,17 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     </div>
                   ))}
                 </dl>
-              </details>
+              </div>
             )}
 
-            {/* Extended Description */}
-            <div className="mb-6">
-              <h4 className={`text-xs font-bold ${colors.accent} uppercase mb-3 tracking-wide`}>
-                What This Does
-              </h4>
-              <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                {guide.overview}
-              </p>
-            </div>
-
-            {/* Step-by-Step and Example were removed 2026-08-03.
-                Step-by-Step averaged 86 words of "fill in the form, press the
-                button" across 125 tools; Example duplicated the Try an Example
-                button that every tool already has. Between them they were a
-                third of the sidebar and neither helped anyone decide whether to
-                use the tool. Order is now: Preamble, What This Does, Pro Tips,
-                Avoid These Mistakes. */}
-
-            {/* Pro Tips */}
+            {/* ── Helpful to Know ──────────────────────────────────────────
+                Was "Pro Tips". Same content, but these answer "does it handle
+                my situation?" rather than offering advice, so they stay visible
+                while the documentation does not. */}
             {guide.tips && guide.tips.length > 0 && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                  <span className="text-sm">💡</span>
-                  Pro Tips
+                <h4 className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase mb-3 tracking-wide`}>
+                  Helpful to Know
                 </h4>
                 <ul className="space-y-2">
                   {guide.tips.map((tip, index) => (
@@ -498,45 +464,85 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               </div>
             )}
 
-            {/* Common Pitfalls */}
-            {guide.pitfalls && guide.pitfalls.length > 0 && (
+            {/* ── Before you go ────────────────────────────────────────────
+                Optional, and deliberately so. The one caveat a person needs
+                BEFORE acting on the output — for tools where acting means
+                turning up somewhere or spending money. Most tools have nothing
+                that belongs here and correctly render nothing; this is not a
+                field to fill in for the sake of it. */}
+            {guide.beforeYouGo && (
               <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'} uppercase mb-3 tracking-wide`}>
-                  ⚠️ Avoid These Mistakes
+                <h4 className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                  <span className="text-sm">✓</span>
+                  Before You Go
                 </h4>
-                <ul className="space-y-2">
-                  {guide.pitfalls.map((pitfall, index) => (
-                    <li key={index} className="flex gap-2">
-                      <span className={`${isDark ? 'text-orange-400' : 'text-orange-700'} mt-1 flex-shrink-0`}>✗</span>
-                      <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
-                        {pitfall}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <p className={`text-sm ${colors.textSecondary} leading-relaxed`}>
+                  {guide.beforeYouGo}
+                </p>
               </div>
             )}
 
-            {/* FAQ — focus-tools enrichment; mirrors the prerendered static page */}
-            {faq.length > 0 && (
-              <div className="mb-6">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
-                  <span className="text-sm">❓</span>
-                  Frequently Asked Questions
-                </h4>
-                <div className="space-y-3">
-                  {faq.map((item, index) => (
-                    <details key={index} className={`rounded-lg border ${isDark ? 'border-zinc-700' : 'border-gray-200'} px-3 py-2`}>
-                      <summary className={`text-sm font-medium cursor-pointer ${colors.text} leading-snug`}>
-                        {item.q}
-                      </summary>
-                      <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-2`}>
-                        {item.a}
-                      </p>
-                    </details>
-                  ))}
-                </div>
-              </div>
+            {/* ── How this tool works ──────────────────────────────────────
+                The documentation, demoted. What This Does repeated the nutshell
+                almost line for line in paragraph form — the nutshell made it
+                redundant rather than the other way round. It is kept, with the
+                pitfalls and the FAQ, behind one disclosure so the detail is
+                there for whoever wants it and costs nothing to whoever does not.
+                Rendered in the DOM either way, so it stays crawlable. */}
+            {(guide.overview || (guide.pitfalls && guide.pitfalls.length > 0) || faq.length > 0) && (
+              <details className="group">
+                <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
+                  <div className={`text-xs font-bold ${colors.textMuted} uppercase tracking-wide flex items-center gap-2`}>
+                    How {tool?.title || 'this tool'} works
+                    <span className={`ms-auto text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200`} aria-hidden="true">▼</span>
+                  </div>
+                </summary>
+
+                {guide.overview && (
+                  <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-4`}>
+                    {guide.overview}
+                  </p>
+                )}
+
+                {guide.pitfalls && guide.pitfalls.length > 0 && (
+                  <div className="mt-5">
+                    <h4 className={`text-xs font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'} uppercase mb-3 tracking-wide`}>
+                      ⚠️ Avoid These Mistakes
+                    </h4>
+                    <ul className="space-y-2">
+                      {guide.pitfalls.map((pitfall, index) => (
+                        <li key={index} className="flex gap-2">
+                          <span className={`${isDark ? 'text-orange-400' : 'text-orange-700'} mt-1 flex-shrink-0`}>✗</span>
+                          <span className={`text-sm ${colors.textSecondary} leading-relaxed`}>
+                            {pitfall}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {faq.length > 0 && (
+                  <div className="mt-5">
+                    <h4 className={`text-xs font-bold ${isDark ? 'text-sky-400' : 'text-sky-700'} uppercase mb-3 tracking-wide flex items-center gap-2`}>
+                      <span className="text-sm">❓</span>
+                      Frequently Asked Questions
+                    </h4>
+                    <div className="space-y-3">
+                      {faq.map((item, index) => (
+                        <details key={index} className={`rounded-lg border ${isDark ? 'border-zinc-700' : 'border-gray-200'} px-3 py-2`}>
+                          <summary className={`text-sm font-medium cursor-pointer ${colors.text} leading-snug`}>
+                            {item.q}
+                          </summary>
+                          <p className={`text-sm ${colors.textSecondary} leading-relaxed mt-2`}>
+                            {item.a}
+                          </p>
+                        </details>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </details>
             )}
           </div>
         </aside>
