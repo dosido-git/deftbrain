@@ -250,11 +250,19 @@ function getRelatedGuidesHTML(guides, n = 4) {
     </nav>`;
 }
 
-// Homepage "Start here" block — link-equity concentration for the focus tools
+// Homepage featured-tools block — link-equity concentration for the focus tools
 // (tools-keep-list.json). The homepage is the highest-authority page; the 18
 // focus tools get first-position, keyword-adjacent links ahead of the guides
 // sample and the global all-tools index. Mirrored by RelatedLinks.js for SPA
 // parity (same pattern as the guides sample below).
+//
+// The heading was "Start here" until 2026-08-08, which was written for the
+// crawler's view and wrong for everyone else's. This block IS first inside
+// #root, so Googlebot reads it first — but React replaces #root on mount and
+// RelatedLinks re-renders it in the FOOTER, so a reader met "Start here" at the
+// very bottom, under the whole catalog it was meant to introduce, offering 18
+// choices. The links carry the SEO value; the heading text carries none, so
+// naming it honestly costs nothing.
 function getFeaturedToolsHTML(tools) {
   const featured = (TOOLS_KEEP_LIST.focus || [])
     .map(id => tools.find(t => t.id === id))
@@ -265,7 +273,7 @@ function getFeaturedToolsHTML(tools) {
     return `<li style="margin:.45rem 0;line-height:1.55"><a href="/${t.id}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(t.title)}</a>${blurb ? ` — <span style="color:#475569">${escapeHtml(blurb)}</span>` : ''}</li>`;
   }).join('\n        ');
   return `<nav class="db-featured-tools" aria-label="Featured tools" style="max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 0">
-      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Start here — our most useful tools</h2>
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Some of our most popular tools</h2>
       <ul style="list-style:none;padding:0;margin:0">
         ${items}
       </ul>

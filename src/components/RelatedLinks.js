@@ -105,7 +105,7 @@ export default function RelatedLinks() {
   let body = null;
 
   if (seg === '') {
-    // Homepage: "Start here" focus tools (mirrors getFeaturedToolsHTML) + one
+    // Homepage: the focus tools (mirrors getFeaturedToolsHTML) + one
     // guide per tool, up to 10 (mirrors getHomepageGuidesHTML).
     const featured = (toolsKeepList.focus || [])
       .map(id => tools.find(t => t.id === id))
@@ -128,7 +128,7 @@ export default function RelatedLinks() {
     const allHubs = hubLinks([...new Set(guides.map(g => g.category))].sort());
     body = (
       <>
-        <Block label="Start here" links={featured} />
+        <Block label="Some of our most popular tools" links={featured} />
         <Block label="Guides" links={links} hub={hub} />
         <Block label="Browse guides by topic" links={allHubs} />
       </>
