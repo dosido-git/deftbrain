@@ -114,12 +114,31 @@ for (const id of indexableToolIds) {
   toolLastmod[id] = lastmodFor(`tool:${id}`, sha(JSON.stringify(toolObjects[id])));
 }
 
-// Homepage: its crawlable content is the featured/keep-list links + the tool
-// index, so its hash is the keep-lists + the union of tool hashes.
-const keepFiles = [keepListPath, path.join(__dirname, '..', 'guides', 'keep-list.json')]
-  .map(f => (fs.existsSync(f) ? fs.readFileSync(f, 'utf-8') : ''));
+// Homepage: its crawlable content is the featured/keep-list links, the tool
+// index, and the blocks prerender.js writes into #root.
+//
+// Hash the MEANING of the keep-lists, not their bytes. Reading the raw files
+// was wrong in both directions: editing a comment in tools-keep-list.json's
+// _meta bumped the homepage date though nothing crawlable moved (hit
+// 2026-08-08), while adding the 18 category-hub links to the homepage did NOT
+// bump it, because that lives in prerender.js and was never an input. A date
+// that moves on prose and sits still on real change is worse than no date.
+const readJson = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf-8')); } catch { return {}; } };
+const toolsKeep = readJson(keepListPath);
+const guidesKeep = readJson(path.join(__dirname, '..', 'guides', 'keep-list.json')).keep || {};
+const keepSignature = JSON.stringify({
+  focus: [...(toolsKeep.focus || [])].sort(),
+  keepers: [...(toolsKeep.keepers || [])].sort(),
+  guides: Object.entries(guidesKeep).map(([c, sl]) => [c, [...sl].sort()]).sort(),
+});
+// The homepage template itself — getFeaturedToolsHTML / getHomepageGuidesHTML /
+// getHubsHTML all live here, so a change to any of them is a real change to the
+// page Google fetches.
+const prerenderHash = (() => {
+  try { return sha(fs.readFileSync(path.join(__dirname, 'prerender.js'), 'utf-8')); } catch { return ''; }
+})();
 const homepageLastmod = lastmodFor('homepage',
-  sha(keepFiles.join('') + indexableToolIds.map(id => lastmodState[`tool:${id}`].hash).join('')));
+  sha(keepSignature + prerenderHash + indexableToolIds.map(id => lastmodState[`tool:${id}`].hash).join('')));
 
 if (CHECK) {
   if (bumped.length === 0) {
