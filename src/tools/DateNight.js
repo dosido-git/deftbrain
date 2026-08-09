@@ -177,6 +177,7 @@ const DateNight = ({ tool }) => {
   const [checklist, setChecklist] = useState(null);
   const [checklistLoading, setChecklistLoading] = useState(false);
   const [adapting, setAdapting] = useState('');
+  const [nextHelp, setNextHelp] = useState([]);
   const [feel, setFeel] = useState('');
   const [checklistChecked, setChecklistChecked] = useState({});
 
@@ -384,6 +385,21 @@ const DateNight = ({ tool }) => {
 
   // "If something changes" — one endpoint, three directions. Sends the current
   // itinerary so the model revises THIS evening rather than inventing another.
+  // Asked for after the plan is on screen, so it costs the reader nothing.
+  // Server validates every id against the real catalog; anything invented is
+  // dropped before it reaches here.
+  useEffect(() => {
+    if (!results?.itinerary?.length) { setNextHelp([]); return; }
+    let alive = true;
+    callToolEndpoint('date-night', { action: 'next-help', dateType, location,
+      vibeTitle: results.vibe_title, itinerary: results.itinerary, yearsTogether,
+      userLocale, userCurrency, userRegion })
+      .then(d => { if (alive && Array.isArray(d?.suggestions)) setNextHelp(d.suggestions); })
+      .catch(() => { /* a missing suggestion strip is not worth an error */ });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results]);
+
   const handleAdapt = async (change) => {
     setAdapting(change);
     try {
@@ -678,6 +694,24 @@ const DateNight = ({ tool }) => {
               </button>
             </div>
           {results.plan_b && <p className={`text-xs ${c.textSecondary} pt-1 border-t ${c.border}`}>{results.plan_b}</p>}
+        </div>
+      )}
+
+      {/* ── Anything else before tonight? ──────────────────────────────
+          Replaces a related-tools strip that recommended by taxonomy — which
+          is how someone planning an anniversary got offered Apology
+          Calibrator. These are chosen by the model from the real catalog,
+          against THIS evening. */}
+      {nextHelp.length > 0 && (
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <p className={`text-sm font-bold ${c.text}`}>{t('dn_anything_else')}</p>
+          {nextHelp.map((s) => (
+            <a key={s.id} href={`/${s.id}`} className="block group">
+              <span className={`text-sm font-bold ${c.roseText} group-hover:underline`}>{s.label}</span>
+              {s.why && <span className={`block text-xs ${c.textSecondary}`}>{s.why}</span>}
+            </a>
+          ))}
+          <a href="/" className={`inline-block text-xs ${c.textMuteded} hover:underline`}>{t('dn_explore_all')}</a>
         </div>
       )}
 

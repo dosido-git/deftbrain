@@ -5,6 +5,8 @@
 // Brand/tool names (Date Night, CaptionMagic, DecisionCoach) stay as-is.
 export const dateNight = {
   en: {
+    dn_anything_else: "Anything else you want help with before tonight?",
+    dn_explore_all: "Explore all DeftBrain tools →",
     dn_for_the_two: "For the two of you",
     dn_one_thing_now: "One thing to do now",
     dn_if_changes: "If something changes",
@@ -192,6 +194,8 @@ export const dateNight = {
     dn_total: "Total",
   },
   es: {
+    dn_anything_else: "¿Algo más en lo que te podamos ayudar antes de esta noche?",
+    dn_explore_all: "Explora todas las herramientas de DeftBrain →",
     dn_for_the_two: "Para los dos",
     dn_one_thing_now: "Lo primero que hacer",
     dn_if_changes: "Si algo cambia",
@@ -379,6 +383,8 @@ export const dateNight = {
     dn_total: "Total",
   },
   zh: {
+    dn_anything_else: "今晚之前还需要什么帮助吗？",
+    dn_explore_all: "浏览全部 DeftBrain 工具 →",
     dn_for_the_two: "属于你们俩",
     dn_one_thing_now: "现在先做这件事",
     dn_if_changes: "如果有变",
@@ -566,6 +572,8 @@ export const dateNight = {
     dn_total: "总计",
   },
   hi: {
+    dn_anything_else: "आज रात से पहले और किसी चीज़ में मदद चाहिए?",
+    dn_explore_all: "सभी DeftBrain टूल देखें →",
     dn_for_the_two: "आप दोनों के लिए",
     dn_one_thing_now: "अभी यह एक काम करें",
     dn_if_changes: "अगर कुछ बदल जाए",
@@ -753,6 +761,8 @@ export const dateNight = {
     dn_total: "कुल",
   },
   ar: {
+    dn_anything_else: "هل تحتاج مساعدة في شيء آخر قبل الليلة؟",
+    dn_explore_all: "استكشف كل أدوات DeftBrain ←",
     dn_for_the_two: "لكما أنتما",
     dn_one_thing_now: "افعل هذا الآن",
     dn_if_changes: "إذا تغيّر شيء",
@@ -940,6 +950,8 @@ export const dateNight = {
     dn_total: "الإجمالي",
   },
   pt: {
+    dn_anything_else: "Mais alguma coisa em que possamos ajudar antes desta noite?",
+    dn_explore_all: "Explore todas as ferramentas DeftBrain →",
     dn_for_the_two: "Para vocês dois",
     dn_one_thing_now: "Faça isto primeiro",
     dn_if_changes: "Se algo mudar",
@@ -1127,6 +1139,8 @@ export const dateNight = {
     dn_total: "Total",
   },
   fr: {
+    dn_anything_else: "Autre chose avant ce soir ?",
+    dn_explore_all: "Découvrir tous les outils DeftBrain →",
     dn_for_the_two: "Pour vous deux",
     dn_one_thing_now: "À faire maintenant",
     dn_if_changes: "Si quelque chose change",
@@ -1314,6 +1328,8 @@ export const dateNight = {
     dn_total: "Total",
   },
   de: {
+    dn_anything_else: "Noch etwas, wobei wir vor heute Abend helfen können?",
+    dn_explore_all: "Alle DeftBrain-Tools entdecken →",
     dn_for_the_two: "Für euch beide",
     dn_one_thing_now: "Das jetzt erledigen",
     dn_if_changes: "Falls sich etwas ändert",
@@ -1501,6 +1517,8 @@ export const dateNight = {
     dn_total: "Gesamt",
   },
   ja: {
+    dn_anything_else: "今夜までに、ほかにお手伝いできることは？",
+    dn_explore_all: "DeftBrain のツールをすべて見る →",
     dn_for_the_two: "ふたりのために",
     dn_one_thing_now: "まずやること",
     dn_if_changes: "予定が変わったら",
@@ -1688,6 +1706,8 @@ export const dateNight = {
     dn_total: "合計",
   },
   ko: {
+    dn_anything_else: "오늘 밤 전에 더 도와드릴 일이 있나요?",
+    dn_explore_all: "DeftBrain 도구 전체 보기 →",
     dn_for_the_two: "두 사람을 위해",
     dn_one_thing_now: "지금 할 한 가지",
     dn_if_changes: "상황이 바뀌면",
@@ -1875,6 +1895,8 @@ export const dateNight = {
     dn_total: "합계",
   },
   ru: {
+    dn_anything_else: "Помочь ещё с чем-нибудь до вечера?",
+    dn_explore_all: "Все инструменты DeftBrain →",
     dn_for_the_two: "Для вас двоих",
     dn_one_thing_now: "Сделайте это сейчас",
     dn_if_changes: "Если что-то изменится",
@@ -2062,6 +2084,8 @@ export const dateNight = {
     dn_total: "Итого",
   },
   th: {
+    dn_anything_else: "ก่อนคืนนี้ ต้องการให้ช่วยอะไรอีกไหม?",
+    dn_explore_all: "ดูเครื่องมือ DeftBrain ทั้งหมด →",
     dn_for_the_two: "สำหรับคุณสองคน",
     dn_one_thing_now: "สิ่งที่ต้องทำตอนนี้",
     dn_if_changes: "ถ้ามีอะไรเปลี่ยน",
@@ -2249,6 +2273,8 @@ export const dateNight = {
     dn_total: "รวม",
   },
   vi: {
+    dn_anything_else: "Cần giúp gì thêm trước tối nay không?",
+    dn_explore_all: "Khám phá tất cả công cụ DeftBrain →",
     dn_for_the_two: "Dành cho hai bạn",
     dn_one_thing_now: "Việc cần làm ngay",
     dn_if_changes: "Nếu có gì thay đổi",

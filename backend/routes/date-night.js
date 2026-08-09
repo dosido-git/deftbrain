@@ -3,6 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -212,6 +213,66 @@ Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     return res.json(parsed);
+    }
+
+    // ─── NEXT HELP ───
+    // "Anything else you want help with before tonight?" — replaces a related-
+    // tools strip that recommended by taxonomy, which is how someone planning
+    // an anniversary got sent to Apology Calibrator.
+    //
+    // The model picks from the real catalog and writes the framing, so the
+    // answer is about THIS evening rather than a category. It is a separate
+    // action, fired after the plan renders, so it adds nothing to the wait.
+    //
+    // EVERY id is validated against the catalog before it leaves the server. A
+    // model asked to name a tool will invent a plausible one, and an invented
+    // id is a dead link on a results page. Unknown ids are dropped, not fixed.
+    if (action === 'next-help') {
+      const { dateType, location, vibeTitle, itinerary, yearsTogether,
+              userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+      const plan = Array.isArray(itinerary) && itinerary.length
+        ? itinerary.map(x => `${x.time} ${x.venue_name} (${x.stop_type})`).join('; ')
+        : '(no itinerary)';
+      const menu = TOOL_CATALOG
+        .filter(t => t.id !== 'DateNight')
+        .map(t => `${t.id}: ${t.tagline || t.description || ''}`.slice(0, 130))
+        .join('\n');
+
+      const prompt = `Someone has just planned this evening and is getting ready for it.
+
+OCCASION: ${DATE_TYPE_LABELS[dateType] || dateType || 'a date'}${yearsTogether ? ` (${yearsTogether} years together)` : ''}
+PLACE: ${location || 'unspecified'}
+THE EVENING: ${vibeTitle || ''}
+STOPS: ${plan}
+
+Pick AT MOST 3 tools that this specific person plausibly needs BEFORE OR DURING tonight.
+Judge by what the evening actually demands — a dress code implies deciding what to wear, an
+unfamiliar cuisine implies reading a menu, a milestone implies writing something. Do NOT pick a
+tool because it shares a topic with dating or relationships. If fewer than 3 genuinely fit,
+return fewer. If none fit, return an empty array.
+
+Never suggest a tool that solves a problem this evening does not have.
+
+TOOLS (choose by exact id, only from this list):
+${menu}
+
+Return ONLY valid JSON:
+{ "suggestions": [ { "id": "ExactToolId", "label": "What it does for them tonight, imperative, max 6 words", "why": "One short sentence, specific to this evening" } ] }`;
+
+      const parsed = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 700,
+        system: withLanguage('You recommend the next useful tool, never the merely related one. Return ONLY valid JSON.', userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
+        messages: [{ role: 'user', content: prompt }],
+      }, { label: 'DateNightNextHelp' });
+
+      const clean = (Array.isArray(parsed.suggestions) ? parsed.suggestions : [])
+        .filter(x => x && typeof x.id === 'string' && isRealTool(x.id))
+        .slice(0, 3);
+      const dropped = (parsed.suggestions || []).length - clean.length;
+      if (dropped > 0) console.warn(`[date-night:next-help] dropped ${dropped} suggestion(s) naming tools that do not exist`);
+      return res.json({ suggestions: clean });
     }
 
     // ─── ADAPT ───
