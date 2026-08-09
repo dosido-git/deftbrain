@@ -97,6 +97,11 @@ export default function RelatedLinks() {
     </nav>
   ));
 
+  // Category slugs are all single lowercase words, so the display name is just
+  // the capitalised slug — no second copy of CATEGORY_META to drift.
+  const hubName = (cat) => cat.charAt(0).toUpperCase() + cat.slice(1);
+  const hubLinks = (cats) => cats.map(cat => ({ href: `/guides/${cat}`, text: hubName(cat) }));
+
   let body = null;
 
   if (seg === '') {
@@ -117,10 +122,15 @@ export default function RelatedLinks() {
     const hub = (
       <> — <a href="/guides" className={`${c.link} inline-block py-2 -my-2`}>browse all {guides.length} &rarr;</a></>
     );
+    // The 18 category hubs absorb 381 consolidation redirects and, until
+    // 2026-08-08, had one inbound internal link each — none of them from here,
+    // the highest-authority page. Mirrors getHubsHTML in prerender.js.
+    const allHubs = hubLinks([...new Set(guides.map(g => g.category))].sort());
     body = (
       <>
         <Block label="Start here" links={featured} />
         <Block label="Guides" links={links} hub={hub} />
+        <Block label="Browse guides by topic" links={allHubs} />
       </>
     );
   } else {
@@ -131,10 +141,16 @@ export default function RelatedLinks() {
       .slice(0, 4)
       .map(g => ({ href: `/guides/${g.category}/${g.slug}`, text: g.title }));
     const relTools = relatedTools(tool, tools).map(t => ({ href: `/${t.id}`, text: t.title }));
+    // The hub(s) this tool's own guides live in — topically relevant by
+    // construction, never hand-mapped. Mirrors getToolHubsHTML in prerender.js.
+    const toolHubs = hubLinks(
+      [...new Set(guides.filter(g => g.toolId === tool.id).map(g => g.category))].slice(0, 3)
+    );
     body = (
       <>
         <Block label="Related guides" links={relGuides} />
         <Block label="Related tools" links={relTools} />
+        {toolHubs.length > 0 && <Block label="More guides like this" links={toolHubs} />}
       </>
     );
   }

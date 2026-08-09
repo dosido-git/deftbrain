@@ -138,6 +138,13 @@ const MAX_TITLE_LEN = 70;
 // still valid JSON and renders identically.
 const jsLit = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
 
+// The category eyebrow is a LINK, not a label. Until 2026-08-08 the hub was
+// named here in BreadcrumbList schema and rendered as plain text, so all 552
+// articles pointed structured data at their hub and not one actual <a href>.
+// Every hub had exactly ONE inbound internal link site-wide — from /guides —
+// while absorbing 381 consolidation redirects: the redirects told Google these
+// pages mattered and the link graph said they did not. Same word, now carrying
+// the link it always implied. Do not turn it back into a <span>.
 function renderGuide(spec, siblings) {
   // canonicalOverride: for a guide that exists at two URLs (same slug filed in
   // two categories) the twin points its canonical at the primary — Google
@@ -308,8 +315,9 @@ ${stepsJsonLd}
   <main>
     <div class="container">
 
+      <!-- eyebrow: category name, linked to its hub (see note above renderGuide) -->
       <div class="eyebrow">
-        <span class="tag">${esc(spec.categoryLabel)}</span>
+        <a class="tag" href="/guides/${spec.category}">${esc(spec.categoryLabel)}</a>
         <div class="eyebrow-rule"></div>
       </div>
 

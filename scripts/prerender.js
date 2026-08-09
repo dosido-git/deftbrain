@@ -183,6 +183,57 @@ function getRelatedHTML(related) {
 }
 
 // Visible "Related guides" block — mirrors getRelatedHTML (Related tools) for
+// ─── Category hubs ────────────────────────────────────────────────────────────
+// The 18 hubs absorb 381 consolidation redirects and, before 2026-08-08, had
+// exactly ONE inbound internal link each — from /guides. The homepage linked
+// ten individual articles and zero hubs; no tool page linked one at all. The
+// redirects told Google these pages matter while the link graph said they did
+// not. These two blocks resolve that contradiction.
+//
+// Names are read from build-guides-indexes.js rather than restated here, so a
+// renamed category cannot silently desync the two files.
+function loadHubNames() {
+  try {
+    const src = fs.readFileSync(path.join(__dirname, 'build-guides-indexes.js'), 'utf8');
+    const block = src.slice(src.indexOf('const CATEGORY_META'), src.indexOf('\n};', src.indexOf('const CATEGORY_META')));
+    const out = {};
+    for (const m of block.matchAll(/(\w+):\s*\{\s*\n\s*name:\s*'([^']+)'/g)) out[m[1]] = m[2];
+    return out;
+  } catch { return {}; }
+}
+const HUB_NAMES = loadHubNames();
+
+// Homepage → all 18 hubs. Eighteen links from the highest-authority page.
+function getHubsHTML() {
+  const cats = Object.keys(HUB_NAMES);
+  if (cats.length < 2) return '';
+  const links = cats.sort((a, b) => HUB_NAMES[a].localeCompare(HUB_NAMES[b]))
+    .map(c => `<a href="/guides/${c}" style="color:#2c4a6e;text-decoration:none;font-weight:500">${escapeHtml(HUB_NAMES[c])}</a>`)
+    .join('\n        ');
+  return `<nav class="db-hubs" aria-label="Guide categories" style="margin:0 0 20px">
+      <h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;margin:0 0 12px;font-weight:700">Browse guides by topic</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+        ${links}
+      </div>
+    </nav>`;
+}
+
+// Tool page → the hub(s) its own guides live in. Derived from the guides
+// themselves, so the link is always topically relevant and never hand-mapped.
+function getToolHubsHTML(guides) {
+  if (!guides || !guides.length) return '';
+  const cats = [...new Set(guides.map(g => g.category))].filter(c => HUB_NAMES[c]).slice(0, 3);
+  if (!cats.length) return '';
+  const links = cats
+    .map(c => `<a href="/guides/${c}" style="color:#2c4a6e;text-decoration:none;font-weight:600">${escapeHtml(HUB_NAMES[c])} guides &rarr;</a>`)
+    .join('\n        ');
+  return `<nav class="db-tool-hubs" aria-label="Guide categories for this tool" style="margin:0 0 20px">
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;line-height:1.5">
+        ${links}
+      </div>
+    </nav>`;
+}
+
 // visual consistency. Links a tool page to a few of its own guides so authority
 // flows from the (higher-authority) tool pages into the guides cluster. Capped at
 // `n` and only rendered when the tool actually has guides, to keep the footer tidy.
@@ -543,7 +594,8 @@ async function main() {
       // <RelatedLinks> replaces them per-route → no SPA-nav leak); the global
       // all-tools index stays OUTSIDE #root (identical on every page, harmless).
       const relatedBlocks = getRelatedHTML(relatedTools(tool, tools))
-        + getRelatedGuidesHTML(guidesByTool[tool.id]);
+        + getRelatedGuidesHTML(guidesByTool[tool.id])
+        + getToolHubsHTML(guidesByTool[tool.id]);
       const html = injectToolIndex(
         injectBody(injectMeta(template, tool), tool, relatedBlocks),
         getToolIndexHTML(tools));
@@ -563,7 +615,7 @@ async function main() {
     // replaces them per-route → no leak onto tool pages); the all-tools index
     // stays outside #root. Featured first = first-position links for the 18.
     const homepageHtml = injectToolIndex(
-      template.replace('<div id="root"></div>', `<div id="root">${getFeaturedToolsHTML(tools)}${homeGuides}</div>`),
+      template.replace('<div id="root"></div>', `<div id="root">${getFeaturedToolsHTML(tools)}${homeGuides}${getHubsHTML()}</div>`),
       getToolIndexHTML(tools));
     fs.writeFileSync(templatePath, homepageHtml, 'utf8');
     console.log('  OK  / (homepage tool index)');
