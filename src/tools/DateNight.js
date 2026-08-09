@@ -503,9 +503,6 @@ const DateNight = ({ tool }) => {
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
         </button>
-        <button onClick={regenerate} disabled={loading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-          {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>🔄 {t('dn_different')}</>}
-        </button>
         <button onClick={() => { setSurpriseMode(false); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>📨 {t('dn_send_plan')}</>}
         </button>
@@ -796,15 +793,6 @@ const DateNight = ({ tool }) => {
       <p className={`text-xs italic text-center ${c.textMuted}`}>
         {t('dn_ai_disclaimer')}
       </p>
-
-      {/* Post-result cross-refs */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('dn_related')}</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/CaptionMagic" className={`text-xs ${linkStyle}`}>📸 {t('dn_caption_magic')}</a>
-          <a href="/DecisionCoach" className={`text-xs ${linkStyle}`}>🎯 {t('dn_decision_coach')}</a>
-        </div>
-      </div>
 
       {/* Reset */}
     </div>

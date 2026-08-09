@@ -519,9 +519,12 @@ Return ONLY valid JSON:
       "description": "What to do (2-3 sentences)", "estimated_cost": 30,
       "pro_tip": "Tip", "dress_vibe": "Dress code",
       "anniversary_touch": "Something specific for an anniversary at this stop",
+      "for_the_two_of_you": "One thing to DO or SAY together at this stop — a toast, a question, an exchange. Specific to this venue and to ${yearsTogether} years. One sentence.",
+      "plan_b": "Specific alternative if this stop has a wait or is closed",
       "stop_number": 1 }
   ],
   "total_estimated": 80, "buffer": 15,
+  "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner'). The one thing that breaks the evening if skipped.",
   "transportation": "Getting between stops",
   "nostalgia_prompts": ["3-4 reflection questions for ${yearsTogether} years"],
   "milestone_gesture": "Meaningful gesture for ${yearsTogether} years",
