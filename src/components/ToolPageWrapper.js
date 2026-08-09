@@ -380,8 +380,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </div>
           {/* Print-only footer */}
           <div data-print-show-flex style={{display:'none',justifyContent:'center',alignItems:'center',gap:'8px',paddingTop:'10px',marginTop:'20px',borderTop:'1px solid #e5e7eb'}}>
+            {/* Wordmark + URL only. The brain mark is already at the top of
+                every print-out (the print-only header above), so a second copy
+                28px from the bottom of the page was the same logo twice. The
+                URL line stays — a printed page should say where it came from. */}
             <span style={{fontFamily:'Georgia,serif',fontSize:'12px',color:'#9ca3af'}}><span style={{color:'#c8872e',fontWeight:'bold'}}>D</span>eftBrain · deftbrain.com</span>
-            <img src="/pBrain-l.png" alt="DeftBrain" style={{height:'28px',width:'auto'}} />
           </div>
         </main>
 
