@@ -7,6 +7,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import LocaleSelectors from './LocaleSelectors';
 import FeedbackTap from './FeedbackTap';
+import { ContextualRailProvider, useContextualRail } from './ContextualRailContext';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -15,6 +16,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
   const { actions } = useActionBar();
+  const contextualRail = useContextualRail();
 
   // Scroll to top when a new tool page opens
   useEffect(() => {
@@ -386,7 +388,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
         {/* Right Column: Ad Panel + Guide Sidebar */}
         {/* Below `lg` the whole aside stacks AFTER the form, as it always has. */}
-        <aside data-print-hide className="lg:col-span-4 space-y-6 relative z-0">
+        <aside data-print-hide className={`lg:col-span-4 space-y-6 relative z-0 ${contextualRail ? 'hidden lg:block' : ''}`}>
 
           {/* ── Ad Panel Placeholder — commented out until ready to activate ── */}
           {/* <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl overflow-hidden transition-colors duration-200`}>
@@ -397,8 +399,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             </div>
           </div> */}
 
-          {/* ── Guide Sidebar ── */}
+          {/* ── Guide Sidebar / opt-in contextual rail ── */}
           <div className={`${colors.surfaceAlt} border ${colors.border} rounded-2xl p-6 sticky top-44 max-h-[calc(100vh-12rem)] overflow-y-auto transition-colors duration-200`}>
+            {contextualRail ? contextualRail.content : <>
             
             {/* Header */}
             {/* ── In a Nutshell ────────────────────────────────────────────
@@ -471,6 +474,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               </div>
             )}
 
+            </>}
+
           </div>
         </aside>
       </div>
@@ -480,9 +485,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
 const ToolPageWrapper = ({ children, tool, toolId }) => (
   <ActionBarProvider>
-    <ToolPageWrapperInner tool={tool} toolId={toolId}>
-      {children}
-    </ToolPageWrapperInner>
+    <ContextualRailProvider>
+      <ToolPageWrapperInner tool={tool} toolId={toolId}>
+        {children}
+      </ToolPageWrapperInner>
+    </ContextualRailProvider>
   </ActionBarProvider>
 );
 
