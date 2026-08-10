@@ -143,6 +143,7 @@ const DateNight = ({ tool }) => {
   const [weather, setWeather] = useState('');
   const [plannedDate, setPlannedDate] = useState(''); // '' = tonight
   const [dietary, setDietary] = useState([]);
+  const [showTiming, setShowTiming] = useState(false);
   const [showDietary, setShowDietary] = useState(false);
   const [yearsTogether, setYearsTogether] = useState(1);
   const [showInputs, setShowInputs] = useState(true);
@@ -890,13 +891,33 @@ const DateNight = ({ tool }) => {
       {/* ═══ INPUT FORM ═══ */}
       {(!results || showInputs) && !liveMode && (
         <div className="space-y-4">
-          {/* Location — first. It is the one answer nothing can be inferred
-              without: every venue, price and travel time depends on it, and
-              unlike the others it has no sensible default. Conversation
-              Guidelines #5 — ask the most important question first. */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-            <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+          {/* Where and when — the two basics, together and first. Location is
+              the one answer nothing can be inferred without: every venue,
+              price and travel time depends on it, and unlike the rest it has
+              no sensible default. Conversation Guidelines #5 — ask the most
+              important questions first. */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div>
+              <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
+              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
+              <div className="flex gap-2 items-center flex-wrap">
+                <button onClick={() => setPlannedDate('')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${!plannedDate ? c.chipOn : c.chipOff}`}>
+                  {t('dn_tonight')}
+                </button>
+                <input
+                  type="date"
+                  value={plannedDate}
+                  min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
+                  onChange={e => setPlannedDate(e.target.value)}
+                  className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
+                />
+                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
+              </div>
+            </div>
           </div>
 
           {/* Date type */}
@@ -961,41 +982,33 @@ const DateNight = ({ tool }) => {
             </div>
           </div>
 
-          {/* Time + Duration + Weather (location moved to the top of the form) */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-            <div>
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
-              <div className="flex gap-2 items-center flex-wrap">
-                <button onClick={() => setPlannedDate('')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${!plannedDate ? c.chipOn : c.chipOff}`}>
-                  {t('dn_tonight')}
-                </button>
-                <input
-                  type="date"
-                  value={plannedDate}
-                  min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
-                  onChange={e => setPlannedDate(e.target.value)}
-                  className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
-                />
-                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
+          {/* Start time, length and weather — all three have a working default
+              (7:00 PM, Standard, Not sure), so they don't need to be open. Same
+              disclosure pattern as Dietary and Partner preferences below. */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+              🕐 {t('dn_timing_details')} {showTiming ? '▲' : '▼'}
+            </button>
+            {showTiming && (
+              <div className="mt-3 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
+                    <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
+                      {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
+                    <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
+                  </div>
+                </div>
+                <div>
+                  <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
+                  <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
-                <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
-                  {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
-                <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
-              </div>
-            </div>
-            <div>
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
-              <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
-            </div>
+            )}
           </div>
 
           {/* Dietary + Restrictions */}
