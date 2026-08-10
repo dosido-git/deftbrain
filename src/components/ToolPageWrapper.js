@@ -189,6 +189,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
   };
   // Theme-aware classes
   const isDark = theme === 'dark';
+  const isDateNight = detectedTool?.id === 'DateNight';
 
   // Bookmark toast
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
@@ -300,12 +301,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 {detectedTool?.categories?.[0] || 'General'}
               </span>
             </div>
-            <h1 className={`text-5xl font-light ${colors.text} tracking-tight`}>
-              {detectedTool?.title || 'Tool'}
+            <h1 className={`${isDateNight ? 'text-4xl sm:text-5xl font-bold font-serif' : 'text-5xl font-light'} ${colors.text} tracking-tight`}>
+              {isDateNight ? t('dn_page_title') : (detectedTool?.title || 'Tool')}
             </h1>
-            <p className={`${colors.textSecondary} max-w-2xl leading-relaxed`}>
-              {detectedTool?.description || 'Strategic intelligence tool'}
+            <p className={`${colors.textSecondary} max-w-2xl leading-relaxed ${isDateNight ? 'text-lg' : ''}`}>
+              {isDateNight ? t('dn_page_intro') : (detectedTool?.description || 'Strategic intelligence tool')}
             </p>
+            {isDateNight && <p className={`text-sm ${colors.textMuted} pt-2`}>🛡️ {t('dn_no_prompt')}</p>}
             {/* ── Localized "Any language works" signal — only renders for non-English browsers ── */}
             {i18n.language !== 'en' && (
               <p
@@ -321,9 +323,9 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           </header>
 
           {/* Bookmark hint + Theme Toggle (above card, right-aligned) */}
-          <div data-print-hide className="flex items-center justify-between flex-wrap mt-4 mb-2 gap-2 relative">
+          <div data-print-hide className={`flex items-center ${isDateNight ? 'justify-end' : 'justify-between'} flex-wrap mt-4 mb-2 gap-2 relative`}>
             <div className="flex gap-2">
-            <button
+            {!isDateNight && <button
               onClick={handleBookmarkHint}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${colors.toggleBg} ${colors.toggleText}`}
               aria-label="Bookmark this tool"
@@ -331,8 +333,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             >
               <span className="text-base leading-none">🔖</span>
               <span className="text-xs font-medium">Bookmark</span>
-            </button>
-            {showBookmarkToast && (
+            </button>}
+            {!isDateNight && showBookmarkToast && (
               <div className={`absolute start-0 top-full mt-2 px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium whitespace-nowrap z-50 ${
                 isDark ? 'bg-zinc-800 border-zinc-600 text-zinc-100' : 'bg-white border-stone-200 text-stone-800'
               }`}>
@@ -360,14 +362,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             )}
           </div>
 
-          <section data-print-section className={`border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
-              ...(detectedTool?.headerColor ? {
+          <section data-print-section className={`${isDateNight ? '' : `border ${colors.border} rounded-2xl shadow-sm overflow-hidden`} transition-colors duration-200`} style={{
+              ...(!isDateNight && detectedTool?.headerColor ? {
                 background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
               } : { background: isDark ? '#27272a' : '#ffffff' }),
               breakBefore: 'avoid',
               pageBreakBefore: 'avoid',
             }}>
-            <div className={`${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
+            <div className={`${colors.surface} ${isDateNight ? 'm-0 p-4 sm:p-6' : 'm-3 sm:m-8 rounded-xl p-4 sm:p-6'}`}>
               {children}
             </div>
           </section>
