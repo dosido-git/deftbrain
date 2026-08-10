@@ -133,6 +133,7 @@ const DateNight = ({ tool }) => {
   // ─── Input ───
   const [currency, setCurrency] = useState(detectCur);
   const [budget, setBudget] = useState(() => (BUDGET_PRESETS[detectCur()] || BUDGET_PRESETS['$'])[2]);
+  const [otherBudget, setOtherBudget] = useState('');
   const [dateType, setDateType] = useState('');
   const [location, setLocation] = useState(detectLoc() || '');
   const [restrictions, setRestrictions] = useState('');
@@ -250,21 +251,12 @@ const DateNight = ({ tool }) => {
   const fmtDate = (iso) => { try { const d = Math.floor((Date.now() - new Date(iso)) / 86400000); return d === 0 ? t('dn_today') : d === 1 ? t('dn_yesterday') : d < 7 ? t('dn_days_ago', { count: d }) : new Date(iso).toLocaleDateString(userLocale || 'en', { month: 'short', day: 'numeric' }); } catch { return ''; } };
   const plannedDateLabel = isFuture ? new Date(plannedDate + 'T12:00:00').toLocaleDateString(userLocale || 'en', { weekday: 'short', month: 'short', day: 'numeric' }) : t('dn_tonight');
 
-  const dateTypeLabel = dateType ? t(DATE_TYPES.find(d => d.id === dateType)?.lk || 'dn_your_evening') : '';
   const railContent = useMemo(() => {
-    const hasChoices = !!(dateType || dietary.length || partnerPrefs.partnerLikes || partnerPrefs.partnerDislikes);
     const tonight = !!results && !showInputs;
-    const facts = [
-      dateTypeLabel,
-      location.trim(),
-      fm(budget),
-      plannedDateLabel,
-      dietary.length ? dietary.map(v => t(DIETARY_OPTIONS.find(d => d.v === v)?.lk || 'dn_dietary')).join(', ') : '',
-    ].filter(Boolean);
     return (
       <div>
         <p className={`text-xs font-bold uppercase tracking-wide ${tonight ? c.roseText : c.accentTxt}`}>
-          {tonight ? t('dn_tonight') : hasChoices ? t('dn_your_evening_so_far') : t('dn_good_to_know')}
+          {tonight ? t('dn_tonight') : t('dn_good_to_know')}
         </p>
         {tonight ? (
           <div className="mt-3 space-y-3">
@@ -274,10 +266,6 @@ const DateNight = ({ tool }) => {
             {results.one_thing_now && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-[10px] font-bold uppercase ${c.roseText}`}>{t('dn_one_thing_now')}</p><p className={`text-sm font-bold mt-1 ${c.text}`}>{results.one_thing_now}</p></div>}
             <p className={`text-xs ${c.textMuted}`}>{t('dn_confirm_direct')}</p>
           </div>
-        ) : hasChoices ? (
-          <dl className="mt-3 space-y-2">
-            {facts.map((fact, index) => <div key={`${fact}-${index}`} className={`text-sm ${c.textSecondary}`}>✓ {fact}</div>)}
-          </dl>
         ) : (
           <div className="mt-4 space-y-4">
             {tool?.primer && <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
@@ -296,13 +284,13 @@ const DateNight = ({ tool }) => {
         )}
       </div>
     );
-  }, [budget, c.accentCard, c.accentTxt, c.roseText, c.text, c.textMuted, c.textSecondary, dateType, dateTypeLabel, dietary, fm, location, partnerPrefs.partnerDislikes, partnerPrefs.partnerLikes, plannedDateLabel, results, showInputs, t, timeRange, tool, totalSpent]);
-  const railUpdateKey = JSON.stringify({ dateType, location, budget, plannedDateLabel, dietary, results, showInputs });
+  }, [budget, c.accentCard, c.accentTxt, c.roseText, c.text, c.textMuted, c.textSecondary, fm, results, showInputs, t, timeRange, tool, totalSpent]);
+  const railUpdateKey = JSON.stringify({ results, showInputs });
   useRegisterContextualRail(railContent, railUpdateKey);
 
   // ═══ HELPERS ═══
 
-  const handleCurrencyChange = useCallback((s) => { setCurrency(s); setBudget((BUDGET_PRESETS[s] || BUDGET_PRESETS['$'])[2]); }, []);
+  const handleCurrencyChange = useCallback((s) => { setCurrency(s); setBudget((BUDGET_PRESETS[s] || BUDGET_PRESETS['$'])[2]); setOtherBudget(''); }, []);
   const toggleDietary = useCallback((v) => setDietary(p => p.includes(v) ? p.filter(d => d !== v) : [...p, v]), []);
 
   const getPayload = useCallback(() => ({
@@ -961,26 +949,29 @@ const DateNight = ({ tool }) => {
       {(!results || showInputs) && !liveMode && (
         <div className={`${c.card} border ${c.border} rounded-2xl p-5 sm:p-7 space-y-7`}>
           <section>
-            <h2 className={`text-lg font-bold font-serif ${c.text}`}>📍 {t('dn_location')}</h2>
+            <h2 className={`text-lg font-bold ${c.text}`}>📍 {t('dn_location')}</h2>
             <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-4 py-3 border rounded-xl text-base ${c.input}`} />
           </section>
 
           <section>
-            <h2 className={`text-lg font-bold font-serif ${c.text}`}>💰 {t('dn_budget')}</h2>
+            <h2 className={`text-lg font-bold ${c.text}`}>💰 {t('dn_budget')}</h2>
             <div className="grid grid-cols-[120px_1fr] gap-2">
               <select value={currency} onChange={e => handleCurrencyChange(e.target.value)} className={`px-3 py-3 border rounded-xl text-sm ${c.input}`}>
                 {CURRENCIES.map(cur => <option key={cur.s} value={cur.s}>{cur.l}</option>)}
               </select>
-              <div className={`px-4 py-3 border rounded-xl text-base font-bold ${c.input}`}>{fm(budget)}</div>
+              <label className="relative">
+                <span className={`absolute -top-2 start-3 px-1 text-[10px] font-bold uppercase ${c.card} ${c.textMuted}`}>{t('dn_other_amount')}</span>
+                <input type="number" min={0} step={br.step} value={otherBudget} placeholder={fm(budget)} onChange={e => { setOtherBudget(e.target.value); if (e.target.value !== '') setBudget(Math.max(0, Number(e.target.value))); }} aria-label={t('dn_other_amount')} className={`w-full px-4 py-3 border rounded-xl text-base font-bold ${c.input}`} />
+              </label>
             </div>
-            <input type="range" min={br.min} max={br.max} step={br.step} value={budget} onChange={e => setBudget(Number(e.target.value))} className="w-full mt-4 accent-emerald-600" />
+            <input type="range" min={br.min} max={br.max} step={br.step} value={Math.min(br.max, Math.max(br.min, budget))} onChange={e => { setBudget(Number(e.target.value)); setOtherBudget(''); }} className="w-full mt-4 accent-emerald-600" />
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {presets.map(p => <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>)}
+              {presets.map(p => <button key={p} onClick={() => { setBudget(p); setOtherBudget(''); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p && !otherBudget ? c.chipOn : c.chipOff}`}>{fm(p)}</button>)}
             </div>
           </section>
 
           <section>
-            <h2 className={`text-lg font-bold font-serif ${c.text}`}>💗 {t('dn_what_kind')}</h2>
+            <h2 className={`text-lg font-bold ${c.text}`}>💗 {t('dn_what_kind')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DATE_TYPES.map(dt => (
                 <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)} className={`px-3 py-3 rounded-xl border text-sm font-bold ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
@@ -993,7 +984,7 @@ const DateNight = ({ tool }) => {
           </section>
 
           <section>
-            <h2 className={`text-lg font-bold font-serif ${c.text}`}>☷ {t('dn_other_restrictions')}</h2>
+            <h2 className={`text-lg font-bold ${c.text}`}>☷ {t('dn_other_restrictions')}</h2>
             <textarea value={restrictions} onChange={e => setRestrictions(e.target.value)} placeholder={t('dn_other_restrictions')} rows={4} className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input}`} />
           </section>
 

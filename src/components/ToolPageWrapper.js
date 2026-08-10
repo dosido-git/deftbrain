@@ -301,11 +301,11 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 {detectedTool?.categories?.[0] || 'General'}
               </span>
             </div>
-            <h1 className={`${isDateNight ? 'text-4xl sm:text-5xl font-bold font-serif' : 'text-5xl font-light'} ${colors.text} tracking-tight`}>
-              {isDateNight ? t('dn_page_title') : (detectedTool?.title || 'Tool')}
+            <h1 className={`${isDateNight ? 'text-4xl sm:text-5xl font-bold' : 'text-5xl font-light'} ${colors.text} tracking-tight`}>
+              {isDateNight ? t('dn_title') : (detectedTool?.title || 'Tool')}
             </h1>
             <p className={`${colors.textSecondary} max-w-2xl leading-relaxed ${isDateNight ? 'text-lg' : ''}`}>
-              {isDateNight ? t('dn_page_intro') : (detectedTool?.description || 'Strategic intelligence tool')}
+              {isDateNight ? <><span className="font-semibold">{t('dn_page_title')}.</span> {t('dn_page_intro')}</> : (detectedTool?.description || 'Strategic intelligence tool')}
             </p>
             {isDateNight && <p className={`text-sm ${colors.textMuted} pt-2`}>🛡️ {t('dn_no_prompt')}</p>}
             {/* ── Localized "Any language works" signal — only renders for non-English browsers ── */}
