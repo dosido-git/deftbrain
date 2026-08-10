@@ -111,8 +111,11 @@ const DateNight = ({ tool }) => {
     infoCard:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     budgetBar:     isDark ? 'bg-zinc-700' : 'bg-gray-200',
     bufferText:    isDark ? 'text-emerald-400' : 'text-emerald-600',
+    journalText:   isDark ? 'text-amber-400' : 'text-amber-600',
     journalCard:   isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
+    jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
     jarCard:       isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200',
+    rutText:       isDark ? 'text-cyan-400' : 'text-cyan-600',
     liveCard:      isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     proTipText:    isDark ? 'text-amber-300' : 'text-amber-700',
     quoteCard:     isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -505,31 +508,19 @@ const DateNight = ({ tool }) => {
     const stops = results.itinerary || [];
     return (
     <div ref={resultsRef} className="space-y-6">
-      <button onClick={() => setShowInputs(true)} className={`text-xs ${c.textMuted} hover:underline`}>✏️ {t('dn_edit')} · {location} · {fm(budget)}{isFuture ? ` · ${plannedDateLabel}` : ''}</button>
+      <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.roseText}`}>✏️ {t('dn_edit')} · {location} · {fm(budget)}{isFuture ? ` · ${plannedDateLabel}` : ''}</button>
 
-      {/* The evening opens as one composed answer: feeling first, then the few
-          practical facts someone needs before reading the itinerary. */}
-      <div className={`${c.headerCard} border rounded-3xl p-6 sm:p-8 shadow-sm`}>
+      {/* Header */}
+      <div className={`${c.headerCard} border-2 rounded-2xl p-6 sm:p-8`}>
         <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${c.roseText}`}>{plannedDateLabel}</p>
-        <h3 className={`text-2xl sm:text-4xl font-bold ${c.text} mt-2 leading-tight`}>{results.vibe_title || t('dn_your_evening')}</h3>
-        {results.vibe_description && <p className={`text-base sm:text-lg ${c.textSecondary} mt-3 leading-relaxed max-w-2xl`}>{results.vibe_description}</p>}
+        <h3 className={`text-2xl sm:text-3xl font-bold ${c.text} mt-2`}>{results.vibe_title || t('dn_your_evening')}</h3>
+        {results.vibe_description && <p className={`text-base ${c.textSecondary} mt-2 leading-relaxed`}>{results.vibe_description}</p>}
         {results.pace_preference && <p className={`text-xs ${c.textMuteded} mt-1`}>⏱️ {t('dn_pace', { pace: results.pace_preference })}</p>}
-        {results.narrative_arc && <p className={`text-sm ${c.textSecondary} mt-5 pt-5 border-t ${c.border} leading-relaxed`}>{results.narrative_arc}</p>}
-
-        <dl className={`grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4 mt-6 pt-5 border-t ${c.border}`}>
-          {timeRange && <div><dt className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>🕕 {t('dn_your_evening')}</dt><dd className={`text-sm font-bold ${c.text} mt-1`}>{timeRange}</dd></div>}
-          <div><dt className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dn_estimated_cost')}</dt><dd className={`text-sm font-bold ${c.text} mt-1`}>~{fm(totalSpent)}</dd><dd className={`text-[10px] ${c.textMuted}`}>{t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) })}</dd></div>
-          {bufferAmt > 0 && <div><dt className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dn_budget_label')}</dt><dd className={`text-sm font-bold ${c.bufferText} mt-1`}>{t('dn_budget_left', { amount: `~${fm(bufferAmt)}` })}</dd></div>}
-          {results.overall_dress_code && <div><dt className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dn_dress')}</dt><dd className={`text-sm font-bold ${c.text} mt-1`}>{results.overall_dress_code}</dd></div>}
-        </dl>
-
-        {results.one_thing_now && <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-5`}><p className={`text-[10px] font-bold uppercase tracking-wide ${c.roseText}`}>{t('dn_one_thing_now')}</p><p className={`text-sm font-bold ${c.text} mt-1`}>{results.one_thing_now}</p></div>}
-        {results.transportation && <p className={`text-xs ${c.textSecondary} mt-4`}>↗ {t('dn_getting_around')}: {results.transportation}</p>}
-        {results.milestone_gesture && <p className={`text-sm ${c.textSecondary} mt-4`}>🎁 <span className={`font-bold ${c.roseText}`}>{t('dn_small_touch')}</span> {results.milestone_gesture}</p>}
+        {results.narrative_arc && <p className={`text-sm italic ${c.textSecondary} mt-4 pt-4 border-t ${c.border}`}>{results.narrative_arc}</p>}
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {isFuture ? (
           <div className={`w-full ${c.infoCard} border rounded-xl p-4 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>📅 {t('dn_planning_ahead', { label: plannedDateLabel })}</p>
@@ -543,7 +534,7 @@ const DateNight = ({ tool }) => {
             )}
           </div>
         ) : (
-          <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`col-span-2 sm:col-span-1 px-5 py-3 rounded-xl text-sm font-bold ${c.btnLive}`}>▶️ {t('dn_start_date')}</button>
+          <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnLive}`}>▶️ {t('dn_start_date')}</button>
         )}
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
@@ -582,10 +573,63 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
+      {/* ── At a glance ──────────────────────────────────────────────────
+          One summary card in place of three scattered ones: a centred dress
+          strip, a budget progress bar, and transportation buried at the bottom
+          of live mode. The bar is gone on purpose — "about $75 left" is more
+          reassuring than a filling rectangle, and it does not imply precision
+          the estimate does not have. */}
+      <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+        <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-3`}>{t('dn_at_a_glance')}</p>
+        <dl className="space-y-2">
+          {timeRange && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>🕕</dt>
+              <dd className={`text-xs font-bold ${c.text} text-end`}>{timeRange}</dd>
+            </div>
+          )}
+          <div className="flex justify-between gap-4">
+            <dt className={`text-xs ${c.textSecondary}`}>{t('dn_estimated_cost')}</dt>
+            <dd className={`text-sm font-bold ${c.text} text-end`}>{t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) })}</dd>
+          </div>
+          {bufferAmt > 0 && (
+            <div className="flex justify-end">
+              <dd className={`text-xs ${c.bufferText}`}>{t('dn_budget_left', { amount: `~${fm(bufferAmt)}` })}</dd>
+            </div>
+          )}
+          {results.one_thing_now && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_one_thing_now')}</dt>
+              <dd className={`text-xs font-bold ${c.roseText} text-end`}>{results.one_thing_now}</dd>
+            </div>
+          )}
+          {results.transportation && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_getting_around')}</dt>
+              <dd className={`text-xs ${c.text} text-end`}>{results.transportation}</dd>
+            </div>
+          )}
+          {results.overall_dress_code && (
+            <div className="flex justify-between gap-4">
+              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_dress')}</dt>
+              <dd className={`text-xs ${c.text} text-end`}>{results.overall_dress_code}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
+
+      {/* Milestone gesture */}
+      {results.milestone_gesture && (
+        <div className="px-1">
+          <p className={`text-xs font-bold ${c.roseText} mb-1`}>🎁 {t('dn_small_touch')}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{results.milestone_gesture}</p>
+        </div>
+      )}
+
       {/* Timeline */}
       <div>
         <div className="mb-4">
-          <p className={`text-xl font-bold ${c.text}`}>{t('dn_your_evening')}</p>
+          <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${c.roseText}`}>{t('dn_your_evening')}</p>
           {timeRange && <p className={`text-sm ${c.textSecondary} mt-1`}>{timeRange}</p>}
         </div>
         <div className="relative">
@@ -593,19 +637,19 @@ const DateNight = ({ tool }) => {
         {stops.map((stop, idx) => {
           const isSwap = swapping === (stop.stop_number || idx + 1);
           return (
-            <div key={idx} className="flex gap-3 sm:gap-4 relative mb-5">
+            <div key={idx} className="flex gap-4 relative mb-4">
               <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 ${c.timelineDot}`}>
                 <span className="text-base">{stopEmoji(stop.stop_type || stop.venue_name)}</span>
               </div>
-              <div className={`min-w-0 flex-1 ${c.stopCard} border rounded-2xl p-4 sm:p-5 shadow-sm ${isSwap ? 'opacity-50' : ''}`}>
-                <div className="flex justify-between gap-3 mb-2">
+              <div className={`flex-1 ${c.stopCard} border rounded-xl p-4 ${isSwap ? 'opacity-50' : ''}`}>
+                <div className="flex justify-between mb-1">
                   <div>
                     <span className={`text-[10px] font-bold ${c.roseText} uppercase`}>{stop.time}</span>
-                    <h4 className={`text-base font-bold ${c.text} leading-snug`}>{stop.venue_name}</h4>
+                    <h4 className={`text-sm font-bold ${c.text}`}>{stop.venue_name}</h4>
                   </div>
                   <span className={`text-sm font-black ${c.roseText}`}>~{fm(stop.estimated_cost)}</span>
                 </div>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed mb-3`}>{stop.description}</p>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed mb-2`}>{stop.description}</p>
                 {stop.dress_vibe && <p className={`text-[10px] ${c.textMuteded} mb-1`}>👗 {stop.dress_vibe}</p>}
                 {stop.what_worked && <p className={`text-[10px] ${c.roseText} mb-1`}>✨ {stop.what_worked}</p>}
                 {stop.pro_tip && (
@@ -659,42 +703,37 @@ const DateNight = ({ tool }) => {
           thinks "what if this goes wrong" — and as three repairs it can
           actually make, not prose describing one. */}
       {results.itinerary?.length > 0 && (
-        <details className={`${c.card} border ${c.border} rounded-xl p-4 group`}>
-          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-start gap-3">
-            <div>
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-3`}>
+          <div>
             <p className={`text-sm font-bold ${c.text}`}>{t('dn_if_changes')}</p>
             <p className={`text-xs ${c.textMuteded}`}>{t('dn_plans_change')}</p>
-            </div>
-            <span className={`ms-auto text-[9px] ${c.textMuted} group-open:rotate-180 transition-transform`}>▼</span>
-          </summary>
-          <div className={`space-y-3 mt-4 pt-4 border-t ${c.border}`}>
+          </div>
             { /* restaurant */ }
             <div>
-              <p className={`text-xs ${c.textSecondary}`}>{t('dn_dinner_gone')}</p>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_dinner_gone')}</p>
               <button onClick={() => handleAdapt('restaurant')} disabled={!!adapting || loading}
-                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
                 {adapting === 'restaurant' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_another_restaurant')}
               </button>
             </div>
             { /* indoors */ }
             <div>
-              <p className={`text-xs ${c.textSecondary}`}>{t('dn_weather_bad')}</p>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_weather_bad')}</p>
               <button onClick={() => handleAdapt('indoors')} disabled={!!adapting || loading}
-                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
                 {adapting === 'indoors' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_make_indoors')}
               </button>
             </div>
             { /* timing */ }
             <div>
-              <p className={`text-xs ${c.textSecondary}`}>{t('dn_running_late')}</p>
+              <p className={`text-xs {c.textSecondary}`}>{t('dn_running_late')}</p>
               <button onClick={() => handleAdapt('timing')} disabled={!!adapting || loading}
-                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+                className={`mt-1 px-3 py-2 rounded-xl text-xs font-bold {c.btnSecondary} border {c.border} disabled:opacity-40`}>
                 {adapting === 'timing' ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_rework_timing')}
               </button>
-          </div>
+            </div>
           {results.plan_b && <p className={`text-xs ${c.textSecondary} pt-1 border-t ${c.border}`}>{results.plan_b}</p>}
-          </div>
-        </details>
+        </div>
       )}
 
       {/* ── Anything else before tonight? ──────────────────────────────
@@ -720,12 +759,8 @@ const DateNight = ({ tool }) => {
           would get. A direction is a choice the reader understands before
           clicking. */}
       {results.itinerary?.length > 0 && (
-        <details className={`${c.card} border ${c.border} rounded-xl p-4 group`}>
-          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3">
-            <p className={`text-sm font-bold ${c.text}`}>{t('dn_change_feel')}</p>
-            <span className={`ms-auto text-[9px] ${c.textMuted} group-open:rotate-180 transition-transform`}>▼</span>
-          </summary>
-          <div className="space-y-2 mt-4">
+        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
+          <p className={`text-sm font-bold ${c.text}`}>{t('dn_change_feel')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {[['relaxed','dn_feel_relaxed','dn_feel_relaxed_d'],
               ['romantic','dn_feel_romantic','dn_feel_romantic_d'],
@@ -741,8 +776,7 @@ const DateNight = ({ tool }) => {
             className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnLive} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : t('dn_reimagine')}
           </button>
-          </div>
-        </details>
+        </div>
       )}
       {results.tips?.length > 0 && (
         <div className={`${c.warning} border rounded-xl p-4`}>
@@ -826,10 +860,35 @@ const DateNight = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
 
-      {(!results || showInputs) && <div className="flex items-start justify-between gap-3">
-        <div><p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dn_tagline')}</p><button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button><p className={`text-xs ${c.textMuted} mt-4`}>{t('dn_pre_xref')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a> {t('dn_pre_xref_after')}</p></div>
+      <div className="flex items-start justify-between gap-3">
+        <div><p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('dn_tagline')}</p><button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button></div>
         {hasInput && <button onClick={() => { setResults(null); setShowInputs(true); resetResults(); setDateType(''); setLocation(''); setLastTime(''); setWeather(''); setDietary([]); setError(''); }} className={`text-xs font-semibold ${c.textMuted} hover:underline`}>↻ {t('dn_new_date_night')}</button>}
-      </div>}
+      </div>
+
+      {/* Nav */}
+      {results && <details className={`${c.cardAlt} border ${c.border} rounded-xl px-4 py-2.5 group`}>
+        <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-2 text-xs ${c.textMuted}`}>
+          <span>↻</span>
+          <span>{t('dn_past_dates_ideas')}</span>
+          <span className="ms-auto text-[9px] group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <div className={`flex flex-wrap gap-x-4 gap-y-2 pt-3 mt-2 border-t ${c.border}`}>
+          {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-semibold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
+          {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-semibold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
+          <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-semibold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
+          {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
+        </div>
+        {sessionHistory.length > 0 && (
+          <div className={`mt-3 pt-3 border-t ${c.border} space-y-1.5`}>
+            <p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dn_recent_plans')}</p>
+            {sessionHistory.map((h, i) => (
+              <button key={i} onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }} className={`block w-full text-start px-3 py-2 rounded-lg text-xs ${c.card} ${c.textSecondary}`}>
+                {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
+              </button>
+            ))}
+          </div>
+        )}
+      </details>}
 
       {/* Rut result */}
       {rutResult && (
@@ -984,18 +1043,7 @@ const DateNight = ({ tool }) => {
       )}
 
       {renderResults()}
-      {results && !showInputs && !liveMode && <details className={`${c.cardAlt} border ${c.border} rounded-xl px-4 py-2.5 group`}>
-        <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-2 text-xs ${c.textMuted}`}>
-          <span>↻</span><span>{t('dn_past_dates_ideas')}</span><span className="ms-auto text-[9px] group-open:rotate-180 transition-transform">▼</span>
-        </summary>
-        <div className={`flex flex-wrap gap-x-4 gap-y-2 pt-3 mt-2 border-t ${c.border}`}>
-          {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs ${c.textMuted}`}>📔 {t('dn_history', { count: journal.length })}</button>}
-          {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs ${c.textMuted} disabled:opacity-40`}>{rutLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> : <>🔍 {t('dn_rut_check')}</>}</button>}
-          <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs ${c.textMuted}`}>🫙 {t('dn_date_jar')}</button>
-          {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuted}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
-        </div>
-        {sessionHistory.length > 0 && <div className={`mt-3 pt-3 border-t ${c.border} space-y-1.5`}><p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted}`}>{t('dn_recent_plans')}</p>{sessionHistory.map((h, i) => <button key={i} onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }} className={`block w-full text-start px-3 py-2 rounded-lg text-xs ${c.card} ${c.textSecondary}`}>{h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}</button>)}</div>}
-      </details>}
+      {results && !showInputs && !liveMode && <p className={`text-xs ${c.textMuted}`}>{t('dn_anything_else')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>.</p>}
 
 
       {/* ═══ LIVE DATE MODE ═══ */}
