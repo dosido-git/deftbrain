@@ -257,7 +257,7 @@ const DateNight = ({ tool }) => {
 
   const dateTypeLabel = dateType ? t(DATE_TYPES.find(d => d.id === dateType)?.lk || 'dn_your_evening') : '';
   const railContent = useMemo(() => {
-    const hasChoices = !!(dateType || dietary.length || partnerPrefs.partnerLikes || partnerPrefs.partnerDislikes);
+    const hasChoices = !!(dateType || location.trim() || dietary.length || partnerPrefs.partnerLikes || partnerPrefs.partnerDislikes);
     const tonight = !!results && !showInputs;
     const facts = [
       dateTypeLabel,
@@ -514,16 +514,15 @@ const DateNight = ({ tool }) => {
     if (!results || showInputs || liveMode) return null;
     const stops = results.itinerary || [];
     return (
-    <div ref={resultsRef} className="space-y-6">
+    <div ref={resultsRef} className="space-y-4">
       <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.roseText}`}>✏️ {t('dn_edit')} · {location} · {fm(budget)}{isFuture ? ` · ${plannedDateLabel}` : ''}</button>
 
       {/* Header */}
-      <div className={`${c.headerCard} border-2 rounded-2xl p-6 sm:p-8`}>
-        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${c.roseText}`}>{plannedDateLabel}</p>
-        <h3 className={`text-2xl sm:text-3xl font-bold ${c.text} mt-2`}>{results.vibe_title || t('dn_your_evening')}</h3>
-        {results.vibe_description && <p className={`text-base ${c.textSecondary} mt-2 leading-relaxed`}>{results.vibe_description}</p>}
+      <div className={`${c.headerCard} border-2 rounded-2xl p-5`}>
+        <h3 className={`text-xl font-bold ${c.text}`}>{tool?.icon ?? '💘'} {results.vibe_title || t('dn_your_evening')}</h3>
+        {results.vibe_description && <p className={`text-sm ${c.textSecondary} mt-1`}>{results.vibe_description}</p>}
         {results.pace_preference && <p className={`text-xs ${c.textMuteded} mt-1`}>⏱️ {t('dn_pace', { pace: results.pace_preference })}</p>}
-        {results.narrative_arc && <p className={`text-sm italic ${c.textSecondary} mt-4 pt-4 border-t ${c.border}`}>{results.narrative_arc}</p>}
+        {results.narrative_arc && <p className={`text-xs italic ${c.textSecondary} mt-2`}>{results.narrative_arc}</p>}
       </div>
 
       {/* Actions */}
@@ -634,12 +633,7 @@ const DateNight = ({ tool }) => {
       )}
 
       {/* Timeline */}
-      <div>
-        <div className="mb-4">
-          <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${c.roseText}`}>{t('dn_your_evening')}</p>
-          {timeRange && <p className={`text-sm ${c.textSecondary} mt-1`}>{timeRange}</p>}
-        </div>
-        <div className="relative">
+      <div className="relative">
         <div className={`absolute start-[19px] top-6 bottom-6 w-px ${c.timelineLine}`} />
         {stops.map((stop, idx) => {
           const isSwap = swapping === (stop.stop_number || idx + 1);
@@ -681,7 +675,6 @@ const DateNight = ({ tool }) => {
             </div>
           );
         })}
-        </div>
       </div>
 
       {/* Conversation starters / nostalgia */}
@@ -928,19 +921,12 @@ const DateNight = ({ tool }) => {
       )}
 
       {/* Nav */}
-      <details className={`${c.cardAlt} border ${c.border} rounded-xl px-4 py-2.5 group`}>
-        <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-2 text-xs ${c.textMuted}`}>
-          <span>↻</span>
-          <span>{t('dn_past_dates_ideas')}</span>
-          <span className="ms-auto text-[9px] group-open:rotate-180 transition-transform">▼</span>
-        </summary>
-        <div className={`flex flex-wrap gap-x-4 gap-y-2 pt-3 mt-2 border-t ${c.border}`}>
-          {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-semibold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
-          {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-semibold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
-          <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-semibold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
-          {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
-        </div>
-      </details>
+      <div className="flex flex-wrap gap-2">
+        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
+        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
+        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
+        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
+      </div>
 
       {/* Rut result */}
       {rutResult && (
@@ -1016,30 +1002,20 @@ const DateNight = ({ tool }) => {
       {/* ═══ INPUT FORM ═══ */}
       {(!results || showInputs) && !liveMode && (
         <div className="space-y-4">
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3`}>
-            <div className="flex items-center gap-2" aria-label={`${mobileStep + 1} / 4`}>
-              {[0, 1, 2, 3].map(step => (
-                <div key={step} className={`h-1.5 flex-1 rounded-full transition-colors ${step <= mobileStep ? c.budgetFill : c.budgetBar}`} />
-              ))}
-            </div>
-            <p className={`text-[10px] uppercase tracking-wide mt-2 ${c.textMuted}`}>
-              {[t('dn_what_kind'), t('dn_at_a_glance'), t('dn_partner_prefs'), t('dn_last_time')][mobileStep]}
-            </p>
-          </div>
           {/* Date type */}
           {mobileStep > 0 && dateType && (
-            <button onClick={() => setMobileStep(0)} className={`w-full text-start ${c.success} border rounded-xl p-3`}>
+            <button onClick={() => setMobileStep(0)} className={`md:hidden w-full text-start ${c.success} border rounded-xl p-3`}>
               <span className="text-xs font-bold">✓ {dateTypeLabel}</span>
               <span className="float-end text-xs">✏️ {t('dn_edit')}</span>
             </button>
           )}
-          <div className={`${mobileStep > 0 ? 'hidden' : ''} ${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`${mobileStep > 0 ? 'hidden md:block' : ''} ${c.card} border ${c.border} rounded-xl p-5`}>
             <div className={`border-b ${c.border} pb-3 mb-3`}>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase`}>{tool?.icon ?? '💘'} {t('dn_what_kind')} <span className={c.required}>*</span></p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {DATE_TYPES.map(dt => (
-                <button key={dt.id} onClick={() => setDateType(dateType === dt.id ? '' : dt.id)}
+                <button key={dt.id} onClick={() => { const next = dateType === dt.id ? '' : dt.id; setDateType(next); if (next) setMobileStep(1); }}
                   className={`p-3 rounded-lg border text-start ${dateType === dt.id ? c.chipOn : c.chipOff}`}>
                   <span className="text-xs font-bold">{t(dt.lk)}</span>
                   <p className={`text-[10px] mt-0.5 ${dateType === dt.id ? 'text-white/70' : c.textMuteded}`}>{t(dt.dk)}</p>
@@ -1052,19 +1028,15 @@ const DateNight = ({ tool }) => {
                 <span className={`text-xs ${c.textMuteded}`}>{yearsTogether > 1 ? t('dn_years') : t('dn_year')}</span>
               </div>
             )}
-            <button onClick={() => setMobileStep(1)} disabled={!dateType}
-              className={`w-full mt-4 px-4 py-3 rounded-xl text-sm font-bold ${c.btnAction} disabled:opacity-40`}>
-              {t('dn_budget')} →
-            </button>
           </div>
 
           {mobileStep > 1 && location.trim() && (
-            <button onClick={() => setMobileStep(1)} className={`w-full text-start ${c.success} border rounded-xl p-3`}>
+            <button onClick={() => setMobileStep(1)} className={`md:hidden w-full text-start ${c.success} border rounded-xl p-3`}>
               <span className="text-xs font-bold">✓ {fm(budget)} · {location.trim()} · {plannedDateLabel}</span>
               <span className="float-end text-xs">✏️ {t('dn_edit')}</span>
             </button>
           )}
-          <div className={`${mobileStep !== 1 ? 'hidden' : 'contents'}`}>
+          <div className={`${mobileStep !== 1 ? 'hidden md:contents' : 'contents'}`}>
           {/* Budget */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className="flex justify-between mb-2">
@@ -1092,7 +1064,7 @@ const DateNight = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
             <div>
               <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+              <input value={location} onChange={e => setLocation(e.target.value)} onBlur={() => { if (location.trim()) setMobileStep(2); }} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
             </div>
             <div>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
@@ -1128,19 +1100,15 @@ const DateNight = ({ tool }) => {
               <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
             </div>
           </div>
-          <button onClick={() => setMobileStep(2)} disabled={!location.trim()}
-            className={`w-full px-4 py-3 rounded-xl text-sm font-bold ${c.btnAction} disabled:opacity-40`}>
-            {t('dn_partner_prefs')} →
-          </button>
           </div>
 
           {mobileStep > 2 && (
-            <button onClick={() => setMobileStep(2)} className={`w-full text-start ${c.success} border rounded-xl p-3`}>
+            <button onClick={() => setMobileStep(2)} className={`md:hidden w-full text-start ${c.success} border rounded-xl p-3`}>
               <span className="text-xs font-bold">✓ {t('dn_partner_prefs')} · {t('dn_dietary')}</span>
               <span className="float-end text-xs">✏️ {t('dn_edit')}</span>
             </button>
           )}
-          <div className={`${mobileStep !== 2 ? 'hidden' : 'contents'}`}>
+          <div className={`${mobileStep !== 2 ? 'hidden md:contents' : 'contents'}`}>
           {/* Dietary + Restrictions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
@@ -1180,13 +1148,13 @@ const DateNight = ({ tool }) => {
               </div>
             )}
           </div>
-          <button onClick={() => setMobileStep(3)} className={`w-full px-4 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>
+          <button onClick={() => setMobileStep(3)} className={`md:hidden w-full px-4 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>
             {t('dn_last_time')} →
           </button>
           </div>
 
           {/* Last time */}
-          <div className={`${mobileStep < 3 ? 'hidden' : ''} ${c.card} border ${c.border} rounded-xl p-5`}>
+          <div className={`${mobileStep < 3 ? 'hidden md:block' : ''} ${c.card} border ${c.border} rounded-xl p-5`}>
             <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🔁 {t('dn_last_time')} <span className={c.textMuteded}>({t('optional')})</span></p>
             <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder={t('dn_last_time_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
           </div>
