@@ -202,7 +202,9 @@ const DateNight = ({ tool }) => {
   const [favorites, setFavorites] = usePersistentState('date-night-favorites', []);
   const [partnerPrefs, setPartnerPrefs] = usePersistentState('date-night-partner', { partnerLikes: '', partnerDislikes: '', noiseLevel: '', energyLevel: '' });
   const [dateJar, setDateJar] = usePersistentState('date-night-jar', []);
-  const [sessionHistory, setSessionHistory] = usePersistentState('date-night-history', []);
+  // Array-elided read binding: the store is still written on every generate,
+  // but History (journal) is what renders now, so nothing reads it back.
+  const [, setSessionHistory] = usePersistentState('date-night-history', []);
   const [showJournal, setShowJournal] = useState(false);
 
   // Sync persistent dateType/location/results into local state on first render
@@ -878,88 +880,25 @@ const DateNight = ({ tool }) => {
         </p>
       )}
 
-      {/* Nav */}
-      <div className="flex flex-wrap gap-2">
-        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
-        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
-        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
-        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
-      </div>
-
-      {/* Rut result */}
-      {rutResult && (
-        <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
-          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
-          {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
-          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>{t('dn_missing')} {rutResult.missing_categories.join(', ')}</p>}
-          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondary}`}>💡 {s.idea} — {s.why}</div>)}
-          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondary}`}>{rutResult.encouragement}</p>}
-        </div>
-      )}
-
-      {/* Date Jar */}
-      {showJar && (
-        <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
-          <div className="flex justify-between items-center">
-            <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
-            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
-            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
-          </div>
-          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
-          {dateJar.map((concept, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
-              onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
-              <div className="flex justify-between items-start">
-                <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
-                <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
-              </div>
-              <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
-              <div className="flex gap-2 mt-1">
-                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
-                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Journal */}
-      {showJournal && (
-        <div className={`${c.journalCard} border rounded-xl p-4 space-y-2`}>
-          {journal.map(e => (
-            <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
-              <div className="flex justify-between">
-                <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
-                  <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || t('dn_default_date')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
-                </div>
-                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Recent plans (sessionHistory) */}
-      {sessionHistory.length > 0 && !results && !liveMode && !showJournal && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
-          <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('dn_recent_plans')}</p>
-          {sessionHistory.map((h, i) => (
-            <button
-              key={i}
-              onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}
-              className={`w-full text-start px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
-            >
-              {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* "Recent plans" used to render here. It listed the same thing History
+          does — past plans, click to reload — but thinner: preview text only,
+          no location, budget, rating or delete, and capped at 6 against
+          History's 50. Two lists of the same thing is a choice the visitor
+          shouldn't have to make. The store is still written (see
+          setSessionHistory in generate) so nothing is lost if we want it back. */}
 
       {/* ═══ INPUT FORM ═══ */}
       {(!results || showInputs) && !liveMode && (
         <div className="space-y-4">
+          {/* Location — first. It is the one answer nothing can be inferred
+              without: every venue, price and travel time depends on it, and
+              unlike the others it has no sensible default. Conversation
+              Guidelines #5 — ask the most important question first. */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+            <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
+            <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+          </div>
+
           {/* Date type */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className={`border-b ${c.border} pb-3 mb-3`}>
@@ -998,19 +937,32 @@ const DateNight = ({ tool }) => {
                 className="absolute start-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
               <div className="absolute h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
             </div>
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            <div className="flex flex-wrap items-center gap-1.5 mt-2">
               {presets.map(p => (
                 <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>
               ))}
+              {/* Typed amount. The slider snaps to a step and the chips are
+                  fixed, so neither could express "£140" — this is the only way
+                  to enter the number you actually have. Not clamped to the
+                  slider range: a real budget can sit outside it. */}
+              <label className="flex items-center gap-1.5">
+                <span className={`text-xs ${c.textMuteded}`}>{t('dn_or')}</span>
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={budget}
+                  onChange={e => { const v = parseInt(e.target.value, 10); setBudget(Number.isFinite(v) && v >= 0 ? v : 0); }}
+                  aria-label={t('dn_budget_exact')}
+                  placeholder={t('dn_budget_exact')}
+                  className={`w-24 px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
+                />
+              </label>
             </div>
           </div>
 
-          {/* Location + Time + Duration + Weather */}
+          {/* Time + Duration + Weather (location moved to the top of the form) */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-            <div>
-              <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
-            </div>
             <div>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
               <div className="flex gap-2 items-center flex-wrap">
@@ -1203,6 +1155,72 @@ const DateNight = ({ tool }) => {
         );
         return liveEl;
       })()}
+
+      {/* History / Rut check / Date jar — planning aids, not part of
+          planning. They sat above the form, competing with the primary
+          action before the visitor had done anything; they live down here
+          now, after the plan. */}
+      <div className="flex flex-wrap gap-2">
+        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
+        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
+        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
+        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
+      </div>
+
+      {/* Rut result */}
+      {rutResult && (
+        <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
+          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
+          {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
+          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>{t('dn_missing')} {rutResult.missing_categories.join(', ')}</p>}
+          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondary}`}>💡 {s.idea} — {s.why}</div>)}
+          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondary}`}>{rutResult.encouragement}</p>}
+        </div>
+      )}
+
+      {/* Date Jar */}
+      {showJar && (
+        <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
+          <div className="flex justify-between items-center">
+            <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
+            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
+            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+          </div>
+          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
+          {dateJar.map((concept, i) => (
+            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
+              onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
+              <div className="flex justify-between items-start">
+                <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
+                <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
+              </div>
+              <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
+              <div className="flex gap-2 mt-1">
+                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
+                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Journal */}
+      {showJournal && (
+        <div className={`${c.journalCard} border rounded-xl p-4 space-y-2`}>
+          {journal.map(e => (
+            <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
+              <div className="flex justify-between">
+                <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
+                  <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || t('dn_default_date')}</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
+                </div>
+                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Favorites list */}
       {favorites.length > 0 && !results && !liveMode && (

@@ -275,8 +275,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <LocaleSelectors dark={isDark} />
         </div>
         
-        {/* Main Content Area */}
-        <main data-print-main className="lg:col-span-8">
+        {/* Page header + action bar — their own grid item, not part of <main>.
+            The row uses 8 of 12 columns, so <main> wraps to the next row and
+            the sidebar starts beside it: the sidebar's top edge now lines up
+            with the tool card's gradient rather than with the page title.
+            Width is unchanged (still lg:col-span-8), so nothing inside this
+            block moves or resizes. Below `lg` the grid is one column and the
+            DOM order is what it always was. */}
+        <div className="lg:col-span-8">
 
           {/* Print-only header */}
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
@@ -357,7 +363,10 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
             )}
           </div>
+        </div>
 
+        {/* Main Content Area */}
+        <main data-print-main className="lg:col-span-8">
           <section data-print-section className={`border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               ...(detectedTool?.headerColor ? {
                 background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
