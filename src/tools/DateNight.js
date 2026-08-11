@@ -1265,8 +1265,17 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
-      {/* Error */}
-      {error && <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>}
+      {/* Error — ONLY when the form is not on screen. There is a second copy of
+          this block inside the input form, next to the submit button, and both
+          used to render for the same `error`: "Please select a date type" and
+          the rate-limit notice each appeared twice. The in-form copy is the
+          right one while the form is visible, because that is where the reader
+          is looking; this one exists for errors raised after a plan replaces
+          the form — a failed swap, adapt, checklist or share. Same condition as
+          the form's own guard, inverted. */}
+      {error && results && !showInputs && (
+        <div className={`${c.danger} border rounded-xl p-4 text-sm`}>⚠️ {error}</div>
+      )}
     </div>
   );
 };

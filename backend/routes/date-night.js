@@ -15,6 +15,8 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 
 const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location. Keep every field concise — one short sentence; outputs render in compact cards, so long text overflows the layout and the response budget.
 
+LOCAL SHORTHAND: write neighbourhood and district names out in full, with the local abbreviation after it in brackets if it is worth knowing — "the River North Art District (RiNo)", never just "RiNo". The reader may be visiting, may have moved last week, or may be planning this from another country; an abbreviation only locals know tells them nothing about where they are going.
+
 ${NO_QUOTE_RULE}`;
 
 // ═══════════════════════════════════════════
