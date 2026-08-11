@@ -798,7 +798,12 @@ for name, fpath in tools:
         fails.append('S1.5: history entry missing preview field')
 
     # S1.5: history rendered (broad match for common history array patterns)
-    if not re.search(r'(?:history|History|[A-Za-z]+Log|[A-Za-z]+log|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?)\.(map|length)', content):
+    # [Jj]ournal added 2026-08-10: the store check on line 793 has always
+    # accepted `journal` as a history store, but this render check did not
+    # accept `journal.map`, so a tool whose history feature is named journal
+    # failed a rule it satisfies. DateNight is one — it renders journal.map in
+    # its History panel. Widening here only makes the two halves of S1.5 agree.
+    if not re.search(r'(?:history|History|[A-Za-z]+Log|[A-Za-z]+log|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?|[Jj]ournal)\.(map|length)', content):
         fails.append('S1.5: history not rendered in JSX')
 
     # S1.5: history cap — look for ].slice(0, N) pattern (array cap, not string slices inside)

@@ -267,7 +267,12 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         </div>
       </div>
 
-      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* lg:gap-y-0 — the header is its own grid item now, so the 32px row gap
+          landed between the action bar and the tool card, where there used to
+          be only the action row's own mb-2. Column gap is untouched (main to
+          sidebar), and below lg the single column keeps the full gap-8 so the
+          stacked sections still breathe. */}
+      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-y-0">
         {/* Locale controls — top-right of the working area, off the brand bar.
             Absolute on desktop so the tool content fills from the top; a normal
             right-aligned row on mobile. */}
@@ -275,8 +280,14 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           <LocaleSelectors dark={isDark} />
         </div>
         
-        {/* Main Content Area */}
-        <main data-print-main className="lg:col-span-8">
+        {/* Page header + action bar — their own grid item, not part of <main>.
+            The row uses 8 of 12 columns, so <main> wraps to the next row and
+            the sidebar starts beside it: the sidebar's top edge now lines up
+            with the tool card's gradient rather than with the page title.
+            Width is unchanged (still lg:col-span-8), so nothing inside this
+            block moves or resizes. Below `lg` the grid is one column and the
+            DOM order is what it always was. */}
+        <div className="lg:col-span-8">
 
           {/* Print-only header */}
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
@@ -357,7 +368,10 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               <ActionBar content={actions.content} title={actions.title} shareUrl={actions.shareUrl} />
             )}
           </div>
+        </div>
 
+        {/* Main Content Area */}
+        <main data-print-main className="lg:col-span-8">
           <section data-print-section className={`border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               ...(detectedTool?.headerColor ? {
                 background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`

@@ -99,7 +99,6 @@ const DateNight = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Bespoke keys
     roseText:      isDark ? 'text-red-400' : 'text-red-600',
-    roseBorder:    isDark ? 'border-red-700' : 'border-red-300',
     chipOn:        isDark ? 'bg-red-800 border-red-600 text-red-100' : 'bg-red-600 border-red-600 text-white',
     chipOff:       isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     headerCard:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
@@ -116,7 +115,6 @@ const DateNight = ({ tool }) => {
     jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
     jarCard:       isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200',
     rutText:       isDark ? 'text-cyan-400' : 'text-cyan-600',
-    liveCard:      isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     proTipText:    isDark ? 'text-amber-300' : 'text-amber-700',
     quoteCard:     isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     stopCard:      isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
@@ -143,6 +141,7 @@ const DateNight = ({ tool }) => {
   const [weather, setWeather] = useState('');
   const [plannedDate, setPlannedDate] = useState(''); // '' = tonight
   const [dietary, setDietary] = useState([]);
+  const [showTiming, setShowTiming] = useState(false);
   const [showDietary, setShowDietary] = useState(false);
   const [yearsTogether, setYearsTogether] = useState(1);
   const [showInputs, setShowInputs] = useState(true);
@@ -154,9 +153,6 @@ const DateNight = ({ tool }) => {
   const [expandedConvo, setExpandedConvo] = useState(false);
 
   // ─── Live mode ───
-  const [liveMode, setLiveMode] = useState(false);
-  const [liveStep, setLiveStep] = useState(0);
-  const [timeOffset, setTimeOffset] = useState(0);
 
   // ─── Rating ───
   const [showRate, setShowRate] = useState(false);
@@ -202,7 +198,9 @@ const DateNight = ({ tool }) => {
   const [favorites, setFavorites] = usePersistentState('date-night-favorites', []);
   const [partnerPrefs, setPartnerPrefs] = usePersistentState('date-night-partner', { partnerLikes: '', partnerDislikes: '', noiseLevel: '', energyLevel: '' });
   const [dateJar, setDateJar] = usePersistentState('date-night-jar', []);
-  const [sessionHistory, setSessionHistory] = usePersistentState('date-night-history', []);
+  // Array-elided read binding: the store is still written on every generate,
+  // but History (journal) is what renders now, so nothing reads it back.
+  const [, setSessionHistory] = usePersistentState('date-night-history', []);
   const [showJournal, setShowJournal] = useState(false);
 
   // Sync persistent dateType/location/results into local state on first render
@@ -280,7 +278,7 @@ const DateNight = ({ tool }) => {
     setShowRate(false); setRateResult(null); setShareData(null);
     setExpandedConvo(false); setStopRatings({}); setOverallRating(0);
     setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
-    setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null);
+    setRutResult(null);
   };
 
   const buildText = () => {
@@ -355,7 +353,15 @@ const DateNight = ({ tool }) => {
     setSwapping(num);
     try {
       const data = await callToolEndpoint('date-night', { action: 'swap', ...getPayload(), currentItinerary: results, swapStopNumber: num });
-      if (data?.stop) { setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; }); }
+      if (data?.stop) {
+        setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; });
+        // Ratings are keyed by stop_number, so without this the score given to
+        // the venue you just replaced stays attached to its replacement — and
+        // any feedback already returned describes an evening that no longer
+        // exists. Drop both; the rest of the ratings are still valid.
+        setStopRatings(p => { const { [num]: _dropped, ...rest } = p; return rest; });
+        setRateResult(null);
+      }
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
     finally { setSwapping(null); }
   };
@@ -469,7 +475,7 @@ const DateNight = ({ tool }) => {
 
   // ═══ RENDER: Results ═══
   const renderResults = () => {
-    if (!results || showInputs || liveMode) return null;
+    if (!results || showInputs) return null;
     const stops = results.itinerary || [];
     return (
     <div ref={resultsRef} className="space-y-4">
@@ -485,7 +491,10 @@ const DateNight = ({ tool }) => {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
-        {isFuture ? (
+        {/* Was a ternary whose else-branch was the "Start the date" button
+            that opened live mode. With live mode gone there is no alternative
+            branch, so this is a plain conditional. */}
+        {isFuture && (
           <div className={`w-full ${c.infoCard} border rounded-xl p-4 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>📅 {t('dn_planning_ahead', { label: plannedDateLabel })}</p>
             {daysUntil > 7 && <p className={`text-xs ${c.textSecondary}`}>⏰ {t('dn_book_now', { count: daysUntil })}</p>}
@@ -497,8 +506,6 @@ const DateNight = ({ tool }) => {
               </div>
             )}
           </div>
-        ) : (
-          <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnLive}`}>▶️ {t('dn_start_date')}</button>
         )}
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
@@ -878,88 +885,74 @@ const DateNight = ({ tool }) => {
         </p>
       )}
 
-      {/* Nav */}
-      <div className="flex flex-wrap gap-2">
-        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
-        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
-        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
-        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
-      </div>
-
-      {/* Rut result */}
-      {rutResult && (
-        <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
-          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
-          <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
-          {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
-          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>{t('dn_missing')} {rutResult.missing_categories.join(', ')}</p>}
-          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondary}`}>💡 {s.idea} — {s.why}</div>)}
-          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondary}`}>{rutResult.encouragement}</p>}
-        </div>
-      )}
-
-      {/* Date Jar */}
-      {showJar && (
-        <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
-          <div className="flex justify-between items-center">
-            <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
-            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
-            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
-          </div>
-          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
-          {dateJar.map((concept, i) => (
-            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
-              onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
-              <div className="flex justify-between items-start">
-                <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
-                <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
-              </div>
-              <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
-              <div className="flex gap-2 mt-1">
-                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
-                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Journal */}
-      {showJournal && (
-        <div className={`${c.journalCard} border rounded-xl p-4 space-y-2`}>
-          {journal.map(e => (
-            <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
-              <div className="flex justify-between">
-                <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
-                  <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || t('dn_default_date')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
-                </div>
-                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Recent plans (sessionHistory) */}
-      {sessionHistory.length > 0 && !results && !liveMode && !showJournal && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}>
-          <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuteded}`}>{t('dn_recent_plans')}</p>
-          {sessionHistory.map((h, i) => (
-            <button
-              key={i}
-              onClick={() => { setResults(h.result); setShowInputs(false); resetResults(); }}
-              className={`w-full text-start px-3 py-2 rounded-lg text-xs ${c.cardAlt} ${c.textSecondary} hover:opacity-80`}
-            >
-              {h.preview}{(h.preview?.length ?? 0) >= 40 ? '…' : ''}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* "Recent plans" used to render here. It listed the same thing History
+          does — past plans, click to reload — but thinner: preview text only,
+          no location, budget, rating or delete, and capped at 6 against
+          History's 50. Two lists of the same thing is a choice the visitor
+          shouldn't have to make. The store is still written (see
+          setSessionHistory in generate) so nothing is lost if we want it back. */}
 
       {/* ═══ INPUT FORM ═══ */}
-      {(!results || showInputs) && !liveMode && (
+      {(!results || showInputs) && (
         <div className="space-y-4">
+          {/* Where and when — the two basics, together and first. Location is
+              the one answer nothing can be inferred without: every venue,
+              price and travel time depends on it, and unlike the rest it has
+              no sensible default. Conversation Guidelines #5 — ask the most
+              important questions first. */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
+            <div>
+              <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
+              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+            </div>
+            <div>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
+              {/* Tonight / a date / the timing disclosure all on one row — the
+                  details belong beside the day they refine, not two cards away.
+                  flex-wrap drops the disclosure to its own line when the row
+                  runs out of width. */}
+              <div className="flex gap-2 items-center flex-wrap">
+                <button onClick={() => setPlannedDate('')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${!plannedDate ? c.chipOn : c.chipOff}`}>
+                  {t('dn_tonight')}
+                </button>
+                <input
+                  type="date"
+                  value={plannedDate}
+                  min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
+                  onChange={e => setPlannedDate(e.target.value)}
+                  className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
+                />
+                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
+                <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+                  🕐 {t('dn_timing_details')} {showTiming ? '▲' : '▼'}
+                </button>
+              </div>
+              {/* Start time, length and weather — all three have a working
+                  default (7:00 PM, Standard, Not sure), so they stay closed. */}
+              {showTiming && (
+                <div className="mt-3 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
+                      <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
+                        {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
+                      <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
+                    <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Date type */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <div className={`border-b ${c.border} pb-3 mb-3`}>
@@ -998,53 +991,30 @@ const DateNight = ({ tool }) => {
                 className="absolute start-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
               <div className="absolute h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
             </div>
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            <div className="flex flex-wrap items-center gap-1.5 mt-2">
               {presets.map(p => (
                 <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>
               ))}
+              {/* Typed amount. The slider snaps to a step and the chips are
+                  fixed, so neither could express "£140" — this is the only way
+                  to enter the number you actually have. Not clamped to the
+                  slider range: a real budget can sit outside it. */}
+              <label className="flex items-center gap-1.5">
+                <span className={`text-xs ${c.textMuteded}`}>{t('dn_or')}</span>
+                <input
+                  type="number"
+                  min={0}
+                  inputMode="numeric"
+                  value={budget}
+                  onChange={e => { const v = parseInt(e.target.value, 10); setBudget(Number.isFinite(v) && v >= 0 ? v : 0); }}
+                  aria-label={t('dn_budget_exact')}
+                  placeholder={t('dn_budget_exact')}
+                  className={`w-24 px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
+                />
+              </label>
             </div>
           </div>
 
-          {/* Location + Time + Duration + Weather */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
-            <div>
-              <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
-            </div>
-            <div>
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
-              <div className="flex gap-2 items-center flex-wrap">
-                <button onClick={() => setPlannedDate('')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${!plannedDate ? c.chipOn : c.chipOff}`}>
-                  {t('dn_tonight')}
-                </button>
-                <input
-                  type="date"
-                  value={plannedDate}
-                  min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
-                  onChange={e => setPlannedDate(e.target.value)}
-                  className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
-                />
-                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
-                <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
-                  {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
-                <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
-              </div>
-            </div>
-            <div>
-              <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
-              <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
-            </div>
-          </div>
 
           {/* Dietary + Restrictions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
@@ -1124,88 +1094,74 @@ const DateNight = ({ tool }) => {
       {renderResults()}
 
 
-      {/* ═══ LIVE DATE MODE ═══ */}
-      {liveMode && (results != null) && (() => {
-        const stops = results.itinerary || [];
-        const cur = stops[liveStep];
-        if (!cur) return null;
-        const progress = stops.length > 0 ? ((liveStep + 1) / stops.length) * 100 : 0;
+      {/* History / Rut check / Date jar — planning aids, not part of
+          planning. They sat above the form, competing with the primary
+          action before the visitor had done anything; they live down here
+          now, after the plan. */}
+      <div className="flex flex-wrap gap-2">
+        {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
+        {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
+        <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
+        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
+      </div>
 
-        const liveEl = (
-          <div className="space-y-4">
-            <div className={`${c.liveCard} border-2 rounded-2xl p-5`}>
-              <div className="flex justify-between items-center mb-3">
-                <h3 className={`font-bold text-sm ${c.text}`}>▶️ {t('dn_live')}</h3>
-                <button onClick={() => setLiveMode(false)} className={`text-xs font-bold ${c.textMuteded}`}>✕ {t('dn_exit')}</button>
-              </div>
-              <div className={`w-full h-2 rounded-full ${c.budgetBar} mb-2`}>
-                <div className="h-full rounded-full bg-red-500 transition-all" style={{ width: `${progress}%` }} />
-              </div>
-              <div className="flex justify-between">
-                <p className={`text-xs ${c.textMuteded}`}>{t('dn_stop_of', { step: liveStep + 1, total: stops.length })}</p>
-                {timeOffset !== 0 && <p className={`text-xs ${c.roseText}`}>{timeOffset > 0 ? `+${timeOffset}` : timeOffset}{t('dn_min')}</p>}
-              </div>
-            </div>
+      {/* Rut result */}
+      {rutResult && (
+        <div className={`${c.altCard} border rounded-xl p-4 space-y-2`}>
+          <div className="flex justify-between"><h4 className={`font-bold text-sm ${c.text}`}>🔍 {t('dn_pattern_analysis')}</h4><button onClick={() => setRutResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
+          <p className={`text-sm ${c.textSecondary}`}>{rutResult.pattern_summary}</p>
+          {rutResult.rut_detected && <div className={`${c.warning} border rounded-lg p-3 text-xs`}>⚠️ {rutResult.rut_description}</div>}
+          {rutResult.missing_categories?.length > 0 && <p className={`text-xs ${c.textSecondary}`}>{t('dn_missing')} {rutResult.missing_categories.join(', ')}</p>}
+          {(rutResult.suggestions || []).map((s, i) => <div key={i} className={`text-xs ${c.textSecondary}`}>💡 {s.idea} — {s.why}</div>)}
+          {rutResult.encouragement && <p className={`text-xs italic ${c.textSecondary}`}>{rutResult.encouragement}</p>}
+        </div>
+      )}
 
-            {/* Time adjuster */}
-            <div className="flex items-center gap-2">
-              <span className={`text-xs ${c.textSecondary}`}>{t('dn_running_late')}</span>
-              {[15, 30, -15].map(m => (
-                <button key={m} onClick={() => setTimeOffset(p => p + m)} className={`px-2 py-1 rounded text-xs ${c.btnSecondary} border ${c.border}`}>{m > 0 ? '+' : ''}{m}{t('dn_min_abbr')}</button>
-              ))}
-              {timeOffset !== 0 && <button onClick={() => setTimeOffset(0)} className={`text-xs ${c.textMuteded}`}>{t('dn_reset_time')}</button>}
-            </div>
-
-            {/* Current stop */}
-            <div className={`${c.card} border-2 ${c.roseBorder} rounded-2xl p-5 space-y-3`}>
-              <div className="flex justify-between">
-                <div>
-                  <p className={`text-xs font-bold ${c.roseText} mb-1`}>{t('dn_now')}</p>
-                  <h3 className={`text-lg font-bold ${c.text}`}>{stopEmoji(cur.stop_type)} {cur.venue_name}</h3>
-                </div>
-                <span className={`text-sm font-bold ${c.roseText}`}>~{fm(cur.estimated_cost)}</span>
-              </div>
-              <p className={`text-sm ${c.text}`}>{cur.description}</p>
-              {cur.dress_vibe && <p className={`text-sm font-bold ${c.textSecondary}`}>👗 {cur.dress_vibe}</p>}
-              {cur.pro_tip && <div className={`text-sm p-3 rounded-lg border ${c.warning}`}>💡 {cur.pro_tip}</div>}
-              {cur.anniversary_touch && <div className={`text-sm p-3 rounded-lg border ${c.accentCard} ${c.border}`}>💍 {cur.anniversary_touch}</div>}
-            </div>
-
-            {/* Plan B for this stop */}
-            {cur.plan_b && (
-              <div className={`${c.infoCard} border rounded-xl p-3`}>
-                <p className={`text-xs font-bold mb-0.5`}>🔄 {t('dn_if_not_work')}</p>
-                <p className={`text-xs`}>{cur.plan_b}</p>
-              </div>
-            )}
-
-            {/* Swap mid-date */}
-            <button onClick={() => swapStop(cur.stop_number || liveStep + 1)} disabled={swapping === (cur.stop_number || liveStep + 1) || loading}
-              className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-              {swapping ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💘'}</span>{t('dn_finding_replacement')}</> : <>🔄 {t('dn_swap_not_working')}</>}
-            </button>
-
-            {/* Next stop preview */}
-            {liveStep < stops.length - 1 && (
-              <div className={`${c.altCard} border ${c.border} rounded-xl p-3`}>
-                <p className={`text-xs font-bold ${c.text} mb-1`}>{t('dn_up_next', { emoji: stopEmoji(stops[liveStep + 1].stop_type), name: stops[liveStep + 1].venue_name })}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{stops[liveStep + 1].time}{timeOffset ? ` ${t('dn_adj', { offset: `~${timeOffset > 0 ? '+' : ''}${timeOffset}${t('dn_min_abbr')}` })}` : ''}</p>
-                {results?.transportation != null && <p className={`text-xs ${c.textSecondary} mt-1`}>🚶 {results.transportation}</p>}
-              </div>
-            )}
-
-            {/* Nav */}
-            {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>← {t('dn_back')}</button>}
-            {liveStep < stops.length - 1
-              ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>{t('dn_next_stop')}</button>
-              : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>🎉 {t('dn_finish_rate')}</button>}
+      {/* Date Jar */}
+      {showJar && (
+        <div className={`${c.jarCard} border rounded-xl p-4 space-y-3`}>
+          <div className="flex justify-between items-center">
+            <h4 className={`font-bold text-sm ${c.text}`}>🫙 {t('dn_jar_ideas', { count: dateJar.length })}</h4>
+            <button onClick={handleDateJar} disabled={jarLoading || !location.trim()} className={`text-xs font-bold ${c.roseText} disabled:opacity-40`}>{jarLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_filling')}</> : <>🔄 {t('dn_refill')}</>}</button>
+            <button onClick={() => setShowJar(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
           </div>
-        );
-        return liveEl;
-      })()}
+          {dateJar.length === 0 && !jarLoading && <p className={`text-xs ${c.textMuteded}`}>{t('dn_jar_empty')}</p>}
+          {dateJar.map((concept, i) => (
+            <div key={i} className={`${c.card} border ${c.border} rounded-lg p-3 cursor-pointer hover:opacity-80`}
+              onClick={() => { setDateType(concept.type || 'casual'); setShowJar(false); setShowInputs(true); }}>
+              <div className="flex justify-between items-start">
+                <p className={`text-sm font-bold ${c.text}`}>{concept.name}</p>
+                <span className={`text-xs ${c.roseText}`}>{concept.estimated_budget}</span>
+              </div>
+              <p className={`text-xs ${c.textSecondary} mt-0.5`}>{concept.description}</p>
+              <div className="flex gap-2 mt-1">
+                {concept.vibe && <span className={`text-[10px] ${c.textMuteded}`}>✨ {concept.vibe}</span>}
+                {concept.best_for && <span className={`text-[10px] ${c.textMuteded}`}>📅 {concept.best_for}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Journal */}
+      {showJournal && (
+        <div className={`${c.journalCard} border rounded-xl p-4 space-y-2`}>
+          {journal.map(e => (
+            <div key={e.id} className={`${c.card} border ${c.border} rounded-lg p-3`}>
+              <div className="flex justify-between">
+                <div className="flex-1 cursor-pointer" onClick={() => loadJournal(e)}>
+                  <p className={`text-sm font-bold ${c.text}`}>{e.vibeTitle || t('dn_default_date')}</p>
+                  <span className={`text-xs ${c.textMuteded}`}>{fmtDate(e.date)} · {e.location} · {fm(e.budget)}{e.rating ? ` · ${'⭐'.repeat(e.rating)}` : ''}</span>
+                </div>
+                <button onClick={() => setJournal(p => p.filter(j => j.id !== e.id))} className={`text-xs ${c.textMuteded}`}>🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Favorites list */}
-      {favorites.length > 0 && !results && !liveMode && (
+      {favorites.length > 0 && !results && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.roseText} mb-2`}>❤️ {t('dn_saved_venues', { count: favorites.length })}</p>
           <div className="space-y-1">
