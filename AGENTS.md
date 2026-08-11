@@ -20,7 +20,7 @@ See `audit/CONVENTIONS.md` for full patterns and worked examples. The rules belo
 Four documents in `docs/foundation/` define what DeftBrain is and how it should
 feel. They are the reference for **what we build and how it reads to a person**.
 Most of the rest of this file is about **how the code is written**, and
-[`.claude/CLAUDE.md`](.claude/CLAUDE.md) is about **how to report back** — three
+[`.Codex/AGENTS.md`](.Codex/AGENTS.md) is about **how to report back** — three
 separate questions, three separate sources. When a question is about wording,
 layout, flow, what a tool asks for, or what a screen says — open the relevant
 document below and follow it. Don't reason from the codebase's existing habits.
@@ -102,7 +102,7 @@ Full localization of a tool means all four layers, not just one:
 
 ## Working style
 
-**How to report back:** [`.claude/CLAUDE.md`](.claude/CLAUDE.md) sets the
+**How to report back:** [`.Codex/AGENTS.md`](.Codex/AGENTS.md) sets the
 communication style — outcome first in ≤3 lines, no blow-by-blow narration, no
 sentence announcing a tool call. It is an accessibility requirement, not a
 preference. Read it before replying, and re-read it if a reply starts running
