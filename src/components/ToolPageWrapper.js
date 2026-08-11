@@ -273,21 +273,31 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           sidebar), and below lg the single column keeps the full gap-8 so the
           stacked sections still breathe. */}
       <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-y-0">
-        {/* Locale controls — top-right of the working area, off the brand bar.
-            Absolute on desktop so the tool content fills from the top; a normal
-            right-aligned row on mobile. */}
-        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:absolute lg:top-3 lg:end-4 lg:z-10">
+        {/* Locale controls — the trailing columns of row 1, beside the page
+            header. They used to be absolutely positioned here, which meant row
+            1 sized itself as if they did not exist: nothing stopped them
+            overlapping the title if the pills ever grew or the heading wrapped.
+            Placing them explicitly costs the same pixels and removes that.
+
+            They stay FIRST in the DOM on purpose. Below lg the grid is one
+            column and children stack in source order, so language and currency
+            remain at the very top of the page — measured at 413px, y=89 here
+            versus y=2241 if they moved into the sidebar, on a 3853px page. On
+            a tool page these two pills are the only language control there is
+            (GlobalHeader does not render here), so burying them below the form
+            would strand anyone who landed in the wrong language. */}
+        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
         </div>
-        
+
         {/* Page header + action bar — their own grid item, not part of <main>.
-            The row uses 8 of 12 columns, so <main> wraps to the next row and
-            the sidebar starts beside it: the sidebar's top edge now lines up
-            with the tool card's gradient rather than with the page title.
-            Width is unchanged (still lg:col-span-8), so nothing inside this
-            block moves or resizes. Below `lg` the grid is one column and the
-            DOM order is what it always was. */}
-        <div className="lg:col-span-8">
+            Row 1 is now fully occupied (8 + 4), so <main> wraps to row 2 and
+            the sidebar starts beside it: the sidebar's top edge lines up with
+            the tool card's gradient rather than with the page title. Width is
+            unchanged (still 8 of 12), so nothing inside this block moves or
+            resizes. Below `lg` the grid is one column and the DOM order is
+            what it always was. */}
+        <div className="lg:col-start-1 lg:col-span-8 lg:row-start-1">
 
           {/* Print-only header */}
           <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
