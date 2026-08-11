@@ -770,32 +770,30 @@ Output: Overview: Japan's business culture is built on hierarchy, relationship-b
 ### Date Night
 
 URL: https://deftbrain.com/DateNight
-Tagline: A full evening plan, on budget, anywhere
+Tagline: Plan an evening that feels special—without spending hours figuring it out.
 Categories: Out & About, Humans
 
-Budget-driven evening planner for two. Pick your currency, set a budget and vibe, and get a complete itinerary with timing, cost per stop, budget buffer, transportation tips, and a Plan B. Works worldwide — adapts to local culture, venues, and pricing.
+Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.
 
-**What it does.** DateNight turns 'I dunno, what do you want to do?' into a complete evening with a timeline, per-stop costs, and a built-in budget buffer. Pick your currency and set a hard budget, choose a vibe (casual, romantic, adventurous, first date, anniversary, stay-in), and enter your city. It generates 2-4 stops with culturally appropriate venues — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — plus conversation starters and a Plan B.
+**What it does.** Date Night turns 'I dunno, what do you want to do?' into a complete evening with a timeline, a cost for each stop, and room left in the budget. Say where you are and when, choose the kind of night you want, set what you can spend, and you get 2-4 stops suited to where you are — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — with something to do or say together at each one, and a backup for every stop.
 
 **How to use it.**
 
-1. Select your currency and set your budget with the slider or quick-pick buttons
-2. Pick a date type — casual, romantic, adventurous, first date, anniversary, or stay-in
-3. Enter your city or neighborhood anywhere in the world
-4. Optionally add dietary restrictions, dealbreakers, or what you did last time
-5. Click 'Plan My Date Night' for a complete evening itinerary
-6. Review the budget breakdown to see cost per stop and your buffer
-7. Expand Conversation Starters and Plan B for extras
-8. Hit 'Different' if you want a new itinerary with the same constraints
+1. Say where you are, and whether it's tonight or another day
+2. Choose the kind of night — casual, romantic, adventurous, first date, anniversary, or staying in
+3. Set what you can spend: drag the slider, pick an amount, or type an exact figure
+4. Open the extra sections if they apply — start time and weather, dietary needs, what your partner likes, what you did last time
+5. Press the plan button, or ⌘↵
+6. Read the plan: each stop has a time, a cost, something to do together, and a backup
+7. Swap any stop you don't like, or use 'If something changes' when dinner falls through, the weather turns, or you're running late
+8. Want a different feel? Choose more relaxed, more romantic or more adventurous, then reimagine the evening
 
 **Tips.**
 
-- Select your local currency first — presets and slider range adapt automatically
-- The budget buffer accounts for tips (where customary), transport surcharges, and impulse buys
-- First Date mode suggests venues with easy conversation and natural exit points
-- Stay-In mode includes delivery fees and tips in the budget
-- Hit 'Different' to get a completely different itinerary without changing your inputs
-- Add what you did last time so the AI avoids repeating it
+- First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.
+- Staying in? We'll account for delivery fees and tips.
+- Don't want a repeat? Tell us what you did last time.
+- Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over.
 
 **Example.**
 
