@@ -1,55 +1,3 @@
-# Launch drafts — directories + Show HN + Product Hunt
-
-Revised 2026-08-02: **every venue now submits the whole site.** NOTHING here is
-posted by Claude; these are drafts for the operator to post from their own
-accounts.
-
-## Why the single-tool framing was dropped
-
-Two earlier versions of this file said "one sharp tool as the door." The
-reasoning was that a feed gives you one sentence, so a hook has to be singular.
-That is true about *hooks* and wrong about *products*, and it gave away the only
-story worth telling:
-
-**For any single tool there will always be a specialist that does that one job
-better.** Velvet Hammer versus Grammarly, BuyWise versus Wirecutter, TheDebrief
-versus Otter. Lead with one tool and you invite exactly that comparison, and
-lose it.
-
-The real competitor is *someone opening a blank chatbot box and working out the
-prompt themselves.* Against that, breadth **is** the product: the prompt
-engineering, the output schema, the jurisdiction grounding and the formatting
-are already done, 125 times over. Only a catalogue can tell that story.
-
-### State it as a promise, not a spec (revised 2026-08-05)
-
-A usability review landed on the sharpest version of this, and it is now the
-line to lead with everywhere:
-
-> **Answers begin with the right questions.**
-
-Users do not care about prompt engineering. What they care about is *"someone
-already knows the right questions to ask me."* Same fact, opposite framing.
-
-Think of a good doctor. You do not admire their internal reasoning — you notice
-they asked the right things before advising. That is what the forms do: they
-encode expertise as a conversation without exposing the machinery.
-
-Practical consequence for every draft below:
-
-- **Stop leading with "not a chatbot."** That is negative positioning — it says
-  what DeftBrain is not, and invites the reader to picture a chatbot. Lead with
-  what the form does: it already knows what to ask.
-- "125 single-purpose tools" is the *evidence* for that claim, not the claim.
-- The old framing survives as the second beat, never the first.
-
-A single tool still appears — as the **example inside** the pitch, never as the
-pitch. Never omit it either: "125 tools" without a concrete one is an abstraction.
-
-## The anti-farm proof (non-negotiable everywhere)
-
-"Over 100 AI tools" pattern-matches to a content farm and curators scan
-defensively for it.
 
 **Never lead with the count ALONE.** The number is a liability only when it
 arrives unaccompanied — "125 AI tools" is indistinguishable from slop. It is
@@ -90,16 +38,7 @@ Then earn it with three things a farm never does:
 3. `Show HN: I built 125 tiny AI tools instead of one chatbot`
 4. `Show HN: Small AI tools for problems too specific to search for`
 
-Recommendation: **#1.** The clause after the comma is the hook and the one claim
-a reader cannot assume they have seen before — and it is what licenses the count
-in front of it. #3 makes the design argument instead and invites "why?", which
-is a good comment thread but a weaker title. #4 is the count-free option: safest,
-and the least likely to be read at all. Do not use #2 or #4 unless #1 feels too
-promotional on the day.
 
-Note which titles carry the number: #1 and #3 do, deliberately, per the split
-above. #2 and #4 do not, and are the fallback if HN's mood that week is hostile
-to AI submissions.
 
 **First comment (post immediately after submitting — plain voice, no marketing):**
 

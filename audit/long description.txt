@@ -11,11 +11,9 @@ Free while we calibrate demand. No accounts, no cookies, nothing you type is sto
 ===============
 
 HACKER NEWS/YCOMBINATOR
-DeftBrain.com is a catalog of 125 single-purpose tools that help non-technical people solve everyday problems with AI. No signup. No prompting skill needed. Fourteen categories spanning money, health, work, home, relationships and creativity.
+DeftBrain.com is a catalog of 120+ single-purpose tools that help non-technical people solve everyday problems with AI. No signup. No prompting skill needed. 14 categories spanning money, health, work, home, relationships and creativity.
 
-Each tool is a purpose-built form asking just enough to solve one real problem: Apology Calibrator, Ticket Tackler, Doctor Visit Translator. The output is a finished artifact — a written apology, an appeal letter, an evidence checklist, a step-by-step plan — not an essay you have to format.
-
-Several will talk you out of using them. Ticket Tackler might tell you "just pay it." Legal and regulatory facts are checked against live sources at request time, not recalled from training data.
+Each tool is a purpose-built form asking just enough to solve one real problem: Apology Calibrator, Ticket Tackler, Doctor Visit Translator. The output is a finished artifact — a written apology, an appeal letter, a step-by-step plan — not an essay you have to format.
 
 Everything runs in 13 languages, adapting prices, local customs and the rules where you actually live.
 
