@@ -951,9 +951,9 @@ for name, fpath in tools:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')
     else:
         if pre_hrefs == 0:
-            fails.append('S5.5: no pre-result cross-ref — add a tool link visible before submit (e.g. "Need X first? Try [Tool]")')
+            fails.append('S5.5: no pre-result cross-ref — add a tool link at the FOOT of the tool inside {!results && ...}, never above the form (a cross-ref must not interrupt the flow to the primary action)')
         if post_hrefs == 0:
-            fails.append('S5.5: no post-result cross-ref — add a tool link inside the results block (e.g. "Next step: [Tool]")')
+            fails.append('S5.5: no post-result cross-ref — add a tool link at the END of the results block, after the outcome and its next steps')
 
         # Per-cluster rule (v4.38): no more than 3 hrefs within any 5-source-line window.
         # Counts every href occurrence with its line number, groups by proximity, flags dense clusters.

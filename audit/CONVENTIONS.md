@@ -515,10 +515,27 @@ grep -n 'href="/' ComponentName.js
 **Cap clarified (v4.38, Session 101, April 2026):** The cap is **3 per cluster**, not 3 per tool. A "cluster" = cross-ref links appearing within ~5 source lines of each other — typically a single footer, sidebar, or inline paragraph. Separate pages/branches of the same tool each get their own cluster budget. Preferred: 1–2 links per cluster. The audit script (`audit_v2-3-2.py` S5.5) enforces this by grouping adjacent hrefs into clusters and flagging any cluster with >3.
 
 **Placement rules:**
-- **Pre-result:** one inline sentence below the submit button, inside the input card
-- **Post-result:** a `🔗 Related tools` block inside the results section
+- **Pre-result:** one inline sentence at the **foot of the tool**, wrapped in `{!results && (...)}`. Never above the form.
+- **Post-result:** a related-tools block at the **end** of the results section, after the outcome and its next steps
 - Multi-page tools: at least one cross-ref per primary page/branch
 - Use `cross-reference-map.md` to find the correct tools for each cluster
+
+> **A cross-ref must never interrupt the flow to the primary action.** (Owner
+> decision, 2026-08-11.) Cross-refs are still mandatory — the argument is about
+> where they sit, not whether they exist. A link above the form asks the visitor
+> to consider leaving before they have done the thing they came for, which is
+> the opposite of "one primary action per screen" (Experience Guidelines #4) and
+> of "every paragraph should earn its place" (#7).
+>
+> This reverses the older "below the submit button, inside the input card"
+> guidance, which produced exactly that interruption in 13 of 126 tools.
+> DateNight is the reference implementation: the DecisionCoach line sits after
+> the History / Rut check / Date jar row, still gated on `!results`, so it is
+> visible only before a plan exists and only once everything else is done with.
+>
+> S5.5 counts a link inside an explicit `{!results && …}` guard as a pre-result
+> cross-ref wherever it appears in the file, so the correct placement passes.
+> Still outstanding: 12 tools place a cross-ref above their primary action.
 
 **Correct pattern:**
 ```jsx
