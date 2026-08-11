@@ -486,18 +486,23 @@ Return ONLY valid JSON:
 
     // ─── RATE ───
     if (action === 'rate') {
-      const { vibeTitle, location, dateType, overallRating, stopRatings, notes,
-              actualSpend, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+      // `evening` replaced stopRatings / notes / actualSpend when the rating
+      // section was cut back to stars: all three asked the visitor for work
+      // and then discarded it. stopRatings is still accepted so a client that
+      // is mid-session on the previous bundle keeps working.
+      const { vibeTitle, location, dateType, overallRating, evening, stopRatings,
+              userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!overallRating) return res.status(400).json({ error: 'Please rate your date.' });
 
-      const spendNote = actualSpend ? `\nACTUAL SPEND: ${actualSpend} (compare to estimates for accuracy insight)` : '';
+      const stops = (Array.isArray(evening) && evening.length) ? evening : (stopRatings || []);
 
       const prompt = withLanguage(`Analyze date feedback.
 
 DATE: "${vibeTitle}" in ${location || 'unknown'} | Type: ${dateType || '?'} | OVERALL: ${overallRating}/5
-STOPS:
-${(stopRatings || []).map(s => `  - "${s.venue_name}" (${s.stop_type || '?'}): ${s.rating}${s.note ? ` — "${s.note}"` : ''}`).join('\n')}
-${notes ? `NOTES: "${notes}"` : ''}${spendNote}
+THE EVENING THEY RATED:
+${stops.map(s => `  - "${s.venue_name}" (${s.stop_type || '?'})`).join('\n')}
+
+Infer what this couple likes from that rating and the kinds of places above — a high rating means more like these, a low one means fewer.
 
 Return ONLY valid JSON:
 {
@@ -507,7 +512,7 @@ Return ONLY valid JSON:
   "liked_qualities": ["qualities they enjoy"],
   "pace_preference": "quick|standard|long",
   "next_suggestion": "Specific idea for next date",
-  "encouragement": "Warm one-sentence note"${actualSpend ? ',\n  "budget_accuracy": "How accurate were the estimates vs actual spend (1 sentence)"' : ''}
+  "encouragement": "Warm one-sentence note"
 }`, userLanguage);
 
       const parsed = await callClaudeWithRetry({

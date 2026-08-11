@@ -36,7 +36,6 @@ const DIETARY_OPTIONS = [
   { v: 'kosher', lk: 'dn_diet_kosher' }, { v: 'no-alcohol', lk: 'dn_diet_no_alcohol' },
   { v: 'dairy-free', lk: 'dn_diet_dairy_free' }, { v: 'nut-allergy', lk: 'dn_diet_nut_allergy' },
 ];
-const STOP_RATINGS = [{ v: 'loved', lk: 'dn_rate_loved' }, { v: 'fine', lk: 'dn_rate_fine' }, { v: 'skip', lk: 'dn_rate_skip' }];
 const NOISE_OPTIONS = [{ v: 'quiet', lk: 'dn_noise_quiet' }, { v: 'moderate', lk: 'dn_noise_moderate' }, { v: 'lively', lk: 'dn_noise_lively' }];
 const ENERGY_OPTIONS = [{ v: 'low', lk: 'dn_energy_low' }, { v: 'medium', lk: 'dn_energy_medium' }, { v: 'high', lk: 'dn_energy_high' }];
 
@@ -157,10 +156,7 @@ const DateNight = ({ tool }) => {
   // ─── Rating ───
   const [showRate, setShowRate] = useState(false);
   const [overallRating, setOverallRating] = useState(0);
-  const [stopRatings, setStopRatings] = useState({});
-  const [rateNotes, setRateNotes] = useState('');
   const [rateResult, setRateResult] = useState(null);
-  const [actualSpend, setActualSpend] = useState('');
 
   // ─── Share / Surprise ───
   const [shareData, setShareData] = useState(null);
@@ -276,8 +272,8 @@ const DateNight = ({ tool }) => {
 
   const resetResults = () => {
     setShowRate(false); setRateResult(null); setShareData(null);
-    setExpandedConvo(false); setStopRatings({}); setOverallRating(0);
-    setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
+    setExpandedConvo(false); setOverallRating(0);
+    setChecklist(null); setChecklistChecked({});
     setRutResult(null);
   };
 
@@ -359,7 +355,6 @@ const DateNight = ({ tool }) => {
         // the venue you just replaced stays attached to its replacement — and
         // any feedback already returned describes an evening that no longer
         // exists. Drop both; the rest of the ratings are still valid.
-        setStopRatings(p => { const { [num]: _dropped, ...rest } = p; return rest; });
         setRateResult(null);
       }
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
@@ -369,9 +364,14 @@ const DateNight = ({ tool }) => {
   const handleRate = async () => {
     if (!overallRating) { setError(t('dn_err_star')); return; }
     setError('');
-    const sr = (results?.itinerary || []).map(s => ({ venue_name: s.venue_name, stop_type: s.stop_type, rating: stopRatings[s.stop_number] || 'fine', note: '' }));
+    // The stars are the only thing we ask for, but the model still needs to
+    // know WHAT was rated to learn anything useful from them — five stars on
+    // "wine bar, Italian, riverside walk" is a preference; five stars on
+    // nothing is a number. Sending the evening keeps the learning loop that
+    // the per-stop grid used to feed, without making anyone fill in a grid.
+    const evening = (results?.itinerary || []).map(s => ({ venue_name: s.venue_name, stop_type: s.stop_type }));
     try {
-      const data = await callToolEndpoint('date-night', { action: 'rate', vibeTitle: results?.vibe_title, location, dateType, overallRating, stopRatings: sr, notes: rateNotes, actualSpend: actualSpend || null, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('date-night', { action: 'rate', vibeTitle: results?.vibe_title, location, dateType, overallRating, evening, userLocale, userCurrency, userRegion });
       if (data) {
         setRateResult(data);
         setPrefs(p => ({ liked: [...new Set([...(p.liked || []), ...(data.liked_types || []), ...(data.liked_qualities || [])])].slice(0, 15), disliked: [...new Set([...(p.disliked || []), ...(data.disliked_types || [])])].slice(0, 10) }));
@@ -764,38 +764,20 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
-      {/* Rate */}
+      {/* Rate — stars and nothing else. Per-stop ratings, actual spend and
+          "notes for next time" each asked for work and then discarded it; the
+          notes in particular were never kept for next time, despite the label.
+          The evening's stops still reach the model (see handleRate), so it can
+          still learn what this couple likes — it just no longer makes them
+          grade three venues to say the plan was good. */}
       <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.roseText}`}>{showRate ? '▲' : '⭐'} {t('dn_rate_this')}</button>
       {showRate && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
-          <div>
-            <p className={`text-sm font-bold ${c.text} mb-2`}>{t('dn_overall')}</p>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map(s => (
-                <button key={s} onClick={() => setOverallRating(s)} className={`text-2xl ${s <= overallRating ? '' : 'opacity-30'}`}>⭐</button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className={`text-sm font-bold ${c.text} mb-2`}>{t('dn_each_stop')}</p>
-            {stops.map((s, i) => (
-              <div key={i} className={`${c.stopCard} border rounded-lg p-3 mb-2`}>
-                <p className={`text-xs font-bold ${c.text} mb-1`}>{stopEmoji(s.stop_type)} {s.venue_name}</p>
-                <div className="flex gap-1">
-                  {STOP_RATINGS.map(r => (
-                    <button key={r.v} onClick={() => setStopRatings(p => ({ ...p, [s.stop_number || i + 1]: r.v }))}
-                      className={`px-2 py-1 rounded-lg text-xs border ${stopRatings[s.stop_number || i + 1] === r.v ? c.chipOn : c.chipOff}`}>{t(r.lk)}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map(s => (
+              <button key={s} onClick={() => setOverallRating(s)} aria-label={`${s}`} className={`text-2xl ${s <= overallRating ? '' : 'opacity-30'}`}>⭐</button>
             ))}
           </div>
-          <div>
-            <p className={`text-xs font-bold ${c.text} mb-1`}>💰 {t('dn_actual_spend')} <span className={c.textMuteded}>({t('optional')})</span></p>
-            <input value={actualSpend} onChange={e => setActualSpend(e.target.value)} placeholder={t('dn_actual_spend_ph', { budget: fm(budget) })} className={`w-40 px-3 py-2 border rounded-lg text-sm ${c.input}`} />
-          </div>
-          <textarea value={rateNotes} onChange={e => setRateNotes(e.target.value)} placeholder={t('dn_rate_notes_ph')} rows={2} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
           <button onClick={handleRate} disabled={loading || !overallRating} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_saving')}</> : <>⭐ {t('dn_submit_rating')}</>}
           </button>
@@ -804,7 +786,6 @@ const DateNight = ({ tool }) => {
               <p className={`text-sm`}>{rateResult.encouragement}</p>
               <p className={`text-xs ${c.textSecondary}`}>{rateResult.summary}</p>
               {rateResult.next_suggestion && <p className={`text-xs ${c.roseText}`}>💡 {t('dn_next')} {rateResult.next_suggestion}</p>}
-              {rateResult.budget_accuracy && <p className={`text-xs ${c.textMuteded}`}>💰 {rateResult.budget_accuracy}</p>}
             </div>
           )}
         </div>
