@@ -99,7 +99,6 @@ const DateNight = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     // Bespoke keys
     roseText:      isDark ? 'text-red-400' : 'text-red-600',
-    roseBorder:    isDark ? 'border-red-700' : 'border-red-300',
     chipOn:        isDark ? 'bg-red-800 border-red-600 text-red-100' : 'bg-red-600 border-red-600 text-white',
     chipOff:       isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     headerCard:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
@@ -116,7 +115,6 @@ const DateNight = ({ tool }) => {
     jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
     jarCard:       isDark ? 'bg-orange-900/20 border-orange-700' : 'bg-orange-50 border-orange-200',
     rutText:       isDark ? 'text-cyan-400' : 'text-cyan-600',
-    liveCard:      isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
     proTipText:    isDark ? 'text-amber-300' : 'text-amber-700',
     quoteCard:     isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     stopCard:      isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200',
@@ -155,9 +153,6 @@ const DateNight = ({ tool }) => {
   const [expandedConvo, setExpandedConvo] = useState(false);
 
   // ─── Live mode ───
-  const [liveMode, setLiveMode] = useState(false);
-  const [liveStep, setLiveStep] = useState(0);
-  const [timeOffset, setTimeOffset] = useState(0);
 
   // ─── Rating ───
   const [showRate, setShowRate] = useState(false);
@@ -283,7 +278,7 @@ const DateNight = ({ tool }) => {
     setShowRate(false); setRateResult(null); setShareData(null);
     setExpandedConvo(false); setStopRatings({}); setOverallRating(0);
     setRateNotes(''); setActualSpend(''); setChecklist(null); setChecklistChecked({});
-    setLiveMode(false); setLiveStep(0); setTimeOffset(0); setRutResult(null);
+    setRutResult(null);
   };
 
   const buildText = () => {
@@ -480,7 +475,7 @@ const DateNight = ({ tool }) => {
 
   // ═══ RENDER: Results ═══
   const renderResults = () => {
-    if (!results || showInputs || liveMode) return null;
+    if (!results || showInputs) return null;
     const stops = results.itinerary || [];
     return (
     <div ref={resultsRef} className="space-y-4">
@@ -496,7 +491,10 @@ const DateNight = ({ tool }) => {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
-        {isFuture ? (
+        {/* Was a ternary whose else-branch was the "Start the date" button
+            that opened live mode. With live mode gone there is no alternative
+            branch, so this is a plain conditional. */}
+        {isFuture && (
           <div className={`w-full ${c.infoCard} border rounded-xl p-4 space-y-2`}>
             <p className={`text-sm font-bold ${c.text}`}>📅 {t('dn_planning_ahead', { label: plannedDateLabel })}</p>
             {daysUntil > 7 && <p className={`text-xs ${c.textSecondary}`}>⏰ {t('dn_book_now', { count: daysUntil })}</p>}
@@ -508,8 +506,6 @@ const DateNight = ({ tool }) => {
               </div>
             )}
           </div>
-        ) : (
-          <button onClick={() => { setLiveMode(true); setLiveStep(0); setTimeOffset(0); }} className={`px-4 py-2 rounded-xl text-xs font-bold ${c.btnLive}`}>▶️ {t('dn_start_date')}</button>
         )}
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
@@ -897,7 +893,7 @@ const DateNight = ({ tool }) => {
           setSessionHistory in generate) so nothing is lost if we want it back. */}
 
       {/* ═══ INPUT FORM ═══ */}
-      {(!results || showInputs) && !liveMode && (
+      {(!results || showInputs) && (
         <div className="space-y-4">
           {/* Where and when — the two basics, together and first. Location is
               the one answer nothing can be inferred without: every venue,
@@ -1098,86 +1094,6 @@ const DateNight = ({ tool }) => {
       {renderResults()}
 
 
-      {/* ═══ LIVE DATE MODE ═══ */}
-      {liveMode && (results != null) && (() => {
-        const stops = results.itinerary || [];
-        const cur = stops[liveStep];
-        if (!cur) return null;
-        const progress = stops.length > 0 ? ((liveStep + 1) / stops.length) * 100 : 0;
-
-        const liveEl = (
-          <div className="space-y-4">
-            <div className={`${c.liveCard} border-2 rounded-2xl p-5`}>
-              <div className="flex justify-between items-center mb-3">
-                <h3 className={`font-bold text-sm ${c.text}`}>▶️ {t('dn_live')}</h3>
-                <button onClick={() => setLiveMode(false)} className={`text-xs font-bold ${c.textMuteded}`}>✕ {t('dn_exit')}</button>
-              </div>
-              <div className={`w-full h-2 rounded-full ${c.budgetBar} mb-2`}>
-                <div className="h-full rounded-full bg-red-500 transition-all" style={{ width: `${progress}%` }} />
-              </div>
-              <div className="flex justify-between">
-                <p className={`text-xs ${c.textMuteded}`}>{t('dn_stop_of', { step: liveStep + 1, total: stops.length })}</p>
-                {timeOffset !== 0 && <p className={`text-xs ${c.roseText}`}>{timeOffset > 0 ? `+${timeOffset}` : timeOffset}{t('dn_min')}</p>}
-              </div>
-            </div>
-
-            {/* Time adjuster */}
-            <div className="flex items-center gap-2">
-              <span className={`text-xs ${c.textSecondary}`}>{t('dn_running_late')}</span>
-              {[15, 30, -15].map(m => (
-                <button key={m} onClick={() => setTimeOffset(p => p + m)} className={`px-2 py-1 rounded text-xs ${c.btnSecondary} border ${c.border}`}>{m > 0 ? '+' : ''}{m}{t('dn_min_abbr')}</button>
-              ))}
-              {timeOffset !== 0 && <button onClick={() => setTimeOffset(0)} className={`text-xs ${c.textMuteded}`}>{t('dn_reset_time')}</button>}
-            </div>
-
-            {/* Current stop */}
-            <div className={`${c.card} border-2 ${c.roseBorder} rounded-2xl p-5 space-y-3`}>
-              <div className="flex justify-between">
-                <div>
-                  <p className={`text-xs font-bold ${c.roseText} mb-1`}>{t('dn_now')}</p>
-                  <h3 className={`text-lg font-bold ${c.text}`}>{stopEmoji(cur.stop_type)} {cur.venue_name}</h3>
-                </div>
-                <span className={`text-sm font-bold ${c.roseText}`}>~{fm(cur.estimated_cost)}</span>
-              </div>
-              <p className={`text-sm ${c.text}`}>{cur.description}</p>
-              {cur.dress_vibe && <p className={`text-sm font-bold ${c.textSecondary}`}>👗 {cur.dress_vibe}</p>}
-              {cur.pro_tip && <div className={`text-sm p-3 rounded-lg border ${c.warning}`}>💡 {cur.pro_tip}</div>}
-              {cur.anniversary_touch && <div className={`text-sm p-3 rounded-lg border ${c.accentCard} ${c.border}`}>💍 {cur.anniversary_touch}</div>}
-            </div>
-
-            {/* Plan B for this stop */}
-            {cur.plan_b && (
-              <div className={`${c.infoCard} border rounded-xl p-3`}>
-                <p className={`text-xs font-bold mb-0.5`}>🔄 {t('dn_if_not_work')}</p>
-                <p className={`text-xs`}>{cur.plan_b}</p>
-              </div>
-            )}
-
-            {/* Swap mid-date */}
-            <button onClick={() => swapStop(cur.stop_number || liveStep + 1)} disabled={swapping === (cur.stop_number || liveStep + 1) || loading}
-              className={`w-full py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
-              {swapping ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💘'}</span>{t('dn_finding_replacement')}</> : <>🔄 {t('dn_swap_not_working')}</>}
-            </button>
-
-            {/* Next stop preview */}
-            {liveStep < stops.length - 1 && (
-              <div className={`${c.altCard} border ${c.border} rounded-xl p-3`}>
-                <p className={`text-xs font-bold ${c.text} mb-1`}>{t('dn_up_next', { emoji: stopEmoji(stops[liveStep + 1].stop_type), name: stops[liveStep + 1].venue_name })}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{stops[liveStep + 1].time}{timeOffset ? ` ${t('dn_adj', { offset: `~${timeOffset > 0 ? '+' : ''}${timeOffset}${t('dn_min_abbr')}` })}` : ''}</p>
-                {results?.transportation != null && <p className={`text-xs ${c.textSecondary} mt-1`}>🚶 {results.transportation}</p>}
-              </div>
-            )}
-
-            {/* Nav */}
-            {liveStep > 0 && <button onClick={() => setLiveStep(p => p - 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnSecondary} border ${c.border}`}>← {t('dn_back')}</button>}
-            {liveStep < stops.length - 1
-              ? <button onClick={() => setLiveStep(p => p + 1)} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>{t('dn_next_stop')}</button>
-              : <button onClick={() => { setLiveMode(false); setShowRate(true); }} className={`flex-1 py-3 rounded-xl text-sm font-bold ${c.btnAction}`}>🎉 {t('dn_finish_rate')}</button>}
-          </div>
-        );
-        return liveEl;
-      })()}
-
       {/* History / Rut check / Date jar — planning aids, not part of
           planning. They sat above the form, competing with the primary
           action before the visitor had done anything; they live down here
@@ -1245,7 +1161,7 @@ const DateNight = ({ tool }) => {
       )}
 
       {/* Favorites list */}
-      {favorites.length > 0 && !results && !liveMode && (
+      {favorites.length > 0 && !results && (
         <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
           <p className={`text-xs font-bold ${c.roseText} mb-2`}>❤️ {t('dn_saved_venues', { count: favorites.length })}</p>
           <div className="space-y-1">
