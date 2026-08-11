@@ -612,6 +612,15 @@ const DateNight = ({ tool }) => {
                   <div>
                     <span className={`text-[10px] font-bold ${c.roseText} uppercase`}>{stop.time}</span>
                     <h4 className={`text-sm font-bold ${c.text}`}>{stop.venue_name}</h4>
+                    {/* venue_confirmed is computed on the server by matching the
+                        name against the verified list — the model is never asked
+                        to vouch for itself. When it is false the name above is a
+                        kind of place, not a place, and saying so is the whole
+                        point: an unmarked invented restaurant sends someone
+                        across town to a door that isn't there. */}
+                    {stop.venue_confirmed === false && (
+                      <p className={`text-[10px] ${c.textMuteded}`}>{t('dn_find_a_place')}</p>
+                    )}
                   </div>
                   <span className={`text-sm font-black ${c.roseText}`}>~{fm(stop.estimated_cost)}</span>
                 </div>

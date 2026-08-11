@@ -4,6 +4,80 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
+const { groundedFacts, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+
+// ═══════════════════════════════════════════
+// REAL VENUES — grounded, or honestly absent
+// ═══════════════════════════════════════════
+// The plan says "where to go", so a named place beats a category — but only if
+// the name is real. An invented restaurant is worse than no restaurant: the
+// visitor drives somewhere that does not exist.
+//
+// So the name is required WHEN it can be verified and not otherwise. One
+// bounded web_search per location fills a 14-day cache; groundedFacts never
+// blocks the request, so the first visitor to a new location gets descriptive
+// types and everyone after them gets real names. Whether a given stop ended up
+// verified is decided HERE, by string-matching the model's answer against the
+// verified list — never by asking the model to self-report, which it will
+// happily get wrong for a name it just invented.
+
+const VENUE_LINE = /^- "([^"]+)"/gm;
+
+function verifiedNamesFrom(block) {
+  if (!block) return [];
+  return [...block.matchAll(VENUE_LINE)].map(m => m[1]);
+}
+
+// Loose enough to survive "The Automat" vs "Automat" and stray punctuation,
+// strict enough that a different restaurant never matches.
+const normVenue = (s) => String(s || '').toLowerCase()
+  .replace(/^(the|a|an|le|la|el)\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+function markVerified(itinerary, verifiedNames) {
+  if (!Array.isArray(itinerary)) return itinerary;
+  const known = new Set(verifiedNames.map(normVenue));
+  for (const stop of itinerary) {
+    if (stop && typeof stop === 'object') stop.venue_confirmed = known.has(normVenue(stop.venue_name));
+  }
+  return itinerary;
+}
+
+function venueFacts(location) {
+  return groundedFacts({
+    cacheKey: `date-venues:${normalizeKeyPart(location)}`,
+    label: 'date-night-venues',
+    ttlMs: 7 * 24 * 60 * 60 * 1000, // shorter than the 14-day default; restaurants close
+    system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Using web_search, list REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
+
+Cover as many of these as you can find: a bar or cocktail place, a casual restaurant, a nicer restaurant, a dessert or ice-cream place, a coffee or tea place, somewhere to walk (park, waterfront, plaza), and something to do (music, theatre, gallery, games).
+
+Only include a place you can actually verify is open. Fewer real ones is better than padding the list.
+
+Return ONLY valid JSON:
+{ "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|activity", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
+    render: (facts) => {
+      const list = Array.isArray(facts.venues) ? facts.venues.filter(v => v && v.name) : [];
+      if (!list.length) return '';
+      const lines = list.slice(0, 24)
+        .map(v => `- "${v.name}" (${v.kind || 'venue'}, ${v.price || '?'}) — ${v.note || ''}${v.area ? ` · ${v.area}` : ''}`)
+        .join('\n');
+      return `\n\nVERIFIED VENUES NEAR ${location} — real places, confirmed open:
+${lines}
+
+VENUE RULE: for each stop, venue_name MUST be one of the names above, copied EXACTLY as written between the quotes. Do not shorten, expand, translate or re-style it. Build the evening from these places. Only if none of them can fill a stop, fall back to a descriptive venue type for that one stop.`;
+    },
+  });
+}
+
+// groundedFacts already strips <cite> tags before render(), but this block is
+// the only web-derived text in the route and it goes straight into a prompt.
+// Re-asserting it here keeps that guarantee local and visible instead of
+// resting on a lib two files away.
+async function venueBlockFor(location) {
+  const loc = String(location || '').trim();
+  return loc ? stripCites(await venueFacts(loc)) : '';
+}
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -98,7 +172,7 @@ const RESPONSE_SCHEMA = `{
   "itinerary": [
     {
       "time": "7:00 PM",
-      "venue_name": "Descriptive venue TYPE (e.g. 'Cozy vegetarian bistro') — NEVER a real or real-sounding business name; the user finds the actual venue themselves",
+      "venue_name": __VENUE_NAME__,
       "stop_type": "drinks|dinner|dessert|walk|entertainment|activity|coffee|tea",
       "description": "What you'll do here (2-3 sentences)",
       "estimated_cost": 25,
@@ -118,6 +192,16 @@ const RESPONSE_SCHEMA = `{
   "plan_b": "General backup plan",
   "tips": ["2-3 tips to elevate this evening"]
 }`;
+
+// The venue_name rule is the one part of the schema that depends on whether we
+// managed to verify anything for this location, so it is substituted per call
+// rather than baked in. Everything else about the shape is identical.
+const VENUE_NAME_RULE = {
+  verified: `"EXACT name from the VERIFIED VENUES list above — copy it character for character. Only if none of those can fill this stop, a descriptive venue type instead"`,
+  unverified: `"Descriptive venue TYPE (e.g. 'Cozy vegetarian bistro') — NEVER a real or real-sounding business name; the user finds the actual venue themselves"`,
+};
+const responseSchema = (grounded) =>
+  RESPONSE_SCHEMA.replace('__VENUE_NAME__', grounded ? VENUE_NAME_RULE.verified : VENUE_NAME_RULE.unverified);
 
 // ═══════════════════════════════════════════
 // ROUTES
@@ -141,6 +225,9 @@ router.post('/date-night', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       const durationMap = { quick: 'Quick — 2 stops, done by ~9:30 PM', standard: 'Standard — 2-3 stops, done by ~11 PM', long: 'Long — 3-4 stops, past midnight' };
       const futureDateStr = plannedDate ? new Date(plannedDate + 'T12:00:00').toLocaleDateString('en', { weekday: 'long', month: 'long', day: 'numeric' }) : null;
 
+      const venuesBlock = await venueBlockFor(location);
+      const verified = verifiedNamesFrom(venuesBlock);
+
       const prompt = `PLAN A DATE NIGHT:
 - Budget: ${sym}${budget} (hard cap — plan ~${sym}${Math.round((budget || 100) * 0.85)})
 - Currency: ${sym} only
@@ -153,10 +240,10 @@ ${isFuturePlan && futureDateStr ? `- FUTURE DATE: Planning for ${futureDateStr}.
 ${weather ? `- Weather: ${weather}` : ''}
 ${restrictions ? `- Restrictions: ${restrictions}` : ''}
 ${lastTime ? `- Last time (avoid): ${lastTime}` : ''}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}${venuesBlock}
 
 Return ONLY valid JSON:
-${RESPONSE_SCHEMA}
+${responseSchema(!!venuesBlock)}
 ${isFuturePlan ? '\nAlso include: "advance_booking": ["Tip 1 about reservations/booking", "Tip 2", "Tip 3"] — specific actions to take now for the planned date.' : ''}
 
 All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop AND overall.`;
@@ -170,6 +257,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
       if (!parsed.itinerary) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    markVerified(parsed.itinerary, verified);
     return res.json(parsed);
     }
 
@@ -180,6 +268,9 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
               partnerPrefs, favorites, feel, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
+
+      const venuesBlock = await venueBlockFor(location);
+      const verified = verifiedNamesFrom(venuesBlock);
       const sym = currency;
       const durationMap = { quick: '~2 hours', standard: '~3-4 hours', long: '~5+ hours' };
 
@@ -201,7 +292,9 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}
 
-Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
+${venuesBlock}
+
+Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
       const parsed = await callClaudeWithRetry({
         model: MODELS.FAST,
@@ -212,6 +305,7 @@ Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
       if (!parsed.itinerary && !parsed.plan) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    markVerified(parsed.itinerary, verified);
     return res.json(parsed);
     }
 
@@ -286,6 +380,9 @@ Return ONLY valid JSON:
               userCurrency, userRegion } = req.body;
 
       if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
+
+      const venuesBlock = await venueBlockFor(location);
+      const verified = verifiedNamesFrom(venuesBlock);
       const CHANGE = {
         restaurant: 'The DINNER stop fell through — it is unavailable. Replace that one stop with a different place of the same kind at a similar price. Keep every other stop and the timings exactly as they are.',
         indoors:    'The WEATHER has turned. Move the ending indoors: replace any outdoor stop with an indoor one nearby at a similar price, and keep the rest of the evening intact.',
@@ -309,7 +406,9 @@ ${current}
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}
 
-Return the WHOLE revised evening. Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
+${venuesBlock}
+
+Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
       const parsed = await callClaudeWithRetry({
         model: MODELS.FAST,
@@ -320,6 +419,7 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
       if (!parsed.itinerary) {
         return res.status(500).json({ error: 'Could not rework the evening. Please try again.' });
       }
+      markVerified(parsed.itinerary, verified);
       return res.json(parsed);
     }
 
@@ -332,17 +432,22 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${RESPONSE_SCHEMA}`;
       const sym = currency;
       const currentStop = (currentItinerary.itinerary || []).find(s => s.stop_number === swapStopNumber);
       const otherStops = (currentItinerary.itinerary || []).filter(s => s.stop_number !== swapStopNumber).map(s => s.venue_name);
+      // The replacement has to be as real as the stop it replaces, or swapping
+      // silently downgrades a verified evening into an invented one.
+      const venuesBlock = await venueBlockFor(location);
+      const verified = verifiedNamesFrom(venuesBlock);
 
       const prompt = `Replace ONE stop. Evening: "${currentItinerary.vibe_title}" in ${location}
 Type: ${DATE_TYPE_LABELS[dateType] || dateType}
 KEEP: ${otherStops.join(', ')}
 REPLACE: #${swapStopNumber} "${currentStop?.venue_name}" at ${currentStop?.time} (~${sym}${currentStop?.estimated_cost})
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}
+${venuesBlock ? 'The replacement MUST be one of the verified venues above, and MUST NOT be one of the KEEP venues.' : ''}
 
 Return ONLY valid JSON:
 {
   "stop": {
-    "time": "${currentStop?.time || '8:00 PM'}", "venue_name": "New venue",
+    "time": "${currentStop?.time || '8:00 PM'}", "venue_name": ${venuesBlock ? '"EXACT name from the VERIFIED VENUES list above"' : '"Descriptive venue TYPE — never a real or real-sounding business name"'},
     "stop_type": "type", "description": "What to do (2-3 sentences)",
     "estimated_cost": ${currentStop?.estimated_cost || 25}, "pro_tip": "Tip",
     "dress_vibe": "Dress code", "plan_b": "Alternative", "stop_number": ${swapStopNumber}
@@ -358,6 +463,7 @@ Return ONLY valid JSON:
       if (!parsed.stop) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    markVerified([parsed.stop], verified);
     return res.json(parsed);
     }
 
@@ -501,12 +607,14 @@ Return ONLY valid JSON:
               preferences, partnerPrefs, userLanguage, userLocale, userCurrency, userRegion } = req.body;
       if (!yearsTogether) return res.status(400).json({ error: 'How many years?' });
       const sym = currency || '$';
+      const venuesBlock = await venueBlockFor(location);
+      const verified = verifiedNamesFrom(venuesBlock);
 
       const prompt = withLanguage(`Plan a special ${yearsTogether}-year anniversary date.
 
 LOCATION: ${location || '?'} | BUDGET: ${sym}${budget || 100} | START: ${startTime || '7:00 PM'}
 SEASON: ${season} — ${seasonAdvice}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}
 
 Create a narrative arc — thoughtful opening → signature memory moment → intimate closing.
 
@@ -515,7 +623,7 @@ Return ONLY valid JSON:
   "vibe_title": "Evocative name", "vibe_description": "Mood sentence",
   "narrative_arc": "Emotional journey (2 sentences)",
   "itinerary": [
-    { "time": "7:00 PM", "venue_name": "Venue type", "stop_type": "type",
+    { "time": "7:00 PM", "venue_name": ${venuesBlock ? '"EXACT name from the VERIFIED VENUES list above"' : '"Descriptive venue TYPE — never a real or real-sounding business name"'}, "stop_type": "type",
       "description": "What to do (2-3 sentences)", "estimated_cost": 30,
       "pro_tip": "Tip", "dress_vibe": "Dress code",
       "anniversary_touch": "Something specific for an anniversary at this stop",
@@ -541,6 +649,7 @@ Return ONLY valid JSON:
       if (!parsed.itinerary && !parsed.plan) {
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
+    markVerified(parsed.itinerary, verified);
     return res.json(parsed);
     }
 
