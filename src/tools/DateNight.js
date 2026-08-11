@@ -259,6 +259,27 @@ const DateNight = ({ tool }) => {
     ? (itin.length > 1 ? `${itin[0].time} – ${itin[itin.length - 1].time}` : itin[0].time)
     : '';
   const bufferAmt = results?.buffer || (budget - totalSpent);
+  // How long the evening runs, for the line under the time range. Parses the
+  // model's own clock strings, which are only reliably "7:00 PM" in English —
+  // any other shape returns null and the line is simply omitted rather than
+  // guessed at. Measures first stop to last stop, the same two points the
+  // range itself uses, so the two can never disagree.
+  const clockMin = (s) => {
+    const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(s || '').trim());
+    if (!m) return null;
+    const h = (parseInt(m[1], 10) % 12) + (/pm/i.test(m[3]) ? 12 : 0);
+    return h * 60 + parseInt(m[2], 10);
+  };
+  const spanLabel = (() => {
+    if (itin.length < 2) return '';
+    const a = clockMin(itin[0].time), b = clockMin(itin[itin.length - 1].time);
+    if (a == null || b == null) return '';
+    const mins = Math.round(((b - a + 1440) % 1440) / 15) * 15;
+    const h = Math.floor(mins / 60);
+    if (h < 1) return '';
+    const frac = { 0: '', 15: '¼', 30: '½', 45: '¾' }[mins % 60] || '';
+    return t('dn_about_hours', { n: `${h}${frac}` });
+  })();
   const isAnni = dateType === 'anniversary';
   const isFuture = !!plannedDate && plannedDate > new Date().toISOString().slice(0, 10);
   const daysUntil = isFuture ? Math.round((new Date(plannedDate) - new Date()) / 86400000) : 0;
@@ -570,40 +591,29 @@ const DateNight = ({ tool }) => {
           the estimate does not have. */}
       <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-3`}>{t('dn_at_a_glance')}</p>
-        <dl className="space-y-2">
-          {timeRange && (
-            <div className="flex justify-between gap-4">
-              <dt className={`text-xs ${c.textSecondary}`}>🕕</dt>
-              <dd className={`text-xs font-bold ${c.text} text-end`}>{timeRange}</dd>
+        {/* One strip of facts instead of a stack of label/value rows: the shape
+            of the evening — when, what it costs, how you move, what to wear,
+            what to do first — readable in one pass. Each cell is icon, a bold
+            line, and a quiet line under it. Cells with nothing to say drop out
+            rather than render empty, so the column count follows the content.
+            Dividers only at lg, where the five are guaranteed to sit on one
+            row; wrapped rows get gaps instead, and the rule is border-s, not
+            border-l, so Arabic mirrors with everything else. */}
+        <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-4">
+          {[
+            timeRange && { icon: '🕕', head: timeRange, sub: spanLabel },
+            { icon: '💰', head: t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) }),
+              sub: bufferAmt > 0 ? t('dn_budget_left', { amount: `~${fm(bufferAmt)}` }) : '' },
+            results.transportation && { icon: '🚶', head: results.transportation, sub: location.trim() },
+            results.overall_dress_code && { icon: '👗', head: t('dn_dress'), sub: results.overall_dress_code },
+            results.one_thing_now && { icon: '📌', head: t('dn_one_thing_now'), sub: results.one_thing_now },
+          ].filter(Boolean).map((cell, i) => (
+            <div key={i} className={i > 0 ? `lg:border-s ${c.border} lg:ps-4` : ''}>
+              <span className="text-base leading-none" aria-hidden="true">{cell.icon}</span>
+              <dt className={`text-xs font-bold ${c.text} mt-1.5`}>{cell.head}</dt>
+              {cell.sub && <dd className={`text-[11px] ${c.textMuteded} mt-0.5 leading-snug`}>{cell.sub}</dd>}
             </div>
-          )}
-          <div className="flex justify-between gap-4">
-            <dt className={`text-xs ${c.textSecondary}`}>{t('dn_estimated_cost')}</dt>
-            <dd className={`text-sm font-bold ${c.text} text-end`}>{t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) })}</dd>
-          </div>
-          {bufferAmt > 0 && (
-            <div className="flex justify-end">
-              <dd className={`text-xs ${c.bufferText}`}>{t('dn_budget_left', { amount: `~${fm(bufferAmt)}` })}</dd>
-            </div>
-          )}
-          {results.one_thing_now && (
-            <div className="flex justify-between gap-4">
-              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_one_thing_now')}</dt>
-              <dd className={`text-xs font-bold ${c.roseText} text-end`}>{results.one_thing_now}</dd>
-            </div>
-          )}
-          {results.transportation && (
-            <div className="flex justify-between gap-4">
-              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_getting_around')}</dt>
-              <dd className={`text-xs ${c.text} text-end`}>{results.transportation}</dd>
-            </div>
-          )}
-          {results.overall_dress_code && (
-            <div className="flex justify-between gap-4">
-              <dt className={`text-xs ${c.textSecondary}`}>{t('dn_dress')}</dt>
-              <dd className={`text-xs ${c.text} text-end`}>{results.overall_dress_code}</dd>
-            </div>
-          )}
+          ))}
         </dl>
       </div>
 

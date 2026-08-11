@@ -186,9 +186,9 @@ const RESPONSE_SCHEMA = `{
   "total_estimated": 65,
   "buffer": 10,
   "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner', 'Check the forecast', 'Buy tickets'). The one thing that breaks the evening if skipped.",
-  "transportation": "How to get between stops with costs",
+  "transportation": "How you get around, as a SHORT phrase of 2 to 5 words — 'Mostly walkable', 'Rideshare, about $10 total', 'One short bus ride'. This renders in a narrow column beside four other facts; a sentence breaks the layout.",
   "conversation_starters": ["3-5 prompts tailored to date type"],
-  "overall_dress_code": "One sentence — what to wear",
+  "overall_dress_code": "What to wear, as a SHORT phrase of 3 to 6 words — 'Light, polished, summer-ready'. Same narrow column; never a sentence.",
   "plan_b": __PLAN_B_OVERALL__,
   "tips": ["2-3 tips to elevate this evening"]
 }`;
@@ -655,10 +655,10 @@ Return ONLY valid JSON:
   ],
   "total_estimated": 80, "buffer": 15,
   "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner'). The one thing that breaks the evening if skipped.",
-  "transportation": "Getting between stops",
+  "transportation": "How you get around, as a SHORT phrase of 2 to 5 words — never a sentence.",
   "nostalgia_prompts": ["3-4 reflection questions for ${yearsTogether} years"],
   "milestone_gesture": "Meaningful gesture for ${yearsTogether} years",
-  "overall_dress_code": "What to wear",
+  "overall_dress_code": "What to wear, as a SHORT phrase of 3 to 6 words — never a sentence.",
   "tips": ["2-3 anniversary-specific tips"]
 }`, userLanguage);
 
