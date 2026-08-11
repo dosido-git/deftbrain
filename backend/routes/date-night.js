@@ -178,7 +178,7 @@ const RESPONSE_SCHEMA = `{
       "estimated_cost": 25,
       "pro_tip": "Insider tip",
       "dress_vibe": "Smart casual|Come as you are|Dress up a bit|Cozy layers",
-      "plan_b": "Specific alternative if this stop has a wait or is closed",
+      "plan_b": __PLAN_B__,
       "for_the_two_of_you": "One thing to DO or SAY together at this stop — a toast, a question, an exchange. Specific to this venue and to their occasion, never generic. One sentence.",
       "stop_number": 1
     }
@@ -189,19 +189,36 @@ const RESPONSE_SCHEMA = `{
   "transportation": "How to get between stops with costs",
   "conversation_starters": ["3-5 prompts tailored to date type"],
   "overall_dress_code": "One sentence — what to wear",
-  "plan_b": "General backup plan",
+  "plan_b": __PLAN_B_OVERALL__,
   "tips": ["2-3 tips to elevate this evening"]
 }`;
 
 // The venue_name rule is the one part of the schema that depends on whether we
 // managed to verify anything for this location, so it is substituted per call
 // rather than baked in. Everything else about the shape is identical.
+// plan_b names places too. Pinning venue_name to the verified list while
+// leaving the backup as free prose let an unverified restaurant in through the
+// side door — and phrased as if it had already been introduced ("if Bar Enza
+// is booked and Harvest is too..."), when Harvest appeared nowhere else.
+const PLAN_B_RULE = {
+  verified: `"Backup if this stop is full or closed. Any place you name MUST come from the VERIFIED VENUES list above, and must be introduced as a new suggestion — never referred to as if already mentioned"`,
+  unverified: `"Backup if this stop is full or closed — describe the kind of place, never a real or real-sounding business name"`,
+};
+const PLAN_B_OVERALL_RULE = {
+  verified: `"Backup for the evening as a whole. Any place you name MUST come from the VERIFIED VENUES list above, introduced as a new suggestion"`,
+  unverified: `"Backup for the evening as a whole — describe the kind of place, never a real or real-sounding business name"`,
+};
 const VENUE_NAME_RULE = {
   verified: `"EXACT name from the VERIFIED VENUES list above — copy it character for character. Only if none of those can fill this stop, a descriptive venue type instead"`,
   unverified: `"Descriptive venue TYPE (e.g. 'Cozy vegetarian bistro') — NEVER a real or real-sounding business name; the user finds the actual venue themselves"`,
 };
-const responseSchema = (grounded) =>
-  RESPONSE_SCHEMA.replace('__VENUE_NAME__', grounded ? VENUE_NAME_RULE.verified : VENUE_NAME_RULE.unverified);
+const responseSchema = (grounded) => {
+  const pick = (rule) => grounded ? rule.verified : rule.unverified;
+  return RESPONSE_SCHEMA
+    .replace('__VENUE_NAME__', pick(VENUE_NAME_RULE))
+    .replace('__PLAN_B__', pick(PLAN_B_RULE))
+    .replace('__PLAN_B_OVERALL__', pick(PLAN_B_OVERALL_RULE));
+};
 
 // ═══════════════════════════════════════════
 // ROUTES
@@ -450,7 +467,7 @@ Return ONLY valid JSON:
     "time": "${currentStop?.time || '8:00 PM'}", "venue_name": ${venuesBlock ? '"EXACT name from the VERIFIED VENUES list above"' : '"Descriptive venue TYPE — never a real or real-sounding business name"'},
     "stop_type": "type", "description": "What to do (2-3 sentences)",
     "estimated_cost": ${currentStop?.estimated_cost || 25}, "pro_tip": "Tip",
-    "dress_vibe": "Dress code", "plan_b": "Alternative", "stop_number": ${swapStopNumber}
+    "dress_vibe": "Dress code", "plan_b": ${venuesBlock ? '"Backup if this stop is full or closed. Any place you name MUST come from the VERIFIED VENUES list above, introduced as a new suggestion"' : '"Backup if this stop is full or closed — describe the kind of place, never a real business name"'}, "stop_number": ${swapStopNumber}
   }
 }`;
 

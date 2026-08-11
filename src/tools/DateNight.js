@@ -610,7 +610,12 @@ const DateNight = ({ tool }) => {
               <div className={`flex-1 ${c.stopCard} border rounded-xl p-4 ${isSwap ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between mb-1">
                   <div>
-                    <span className={`text-[10px] font-bold ${c.roseText} uppercase`}>{stop.time}</span>
+                    {/* text-xs, not text-[10px]: in an itinerary the time is
+                        wayfinding, not a caption. At 10px it read as a label
+                        above the venue rather than the hour you leave. Still a
+                        step below the venue name (text-sm), so the hierarchy
+                        is unchanged. */}
+                    <span className={`text-xs font-bold ${c.roseText} uppercase`}>{stop.time}</span>
                     <h4 className={`text-sm font-bold ${c.text}`}>{stop.venue_name}</h4>
                     {/* venue_confirmed is computed on the server by matching the
                         name against the verified list — the model is never asked
