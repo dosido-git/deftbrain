@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -178,7 +178,6 @@ const DateNight = ({ tool }) => {
   // ─── Share / Surprise ───
   const [shareData, setShareData] = useState(null);
   const [shareLoading, setShareLoading] = useState(false);
-  const [surpriseMode, setSurpriseMode] = useState(false);
 
   // ─── Similar ───
 
@@ -418,14 +417,33 @@ const DateNight = ({ tool }) => {
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (surprise) => {
     setShareLoading(true); setShareData(null);
     try {
-      const data = await callToolEndpoint('date-night', { action: 'share', vibeTitle: results?.vibe_title, dateType, location, itinerary: results?.itinerary, startTime, budget, currency, surprise: surpriseMode, userLocale, userCurrency, userRegion });
-      if (data) setShareData(data);
+      const data = await callToolEndpoint('date-night', { action: 'share', vibeTitle: results?.vibe_title, dateType, location, itinerary: results?.itinerary, startTime, budget, currency, surprise, userLocale, userCurrency, userRegion });
+      // isSurprise is stamped HERE, not read off the response: the panel has
+      // always branched on shareData.isSurprise, but the route never returns
+      // that field, so "Surprise my date" rendered as a plain invite every
+      // time. The client is the only thing that knows which button was
+      // pressed, so it is the right place to record it.
+      if (data) setShareData({ ...data, isSurprise: !!surprise });
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
     finally { setShareLoading(false); }
   };
+
+  // A prefilled message the visitor still has to send themselves — opening
+  // their mail client, never sending anything on their behalf. Kept short:
+  // both fields are one-liners by design, so the URL stays well inside the
+  // length every mail client handles.
+  const shareMailto = useMemo(() => {
+    if (!shareData?.message) return '';
+    const subject = shareData.isSurprise
+      ? t('dn_mail_subject_surprise')
+      : (results?.vibe_title || t('dn_mail_subject'));
+    const body = [shareData.message, shareData.what_to_tell_them || '']
+      .filter(Boolean).join('\r\n\r\n') + BRAND.replace(/\n/g, '\r\n');
+    return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [shareData, results, t]);
 
   // "If something changes" — one endpoint, three directions. Sends the current
   // itinerary so the model revises THIS evening rather than inventing another.
@@ -548,10 +566,10 @@ const DateNight = ({ tool }) => {
         <button onClick={handleChecklist} disabled={checklistLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {checklistLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> {t('dn_loading')}</> : <>📋 {t('dn_pre_date_checklist')}</>}
         </button>
-        <button onClick={() => { setSurpriseMode(false); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+        <button onClick={() => handleShare(false)} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>📨 {t('dn_send_plan')}</>}
         </button>
-        <button onClick={() => { setSurpriseMode(true); handleShare(); }} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
+        <button onClick={() => handleShare(true)} disabled={shareLoading} className={`px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>
           {shareLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span> …</> : <>🎁 {t('dn_surprise_invite')}</>}
         </button>
       </div>
@@ -579,6 +597,16 @@ const DateNight = ({ tool }) => {
           <div className="flex justify-between"><h4 className="text-sm font-bold">{shareData.isSurprise ? <>🎁 {t('dn_mystery_invite')}</> : <>📨 {t('dn_invite')}</>}</h4><button onClick={() => setShareData(null)} className={`text-xs ${c.textMuteded}`}>✕</button></div>
           <p className={`text-sm whitespace-pre-line`}>{shareData.message}</p>
           {shareData.what_to_tell_them && <div className={`${c.warning} border rounded-lg p-2 text-xs`}>📌 {t('dn_all_they_need')} {shareData.what_to_tell_them}</div>}
+          {/* "Send this plan" produced text with no way to send it. This opens
+              the visitor's own mail client with the message already written —
+              they still address it and press send themselves; nothing is sent
+              on their behalf. */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            <a href={shareMailto}
+              className={`inline-flex items-center px-3 py-2 rounded-xl text-xs font-bold ${c.btnSecondary} border ${c.border}`}>
+              ✉️ {t('dn_email_it')}
+            </a>
+          </div>
         </div>
       )}
 
