@@ -75,7 +75,6 @@ const LOC_CUR = { 'en-us': '$', 'en-gb': '£', 'en-au': 'A$', 'en-ca': 'C$', 'en
 // one is worse than the dollar default the visitor can see and change.
 function detectCur() { try { const l = (navigator.language || 'en-US').toLowerCase(); return LOC_CUR[l] || LOC_CUR[l.split('-')[0]] || '$'; } catch { return '$'; } }
 function detectLoc() { try { const p = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').split('/'); return p.length >= 2 ? p[p.length - 1].replace(/_/g, ' ') : ''; } catch { return ''; } }
-function budgetRange(s) { const p = BUDGET_PRESETS[s] || BUDGET_PRESETS['$']; return { min: Math.round(p[0] * 0.5), max: Math.round(p[p.length - 1] * 1.5), step: p[0] <= 100 ? 5 : p[0] <= 1000 ? 50 : p[0] <= 20000 ? 500 : 10000 }; }
 function fmtMoney(a, s) {
   if (['kr', 'zł'].includes(s)) return `${a} ${s}`;
   if (/^[A-Z]{3}$/.test(s)) return `${s} ${a}`;
@@ -124,8 +123,6 @@ const DateNight = ({ tool }) => {
     accentCard:    isDark ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200',
     altCard:       isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-slate-200',
     infoCard:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
-    budgetBar:     isDark ? 'bg-zinc-700' : 'bg-gray-200',
-    budgetFill:    isDark ? 'bg-red-600' : 'bg-red-500',
     journalText:   isDark ? 'text-amber-400' : 'text-amber-600',
     journalCard:   isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
@@ -247,7 +244,6 @@ const DateNight = ({ tool }) => {
 
   // ─── Derived ───
   const presets = BUDGET_PRESETS[currency] || BUDGET_PRESETS['$'];
-  const br = budgetRange(currency);
   const fm = useCallback((a) => fmtMoney(a, currency), [currency]);
   const totalSpent = results?.total_estimated || 0;
   // First stop through last, straight from the itinerary — the card states the
@@ -1039,22 +1035,20 @@ const DateNight = ({ tool }) => {
                 {CURRENCIES.map(cur => <option key={cur.s} value={cur.s}>{cur.f} {cur.l}</option>)}
               </select>
             </div>
-            <div className="relative w-full h-6 flex items-center">
-              <div className={`absolute start-0 end-0 h-2 rounded-full ${c.budgetBar}`}>
-                <div className={`h-full rounded-full ${c.budgetFill}`} style={{ width: `${((budget - br.min) / (br.max - br.min)) * 100}%` }} />
-              </div>
-              <input type="range" min={br.min} max={br.max} step={br.step} value={budget} onChange={e => setBudget(Number(e.target.value))}
-                className="absolute start-0 w-full h-2 cursor-pointer opacity-0" style={{ zIndex: 2 }} />
-              <div className="absolute h-5 w-5 rounded-full bg-red-500 border-2 border-white shadow-md pointer-events-none" style={{ left: `calc(${((budget - br.min) / (br.max - br.min)) * 100}% - 10px)`, zIndex: 1 }} />
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+            {/* Presets + Other, and no slider. There were three ways to say
+                one number: a slider, six chips and a typed field. The slider
+                was the weakest of the three — it snapped to a step, so it
+                could not express £140 anyway; its range was derived (0.5x to
+                1.5x the presets), so it could not reach a number outside that;
+                and dragging a 2px track is the worst of the three on a phone,
+                which is where most of this happens. The chips cover the common
+                answers in one tap and Other covers everything else, so nothing
+                is lost by removing it.
+                Currency stays: that is which money, not how much. */}
+            <div className="flex flex-wrap items-center gap-1.5">
               {presets.map(p => (
                 <button key={p} onClick={() => setBudget(p)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${budget === p ? c.chipOn : c.chipOff}`}>{fm(p)}</button>
               ))}
-              {/* Typed amount. The slider snaps to a step and the chips are
-                  fixed, so neither could express "£140" — this is the only way
-                  to enter the number you actually have. Not clamped to the
-                  slider range: a real budget can sit outside it. */}
               <label className="flex items-center gap-1.5">
                 <span className={`text-xs ${c.textMuteded}`}>{t('dn_or')}</span>
                 <input
