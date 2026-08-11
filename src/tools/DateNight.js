@@ -126,7 +126,6 @@ const DateNight = ({ tool }) => {
     infoCard:      isDark ? 'bg-sky-900/20 border-sky-700' : 'bg-sky-50 border-sky-200',
     budgetBar:     isDark ? 'bg-zinc-700' : 'bg-gray-200',
     budgetFill:    isDark ? 'bg-red-600' : 'bg-red-500',
-    bufferText:    isDark ? 'text-emerald-400' : 'text-emerald-600',
     journalText:   isDark ? 'text-amber-400' : 'text-amber-600',
     journalCard:   isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200',
     jarBtnText:    isDark ? 'text-orange-400' : 'text-orange-600',
