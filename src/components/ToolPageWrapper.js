@@ -286,7 +286,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             a tool page these two pills are the only language control there is
             (GlobalHeader does not render here), so burying them below the form
             would strand anyone who landed in the wrong language. */}
-        <div data-print-hide className="flex justify-end mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
+        <div data-print-hide className="flex justify-end pt-4 mb-2 lg:mb-0 lg:col-start-9 lg:col-span-4 lg:row-start-1 lg:items-start">
           <LocaleSelectors dark={isDark} />
         </div>
 
