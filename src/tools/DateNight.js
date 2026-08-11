@@ -358,7 +358,15 @@ const DateNight = ({ tool }) => {
     setSwapping(num);
     try {
       const data = await callToolEndpoint('date-night', { action: 'swap', ...getPayload(), currentItinerary: results, swapStopNumber: num });
-      if (data?.stop) { setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; }); }
+      if (data?.stop) {
+        setResults(p => { const it = [...(p.itinerary || [])]; const idx = it.findIndex(s => s.stop_number === num); if (idx !== -1) it[idx] = data.stop; return { ...p, itinerary: it }; });
+        // Ratings are keyed by stop_number, so without this the score given to
+        // the venue you just replaced stays attached to its replacement — and
+        // any feedback already returned describes an evening that no longer
+        // exists. Drop both; the rest of the ratings are still valid.
+        setStopRatings(p => { const { [num]: _dropped, ...rest } = p; return rest; });
+        setRateResult(null);
+      }
     } catch (e) { setError(e.message || t('dn_err_request_failed')); }
     finally { setSwapping(null); }
   };
@@ -903,6 +911,10 @@ const DateNight = ({ tool }) => {
             </div>
             <div>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
+              {/* Tonight / a date / the timing disclosure all on one row — the
+                  details belong beside the day they refine, not two cards away.
+                  flex-wrap drops the disclosure to its own line when the row
+                  runs out of width. */}
               <div className="flex gap-2 items-center flex-wrap">
                 <button onClick={() => setPlannedDate('')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${!plannedDate ? c.chipOn : c.chipOff}`}>
@@ -916,7 +928,32 @@ const DateNight = ({ tool }) => {
                   className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
                 />
                 {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
+                <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
+                  🕐 {t('dn_timing_details')} {showTiming ? '▲' : '▼'}
+                </button>
               </div>
+              {/* Start time, length and weather — all three have a working
+                  default (7:00 PM, Standard, Not sure), so they stay closed. */}
+              {showTiming && (
+                <div className="mt-3 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
+                      <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
+                        {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
+                      <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
+                    <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -982,34 +1019,6 @@ const DateNight = ({ tool }) => {
             </div>
           </div>
 
-          {/* Start time, length and weather — all three have a working default
-              (7:00 PM, Standard, Not sure), so they don't need to be open. Same
-              disclosure pattern as Dietary and Partner preferences below. */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-            <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-              🕐 {t('dn_timing_details')} {showTiming ? '▲' : '▼'}
-            </button>
-            {showTiming && (
-              <div className="mt-3 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🕐 {t('dn_start')}</p>
-                    <select value={startTime} onChange={e => setStartTime(e.target.value)} className={`w-full py-2.5 px-3 border rounded-lg text-sm ${c.input}`}>
-                      {START_TIMES.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>⏱️ {t('dn_length')}</p>
-                    <Pill options={DURATION_OPTIONS} value={duration} setter={setDuration} />
-                  </div>
-                </div>
-                <div>
-                  <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
-                  <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Dietary + Restrictions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>

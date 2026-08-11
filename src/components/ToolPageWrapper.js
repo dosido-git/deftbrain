@@ -267,7 +267,12 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         </div>
       </div>
 
-      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* lg:gap-y-0 — the header is its own grid item now, so the 32px row gap
+          landed between the action bar and the tool card, where there used to
+          be only the action row's own mb-2. Column gap is untouched (main to
+          sidebar), and below lg the single column keeps the full gap-8 so the
+          stacked sections still breathe. */}
+      <div data-print-grid className="relative max-w-7xl mx-auto px-4 pb-8 pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-y-0">
         {/* Locale controls — top-right of the working area, off the brand bar.
             Absolute on desktop so the tool content fills from the top; a normal
             right-aligned row on mobile. */}

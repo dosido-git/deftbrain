@@ -5451,23 +5451,23 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoDescription: "Get a complete date night itinerary on your budget, anywhere in the world. Free plan for every stop — timing, costs, a buffer, and a backup. No signup.",
   seoTitle: "Date Night Planner with Budget Itinerary",
   title: "Date Night",
-  tagline: "A full evening plan, on budget, anywhere",
+  tagline: "Plan an evening that feels special—without spending hours figuring it out.",
   tags: ['date', 'date night', 'couples', 'relationship', 'romantic', 'activity', 'itinerary', 'anniversary', 'first date', 'budget'],
   icon: "💘",
   categories: ['Out & About', 'Humans'],
   headerColor: "#ccdfc4",
-  description: "Neither of you can decide, and the evening is getting away from you. Tell us your budget, the kind of night you want, and where you are — you'll get a full evening with timing, what each stop should cost, room left in the budget, and a backup if something falls through. Works anywhere, in local venues and local prices.",
+  description: "Tell DeftBrain where you are, what you want to spend, and what kind of night you're hoping for. You'll get a complete plan—including where to go, when to go, what it should cost, and what to do if plans change.",
   guide: {
-    overview: "DateNight turns 'I dunno, what do you want to do?' into a complete evening with a timeline, per-stop costs, and a built-in budget buffer. Pick your currency and set a hard budget, choose a vibe (casual, romantic, adventurous, first date, anniversary, stay-in), and enter your city. It generates 2-4 stops with culturally appropriate venues — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — plus conversation starters and a Plan B.",
+    overview: "Date Night turns 'I dunno, what do you want to do?' into a complete evening with a timeline, a cost for each stop, and room left in the budget. Say where you are and when, choose the kind of night you want, set what you can spend, and you get 2-4 stops suited to where you are — izakayas in Tokyo, tapas bars in Madrid, hawker centres in Singapore — with something to do or say together at each one, and a backup for every stop.",
     howToUse: [
-      "Select your currency and set your budget with the slider or quick-pick buttons",
-      "Pick a date type — casual, romantic, adventurous, first date, anniversary, or stay-in",
-      "Enter your city or neighborhood anywhere in the world",
-      "Optionally add dietary restrictions, dealbreakers, or what you did last time",
-      "Click 'Plan My Date Night' for a complete evening itinerary",
-      "Review the budget breakdown to see cost per stop and your buffer",
-      "Expand Conversation Starters and Plan B for extras",
-      "Hit 'Different' if you want a new itinerary with the same constraints"
+      "Say where you are, and whether it's tonight or another day",
+      "Choose the kind of night — casual, romantic, adventurous, first date, anniversary, or staying in",
+      "Set what you can spend: drag the slider, pick an amount, or type an exact figure",
+      "Open the extra sections if they apply — start time and weather, dietary needs, what your partner likes, what you did last time",
+      "Press the plan button, or ⌘↵",
+      "Read the plan: each stop has a time, a cost, something to do together, and a backup",
+      "Swap any stop you don't like, or use 'If something changes' when dinner falls through, the weather turns, or you're running late",
+      "Want a different feel? Choose more relaxed, more romantic or more adventurous, then reimagine the evening"
     ],
     example: {
       scenario: "You have ¥8,000 for a romantic date in Shibuya, Tokyo, starting at 7:00 PM. Your partner doesn't eat seafood and you went to an izakaya last time.",
@@ -5478,7 +5478,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "First date? We'll favour places where conversation comes easily and you can comfortably wrap things up.",
       "Staying in? We'll account for delivery fees and tips.",
       "Don't want a repeat? Tell us what you did last time.",
-      "Want a completely different plan? Choose 'Something different' without starting over."
+      "Want a different feel? Choose more relaxed, more romantic or more adventurous and reimagine the evening — no need to start over."
     ],
     beforeYouGo: "Hours, prices and availability can change. Confirm the details and make reservations where needed.",
     pitfalls: [
