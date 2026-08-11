@@ -50,6 +50,9 @@ const BUDGET_PRESETS = {
   'CHF': [25, 50, 75, 100, 150, 200], 'kr': [200, 400, 600, 800, 1200, 1800],
   'zł': [80, 150, 250, 400, 600, 800], '₱': [500, 1000, 2000, 3000, 5000, 8000],
   '฿': [500, 1000, 1500, 2500, 4000, 6000], 'RM': [50, 100, 150, 250, 400, 600],
+  'CN¥': [100, 200, 300, 500, 800, 1200], '₽': [1500, 3000, 5000, 8000, 12000, 20000],
+  '₫': [300000, 600000, 1000000, 1500000, 2500000, 4000000],
+  'AED': [80, 150, 250, 400, 600, 1000], 'SAR': [80, 150, 250, 400, 600, 1000],
 };
 const CURRENCIES = [
   { s: '$', l: 'USD', f: '🇺🇸' }, { s: '€', l: 'EUR', f: '🇪🇺' }, { s: '£', l: 'GBP', f: '🇬🇧' },
@@ -57,12 +60,27 @@ const CURRENCIES = [
   { s: '₩', l: 'KRW', f: '🇰🇷' }, { s: 'A$', l: 'AUD', f: '🇦🇺' }, { s: 'C$', l: 'CAD', f: '🇨🇦' },
   { s: 'CHF', l: 'CHF', f: '🇨🇭' }, { s: 'kr', l: 'SEK', f: '🇸🇪' }, { s: 'zł', l: 'PLN', f: '🇵🇱' },
   { s: '₱', l: 'PHP', f: '🇵🇭' }, { s: '฿', l: 'THB', f: '🇹🇭' }, { s: 'RM', l: 'MYR', f: '🇲🇾' },
+  // Added 2026-08-10. The currency list and the language list had been built
+  // independently, so four of the thirteen languages we ship in had no
+  // currency behind them at all — a Chinese, Russian, Vietnamese or Arabic
+  // speaker got a plan priced in dollars. CNY cannot reuse '¥': the list is
+  // keyed by symbol and JPY already holds it, hence 'CN¥'.
+  { s: 'CN¥', l: 'CNY', f: '🇨🇳' }, { s: '₽', l: 'RUB', f: '🇷🇺' },
+  { s: '₫', l: 'VND', f: '🇻🇳' }, { s: 'AED', l: 'AED', f: '🇦🇪' },
+  { s: 'SAR', l: 'SAR', f: '🇸🇦' },
 ];
-const LOC_CUR = { 'en-us': '$', 'en-gb': '£', 'en-au': 'A$', 'en-ca': 'C$', 'en-in': '₹', 'ja': '¥', 'ko': '₩', 'pt-br': 'R$', 'de': '€', 'fr': '€', 'it': '€', 'sv': 'kr', 'pl': 'zł', 'th': '฿', 'ms': 'RM', 'fil': '₱' };
+const LOC_CUR = { 'en-us': '$', 'en-gb': '£', 'en-au': 'A$', 'en-ca': 'C$', 'en-in': '₹', 'ja': '¥', 'ko': '₩', 'pt-br': 'R$', 'de': '€', 'fr': '€', 'it': '€', 'sv': 'kr', 'pl': 'zł', 'th': '฿', 'ms': 'RM', 'fil': '₱',
+  'zh': 'CN¥', 'zh-cn': 'CN¥', 'ru': '₽', 'vi': '₫', 'ar-ae': 'AED', 'ar-sa': 'SAR' };
+// Bare 'ar' deliberately absent: Arabic spans a dozen currencies and guessing
+// one is worse than the dollar default the visitor can see and change.
 function detectCur() { try { const l = (navigator.language || 'en-US').toLowerCase(); return LOC_CUR[l] || LOC_CUR[l.split('-')[0]] || '$'; } catch { return '$'; } }
 function detectLoc() { try { const p = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').split('/'); return p.length >= 2 ? p[p.length - 1].replace(/_/g, ' ') : ''; } catch { return ''; } }
-function budgetRange(s) { const p = BUDGET_PRESETS[s] || BUDGET_PRESETS['$']; return { min: Math.round(p[0] * 0.5), max: Math.round(p[p.length - 1] * 1.5), step: p[0] <= 100 ? 5 : p[0] <= 1000 ? 50 : 500 }; }
-function fmtMoney(a, s) { return ['kr', 'zł'].includes(s) ? `${a} ${s}` : `${s}${a}`; }
+function budgetRange(s) { const p = BUDGET_PRESETS[s] || BUDGET_PRESETS['$']; return { min: Math.round(p[0] * 0.5), max: Math.round(p[p.length - 1] * 1.5), step: p[0] <= 100 ? 5 : p[0] <= 1000 ? 50 : p[0] <= 20000 ? 500 : 10000 }; }
+function fmtMoney(a, s) {
+  if (['kr', 'zł'].includes(s)) return `${a} ${s}`;
+  if (/^[A-Z]{3}$/.test(s)) return `${s} ${a}`;
+  return `${s}${a}`;
+}
 const START_TIMES = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM', '9:30 PM', '10:00 PM'];
 
 // ═══════════════════════════════════════════
@@ -941,6 +959,12 @@ const DateNight = ({ tool }) => {
                   </div>
                   <div>
                     <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🌙 {t('dn_weather')}</p>
+                    {/* Charter §8 and Conversation Guidelines #4: a question
+                        whose reason isn't obvious has to carry its reason. Only
+                        these three do — where, when, budget and the kind of
+                        night explain themselves, and adding a line to those
+                        would be noise. */}
+                    <p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dn_why_weather')}</p>
                     <Pill options={WEATHER_OPTIONS} value={weather} setter={setWeather} />
                   </div>
                 </div>
@@ -1031,6 +1055,7 @@ const DateNight = ({ tool }) => {
             </button>
             {showPartner && (
               <div className="mt-3 space-y-3">
+                <p className={`text-[10px] ${c.textMuteded}`}>{t('dn_why_partner')}</p>
                 <div>
                   <p className={`text-xs ${c.textMuteded} mb-1`}>{t('dn_partner_likes_q')}</p>
                   <input value={partnerPrefs.partnerLikes} onChange={e => setPartnerPrefs(p => ({ ...p, partnerLikes: e.target.value }))} placeholder={t('dn_partner_likes_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} />
@@ -1054,6 +1079,7 @@ const DateNight = ({ tool }) => {
           {/* Last time */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>🔁 {t('dn_last_time')} <span className={c.textMuteded}>({t('optional')})</span></p>
+            <p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dn_why_last_time')}</p>
             <input value={lastTime} onChange={e => setLastTime(e.target.value)} placeholder={t('dn_last_time_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
           </div>
 
@@ -1082,6 +1108,15 @@ const DateNight = ({ tool }) => {
                 ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
                 : <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
           </button>
+          {/* Experience Guidelines #17 — privacy must be visible, not buried in
+              a policy. This form asks what your partner likes and dislikes, and
+              the tool keeps a history, saved places and learned preferences. It
+              should say where all that goes, next to the button that sends it.
+              Worded to be exactly true: the answers ARE sent in order to build
+              the plan, they are simply not retained (the route writes nothing,
+              and the metrics sink records response shape, never request
+              bodies), and history/favourites/preferences are localStorage. */}
+          <p className={`text-xs text-center ${c.textMuteded}`}>🔒 {t('dn_privacy')}</p>
           <p className={`text-xs text-center ${c.textMuteded}`}>{t('dn_cmd_enter')}</p>
         </div>
       )}
