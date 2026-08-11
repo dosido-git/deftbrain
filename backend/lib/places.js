@@ -19,7 +19,9 @@ const KEY = () => process.env.GOOGLE_PLACES_KEY || '';
 // so this is ONE billed call per venue rather than a search followed by a
 // details fetch. The mask is deliberately narrow — every extra field can move
 // the call into a more expensive SKU.
-const SEARCH_URL = 'https://places.googleapis.com/v1/places:searchText';
+// Overridable so the whole server path can be exercised against a local
+// stand-in. Unset in every real environment.
+const SEARCH_URL = () => process.env.GOOGLE_PLACES_URL || 'https://places.googleapis.com/v1/places:searchText';
 const FIELD_MASK = [
   'places.id',
   'places.displayName',
@@ -27,6 +29,7 @@ const FIELD_MASK = [
   'places.location',
   'places.regularOpeningHours.periods',
   'places.priceLevel',
+  'places.utcOffsetMinutes',
 ].join(',');
 
 const TIMEOUT_MS = 6000;
@@ -45,7 +48,7 @@ async function lookup(name, locationHint) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(SEARCH_URL, {
+    const res = await fetch(SEARCH_URL(), {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -83,6 +86,7 @@ async function lookup(name, locationHint) {
       lng: p.location ? p.location.longitude : null,
       periods: (p.regularOpeningHours && p.regularOpeningHours.periods) || null,
       priceLevel: p.priceLevel || null,
+      utcOffset: Number.isFinite(p.utcOffsetMinutes) ? p.utcOffsetMinutes : null,
     };
   } catch (err) {
     if (err.name !== 'AbortError') console.error(`[places] lookup failed for "${name}":`, err.message);
@@ -173,6 +177,26 @@ function walkMinutes(a, b) {
   return Math.max(1, Math.round((m * 1.25) / 80));
 }
 
+/**
+ * The venue's own weekday and minute-of-day right now, from its UTC offset.
+ * Without this, "is it open at 7:45 tonight" is evaluated in the server's
+ * timezone, which is wrong for every venue that is not beside the server.
+ * Returns null when the offset is unknown — callers must then say nothing.
+ */
+function localNow(utcOffsetMinutes, nowMs) {
+  if (!Number.isFinite(utcOffsetMinutes)) return null;
+  const d = new Date((nowMs != null ? nowMs : Date.now()) + utcOffsetMinutes * 60000);
+  return { day: d.getUTCDay(), minutes: d.getUTCHours() * 60 + d.getUTCMinutes() };
+}
+
+/** "7:45 PM" -> 1185. Null for any other shape, including localised clocks. */
+function clockToMinutes(s) {
+  const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(s || '').trim());
+  if (!m) return null;
+  const h = (parseInt(m[1], 10) % 12) + (/pm/i.test(m[3]) ? 12 : 0);
+  return h * 60 + parseInt(m[2], 10);
+}
+
 module.exports = {
   enabled: () => !!KEY(),
   lookup,
@@ -181,5 +205,7 @@ module.exports = {
   closedDays,
   metresBetween,
   walkMinutes,
+  localNow,
+  clockToMinutes,
   DAY_NAMES,
 };

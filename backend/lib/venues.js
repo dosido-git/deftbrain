@@ -83,6 +83,9 @@ CLOSING DAYS ARE HARD CONSTRAINTS: never place a stop at a venue on a day it is 
         data: enriched.map(v => ({
           name: v.name, kind: v.kind || null, placeId: v.placeId || null,
           lat: v.lat ?? null, lng: v.lng ?? null, periods: v.periods || null,
+          // utcOffset is what lets "open tonight" be evaluated in the venue's
+          // own timezone instead of the server's. attachPlaceFacts reads it.
+          utcOffset: v.utcOffset ?? null,
         })),
       };
     },
@@ -99,4 +102,50 @@ async function venueBlockFor(location) {
 }
 
 
-module.exports = { venueFacts, venueBlockFor, verifiedNamesFrom, markVerified, normVenue };
+/**
+ * Attach what we know about each stop as a place rather than a name:
+ *   walk_minutes  minutes on foot from the PREVIOUS stop
+ *   open_at       true / false / undefined for "open at this stop's own time"
+ *
+ * Everything here is omitted rather than guessed. A stop we cannot match, a
+ * clock string we cannot parse (stop.time is only reliably "7:45 PM" in
+ * English), a venue with no hours, or a date we cannot pin to the venue's own
+ * weekday all produce no field at all — the frontend then says nothing, which
+ * is the honest outcome. open_at is never set to false out of ignorance.
+ */
+function attachPlaceFacts(itinerary, data, plannedDate) {
+  if (!Array.isArray(itinerary) || !Array.isArray(data) || !data.length) return itinerary;
+  const byName = new Map(data.map(d => [normVenue(d.name), d]));
+  let prev = null;
+
+  for (const stop of itinerary) {
+    if (!stop || typeof stop !== 'object') continue;
+    const d = byName.get(normVenue(stop.venue_name));
+    if (!d) { prev = null; continue; }
+
+    if (prev) {
+      const mins = places.walkMinutes(prev, d);
+      if (mins != null) stop.walk_minutes = mins;
+    }
+
+    // Which weekday to test. An explicit date is unambiguous — it is the local
+    // date the visitor picked. "Tonight" has to come from the venue's own UTC
+    // offset, or we would be asking whether it is open in the server's timezone.
+    let day = null;
+    if (plannedDate && /^\d{4}-\d{2}-\d{2}$/.test(plannedDate)) {
+      day = new Date(`${plannedDate}T12:00:00Z`).getUTCDay();
+    } else {
+      const now = places.localNow(d.utcOffset);
+      if (now) day = now.day;
+    }
+    const mins = places.clockToMinutes(stop.time);
+    if (day != null && mins != null) {
+      const open = places.isOpenAt(d.periods, day, mins);
+      if (open === true || open === false) stop.open_at = open;
+    }
+    prev = d;
+  }
+  return itinerary;
+}
+
+module.exports = { venueFacts, venueBlockFor, verifiedNamesFrom, markVerified, normVenue, attachPlaceFacts };

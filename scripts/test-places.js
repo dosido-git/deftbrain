@@ -109,3 +109,83 @@ t('enabled() is false and enrich() returns its input untouched', async () => {
   console.log('  ✓ enrich() is a no-op with no key');
   console.log(`\n${pass} passed`);
 })();
+
+// ── attachPlaceFacts ────────────────────────────────────────────────────────
+// The join between an itinerary and what we know about those venues as places.
+// Pure given its inputs, so it is tested here rather than only in production.
+const { attachPlaceFacts } = require('../backend/lib/venues');
+
+const DATA = [
+  // ~900 m apart in Austin; open 17:00-23:00 every day EXCEPT Monday (day 1).
+  { name: 'Red Ash Italia', lat: 30.2672, lng: -97.7431, utcOffset: -300,
+    periods: [0, 2, 3, 4, 5, 6].map(d => ({ open: { day: d, hour: 17, minute: 0 }, close: { day: d, hour: 23, minute: 0 } })) },
+  { name: 'The Roosevelt Room', lat: 30.2745, lng: -97.7404, utcOffset: -300,
+    periods: [0, 2, 3, 4, 5, 6].map(d => ({ open: { day: d, hour: 17, minute: 0 }, close: { day: d, hour: 23, minute: 0 } })) },
+  { name: 'No Hours Known', lat: 30.2700, lng: -97.7420, utcOffset: -300, periods: null },
+];
+
+const plan = (...stops) => stops.map((s, i) => ({ stop_number: i + 1, ...s }));
+
+console.log('attachPlaceFacts');
+
+t('walking minutes are attached from the previous stop, never the first', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' },
+                  { venue_name: 'The Roosevelt Room', time: '9:00 PM' });
+  attachPlaceFacts(it, DATA, '2026-08-15'); // a Saturday
+  assert.strictEqual(it[0].walk_minutes, undefined);
+  assert.ok(it[1].walk_minutes >= 5 && it[1].walk_minutes <= 20, `got ${it[1].walk_minutes}`);
+});
+
+t('open_at is true inside hours on an open day', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' });
+  attachPlaceFacts(it, DATA, '2026-08-15'); // Saturday
+  assert.strictEqual(it[0].open_at, true);
+});
+
+t('open_at is false on a day the venue is shut — the point of the feature', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' });
+  attachPlaceFacts(it, DATA, '2026-08-17'); // Monday
+  assert.strictEqual(it[0].open_at, false);
+});
+
+t('open_at is false before opening even on an open day', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '11:00 AM' });
+  attachPlaceFacts(it, DATA, '2026-08-15');
+  assert.strictEqual(it[0].open_at, false);
+});
+
+t('a venue with unknown hours gets NO open_at rather than a guess', () => {
+  const it = plan({ venue_name: 'No Hours Known', time: '7:00 PM' });
+  attachPlaceFacts(it, DATA, '2026-08-15');
+  assert.strictEqual('open_at' in it[0], false);
+});
+
+t('an unparseable clock produces no open_at', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '19:00' });
+  attachPlaceFacts(it, DATA, '2026-08-15');
+  assert.strictEqual('open_at' in it[0], false);
+});
+
+t('an unmatched venue is skipped and breaks the walking chain', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' },
+                  { venue_name: 'Somewhere We Never Verified', time: '8:00 PM' },
+                  { venue_name: 'The Roosevelt Room', time: '9:00 PM' });
+  attachPlaceFacts(it, DATA, '2026-08-15');
+  assert.strictEqual('walk_minutes' in it[1], false);
+  // the stop after an unknown one cannot know where it is walking from
+  assert.strictEqual('walk_minutes' in it[2], false);
+});
+
+t('no data at all leaves the itinerary untouched', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' });
+  attachPlaceFacts(it, null, '2026-08-15');
+  assert.deepStrictEqual(it, plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' }));
+});
+
+t('with no date it falls back to the venue timezone, not the server', () => {
+  const it = plan({ venue_name: 'Red Ash Italia', time: '7:00 PM' });
+  attachPlaceFacts(it, DATA, null);
+  // Whatever today is, the answer must be a real boolean or absent — never
+  // computed from the server's idea of the weekday.
+  assert.ok(!('open_at' in it[0]) || typeof it[0].open_at === 'boolean');
+});

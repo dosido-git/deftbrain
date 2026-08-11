@@ -4,7 +4,8 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
-const { venueBlockFor, verifiedNamesFrom, markVerified } = require('../lib/venues');
+const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts } = require('../lib/venues');
+const { groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
 
 // ═══════════════════════════════════════════
 // SYSTEM PROMPT
@@ -202,6 +203,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     markVerified(parsed.itinerary, verified);
+    attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
     }
 
@@ -250,6 +252,7 @@ Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     markVerified(parsed.itinerary, verified);
+    attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
     }
 
@@ -364,6 +367,7 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!ven
         return res.status(500).json({ error: 'Could not rework the evening. Please try again.' });
       }
       markVerified(parsed.itinerary, verified);
+    attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
       return res.json(parsed);
     }
 
@@ -599,6 +603,7 @@ Return ONLY valid JSON:
       return res.status(500).json({ error: 'Could not plan your date night. Please try again.' });
     }
     markVerified(parsed.itinerary, verified);
+    attachPlaceFacts(parsed.itinerary, groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
     return res.json(parsed);
     }
 

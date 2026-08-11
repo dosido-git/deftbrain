@@ -694,6 +694,18 @@ const DateNight = ({ tool }) => {
                     <span className="font-bold">{t('dn_for_the_two')}</span> {stop.for_the_two_of_you}
                   </p>
                 )}
+                {/* Facts about the stop as a PLACE, from Google Places, and
+                    only ever rendered when we actually know them. Walking time
+                    replaces the plan-wide "mostly walkable" assertion with a
+                    number for this leg. The closed warning is the whole point
+                    of the exercise — it is shown only when open_at is exactly
+                    false, never when the hours are simply unknown. */}
+                {typeof stop.walk_minutes === 'number' && (
+                  <p className={`text-[10px] ${c.textMuteded} mb-1`}>🚶 {t('dn_walk_from_last', { count: stop.walk_minutes })}</p>
+                )}
+                {stop.open_at === false && (
+                  <p className={`text-[10px] font-bold ${c.roseText} mb-1`}>⚠️ {t('dn_may_be_closed')}</p>
+                )}
                 {stop.plan_b && <p className={`text-[10px] ${c.textMuteded} mb-1`}>🔄 {t('dn_backup')} {stop.plan_b}</p>}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <button onClick={() => swapStop(stop.stop_number || idx + 1)} disabled={isSwap || loading} className={`text-xs font-bold ${c.textMuteded} disabled:opacity-40`}>
