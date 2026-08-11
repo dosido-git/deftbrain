@@ -936,12 +936,6 @@ const DateNight = ({ tool }) => {
       </div>
 
       {/* Pre-result cross-ref */}
-      {!results && (
-        <p className={`text-xs ${c.textMuted}`}>
-          {t('dn_pre_xref')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>{' '}
-          {t('dn_pre_xref_after')}
-        </p>
-      )}
 
       {/* "Recent plans" used to render here. It listed the same thing History
           does — past plans, click to reload — but thinner: preview text only,
@@ -1173,6 +1167,16 @@ const DateNight = ({ tool }) => {
               bodies), and history/favourites/preferences are localStorage. */}
           <p className={`text-xs text-center ${c.textMuteded}`}>🔒 {t('dn_privacy')}</p>
         </div>
+      )}
+
+      {/* "Can't decide where to go?" — still only shown when there is no
+          plan yet, but at the foot of the tool rather than above the form,
+          where it was one more thing to read before the primary action. */}
+      {!results && (
+        <p className={`text-xs ${c.textMuted}`}>
+          {t('dn_pre_xref')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>{' '}
+          {t('dn_pre_xref_after')}
+        </p>
       )}
 
       {renderResults()}
