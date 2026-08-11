@@ -5,6 +5,7 @@
 // prompt than the one in production would be worse than no seed.
 
 const { groundedFacts, normalizeKeyPart, stripCites } = require('./groundedFacts');
+const places = require('./places');
 
 // So the name is required WHEN it can be verified and not otherwise. One
 // bounded web_search per location fills a 14-day cache; groundedFacts never
@@ -49,16 +50,41 @@ Only include a place you can actually verify is open. Fewer real ones is better 
 
 Return ONLY valid JSON:
 { "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|activity", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
-    render: (facts) => {
+    render: async (facts) => {
       const list = Array.isArray(facts.venues) ? facts.venues.filter(v => v && v.name) : [];
       if (!list.length) return '';
-      const lines = list.slice(0, 24)
-        .map(v => `- "${v.name}" (${v.kind || 'venue'}, ${v.price || '?'}) — ${v.note || ''}${v.area ? ` · ${v.area}` : ''}`)
-        .join('\n');
-      return `\n\nVERIFIED VENUES NEAR ${location} — real places, confirmed open:
+      // Opening hours, operating status and coordinates, when a Places key is
+      // configured. Dormant otherwise — `enrich` hands back exactly what it was
+      // given. This runs while the block is being BUILT, on a cache miss, so it
+      // is paid once per location per TTL and never on the path of a request.
+      // Permanently-closed venues are dropped inside enrich().
+      const enriched = await places.enrich(list.slice(0, 24), location);
+
+      const lines = enriched.map(v => {
+        const shut = places.closedDays(v.periods);
+        // Only the closures go in the prompt. Full weekly hours for 20 venues
+        // would be most of the context window, and "closed Mondays" is the
+        // part that changes what the model may schedule.
+        const closed = shut.length && shut.length < 7
+          ? ` · closed ${shut.map(d => places.DAY_NAMES[d]).join(', ')}`
+          : '';
+        return `- "${v.name}" (${v.kind || 'venue'}, ${v.price || '?'}) — ${v.note || ''}${v.area ? ` · ${v.area}` : ''}${closed}`;
+      }).join('\n');
+
+      const anyHours = enriched.some(v => Array.isArray(v.periods) && v.periods.length);
+      return {
+        block: `\n\nVERIFIED VENUES NEAR ${location} — real places, confirmed open:
 ${lines}
 
-VENUE RULE: for each stop, venue_name MUST be one of the names above, copied EXACTLY as written between the quotes. Do not shorten, expand, translate or re-style it. Build the evening from these places. Only if none of them can fill a stop, fall back to a descriptive venue type for that one stop.`;
+VENUE RULE: for each stop, venue_name MUST be one of the names above, copied EXACTLY as written between the quotes. Do not shorten, expand, translate or re-style it. Build the evening from these places. Only if none of them can fill a stop, fall back to a descriptive venue type for that one stop.${anyHours ? `
+CLOSING DAYS ARE HARD CONSTRAINTS: never place a stop at a venue on a day it is marked closed. Choose another verified venue instead.` : ''}`,
+        // Structured copy for anything that needs more than prose: open-at-time
+        // checks and walking distances between stops.
+        data: enriched.map(v => ({
+          name: v.name, kind: v.kind || null, placeId: v.placeId || null,
+          lat: v.lat ?? null, lng: v.lng ?? null, periods: v.periods || null,
+        })),
+      };
     },
   });
 }

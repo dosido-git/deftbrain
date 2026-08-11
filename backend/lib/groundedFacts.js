@@ -67,7 +67,7 @@ function hydrate(file, { expired }) {
     // once and then refreshed.
     const expires = expired ? 0 : Number(entry.expires) || 0;
     if (!expired && expires <= Date.now()) continue;
-    cache.set(key, { block, expires });
+    cache.set(key, { block, data: entry.data || null, expires });
     n++;
   }
   return n;
@@ -89,7 +89,7 @@ function scheduleFlush() {
   flushTimer = setTimeout(() => {
     flushTimer = null;
     const out = {};
-    for (const [key, v] of cache) if (v.block) out[key] = { block: v.block, expires: v.expires };
+    for (const [key, v] of cache) if (v.block) out[key] = { block: v.block, data: v.data || null, expires: v.expires };
     const tmp = `${RUNTIME_PATH}.tmp`;
     try {
       fs.mkdirSync(path.dirname(RUNTIME_PATH), { recursive: true });
@@ -177,13 +177,19 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
             timer = setTimeout(() => reject(new Error(`grounding exceeded ${timeoutMs}ms`)), timeoutMs);
           }),
         ]);
-        const block = render(stripCites(facts)) || '';
-        store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS);
+        // render may be async, and may return either a plain string (every
+        // consumer before venues.js) or { block, data } when it has structure
+        // worth keeping — opening hours and coordinates are not prose and
+        // should not have to be re-parsed out of a prompt.
+        const rendered = await render(stripCites(facts));
+        const block = (typeof rendered === 'string' ? rendered : rendered && rendered.block) || '';
+        const data = (rendered && typeof rendered === 'object' && rendered.data) || null;
+        store(cacheKey, block, block ? ttlMs : FAILURE_TTL_MS, data);
         if (block) console.log(`[${label}] grounding refreshed in background — later requests for this jurisdiction are verified`);
         return block;
       } catch (err) {
         console.error(`[${label}] background grounding failed, staying unverified:`, err.message);
-        store(cacheKey, hit ? hit.block : '', FAILURE_TTL_MS);
+        store(cacheKey, hit ? hit.block : '', FAILURE_TTL_MS, hit ? hit.data : null);
         return '';
       } finally {
         clearTimeout(timer);
@@ -200,15 +206,25 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
   return hit ? hit.block : '';
 }
 
-function store(key, block, ttlMs) {
+function store(key, block, ttlMs, data) {
   if (cache.size >= MAX_ENTRIES) {
     // drop the oldest-expiring entry — bounded memory beats LRU precision here
     let oldestKey, oldestExp = Infinity;
     for (const [k, v] of cache) if (v.expires < oldestExp) { oldestExp = v.expires; oldestKey = k; }
     if (oldestKey !== undefined) cache.delete(oldestKey);
   }
-  cache.set(key, { block, expires: Date.now() + ttlMs });
+  cache.set(key, { block, data: data || null, expires: Date.now() + ttlMs });
   if (block) scheduleFlush();
 }
 
-module.exports = { groundedFacts, normalizeKeyPart, stripCites };
+/**
+ * The structured half of a cached entry, when the render step produced one.
+ * Null whenever there is nothing cached, or the entry predates structure —
+ * callers must treat null as "no information", never as "none".
+ */
+function groundedData(cacheKey) {
+  const hit = cache.get(cacheKey);
+  return (hit && hit.data) || null;
+}
+
+module.exports = { groundedFacts, groundedData, normalizeKeyPart, stripCites };
