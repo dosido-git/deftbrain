@@ -19,9 +19,9 @@ See `audit/CONVENTIONS.md` for full patterns and worked examples. The rules belo
 
 Four documents in `docs/foundation/` define what DeftBrain is and how it should
 feel. They are the reference for **what we build and how it reads to a person**.
-Most of the rest of this file is about **how the code is written**, and
-[`.Codex/AGENTS.md`](.Codex/AGENTS.md) is about **how to report back** — three
-separate questions, three separate sources. When a question is about wording,
+Most of the rest of this file is about **how the code is written**, and the
+Working style section at the bottom is about **how to report back** — three
+separate questions. When a question is about wording,
 layout, flow, what a tool asks for, or what a screen says — open the relevant
 document below and follow it. Don't reason from the codebase's existing habits.
 
@@ -102,11 +102,27 @@ Full localization of a tool means all four layers, not just one:
 
 ## Working style
 
-**How to report back:** [`.Codex/AGENTS.md`](.Codex/AGENTS.md) sets the
-communication style — outcome first in ≤3 lines, no blow-by-blow narration, no
-sentence announcing a tool call. It is an accessibility requirement, not a
-preference. Read it before replying, and re-read it if a reply starts running
-long.
+### How to report back (accessibility requirement, not a preference)
+
+Following along costs the reader real energy (ADHD). Do **not** narrate a
+blow-by-blow of your steps. No play-by-play, no "now I'll…", no sentence
+announcing a tool call, no recap of what you just did. Lead with the outcome;
+put any detail below a short bold summary the reader can stop reading after.
+Silence during the work is fine — a running commentary is not.
+
+- **Answer/result first**, in ≤3 lines. Then optional detail, bulleted, that is
+  safe to skip.
+- Don't re-explain what the user already knows or restate the request.
+- Tool calls and process are invisible unless something needs a decision or
+  something broke. Report those, not the routine steps.
+- When work spans many commits/files, a short final tally is enough — not a
+  per-step log.
+
+Re-read this if a reply starts running long. It lives here, in the tracked
+guide, because `.claude/` and `.Codex/` are gitignored — a rule that only exists on one
+machine is not a rule.
+
+### Everything else
 
 - Work in batches of **2–4 files** at a time.
 - Always work on the **latest** version of a file; if unsure which that is, ask.

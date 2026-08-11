@@ -45,3 +45,14 @@ __pycache__/
 
 # Excel/Word lock artifacts — created while a file is open, never content
 ~$*
+
+# UX review artifacts — 131 MB of screenshots and exported PDFs. Output, not
+# source: nothing in the build reads them, and git history is append-only in
+# practice, so committing them would roughly double a 196 MB repo forever —
+# and Railway clones it on every deploy. The findings belong in a .md; the
+# 30 MB PDF of them does not.
+audit/ux-review/
+
+# Design exports — same reasoning, smaller numbers.
+docs/home page redesign/
+docs/*.pdf
