@@ -927,7 +927,19 @@ for name, fpath in tools:
         pre_content = content
         post_content = ''
 
-    pre_hrefs = len(re.findall(href_pattern, pre_content))
+    # A link inside an explicit {!results && …} block IS a pre-result cross-ref,
+    # wherever it sits in the file. The pre/post split above uses position
+    # relative to {renderResults()} as a proxy for visibility, which is right
+    # almost always — but a tool that deliberately puts its pre-result link at
+    # the FOOT of the page (below the form, below the history controls) still
+    # only shows it before submit, and the proxy calls that "missing".
+    # Added 2026-08-11 for DateNight. This recognises an explicit guard; it does
+    # not accept an ungated link anywhere, so the rule still requires a
+    # cross-ref that a visitor actually sees before submitting.
+    _not_results_blocks = re.findall(r'\{\s*!\s*(?:results|result)\s*&&[\s\S]{0,2000}?\n\s*\)\}', content)
+    _guarded_pre = sum(len(re.findall(href_pattern, b)) for b in _not_results_blocks)
+
+    pre_hrefs = len(re.findall(href_pattern, pre_content)) + _guarded_pre
     post_hrefs_raw = re.findall(href_pattern, post_content)
     # Dynamic array refs count as 1
     dynamic_count = len(re.findall(r'href=\{[`][/]\$?\{?[A-Za-z]', post_content))

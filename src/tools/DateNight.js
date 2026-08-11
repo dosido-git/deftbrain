@@ -1169,16 +1169,6 @@ const DateNight = ({ tool }) => {
         </div>
       )}
 
-      {/* "Can't decide where to go?" — still only shown when there is no
-          plan yet, but at the foot of the tool rather than above the form,
-          where it was one more thing to read before the primary action. */}
-      {!results && (
-        <p className={`text-xs ${c.textMuted}`}>
-          {t('dn_pre_xref')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>{' '}
-          {t('dn_pre_xref_after')}
-        </p>
-      )}
-
       {renderResults()}
 
 
@@ -1246,6 +1236,16 @@ const DateNight = ({ tool }) => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* "Can't decide where to go?" — still only shown when there is no
+          plan yet, but at the foot of the tool rather than above the form,
+          where it was one more thing to read before the primary action. */}
+      {!results && (
+        <p className={`text-xs ${c.textMuted}`}>
+          {t('dn_pre_xref')}{' '}<a href="/DecisionCoach" className={linkStyle}>🎯 {t('dn_decision_coach')}</a>{' '}
+          {t('dn_pre_xref_after')}
+        </p>
       )}
 
       {/* Favorites list */}
