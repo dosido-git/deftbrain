@@ -1107,8 +1107,14 @@ const DateNight = ({ tool }) => {
               renders in the error block directly above. Those messages exist
               in 13 languages and could never fire. A dead button also tells
               the user nothing about WHICH field is missing. */}
-          <button onClick={generate} disabled={loading}
-          className={`w-full px-6 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
+          {/* The shortcut is shown ON the control, the way the catalog search
+              shows ⌘K, instead of as a line of prose underneath it. Absolutely
+              positioned so the label stays optically centred, end-3 rather
+              than right-3 so it mirrors in Arabic, and hidden below sm —
+              there is no Command key on a phone. title carries the same hint
+              for anyone who cannot see the chip. */}
+          <button onClick={generate} disabled={loading} title={t('dn_cmd_enter')}
+          className={`relative w-full px-6 py-3.5 rounded-xl font-bold text-sm ${c.btnAction} disabled:opacity-40`}>
           {loading
             ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '💘'}</span>{t('dn_planning')}</>
             : isAnni
@@ -1116,6 +1122,12 @@ const DateNight = ({ tool }) => {
               : isFuture
                 ? <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_for', { label: plannedDateLabel })}</>
                 : <><span className="me-1">{tool?.icon ?? '💘'}</span>{t('dn_plan_my')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           {/* Experience Guidelines #17 — privacy must be visible, not buried in
               a policy. This form asks what your partner likes and dislikes, and
@@ -1126,7 +1138,6 @@ const DateNight = ({ tool }) => {
               and the metrics sink records response shape, never request
               bodies), and history/favourites/preferences are localStorage. */}
           <p className={`text-xs text-center ${c.textMuteded}`}>🔒 {t('dn_privacy')}</p>
-          <p className={`text-xs text-center ${c.textMuteded}`}>{t('dn_cmd_enter')}</p>
         </div>
       )}
 
