@@ -36,8 +36,21 @@ const TIMEOUT_MS = 6000;
 
 // Same normalisation the verified-name matcher uses, so "The Automat" and
 // "Automat" agree here too.
-const norm = (s) => String(s || '').toLowerCase()
-  .replace(/^(the|a|an|le|la|el)\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+//
+// Diacritics are FOLDED, not deleted. Stripping [^a-z0-9] on its own removed
+// accented letters outright — "Café Babalú" became "caf babal" and matched
+// nothing, so enrichment silently skipped most of the non-English world.
+// Observed on Reykjavik: 5 of 13 venues dropped for exactly this
+// (Ís, Café, Bíó Paradís, Bæjarins). NFD splits a letter from its accent so
+// the accent can be removed on its own; the ligatures below have no
+// decomposition and are mapped by hand.
+const LIGATURES = [[/æ/g, 'ae'], [/ø/g, 'o'], [/ð/g, 'd'], [/þ/g, 'th'], [/ß/g, 'ss'], [/ł/g, 'l'], [/œ/g, 'oe']];
+function foldName(s) {
+  let t = String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  for (const [re, to] of LIGATURES) t = t.replace(re, to);
+  return t.replace(/^(the|a|an|le|la|el)\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+const norm = foldName;
 
 /**
  * One venue -> { placeId, status, lat, lng, periods, priceLevel } or null.
@@ -205,6 +218,7 @@ module.exports = {
   closedDays,
   metresBetween,
   walkMinutes,
+  foldName,
   localNow,
   clockToMinutes,
   DAY_NAMES,

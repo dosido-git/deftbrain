@@ -23,9 +23,10 @@ function verifiedNamesFrom(block) {
 }
 
 // Loose enough to survive "The Automat" vs "Automat" and stray punctuation,
-// strict enough that a different restaurant never matches.
-const normVenue = (s) => String(s || '').toLowerCase()
-  .replace(/^(the|a|an|le|la|el)\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim();
+// strict enough that a different restaurant never matches. Shared with the
+// Places matcher so both sides of every comparison fold accents identically —
+// see foldName for why deleting them instead was wrong.
+const normVenue = places.foldName;
 
 function markVerified(itinerary, verifiedNames) {
   if (!Array.isArray(itinerary)) return itinerary;
