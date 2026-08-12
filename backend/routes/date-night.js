@@ -41,6 +41,23 @@ function getSeasonContext() {
   return { season: 'unknown', advice: '' };
 }
 
+// Which "Portland"? The visitor's own words come first; an explicit region
+// they typed wins outright. Failing that, the browser's region is a tie-break
+// — it comes from navigator.language, so it is COUNTRY level only. Good enough
+// to separate Cambridge, England from Cambridge, Massachusetts; useless for
+// Portland Oregon versus Portland Maine, which is why the optional field
+// exists rather than relying on this alone.
+function buildPlaceBlock(location, region, userRegion) {
+  const typed = String(region || '').trim();
+  if (typed) {
+    return `\nThe visitor specified the region explicitly: ${typed}. Plan for "${location}" in ${typed} and nowhere else, even if a larger place shares the name.\n`;
+  }
+  if (userRegion) {
+    return `\nIf "${location}" is ambiguous, prefer the one in ${userRegion} — that is where the visitor appears to be. If it is clearly somewhere else, follow the obvious reading instead.\n`;
+  }
+  return '';
+}
+
 function buildDietaryBlock(dietary) {
   if (!dietary?.length) return '';
   const map = {
@@ -120,6 +137,7 @@ const RESPONSE_SCHEMA = `{
   "total_estimated": 65,
   "buffer": 10,
   "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner', 'Check the forecast', 'Buy tickets'). The one thing that breaks the evening if skipped.",
+  "resolved_location": "The place you actually planned for, written unambiguously — 'Portland, Oregon', 'Cambridge, England'. The visitor may have typed something ambiguous; this is how they find out which one you chose.",
   "transportation": "How you get around, as a SHORT phrase of 2 to 5 words — 'Mostly walkable', 'Rideshare, about $10 total', 'One short bus ride'. This renders in a narrow column beside four other facts; a sentence breaks the layout.",
   "conversation_starters": ["3-5 prompts tailored to date type"],
   "overall_dress_code": "What to wear, as a SHORT phrase of 3 to 6 words — 'Light, polished, summer-ready'. Same narrow column; never a sentence.",
@@ -209,7 +227,7 @@ ${isFuturePlan && futureDateStr ? `- FUTURE DATE: Planning for ${futureDateStr}.
 ${weather ? `- Weather: ${weather}` : ''}
 ${restrictions ? `- Restrictions: ${restrictions}` : ''}
 ${lastTime ? `- Last time (avoid): ${lastTime}` : ''}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}${venuesBlock}${datedEvents}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}${buildPlaceBlock(location, req.body.region, req.body.userRegion)}${venuesBlock}${datedEvents}
 
 Return ONLY valid JSON:
 ${responseSchema(!!venuesBlock)}
@@ -263,7 +281,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}
 
-${venuesBlock}${datedEvents}
+${buildPlaceBlock(location, req.body.region, req.body.userRegion)}${venuesBlock}${datedEvents}
 
 Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
@@ -379,7 +397,7 @@ ${current}
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}
 
-${venuesBlock}${datedEvents}
+${buildPlaceBlock(location, req.body.region, req.body.userRegion)}${venuesBlock}${datedEvents}
 
 Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
@@ -416,7 +434,7 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!ven
 Type: ${DATE_TYPE_LABELS[dateType] || dateType}
 KEEP: ${otherStops.join(', ')}
 REPLACE: #${swapStopNumber} "${currentStop?.venue_name}" at ${currentStop?.time} (~${sym}${currentStop?.estimated_cost})
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}${datedEvents}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildPlaceBlock(location, req.body.region, req.body.userRegion)}${venuesBlock}${datedEvents}
 ${venuesBlock ? 'The replacement MUST be one of the verified venues above, and MUST NOT be one of the KEEP venues.' : ''}
 
 Return ONLY valid JSON:
@@ -595,7 +613,7 @@ Return ONLY valid JSON:
 
 LOCATION: ${location || '?'} | BUDGET: ${sym}${budget || 100} | START: ${startTime || '7:00 PM'}
 SEASON: ${season} — ${seasonAdvice}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}${datedEvents}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildPlaceBlock(location, req.body.region, req.body.userRegion)}${venuesBlock}${datedEvents}
 
 Create a narrative arc — thoughtful opening → signature memory moment → intimate closing.
 
@@ -614,6 +632,7 @@ Return ONLY valid JSON:
   ],
   "total_estimated": 80, "buffer": 15,
   "one_thing_now": "The single action to take BEFORE the date, in 2-4 words (e.g. 'Reserve dinner'). The one thing that breaks the evening if skipped.",
+  "resolved_location": "The place you actually planned for, written unambiguously — 'Portland, Oregon'.",
   "transportation": "How you get around, as a SHORT phrase of 2 to 5 words — never a sentence.",
   "nostalgia_prompts": ["3-4 reflection questions for ${yearsTogether} years"],
   "milestone_gesture": "Meaningful gesture for ${yearsTogether} years",

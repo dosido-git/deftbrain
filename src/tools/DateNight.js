@@ -147,6 +147,12 @@ const DateNight = ({ tool }) => {
   const [budget, setBudget] = useState(() => (BUDGET_PRESETS[detectCur()] || BUDGET_PRESETS['$'])[2]);
   const [dateType, setDateType] = useState('');
   const [location, setLocation] = useState(detectLoc() || '');
+  // Optional, and empty for almost everyone. The browser's region comes from
+  // navigator.language, so it is COUNTRY level — enough to tell Cambridge,
+  // England from Cambridge, Massachusetts, useless for Portland Oregon versus
+  // Portland Maine. Someone in the smaller of two same-named places types it
+  // once; everyone else never sees it matter.
+  const [region, setRegion] = useState('');
   const [restrictions, setRestrictions] = useState('');
   const [lastTime, setLastTime] = useState('');
   const [startTime, setStartTime] = useState('7:00 PM');
@@ -314,7 +320,8 @@ const DateNight = ({ tool }) => {
 
   const getPayload = useCallback(() => ({
     userLocale, userCurrency, userRegion,
-    budget, currency, dateType, location: location.trim(), restrictions: restrictions.trim(),
+    budget, currency, dateType, location: location.trim(), region: region.trim(),
+    restrictions: restrictions.trim(),
     lastTime: lastTime.trim(), startTime, duration, weather, dietary, partnerPrefs,
     plannedDate: plannedDate || null,
     isFuturePlan: isFuture,
@@ -654,7 +661,7 @@ const DateNight = ({ tool }) => {
             timeRange && { icon: '🕕', head: timeRange, sub: spanLabel },
             { icon: '💰', head: t('dn_of_budget', { spent: `~${fm(totalSpent)}`, total: fm(budget) }),
               sub: bufferAmt > 0 ? t('dn_budget_left', { amount: `~${fm(bufferAmt)}` }) : '' },
-            results.transportation && { icon: '🚶', head: results.transportation, sub: location.trim() },
+            results.transportation && { icon: '🚶', head: results.transportation, sub: results.resolved_location || location.trim() },
             results.overall_dress_code && { icon: '👗', head: t('dn_dress'), sub: results.overall_dress_code },
             results.one_thing_now && { icon: '📌', head: t('dn_one_thing_now'), sub: results.one_thing_now },
           ].filter(Boolean).map((cell, i) => (
@@ -983,6 +990,7 @@ const DateNight = ({ tool }) => {
             <div>
               <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
               <input value={location} onChange={e => setLocation(e.target.value)} onBlur={e => warmVenues(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+              <input value={region} onChange={e => setRegion(e.target.value)} placeholder={t('dn_region_ph')} aria-label={t('dn_region')} className={`w-full mt-2 px-3 py-2 border rounded-lg text-xs ${c.input}`} />
             </div>
             <div>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>
