@@ -924,9 +924,6 @@ const SocialBatteryAdvisor = ({ tool }) => {
         )}
 
 
-        <p className={`text-[11px] ${c.textMuted} text-center mb-2`}>
-          {t('sea_xref_pre')} <a href="/CrashPredictor" className={linkStyle}>{t('sea_xref_crashpredictor')}</a> {t('sea_xref_post')}
-        </p>
 
         <div className="flex gap-2">
           <button

@@ -280,9 +280,6 @@ function SleepArchitect({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
-        {t('sa_xref_stress')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('sa_spiral_stopper')}</a> {t('sa_xref_stress_after')}
-      </p>
 
       <button onClick={handleBuild} disabled={!canSubmit || loading}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>

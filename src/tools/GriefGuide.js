@@ -268,9 +268,6 @@ function GriefGuide({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
-        {t('gg_pre_xref')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('gg_difficult_talk_coach')}</a> {t('gg_pre_xref_after')}
-      </p>
 
       <button onClick={handleGuide} disabled={!canSubmit || loading}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>

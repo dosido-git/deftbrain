@@ -535,7 +535,15 @@ grep -n 'href="/' ComponentName.js
 >
 > S5.5 counts a link inside an explicit `{!results && …}` guard as a pre-result
 > cross-ref wherever it appears in the file, so the correct placement passes.
-> Still outstanding: 12 tools place a cross-ref above their primary action.
+> **Sweep, 2026-08-11.** All 13 offenders turned out to already carry a
+> cross-ref BELOW the submit button, so the one above it was a duplicate
+> rather than the only link. Six had a properly `!results`-guarded ref at the
+> foot and simply had the duplicate deleted: CultureBriefing, GriefGuide,
+> IdeaAutopsy, MentalHealthNavigator, SleepArchitect, SocialBatteryAdvisor.
+> Seven have no guarded foot ref, so theirs must be MOVED, not deleted, or
+> they lose pre-result coverage entirely — still outstanding: BuyWise,
+> DriveHome, GentlePushGenerator, LaundroMat, RecipeChaosSolver, SafeWalk,
+> SubscriptionTamer.
 
 **Correct pattern:**
 ```jsx

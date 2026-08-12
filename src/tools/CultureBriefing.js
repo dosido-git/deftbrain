@@ -271,9 +271,6 @@ function CultureBriefing({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
-        {t('cb_xref_layover_intro')} <a href="/LayoverMaximizer" className={linkStyle}>✈️ {t('cb_layover')}</a> {t('cb_xref_layover_outro')}
-      </p>
 
       <button onClick={handleBrief} disabled={!canSubmit || loading}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>

@@ -278,9 +278,6 @@ function MentalHealthNavigator({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
-        {t('mhn_spiral_note')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('mhn_spiralstopper')}</a> {t('mhn_spiral_note_tail')}
-      </p>
 
       <button onClick={handleFind} disabled={!canSubmit || loading}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>

@@ -268,9 +268,6 @@ function IdeaAutopsy({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-      <p className={`text-xs ${c.textMuted}`}>
-        {t('ia_xref_pitch')} <a href="/PreMortem" className={linkStyle}>🪦 {t('ia_premortem')}</a> {t('ia_xref_pitch_after')}
-      </p>
 
       <button onClick={handleRun} disabled={!canSubmit || loading}
         className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
