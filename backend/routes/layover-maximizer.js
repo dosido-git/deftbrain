@@ -82,6 +82,8 @@ NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is
 - Terminals decide whether they re-clear security. Unknown terminals mean you must not assert either way.
 - Checked bags decide whether they can leave at all at some airports.
 
+Write every sentence for the traveller. No field name from this schema may appear in any text you write — not return_by_time, not available_city_minutes, not immigration_exit_minutes. Say 'the time to be back by', 'your time in the city', 'immigration'.
+
 For every NOT PROVIDED item that would change your verdict or your arithmetic, add an entry to need_to_know. Give the best answer you honestly can from what you were told, and be explicit about what would sharpen it. A preliminary answer with a stated gap is worth more than a confident answer built on an invented fact.
 
 You are answering ONE HALF of this question. Another planner is answering the other half — return only your own keys.`;

@@ -17,7 +17,7 @@ const EXAMPLE = {
   hasPreCheck: false,
   arrivalTerminal: 'Non-Schengen arrivals',
   connectionTerminal: 'Schengen departures',
-  arrivalTime: '8:30 AM local',
+  arrivalTime: '08:30',
   travelStyle: 'efficient',
 };
 // ════════════════════════════════════════════════════════════
@@ -148,6 +148,8 @@ const LayoverMaximizer = ({ tool }) => {
   const [error, setError] = useState('');
 
   // ── Main form ──
+  const [showDetails, setShowDetails] = useState(false);
+  const detailsRef = useRef(null);
   const [airport, setAirport] = useState('');
   const [layoverHours, setLayoverHours] = useState('');
   const [nationality, setNationality] = useState('');
@@ -271,6 +273,7 @@ const LayoverMaximizer = ({ tool }) => {
     setConnectionTerminal(EXAMPLE.connectionTerminal);
     setArrivalTime(EXAMPLE.arrivalTime);
     setTravelStyle(EXAMPLE.travelStyle);
+    setShowDetails(true);
     setResults(null);
   }, [setView, setAirport, setLayoverHours, setNationality, setHasCheckedBags, setHasPreCheck, setArrivalTerminal, setConnectionTerminal, setArrivalTime, setTravelStyle, setResults]);
 
@@ -616,52 +619,9 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
             )}
 
-            {/* Details row */}
-            <div className="flex flex-wrap gap-2">
-              <div className="flex-1 min-w-[140px]">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_nationality')}</label>
-                <input value={nationality} onChange={e => setNationality(e.target.value)}
-                  placeholder={t('lmx_ph_nationality')}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-              <div className="flex-1 min-w-[100px]">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
-                <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
-                  placeholder={t('lmx_ph_arrival_terminal')}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-              <div className="flex-1 min-w-[100px]">
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
-                <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
-                  placeholder={t('lmx_ph_departure_terminal')}
-                  className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-            </div>
-
-            {/* Arrival time */}
-            {!isLiveMode && (
-              <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_landing_time')}</label>
-                <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
-                  className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
-              </div>
-            )}
-
-            {/* Checkboxes */}
-            <div className="flex flex-wrap gap-4">
-              <label className="flex items-center gap-2 text-xs cursor-pointer">
-                <input type="checkbox" checked={hasCheckedBags} onChange={() => setHasCheckedBags(!hasCheckedBags)}
-                  className="accent-sky-500" />
-                <span className={c.text}>{t('lmx_chk_checked_bags')}</span>
-              </label>
-              <label className="flex items-center gap-2 text-xs cursor-pointer">
-                <input type="checkbox" checked={hasPreCheck} onChange={() => setHasPreCheck(!hasPreCheck)}
-                  className="accent-sky-500" />
-                <span className={c.text}>{t('lmx_chk_precheck')}</span>
-              </label>
-            </div>
-
-            {/* Travel style */}
+            {/* Travel style — where is it, how long, and what do you want from
+                it. Those three are the whole question; everything below sharpens
+                the answer rather than forming it. */}
             <div>
               <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_travel_style')}</label>
               <div className="flex flex-wrap gap-1.5">
@@ -672,6 +632,67 @@ const LayoverMaximizer = ({ tool }) => {
                     }`}>{ts.emoji} {t(ts.labelKey)}</button>
                 ))}
               </div>
+            </div>
+
+            {/* The four consequential fields, folded away. Asking every traveller
+                for a passport and two terminal numbers before they have any answer
+                at all is the form doing the tool's work. The toggle says plainly
+                what stays unknowable without them, and the answer asks for
+                whichever one actually mattered. */}
+            <div ref={detailsRef} className={`border-t ${c.border} pt-3`}>
+              <button onClick={() => setShowDetails(!showDetails)}
+                className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px]`}>
+                {t('lmx_details_toggle')} {showDetails ? '▲' : '▼'}
+              </button>
+              {!showDetails && ![nationality, arrivalTerminal, connectionTerminal, arrivalTime].some(v => String(v || '').trim()) && (
+                <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_details_why')}</p>
+              )}
+
+              {showDetails && (
+                <div className="mt-3 space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    <div className="flex-1 min-w-[140px]">
+                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_nationality')}</label>
+                      <input value={nationality} onChange={e => setNationality(e.target.value)}
+                        placeholder={t('lmx_ph_nationality')}
+                        className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                    </div>
+                    <div className="flex-1 min-w-[100px]">
+                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
+                      <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
+                        placeholder={t('lmx_ph_arrival_terminal')}
+                        className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                    </div>
+                    <div className="flex-1 min-w-[100px]">
+                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
+                      <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
+                        placeholder={t('lmx_ph_departure_terminal')}
+                        className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                    </div>
+                  </div>
+
+                  {!isLiveMode && (
+                    <div>
+                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_landing_time')}</label>
+                      <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
+                        className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap gap-4">
+                    <label className="flex items-center gap-2 text-xs cursor-pointer">
+                      <input type="checkbox" checked={hasCheckedBags} onChange={() => setHasCheckedBags(!hasCheckedBags)}
+                        className="accent-sky-500" />
+                      <span className={c.text}>{t('lmx_chk_checked_bags')}</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs cursor-pointer">
+                      <input type="checkbox" checked={hasPreCheck} onChange={() => setHasPreCheck(!hasPreCheck)}
+                        className="accent-sky-500" />
+                      <span className={c.text}>{t('lmx_chk_precheck')}</span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
 
             <button onClick={runAnalysis} disabled={loading || !airport.trim()}
@@ -787,6 +808,14 @@ const LayoverMaximizer = ({ tool }) => {
                       {n.why && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
                     </div>
                   ))}
+                  <button
+                    onClick={() => {
+                      setShowDetails(true);
+                      setTimeout(() => detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+                    }}
+                    className={`text-xs font-bold ${c.skyText} underline min-h-[28px] mt-1`}>
+                    {t('lmx_need_add_details')}
+                  </button>
                 </div>
               )}
 
