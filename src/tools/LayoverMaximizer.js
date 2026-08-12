@@ -82,6 +82,26 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   );
 }
 
+// One derivation of the time ledger, shared by the plan and by the re-plan.
+// available_city_minutes comes back null whenever a deduction is unknowable
+// (immigration without a passport), so the remainder is computed from the parts
+// that ARE known and carried with a flag saying it is provisional.
+function deriveTimeBudget(tm) {
+  if (!tm) return null;
+  const parts = [
+    tm.deplane_and_walk_minutes, tm.immigration_exit_minutes,
+    tm.transit_to_city_minutes, tm.transit_from_city_minutes,
+    tm.security_reentry_minutes, tm.buffer_minutes,
+  ];
+  const spent = parts.reduce((sum, v) => sum + (Number(v) || 0), 0);
+  // Number(null) is 0, so null must be caught before the numeric test.
+  const missing = v => v === null || v === undefined || v === '' || !Number.isFinite(Number(v));
+  return {
+    availableMin: Math.max(0, (Number(tm.total_layover_minutes) || 0) - spent),
+    provisional: parts.some(missing),
+  };
+}
+
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
@@ -191,6 +211,8 @@ const LayoverMaximizer = ({ tool }) => {
 
   // ── Delay Tracker ──
   const [delayMinutes, setDelayMinutes] = useState('');
+  const [delayedFlight, setDelayedFlight] = useState('inbound');
+  const [delayResults, setDelayResults] = useState(null);
 
   // ── Packing ──
   const [packResults, setPackResults] = useState(null);
@@ -290,6 +312,49 @@ const LayoverMaximizer = ({ tool }) => {
     }
   }, [riskAirport, riskAirline, riskHours, riskScenario, riskDelay, riskIntl, callToolEndpoint, t]);
 
+  // ── API: Delay re-plan ──
+  // The local arithmetic above answers instantly and for free; this is the
+  // deliberate second step, where the delay changes the advice and not just
+  // the number.
+  const runDelayReplan = useCallback(async () => {
+    const dm = Number(delayMinutes);
+    if (!results) return;
+    if (!dm || dm <= 0) { setError(t('lmx_err_enter_delay')); return; }
+    setError('');
+    setDelayResults(null);
+    try {
+      const data = await callToolEndpoint('layover-maximizer/delay', {
+        airport: (results.airport_code || airport).trim(),
+        layoverHours: Number(layoverHours) || (results.time_math?.total_layover_minutes || 0) / 60,
+        nationality: nationality.trim() || null,
+        hasCheckedBags, hasPreCheck,
+        arrivalTerminal: arrivalTerminal.trim() || null,
+        connectionTerminal: connectionTerminal.trim() || null,
+        arrivalTime: arrivalTime || null,
+        travelStyle: travelStyle || null,
+        delayMinutes: dm,
+        delayedFlight,
+        previousVerdict: results.verdict || null,
+        // Only the total moved. Re-estimating the deductions from scratch made
+        // the same airport cost 35 min of transit in one answer and 60 in the
+        // next, which reads as arbitrary sitting next to the original plan.
+        originalDeductions: results.time_math ? {
+          deplane_and_walk_minutes: results.time_math.deplane_and_walk_minutes,
+          immigration_exit_minutes: results.time_math.immigration_exit_minutes,
+          transit_to_city_minutes: results.time_math.transit_to_city_minutes,
+          transit_from_city_minutes: results.time_math.transit_from_city_minutes,
+          security_reentry_minutes: results.time_math.security_reentry_minutes,
+          buffer_minutes: results.time_math.buffer_minutes,
+        } : null,
+      });
+      setDelayResults(data);
+    } catch (err) {
+      setError(err.message || t('lmx_err_replan_failed'));
+    }
+  }, [results, airport, layoverHours, nationality, hasCheckedBags, hasPreCheck,
+      arrivalTerminal, connectionTerminal, arrivalTime, travelStyle,
+      delayMinutes, delayedFlight, callToolEndpoint, t]);
+
   // ── API: Gate-to-Gate ──
   const runGateToGate = useCallback(async () => {
     if (!g2gAirport.trim()) { setError(t('lmx_err_enter_airport')); return; }
@@ -354,26 +419,8 @@ const LayoverMaximizer = ({ tool }) => {
   }, [kitAirport, kitAirline, kitHours, results, airport, layoverHours, callToolEndpoint, t]);
 
   // ── Delay recalculation ──
-  // One derivation of the time ledger, shared by the plan and the delay tracker.
-  // available_city_minutes comes back null whenever a deduction is unknowable
-  // (immigration without a passport), so the remainder is computed from the
-  // parts that ARE known and carried with a flag saying it is provisional.
-  const timeBudget = useMemo(() => {
-    const tm = results?.time_math;
-    if (!tm) return null;
-    const parts = [
-      tm.deplane_and_walk_minutes, tm.immigration_exit_minutes,
-      tm.transit_to_city_minutes, tm.transit_from_city_minutes,
-      tm.security_reentry_minutes, tm.buffer_minutes,
-    ];
-    const spent = parts.reduce((sum, v) => sum + (Number(v) || 0), 0);
-    // Number(null) is 0, so null must be caught before the numeric test.
-    const missing = v => v === null || v === undefined || v === '' || !Number.isFinite(Number(v));
-    return {
-      availableMin: Math.max(0, (Number(tm.total_layover_minutes) || 0) - spent),
-      provisional: parts.some(missing),
-    };
-  }, [results]);
+  const timeBudget = useMemo(() => deriveTimeBudget(results?.time_math), [results]);
+  const replanBudget = useMemo(() => deriveTimeBudget(delayResults?.time_math), [delayResults]);
 
   const delayImpact = useMemo(() => {
     if (!results?.time_math || !delayMinutes) return null;
@@ -508,16 +555,18 @@ const LayoverMaximizer = ({ tool }) => {
     </div>
   );
 
+  // Shared by the plan's verdict and the re-planned verdict, so a delay that
+  // moves YES to NO looks the same as a NO that was there from the start.
+  const VERDICT_COLORS = {
+    'YES': isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
+    'NO': isDark ? 'bg-red-900/40 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
+    'RISKY': isDark ? 'bg-amber-900/40 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
+  };
+
   // ════════════════════════════════════════════════════════════
   // RENDER: PLAN (main form + results)
   // ════════════════════════════════════════════════════════════
   const renderPlan = () => {
-    const VERDICT_COLORS = {
-      'YES': isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-      'NO': isDark ? 'bg-red-900/40 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
-      'RISKY': isDark ? 'bg-amber-900/40 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
-    };
-
     return (
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
@@ -1455,7 +1504,7 @@ const LayoverMaximizer = ({ tool }) => {
     // The threshold scale reads a verdict off each row, so it only earns its
     // place when the remainder is complete. Provisional budgets show the delay
     // arithmetic above and nothing that looks like a graded forecast.
-    const thresholds = (timeBudget && !timeBudget.provisional) ? [30, 60, 90, 120]
+    const thresholds = (timeBudget && !timeBudget.provisional && !delayResults) ? [30, 60, 90, 120]
       .map(delay => ({ delay, available: timeBudget.availableMin - delay }))
       .filter(row => row.available > -60) : [];
 
@@ -1480,13 +1529,28 @@ const LayoverMaximizer = ({ tool }) => {
 
               <div>
                 <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_delay_field_minutes')}</label>
-                <input type="number" value={delayMinutes} onChange={e => setDelayMinutes(e.target.value)}
+                <input type="number" value={delayMinutes} onChange={e => { setDelayMinutes(e.target.value); setDelayResults(null); }}
                   placeholder={t('lmx_ph_delay_minutes')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
 
-              {/* Live impact */}
-              {delayImpact && (
+              {/* Which flight is late decides the sign, and the tool never asked:
+                  a late arrival eats the layover, a late departure hands time back. */}
+              <div>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_delay_which_flight')}</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[['inbound', t('lmx_delay_inbound')], ['outbound', t('lmx_delay_outbound')]].map(([key, label]) => (
+                    <button key={key} onClick={() => { setDelayedFlight(key); setDelayResults(null); }}
+                      className={`text-xs px-3 py-1.5 rounded-lg border ${delayedFlight === key ? c.pillActive : c.pillInactive} min-h-[32px]`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Live impact — the instant preview, replaced by the re-plan below
+                  as soon as there is one. Two remainders on one screen is two answers. */}
+              {delayImpact && !delayResults && (
                 <div className={`border-2 rounded-xl p-5 text-center ${
                   delayImpact.newVerdict === 'YES' ? (isDark ? 'bg-emerald-900/40 border-emerald-700' : 'bg-emerald-50 border-emerald-300')
                   : delayImpact.newVerdict === 'RISKY' ? (isDark ? 'bg-amber-900/40 border-amber-700' : 'bg-amber-50 border-amber-300')
@@ -1512,6 +1576,95 @@ const LayoverMaximizer = ({ tool }) => {
                   )}
                   {delayImpact.provisional && (
                     <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('lmx_tm_before_unknowns')}</p>
+                  )}
+                </div>
+              )}
+
+              {/* The instant arithmetic above says how much time is left. This
+                  re-runs the recommendation, because a delay changes what is
+                  realistic and not only what the clock says. */}
+              {delayImpact && !delayResults && (
+                <button onClick={runDelayReplan} disabled={loading}
+                  className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+                  {loading
+                    ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔄'}</span> {t('lmx_replanning')}</>
+                    : <><span>🔄</span> {t('lmx_btn_replan')}</>}
+                </button>
+              )}
+
+              {/* ── Re-planned around the delay ── */}
+              {delayResults && (
+                <div className="space-y-4">
+                  <div className={`border-2 rounded-xl p-5 text-center ${VERDICT_COLORS[delayResults.new_verdict] || c.card}`}>
+                    <p className="text-3xl mb-1">{delayResults.verdict_emoji}</p>
+                    <p className="text-sm font-black">{delayResults.headline}</p>
+                    {delayResults.what_changed && <p className="text-xs mt-1">{delayResults.what_changed}</p>}
+                  </div>
+
+                  {delayResults.time_math && (
+                    <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
+                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-2`}>{t('lmx_sec_time_math')}</p>
+                      <p className={`text-xs ${c.text} mb-2`}>{delayResults.time_math.breakdown_explanation}</p>
+                      <div className={`flex items-center justify-between text-sm font-black border-t ${c.border} pt-2`}>
+                        <span className={c.text}>{t('lmx_tm_available')}</span>
+                        <span className={replanBudget?.provisional ? c.textMuteded : ((replanBudget?.availableMin || 0) > 60 ? c.success : c.danger)}>
+                          {t('lmx_unit_hm', { h: Math.floor((replanBudget?.availableMin || 0) / 60), m: (replanBudget?.availableMin || 0) % 60 })}
+                        </span>
+                      </div>
+                      {replanBudget?.provisional && (
+                        <p className={`text-[10px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
+                      )}
+                      {delayResults.time_math.return_by_time && (
+                        <p className={`text-xs font-bold ${c.text} mt-2`}>{t('lmx_tm_be_back')} {delayResults.time_math.return_by_time}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {delayResults.revised_plan?.headline && (
+                    <div className={`${c.highlight} border rounded-xl p-4`}>
+                      <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('lmx_replan_now')}</p>
+                      <p className={`text-sm font-bold ${c.text} mb-2`}>{delayResults.revised_plan.headline}</p>
+                      {delayResults.revised_plan.steps?.length > 0 && (
+                        <div className="space-y-1.5 mb-2">
+                          {delayResults.revised_plan.steps.map((st, i) => (
+                            <div key={i} className="flex gap-2">
+                              <span className={`text-xs font-bold ${c.skyText} flex-shrink-0 min-w-[3.5rem]`}>{st.when}</span>
+                              <span className="text-xs">{st.do}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {delayResults.revised_plan.why && <p className="text-xs opacity-90">{delayResults.revised_plan.why}</p>}
+                      {delayResults.revised_plan.leave_for_gate && (
+                        <p className={`text-xs font-bold ${c.text} mt-2`}>🚶 {t('lmx_leave_for_gate')} {delayResults.revised_plan.leave_for_gate}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {delayResults.off_the_table?.length > 0 && (
+                    <div className={`${c.warning} border rounded-xl p-4`}>
+                      <p className={`text-[10px] font-bold uppercase mb-1.5`}>{t('lmx_replan_off_table')}</p>
+                      {delayResults.off_the_table.map((x, i) => <p key={i} className="text-xs mb-1 last:mb-0">• {x}</p>)}
+                    </div>
+                  )}
+
+                  {delayResults.now_possible?.length > 0 && (
+                    <div className={`${c.success} border rounded-xl p-4`}>
+                      <p className={`text-[10px] font-bold uppercase mb-1.5`}>{t('lmx_replan_now_possible')}</p>
+                      {delayResults.now_possible.map((x, i) => <p key={i} className="text-xs mb-1 last:mb-0">• {x}</p>)}
+                    </div>
+                  )}
+
+                  {delayResults.need_to_know?.length > 0 && (
+                    <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
+                      <p className={`text-xs font-bold ${c.text} mb-2`}>{t('lmx_need_title')}</p>
+                      {delayResults.need_to_know.map((n, i) => (
+                        <div key={i} className="mb-2 last:mb-0">
+                          <p className={`text-sm font-bold ${c.text}`}>{n.question}</p>
+                          {n.why && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               )}

@@ -8,6 +8,20 @@ const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPOR
 
 LOUNGE ACCESS IS SAFETY-CRITICAL, because a traveller will walk across a terminal on your word. Name the lounge and its terminal, and describe access only in terms you are sure of. Do not summarise a card or airline's access rules into a short list — they change and they are full of exceptions. Point them at the operator to confirm eligibility instead.`;
 
+// Clock arithmetic is arithmetic, not judgement. Asking the model to hold a
+// landing time, a layover length and a delay in its head and derive a departure
+// produced a return-by time two hours AFTER the flight left. Compute it here and
+// hand it over as a fact.
+function addMinutes(hhmm, mins) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || '').trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (h > 23 || min > 59) return null;
+  const t = (((h * 60 + min + Math.round(mins)) % 1440) + 1440) % 1440;
+  return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+}
+
 const PERSONALITY = `Expert travel advisor specializing in airport layovers. Deep knowledge of terminal layouts, immigration timing, visa-free transit, lounges, city connections, and realistic time estimates. Time-aware and risk-conscious: every recommendation accounts for actual available time and builds in buffer. Missing a connection is the worst outcome.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
@@ -38,9 +52,9 @@ Plan this layover specifically — real terminal names, real restaurants, real t
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. If any deduction is null because you were not told the fact behind it, available_city_minutes is null too — an unknown minus something is not a number, and breakdown_explanation must say which missing fact is blocking it. Never write 0 to mean unknown — 0 means you did the arithmetic and the honest answer is no usable time.
+CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. If any deduction is null because you were not told the fact behind it, available_city_minutes is null too — an unknown minus something is not a number, and breakdown_explanation must say which missing fact is blocking it. Never write 0 to mean unknown — 0 means you did the arithmetic and the honest answer is no usable time. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.
 
-EVERY FIELD IS READ BY A TRAVELLER, NOT A PROGRAMMER. Never name a JSON field in any text you write — not available_city_minutes, not immigration_exit_minutes, not return_by_time. Say 'your time in the city', 'immigration', 'the time to be back by'. A sentence that mentions a field name has leaked the plumbing into the answer. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.
+EVERY FIELD IS READ BY A TRAVELLER, NOT A PROGRAMMER. Never name a JSON field in any text you write — not available_city_minutes, not immigration_exit_minutes, not return_by_time. Say 'your time in the city', 'immigration', 'the time to be back by'. A sentence that mentions a field name has leaked the plumbing into the answer.
 
 ${NO_INVENTED_AUTHORITY}`;
 
@@ -58,6 +72,7 @@ ${hasPreCheck ? 'Has TSA PreCheck / Global Entry' : ''}
 ${arrivalTerminal ? `Arriving at: Terminal ${arrivalTerminal}` : 'Arrival terminal: NOT PROVIDED'}
 ${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : 'Departure terminal: NOT PROVIDED'}
 ${arrivalTime ? `Landing time: ${arrivalTime}` : 'Landing time: NOT PROVIDED'}
+${addMinutes(arrivalTime, Number(layoverHours) * 60) ? `Onward flight departs: ${addMinutes(arrivalTime, Number(layoverHours) * 60)} (computed from the landing time and the layover length — use this exact time, do not derive your own)` : ''}
 ${travelStyle ? `Travel style: ${travelStyle}` : ''}
 
 NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you, and several of these decide whether this traveller makes their flight:
@@ -631,6 +646,143 @@ Return ONLY valid JSON:
 
   } catch (error) {
     console.error('LayoverMaximizer survival-kit error:', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /layover-maximizer/delay — Re-plan around a delay
+// ════════════════════════════════════════════════════════════
+// The delay view used to subtract the delay from the remainder and re-grade the
+// verdict against fixed thresholds — the same 30/60/90 ladder for JFK and for
+// Reykjavík, with the plan itself untouched. This re-runs the recommendation
+// instead: the delay changes what is realistic, so it should change the advice.
+router.post('/layover-maximizer/delay', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const {
+      airport, layoverHours, nationality, hasCheckedBags, hasPreCheck,
+      connectionTerminal, arrivalTerminal, arrivalTime, travelStyle,
+      delayMinutes, delayedFlight, previousVerdict, originalDeductions, userLanguage
+    } = req.body;
+
+    if (!airport?.trim()) {
+      return res.status(400).json({ error: 'Enter an airport code or name.' });
+    }
+    if (!layoverHours || layoverHours < 0.5) {
+      return res.status(400).json({ error: 'Enter your layover duration.' });
+    }
+    const delay = Number(delayMinutes);
+    if (!delay || delay <= 0) {
+      return res.status(400).json({ error: 'Enter how many minutes late the flight is.' });
+    }
+
+    // Which flight is late decides the sign, and nothing else in the tool knew
+    // this: a late inbound eats the layover, a late outbound hands time back.
+    const outbound = delayedFlight === 'outbound';
+    const adjustedHours = Math.max(0, Number(layoverHours) + (outbound ? delay : -delay) / 60);
+    // A late inbound moves the landing; a late outbound moves the departure.
+    const effectiveLanding = outbound ? (arrivalTime || null) : addMinutes(arrivalTime, delay);
+    const newDeparture = addMinutes(arrivalTime, Number(layoverHours) * 60 + (outbound ? delay : 0));
+
+    const systemPrompt = `${PERSONALITY}
+
+Re-plan a layover that has just changed. Worst-case estimates only. Add 15-20 min buffer to immigration.
+
+CONSISTENT NUMBERS: available_city_minutes MUST equal total_layover_minutes minus every deduction, and breakdown_explanation must state the same figure. If any deduction is null because you were not told the fact behind it, available_city_minutes is null too. Never write 0 to mean unknown — 0 means you did the arithmetic and the honest answer is no usable time.
+
+EVERY FIELD IS READ BY A TRAVELLER, NOT A PROGRAMMER. Never name a JSON field in any text you write — say 'your time in the city', 'immigration', 'the time to be back by'.
+
+${NO_INVENTED_AUTHORITY}`;
+
+    const userPrompt = `DELAY RE-PLAN:
+Airport: ${airport}
+Layover as originally booked: ${layoverHours} hours
+${outbound ? 'DEPARTING' : 'ARRIVING'} flight is ${delay} minutes late
+Layover after the delay: ${adjustedHours.toFixed(2)} hours (${Math.round(adjustedHours * 60)} minutes)
+${previousVerdict ? `Verdict before the delay: ${previousVerdict}` : ''}
+${nationality ? `Nationality/passport: ${nationality}` : 'Nationality/passport: NOT PROVIDED'}
+${hasCheckedBags !== undefined ? `Checked bags: ${hasCheckedBags ? 'Yes (checked through to final destination)' : 'No / carry-on only'}` : 'Checked bags: NOT PROVIDED'}
+${hasPreCheck ? 'Has TSA PreCheck / Global Entry' : ''}
+${arrivalTerminal ? `Arriving at: Terminal ${arrivalTerminal}` : 'Arrival terminal: NOT PROVIDED'}
+${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : 'Departure terminal: NOT PROVIDED'}
+${arrivalTime ? `Original landing time: ${arrivalTime}` : 'Landing time: NOT PROVIDED'}
+${effectiveLanding ? `Landing after the delay: ${effectiveLanding}` : ''}
+${newDeparture ? `Onward flight now departs: ${newDeparture} (computed — use this exact time, do not derive your own. return_by_time MUST be earlier than this by at least the return transit, security and buffer combined.)` : ''}
+${travelStyle ? `Travel style: ${travelStyle}` : ''}
+${originalDeductions ? `\nDEDUCTIONS FROM THE ORIGINAL PLAN — reuse these exact figures. The delay moved the total, not the walk to immigration or the train into town, and a traveller reading both answers should not see the same journey priced twice. Change one only if the delay genuinely changes it, and say so if you do:\n${JSON.stringify(originalDeductions)}\nA null here stayed unknowable — keep it null.` : ''}
+
+NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you. Unknown passport means immigration_exit_minutes MUST be null, never 0. Unknown landing time means return_by_time MUST be null — a delay does not create a clock time you did not have before. For anything NOT PROVIDED that would change this answer, add an entry to need_to_know.
+
+${outbound
+  ? 'A late departure GIVES this traveller time back. Say what the extra time now makes possible, and be honest if the answer is nothing much — extra time in a terminal is not automatically good news.'
+  : 'A late arrival TAKES time away. Say plainly what is now off the table, and do not soften it. Missing the onward flight is the worst outcome here.'}
+
+Answer the question they are actually asking: does the plan still work, and if not, what should they do instead.
+
+Return ONLY valid JSON:
+{
+  "new_verdict": "YES|NO|RISKY",
+  "verdict_emoji": "✅|❌|⚠️",
+  "headline": "What this delay does to the plan, in one line a traveller reads first — 6-14 words",
+  "what_changed": "Plain English: what the delay took away or handed back, and whether that crosses a line — 1-2 sentences",
+
+  "time_math": {
+    "total_layover_minutes": ${Math.round(adjustedHours * 60)},
+    "deplane_and_walk_minutes": 15,
+    "immigration_exit_minutes": 25,
+    "transit_to_city_minutes": 35,
+    "transit_from_city_minutes": 35,
+    "security_reentry_minutes": 40,
+    "buffer_minutes": 30,
+    "available_city_minutes": 120,
+    "return_by_time": "A clock time ONLY if a landing time was provided. null otherwise.",
+    "breakdown_explanation": "Plain English explanation of the math after the delay — 1-2 sentences",
+    "provenance": {
+      "told_us": ["Which figures came from the traveller"],
+      "estimated": ["Which are conservative estimates"],
+      "unknown": ["Which could not be computed and why"]
+    }
+  },
+
+  "revised_plan": {
+    "headline": "The recommendation now, in one short imperative line — 3-8 words",
+    "steps": [
+      {
+        "when": "A clock time ONLY if a landing time was provided; otherwise First, Then, After that — 1-3 words",
+        "do": "One concrete action naming a specific place — one sentence"
+      }
+    ],
+    "why": "Why this is the plan now that the clock has moved — 1-2 sentences",
+    "leave_for_gate": "When to start heading for the gate. A clock time only if a landing time was provided, otherwise how long before boarding. null if you cannot say."
+  },
+
+  "off_the_table": ["Something that was realistic before this delay and is not now, and why — one sentence each"],
+  "now_possible": ["Only if the DEPARTING flight is late: what the extra time genuinely opens up — one sentence each. Empty array otherwise."],
+
+  "need_to_know": [
+    {
+      "question": "A missing fact, as a question you would ask them",
+      "why": "What it would change about this answer — one sentence",
+      "changes_verdict": true
+    }
+  ]
+}
+
+AT MOST 4 steps, 3 off_the_table, 3 now_possible, 2 need_to_know. ONE question per need_to_know entry — never bundle two questions into one string.`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2500,
+      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'layover-maximizer:delay' });
+    if (!parsed.new_verdict) {
+      return res.status(500).json({ error: 'Could not re-plan your layover. Please try again.' });
+    }
+    res.json(parsed);
+
+  } catch (error) {
+    console.error('LayoverMaximizer delay error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
