@@ -24,6 +24,15 @@ function validIanaZone(tz) {
   }
 }
 
+// Accepts 8:30 as well as 08:30, and nothing that is not a wall-clock time.
+function hhmmish(v) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(v || '').trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  return h > 23 || min > 59 ? null : `${String(h).padStart(2, '0')}:${m[2]}`;
+}
+
 // Clock arithmetic is arithmetic, not judgement. Asking the model to hold a
 // landing time, a layover length and a delay in its head and derive a departure
 // produced a return-by time two hours AFTER the flight left. Compute it here and
@@ -52,7 +61,8 @@ router.post('/layover-maximizer', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     const {
       airport, layoverHours, nationality, hasCheckedBags,
       hasPreCheck, connectionTerminal, arrivalTerminal,
-      arrivalTime, travelStyle, userLanguage
+      arrivalTime, travelStyle, userLanguage,
+      isLive, nowAtAirport, departureTime
     } = req.body;
 
     if (!airport?.trim()) {
@@ -61,6 +71,14 @@ router.post('/layover-maximizer', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     if (!layoverHours || layoverHours < 0.5) {
       return res.status(400).json({ error: 'Enter your layover duration.' });
     }
+
+    // Standing in the terminal is a different problem from planning at home:
+    // durations stop being useful and deadlines start. The traveller cannot act
+    // on "allow 40 minutes", only on "leave by 15:10".
+    const liveDeparture = isLive ? hhmmish(departureTime) : null;
+    const liveBrief = liveDeparture
+      ? `THEY ARE STANDING IN THIS AIRPORT RIGHT NOW. Local time there is ${hhmmish(nowAtAirport) || 'unknown'} and their onward flight departs at ${liveDeparture}. Answer as though they are looking up from their phone at the terminal, not planning next month.`
+      : '';
 
     const systemPrompt = `${PERSONALITY}
 
@@ -89,6 +107,7 @@ ${arrivalTerminal ? `Arriving at: Terminal ${arrivalTerminal}` : 'Arrival termin
 ${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : 'Departure terminal: NOT PROVIDED'}
 ${arrivalTime ? `Landing time: ${arrivalTime}` : 'Landing time: NOT PROVIDED'}
 ${addMinutes(arrivalTime, Number(layoverHours) * 60) ? `Onward flight departs: ${addMinutes(arrivalTime, Number(layoverHours) * 60)} (computed from the landing time and the layover length — use this exact time, do not derive your own)` : ''}
+${liveBrief}
 ${travelStyle ? `Travel style: ${travelStyle}` : ''}
 
 NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you, and several of these decide whether this traveller makes their flight:
@@ -137,6 +156,14 @@ Return ONLY valid JSON with EXACTLY these nine top-level keys:
     }
   },
 
+  "live_deadlines": [
+    {
+      "what": "The action, as an instruction — 'Leave the lounge', 'Start walking to your gate' — 2-5 words",
+      "minutes_before_departure": 45,
+      "why": "What goes wrong if they leave it later — one sentence"
+    }
+  ],
+
   "need_to_know": [
     {
       "question": "The single missing fact, as a question you would ask them — 'Are your arriving and departing flights in the same terminal?'",
@@ -177,7 +204,11 @@ Return ONLY valid JSON with EXACTLY these nine top-level keys:
   "terminal_change_warning": "If arriving and departing from different terminals, explain how to transfer and how long it takes. null if same terminal or unknown. — one sentence"
 }
 
-AT MOST 3 need_to_know — only facts that would actually change the verdict or the arithmetic, most consequential first. AT MOST 3 transit_options, 4 stops, 3 warnings.`;
+AT MOST 3 need_to_know — only facts that would actually change the verdict or the arithmetic, most consequential first. AT MOST 3 transit_options, 4 stops, 3 warnings.
+
+${liveDeparture
+  ? 'live_deadlines: give 2-4, ordered from the earliest deadline to the latest, each a moment they must not let pass. Boarding closes well before departure — account for it. Express every one as minutes before departure and nothing else; the clock times are computed from that.'
+  : 'live_deadlines: return an empty array. They are not at the airport.'}`;
 
     // ── Part B: what the airport itself offers if they stay ──
     const stayPrompt = `${brief}
@@ -253,6 +284,15 @@ AT MOST 4 steps in best_plan, 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
       }, { label: 'layover-maximizer:stay' }),
     ]);
     const parsed = { ...stayPart, ...leavePart };
+    // The model supplies the judgement (what, and how long before); the clock
+    // time is subtraction, and subtraction belongs here.
+    if (Array.isArray(parsed.live_deadlines)) {
+      parsed.live_deadlines = liveDeparture
+        ? parsed.live_deadlines
+            .map(d => ({ ...d, at_time: addMinutes(liveDeparture, -Math.abs(Number(d?.minutes_before_departure) || 0)) }))
+            .filter(d => d.what && d.at_time)
+        : [];
+    }
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not plan your layover. Please try again.' });
     }

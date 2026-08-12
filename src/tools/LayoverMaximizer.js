@@ -101,6 +101,16 @@ function hhmmToMinutes(hhmm) {
   return h > 23 || min > 59 ? null : h * 60 + min;
 }
 
+// How far off a wall-clock deadline is, given the clock has no date on it.
+// Anything more than twelve hours "ago" is tomorrow, not something missed
+// yesterday — every deadline here sits inside one layover.
+function minutesUntil(atMinutes, nowMinutes) {
+  if (atMinutes === null || nowMinutes === null) return null;
+  let d = atMinutes - nowMinutes;
+  if (d < -720) d += 1440;
+  return d;
+}
+
 function minutesToHhmm(mins) {
   const t = (((Math.round(mins) % 1440) + 1440) % 1440);
   return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
@@ -229,14 +239,20 @@ const LayoverMaximizer = ({ tool }) => {
     [airportZone, tick]  // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const liveHoursRemaining = useMemo(() => {
+  const liveMinutesRemaining = useMemo(() => {
     if (!isLiveMode) return null;
     const dep = hhmmToMinutes(departureTime);
     if (dep === null || nowMinutes === null) return null;
     let diff = dep - nowMinutes;
     if (diff < 0) diff += 1440;   // a departure earlier than now is tomorrow's
-    return Math.max(0, Math.round((diff / 60) * 10) / 10);
+    return Math.max(0, diff);
   }, [isLiveMode, departureTime, nowMinutes]);
+
+  // Rounded, because this is what the plan wants as a layover length.
+  const liveHoursRemaining = useMemo(
+    () => (liveMinutesRemaining === null ? null : Math.round((liveMinutesRemaining / 60) * 10) / 10),
+    [liveMinutesRemaining]
+  );
 
   // ── Gate-to-Gate ──
   const [g2gAirport, setG2gAirport] = useState('');
@@ -281,6 +297,11 @@ const LayoverMaximizer = ({ tool }) => {
         arrivalTerminal: arrivalTerminal.trim() || null,
         connectionTerminal: connectionTerminal.trim() || null,
         arrivalTime: arrivalTime || null, travelStyle: travelStyle || null,
+        // Standing in the terminal changes the answer's shape, not just its
+        // length: deadlines instead of durations.
+        isLive: isLiveMode || undefined,
+        nowAtAirport: isLiveMode && nowMinutes !== null ? minutesToHhmm(nowMinutes) : undefined,
+        departureTime: isLiveMode ? (departureTime || undefined) : undefined,
       });
       setResults(data);
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -300,7 +321,7 @@ const LayoverMaximizer = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('lmx_err_analysis_failed'));
     }
-  }, [airport, layoverHours, nationality, hasCheckedBags, hasPreCheck, arrivalTerminal, connectionTerminal, arrivalTime, travelStyle, isLiveMode, liveHoursRemaining, callToolEndpoint, t]);
+  }, [airport, layoverHours, nationality, hasCheckedBags, hasPreCheck, arrivalTerminal, connectionTerminal, arrivalTime, travelStyle, isLiveMode, liveHoursRemaining, nowMinutes, departureTime, callToolEndpoint, t]);
 
   // ── API: Lounge finder ──
   const loadExample = useCallback(() => {
@@ -808,6 +829,43 @@ const LayoverMaximizer = ({ tool }) => {
           const hasUnknownDeduction = !!timeBudget?.provisional;
           return (
             <div ref={resultsRef} className="space-y-4">
+              {/* A traveller already at the airport reads the clock first and the
+                  verdict second. Durations are for planning; these are moments. */}
+              {isLiveMode && liveMinutesRemaining !== null && (
+                <div className={`${c.highlight} border rounded-xl p-4`}>
+                  <p className="text-[10px] font-bold uppercase tracking-wide opacity-80">{t('lmx_live_until_departure')}</p>
+                  <p className={`text-2xl font-black ${c.text}`}>
+                    {t('lmx_unit_hm', { h: Math.floor(liveMinutesRemaining / 60), m: liveMinutesRemaining % 60 })}
+                  </p>
+                  {r.live_deadlines?.length > 0 && (
+                    <div className={`mt-3 pt-2 border-t ${c.border} space-y-1.5`}>
+                      {r.live_deadlines.map((d, i) => {
+                        const left = minutesUntil(hhmmToMinutes(d.at_time), nowMinutes);
+                        const passed = left !== null && left < 0;
+                        const next = !passed && !r.live_deadlines.some((o, j) => {
+                          const ol = minutesUntil(hhmmToMinutes(o.at_time), nowMinutes);
+                          return j < i && ol !== null && ol >= 0;
+                        });
+                        return (
+                          <div key={i} className="flex items-baseline gap-2">
+                            <span className={`text-xs font-black tabular-nums ${passed ? c.textMuteded : c.text}`}>{d.at_time}</span>
+                            <span className={`text-xs flex-1 ${passed ? c.textMuteded : ''} ${next ? 'font-bold' : ''}`}>{d.what}</span>
+                            <span className={`text-[10px] flex-shrink-0 ${passed ? c.textMuteded : c.skyText}`}>
+                              {passed
+                                ? t('lmx_live_passed')
+                                : left >= 60
+                                  ? t('lmx_live_in_hm', { h: Math.floor(left / 60), m: left % 60 })
+                                  : t('lmx_live_in_m', { n: left })}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      <p className={`text-[10px] ${c.textMuteded} pt-1`}>{t('lmx_live_deadlines_note')}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Verdict banner */}
               <div className={`border-2 rounded-xl p-5 text-center ${VERDICT_COLORS[r.verdict] || c.card}`}>
                 <p className="text-3xl mb-1">{r.verdict_emoji}</p>
