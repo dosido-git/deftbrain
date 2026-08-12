@@ -10,6 +10,7 @@ import ToolRenderer from './components/ToolRenderer';
 import DashBoard from './components/DashBoard';
 import Footer from './components/Footer';
 import RelatedLinks from './components/RelatedLinks';
+import ToolFaq from './components/ToolFaq';
 import EmailCapture from './components/EmailCapture';
 import NotFound from './components/NotFound';
 
@@ -43,6 +44,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
+            <ToolFaq />
             <RelatedLinks />
             <EmailCapture />
             <Footer />

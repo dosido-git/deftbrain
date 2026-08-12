@@ -342,9 +342,16 @@ function buildJsonLd({ id, title, description, faq }) {
   const json = JSON.stringify(obj, null, 2).replace(/</g, '\\u003c');
   let out = `<script type="application/ld+json">${json}</script>`;
   // FAQPage markup for enriched tools. Google restricts FAQ *rich results* to
-  // high-authority sites, but the markup is valid, harmless, and makes the
-  // question coverage machine-readable. The same Q&As render visibly in the
-  // page body and the React guide aside — never markup-only content.
+  // high-authority sites, but the markup is valid and makes the question
+  // coverage machine-readable.
+  //
+  // This is only legitimate while the same Q&As are VISIBLE on the rendered
+  // page. They were not, between 3ca6667a and today: the static block below
+  // lives inside #root and React replaces it, and the React copy lived in the
+  // guide sidebar until that sidebar was distilled to the nutshell. Structured
+  // data then described content neither a visitor nor a JS-rendering crawler
+  // could see. src/components/ToolFaq.js is the mirror that makes this honest —
+  // if it is ever removed, remove this block with it.
   if (Array.isArray(faq) && faq.length) {
     const faqObj = {
       '@context': 'https://schema.org',
@@ -499,8 +506,10 @@ function buildBodyContent({ title, tagline, description, guide, faq }) {
     const items = g.pitfalls.map(p => `<li style="${LI}">${e(String(p))}</li>`).join('');
     out.push(`<h2 style="${H2}">Common pitfalls</h2><ul style="padding-left:1.25rem;margin:0">${items}</ul>`);
   }
-  // FAQ — focus-tools enrichment (2026-07). Same content renders in the React
-  // guide aside (ToolPageWrapper), so crawler and user see identical copy.
+  // FAQ — focus-tools enrichment (2026-07). Mirrored by
+  // src/components/ToolFaq.js, so crawler and user see identical copy. It used
+  // to say "the React guide aside" and that stopped being true when the
+  // sidebar was stripped; the mirror moved, the guarantee did not.
   if (Array.isArray(faq) && faq.length) {
     const items = faq.map(f =>
       `<h3 style="font-size:1rem;font-weight:600;margin:1.1rem 0 .3rem;color:#0f172a">${e(String(f.q))}</h3>`
