@@ -354,26 +354,53 @@ const LayoverMaximizer = ({ tool }) => {
   }, [kitAirport, kitAirline, kitHours, results, airport, layoverHours, callToolEndpoint, t]);
 
   // ── Delay recalculation ──
+  // One derivation of the time ledger, shared by the plan and the delay tracker.
+  // available_city_minutes comes back null whenever a deduction is unknowable
+  // (immigration without a passport), so the remainder is computed from the
+  // parts that ARE known and carried with a flag saying it is provisional.
+  const timeBudget = useMemo(() => {
+    const tm = results?.time_math;
+    if (!tm) return null;
+    const parts = [
+      tm.deplane_and_walk_minutes, tm.immigration_exit_minutes,
+      tm.transit_to_city_minutes, tm.transit_from_city_minutes,
+      tm.security_reentry_minutes, tm.buffer_minutes,
+    ];
+    const spent = parts.reduce((sum, v) => sum + (Number(v) || 0), 0);
+    // Number(null) is 0, so null must be caught before the numeric test.
+    const missing = v => v === null || v === undefined || v === '' || !Number.isFinite(Number(v));
+    return {
+      availableMin: Math.max(0, (Number(tm.total_layover_minutes) || 0) - spent),
+      provisional: parts.some(missing),
+    };
+  }, [results]);
+
   const delayImpact = useMemo(() => {
     if (!results?.time_math || !delayMinutes) return null;
     const dm = Number(delayMinutes);
     if (dm <= 0) return null;
-    const tm = results.time_math;
-    const newAvailable = tm.available_city_minutes - dm;
+    if (!timeBudget) return null;
+    const newAvailable = timeBudget.availableMin - dm;
     const originalVerdict = results.verdict;
     let newVerdict = originalVerdict;
-    if (newAvailable < 30) newVerdict = 'NO';
-    else if (newAvailable < 90) newVerdict = 'RISKY';
-    else newVerdict = 'YES';
+    // A remainder that is still missing a deduction cannot carry a new verdict —
+    // announcing NO off an incomplete subtraction is the same overclaim the
+    // plan was fixed for. Show the lost time, keep the verdict where it was.
+    if (!timeBudget.provisional) {
+      if (newAvailable < 30) newVerdict = 'NO';
+      else if (newAvailable < 90) newVerdict = 'RISKY';
+      else newVerdict = 'YES';
+    }
     return {
-      originalMinutes: tm.available_city_minutes,
+      originalMinutes: timeBudget.availableMin,
       newMinutes: Math.max(0, newAvailable),
       lost: dm,
       originalVerdict,
       newVerdict,
       changed: newVerdict !== originalVerdict,
+      provisional: timeBudget.provisional,
     };
-  }, [results, delayMinutes]);
+  }, [results, delayMinutes, timeBudget]);
 
   // ── Save layover ──
   const saveLayover = useCallback(() => {
@@ -608,20 +635,10 @@ const LayoverMaximizer = ({ tool }) => {
         {/* ── RESULTS ── */}
         {results && (() => {
           const r = results;
-          // The ledger's bottom line is derived here rather than taken from the
-          // model, so the figure can never disagree with the rows above it. When
-          // a deduction is unknowable — immigration without a passport — the
-          // remainder is only the time left BEFORE that unknown, and says so.
-          const tm = r.time_math || {};
-          const deductions = [
-            tm.deplane_and_walk_minutes, tm.immigration_exit_minutes,
-            tm.transit_to_city_minutes, tm.transit_from_city_minutes,
-            tm.security_reentry_minutes, tm.buffer_minutes,
-          ];
-          const spent = deductions.reduce((sum, v) => sum + (Number(v) || 0), 0);
-          const availableMin = Math.max(0, (Number(tm.total_layover_minutes) || 0) - spent);
-          // Number(null) is 0, so null must be caught before the numeric test.
-          const hasUnknownDeduction = deductions.some(v => v === null || v === undefined || v === '' || !Number.isFinite(Number(v)));
+          // The ledger's bottom line is derived (see timeBudget) rather than taken
+          // from the model, so the figure can never disagree with the rows above it.
+          const availableMin = timeBudget?.availableMin || 0;
+          const hasUnknownDeduction = !!timeBudget?.provisional;
           return (
             <div ref={resultsRef} className="space-y-4">
               {/* Verdict banner */}
@@ -1435,12 +1452,12 @@ const LayoverMaximizer = ({ tool }) => {
   // RENDER: DELAY TRACKER
   // ════════════════════════════════════════════════════════════
   const renderDelay = () => {
-    const thresholds = results?.time_math ? [
-      { delay: 30, available: results.time_math.available_city_minutes - 30 },
-      { delay: 60, available: results.time_math.available_city_minutes - 60 },
-      { delay: 90, available: results.time_math.available_city_minutes - 90 },
-      { delay: 120, available: results.time_math.available_city_minutes - 120 },
-    ].filter(row => row.available > -60) : [];
+    // The threshold scale reads a verdict off each row, so it only earns its
+    // place when the remainder is complete. Provisional budgets show the delay
+    // arithmetic above and nothing that looks like a graded forecast.
+    const thresholds = (timeBudget && !timeBudget.provisional) ? [30, 60, 90, 120]
+      .map(delay => ({ delay, available: timeBudget.availableMin - delay }))
+      .filter(row => row.available > -60) : [];
 
     return (
       <div className="space-y-4">
@@ -1458,7 +1475,7 @@ const LayoverMaximizer = ({ tool }) => {
             <div className="space-y-4">
               <div className={`${c.quoteBg} rounded-lg p-3`}>
                 <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_current_plan')} <strong>{results.airport_name}</strong> — {results.verdict_emoji} {results.verdict}</p>
-                <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_available')} <strong>{t('lmx_unit_hm', { h: Math.floor(results.time_math.available_city_minutes / 60), m: results.time_math.available_city_minutes % 60 })}</strong></p>
+                <p className={`text-xs ${c.textMuteded}`}>{t('lmx_delay_available')} <strong>{t('lmx_unit_hm', { h: Math.floor((timeBudget?.availableMin || 0) / 60), m: (timeBudget?.availableMin || 0) % 60 })}</strong>{timeBudget?.provisional ? ` — ${t('lmx_tm_before_unknowns')}` : ''}</p>
               </div>
 
               <div>
@@ -1492,6 +1509,9 @@ const LayoverMaximizer = ({ tool }) => {
                       </p>
                       <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_delay_lost', { n: delayImpact.lost })}</p>
                     </>
+                  )}
+                  {delayImpact.provisional && (
+                    <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('lmx_tm_before_unknowns')}</p>
                   )}
                 </div>
               )}
