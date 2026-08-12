@@ -71,6 +71,18 @@ function getBucket(map, key, windowMs) {
 //   limits    — { perMinute, perDay }
 //   keyPrefix — separate bucket namespace (e.g., 'namestorm:' so creative
 //               tools don't eat into the global budget and vice versa)
+// Actions a TOOL fires on the visitor's behalf, not ones they clicked. Date
+// Night warms the venue cache as they type a location, and asks for next-step
+// suggestions the moment a plan renders. Charging those to the same bucket as
+// the plan meant two plans produced "please slow down" for normal use.
+//
+// The knowledge lives HERE rather than in server.js because /api is limited in
+// two places — app level and per route — and if the two disagree about which
+// bucket an action belongs in, the automatic call lands in the user's bucket
+// anyway under the other key. One definition, both layers, same answer.
+const AUTOMATIC_ACTIONS = new Set(['warm-venues', 'next-help']);
+const AUTOMATIC_LIMITS = { perMinute: 40, perDay: 600 };
+
 function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
   return (req, res, next) => {
     // ── Perf-probe bypass (development only) ──
@@ -84,7 +96,27 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     // bucket per request and bypass every limit.
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
 
-    const key = keyPrefix + ip;
+    // An automatic action is redirected to its own bucket whatever the caller
+    // asked for, so both limiting layers agree and the visitor's own budget is
+    // untouched by chatter the tool generated.
+    const automatic = AUTOMATIC_ACTIONS.has(req.body && req.body.action);
+    const effLimits = automatic ? AUTOMATIC_LIMITS : limits;
+    const key = (automatic ? 'auto:' : keyPrefix) + ip;
+
+    // COUNT ONCE PER REQUEST. server.js rate-limits every POST to /api, and
+    // 128 route files ALSO apply their own rateLimit() — same limits, same
+    // empty keyPrefix, so the same bucket was incremented twice for every
+    // single request. DEFAULT_LIMITS says 12 a minute; the real ceiling was 6,
+    // and had been for as long as both layers existed. Measured on
+    // /api/the-crux: 6 POSTs, then 429.
+    //
+    // Marking the request means the first limiter to see it decides, and any
+    // later one is a no-op. Deliberately keyed on the KEY, not a bare boolean,
+    // so a deliberately different bucket (the automatic-actions limiter, which
+    // uses its own prefix) is still free to count separately.
+    req._rateLimitedKeys = req._rateLimitedKeys || new Set();
+    if (req._rateLimitedKeys.has(key)) return next();
+    req._rateLimitedKeys.add(key);
 
     // Backstop against unbounded Map growth (a spoof/rotation attack, or simply
     // huge traffic, would otherwise grow the daily Map for 24h between cleanups
@@ -96,31 +128,31 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     const dailyBucket = getBucket(dailyWindow, key, DAILY_WINDOW_MS);
 
     // ── Check daily limit ──
-    if (dailyBucket.count >= limits.perDay) {
+    if (dailyBucket.count >= effLimits.perDay) {
       const retryAfter = Math.ceil((dailyBucket.resetAt - Date.now()) / 1000);
       res.set('Retry-After', String(retryAfter));
-      res.set('X-RateLimit-Daily-Limit', String(limits.perDay));
+      res.set('X-RateLimit-Daily-Limit', String(effLimits.perDay));
       res.set('X-RateLimit-Daily-Remaining', '0');
       res.set('X-RateLimit-Daily-Reset', new Date(dailyBucket.resetAt).toISOString());
       return res.status(429).json({
         error: 'Daily limit reached. Come back tomorrow!',
         retryAfter,
         limitType: 'daily',
-        limit: limits.perDay,
+        limit: effLimits.perDay,
       });
     }
 
     // ── Check per-minute limit ──
-    if (shortBucket.count >= limits.perMinute) {
+    if (shortBucket.count >= effLimits.perMinute) {
       const retryAfter = Math.ceil((shortBucket.resetAt - Date.now()) / 1000);
       res.set('Retry-After', String(retryAfter));
-      res.set('X-RateLimit-Minute-Limit', String(limits.perMinute));
+      res.set('X-RateLimit-Minute-Limit', String(effLimits.perMinute));
       res.set('X-RateLimit-Minute-Remaining', '0');
       return res.status(429).json({
         error: 'Too many requests. Please slow down.',
         retryAfter,
         limitType: 'minute',
-        limit: limits.perMinute,
+        limit: effLimits.perMinute,
       });
     }
 
@@ -129,11 +161,13 @@ function rateLimit(limits = DEFAULT_LIMITS, keyPrefix = '') {
     dailyBucket.count++;
 
     // ── Add informational headers ──
-    res.set('X-RateLimit-Minute-Remaining', String(Math.max(0, limits.perMinute - shortBucket.count)));
-    res.set('X-RateLimit-Daily-Remaining', String(Math.max(0, limits.perDay - dailyBucket.count)));
+    res.set('X-RateLimit-Minute-Remaining', String(Math.max(0, effLimits.perMinute - shortBucket.count)));
+    res.set('X-RateLimit-Daily-Remaining', String(Math.max(0, effLimits.perDay - dailyBucket.count)));
 
     next();
   };
 }
 
-module.exports = { rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS };
+module.exports = {
+  AUTOMATIC_ACTIONS,
+  AUTOMATIC_LIMITS, rateLimit, DEFAULT_LIMITS, CREATIVE_LIMITS, DIVERSION_LIMITS };

@@ -303,10 +303,12 @@ const DateNight = ({ tool }) => {
 
   // Typing pauses count too, not just leaving the field — someone who types
   // "Chicago" and goes straight to the date-type buttons never blurs the input.
+  // 1500ms rather than 900: long enough that "Chicago" then " IL" is one search
+  // and not two, short enough to still finish before they pick a date type.
   useEffect(() => {
     const loc = location.trim();
     if (loc.length < 3) return undefined;
-    const id = setTimeout(() => warmVenues(loc), 900);
+    const id = setTimeout(() => warmVenues(loc), 1500);
     return () => clearTimeout(id);
   }, [location, warmVenues]);
 
