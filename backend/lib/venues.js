@@ -42,12 +42,19 @@ function venueFacts(location) {
     cacheKey: `date-venues:${normalizeKeyPart(location)}`,
     label: 'date-night-venues',
     ttlMs: 7 * 24 * 60 * 60 * 1000, // shorter than the 14-day default; restaurants close
+    // Wait, rather than answer with venue categories, the first time anyone
+    // asks for a location we have never seen. A cold search measured 32s
+    // (Reykjavik, timed end to end), so a plan that would take ~11s takes
+    // ~43s — under the ~60s point where Safari abandons a fetch, and paid
+    // once per location ever rather than once per visitor. Any cached entry,
+    // even a stale one, returns immediately and never reaches this.
+    coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 32000),
     system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
-    userPrompt: `Using web_search, list REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
+    userPrompt: `Using web_search, list 10-12 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
 
-Cover as many of these as you can find: a bar or cocktail place, a casual restaurant, a nicer restaurant, a dessert or ice-cream place, a coffee or tea place, somewhere to walk (park, waterfront, plaza), and something to do (music, theatre, gallery, games).
+One or two each of: bar, casual restaurant, nicer restaurant, dessert, coffee, somewhere to walk, something to do.
 
-Only include a place you can actually verify is open. Fewer real ones is better than padding the list.
+Only include a place you can verify is open. Fewer real ones beats padding the list. Keep every note to one short clause — the list is prompt input, not prose.
 
 Return ONLY valid JSON:
 { "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|activity", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
@@ -59,7 +66,7 @@ Return ONLY valid JSON:
       // given. This runs while the block is being BUILT, on a cache miss, so it
       // is paid once per location per TTL and never on the path of a request.
       // Permanently-closed venues are dropped inside enrich().
-      const enriched = await places.enrich(list.slice(0, 24), location);
+      const enriched = await places.enrich(list.slice(0, 16), location);
 
       const lines = enriched.map(v => {
         const shut = places.closedDays(v.periods);

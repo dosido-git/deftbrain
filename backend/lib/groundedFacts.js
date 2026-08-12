@@ -114,9 +114,24 @@ function stripCites(val) {
   return val;
 }
 
-// Normalize free-text jurisdiction input ("Berlin, Deutschland ") into a stable cache key part.
+// Normalize free-text jurisdiction input ("Berlin, Deutschland ") into a stable
+// cache key part.
+//
+// Punctuation is dropped so "Denver, CO", "Denver CO" and "Denver,CO" are one
+// entry instead of three. That is a pure spelling variant and cannot be wrong.
+//
+// What this deliberately does NOT do is fall back to a shorter form — "Dublin,
+// Ohio" will not borrow the entry for "Dublin". 36 of the 60 seeded locations
+// are bare city names, and Dublin, Boston, Melbourne, Madrid and Vancouver all
+// exist in more than one country. Serving Irish pubs to someone in Ohio is the
+// exact failure the venue grounding was built to prevent, so an unrecognised
+// location gets its own lookup.
 function normalizeKeyPart(s) {
-  return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ').slice(0, 80) || 'unknown';
+  return String(s || '').trim().toLowerCase()
+    .replace(/[.,/#!$%^&*;:{}=\-_`~()'"]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80) || 'unknown';
 }
 
 /**
@@ -153,7 +168,7 @@ function normalizeKeyPart(s) {
 // contract — the caller's hedge rules take over — so this is the same
 // degradation, just without the 25s wait attached to it.
 
-async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, system, timeoutMs = 120000 }) {
+async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 * DAY_MS, maxTokens = 6000, system, timeoutMs = 120000, coldWaitMs = 0 }) {
   const hit = cache.get(cacheKey);
   const fresh = hit && hit.expires > Date.now();
 
@@ -203,7 +218,31 @@ async function groundedFacts({ cacheKey, label, userPrompt, render, ttlMs = 14 *
   }
 
   // Stale beats nothing: an expired block is still the last verified law we saw.
-  return hit ? hit.block : '';
+  if (hit) return hit.block;
+
+  // Nothing cached at all. Callers that would rather wait than answer
+  // unverified can opt in with coldWaitMs; everyone else keeps the old
+  // behaviour and gets '' immediately.
+  //
+  // This is only ever the FIRST request for a location. A stale entry returns
+  // above without waiting, so the cost is paid once and never again — and the
+  // 60-location seed means most visitors never reach this line at all.
+  if (coldWaitMs > 0 && inFlight.has(cacheKey)) {
+    let bail;
+    try {
+      const block = await Promise.race([
+        inFlight.get(cacheKey),
+        new Promise((resolve) => { bail = setTimeout(() => resolve(null), coldWaitMs); }),
+      ]);
+      if (block) {
+        console.log(`[${label}] cold request waited for grounding and got it`);
+        return block;
+      }
+      console.log(`[${label}] grounding did not land within ${coldWaitMs}ms — answering unverified`);
+    } catch { /* the fetch failed; fall through unverified */ }
+    finally { clearTimeout(bail); }
+  }
+  return '';
 }
 
 function store(key, block, ttlMs, data) {
