@@ -608,6 +608,20 @@ const LayoverMaximizer = ({ tool }) => {
         {/* ── RESULTS ── */}
         {results && (() => {
           const r = results;
+          // The ledger's bottom line is derived here rather than taken from the
+          // model, so the figure can never disagree with the rows above it. When
+          // a deduction is unknowable — immigration without a passport — the
+          // remainder is only the time left BEFORE that unknown, and says so.
+          const tm = r.time_math || {};
+          const deductions = [
+            tm.deplane_and_walk_minutes, tm.immigration_exit_minutes,
+            tm.transit_to_city_minutes, tm.transit_from_city_minutes,
+            tm.security_reentry_minutes, tm.buffer_minutes,
+          ];
+          const spent = deductions.reduce((sum, v) => sum + (Number(v) || 0), 0);
+          const availableMin = Math.max(0, (Number(tm.total_layover_minutes) || 0) - spent);
+          // Number(null) is 0, so null must be caught before the numeric test.
+          const hasUnknownDeduction = deductions.some(v => v === null || v === undefined || v === '' || !Number.isFinite(Number(v)));
           return (
             <div ref={resultsRef} className="space-y-4">
               {/* Verdict banner */}
@@ -654,17 +668,60 @@ const LayoverMaximizer = ({ tool }) => {
                     ))}
                     <div className={`flex items-center justify-between text-sm font-black border-t ${c.border} pt-2 mt-2`}>
                       <span className={c.text}>{t('lmx_tm_available')}</span>
-                      <span className={r.time_math.available_city_minutes > 60 ? c.success : c.danger}>
-                        {t('lmx_unit_hm', { h: Math.floor(r.time_math.available_city_minutes / 60), m: r.time_math.available_city_minutes % 60 })}
+                      <span className={hasUnknownDeduction ? c.textMuteded : (availableMin > 60 ? c.success : c.danger)}>
+                        {t('lmx_unit_hm', { h: Math.floor(availableMin / 60), m: availableMin % 60 })}
                       </span>
                     </div>
+                    {hasUnknownDeduction && (
+                      <p className={`text-[10px] ${c.textMuteded} text-end`}>{t('lmx_tm_before_unknowns')}</p>
+                    )}
                   </div>
-                  {r.time_math.return_by_time && (
+                  {/* Every figure above used to carry the same authority. They are
+                      not equivalent: the layover length came from the traveller,
+                      the transit and security allowances are estimates, and
+                      immigration cannot be known at all without a passport. The
+                      backend now says which is which, and this shows it. */}
+                  {r.time_math.provenance && (
+                    <div className={`mt-3 pt-2 border-t ${c.border} space-y-0.5`}>
+                      {(r.time_math.provenance.told_us || []).map((x, i) => (
+                        <p key={`t${i}`} className={`text-[10px] ${c.textMuteded}`}>{x} — {t('lmx_prov_told')}</p>
+                      ))}
+                      {(r.time_math.provenance.estimated || []).map((x, i) => (
+                        <p key={`e${i}`} className={`text-[10px] ${c.textMuteded}`}>{x} — {t('lmx_prov_estimated')}</p>
+                      ))}
+                      {(r.time_math.provenance.unknown || []).map((x, i) => (
+                        <p key={`u${i}`} className={`text-[10px] font-bold ${c.danger}`}>{x}</p>
+                      ))}
+                    </div>
+                  )}
+                  {/* A clock time to be back by is only real if a landing time was
+                      given. Without one the tool used to print a confident hour it
+                      had invented — the single worst thing in the old output. */}
+                  {r.time_math.return_by_time ? (
                     <div className={`${c.warning} border rounded-lg p-3 mt-3 text-center`}>
                       <p className={`text-xs font-bold ${c.warning}`}>{t('lmx_tm_be_back')} <span className="text-sm">{r.time_math.return_by_time}</span></p>
                     </div>
+                  ) : (
+                    <div className={`${c.quoteBg} border ${c.border} rounded-lg p-3 mt-3`}>
+                      <p className={`text-xs ${c.text}`}>🕐 {t('lmx_tm_need_landing')}</p>
+                    </div>
                   )}
                 </Section>
+              )}
+
+              {/* What is still missing — shown BEFORE the detail, because a
+                  verdict with an unresolved gap in it should say so up front
+                  rather than bury the caveat inside a finished-looking answer. */}
+              {Array.isArray(r.need_to_know) && r.need_to_know.length > 0 && (
+                <div className={`${c.quoteBg} border ${c.border} rounded-xl p-4`}>
+                  <p className={`text-xs font-bold ${c.text} mb-2`}>{t('lmx_need_title')}</p>
+                  {r.need_to_know.map((n, i) => (
+                    <div key={i} className="mb-2 last:mb-0">
+                      <p className={`text-sm font-bold ${c.text}`}>{n.question}</p>
+                      {n.why && <p className={`text-xs ${c.textMuteded}`}>{t('lmx_need_why')} {n.why}</p>}
+                    </div>
+                  ))}
+                </div>
               )}
 
               {/* Terminal change warning */}
@@ -753,6 +810,32 @@ const LayoverMaximizer = ({ tool }) => {
                       <p className={`text-xs ${c.textMuteded}`}>📍 {r.stay_in_airport.terminal_info}</p>
                     )}
 
+                    {/* The one recommendation, before any list of alternatives */}
+                    {r.best_plan?.headline && (
+                      <div className={`${c.highlight} border rounded-xl p-4`}>
+                        <p className={`text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80`}>{t('lmx_best_plan')}</p>
+                        <p className={`text-sm font-bold ${c.text} mb-2`}>{r.best_plan.headline}</p>
+                        {r.best_plan.steps?.length > 0 && (
+                          <div className="space-y-1.5 mb-2">
+                            {r.best_plan.steps.map((s, i) => (
+                              <div key={i} className="flex gap-2">
+                                <span className={`text-xs font-bold ${c.skyText} flex-shrink-0 min-w-[3.5rem]`}>{s.when}</span>
+                                <span className="text-xs">{s.do}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {r.best_plan.why && <p className="text-xs opacity-90">{r.best_plan.why}</p>}
+                        {r.best_plan.leave_for_gate && (
+                          <p className={`text-xs font-bold ${c.text} mt-2`}>🚶 {t('lmx_leave_for_gate')} {r.best_plan.leave_for_gate}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {r.best_plan?.headline && (r.stay_in_airport.food?.length > 0 || r.stay_in_airport.lounges?.length > 0) && (
+                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide pt-1`}>{t('lmx_other_options')}</p>
+                    )}
+
                     {/* Food */}
                     {r.stay_in_airport.food?.length > 0 && (
                       <div>
@@ -786,6 +869,7 @@ const LayoverMaximizer = ({ tool }) => {
                             </div>
                             <p className={`text-xs ${c.textMuteded}`}>{l.access} • {l.terminal}</p>
                             {l.highlights && <p className={`text-[10px] ${c.text}`}>{l.highlights}</p>}
+                            <p className={`text-[10px] ${c.textMuteded} italic mt-0.5`}>{t('lmx_confirm_access')}</p>
                           </div>
                         ))}
                         <button onClick={() => { setLoungeAirport(r.airport_code || airport); setView('lounge'); }}
@@ -802,7 +886,7 @@ const LayoverMaximizer = ({ tool }) => {
                     )}
 
                     {r.stay_in_airport.hidden_gems?.length > 0 && (
-                      <div className={`${isDark ? 'bg-cyan-600/20 border-cyan-800' : 'bg-cyan-600 border-cyan-200'} border rounded-lg p-3`}>
+                      <div className={`${c.quoteBg} rounded-lg p-3`}>
                         <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_stay_hidden_gems')}</p>
                         {r.stay_in_airport.hidden_gems.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}
                       </div>
@@ -853,6 +937,24 @@ const LayoverMaximizer = ({ tool }) => {
                     {r.pro_tips.map((tip, i) => <p key={i} className="text-xs">💡 {tip}</p>)}
                   </div>
                 </Section>
+              )}
+
+              {/* A clear end to the layover itself, so the cross-links below land
+                  after the experience finishes rather than interrupting it. */}
+              {(r.best_plan?.headline || r.verdict_summary) && (
+                <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                  <p className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_youre_set')}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>
+                    {r.verdict === 'YES' && r.leave_the_airport?.explore_itinerary?.theme
+                      ? r.leave_the_airport.explore_itinerary.theme
+                      : r.best_plan?.headline || r.verdict_summary}
+                  </p>
+                  {/* best_plan is the airside plan; if the verdict was go, quoting
+                      its gate time here would contradict the excursion above. */}
+                  {r.verdict !== 'YES' && r.best_plan?.leave_for_gate && (
+                    <p className={`text-xs font-bold ${c.text} mt-1`}>🚶 {t('lmx_leave_for_gate')} {r.best_plan.leave_for_gate}</p>
+                  )}
+                </div>
               )}
 
 
@@ -957,6 +1059,7 @@ const LayoverMaximizer = ({ tool }) => {
                         <span className={c.textMuteded}>{am.cost}</span>
                       </div>
                     ))}
+                    <p className={`text-[10px] ${c.textMuteded} italic mt-1`}>{t('lmx_confirm_access')}</p>
                   </div>
                 )}
 

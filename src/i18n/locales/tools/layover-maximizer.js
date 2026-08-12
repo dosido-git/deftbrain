@@ -72,7 +72,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Checked bags (through to destination)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Travel style",
-    lmx_btn_analyze: "Analyze My Layover",
+    lmx_btn_analyze: "What do I have time for?",
+    lmx_tm_before_unknowns: "before the unknowns below",
+    lmx_best_plan: "If you were my traveller, I'd do this",
+    lmx_other_options: "Other good options",
+    lmx_leave_for_gate: "Start heading for your gate:",
+    lmx_confirm_access: "Access rules change often — confirm with the lounge before you walk over.",
+    lmx_youre_set: "You're set.",
+    lmx_prov_told: "you told us",
+    lmx_prov_estimated: "conservative estimate",
+    lmx_tm_need_landing: "Add your landing time and we can tell you exactly when to be back.",
+    lmx_need_title: "What I still need to know",
+    lmx_need_why: "Why it matters:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "I want to see the city",
@@ -90,7 +101,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Find Lounges",
 
     // Time math section
-    lmx_sec_time_math: "Time Math",
+    lmx_sec_time_math: "Where your time goes",
     lmx_tm_total_layover: "Total layover",
     lmx_tm_deplane_walk: "Deplane + walk",
     lmx_tm_immigration: "Immigration (exit)",
@@ -363,7 +374,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Equipaje facturado (hasta el destino)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viaje",
-    lmx_btn_analyze: "Analizar mi escala",
+    lmx_btn_analyze: "¿Para qué me da tiempo?",
+    lmx_tm_before_unknowns: "antes de las incógnitas de abajo",
+    lmx_best_plan: "Si fueras mi viajero, haría esto",
+    lmx_other_options: "Otras buenas opciones",
+    lmx_leave_for_gate: "Empieza a ir hacia tu puerta:",
+    lmx_confirm_access: "Las normas de acceso cambian a menudo: confírmalo con la sala antes de ir.",
+    lmx_youre_set: "Ya está todo listo.",
+    lmx_prov_told: "nos lo dijiste",
+    lmx_prov_estimated: "estimación conservadora",
+    lmx_tm_need_landing: "Añade tu hora de aterrizaje y te diremos exactamente cuándo volver.",
+    lmx_need_title: "Lo que aún necesito saber",
+    lmx_need_why: "Por qué importa:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Quiero ver la ciudad",
@@ -381,7 +403,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Buscar salas VIP",
 
     // Time math section
-    lmx_sec_time_math: "Cálculo de tiempo",
+    lmx_sec_time_math: "A dónde se va tu tiempo",
     lmx_tm_total_layover: "Escala total",
     lmx_tm_deplane_walk: "Desembarque + caminata",
     lmx_tm_immigration: "Inmigración (salida)",
@@ -654,7 +676,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 托运行李（直挂至目的地）",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅行风格",
-    lmx_btn_analyze: "分析我的中转",
+    lmx_btn_analyze: "我有时间做什么？",
+    lmx_tm_before_unknowns: "未计入下方的未知项",
+    lmx_best_plan: "如果你是我的旅客，我会这么做",
+    lmx_other_options: "其他不错的选择",
+    lmx_leave_for_gate: "开始前往登机口：",
+    lmx_confirm_access: "入场规则时常变动——过去之前先向休息室确认。",
+    lmx_youre_set: "你已经准备好了。",
+    lmx_prov_told: "你告诉我们的",
+    lmx_prov_estimated: "保守估计",
+    lmx_tm_need_landing: "填写落地时间，我们就能告诉你确切的返回时间。",
+    lmx_need_title: "我还需要知道的事",
+    lmx_need_why: "为什么重要：",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "我想看看这座城市",
@@ -672,7 +705,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ 查找贵宾休息室",
 
     // Time math section
-    lmx_sec_time_math: "时间计算",
+    lmx_sec_time_math: "你的时间都花在哪里",
     lmx_tm_total_layover: "总中转时间",
     lmx_tm_deplane_walk: "下飞机 + 步行",
     lmx_tm_immigration: "入境（出关）",
@@ -945,7 +978,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 चेक किया हुआ सामान (गंतव्य तक सीधा)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "यात्रा शैली",
-    lmx_btn_analyze: "मेरे लेओवर का विश्लेषण करें",
+    lmx_btn_analyze: "मेरे पास किस चीज़ का समय है?",
+    lmx_tm_before_unknowns: "नीचे दी गई अज्ञात बातों से पहले",
+    lmx_best_plan: "अगर आप मेरे यात्री होते, तो मैं यह करता",
+    lmx_other_options: "अन्य अच्छे विकल्प",
+    lmx_leave_for_gate: "अपने गेट की ओर बढ़ना शुरू करें:",
+    lmx_confirm_access: "प्रवेश नियम अक्सर बदलते हैं — जाने से पहले लाउंज से पुष्टि कर लें।",
+    lmx_youre_set: "आप तैयार हैं।",
+    lmx_prov_told: "आपने बताया",
+    lmx_prov_estimated: "रूढ़िवादी अनुमान",
+    lmx_tm_need_landing: "अपना लैंडिंग समय जोड़ें, तो हम बता सकेंगे कि वापस कब आना है।",
+    lmx_need_title: "जो मुझे अभी भी जानना है",
+    lmx_need_why: "यह क्यों मायने रखता है:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "मैं शहर देखना चाहता हूँ",
@@ -963,7 +1007,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ लाउंज खोजें",
 
     // Time math section
-    lmx_sec_time_math: "समय गणना",
+    lmx_sec_time_math: "आपका समय कहाँ जाता है",
     lmx_tm_total_layover: "कुल लेओवर",
     lmx_tm_deplane_walk: "विमान से उतरना + पैदल चलना",
     lmx_tm_immigration: "आव्रजन (निकास)",
@@ -1236,7 +1280,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 أمتعة مسجَّلة (حتى الوجهة مباشرة)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "أسلوب السفر",
-    lmx_btn_analyze: "حلّل فترة ترانزيتي",
+    lmx_btn_analyze: "ما الذي يتّسع له وقتي؟",
+    lmx_tm_before_unknowns: "قبل المجهولات المذكورة أدناه",
+    lmx_best_plan: "لو كنت مسافري، لفعلت هذا",
+    lmx_other_options: "خيارات جيدة أخرى",
+    lmx_leave_for_gate: "ابدأ التوجّه إلى بوابتك:",
+    lmx_confirm_access: "قواعد الدخول تتغيّر كثيرًا — تأكّد من الصالة قبل أن تذهب إليها.",
+    lmx_youre_set: "أنت جاهز.",
+    lmx_prov_told: "أخبرتنا به",
+    lmx_prov_estimated: "تقدير متحفّظ",
+    lmx_tm_need_landing: "أضف وقت هبوطك لنخبرك بالضبط متى يجب أن تعود.",
+    lmx_need_title: "ما زلت بحاجة لمعرفة هذا",
+    lmx_need_why: "لماذا يهم:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "أريد أن أرى المدينة",
@@ -1254,7 +1309,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ ابحث عن الصالات",
 
     // Time math section
-    lmx_sec_time_math: "حساب الوقت",
+    lmx_sec_time_math: "أين يذهب وقتك",
     lmx_tm_total_layover: "إجمالي الترانزيت",
     lmx_tm_deplane_walk: "النزول + المشي",
     lmx_tm_immigration: "الجوازات (الخروج)",
@@ -1527,7 +1582,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Bagagem despachada (direto até o destino)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viagem",
-    lmx_btn_analyze: "Analisar minha conexão",
+    lmx_btn_analyze: "Para o que tenho tempo?",
+    lmx_tm_before_unknowns: "antes das incógnitas abaixo",
+    lmx_best_plan: "Se você fosse meu viajante, eu faria assim",
+    lmx_other_options: "Outras boas opções",
+    lmx_leave_for_gate: "Comece a ir para o seu portão:",
+    lmx_confirm_access: "As regras de acesso mudam com frequência — confirme com a sala antes de ir.",
+    lmx_youre_set: "Está tudo pronto.",
+    lmx_prov_told: "você nos disse",
+    lmx_prov_estimated: "estimativa conservadora",
+    lmx_tm_need_landing: "Informe o horário de pouso e diremos exatamente quando voltar.",
+    lmx_need_title: "O que ainda preciso saber",
+    lmx_need_why: "Por que importa:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Quero conhecer a cidade",
@@ -1545,7 +1611,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Buscar salas VIP",
 
     // Time math section
-    lmx_sec_time_math: "Cálculo de tempo",
+    lmx_sec_time_math: "Para onde vai o seu tempo",
     lmx_tm_total_layover: "Conexão total",
     lmx_tm_deplane_walk: "Desembarque + caminhada",
     lmx_tm_immigration: "Imigração (saída)",
@@ -1818,7 +1884,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Bagages enregistrés (jusqu'à destination)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Style de voyage",
-    lmx_btn_analyze: "Analyser mon escale",
+    lmx_btn_analyze: "J'ai le temps de faire quoi ?",
+    lmx_tm_before_unknowns: "avant les inconnues ci-dessous",
+    lmx_best_plan: "Si vous étiez mon voyageur, voici ce que je ferais",
+    lmx_other_options: "Autres bonnes options",
+    lmx_leave_for_gate: "Partez vers votre porte :",
+    lmx_confirm_access: "Les règles d'accès changent souvent : vérifiez auprès du salon avant de vous déplacer.",
+    lmx_youre_set: "Vous êtes paré.",
+    lmx_prov_told: "vous nous l'avez dit",
+    lmx_prov_estimated: "estimation prudente",
+    lmx_tm_need_landing: "Indiquez votre heure d'atterrissage et nous vous dirons quand revenir précisément.",
+    lmx_need_title: "Ce qu'il me manque encore",
+    lmx_need_why: "Pourquoi c'est important :",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Je veux découvrir la ville",
@@ -1836,7 +1913,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Trouver des salons",
 
     // Time math section
-    lmx_sec_time_math: "Calcul du temps",
+    lmx_sec_time_math: "Où passe votre temps",
     lmx_tm_total_layover: "Escale totale",
     lmx_tm_deplane_walk: "Débarquement + marche",
     lmx_tm_immigration: "Immigration (sortie)",
@@ -2109,7 +2186,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Aufgegebenes Gepäck (durchgecheckt zum Ziel)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Reisestil",
-    lmx_btn_analyze: "Meinen Zwischenstopp analysieren",
+    lmx_btn_analyze: "Wofür reicht meine Zeit?",
+    lmx_tm_before_unknowns: "vor den unten genannten Unbekannten",
+    lmx_best_plan: "Wärst du mein Reisender, würde ich das tun",
+    lmx_other_options: "Weitere gute Optionen",
+    lmx_leave_for_gate: "Mach dich auf zum Gate:",
+    lmx_confirm_access: "Zugangsregeln ändern sich häufig — kläre es mit der Lounge, bevor du hingehst.",
+    lmx_youre_set: "Du bist startklar.",
+    lmx_prov_told: "von dir angegeben",
+    lmx_prov_estimated: "vorsichtige Schätzung",
+    lmx_tm_need_landing: "Gib deine Landezeit an, dann sagen wir dir genau, wann du zurück sein musst.",
+    lmx_need_title: "Was ich noch wissen muss",
+    lmx_need_why: "Warum das zählt:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Ich will die Stadt sehen",
@@ -2127,7 +2215,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Lounges finden",
 
     // Time math section
-    lmx_sec_time_math: "Zeitrechnung",
+    lmx_sec_time_math: "Wohin deine Zeit geht",
     lmx_tm_total_layover: "Gesamter Zwischenstopp",
     lmx_tm_deplane_walk: "Aussteigen + Fußweg",
     lmx_tm_immigration: "Einreise (Ausgang)",
@@ -2400,7 +2488,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 預け入れ荷物（目的地までスルーチェックイン）",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅のスタイル",
-    lmx_btn_analyze: "私の乗り継ぎを分析",
+    lmx_btn_analyze: "何をする時間がある？",
+    lmx_tm_before_unknowns: "下記の不明分を差し引く前",
+    lmx_best_plan: "私があなたなら、こうします",
+    lmx_other_options: "ほかの良い選択肢",
+    lmx_leave_for_gate: "ゲートへ向かい始める時刻：",
+    lmx_confirm_access: "入室条件は頻繁に変わります。向かう前にラウンジに確認を。",
+    lmx_youre_set: "これで準備完了です。",
+    lmx_prov_told: "あなたの入力",
+    lmx_prov_estimated: "控えめな見積もり",
+    lmx_tm_need_landing: "着陸時刻を入力すれば、戻るべき時刻を正確にお伝えします。",
+    lmx_need_title: "まだ知りたいこと",
+    lmx_need_why: "なぜ重要か：",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "街を見て回りたい",
@@ -2418,7 +2517,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ ラウンジを探す",
 
     // Time math section
-    lmx_sec_time_math: "時間の計算",
+    lmx_sec_time_math: "時間はどこへ消えるか",
     lmx_tm_total_layover: "乗り継ぎ時間の合計",
     lmx_tm_deplane_walk: "降機 + 徒歩",
     lmx_tm_immigration: "入国審査（出口）",
@@ -2691,7 +2790,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 위탁 수하물 (목적지까지 연결)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "여행 스타일",
-    lmx_btn_analyze: "내 환승 분석하기",
+    lmx_btn_analyze: "무엇을 할 시간이 있나요?",
+    lmx_tm_before_unknowns: "아래 미확인 항목을 빼기 전",
+    lmx_best_plan: "제가 여행자라면 이렇게 하겠습니다",
+    lmx_other_options: "다른 좋은 선택지",
+    lmx_leave_for_gate: "게이트로 출발할 시각:",
+    lmx_confirm_access: "이용 조건은 자주 바뀝니다 — 이동하기 전에 라운지에 확인하세요.",
+    lmx_youre_set: "준비 끝났습니다.",
+    lmx_prov_told: "직접 알려주신 값",
+    lmx_prov_estimated: "보수적인 추정",
+    lmx_tm_need_landing: "착륙 시각을 입력하시면 언제 돌아와야 하는지 정확히 알려드릴게요.",
+    lmx_need_title: "아직 알아야 할 것",
+    lmx_need_why: "왜 중요한가:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "도시를 둘러보고 싶어요",
@@ -2709,7 +2819,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ 라운지 찾기",
 
     // Time math section
-    lmx_sec_time_math: "시간 계산",
+    lmx_sec_time_math: "시간이 어디로 가는지",
     lmx_tm_total_layover: "총 환승 시간",
     lmx_tm_deplane_walk: "하기 + 도보",
     lmx_tm_immigration: "입국 심사 (출구)",
@@ -2982,7 +3092,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Сданный багаж (зарегистрирован до пункта назначения)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Стиль путешествия",
-    lmx_btn_analyze: "Проанализировать мою пересадку",
+    lmx_btn_analyze: "На что у меня хватит времени?",
+    lmx_tm_before_unknowns: "без учёта неизвестных ниже",
+    lmx_best_plan: "Будь вы моим путешественником, я бы сделал так",
+    lmx_other_options: "Другие хорошие варианты",
+    lmx_leave_for_gate: "Выдвигайтесь к выходу:",
+    lmx_confirm_access: "Правила доступа часто меняются — уточните в лаунже, прежде чем идти.",
+    lmx_youre_set: "Вы готовы.",
+    lmx_prov_told: "вы сообщили",
+    lmx_prov_estimated: "осторожная оценка",
+    lmx_tm_need_landing: "Укажите время посадки, и мы скажем точно, когда возвращаться.",
+    lmx_need_title: "Что мне ещё нужно знать",
+    lmx_need_why: "Почему это важно:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Хочу посмотреть город",
@@ -3000,7 +3121,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Найти лаунджи",
 
     // Time math section
-    lmx_sec_time_math: "Расчёт времени",
+    lmx_sec_time_math: "Куда уходит ваше время",
     lmx_tm_total_layover: "Вся пересадка",
     lmx_tm_deplane_walk: "Высадка + переход",
     lmx_tm_immigration: "Паспортный контроль (выход)",
@@ -3273,7 +3394,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 กระเป๋าโหลด (เช็คตรงถึงปลายทาง)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "สไตล์การเดินทาง",
-    lmx_btn_analyze: "วิเคราะห์การต่อเครื่องของฉัน",
+    lmx_btn_analyze: "ฉันมีเวลาทำอะไรได้บ้าง?",
+    lmx_tm_before_unknowns: "ก่อนหักสิ่งที่ยังไม่ทราบด้านล่าง",
+    lmx_best_plan: "ถ้าคุณเป็นผู้โดยสารของฉัน ฉันจะทำแบบนี้",
+    lmx_other_options: "ตัวเลือกดีๆ อื่นๆ",
+    lmx_leave_for_gate: "เริ่มเดินไปที่ประตูขึ้นเครื่อง:",
+    lmx_confirm_access: "เงื่อนไขการเข้าใช้เปลี่ยนบ่อย — ยืนยันกับเลาจน์ก่อนเดินไป",
+    lmx_youre_set: "เรียบร้อยแล้ว",
+    lmx_prov_told: "คุณบอกเรา",
+    lmx_prov_estimated: "ประมาณการแบบเผื่อไว้",
+    lmx_tm_need_landing: "ใส่เวลาที่เครื่องลงจอด แล้วเราจะบอกได้ว่าต้องกลับมาเมื่อไร",
+    lmx_need_title: "สิ่งที่ฉันยังต้องรู้",
+    lmx_need_why: "ทำไมจึงสำคัญ:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "ฉันอยากชมเมือง",
@@ -3291,7 +3423,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ หาเลานจ์",
 
     // Time math section
-    lmx_sec_time_math: "การคำนวณเวลา",
+    lmx_sec_time_math: "เวลาของคุณหมดไปกับอะไร",
     lmx_tm_total_layover: "เวลาต่อเครื่องทั้งหมด",
     lmx_tm_deplane_walk: "ลงเครื่อง + เดิน",
     lmx_tm_immigration: "ตรวจคนเข้าเมือง (ขาออก)",
@@ -3564,7 +3696,18 @@ export const layoverMaximizer = {
     lmx_chk_checked_bags: "🧳 Hành lý ký gửi (chuyển thẳng đến điểm đến)",
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Phong cách du lịch",
-    lmx_btn_analyze: "Phân tích lần quá cảnh của tôi",
+    lmx_btn_analyze: "Tôi có thời gian làm gì?",
+    lmx_tm_before_unknowns: "chưa trừ các ẩn số bên dưới",
+    lmx_best_plan: "Nếu bạn là hành khách của tôi, tôi sẽ làm thế này",
+    lmx_other_options: "Các lựa chọn tốt khác",
+    lmx_leave_for_gate: "Bắt đầu đi ra cửa khởi hành:",
+    lmx_confirm_access: "Điều kiện vào phòng chờ hay thay đổi — hãy xác nhận trước khi đi bộ sang.",
+    lmx_youre_set: "Bạn đã sẵn sàng.",
+    lmx_prov_told: "bạn đã cho biết",
+    lmx_prov_estimated: "ước tính thận trọng",
+    lmx_tm_need_landing: "Thêm giờ hạ cánh để chúng tôi cho biết chính xác khi nào cần quay lại.",
+    lmx_need_title: "Điều tôi vẫn cần biết",
+    lmx_need_why: "Vì sao quan trọng:",
 
     // Travel styles (value stays English; label via t())
     lmx_style_explorer: "Tôi muốn tham quan thành phố",
@@ -3582,7 +3725,7 @@ export const layoverMaximizer = {
     lmx_btn_find_lounges: "🛋️ Tìm phòng chờ",
 
     // Time math section
-    lmx_sec_time_math: "Tính toán thời gian",
+    lmx_sec_time_math: "Thời gian của bạn đi đâu",
     lmx_tm_total_layover: "Tổng thời gian quá cảnh",
     lmx_tm_deplane_walk: "Xuống máy bay + đi bộ",
     lmx_tm_immigration: "Nhập cảnh (lối ra)",

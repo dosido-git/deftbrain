@@ -96,8 +96,8 @@
   "lastmod": "2026-08-07"
  },
  "tool:LayoverMaximizer": {
-  "hash": "c579469d0d0f1069c0db437a36b26282544798ed",
-  "lastmod": "2026-08-07"
+  "hash": "76cc457ff50bc82bdfb84a4c6e9b24250c984f18",
+  "lastmod": "2026-08-12"
  },
  "tool:NameStorm": {
   "hash": "eb2bf4716a701003f133927f5f4c0e71e5543b2c",
@@ -160,7 +160,7 @@
   "lastmod": "2026-08-07"
  },
  "homepage": {
-  "hash": "40d383479569cb0d948417bb8f5c9f044ba72d7a",
+  "hash": "d6d7ada5f9c9149cf894cd317485be4327a27f80",
   "lastmod": "2026-08-12"
  }
 }

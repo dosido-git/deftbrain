@@ -4,6 +4,10 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPORT. Not "consistently fresh", not "nearly always empty at 9 AM", not "signal is stronger there", not "consistently rated the top lounge". Those read as observed fact and none of them is checkable. Say what a place reliably IS, not what it is reliably like on a Tuesday.
+
+LOUNGE ACCESS IS SAFETY-CRITICAL, because a traveller will walk across a terminal on your word. Name the lounge and its terminal, and describe access only in terms you are sure of. Do not summarise a card or airline's access rules into a short list — they change and they are full of exceptions. Point them at the operator to confirm eligibility instead.`;
+
 const PERSONALITY = `Expert travel advisor specializing in airport layovers. Deep knowledge of terminal layouts, immigration timing, visa-free transit, lounges, city connections, and realistic time estimates. Time-aware and risk-conscious: every recommendation accounts for actual available time and builds in buffer. Missing a connection is the worst outcome.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
@@ -34,7 +38,11 @@ Plan this layover specifically — real terminal names, real restaurants, real t
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.`;
+CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_minutes minus every deduction (deplane_and_walk_minutes + immigration_exit_minutes + transit_to_city_minutes + transit_from_city_minutes + security_reentry_minutes + buffer_minutes). Do the subtraction explicitly and reconcile — breakdown_explanation must state the same figure. Never let the available-time number disagree with the breakdown. If any deduction is null because you were not told the fact behind it, available_city_minutes is null too — an unknown minus something is not a number, and breakdown_explanation must say which missing fact is blocking it. Never write 0 to mean unknown — 0 means you did the arithmetic and the honest answer is no usable time.
+
+EVERY FIELD IS READ BY A TRAVELLER, NOT A PROGRAMMER. Never name a JSON field in any text you write — not available_city_minutes, not immigration_exit_minutes, not return_by_time. Say 'your time in the city', 'immigration', 'the time to be back by'. A sentence that mentions a field name has leaked the plumbing into the answer. The same arithmetic discipline applies to return_by_time: it MUST be the latest clock time that still leaves transit_from_city_minutes + security_reentry_minutes + buffer_minutes before the departure time — compute it explicitly, never estimate.
+
+${NO_INVENTED_AUTHORITY}`;
 
     // One 12-key schema at max_tokens 4000 measured 67-68s — past the ~60s where
     // Safari abandons the fetch. The tool already asks two questions (do I leave,
@@ -44,13 +52,22 @@ CONSISTENT NUMBERS: time_math.available_city_minutes MUST equal total_layover_mi
     const brief = `LAYOVER ANALYSIS:
 Airport: ${airport}
 Layover duration: ${layoverHours} hours
-${nationality ? `Nationality/passport: ${nationality}` : ''}
-${hasCheckedBags !== undefined ? `Checked bags: ${hasCheckedBags ? 'Yes (checked through to final destination)' : 'No / carry-on only'}` : ''}
+${nationality ? `Nationality/passport: ${nationality}` : 'Nationality/passport: NOT PROVIDED'}
+${hasCheckedBags !== undefined ? `Checked bags: ${hasCheckedBags ? 'Yes (checked through to final destination)' : 'No / carry-on only'}` : 'Checked bags: NOT PROVIDED'}
 ${hasPreCheck ? 'Has TSA PreCheck / Global Entry' : ''}
-${arrivalTerminal ? `Arriving at: Terminal ${arrivalTerminal}` : ''}
-${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : ''}
-${arrivalTime ? `Arrival time: ${arrivalTime}` : ''}
+${arrivalTerminal ? `Arriving at: Terminal ${arrivalTerminal}` : 'Arrival terminal: NOT PROVIDED'}
+${connectionTerminal ? `Departing from: Terminal ${connectionTerminal}` : 'Departure terminal: NOT PROVIDED'}
+${arrivalTime ? `Landing time: ${arrivalTime}` : 'Landing time: NOT PROVIDED'}
 ${travelStyle ? `Travel style: ${travelStyle}` : ''}
+
+NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you, and several of these decide whether this traveller makes their flight:
+
+- Nationality/passport decides whether immigration and customs apply at all. Unknown passport means immigration_exit_minutes MUST be null, never 0. "No immigration" is a claim, and you cannot make it.
+- Landing time is the only thing that can produce a clock time to be back by. Unknown landing time means return_by_time MUST be null. Do not compute one from a typical schedule.
+- Terminals decide whether they re-clear security. Unknown terminals mean you must not assert either way.
+- Checked bags decide whether they can leave at all at some airports.
+
+For every NOT PROVIDED item that would change your verdict or your arithmetic, add an entry to need_to_know. Give the best answer you honestly can from what you were told, and be explicit about what would sharpen it. A preliminary answer with a stated gap is worth more than a confident answer built on an invented fact.
 
 You are answering ONE HALF of this question. Another planner is answering the other half — return only your own keys.`;
 
@@ -78,9 +95,22 @@ Return ONLY valid JSON with EXACTLY these nine top-level keys:
     "security_reentry_minutes": 40,
     "buffer_minutes": 30,
     "available_city_minutes": 120,
-    "return_by_time": "2:15 PM (if arrival time was provided, otherwise null) — one sentence",
-    "breakdown_explanation": "Plain English explanation of the math — 1-2 sentences"
+    "return_by_time": "A clock time ONLY if a landing time was provided. null otherwise — never computed from a typical schedule.",
+    "breakdown_explanation": "Plain English explanation of the math — 1-2 sentences",
+    "provenance": {
+      "told_us": ["Which figures came from the traveller, e.g. 'Layover duration'"],
+      "estimated": ["Which are conservative estimates, e.g. 'Deplaning', 'Transit', 'Security'"],
+      "unknown": ["Which could not be computed and why, e.g. 'Immigration — need your passport'"]
+    }
   },
+
+  "need_to_know": [
+    {
+      "question": "The single missing fact, as a question you would ask them — 'Are your arriving and departing flights in the same terminal?'",
+      "why": "What it would change about the answer — one sentence",
+      "changes_verdict": true
+    }
+  ],
 
   "leave_the_airport": {
     "can_leave": true,
@@ -114,15 +144,29 @@ Return ONLY valid JSON with EXACTLY these nine top-level keys:
   "terminal_change_warning": "If arriving and departing from different terminals, explain how to transfer and how long it takes. null if same terminal or unknown. — one sentence"
 }
 
-AT MOST 3 transit_options, 4 stops, 3 warnings.`;
+AT MOST 3 need_to_know — only facts that would actually change the verdict or the arithmetic, most consequential first. AT MOST 3 transit_options, 4 stops, 3 warnings.`;
 
     // ── Part B: what the airport itself offers if they stay ──
     const stayPrompt = `${brief}
 
 YOUR PART: what is inside the airport, for a traveller who stays airside.
 
-Return ONLY valid JSON with EXACTLY these two top-level keys:
+LEAD WITH ONE RECOMMENDATION, NOT A DIRECTORY. This traveller wants to know what to DO, not what facts you hold about this airport. best_plan is your answer to 'if you were my traveller, this is what I would do' — one route through the layover, chosen for the travel style they gave you, ordered the way they will live it. Everything else in stay_in_airport is the alternatives shelf they can browse afterwards, and best_plan must name specific places that also appear there.
+
+Return ONLY valid JSON with EXACTLY these three top-level keys:
 {
+  "best_plan": {
+    "headline": "The recommendation in one short imperative line — 'Stay in Terminal 4.' — 3-8 words",
+    "steps": [
+      {
+        "when": "A clock time ONLY if a landing time was provided; otherwise a relative marker like First, Then, After that — 1-3 words",
+        "do": "One concrete action naming a specific place — one sentence"
+      }
+    ],
+    "why": "Why this plan suits THIS traveller's stated style and time — 1-2 sentences",
+    "leave_for_gate": "When to start heading for the gate. A clock time ONLY if a landing time was provided, otherwise say how long before boarding. null if you cannot say."
+  },
+
   "stay_in_airport": {
     "terminal_info": "Which terminal(s) you'll be in and whether you can move between them — one sentence",
     "food": [
@@ -158,7 +202,7 @@ Return ONLY valid JSON with EXACTLY these two top-level keys:
   "pro_tips": ["3-5 airport-specific pro tips that frequent travelers would know"]
 }
 
-AT MOST 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
+AT MOST 4 steps in best_plan, 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const [leavePart, stayPart] = await Promise.all([
@@ -170,7 +214,7 @@ AT MOST 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
       }, { label: 'layover-maximizer:leave' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 2500,
+        max_tokens: 3200,
         system: withLanguage(systemPrompt, userLanguage) + locale,
         messages: [{ role: 'user', content: stayPrompt }],
       }, { label: 'layover-maximizer:stay' }),
