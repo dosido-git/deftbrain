@@ -50,18 +50,27 @@ function venueFacts(location) {
     // even a stale one, returns immediately and never reaches this.
     coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 32000),
     system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
-    userPrompt: `Using web_search, list 12-15 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
+    userPrompt: `Using web_search, list 14-18 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
 
 FOOD AND DRINK — one or two each, no more: bar or cocktail place, casual restaurant, nicer restaurant.
 
-THINGS TO DO — at least FIVE of these, and they matter as much as the food: live music venue, theatre or comedy club, cinema, gallery or museum open in the evening, games (bowling, arcade, pool, mini-golf, climbing, board-game cafe), a landmark or viewpoint worth seeing after dark, somewhere to walk, dessert or late-night sweets, coffee or tea house.
+THINGS TO WATCH — live music venue, theatre or comedy club, cinema, gallery or museum with evening opening, a landmark or viewpoint worth seeing after dark.
 
-An evening is not three meals. A list that is all bars and restaurants is a failed list — if you cannot find five things to DO, say so by returning fewer venues rather than padding with more places to eat.
+THINGS TO DO TOGETHER, actively — this is the category most lists forget, so find at least THREE: somewhere to play a sport for an hour (tennis or padel courts, climbing gym, ice or roller rink, pool or swimming, batting cages, driving range, bowling), somewhere to hire bikes or boats, a trail or route worth riding or walking, an arcade or board-game cafe.
+
+SOMEWHERE TO WATCH SPORT — the stadium, arena or ballpark the local professional teams play at, if there is one. Name the venue and its teams; do not try to name fixtures.
+
+At least FIVE across those three groups, and they matter as much as the food.
+
+An evening is not three meals, and it is not only sitting and watching. A list with nothing to DO in it — nothing to play, ride, climb or hire — is a failed list. Return fewer venues rather than padding with more places to eat.
 
 Only include a place you can verify is open. Keep every note to one short clause — the list is prompt input, not prose.
 
+NOTABLE HAPPENINGS — separately, list any ONCE-OR-TWICE-A-SEASON events in the next 8 weeks with confirmed dates: a city festival, a marathon or race, a seasonal market, an annual celebration, a big touring show, a team's opening or closing home game, a fireworks night. Only things a local would say "oh, that's on" about — NOT the regular weekly programme of a music venue or theatre, whose line-up changes constantly and which we deliberately do not try to track. Omit the list entirely if there is nothing genuinely notable; an empty list is a correct answer.
+
 Return ONLY valid JSON:
-{ "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|live_music|theatre|cinema|gallery|games|landmark", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
+{ "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|live_music|theatre|cinema|gallery|games|landmark|sport_play|outdoors|sports_venue", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ],
+  "events": [ { "name": "Event name", "venue": "Where it happens", "starts": "YYYY-MM-DD", "ends": "YYYY-MM-DD", "note": "Why it is worth building an evening around, one short clause" } ] }`,
     render: async (facts) => {
       const list = Array.isArray(facts.venues) ? facts.venues.filter(v => v && v.name) : [];
       if (!list.length) return '';
@@ -92,13 +101,22 @@ VENUE RULE: for each stop, venue_name MUST be one of the names above, copied EXA
 CLOSING DAYS ARE HARD CONSTRAINTS: never place a stop at a venue on a day it is marked closed. Choose another verified venue instead.` : ''}`,
         // Structured copy for anything that needs more than prose: open-at-time
         // checks and walking distances between stops.
-        data: enriched.map(v => ({
+        // Notable events ride along in the same search — no second pre-pass, no
+        // extra latency. Kept OUT of the prompt block on purpose: a date that
+        // has passed must not reach the planner, and the block is cached for a
+        // week. They are filtered against the actual planned date at request
+        // time instead (see eventsOn).
+        data: {
+        venues: enriched.map(v => ({
           name: v.name, kind: v.kind || null, placeId: v.placeId || null,
           lat: v.lat ?? null, lng: v.lng ?? null, periods: v.periods || null,
-          // utcOffset is what lets "open tonight" be evaluated in the venue's
-          // own timezone instead of the server's. attachPlaceFacts reads it.
           utcOffset: v.utcOffset ?? null,
         })),
+        events: (Array.isArray(facts.events) ? facts.events : [])
+          .filter(e => e && e.name && /^\d{4}-\d{2}-\d{2}$/.test(String(e.starts || '')))
+          .slice(0, 8)
+          .map(e => ({ name: e.name, venue: e.venue || null, starts: e.starts, ends: /^\d{4}-\d{2}-\d{2}$/.test(String(e.ends || '')) ? e.ends : e.starts, note: e.note || '' })),
+        },
       };
     },
   });
@@ -126,8 +144,11 @@ async function venueBlockFor(location) {
  * is the honest outcome. open_at is never set to false out of ignorance.
  */
 function attachPlaceFacts(itinerary, data, plannedDate) {
-  if (!Array.isArray(itinerary) || !Array.isArray(data) || !data.length) return itinerary;
-  const byName = new Map(data.map(d => [normVenue(d.name), d]));
+  // `data` was a bare venue array before events joined it; the committed seed
+  // still holds that shape, so both are accepted.
+  const venues = Array.isArray(data) ? data : (data && Array.isArray(data.venues) ? data.venues : null);
+  if (!Array.isArray(itinerary) || !venues || !venues.length) return itinerary;
+  const byName = new Map(venues.map(d => [normVenue(d.name), d]));
   let prev = null;
 
   for (const stop of itinerary) {
@@ -160,4 +181,26 @@ function attachPlaceFacts(itinerary, data, plannedDate) {
   return itinerary;
 }
 
-module.exports = { venueFacts, venueBlockFor, verifiedNamesFrom, markVerified, normVenue, attachPlaceFacts };
+/**
+ * The notable events covering a date, filtered HERE rather than baked into the
+ * cached prompt block — the block lives for a week, and an event that has
+ * already happened must never reach the planner. Anything in the past is
+ * dropped whatever the cache says.
+ */
+function eventsOn(entry, plannedDate) {
+  const all = (entry && Array.isArray(entry.events)) ? entry.events : [];
+  if (!all.length) return [];
+  const today = new Date().toISOString().slice(0, 10);
+  const day = /^\d{4}-\d{2}-\d{2}$/.test(String(plannedDate || '')) ? plannedDate : today;
+  return all.filter(e => e.ends >= day && e.starts <= day && e.ends >= today);
+}
+
+function eventBlock(entry, plannedDate) {
+  const on = eventsOn(entry, plannedDate);
+  if (!on.length) return '';
+  return `\n\nON THAT DATE in this area:\n` +
+    on.map(e => `- "${e.name}"${e.venue ? ` at ${e.venue}` : ''} (${e.starts}${e.ends !== e.starts ? ` to ${e.ends}` : ''})${e.note ? ` — ${e.note}` : ''}`).join('\n') +
+    `\nThese are an EXCEPTION to the venue rule above: you may use an event's venue as a stop even though it is not in the verified list, because it has been confirmed here. If one genuinely suits this couple, build the evening around it, name the event in that stop's description, and make one_thing_now about getting tickets or checking times. If one does not fit the evening you have planned, do NOT wedge it in — but DO mention it in tips, because someone planning a night out deserves to know the city has something on.`;
+}
+
+module.exports = { venueFacts, venueBlockFor, verifiedNamesFrom, markVerified, normVenue, attachPlaceFacts, eventsOn, eventBlock };

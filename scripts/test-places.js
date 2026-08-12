@@ -189,3 +189,44 @@ t('with no date it falls back to the venue timezone, not the server', () => {
   // computed from the server's idea of the weekday.
   assert.ok(!('open_at' in it[0]) || typeof it[0].open_at === 'boolean');
 });
+
+// ── eventsOn ────────────────────────────────────────────────────────────────
+// Notable events are cached for a week alongside the venues, so the filter
+// that decides which ones reach the planner is the thing standing between a
+// visitor and "go to the festival that ended nine days ago".
+const { eventsOn } = require('../backend/lib/venues');
+const dayOffset = (n) => { const x = new Date(); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+
+console.log('eventsOn');
+
+t('an event covering the planned date is returned', () => {
+  const e = { events: [{ name: 'Fest', starts: dayOffset(-1), ends: dayOffset(4) }] };
+  assert.deepStrictEqual(eventsOn(e, dayOffset(2)).map(x => x.name), ['Fest']);
+});
+
+t('an event that already ended is never returned, even for a past date', () => {
+  const e = { events: [{ name: 'Over', starts: dayOffset(-20), ends: dayOffset(-14) }] };
+  assert.deepStrictEqual(eventsOn(e, dayOffset(-16)), []);
+  assert.deepStrictEqual(eventsOn(e, null), []);
+});
+
+t('an event outside the planned date is not returned', () => {
+  const e = { events: [{ name: 'Later', starts: dayOffset(30), ends: dayOffset(30) }] };
+  assert.deepStrictEqual(eventsOn(e, dayOffset(2)), []);
+});
+
+t('no date means today', () => {
+  const e = { events: [{ name: 'Now', starts: dayOffset(0), ends: dayOffset(0) }] };
+  assert.deepStrictEqual(eventsOn(e, null).map(x => x.name), ['Now']);
+});
+
+t('a malformed date is treated as today, not as a match-everything', () => {
+  const e = { events: [{ name: 'Later', starts: dayOffset(30), ends: dayOffset(30) }] };
+  assert.deepStrictEqual(eventsOn(e, 'next Tuesday'), []);
+});
+
+t('missing or empty events are safe', () => {
+  assert.deepStrictEqual(eventsOn({}, dayOffset(1)), []);
+  assert.deepStrictEqual(eventsOn(null, dayOffset(1)), []);
+  assert.deepStrictEqual(eventsOn({ events: [] }, dayOffset(1)), []);
+});

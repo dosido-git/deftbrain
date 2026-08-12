@@ -4,7 +4,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { TOOL_CATALOG, isRealTool } = require('../lib/toolCatalog');
-const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts } = require('../lib/venues');
+const { venueBlockFor, verifiedNamesFrom, markVerified, attachPlaceFacts, eventBlock } = require('../lib/venues');
 const { groundedData, normalizeKeyPart } = require('../lib/groundedFacts');
 
 // ═══════════════════════════════════════════
@@ -15,7 +15,9 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 
 const SYSTEM_PROMPT = `You are a date night planning expert who creates evening plans for people ANYWHERE in the world. You understand local culture, dining customs, pricing, and social norms for each location. Keep every field concise — one short sentence; outputs render in compact cards, so long text overflows the layout and the response budget.
 
-AN EVENING IS NOT THREE MEALS: if the evening has three or more stops, at least one must be something to DO rather than something to eat or drink — live music, a play, a comedy set, a film, a gallery late opening, a game, a landmark after dark, a walk. Default to drinks-then-dinner-then-a-walk only when nothing else is available or the visitor asked for exactly that.
+AN EVENING IS NOT THREE MEALS: if the evening has three or more stops, at least one must be something to DO rather than something to eat or drink — live music, a play, a comedy set, a film, a gallery late opening, a game, a landmark after dark, a walk — or something ACTIVE: an hour on a tennis court, a bike ride, a climb, a skate, a swim, a ball game. Sitting and watching is not the only alternative to eating. Default to drinks-then-dinner-then-a-walk only when nothing else is available or the visitor asked for exactly that.
+
+WHAT IS ON, HONESTLY: for a music venue, theatre, comedy club or cinema, do NOT state or imply who is performing or what is screening — the line-up changes weekly and we do not track it. Say what the place reliably books ("small-room jazz, two sets a night") and tell them to check the listing or ring ahead. Never invent an act, a play or a film. Being useful about the KIND of night a place gives you beats being confidently wrong about Thursday.
 
 LOCAL SHORTHAND: write neighbourhood and district names out in full, with the local abbreviation after it in brackets if it is worth knowing — "the River North Art District (RiNo)", never just "RiNo". The reader may be visiting, may have moved last week, or may be planning this from another country; an abbreviation only locals know tells them nothing about where they are going.
 
@@ -176,6 +178,7 @@ router.post('/date-night', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
       const venuesBlock = await venueBlockFor(location);
       const verified = verifiedNamesFrom(venuesBlock);
+      const datedEvents = eventBlock(groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
 
       const prompt = `PLAN A DATE NIGHT:
 - Budget: ${sym}${budget} (hard cap — plan ~${sym}${Math.round((budget || 100) * 0.85)})
@@ -189,7 +192,7 @@ ${isFuturePlan && futureDateStr ? `- FUTURE DATE: Planning for ${futureDateStr}.
 ${weather ? `- Weather: ${weather}` : ''}
 ${restrictions ? `- Restrictions: ${restrictions}` : ''}
 ${lastTime ? `- Last time (avoid): ${lastTime}` : ''}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}${venuesBlock}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}${venuesBlock}${datedEvents}
 
 Return ONLY valid JSON:
 ${responseSchema(!!venuesBlock)}
@@ -221,6 +224,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 
       const venuesBlock = await venueBlockFor(location);
       const verified = verifiedNamesFrom(venuesBlock);
+      const datedEvents = eventBlock(groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
       const sym = currency;
       const durationMap = { quick: '~2 hours', standard: '~3-4 hours', long: '~5+ hours' };
 
@@ -242,7 +246,7 @@ All costs in ${sym}. dress_vibe per stop + overall_dress_code. plan_b per stop A
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${buildDedupBlock(pastDates)}${buildFavoritesBlock(favorites)}
 
-${venuesBlock}
+${venuesBlock}${datedEvents}
 
 Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
@@ -334,6 +338,7 @@ Return ONLY valid JSON:
 
       const venuesBlock = await venueBlockFor(location);
       const verified = verifiedNamesFrom(venuesBlock);
+      const datedEvents = eventBlock(groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
       const CHANGE = {
         restaurant: 'The DINNER stop fell through — it is unavailable. Replace that one stop with a different place of the same kind at a similar price. Keep every other stop and the timings exactly as they are.',
         indoors:    'The WEATHER has turned. Move the ending indoors: replace any outdoor stop with an indoor one nearby at a similar price, and keep the rest of the evening intact.',
@@ -357,7 +362,7 @@ ${current}
 ${weather ? `- Weather: ${weather}` : ''}${restrictions ? `\n- Restrictions: ${restrictions}` : ''}
 ${buildDietaryBlock(dietary)}
 
-${venuesBlock}
+${venuesBlock}${datedEvents}
 
 Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
 
@@ -388,12 +393,13 @@ Return the WHOLE revised evening. Return ONLY valid JSON: ${responseSchema(!!ven
       // silently downgrades a verified evening into an invented one.
       const venuesBlock = await venueBlockFor(location);
       const verified = verifiedNamesFrom(venuesBlock);
+      const datedEvents = eventBlock(groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
 
       const prompt = `Replace ONE stop. Evening: "${currentItinerary.vibe_title}" in ${location}
 Type: ${DATE_TYPE_LABELS[dateType] || dateType}
 KEEP: ${otherStops.join(', ')}
 REPLACE: #${swapStopNumber} "${currentStop?.venue_name}" at ${currentStop?.time} (~${sym}${currentStop?.estimated_cost})
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}${datedEvents}
 ${venuesBlock ? 'The replacement MUST be one of the verified venues above, and MUST NOT be one of the KEEP venues.' : ''}
 
 Return ONLY valid JSON:
@@ -566,12 +572,13 @@ Return ONLY valid JSON:
       const sym = currency || '$';
       const venuesBlock = await venueBlockFor(location);
       const verified = verifiedNamesFrom(venuesBlock);
+      const datedEvents = eventBlock(groundedData(`date-venues:${normalizeKeyPart(location || '')}`), req.body.plannedDate);
 
       const prompt = withLanguage(`Plan a special ${yearsTogether}-year anniversary date.
 
 LOCATION: ${location || '?'} | BUDGET: ${sym}${budget || 100} | START: ${startTime || '7:00 PM'}
 SEASON: ${season} — ${seasonAdvice}
-${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}
+${buildDietaryBlock(dietary)}${buildPreferenceBlock(preferences)}${buildPartnerBlock(partnerPrefs)}${venuesBlock}${datedEvents}
 
 Create a narrative arc — thoughtful opening → signature memory moment → intimate closing.
 
