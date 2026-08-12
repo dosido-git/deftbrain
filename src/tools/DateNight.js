@@ -285,6 +285,31 @@ const DateNight = ({ tool }) => {
   const handleCurrencyChange = useCallback((s) => { setCurrency(s); setBudget((BUDGET_PRESETS[s] || BUDGET_PRESETS['$'])[2]); }, []);
   const toggleDietary = useCallback((v) => setDietary(p => p.includes(v) ? p.filter(d => d !== v) : [...p, v]), []);
 
+  // Start the venue search the moment the visitor stops typing a location,
+  // not when they press Plan. The search takes ~25-40s and filling in the rest
+  // of the form takes about as long, so running them concurrently is what turns
+  // "wait 42s, maybe get categories" into "real venues, immediately".
+  //
+  // Fire-and-forget: nothing here is rendered and a failure is invisible — the
+  // plan request does its own grounding regardless. Once per location string
+  // per session, so editing the field back and forth costs one search, not ten.
+  const warmed = useRef(new Set());
+  const warmVenues = useCallback((raw) => {
+    const loc = String(raw || '').trim();
+    if (loc.length < 3 || warmed.current.has(loc.toLowerCase())) return;
+    warmed.current.add(loc.toLowerCase());
+    callToolEndpoint('date-night', { action: 'warm-venues', location: loc }).catch(() => {});
+  }, []);
+
+  // Typing pauses count too, not just leaving the field — someone who types
+  // "Chicago" and goes straight to the date-type buttons never blurs the input.
+  useEffect(() => {
+    const loc = location.trim();
+    if (loc.length < 3) return undefined;
+    const id = setTimeout(() => warmVenues(loc), 900);
+    return () => clearTimeout(id);
+  }, [location, warmVenues]);
+
   const getPayload = useCallback(() => ({
     userLocale, userCurrency, userRegion,
     budget, currency, dateType, location: location.trim(), restrictions: restrictions.trim(),
@@ -955,7 +980,7 @@ const DateNight = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-3`}>
             <div>
               <label className={`block text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📍 {t('dn_location')} <span className={c.required}>*</span></label>
-              <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
+              <input value={location} onChange={e => setLocation(e.target.value)} onBlur={e => warmVenues(e.target.value)} placeholder={t('dn_location_ph')} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input}`} />
             </div>
             <div>
               <p className={`text-xs font-bold ${c.textSecondary} uppercase mb-1`}>📅 {t('dn_when')}</p>

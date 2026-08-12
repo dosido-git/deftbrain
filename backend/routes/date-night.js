@@ -163,6 +163,23 @@ router.post('/date-night', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const { action = 'generate' } = req.body;
     const { season, advice: seasonAdvice } = getSeasonContext();
 
+    // ─── WARM VENUES ───
+    // Fired by the form as soon as the visitor finishes typing a location,
+    // while they are still choosing a date type and a budget. The venue search
+    // takes ~25-40s; the form takes about as long to fill in. Running them at
+    // the same time is the difference between "real venues, instantly" and
+    // "wait 42s and maybe get categories".
+    //
+    // Returns immediately — wait:false — because nothing is displayed from it.
+    // Costs one search per location, the same one the plan would have paid
+    // for, just started earlier.
+    if (action === 'warm-venues') {
+      const { location } = req.body;
+      if (!location?.trim()) return res.status(400).json({ error: 'Location required.' });
+      venueBlockFor(location, { wait: false }).catch(() => {});
+      return res.json({ warming: true });
+    }
+
     // ─── GENERATE ───
     if (action === 'generate') {
       const { budget, currency = '$', dateType, location, restrictions, lastTime, startTime,
@@ -753,7 +770,7 @@ Return ONLY valid JSON:
     return res.json(parsed);
     }
 
-    return res.status(400).json({ error: 'Invalid action. Use: generate, regenerate, swap, rate, share, similar, anniversary-deep, date-jar, rut-detect, checklist' });
+    return res.status(400).json({ error: 'Invalid action. Use: warm-venues, generate, regenerate, swap, rate, share, similar, anniversary-deep, date-jar, rut-detect, checklist' });
   } catch (error) {
     console.error('[DateNight]', error.message);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

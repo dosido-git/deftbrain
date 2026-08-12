@@ -37,7 +37,10 @@ function markVerified(itinerary, verifiedNames) {
   return itinerary;
 }
 
-function venueFacts(location) {
+// wait=false is for PRE-WARMING: kick the search off and return at once,
+// rather than holding the caller for up to coldWaitMs. Used by the warm-venues
+// action, which fires while the visitor is still filling in the form.
+function venueFacts(location, { wait = true } = {}) {
   return groundedFacts({
     cacheKey: `date-venues:${normalizeKeyPart(location)}`,
     label: 'date-night-venues',
@@ -55,7 +58,7 @@ function venueFacts(location) {
     // before the block is even built. 42 + ~12s of planning is ~54s, still
     // inside the ~60s point where Safari abandons a fetch, but that is now
     // the ceiling: do not raise this further without shortening the search.
-    coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 42000),
+    coldWaitMs: wait ? Number(process.env.VENUE_COLD_WAIT_MS ?? 42000) : 0,
     system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
     userPrompt: `Using web_search, list 14-18 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
 
@@ -133,9 +136,9 @@ CLOSING DAYS ARE HARD CONSTRAINTS: never place a stop at a venue on a day it is 
 // the only web-derived text in the route and it goes straight into a prompt.
 // Re-asserting it here keeps that guarantee local and visible instead of
 // resting on a lib two files away.
-async function venueBlockFor(location) {
+async function venueBlockFor(location, opts) {
   const loc = String(location || '').trim();
-  return loc ? stripCites(await venueFacts(loc)) : '';
+  return loc ? stripCites(await venueFacts(loc, opts)) : '';
 }
 
 
