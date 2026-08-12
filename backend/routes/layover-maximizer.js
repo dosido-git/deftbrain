@@ -8,6 +8,22 @@ const NO_INVENTED_AUTHORITY = `NEVER USE CONFIDENT SPECIFICITY YOU CANNOT SUPPOR
 
 LOUNGE ACCESS IS SAFETY-CRITICAL, because a traveller will walk across a terminal on your word. Name the lounge and its terminal, and describe access only in terms you are sure of. Do not summarise a card or airline's access rules into a short list — they change and they are full of exceptions. Point them at the operator to confirm eligibility instead.`;
 
+// A countdown is only as good as the clock behind it. The device clock is the
+// traveller's, not the airport's, and the two disagree exactly when it matters
+// most — before you land, or on a laptop that never changed zone. The model
+// proposes the zone (a stable, well-known fact per airport, unlike lounge
+// rules), and the runtime's own IANA database is what decides whether to
+// believe it. Anything it does not recognise is discarded, not shipped.
+function validIanaZone(tz) {
+  if (typeof tz !== 'string' || !/^[A-Za-z_+-]+\/[A-Za-z_0-9+\-/]+$/.test(tz)) return null;
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: tz }).format(new Date());
+    return tz;
+  } catch {
+    return null;
+  }
+}
+
 // Clock arithmetic is arithmetic, not judgement. Asking the model to hold a
 // landing time, a layover length and a delay in its head and derive a departure
 // produced a return-by time two hours AFTER the flight left. Compute it here and
@@ -785,6 +801,41 @@ AT MOST 4 steps, 3 off_the_table, 3 now_possible, 2 need_to_know. ONE question p
 
   } catch (error) {
     console.error('LayoverMaximizer delay error:', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /layover-maximizer/timezone — Which clock is this airport on?
+// ════════════════════════════════════════════════════════════
+// Live mode needs the airport's local time before any plan exists, so this is
+// its own small lookup rather than a field on the plan.
+router.post('/layover-maximizer/timezone', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { airport, userLanguage } = req.body;
+    if (!airport?.trim()) return res.status(400).json({ error: 'Enter an airport.' });
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 200,
+      system: withLanguage('You identify airports. Answer only with the JSON asked for.', userLanguage),
+      messages: [{ role: 'user', content: `Airport: ${airport}
+
+Return ONLY valid JSON:
+{
+  "airport_code": "IATA code in capitals, or null if you cannot identify this airport",
+  "timezone": "The IANA time zone this airport keeps, exactly as written in the tz database — Area/Location, e.g. America/New_York, Europe/London, Asia/Kolkata. Never translate or localise this value. null if you are not certain."
+}` }],
+    }, { label: 'layover-maximizer:timezone' });
+
+    // Never let an unrecognised zone reach the clock.
+    res.json({
+      airport_code: parsed.airport_code || null,
+      timezone: validIanaZone(parsed.timezone),
+    });
+
+  } catch (error) {
+    console.error('LayoverMaximizer timezone error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

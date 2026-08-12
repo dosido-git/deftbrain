@@ -82,6 +82,30 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
   );
 }
 
+// Minutes since midnight on a given clock. Intl is the only thing here that
+// knows about DST, half-hour zones and the 45-minute ones; do not reimplement it.
+function wallClockMinutes(timeZone) {
+  const opts = { hour: 'numeric', minute: 'numeric', hourCycle: 'h23' };
+  if (timeZone) opts.timeZone = timeZone;
+  const parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(new Date());
+  const h = Number(parts.find(p => p.type === 'hour')?.value) % 24;
+  const m = Number(parts.find(p => p.type === 'minute')?.value);
+  return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+}
+
+function hhmmToMinutes(hhmm) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || '').trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  return h > 23 || min > 59 ? null : h * 60 + min;
+}
+
+function minutesToHhmm(mins) {
+  const t = (((Math.round(mins) % 1440) + 1440) % 1440);
+  return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+}
+
 // One derivation of the time ledger, shared by the plan and by the re-plan.
 // available_city_minutes comes back null whenever a deduction is unknowable
 // (immigration without a passport), so the remainder is computed from the parts
@@ -185,17 +209,34 @@ const LayoverMaximizer = ({ tool }) => {
   // ── "I'm here now" mode ──
   const [isLiveMode, setIsLiveMode] = useState(false);
   const [departureTime, setDepartureTime] = useState('');
+  const [airportZone, setAirportZone] = useState(null);   // { timezone, airport_code } once known
+  const [zoneLoading, setZoneLoading] = useState(false);
+  const [tick, setTick] = useState(0);
+
+  // A live countdown that never advances is a screenshot. Half a minute is
+  // enough for a clock shown to the minute, and cheap.
+  useEffect(() => {
+    if (!isLiveMode) return undefined;
+    const id = setInterval(() => setTick(n => n + 1), 30000);
+    return () => clearInterval(id);
+  }, [isLiveMode]);
+
+  // The clock the countdown runs on. The airport's own where we know it,
+  // otherwise the device's — and the interface says which, because a traveller
+  // who has not landed yet is on the wrong one and only they can tell.
+  const nowMinutes = useMemo(
+    () => wallClockMinutes(airportZone?.timezone || null),
+    [airportZone, tick]  // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const liveHoursRemaining = useMemo(() => {
-    if (!isLiveMode || !departureTime) return null;
-    const now = new Date();
-    const [h, m] = departureTime.split(':').map(Number);
-    const dep = new Date(now);
-    dep.setHours(h, m, 0, 0);
-    if (dep < now) dep.setDate(dep.getDate() + 1); // next day if past
-    const diff = (dep - now) / 3600000;
-    return Math.max(0, Math.round(diff * 10) / 10);
-  }, [isLiveMode, departureTime]);
+    if (!isLiveMode) return null;
+    const dep = hhmmToMinutes(departureTime);
+    if (dep === null || nowMinutes === null) return null;
+    let diff = dep - nowMinutes;
+    if (diff < 0) diff += 1440;   // a departure earlier than now is tomorrow's
+    return Math.max(0, Math.round((diff / 60) * 10) / 10);
+  }, [isLiveMode, departureTime, nowMinutes]);
 
   // ── Gate-to-Gate ──
   const [g2gAirport, setG2gAirport] = useState('');
@@ -314,6 +355,28 @@ const LayoverMaximizer = ({ tool }) => {
       setError(err.message || t('lmx_err_risk_failed'));
     }
   }, [riskAirport, riskAirline, riskHours, riskScenario, riskDelay, riskIntl, callToolEndpoint, t]);
+
+  // ── API: which clock is this airport on ──
+  const zoneFetched = useRef('');
+  useEffect(() => {
+    const ap = airport.trim();
+    if (!isLiveMode || ap.length < 3) return undefined;
+    const key = ap.toLowerCase();
+    if (zoneFetched.current === key) return undefined;
+    const id = setTimeout(async () => {
+      zoneFetched.current = key;
+      setZoneLoading(true);
+      try {
+        const data = await callToolEndpoint('layover-maximizer/timezone', { airport: ap });
+        setAirportZone(data?.timezone ? data : null);
+      } catch {
+        setAirportZone(null);   // fall back to the device clock, and say so
+      } finally {
+        setZoneLoading(false);
+      }
+    }, 900);
+    return () => clearTimeout(id);
+  }, [isLiveMode, airport, callToolEndpoint]);
 
   // ── API: Delay re-plan ──
   // The local arithmetic above answers instantly and for free; this is the
@@ -612,6 +675,19 @@ const LayoverMaximizer = ({ tool }) => {
                 </div>
               )}
             </div>
+
+            {/* Which clock this is running on, in the open. If it disagrees with
+                the terminal displays, the countdown below it is wrong, and the
+                traveller is the only one who can see both. */}
+            {isLiveMode && nowMinutes !== null && (
+              <p className={`text-[10px] ${c.textMuteded}`}>
+                {airportZone?.timezone
+                  ? t('lmx_live_clock_airport', { time: minutesToHhmm(nowMinutes), code: airportZone.airport_code || airport.trim() })
+                  : zoneLoading
+                    ? t('lmx_live_clock_checking')
+                    : t('lmx_live_clock_device', { time: minutesToHhmm(nowMinutes) })}
+              </p>
+            )}
 
             {/* Airport */}
             <div>
