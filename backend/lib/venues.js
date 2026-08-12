@@ -50,14 +50,18 @@ function venueFacts(location) {
     // even a stale one, returns immediately and never reaches this.
     coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 32000),
     system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
-    userPrompt: `Using web_search, list 10-12 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
+    userPrompt: `Using web_search, list 12-15 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
 
-One or two each of: bar, casual restaurant, nicer restaurant, dessert, coffee, somewhere to walk, something to do.
+FOOD AND DRINK — one or two each, no more: bar or cocktail place, casual restaurant, nicer restaurant.
 
-Only include a place you can verify is open. Fewer real ones beats padding the list. Keep every note to one short clause — the list is prompt input, not prose.
+THINGS TO DO — at least FIVE of these, and they matter as much as the food: live music venue, theatre or comedy club, cinema, gallery or museum open in the evening, games (bowling, arcade, pool, mini-golf, climbing, board-game cafe), a landmark or viewpoint worth seeing after dark, somewhere to walk, dessert or late-night sweets, coffee or tea house.
+
+An evening is not three meals. A list that is all bars and restaurants is a failed list — if you cannot find five things to DO, say so by returning fewer venues rather than padding with more places to eat.
+
+Only include a place you can verify is open. Keep every note to one short clause — the list is prompt input, not prose.
 
 Return ONLY valid JSON:
-{ "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|activity", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
+{ "venues": [ { "name": "Exact business name as it is written", "kind": "bar|dinner_casual|dinner_nice|dessert|coffee|walk|live_music|theatre|cinema|gallery|games|landmark", "price": "$|$$|$$$|free", "note": "What it is, one short clause", "area": "Neighborhood or street" } ] }`,
     render: async (facts) => {
       const list = Array.isArray(facts.venues) ? facts.venues.filter(v => v && v.name) : [];
       if (!list.length) return '';
