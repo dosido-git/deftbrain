@@ -32,8 +32,12 @@ specialist beats accumulated experience, and why the catalog is 128 wide.
 
 | Line | Where it lives |
 |---|---|
+| **"Let's think it through together."** | **THE TAGLINE** (since 2026-08-11): page title, meta description, og/twitter title, JSON-LD, both OG image generators. Chosen against the Charter: *together* is §5 — not the smartest person in the room, the one you are glad is beside you — and it preserves agency (§13) while still promising something. It also leaves room for the Curiosities half of the catalog, which every "problems / confusion / decisions" line quietly excludes. |
+| **"Better questions lead to better decisions."** | **THE SECOND LINE** (since 2026-08-11): opens the meta description and the JSON-LD. The Product Philosophy's central claim — "many AI systems compete on answers; DeftBrain competes on questions". Sharpest differentiator we have, but it states a belief rather than making an offer, so it supports the tagline rather than replacing it. |
+| "Personal AI Problem Solvers" | RETIRED 2026-08-11. Was the second half of the page title, i.e. the line Google showed most often. Broke Charter Appendix A twice — "AI" is on the avoid list, and "problem solver" frames the thing as software rather than guidance. |
+| "Confusion, meet your match." | CONSIDERED AND REJECTED 2026-08-11. Clever, and Experience Guidelines #3 says choose calm over clever *always*. Also fighting talk, against §5 "never dramatic". Someone arriving anxious about a diagnosis does not want a scrap picked on their behalf. |
 | **"deft (adj.) — showing cleverness and skill in handling things."** | **THE MASTHEAD** (since 2026-07-05): BrandMark, GlobalHeader, ToolPageWrapper (compact: "skill in handling things"), print branding, homepage title/OG/JSON-LD/manifest ("Skill in Handling Things"). Replaced "Intelligence on Demand." |
-| "Intelligence on Demand" | RETIRED 2026-07-05 (was masthead + OG since launch). Verdict was B-: handsome brand furniture, but claimed the category (access) rather than the product (aim). Lives in git history. |
+| "Intelligence on Demand" | RETIRED 2026-07-05 (was masthead + OG since launch), but survived in BOTH OG image generators until 2026-08-11 — the social preview cards still carried it for five weeks after the retirement. Check the generators, not just the markup. Verdict was B-: handsome brand furniture, but claimed the category (access) rather than the product (aim). Lives in git history. |
 | "128 tiny AI tools for life's oddly specific moments" | Directory kit tagline #1; the de facto canonical descriptor. |
 | "An AI tool for every awkward, stuck, oh-no moment" | Directory kit #2. |
 | "One-job AI tools: paste the situation, get the answer" | Directory kit #3. |

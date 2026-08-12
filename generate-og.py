@@ -264,7 +264,7 @@ def make_default_card(out_path, logo_img, logo_w):
     draw.text((PAD, PAD + 120), 'DeftBrain', font=head_font, fill=(255, 255, 255, 255))
 
     # Tagline
-    draw.text((PAD, PAD + 225), 'Intelligence on Demand', font=tag_lg, fill=(160, 140, 220, 255))
+    draw.text((PAD, PAD + 225), "Let's think it through together", font=tag_lg, fill=(160, 140, 220, 255))
 
     # Rule
     draw.rectangle([(PAD, PAD + 285), (W - PAD, PAD + 287)], fill=(80, 70, 140, 255))
