@@ -43,12 +43,19 @@ function venueFacts(location) {
     label: 'date-night-venues',
     ttlMs: 7 * 24 * 60 * 60 * 1000, // shorter than the 14-day default; restaurants close
     // Wait, rather than answer with venue categories, the first time anyone
-    // asks for a location we have never seen. A cold search measured 32s
-    // (Reykjavik, timed end to end), so a plan that would take ~11s takes
-    // ~43s — under the ~60s point where Safari abandons a fetch, and paid
-    // once per location ever rather than once per visitor. Any cached entry,
-    // even a stale one, returns immediately and never reaches this.
-    coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 32000),
+    // asks for a location we have never seen. Any cached entry, even a stale
+    // one, returns immediately and never reaches this, so the wait is paid
+    // once per location ever rather than once per visitor.
+    //
+    // Raised 32s -> 42s on 2026-08-12. Orlando missed the old window by about
+    // five seconds and answered with categories, which is the worst outcome:
+    // the visitor waits AND gets nothing. Measured cold totals were 36-40s
+    // (Bruges, Porto, Ljubljana) — 32s left no margin at all, and a failing
+    // Places key makes it worse by adding ~18 rejected round-trips to Google
+    // before the block is even built. 42 + ~12s of planning is ~54s, still
+    // inside the ~60s point where Safari abandons a fetch, but that is now
+    // the ceiling: do not raise this further without shortening the search.
+    coldWaitMs: Number(process.env.VENUE_COLD_WAIT_MS ?? 42000),
     system: 'You verify that specific businesses and public places exist and are currently operating, using web search. Prefer the venue\'s own site, a current listing, or recent local coverage. Include a place ONLY if you can confirm it is open now — omit anything permanently closed, relocated, or that you cannot verify. Never invent a name. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
     userPrompt: `Using web_search, list 14-18 REAL venues in or within walking distance of "${location}" that are currently open, suitable for an evening out.
 
