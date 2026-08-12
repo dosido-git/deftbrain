@@ -270,7 +270,7 @@ def make_default_card(out_path, logo_img, logo_w):
     draw.rectangle([(PAD, PAD + 285), (W - PAD, PAD + 287)], fill=(80, 70, 140, 255))
 
     # Sub-tagline
-    draw.text((PAD, PAD + 300), '100+ free AI-powered tools for real life', font=sub_font, fill=(120, 110, 180, 255))
+    draw.text((PAD, PAD + 300), "Let's think it through together", font=sub_font, fill=(120, 110, 180, 255))
 
     # Logo + domain
     canvas.paste(logo_img, (W - logo_w - PAD, H - 100 - PAD + 5), logo_img)

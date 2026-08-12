@@ -105,6 +105,15 @@ sub_font   = ImageFont.truetype(FONT_REG,   32)
 brand_font = ImageFont.truetype(FONT_REG,   28)
 head_font  = ImageFont.truetype(FONT_BOLD,  80)
 tag_lg     = ImageFont.truetype(FONT_REG,   42)
+# The card stays on the same family as the wordmark. DM Sans was tried — it is
+# the site's own face — but read as a different, lighter brand than the one the
+# cards have always had.
+eyebrow_font = ImageFont.truetype(FONT_REG,  24)   # the claim, setting up
+lead_font    = ImageFont.truetype(FONT_BOLD, 38)   # the invitation, carrying
+# DeftBrain gold. Two exist: #c8872e for light backgrounds, #d9a04e for dark.
+# The card is deep indigo, so it takes the dark-mode value.
+GOLD = (217, 160, 78, 255)
+domain_font  = ImageFont.truetype(FONT_BOLD, 34)
 
 # ── Logo preparation ─────────────────────────────────────────────────────────
 
@@ -292,18 +301,27 @@ def make_default_card(out_path, logo_img, logo_w):
     # Wordmark
     draw.text((PAD, PAD + 120), 'DeftBrain', font=head_font, fill=(255, 255, 255, 255))
 
-    # Tagline
-    draw.text((PAD, PAD + 225), 'Better questions lead to better decisions', font=tag_lg, fill=(160, 140, 220, 255))
+    # The claim as an EYEBROW. It still comes first, so it still earns the nod —
+    # but small and letter-spaced, it reads as a setup rather than as the point.
+    eyebrow = 'BETTER QUESTIONS LEAD TO BETTER DECISIONS'
+    x = PAD
+    for ch in eyebrow:                      # Pillow has no letter-spacing
+        draw.text((x, PAD + 232), ch, font=eyebrow_font, fill=(150, 132, 205, 255))
+        x += draw.textlength(ch, font=eyebrow_font) + 2.2
 
     # Rule
-    draw.rectangle([(PAD, PAD + 285), (W - PAD, PAD + 287)], fill=(80, 70, 140, 255))
+    draw.rectangle([(PAD, PAD + 282), (W - PAD, PAD + 284)], fill=(80, 70, 140, 255))
 
-    # Sub-tagline
-    draw.text((PAD, PAD + 300), '100+ free AI-powered tools for real life', font=sub_font, fill=(120, 110, 180, 255))
+    # The invitation as the HEADLINE — the largest thing on the card after the
+    # wordmark, and the brightest. Reading order is unchanged; only the weight
+    # moved, so the line a reader remembers is the one addressed to them.
+    draw.text((PAD, PAD + 314), "Let's think it through together", font=lead_font, fill=(226, 220, 248, 255))
 
-    # Logo + domain
-    canvas.paste(logo_img, (W - logo_w - PAD, H - 100 - PAD + 5), logo_img)
-    draw.text((PAD, H - 44), 'deftbrain.com', font=brand_font, fill=(100, 90, 160, 255))
+    # Domain only — the bottom-right brain was a second copy of the mark already
+    # at top-left, and one is a signature while two is a pattern. The URL was
+    # the quietest thing on a card whose whole job is to be clicked; in brand
+    # gold at 34 it reads as the destination rather than as a footnote.
+    draw.text((PAD, H - 102), 'DeftBrain.com', font=domain_font, fill=GOLD)
 
     canvas.convert('RGB').save(out_path, 'PNG', optimize=True)
 
@@ -312,29 +330,44 @@ def make_default_card(out_path, logo_img, logo_w):
 
 def extract_tools(tools_js_path):
     src    = open(tools_js_path).read()
-    blocks = re.split(r'\n\{[\s\n]*\n?\s*modified:', src)
+    # Split on the `id:` field, not on `modified:`. The old split assumed every
+    # tool object opened with a modified date; 8 do not, so they were invisible
+    # here and silently had no OG card at all — MentalHealthNavigator,
+    # GriefGuide, IdeaAutopsy, SleepArchitect, CultureBriefing, ContractDecoder,
+    # ScamRadar and TicketTackler. `id:` is the one field every tool must have,
+    # and the audit already enforces it, so it is the safe anchor.
+    blocks = re.split(r'\n\s{0,4}id:\s*["\']', src)
+    blocks = ['id: "' + b for b in blocks[1:]]
     tools  = []
     skipped_unmapped = []
-    for block in blocks[1:]:
-        id_m       = re.search(r'id:\s*[\"\'](.*?)[\"\']', block)
-        title_m    = re.search(r'title:\s*[\"\'](.*?)[\"\']', block)
-        tagline_m  = re.search(r'tagline:\s*[\"\'](.*?)[\"\']', block)
-        icon_m     = re.search(r'icon:\s*[\"\'](.*?)[\"\']', block)
+    for block in blocks:
+        # Match the CLOSING quote to the OPENING one. The old pattern was
+        # ["\'](.*?)["\'] , which happily terminated on an apostrophe inside a
+        # double-quoted string: TicketTackler's tagline rendered as "…or find
+        # out it" and stopped. 19 of 126 taglines were being cut mid-sentence
+        # on their own social cards.
+        def field(name, text):
+            m = re.search(rf'{name}:\s*(["\'])((?:[^\\]|\\.)*?)\1', text)
+            return m.group(2) if m else None
+        id_v      = field('id', block)
+        title_v   = field('title', block)
+        tagline_v = field('tagline', block)
+        icon_v    = field('icon', block)
         # ogIcon overrides icon for OG image generation only. Use when the
         # tool page icon is a compound or unsupported emoji that the OG
         # asset pipeline can't resolve (e.g. multi-emoji '👗👔' has no PNG).
-        ogIcon_m   = re.search(r'ogIcon:\s*[\"\'](.*?)[\"\']', block)
-        if id_m and title_m and tagline_m and icon_m and id_m.group(1):
-            tool_id = id_m.group(1)
+        ogIcon_v  = field('ogIcon', block)
+        if id_v and title_v and tagline_v and icon_v:
+            tool_id = id_v
             slug = TOOL_OG_SLUGS.get(tool_id)
             if slug is None:
                 skipped_unmapped.append(tool_id)
                 continue
-            og_icon = ogIcon_m.group(1) if ogIcon_m else icon_m.group(1)
+            og_icon = ogIcon_v or icon_v
             tools.append({
                 'id':      tool_id,
-                'title':   title_m.group(1),
-                'tagline': tagline_m.group(1),
+                'title':   title_v,
+                'tagline': tagline_v,
                 'icon':    og_icon,
                 'slug':    slug,
             })
