@@ -536,27 +536,48 @@ const LayoverMaximizer = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // NAV
   // ════════════════════════════════════════════════════════════
-  const renderNav = () => (
-    <div className="flex flex-wrap gap-1.5 mb-5">
-      {[
-        { key: 'plan', label: t('lmx_nav_plan') },
-        { key: 'gate', label: t('lmx_nav_gate') },
-        { key: 'delay', label: t('lmx_nav_delay') },
-        { key: 'compare', label: t('lmx_nav_compare') },
-        { key: 'lounge', label: t('lmx_nav_lounge') },
-        { key: 'packing', label: t('lmx_nav_packing') },
-        { key: 'kit', label: t('lmx_nav_kit') },
-        { key: 'risk', label: t('lmx_nav_risk') },
-        { key: 'saved', label: savedLayovers.length ? t('lmx_nav_saved_count', { n: savedLayovers.length }) : t('lmx_nav_saved') },
-        { key: 'history', label: layoverHistory.length ? t('lmx_nav_recent_count', { n: layoverHistory.length }) : t('lmx_nav_recent') },
-      ].map(tab => (
-        <button key={tab.key} onClick={() => { setView(tab.key); setError(''); }}
-          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
-            view === tab.key ? c.pillActive : c.pillInactive
-          }`}>{tab.label}</button>
-      ))}
-    </div>
-  );
+  // Ten flat pills read as a list of capabilities. They are actually four
+  // moments in one trip, in the order they happen — booking, packing, standing
+  // in the terminal, and the moment the board changes. Saved and Recent are not
+  // moments at all; they are navigation, and sit apart.
+  const NAV_GROUPS = [
+    { labelKey: 'lmx_nav_group_booking', keys: ['compare'] },
+    { labelKey: 'lmx_nav_group_planning', keys: ['plan', 'packing', 'kit'] },
+    { labelKey: 'lmx_nav_group_airport', keys: ['gate', 'lounge'] },
+    { labelKey: 'lmx_nav_group_changes', keys: ['delay', 'risk'] },
+  ];
+
+  const renderNav = () => {
+    const label = key => {
+      if (key === 'saved') return savedLayovers.length ? t('lmx_nav_saved_count', { n: savedLayovers.length }) : t('lmx_nav_saved');
+      if (key === 'history') return layoverHistory.length ? t('lmx_nav_recent_count', { n: layoverHistory.length }) : t('lmx_nav_recent');
+      return t({
+        plan: 'lmx_nav_plan', gate: 'lmx_nav_gate', delay: 'lmx_nav_delay',
+        compare: 'lmx_nav_compare', lounge: 'lmx_nav_lounge', packing: 'lmx_nav_packing',
+        kit: 'lmx_nav_kit', risk: 'lmx_nav_risk',
+      }[key]);
+    };
+    const pill = key => (
+      <button key={key} onClick={() => { setView(key); setError(''); }}
+        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+          view === key ? c.pillActive : c.pillInactive
+        }`}>{label(key)}</button>
+    );
+
+    return (
+      <div className="space-y-2 mb-5">
+        {NAV_GROUPS.map(g => (
+          <div key={g.labelKey} className="flex flex-wrap items-center gap-1.5">
+            <span className={`basis-full sm:basis-auto text-[10px] font-bold uppercase tracking-wide ${c.textMuted} me-1`}>{t(g.labelKey)}</span>
+            {g.keys.map(pill)}
+          </div>
+        ))}
+        <div className={`flex flex-wrap items-center gap-1.5 pt-1 border-t ${c.border}`}>
+          {['saved', 'history'].map(pill)}
+        </div>
+      </div>
+    );
+  };
 
   // Shared by the plan's verdict and the re-planned verdict, so a delay that
   // moves YES to NO looks the same as a NO that was there from the start.
@@ -641,7 +662,7 @@ const LayoverMaximizer = ({ tool }) => {
                 whichever one actually mattered. */}
             <div ref={detailsRef} className={`border-t ${c.border} pt-3`}>
               <button onClick={() => setShowDetails(!showDetails)}
-                className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px]`}>
+                className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
                 {t('lmx_details_toggle')} {showDetails ? '▲' : '▼'}
               </button>
               {!showDetails && ![nationality, arrivalTerminal, connectionTerminal, arrivalTime].some(v => String(v || '').trim()) && (
