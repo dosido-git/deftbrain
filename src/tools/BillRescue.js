@@ -970,9 +970,15 @@ const BillRescue = ({ tool }) => {
 
         {/* Actions */}
         <div className="flex gap-2 flex-wrap">
-          <button onClick={analyze} disabled={loading || !billType}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
+          <button onClick={analyze} disabled={loading || !billType} title={t('br_cmd_enter')}
+            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> {t('br_working')}</> : <><span>🧾</span> {t('br_get_plan')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
           </button>
         </div>
 
@@ -2340,15 +2346,19 @@ const BillRescue = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-start justify-between">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '🧾'}</span>{tool?.title ?? t('br_title')}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('br_tagline')}</p>
+            {/* PF-30: the wrapper already renders the tool's name as the page
+                <h1>, so an <h2> repeating it made the visitor read it twice
+                before reaching an input. The icon moves onto the tagline. */}
+            <div className="min-w-0">
+              <p className={`text-sm ${c.textSecondary}`}>
+                <span className="me-2">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
+              </p>
               {!results && (
+                /* PF-17c: dark ink in both themes — the pill sits on the tool's
+                   own pale headerColor, where white text measured 1.41:1. */
                 <button onClick={loadExample} disabled={loading}
                   style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
-                  className={`mt-2 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>
+                  className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
                   ✨ {t('try_example')}
                 </button>
               )}

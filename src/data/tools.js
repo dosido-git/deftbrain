@@ -5223,7 +5223,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🧾",
   categories: ['The Grind', 'Loot'],
   headerColor: "#c0d8b8",
-  description: "A bill isn't a verdict. It's a problem to solve. DeftBrain looks at the amount, the type of bill, how far behind you are, and the protections available to you. Then it tells you what to do next — one step at a time, with the words to say when you get there.",
+  description: "Bills become overwhelming when you don't know what to do next. Tell DeftBrain what's happening, and you'll get a practical, step-by-step plan for understanding the bill, protecting your rights, reducing what you owe, and deciding what to do next.",
   guide: {
     overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
 
