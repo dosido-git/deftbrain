@@ -835,12 +835,12 @@ Output: Suggests bookbinding (meditative, solo, $20 starter kit), PCB design (bu
 ### Layover Maximizer
 
 URL: https://deftbrain.com/LayoverMaximizer
-Tagline: Turn dead time into the best part of your trip
+Tagline: Turn dead time into a memorable part of your trip
 Categories: Out & About
 
-Make the most of every layover — 9 tools for every stage of your connection. Get a YES/NO/RISKY verdict with exact time math. Step-by-step gate-to-gate directions. Live delay recalculation. Side-by-side layover comparison for booking decisions. Lounge finder matched to your cards. Context-aware packing lists. Offline-ready survival kits. Risk analysis with worst-case scenarios. Save your frequent airports.
+Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks at your connection, subtracts everything that gets in the way, and tells you what remains. Then it builds a plan around the hours you actually have—not the hours you thought you had.
 
-**What it does.** Layover Maximizer is your complete connection toolkit — 9 views covering every stage from booking to landing. Compare layovers before you book. Get a time-math-backed verdict when you have your itinerary. Navigate gate-to-gate transfers. Track delays in real time. Find lounges matched to your credit cards. Pack smart for your specific airport. Generate an offline survival kit. Assess worst-case risks. Save airports you fly through often.
+**What it does.** Layover Maximizer answers one question: what can I realistically do between these two flights? It subtracts deplaning, immigration, transit, security and a safety buffer from your layover, shows you that arithmetic so you can challenge it, and gives you a verdict — go, stay, or risky. Then it recommends one plan rather than a directory: where to eat, whether a lounge is worth the walk, and when to start heading for your gate. Anything it was not told stays unknown rather than assumed, and it says which missing fact would sharpen the answer. Tell it a delay and it re-runs the decision. It also compares layovers before you book, navigates gate-to-gate transfers, packs for the airport you are actually in, generates an offline survival kit, and tells you what missing the connection would cost.
 
 **How to use it.**
 
