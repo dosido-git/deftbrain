@@ -16,7 +16,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "Your trailside mechanic in your pocket",
-    bmd_try_example: "Try example",
     bmd_back: "← Back",
     bmd_back_plain: "Back",
     bmd_start_over: "🔄 Start Over",
@@ -1457,7 +1456,6 @@ export const bikeMedic = {
   es: {
     bmd_title: "Bike Medic",
     bmd_tagline: "Tu mecánico de ruta en el bolsillo",
-    bmd_try_example: "Probar ejemplo",
     bmd_back: "← Atrás",
     bmd_back_plain: "Atrás",
     bmd_start_over: "🔄 Empezar de nuevo",
@@ -2767,7 +2765,6 @@ export const bikeMedic = {
   pt: {
     bmd_title: "Bike Medic",
     bmd_tagline: "Seu mecânico de estrada no bolso",
-    bmd_try_example: "Ver exemplo",
     bmd_back: "← Voltar",
     bmd_back_plain: "Voltar",
     bmd_start_over: "🔄 Começar de novo",
@@ -4077,7 +4074,6 @@ export const bikeMedic = {
   fr: {
     bmd_title: "Bike Medic",
     bmd_tagline: "Votre mécano de bord dans la poche",
-    bmd_try_example: "Voir un exemple",
     bmd_back: "← Retour",
     bmd_back_plain: "Retour",
     bmd_start_over: "🔄 Recommencer",
@@ -5387,7 +5383,6 @@ export const bikeMedic = {
   de: {
     bmd_title: "Bike Medic",
     bmd_tagline: "Dein Mechaniker für unterwegs in der Tasche",
-    bmd_try_example: "Beispiel testen",
     bmd_back: "← Zurück",
     bmd_back_plain: "Zurück",
     bmd_start_over: "🔄 Neu beginnen",
@@ -6697,7 +6692,6 @@ export const bikeMedic = {
   vi: {
     bmd_title: "Bike Medic",
     bmd_tagline: "Thợ sửa xe bên đường ngay trong túi bạn",
-    bmd_try_example: "Thử ví dụ",
     bmd_back: "← Quay lại",
     bmd_back_plain: "Quay lại",
     bmd_start_over: "🔄 Bắt đầu lại",
@@ -8007,7 +8001,6 @@ export const bikeMedic = {
   zh: {
     bmd_title: "Bike Medic",
     bmd_tagline: "口袋里的路边修车师傅",
-    bmd_try_example: "试用示例",
     bmd_back: "← 返回",
     bmd_back_plain: "返回",
     bmd_start_over: "🔄 重新开始",
@@ -9318,7 +9311,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "आपकी जेब में मौजूद ट्रेलसाइड मैकेनिक",
-    bmd_try_example: "उदाहरण आज़माएँ",
     bmd_back: "← वापस",
     bmd_back_plain: "वापस",
     bmd_start_over: "🔄 फिर से शुरू करें",
@@ -10756,7 +10748,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "ميكانيكي الطريق في جيبك",
-    bmd_try_example: "جرّب مثالاً",
     bmd_back: "← رجوع",
     bmd_back_plain: "رجوع",
     bmd_start_over: "🔄 ابدأ من جديد",
@@ -12194,7 +12185,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "ポケットの中の路上メカニック",
-    bmd_try_example: "例を試す",
     bmd_back: "← 戻る",
     bmd_back_plain: "戻る",
     bmd_start_over: "🔄 最初からやり直す",
@@ -13632,7 +13622,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "주머니 속 노상 정비사",
-    bmd_try_example: "예시 사용해 보기",
     bmd_back: "← 뒤로",
     bmd_back_plain: "뒤로",
     bmd_start_over: "🔄 처음부터 다시",
@@ -15070,7 +15059,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "Придорожный механик у вас в кармане",
-    bmd_try_example: "Попробовать пример",
     bmd_back: "← Назад",
     bmd_back_plain: "Назад",
     bmd_start_over: "🔄 Начать заново",
@@ -16508,7 +16496,6 @@ export const bikeMedic = {
     // ── Header / chrome ──
     bmd_title: "Bike Medic",
     bmd_tagline: "ช่างซ่อมจักรยานข้างทางในกระเป๋าคุณ",
-    bmd_try_example: "ลองตัวอย่าง",
     bmd_back: "← กลับ",
     bmd_back_plain: "กลับ",
     bmd_start_over: "🔄 เริ่มใหม่",

@@ -1023,7 +1023,7 @@ const NameAudit = ({ tool }) => {
                   <span className="me-2">{tool?.icon ?? '🔍'}</span>{tool?.title ?? t('nau_title')}
                 </h2>
                 <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('nau_tagline')}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('nau_try_example')}</button>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
               </div>
               {(results || compareResults || name.trim() || compareNames.some(n => n.trim())) ? (
                 <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>

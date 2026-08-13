@@ -14,7 +14,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "AI-designed soundscapes that actually play",
-    fsa_try_example: "Try example",
     fsa_start_over: "↺ Start Over",
 
     // ── Layer type labels (display only; type id stays English) ──
@@ -352,7 +351,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "Paisajes sonoros diseñados por IA que se reproducen de verdad",
-    fsa_try_example: "Probar ejemplo",
     fsa_start_over: "↺ Empezar de nuevo",
 
     // ── Layer type labels ──
@@ -690,7 +688,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "AI 设计、真正能播放的环境音景",
-    fsa_try_example: "试用示例",
     fsa_start_over: "↺ 重新开始",
 
     // ── Layer type labels ──
@@ -1028,7 +1025,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "AI द्वारा डिज़ाइन किए गए साउंडस्केप जो सचमुच बजते हैं",
-    fsa_try_example: "उदाहरण आज़माएँ",
     fsa_start_over: "↺ फिर से शुरू करें",
 
     // ── Layer type labels ──
@@ -1366,7 +1362,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "مشاهد صوتية مصممة بالذكاء الاصطناعي تُشغَّل فعلاً",
-    fsa_try_example: "جرّب مثالاً",
     fsa_start_over: "↺ ابدأ من جديد",
 
     // ── Layer type labels ──
@@ -1704,7 +1699,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "Paisagens sonoras projetadas por IA que realmente tocam",
-    fsa_try_example: "Testar exemplo",
     fsa_start_over: "↺ Começar de novo",
 
     // ── Layer type labels ──
@@ -2042,7 +2036,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "Des paysages sonores conçus par l'IA qui se jouent vraiment",
-    fsa_try_example: "Essayer un exemple",
     fsa_start_over: "↺ Recommencer",
 
     // ── Layer type labels ──
@@ -2380,7 +2373,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "KI-gestaltete Klanglandschaften, die wirklich abspielen",
-    fsa_try_example: "Beispiel ausprobieren",
     fsa_start_over: "↺ Neu starten",
 
     // ── Layer type labels ──
@@ -2718,7 +2710,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "AIが設計し、実際に再生できるサウンドスケープ",
-    fsa_try_example: "例を試す",
     fsa_start_over: "↺ 最初からやり直す",
 
     // ── Layer type labels ──
@@ -3056,7 +3047,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "AI가 설계하고 실제로 재생되는 사운드스케이프",
-    fsa_try_example: "예시 사용해 보기",
     fsa_start_over: "↺ 처음부터 다시",
 
     // ── Layer type labels ──
@@ -3394,7 +3384,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "Звуковые ландшафты от ИИ, которые действительно играют",
-    fsa_try_example: "Попробовать пример",
     fsa_start_over: "↺ Начать заново",
 
     // ── Layer type labels ──
@@ -3731,7 +3720,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "ภูมิทัศน์เสียงที่ออกแบบด้วย AI และเล่นได้จริง",
-    fsa_try_example: "ลองตัวอย่าง",
     fsa_start_over: "↺ เริ่มใหม่",
 
     // ── Layer type labels ──
@@ -4068,7 +4056,6 @@ export const focusSoundArchitect = {
     // ── Header ──
     fsa_title: "Focus Sound Architect",
     fsa_tagline: "Cảnh âm do AI thiết kế và thực sự phát được",
-    fsa_try_example: "Thử ví dụ",
     fsa_start_over: "↺ Bắt đầu lại",
 
     // ── Layer type labels ──

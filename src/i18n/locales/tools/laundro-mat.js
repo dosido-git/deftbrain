@@ -14,7 +14,6 @@ export const laundroMat = {
     // ── Header / chrome ──
     lmt_title: "LaundroMat",
     lmt_tagline: "Never lose track of your laundry again",
-    lmt_try_example: "Try example",
     lmt_start_over: "↺ Start Over",
     lmt_disclaimer: "AI-generated advice — for reference only. Always check garment care labels.",
     lmt_related_tools: "🔗 Related tools",
@@ -360,7 +359,6 @@ export const laundroMat = {
   es: {
     lmt_title: "LaundroMat",
     lmt_tagline: "No vuelvas a perder de vista tu colada",
-    lmt_try_example: "Probar ejemplo",
     lmt_start_over: "↺ Empezar de nuevo",
     lmt_disclaimer: "Consejos generados por IA — solo de referencia. Consulta siempre las etiquetas de cuidado.",
     lmt_related_tools: "🔗 Herramientas relacionadas",
@@ -669,7 +667,6 @@ export const laundroMat = {
   zh: {
     lmt_title: "LaundroMat",
     lmt_tagline: "再也不会忘记你的衣物",
-    lmt_try_example: "试用示例",
     lmt_start_over: "↺ 重新开始",
     lmt_disclaimer: "AI 生成的建议——仅供参考。请务必查看衣物的洗涤标签。",
     lmt_related_tools: "🔗 相关工具",
@@ -978,7 +975,6 @@ export const laundroMat = {
   hi: {
     lmt_title: "LaundroMat",
     lmt_tagline: "अब अपने कपड़ों का हिसाब कभी न भूलें",
-    lmt_try_example: "उदाहरण आज़माएँ",
     lmt_start_over: "↺ फिर से शुरू करें",
     lmt_disclaimer: "AI से बनी सलाह — केवल संदर्भ के लिए। कपड़ों के केयर लेबल हमेशा जाँचें।",
     lmt_related_tools: "🔗 संबंधित टूल",
@@ -1287,7 +1283,6 @@ export const laundroMat = {
   ar: {
     lmt_title: "LaundroMat",
     lmt_tagline: "لن تفقد متابعة غسيلك بعد الآن",
-    lmt_try_example: "جرّب مثالاً",
     lmt_start_over: "↺ ابدأ من جديد",
     lmt_disclaimer: "نصائح مُولّدة بالذكاء الاصطناعي — للاسترشاد فقط. تحقّق دائماً من ملصقات العناية بالملابس.",
     lmt_related_tools: "🔗 أدوات ذات صلة",
@@ -1596,7 +1591,6 @@ export const laundroMat = {
   pt: {
     lmt_title: "LaundroMat",
     lmt_tagline: "Nunca mais perca o controle da sua roupa",
-    lmt_try_example: "Testar exemplo",
     lmt_start_over: "↺ Começar de novo",
     lmt_disclaimer: "Conselhos gerados por IA — apenas para referência. Verifique sempre as etiquetas de conservação.",
     lmt_related_tools: "🔗 Ferramentas relacionadas",
@@ -1905,7 +1899,6 @@ export const laundroMat = {
   fr: {
     lmt_title: "LaundroMat",
     lmt_tagline: "Ne perdez plus jamais le fil de votre lessive",
-    lmt_try_example: "Essayer un exemple",
     lmt_start_over: "↺ Recommencer",
     lmt_disclaimer: "Conseils générés par IA — à titre indicatif seulement. Vérifiez toujours les étiquettes d'entretien.",
     lmt_related_tools: "🔗 Outils connexes",
@@ -2214,7 +2207,6 @@ export const laundroMat = {
   de: {
     lmt_title: "LaundroMat",
     lmt_tagline: "Behalte deine Wäsche immer im Blick",
-    lmt_try_example: "Beispiel ausprobieren",
     lmt_start_over: "↺ Neu starten",
     lmt_disclaimer: "KI-generierte Ratschläge — nur zur Orientierung. Prüfe immer die Pflegeetiketten der Kleidung.",
     lmt_related_tools: "🔗 Verwandte Tools",
@@ -2523,7 +2515,6 @@ export const laundroMat = {
   ja: {
     lmt_title: "LaundroMat",
     lmt_tagline: "もう洗濯のことを忘れない",
-    lmt_try_example: "例を試す",
     lmt_start_over: "↺ 最初からやり直す",
     lmt_disclaimer: "AIが生成したアドバイス — 参考用です。必ず衣類の洗濯表示を確認してください。",
     lmt_related_tools: "🔗 関連ツール",
@@ -2832,7 +2823,6 @@ export const laundroMat = {
   ko: {
     lmt_title: "LaundroMat",
     lmt_tagline: "다시는 빨래를 잊지 마세요",
-    lmt_try_example: "예시 사용하기",
     lmt_start_over: "↺ 처음부터",
     lmt_disclaimer: "AI가 생성한 조언 — 참고용입니다. 항상 의류의 취급 라벨을 확인하세요.",
     lmt_related_tools: "🔗 관련 도구",
@@ -3141,7 +3131,6 @@ export const laundroMat = {
   ru: {
     lmt_title: "LaundroMat",
     lmt_tagline: "Больше никогда не теряйте контроль над стиркой",
-    lmt_try_example: "Попробовать пример",
     lmt_start_over: "↺ Начать заново",
     lmt_disclaimer: "Советы созданы ИИ — только для справки. Всегда проверяйте ярлыки по уходу за одеждой.",
     lmt_related_tools: "🔗 Похожие инструменты",
@@ -3450,7 +3439,6 @@ export const laundroMat = {
   th: {
     lmt_title: "LaundroMat",
     lmt_tagline: "ไม่ลืมเรื่องซักผ้าอีกต่อไป",
-    lmt_try_example: "ลองตัวอย่าง",
     lmt_start_over: "↺ เริ่มใหม่",
     lmt_disclaimer: "คำแนะนำที่สร้างโดย AI — เพื่อการอ้างอิงเท่านั้น โปรดตรวจสอบป้ายดูแลรักษาเสื้อผ้าเสมอ",
     lmt_related_tools: "🔗 เครื่องมือที่เกี่ยวข้อง",
@@ -3759,7 +3747,6 @@ export const laundroMat = {
   vi: {
     lmt_title: "LaundroMat",
     lmt_tagline: "Không bao giờ quên việc giặt giũ nữa",
-    lmt_try_example: "Thử ví dụ",
     lmt_start_over: "↺ Bắt đầu lại",
     lmt_disclaimer: "Lời khuyên do AI tạo — chỉ để tham khảo. Luôn kiểm tra nhãn hướng dẫn giặt của quần áo.",
     lmt_related_tools: "🔗 Công cụ liên quan",

@@ -174,7 +174,7 @@ const WhatsMyVibe = ({ tool }) => {
             <div>
               <h2 className={`text-xl font-bold ${c.text}`}><span className="me-2">{tool?.icon}</span>{tool?.title}</h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('wmv_try_example')}</button>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
             {(results || samples.trim()) ? (

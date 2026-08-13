@@ -446,7 +446,7 @@ const GentlePushGenerator = ({ tool }) => {
             </h2>
             <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('gpg_tagline')}</p>
             {mode === 'setup' && (
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('gpg_try_example')}</button>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             )}
           </div>
           {mode !== 'setup' && (

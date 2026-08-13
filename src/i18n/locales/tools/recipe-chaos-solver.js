@@ -9,7 +9,6 @@ export const recipeChaosSolver = {
     // Header
     rcs_title: "Recipe Chaos Solver",
     rcs_tagline: "Fix any kitchen crisis in seconds",
-    rcs_try_example: "Try example",
     rcs_start_over: "↺ Start Over",
     rcs_err_generic: "⚠️",
     // Nav
@@ -383,7 +382,6 @@ export const recipeChaosSolver = {
   es: {
     rcs_title: "Solucionador de Caos Culinario",
     rcs_tagline: "Resuelve cualquier crisis de cocina en segundos",
-    rcs_try_example: "Probar ejemplo",
     rcs_start_over: "↺ Empezar de nuevo",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Rescate",
@@ -735,7 +733,6 @@ export const recipeChaosSolver = {
   zh: {
     rcs_title: "厨房混乱救星",
     rcs_tagline: "几秒钟解决任何厨房危机",
-    rcs_try_example: "试用示例",
     rcs_start_over: "↺ 重新开始",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 急救",
@@ -1087,7 +1084,6 @@ export const recipeChaosSolver = {
   hi: {
     rcs_title: "रेसिपी कैओस सॉल्वर",
     rcs_tagline: "किसी भी रसोई संकट को सेकंडों में सुलझाएँ",
-    rcs_try_example: "उदाहरण आज़माएँ",
     rcs_start_over: "↺ फिर से शुरू करें",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 बचाव",
@@ -1439,7 +1435,6 @@ export const recipeChaosSolver = {
   ar: {
     rcs_title: "حلّال فوضى الوصفات",
     rcs_tagline: "حُلّ أي أزمة في المطبخ خلال ثوانٍ",
-    rcs_try_example: "جرّب مثالاً",
     rcs_start_over: "↺ ابدأ من جديد",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 إنقاذ",
@@ -1791,7 +1786,6 @@ export const recipeChaosSolver = {
   pt: {
     rcs_title: "Solucionador de Caos na Cozinha",
     rcs_tagline: "Resolva qualquer crise na cozinha em segundos",
-    rcs_try_example: "Testar exemplo",
     rcs_start_over: "↺ Começar de novo",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Resgate",
@@ -2143,7 +2137,6 @@ export const recipeChaosSolver = {
   fr: {
     rcs_title: "Solveur de Chaos Culinaire",
     rcs_tagline: "Réglez n'importe quelle crise en cuisine en quelques secondes",
-    rcs_try_example: "Essayer un exemple",
     rcs_start_over: "↺ Recommencer",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Sauvetage",
@@ -2495,7 +2488,6 @@ export const recipeChaosSolver = {
   de: {
     rcs_title: "Küchenchaos-Löser",
     rcs_tagline: "Löse jede Küchenkrise in Sekunden",
-    rcs_try_example: "Beispiel ausprobieren",
     rcs_start_over: "↺ Von vorn",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Rettung",
@@ -2847,7 +2839,6 @@ export const recipeChaosSolver = {
   ja: {
     rcs_title: "レシピ・カオス・ソルバー",
     rcs_tagline: "あらゆるキッチンの危機を数秒で解決",
-    rcs_try_example: "例を試す",
     rcs_start_over: "↺ 最初からやり直す",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 レスキュー",
@@ -3199,7 +3190,6 @@ export const recipeChaosSolver = {
   ko: {
     rcs_title: "레시피 카오스 솔버",
     rcs_tagline: "어떤 주방 위기도 몇 초 만에 해결하세요",
-    rcs_try_example: "예시 사용",
     rcs_start_over: "↺ 다시 시작",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 구조",
@@ -3551,7 +3541,6 @@ export const recipeChaosSolver = {
   ru: {
     rcs_title: "Решатель кухонного хаоса",
     rcs_tagline: "Решите любой кухонный кризис за секунды",
-    rcs_try_example: "Попробовать пример",
     rcs_start_over: "↺ Начать заново",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Спасение",
@@ -3903,7 +3892,6 @@ export const recipeChaosSolver = {
   th: {
     rcs_title: "ตัวแก้วิกฤตในครัว",
     rcs_tagline: "แก้ทุกวิกฤตในครัวได้ในไม่กี่วินาที",
-    rcs_try_example: "ลองตัวอย่าง",
     rcs_start_over: "↺ เริ่มใหม่",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 กู้ภัย",
@@ -4255,7 +4243,6 @@ export const recipeChaosSolver = {
   vi: {
     rcs_title: "Trình Giải Quyết Hỗn Loạn Công Thức",
     rcs_tagline: "Giải quyết mọi khủng hoảng bếp núc trong vài giây",
-    rcs_try_example: "Thử ví dụ",
     rcs_start_over: "↺ Bắt đầu lại",
     rcs_err_generic: "⚠️",
     rcs_nav_rescue: "🍳 Cứu nguy",

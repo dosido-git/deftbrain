@@ -1079,7 +1079,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 disabled={loading}
                 className={`w-full py-2 rounded-xl text-xs font-medium disabled:opacity-40 ${c.sec} border ${c.borderLine}`}
               >
-                ✨ {t('lwa_try_example')}
+                ✨ {t('try_example')}
               </button>
             </div>
 

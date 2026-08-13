@@ -6,7 +6,6 @@ export const sensoryMinefieldMapper = {
   en: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Preview any place before you go",
-    smm_try_example: "Try example",
     smm_start_over: "Start Over",
     // place types
     smm_pt_restaurant: "Restaurant",
@@ -200,7 +199,6 @@ export const sensoryMinefieldMapper = {
   es: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Echa un vistazo a cualquier lugar antes de ir",
-    smm_try_example: "Probar ejemplo",
     smm_start_over: "Empezar de nuevo",
     smm_pt_restaurant: "Restaurante",
     smm_pt_grocery: "Supermercado",
@@ -369,7 +367,6 @@ export const sensoryMinefieldMapper = {
   zh: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "出发前先预览任何场所",
-    smm_try_example: "试试示例",
     smm_start_over: "重新开始",
     smm_pt_restaurant: "餐厅",
     smm_pt_grocery: "杂货店",
@@ -538,7 +535,6 @@ export const sensoryMinefieldMapper = {
   hi: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "जाने से पहले किसी भी जगह का पूर्वावलोकन करें",
-    smm_try_example: "उदाहरण आज़माएँ",
     smm_start_over: "फिर से शुरू करें",
     smm_pt_restaurant: "रेस्तरां",
     smm_pt_grocery: "किराना स्टोर",
@@ -707,7 +703,6 @@ export const sensoryMinefieldMapper = {
   ar: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "اطّلع على أي مكان قبل أن تذهب",
-    smm_try_example: "جرّب مثالاً",
     smm_start_over: "ابدأ من جديد",
     smm_pt_restaurant: "مطعم",
     smm_pt_grocery: "بقالة",
@@ -876,7 +871,6 @@ export const sensoryMinefieldMapper = {
   pt: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Veja como é qualquer lugar antes de ir",
-    smm_try_example: "Testar exemplo",
     smm_start_over: "Recomeçar",
     smm_pt_restaurant: "Restaurante",
     smm_pt_grocery: "Mercado",
@@ -1045,7 +1039,6 @@ export const sensoryMinefieldMapper = {
   fr: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Découvrez n'importe quel endroit avant d'y aller",
-    smm_try_example: "Essayer un exemple",
     smm_start_over: "Recommencer",
     smm_pt_restaurant: "Restaurant",
     smm_pt_grocery: "Épicerie",
@@ -1214,7 +1207,6 @@ export const sensoryMinefieldMapper = {
   de: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Sieh dir jeden Ort vorab an, bevor du hingehst",
-    smm_try_example: "Beispiel ausprobieren",
     smm_start_over: "Neu anfangen",
     smm_pt_restaurant: "Restaurant",
     smm_pt_grocery: "Lebensmittelgeschäft",
@@ -1383,7 +1375,6 @@ export const sensoryMinefieldMapper = {
   ja: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "行く前にどんな場所かをプレビュー",
-    smm_try_example: "例を試す",
     smm_start_over: "最初からやり直す",
     smm_pt_restaurant: "レストラン",
     smm_pt_grocery: "食料品店",
@@ -1552,7 +1543,6 @@ export const sensoryMinefieldMapper = {
   ko: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "가기 전에 어떤 장소인지 미리 보기",
-    smm_try_example: "예시 사용해보기",
     smm_start_over: "다시 시작",
     smm_pt_restaurant: "식당",
     smm_pt_grocery: "식료품점",
@@ -1721,7 +1711,6 @@ export const sensoryMinefieldMapper = {
   ru: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Загляните в любое место до того, как пойти",
-    smm_try_example: "Попробовать пример",
     smm_start_over: "Начать заново",
     smm_pt_restaurant: "Ресторан",
     smm_pt_grocery: "Продуктовый магазин",
@@ -1890,7 +1879,6 @@ export const sensoryMinefieldMapper = {
   th: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "ดูตัวอย่างสถานที่ใด ๆ ก่อนไป",
-    smm_try_example: "ลองตัวอย่าง",
     smm_start_over: "เริ่มใหม่",
     smm_pt_restaurant: "ร้านอาหาร",
     smm_pt_grocery: "ร้านขายของชำ",
@@ -2059,7 +2047,6 @@ export const sensoryMinefieldMapper = {
   vi: {
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Xem trước bất kỳ địa điểm nào trước khi đi",
-    smm_try_example: "Thử ví dụ",
     smm_start_over: "Bắt đầu lại",
     smm_pt_restaurant: "Nhà hàng",
     smm_pt_grocery: "Cửa hàng tạp hóa",

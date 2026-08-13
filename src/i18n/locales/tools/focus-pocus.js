@@ -12,7 +12,6 @@ export const focusPocus = {
     // ── Header ──
     fpc_title: "Focus Pocus",
     fpc_tagline: "Lock in your focus session, get pulled out when time is up",
-    fpc_try_example: "Try example",
     fpc_ex_activity: "Finish the Q3 budget proposal — at least the headline numbers and the headcount section",
     fpc_ex_obligations: "3pm 1:1 with my manager — would be ideal to have a draft ready by then",
     fpc_ex_missed: "Coffee, water, phone on Do Not Disturb",
@@ -372,7 +371,6 @@ export const focusPocus = {
   es: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Concéntrate en tu sesión de enfoque y sal cuando se acabe el tiempo",
-    fpc_try_example: "Probar ejemplo",
     fpc_ex_activity: "Terminar la propuesta de presupuesto del T3 — al menos las cifras principales y la sección de personal",
     fpc_ex_obligations: "1:1 a las 15:00 con mi jefe — lo ideal sería tener un borrador listo para entonces",
     fpc_ex_missed: "Café, agua, teléfono en No molestar",
@@ -668,7 +666,6 @@ export const focusPocus = {
   zh: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "锁定你的专注时段，时间一到就把你拉出来",
-    fpc_try_example: "试用示例",
     fpc_ex_activity: "完成第三季度预算方案——至少把核心数字和人员编制部分搞定",
     fpc_ex_obligations: "下午3点与经理一对一——最好在那之前准备好初稿",
     fpc_ex_missed: "咖啡、水、手机调成勿扰",
@@ -964,7 +961,6 @@ export const focusPocus = {
   hi: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "अपने फ़ोकस सत्र में जुट जाइए, समय पूरा होते ही बाहर निकल आइए",
-    fpc_try_example: "उदाहरण आज़माएँ",
     fpc_ex_activity: "तीसरी तिमाही का बजट प्रस्ताव पूरा करना — कम से कम मुख्य आँकड़े और स्टाफ़ वाला हिस्सा",
     fpc_ex_obligations: "दोपहर 3 बजे मैनेजर के साथ 1:1 — तब तक ड्राफ़्ट तैयार रहे तो बेहतर",
     fpc_ex_missed: "कॉफ़ी, पानी, फ़ोन Do Not Disturb पर",
@@ -1260,7 +1256,6 @@ export const focusPocus = {
   ar: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "ادخل في جلسة تركيزك، واخرج منها عند انتهاء الوقت",
-    fpc_try_example: "جرّب مثالاً",
     fpc_ex_activity: "إنهاء مقترح ميزانية الربع الثالث — على الأقل الأرقام الرئيسية وقسم عدد الموظفين",
     fpc_ex_obligations: "اجتماع فردي مع مديري الساعة 3 مساءً — يُفضّل أن تكون المسودة جاهزة قبلها",
     fpc_ex_missed: "قهوة، ماء، الهاتف على وضع عدم الإزعاج",
@@ -1556,7 +1551,6 @@ export const focusPocus = {
   pt: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Mergulhe na sua sessão de foco e saia quando o tempo acabar",
-    fpc_try_example: "Testar exemplo",
     fpc_ex_activity: "Finalizar a proposta de orçamento do 3º tri — pelo menos os números principais e a parte de pessoal",
     fpc_ex_obligations: "1:1 às 15h com meu gestor — o ideal seria ter um rascunho pronto até lá",
     fpc_ex_missed: "Café, água, celular no Não Perturbe",
@@ -1852,7 +1846,6 @@ export const focusPocus = {
   fr: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Plongez dans votre session de concentration, on vous en sort quand le temps est écoulé",
-    fpc_try_example: "Essayer l'exemple",
     fpc_ex_activity: "Terminer la proposition de budget du T3 — au moins les chiffres clés et la partie effectifs",
     fpc_ex_obligations: "Entretien individuel à 15 h avec mon manager — idéal d'avoir un brouillon prêt d'ici là",
     fpc_ex_missed: "Café, eau, téléphone en Ne pas déranger",
@@ -2148,7 +2141,6 @@ export const focusPocus = {
   de: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Tauche in deine Fokus-Session ein und werde herausgeholt, wenn die Zeit um ist",
-    fpc_try_example: "Beispiel ausprobieren",
     fpc_ex_activity: "Den Q3-Budgetvorschlag fertigstellen — zumindest die Kernzahlen und den Personal-Abschnitt",
     fpc_ex_obligations: "15 Uhr 1:1 mit meiner Führungskraft — idealerweise bis dahin ein Entwurf fertig",
     fpc_ex_missed: "Kaffee, Wasser, Handy auf Nicht stören",
@@ -2444,7 +2436,6 @@ export const focusPocus = {
   ja: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "集中セッションに没入し、時間が来たら引き戻してもらおう",
-    fpc_try_example: "例を試す",
     fpc_ex_activity: "第3四半期の予算案を仕上げる——少なくとも主要な数字と人員のセクション",
     fpc_ex_obligations: "15時に上司と1on1——それまでに下書きを用意できると理想的",
     fpc_ex_missed: "コーヒー、水、スマホはおやすみモードに",
@@ -2740,7 +2731,6 @@ export const focusPocus = {
   ko: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "집중 세션에 몰입하고, 시간이 끝나면 빠져나오세요",
-    fpc_try_example: "예시 사용해 보기",
     fpc_ex_activity: "3분기 예산안 마무리하기 — 최소한 핵심 수치와 인력 섹션은",
     fpc_ex_obligations: "오후 3시 매니저와 1:1 — 그때까지 초안을 준비해 두면 이상적",
     fpc_ex_missed: "커피, 물, 휴대폰은 방해 금지 모드로",
@@ -3036,7 +3026,6 @@ export const focusPocus = {
   ru: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Погрузитесь в сессию фокуса — мы вытащим вас, когда время выйдет",
-    fpc_try_example: "Попробовать пример",
     fpc_ex_activity: "Завершить бюджетное предложение за 3-й квартал — хотя бы ключевые цифры и раздел по штату",
     fpc_ex_obligations: "В 15:00 личная встреча с руководителем — идеально к тому времени иметь черновик",
     fpc_ex_missed: "Кофе, вода, телефон в режиме «Не беспокоить»",
@@ -3332,7 +3321,6 @@ export const focusPocus = {
   th: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "ดิ่งเข้าสู่ช่วงโฟกัสของคุณ แล้วถูกดึงออกมาเมื่อหมดเวลา",
-    fpc_try_example: "ลองตัวอย่าง",
     fpc_ex_activity: "ทำข้อเสนอด้านงบประมาณไตรมาส 3 ให้เสร็จ — อย่างน้อยตัวเลขหลักและส่วนของกำลังคน",
     fpc_ex_obligations: "ประชุมตัวต่อตัวกับหัวหน้าบ่าย 3 โมง — ถ้ามีฉบับร่างพร้อมก่อนหน้านั้นจะดีมาก",
     fpc_ex_missed: "กาแฟ น้ำ โทรศัพท์ตั้งโหมดห้ามรบกวน",
@@ -3628,7 +3616,6 @@ export const focusPocus = {
   vi: {
     fpc_title: "Focus Pocus",
     fpc_tagline: "Đắm mình vào phiên tập trung, được kéo ra khi hết giờ",
-    fpc_try_example: "Thử ví dụ",
     fpc_ex_activity: "Hoàn thành đề xuất ngân sách quý 3 — ít nhất là các con số chính và phần nhân sự",
     fpc_ex_obligations: "15h họp 1:1 với quản lý — lý tưởng là có bản nháp sẵn trước đó",
     fpc_ex_missed: "Cà phê, nước, điện thoại để chế độ Không làm phiền",

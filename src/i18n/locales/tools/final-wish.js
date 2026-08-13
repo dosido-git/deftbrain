@@ -11,7 +11,6 @@ export const finalWish = {
     // ── Header / chrome ──
     fws_title: "Final Wish",
     fws_tagline: "Organize what matters. Say what needs to be said.",
-    fws_try_example: "Try example",
     fws_start_over: "🗑️ Start Over",
     fws_auto_saved: "Auto-saved",
     fws_ai_interview_nav: "🧠 AI Interview",
@@ -361,7 +360,6 @@ export const finalWish = {
   es: {
     fws_title: "Último Deseo",
     fws_tagline: "Organiza lo que importa. Di lo que hay que decir.",
-    fws_try_example: "Probar ejemplo",
     fws_start_over: "🗑️ Empezar de nuevo",
     fws_auto_saved: "Guardado automático",
     fws_ai_interview_nav: "🧠 Entrevista con IA",
@@ -666,7 +664,6 @@ export const finalWish = {
   zh: {
     fws_title: "最后的心愿",
     fws_tagline: "整理重要之事，说出该说的话。",
-    fws_try_example: "试用示例",
     fws_start_over: "🗑️ 重新开始",
     fws_auto_saved: "已自动保存",
     fws_ai_interview_nav: "🧠 AI 访谈",
@@ -971,7 +968,6 @@ export const finalWish = {
   hi: {
     fws_title: "अंतिम इच्छा",
     fws_tagline: "जो मायने रखता है उसे व्यवस्थित करें। जो कहना ज़रूरी है, वह कहें।",
-    fws_try_example: "उदाहरण आज़माएँ",
     fws_start_over: "🗑️ फिर से शुरू करें",
     fws_auto_saved: "अपने-आप सहेजा गया",
     fws_ai_interview_nav: "🧠 AI साक्षात्कार",
@@ -1276,7 +1272,6 @@ export const finalWish = {
   ar: {
     fws_title: "الوصية الأخيرة",
     fws_tagline: "نظّم ما يهم. قُل ما يجب أن يُقال.",
-    fws_try_example: "جرّب مثالاً",
     fws_start_over: "🗑️ ابدأ من جديد",
     fws_auto_saved: "حُفظ تلقائياً",
     fws_ai_interview_nav: "🧠 مقابلة بالذكاء الاصطناعي",
@@ -1581,7 +1576,6 @@ export const finalWish = {
   pt: {
     fws_title: "Último Desejo",
     fws_tagline: "Organize o que importa. Diga o que precisa ser dito.",
-    fws_try_example: "Testar exemplo",
     fws_start_over: "🗑️ Começar de novo",
     fws_auto_saved: "Salvo automaticamente",
     fws_ai_interview_nav: "🧠 Entrevista com IA",
@@ -1886,7 +1880,6 @@ export const finalWish = {
   fr: {
     fws_title: "Dernier Souhait",
     fws_tagline: "Organisez ce qui compte. Dites ce qui doit être dit.",
-    fws_try_example: "Essayer l'exemple",
     fws_start_over: "🗑️ Recommencer",
     fws_auto_saved: "Enregistré automatiquement",
     fws_ai_interview_nav: "🧠 Entretien IA",
@@ -2191,7 +2184,6 @@ export const finalWish = {
   de: {
     fws_title: "Letzter Wunsch",
     fws_tagline: "Ordnen Sie, was zählt. Sagen Sie, was gesagt werden muss.",
-    fws_try_example: "Beispiel ausprobieren",
     fws_start_over: "🗑️ Von vorn beginnen",
     fws_auto_saved: "Automatisch gespeichert",
     fws_ai_interview_nav: "🧠 KI-Interview",
@@ -2496,7 +2488,6 @@ export const finalWish = {
   ja: {
     fws_title: "最後の願い",
     fws_tagline: "大切なことを整える。伝えるべきことを伝える。",
-    fws_try_example: "例を試す",
     fws_start_over: "🗑️ 最初からやり直す",
     fws_auto_saved: "自動保存しました",
     fws_ai_interview_nav: "🧠 AIインタビュー",
@@ -2801,7 +2792,6 @@ export const finalWish = {
   ko: {
     fws_title: "마지막 소망",
     fws_tagline: "중요한 것을 정리하세요. 해야 할 말을 전하세요.",
-    fws_try_example: "예시 사용해 보기",
     fws_start_over: "🗑️ 처음부터 다시",
     fws_auto_saved: "자동 저장됨",
     fws_ai_interview_nav: "🧠 AI 인터뷰",
@@ -3106,7 +3096,6 @@ export const finalWish = {
   ru: {
     fws_title: "Последнее желание",
     fws_tagline: "Упорядочите важное. Скажите то, что нужно сказать.",
-    fws_try_example: "Попробовать пример",
     fws_start_over: "🗑️ Начать заново",
     fws_auto_saved: "Сохранено автоматически",
     fws_ai_interview_nav: "🧠 Интервью с ИИ",
@@ -3411,7 +3400,6 @@ export const finalWish = {
   th: {
     fws_title: "ความปรารถนาสุดท้าย",
     fws_tagline: "จัดระเบียบสิ่งที่สำคัญ พูดในสิ่งที่ควรพูด",
-    fws_try_example: "ลองตัวอย่าง",
     fws_start_over: "🗑️ เริ่มใหม่",
     fws_auto_saved: "บันทึกอัตโนมัติแล้ว",
     fws_ai_interview_nav: "🧠 การสัมภาษณ์ด้วย AI",
@@ -3716,7 +3704,6 @@ export const finalWish = {
   vi: {
     fws_title: "Nguyện Ước Cuối",
     fws_tagline: "Sắp xếp những điều quan trọng. Nói ra những điều cần nói.",
-    fws_try_example: "Thử ví dụ",
     fws_start_over: "🗑️ Bắt đầu lại",
     fws_auto_saved: "Đã tự động lưu",
     fws_ai_interview_nav: "🧠 Phỏng vấn bằng AI",

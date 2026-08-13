@@ -18,7 +18,6 @@ export const socialEnergyAudit = {
     // ── Header / chrome ──
     sea_title: "Social Battery Advisor",
     sea_tagline: "Log your interactions — see where your energy actually goes",
-    sea_try_example: "Try example",
     sea_start_over: "🔄 Start Over",
 
     // ── Categories ──
@@ -327,7 +326,6 @@ export const socialEnergyAudit = {
   es: {
     sea_title: "Auditoría de energía social",
     sea_tagline: "Registra tus interacciones y descubre adónde va realmente tu energía",
-    sea_try_example: "Probar ejemplo",
     sea_start_over: "🔄 Empezar de nuevo",
     sea_cat_work: "Trabajo",
     sea_cat_social: "Social",
@@ -578,7 +576,6 @@ export const socialEnergyAudit = {
   zh: {
     sea_title: "社交能量审计",
     sea_tagline: "记录你的互动，看看你的能量到底花在了哪里",
-    sea_try_example: "试用示例",
     sea_start_over: "🔄 重新开始",
     sea_cat_work: "工作",
     sea_cat_social: "社交",
@@ -829,7 +826,6 @@ export const socialEnergyAudit = {
   hi: {
     sea_title: "सोशल एनर्जी ऑडिट",
     sea_tagline: "अपनी बातचीत दर्ज करें — देखें कि आपकी ऊर्जा असल में कहाँ जाती है",
-    sea_try_example: "उदाहरण आज़माएँ",
     sea_start_over: "🔄 फिर से शुरू करें",
     sea_cat_work: "काम",
     sea_cat_social: "सामाजिक",
@@ -1080,7 +1076,6 @@ export const socialEnergyAudit = {
   ar: {
     sea_title: "تدقيق الطاقة الاجتماعية",
     sea_tagline: "سجّل تفاعلاتك واكتشف أين تذهب طاقتك فعلاً",
-    sea_try_example: "جرّب مثالاً",
     sea_start_over: "🔄 ابدأ من جديد",
     sea_cat_work: "العمل",
     sea_cat_social: "اجتماعي",
@@ -1331,7 +1326,6 @@ export const socialEnergyAudit = {
   pt: {
     sea_title: "Auditoria de Energia Social",
     sea_tagline: "Registre suas interações e veja para onde sua energia realmente vai",
-    sea_try_example: "Testar exemplo",
     sea_start_over: "🔄 Recomeçar",
     sea_cat_work: "Trabalho",
     sea_cat_social: "Social",
@@ -1582,7 +1576,6 @@ export const socialEnergyAudit = {
   fr: {
     sea_title: "Audit d'énergie sociale",
     sea_tagline: "Notez vos interactions — voyez où part vraiment votre énergie",
-    sea_try_example: "Essayer un exemple",
     sea_start_over: "🔄 Recommencer",
     sea_cat_work: "Travail",
     sea_cat_social: "Social",
@@ -1833,7 +1826,6 @@ export const socialEnergyAudit = {
   de: {
     sea_title: "Social-Energy-Audit",
     sea_tagline: "Erfasse deine Interaktionen – sieh, wohin deine Energie wirklich geht",
-    sea_try_example: "Beispiel testen",
     sea_start_over: "🔄 Neu beginnen",
     sea_cat_work: "Arbeit",
     sea_cat_social: "Sozial",
@@ -2084,7 +2076,6 @@ export const socialEnergyAudit = {
   ja: {
     sea_title: "ソーシャルエナジー監査",
     sea_tagline: "やり取りを記録して、自分のエネルギーが実際どこに向かうかを把握しよう",
-    sea_try_example: "例を試す",
     sea_start_over: "🔄 最初からやり直す",
     sea_cat_work: "仕事",
     sea_cat_social: "社交",
@@ -2335,7 +2326,6 @@ export const socialEnergyAudit = {
   ko: {
     sea_title: "소셜 에너지 점검",
     sea_tagline: "상호작용을 기록해 에너지가 실제로 어디로 가는지 확인하세요",
-    sea_try_example: "예시 보기",
     sea_start_over: "🔄 처음부터 다시",
     sea_cat_work: "업무",
     sea_cat_social: "사교",
@@ -2586,7 +2576,6 @@ export const socialEnergyAudit = {
   ru: {
     sea_title: "Аудит социальной энергии",
     sea_tagline: "Записывайте свои взаимодействия — и увидите, куда на самом деле уходит ваша энергия",
-    sea_try_example: "Попробовать пример",
     sea_start_over: "🔄 Начать заново",
     sea_cat_work: "Работа",
     sea_cat_social: "Общение",
@@ -2837,7 +2826,6 @@ export const socialEnergyAudit = {
   th: {
     sea_title: "ตรวจสอบพลังงานทางสังคม",
     sea_tagline: "บันทึกการมีปฏิสัมพันธ์ของคุณ แล้วดูว่าพลังงานของคุณไปไหนจริง ๆ",
-    sea_try_example: "ลองตัวอย่าง",
     sea_start_over: "🔄 เริ่มใหม่",
     sea_cat_work: "งาน",
     sea_cat_social: "สังคม",
@@ -3088,7 +3076,6 @@ export const socialEnergyAudit = {
   vi: {
     sea_title: "Kiểm toán năng lượng xã hội",
     sea_tagline: "Ghi lại các tương tác — xem năng lượng của bạn thực sự đi đâu",
-    sea_try_example: "Thử ví dụ",
     sea_start_over: "🔄 Bắt đầu lại",
     sea_cat_work: "Công việc",
     sea_cat_social: "Xã giao",

@@ -679,6 +679,37 @@ const LayoverMaximizer = ({ tool }) => {
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
           <div className="space-y-3">
+            {/* Airport */}
+            <div>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+              <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
+                placeholder={t('lmx_ph_airport_main')}
+                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {POPULAR_AIRPORTS.slice(0, 6).map(ap => (
+                  <button key={ap.code} onClick={() => setAirport(ap.code)}
+                    className={`text-[9px] px-1.5 py-0.5 rounded border ${airport === ap.code ? c.pillActive : c.pillInactive} min-h-[22px]`}>
+                    {ap.code}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* HOW LONG — the same question asked two ways. "I have 5 hours"
+                and "my flight leaves at 22:15" are one answer, not two
+                questions, so the toggle belongs here rather than at the head of
+                the form, where it was the first thing every visitor read and
+                the last thing most of them needed. */}
+            {!isLiveMode && (
+              <div>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+                <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
+                  onChange={e => setLayoverHours(e.target.value)}
+                  placeholder={t('lmx_ph_duration')}
+                  className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+              </div>
+            )}
+
             {/* Live mode toggle */}
             <div className={`flex items-center gap-2 p-2.5 rounded-lg border ${isLiveMode ? (isDark ? 'border-sky-600 bg-sky-900/20' : 'border-sky-300 bg-sky-50') : c.card}`}>
               <input type="checkbox" checked={isLiveMode} onChange={() => setIsLiveMode(!isLiveMode)} className="accent-sky-500" />
@@ -709,32 +740,15 @@ const LayoverMaximizer = ({ tool }) => {
                     : t('lmx_live_clock_device', { time: minutesToHhmm(nowMinutes) })}
               </p>
             )}
-
-            {/* Airport */}
-            <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-              <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
-                placeholder={t('lmx_ph_airport_main')}
-                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {POPULAR_AIRPORTS.slice(0, 6).map(ap => (
-                  <button key={ap.code} onClick={() => setAirport(ap.code)}
-                    className={`text-[9px] px-1.5 py-0.5 rounded border ${airport === ap.code ? c.pillActive : c.pillInactive} min-h-[22px]`}>
-                    {ap.code}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Layover duration */}
+            {/* The fork before the planning: if the ticket is not booked, the
+                question is not "what can I do here" but "is this the right
+                connection at all". Offered as a link, not a control — it does
+                not belong in the sequence of answers. */}
             {!isLiveMode && (
-              <div>
-                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
-                <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
-                  onChange={e => setLayoverHours(e.target.value)}
-                  placeholder={t('lmx_ph_duration')}
-                  className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
-              </div>
+              <button onClick={() => { setView('compare'); setError(''); }}
+                className={`text-xs ${c.skyText} underline underline-offset-2 min-h-[28px] text-start`}>
+                {t('lmx_compare_prompt')}
+              </button>
             )}
 
             {/* Travel style — where is it, how long, and what do you want from
@@ -2252,7 +2266,7 @@ const LayoverMaximizer = ({ tool }) => {
                 {/* Dark ink in BOTH themes: the pill sits on the tool's own
                     headerColor, which is pale on almost every tool, so white
                     text measured 1.41:1 against it and ink measures 4.51:1. */}
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('lmx_try_example')}</button>
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || airport.trim() || layoverHours.trim() || nationality.trim()) ? (

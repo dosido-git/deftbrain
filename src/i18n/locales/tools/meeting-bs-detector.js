@@ -11,7 +11,6 @@ export const meetingBsDetector = {
     // ── Header / chrome ──
     mbd_title: "Meeting BS Detector",
     mbd_tagline: "Detect, audit, and fix your meeting culture",
-    mbd_try_example: "Try example",
     mbd_start_over: "↺ Start Over",
     mbd_default_copy_title: "Meeting BS Detector",
 
@@ -369,7 +368,6 @@ export const meetingBsDetector = {
   es: {
     mbd_title: "Detector de Tonterías de Reuniones",
     mbd_tagline: "Detecta, audita y arregla tu cultura de reuniones",
-    mbd_try_example: "Probar ejemplo",
     mbd_start_over: "↺ Empezar de nuevo",
     mbd_default_copy_title: "Detector de Tonterías de Reuniones",
 
@@ -706,7 +704,6 @@ export const meetingBsDetector = {
   zh: {
     mbd_title: "会议废话探测器",
     mbd_tagline: "检测、审查并改善你的会议文化",
-    mbd_try_example: "试试示例",
     mbd_start_over: "↺ 重新开始",
     mbd_default_copy_title: "会议废话探测器",
 
@@ -1043,7 +1040,6 @@ export const meetingBsDetector = {
   hi: {
     mbd_title: "मीटिंग बकवास डिटेक्टर",
     mbd_tagline: "अपनी मीटिंग संस्कृति का पता लगाएँ, ऑडिट करें और सुधारें",
-    mbd_try_example: "उदाहरण आज़माएँ",
     mbd_start_over: "↺ फिर से शुरू करें",
     mbd_default_copy_title: "मीटिंग बकवास डिटेक्टर",
 
@@ -1380,7 +1376,6 @@ export const meetingBsDetector = {
   ar: {
     mbd_title: "كاشف هراء الاجتماعات",
     mbd_tagline: "اكتشف ثقافة اجتماعاتك ودققها وأصلحها",
-    mbd_try_example: "جرّب مثالاً",
     mbd_start_over: "↺ ابدأ من جديد",
     mbd_default_copy_title: "كاشف هراء الاجتماعات",
 
@@ -1717,7 +1712,6 @@ export const meetingBsDetector = {
   pt: {
     mbd_title: "Detector de Baboseira de Reuniões",
     mbd_tagline: "Detecte, audite e conserte sua cultura de reuniões",
-    mbd_try_example: "Testar exemplo",
     mbd_start_over: "↺ Começar de novo",
     mbd_default_copy_title: "Detector de Baboseira de Reuniões",
 
@@ -2054,7 +2048,6 @@ export const meetingBsDetector = {
   fr: {
     mbd_title: "Détecteur de Bla-bla de Réunions",
     mbd_tagline: "Détectez, auditez et corrigez votre culture des réunions",
-    mbd_try_example: "Essayer un exemple",
     mbd_start_over: "↺ Recommencer",
     mbd_default_copy_title: "Détecteur de Bla-bla de Réunions",
 
@@ -2391,7 +2384,6 @@ export const meetingBsDetector = {
   de: {
     mbd_title: "Meeting-Blabla-Detektor",
     mbd_tagline: "Erkenne, prüfe und repariere deine Meeting-Kultur",
-    mbd_try_example: "Beispiel ausprobieren",
     mbd_start_over: "↺ Neu starten",
     mbd_default_copy_title: "Meeting-Blabla-Detektor",
 
@@ -2728,7 +2720,6 @@ export const meetingBsDetector = {
   ja: {
     mbd_title: "会議ムダ検出器",
     mbd_tagline: "あなたの会議文化を検出・点検・改善",
-    mbd_try_example: "例を試す",
     mbd_start_over: "↺ 最初からやり直す",
     mbd_default_copy_title: "会議ムダ検出器",
 
@@ -3065,7 +3056,6 @@ export const meetingBsDetector = {
   ko: {
     mbd_title: "회의 헛소리 탐지기",
     mbd_tagline: "당신의 회의 문화를 탐지하고, 점검하고, 개선하세요",
-    mbd_try_example: "예시 사용해 보기",
     mbd_start_over: "↺ 처음부터 다시",
     mbd_default_copy_title: "회의 헛소리 탐지기",
 
@@ -3402,7 +3392,6 @@ export const meetingBsDetector = {
   ru: {
     mbd_title: "Детектор бессмыслицы совещаний",
     mbd_tagline: "Выявляйте, проверяйте и исправляйте культуру совещаний",
-    mbd_try_example: "Попробовать пример",
     mbd_start_over: "↺ Начать заново",
     mbd_default_copy_title: "Детектор бессмыслицы совещаний",
 
@@ -3739,7 +3728,6 @@ export const meetingBsDetector = {
   th: {
     mbd_title: "เครื่องตรวจจับเรื่องเหลวไหลในการประชุม",
     mbd_tagline: "ตรวจจับ ตรวจสอบ และแก้ไขวัฒนธรรมการประชุมของคุณ",
-    mbd_try_example: "ลองตัวอย่าง",
     mbd_start_over: "↺ เริ่มใหม่",
     mbd_default_copy_title: "เครื่องตรวจจับเรื่องเหลวไหลในการประชุม",
 
@@ -4076,7 +4064,6 @@ export const meetingBsDetector = {
   vi: {
     mbd_title: "Máy Dò Nhảm Nhí Cuộc Họp",
     mbd_tagline: "Phát hiện, kiểm toán và sửa chữa văn hóa họp hành của bạn",
-    mbd_try_example: "Thử ví dụ",
     mbd_start_over: "↺ Bắt đầu lại",
     mbd_default_copy_title: "Máy Dò Nhảm Nhí Cuộc Họp",
 

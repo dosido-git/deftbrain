@@ -4,7 +4,6 @@
 // Name That Feeling, Slack) stay as-is across languages.
 export const whatsMyVibe = {
   en: {
-    wmv_try_example: "Try example",
     wmv_src_label: "Where's this from?",
     wmv_src_texts: "Text Messages",
     wmv_src_emails: "Emails",
@@ -51,7 +50,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Secret tell:",
   },
   es: {
-    wmv_try_example: "Probar ejemplo",
     wmv_src_label: "¿De dónde es esto?",
     wmv_src_texts: "Mensajes de texto",
     wmv_src_emails: "Correos",
@@ -98,7 +96,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Señal secreta:",
   },
   zh: {
-    wmv_try_example: "试试示例",
     wmv_src_label: "这是来自哪里的？",
     wmv_src_texts: "短信",
     wmv_src_emails: "电子邮件",
@@ -145,7 +142,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "隐藏信号：",
   },
   hi: {
-    wmv_try_example: "उदाहरण आज़माएं",
     wmv_src_label: "यह कहां से है?",
     wmv_src_texts: "टेक्स्ट संदेश",
     wmv_src_emails: "ईमेल",
@@ -192,7 +188,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "गुप्त संकेत:",
   },
   ar: {
-    wmv_try_example: "جرّب مثالاً",
     wmv_src_label: "من أين هذا؟",
     wmv_src_texts: "رسائل نصية",
     wmv_src_emails: "رسائل بريد",
@@ -239,7 +234,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "إشارة خفية:",
   },
   pt: {
-    wmv_try_example: "Testar exemplo",
     wmv_src_label: "De onde é isto?",
     wmv_src_texts: "Mensagens de texto",
     wmv_src_emails: "E-mails",
@@ -286,7 +280,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Sinal secreto:",
   },
   fr: {
-    wmv_try_example: "Essayer un exemple",
     wmv_src_label: "Ça vient d'où ?",
     wmv_src_texts: "SMS",
     wmv_src_emails: "E-mails",
@@ -333,7 +326,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Signal secret :",
   },
   de: {
-    wmv_try_example: "Beispiel ausprobieren",
     wmv_src_label: "Woher stammt das?",
     wmv_src_texts: "SMS-Nachrichten",
     wmv_src_emails: "E-Mails",
@@ -380,7 +372,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Geheimes Signal:",
   },
   ja: {
-    wmv_try_example: "例を試す",
     wmv_src_label: "これはどこからのもの？",
     wmv_src_texts: "テキストメッセージ",
     wmv_src_emails: "メール",
@@ -427,7 +418,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "隠れたサイン：",
   },
   ko: {
-    wmv_try_example: "예시 사용하기",
     wmv_src_label: "이건 어디서 온 건가요?",
     wmv_src_texts: "문자 메시지",
     wmv_src_emails: "이메일",
@@ -474,7 +464,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "숨은 신호:",
   },
   ru: {
-    wmv_try_example: "Попробовать пример",
     wmv_src_label: "Откуда это?",
     wmv_src_texts: "Текстовые сообщения",
     wmv_src_emails: "Письма",
@@ -521,7 +510,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "Тайный сигнал:",
   },
   th: {
-    wmv_try_example: "ลองตัวอย่าง",
     wmv_src_label: "นี่มาจากไหน?",
     wmv_src_texts: "ข้อความ",
     wmv_src_emails: "อีเมล",
@@ -568,7 +556,6 @@ export const whatsMyVibe = {
     wmv_copy_secret: "สัญญาณลับ:",
   },
   vi: {
-    wmv_try_example: "Thử ví dụ",
     wmv_src_label: "Cái này từ đâu?",
     wmv_src_texts: "Tin nhắn",
     wmv_src_emails: "Email",

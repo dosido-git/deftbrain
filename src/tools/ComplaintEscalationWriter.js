@@ -729,7 +729,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <span className="me-2">{tool?.icon ?? '📧'}</span>{tool?.title ?? t('cew_title')}
               </h2>
               <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('cew_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('cew_try_example')}</button>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
             </div>
             <div className="flex items-center gap-2">
               {hasResults && (

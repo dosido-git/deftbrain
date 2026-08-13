@@ -15,7 +15,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Name Audit",
     nau_tagline: "Stress-test any name before you commit",
-    nau_try_example: "Try example",
     nau_start_over: "↺ Start Over",
 
     // ── Mode toggle ──
@@ -445,7 +444,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Auditoría de Nombres",
     nau_tagline: "Pon a prueba cualquier nombre antes de comprometerte",
-    nau_try_example: "Probar ejemplo",
     nau_start_over: "↺ Empezar de nuevo",
 
     // ── Mode toggle ──
@@ -869,7 +867,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "名称审计",
     nau_tagline: "在确定之前，对任何名称进行压力测试",
-    nau_try_example: "试试示例",
     nau_start_over: "↺ 重新开始",
 
     // ── Mode toggle ──
@@ -1293,7 +1290,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "नेम ऑडिट",
     nau_tagline: "किसी भी नाम को तय करने से पहले उसकी कड़ी परख करें",
-    nau_try_example: "उदाहरण आज़माएँ",
     nau_start_over: "↺ फिर से शुरू करें",
 
     // ── Mode toggle ──
@@ -1717,7 +1713,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "تدقيق الاسم",
     nau_tagline: "اختبر أي اسم تحت الضغط قبل أن تلتزم به",
-    nau_try_example: "جرّب مثالاً",
     nau_start_over: "↺ ابدأ من جديد",
 
     // ── Mode toggle ──
@@ -2141,7 +2136,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Auditoria de Nomes",
     nau_tagline: "Teste qualquer nome sob pressão antes de se comprometer",
-    nau_try_example: "Testar exemplo",
     nau_start_over: "↺ Começar de novo",
 
     // ── Mode toggle ──
@@ -2565,7 +2559,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Audit de Nom",
     nau_tagline: "Mettez n'importe quel nom à l'épreuve avant de vous engager",
-    nau_try_example: "Essayer un exemple",
     nau_start_over: "↺ Recommencer",
 
     // ── Mode toggle ──
@@ -2989,7 +2982,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Namens-Audit",
     nau_tagline: "Stelle jeden Namen auf die Probe, bevor du dich festlegst",
-    nau_try_example: "Beispiel ausprobieren",
     nau_start_over: "↺ Neu beginnen",
 
     // ── Mode toggle ──
@@ -3413,7 +3405,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "ネーム監査",
     nau_tagline: "決める前に、どんな名前も徹底的にテスト",
-    nau_try_example: "例を試す",
     nau_start_over: "↺ 最初からやり直す",
 
     // ── Mode toggle ──
@@ -3837,7 +3828,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "네임 감사",
     nau_tagline: "확정하기 전에 어떤 이름이든 철저히 테스트하세요",
-    nau_try_example: "예시 보기",
     nau_start_over: "↺ 처음부터 다시",
 
     // ── Mode toggle ──
@@ -4261,7 +4251,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Аудит имени",
     nau_tagline: "Проверьте любое имя на прочность, прежде чем остановиться на нём",
-    nau_try_example: "Попробовать пример",
     nau_start_over: "↺ Начать заново",
 
     // ── Mode toggle ──
@@ -4685,7 +4674,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "ตรวจสอบชื่อ",
     nau_tagline: "ทดสอบชื่อทุกชื่ออย่างหนักก่อนตัดสินใจเลือก",
-    nau_try_example: "ลองตัวอย่าง",
     nau_start_over: "↺ เริ่มใหม่",
 
     // ── Mode toggle ──
@@ -5109,7 +5097,6 @@ export const nameAudit = {
     // ── Header / chrome ──
     nau_title: "Kiểm Định Tên",
     nau_tagline: "Thử thách mọi cái tên trước khi bạn quyết định",
-    nau_try_example: "Thử ví dụ",
     nau_start_over: "↺ Bắt đầu lại",
 
     // ── Mode toggle ──

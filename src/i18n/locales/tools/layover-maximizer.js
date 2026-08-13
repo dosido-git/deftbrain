@@ -13,7 +13,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Layover Maximizer",
     lmx_tagline: "Make every layover count",
-    lmx_try_example: "Try example",
     lmx_analyzing: "Analyzing...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -73,6 +72,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Travel style",
     lmx_btn_analyze: "What do I have time for?",
+    lmx_compare_prompt: "Not booked yet? Compare this against other connections →",
     lmx_cmd_enter: "Press ⌘↵ when you're ready",
     lmx_live_until_departure: "Until your flight leaves",
     lmx_live_passed: "passed",
@@ -341,7 +341,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Maximizador de Escalas",
     lmx_tagline: "Aprovecha al máximo cada escala",
-    lmx_try_example: "Probar ejemplo",
     lmx_analyzing: "Analizando...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -401,6 +400,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viaje",
     lmx_btn_analyze: "¿Para qué me da tiempo?",
+    lmx_compare_prompt: "¿Aún no lo has reservado? Compáralo con otras conexiones →",
     lmx_cmd_enter: "Pulsa ⌘↵ cuando estés listo",
     lmx_live_until_departure: "Hasta que salga tu vuelo",
     lmx_live_passed: "ya pasó",
@@ -669,7 +669,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "中转时间规划器",
     lmx_tagline: "让每一次中转都不虚度",
-    lmx_try_example: "试用示例",
     lmx_analyzing: "分析中...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -729,6 +728,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅行风格",
     lmx_btn_analyze: "我有时间做什么？",
+    lmx_compare_prompt: "还没订票？把它和其他中转方案比一比 →",
     lmx_cmd_enter: "准备好后按 ⌘↵",
     lmx_live_until_departure: "距离航班起飞",
     lmx_live_passed: "已过",
@@ -997,7 +997,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "लेओवर मैक्सिमाइज़र",
     lmx_tagline: "हर लेओवर को सार्थक बनाएँ",
-    lmx_try_example: "उदाहरण आज़माएँ",
     lmx_analyzing: "विश्लेषण किया जा रहा है...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1057,6 +1056,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "यात्रा शैली",
     lmx_btn_analyze: "मेरे पास किस चीज़ का समय है?",
+    lmx_compare_prompt: "अभी बुक नहीं किया? इसकी तुलना दूसरे कनेक्शनों से करें →",
     lmx_cmd_enter: "तैयार हों तो ⌘↵ दबाएँ",
     lmx_live_until_departure: "आपकी उड़ान जाने तक",
     lmx_live_passed: "बीत चुका",
@@ -1325,7 +1325,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "مُحسِّن فترة الترانزيت",
     lmx_tagline: "اجعل كل فترة ترانزيت ذات قيمة",
-    lmx_try_example: "جرّب مثالاً",
     lmx_analyzing: "جارٍ التحليل...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1385,6 +1384,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "أسلوب السفر",
     lmx_btn_analyze: "ما الذي يتّسع له وقتي؟",
+    lmx_compare_prompt: "لم تحجز بعد؟ قارن هذا بخيارات ربط أخرى ←",
     lmx_cmd_enter: "اضغط ⌘↵ عندما تكون جاهزًا",
     lmx_live_until_departure: "حتى إقلاع رحلتك",
     lmx_live_passed: "فات",
@@ -1653,7 +1653,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Maximizador de Conexões",
     lmx_tagline: "Aproveite ao máximo cada conexão",
-    lmx_try_example: "Testar exemplo",
     lmx_analyzing: "Analisando...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1713,6 +1712,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viagem",
     lmx_btn_analyze: "Para o que tenho tempo?",
+    lmx_compare_prompt: "Ainda não reservou? Compare com outras conexões →",
     lmx_cmd_enter: "Pressione ⌘↵ quando estiver pronto",
     lmx_live_until_departure: "Até seu voo partir",
     lmx_live_passed: "já passou",
@@ -1981,7 +1981,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Maximiseur d'Escale",
     lmx_tagline: "Tirez le meilleur de chaque escale",
-    lmx_try_example: "Essayer un exemple",
     lmx_analyzing: "Analyse en cours...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2041,6 +2040,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Style de voyage",
     lmx_btn_analyze: "J'ai le temps de faire quoi ?",
+    lmx_compare_prompt: "Pas encore réservé ? Comparez avec d'autres correspondances →",
     lmx_cmd_enter: "Appuyez sur ⌘↵ quand vous êtes prêt",
     lmx_live_until_departure: "Avant le décollage",
     lmx_live_passed: "dépassé",
@@ -2309,7 +2309,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Zwischenstopp-Maximierer",
     lmx_tagline: "Hol das Beste aus jedem Zwischenstopp heraus",
-    lmx_try_example: "Beispiel ausprobieren",
     lmx_analyzing: "Wird analysiert...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2369,6 +2368,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Reisestil",
     lmx_btn_analyze: "Wofür reicht meine Zeit?",
+    lmx_compare_prompt: "Noch nicht gebucht? Vergleich ihn mit anderen Verbindungen →",
     lmx_cmd_enter: "Drück ⌘↵, wenn du so weit bist",
     lmx_live_until_departure: "Bis dein Flug geht",
     lmx_live_passed: "vorbei",
@@ -2637,7 +2637,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "乗り継ぎ最大活用ツール",
     lmx_tagline: "すべての乗り継ぎを無駄にしない",
-    lmx_try_example: "例を試す",
     lmx_analyzing: "分析中...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2697,6 +2696,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅のスタイル",
     lmx_btn_analyze: "何をする時間がある？",
+    lmx_compare_prompt: "まだ予約前ですか？ 他の乗り継ぎと比べてみる →",
     lmx_cmd_enter: "準備ができたら ⌘↵ を押してください",
     lmx_live_until_departure: "出発まで",
     lmx_live_passed: "経過",
@@ -2965,7 +2965,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "환승 활용 극대화 도구",
     lmx_tagline: "모든 환승을 알차게",
-    lmx_try_example: "예시 사용해 보기",
     lmx_analyzing: "분석 중...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3025,6 +3024,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "여행 스타일",
     lmx_btn_analyze: "무엇을 할 시간이 있나요?",
+    lmx_compare_prompt: "아직 예약 전인가요? 다른 연결편과 비교해 보세요 →",
     lmx_cmd_enter: "준비되면 ⌘↵ 를 누르세요",
     lmx_live_until_departure: "출발까지",
     lmx_live_passed: "지났음",
@@ -3293,7 +3293,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Максимайзер пересадок",
     lmx_tagline: "Используйте каждую пересадку с пользой",
-    lmx_try_example: "Попробовать пример",
     lmx_analyzing: "Анализируем...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3353,6 +3352,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Стиль путешествия",
     lmx_btn_analyze: "На что у меня хватит времени?",
+    lmx_compare_prompt: "Ещё не забронировали? Сравните с другими стыковками →",
     lmx_cmd_enter: "Нажмите ⌘↵, когда будете готовы",
     lmx_live_until_departure: "До вылета",
     lmx_live_passed: "прошло",
@@ -3621,7 +3621,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "ตัวจัดการเวลาต่อเครื่อง",
     lmx_tagline: "ใช้ทุกช่วงต่อเครื่องให้คุ้มค่า",
-    lmx_try_example: "ลองตัวอย่าง",
     lmx_analyzing: "กำลังวิเคราะห์...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3681,6 +3680,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "สไตล์การเดินทาง",
     lmx_btn_analyze: "ฉันมีเวลาทำอะไรได้บ้าง?",
+    lmx_compare_prompt: "ยังไม่ได้จอง? ลองเทียบกับเที่ยวบินต่อเครื่องอื่น →",
     lmx_cmd_enter: "กด ⌘↵ เมื่อพร้อม",
     lmx_live_until_departure: "จนกว่าเครื่องจะออก",
     lmx_live_passed: "ผ่านไปแล้ว",
@@ -3949,7 +3949,6 @@ export const layoverMaximizer = {
     // ── Header / chrome ──
     lmx_title: "Tối Ưu Thời Gian Quá Cảnh",
     lmx_tagline: "Tận dụng tối đa mỗi lần quá cảnh",
-    lmx_try_example: "Thử ví dụ",
     lmx_analyzing: "Đang phân tích...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -4009,6 +4008,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Phong cách du lịch",
     lmx_btn_analyze: "Tôi có thời gian làm gì?",
+    lmx_compare_prompt: "Chưa đặt vé? So sánh với các chuyến nối khác →",
     lmx_cmd_enter: "Nhấn ⌘↵ khi bạn sẵn sàng",
     lmx_live_until_departure: "Đến khi chuyến bay cất cánh",
     lmx_live_passed: "đã qua",

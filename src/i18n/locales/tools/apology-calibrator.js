@@ -11,7 +11,6 @@ export const apologyCalibrator = {
     // ── Header / chrome ──
     apc_title: "Apology Calibrator",
     apc_tagline: "Find the right level — not too much, not too little",
-    apc_try_example: "Try example",
     apc_start_over: "↺ Start Over",
 
     // ── Tabs ──
@@ -499,7 +498,6 @@ export const apologyCalibrator = {
   es: {
     apc_title: "Calibrador de Disculpas",
     apc_tagline: "Encuentra el nivel justo: ni demasiado, ni muy poco",
-    apc_try_example: "Probar ejemplo",
     apc_start_over: "↺ Empezar de nuevo",
 
     apc_tab_calibrate: "Calibrar",
@@ -964,7 +962,6 @@ export const apologyCalibrator = {
   zh: {
     apc_title: "道歉校准器",
     apc_tagline: "找到恰当的力度——不多也不少",
-    apc_try_example: "试试示例",
     apc_start_over: "↺ 重新开始",
 
     apc_tab_calibrate: "校准",
@@ -1429,7 +1426,6 @@ export const apologyCalibrator = {
   hi: {
     apc_title: "माफ़ी कैलिब्रेटर",
     apc_tagline: "सही स्तर खोजें — न ज़्यादा, न कम",
-    apc_try_example: "उदाहरण आज़माएँ",
     apc_start_over: "↺ फिर से शुरू करें",
 
     apc_tab_calibrate: "कैलिब्रेट",
@@ -1894,7 +1890,6 @@ export const apologyCalibrator = {
   ar: {
     apc_title: "معاير الاعتذار",
     apc_tagline: "اعثر على المستوى المناسب — لا أكثر من اللازم ولا أقل",
-    apc_try_example: "جرّب مثالاً",
     apc_start_over: "↺ ابدأ من جديد",
 
     apc_tab_calibrate: "المعايرة",
@@ -2359,7 +2354,6 @@ export const apologyCalibrator = {
   pt: {
     apc_title: "Calibrador de Desculpas",
     apc_tagline: "Encontre o nível certo — nem demais, nem de menos",
-    apc_try_example: "Testar exemplo",
     apc_start_over: "↺ Começar de novo",
 
     apc_tab_calibrate: "Calibrar",
@@ -2824,7 +2818,6 @@ export const apologyCalibrator = {
   fr: {
     apc_title: "Calibrateur d'Excuses",
     apc_tagline: "Trouvez le bon niveau — ni trop, ni trop peu",
-    apc_try_example: "Essayer un exemple",
     apc_start_over: "↺ Recommencer",
 
     apc_tab_calibrate: "Calibrer",
@@ -3289,7 +3282,6 @@ export const apologyCalibrator = {
   de: {
     apc_title: "Entschuldigungs-Kalibrator",
     apc_tagline: "Finde das richtige Maß – nicht zu viel, nicht zu wenig",
-    apc_try_example: "Beispiel ausprobieren",
     apc_start_over: "↺ Von vorn beginnen",
 
     apc_tab_calibrate: "Kalibrieren",
@@ -3754,7 +3746,6 @@ export const apologyCalibrator = {
   ja: {
     apc_title: "謝罪キャリブレーター",
     apc_tagline: "ちょうどいい度合いを見つける——多すぎず、少なすぎず",
-    apc_try_example: "例を試す",
     apc_start_over: "↺ 最初からやり直す",
 
     apc_tab_calibrate: "調整",
@@ -4219,7 +4210,6 @@ export const apologyCalibrator = {
   ko: {
     apc_title: "사과 캘리브레이터",
     apc_tagline: "딱 맞는 수준 찾기 — 과하지도, 부족하지도 않게",
-    apc_try_example: "예시 보기",
     apc_start_over: "↺ 처음부터 다시",
 
     apc_tab_calibrate: "조정",
@@ -4684,7 +4674,6 @@ export const apologyCalibrator = {
   ru: {
     apc_title: "Калибратор извинений",
     apc_tagline: "Найдите верный уровень — не слишком много и не слишком мало",
-    apc_try_example: "Попробовать пример",
     apc_start_over: "↺ Начать заново",
 
     apc_tab_calibrate: "Калибровка",
@@ -5149,7 +5138,6 @@ export const apologyCalibrator = {
   th: {
     apc_title: "เครื่องปรับระดับคำขอโทษ",
     apc_tagline: "หาระดับที่พอดี — ไม่มากไป ไม่น้อยไป",
-    apc_try_example: "ลองตัวอย่าง",
     apc_start_over: "↺ เริ่มใหม่",
 
     apc_tab_calibrate: "ปรับระดับ",
@@ -5614,7 +5602,6 @@ export const apologyCalibrator = {
   vi: {
     apc_title: "Bộ Hiệu Chỉnh Lời Xin Lỗi",
     apc_tagline: "Tìm đúng mức độ — không quá nhiều, không quá ít",
-    apc_try_example: "Thử ví dụ",
     apc_start_over: "↺ Bắt đầu lại",
 
     apc_tab_calibrate: "Hiệu chỉnh",
