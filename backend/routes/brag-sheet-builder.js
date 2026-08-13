@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, withLocaleContext} = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -69,7 +69,9 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const systemPrompt = `You are the world's best professional accomplishment translator. You take humble, self-deprecating descriptions and transform them into powerful, specific, metrics-driven achievement statements.
 
 CALIBRATE YOUR OUTPUT TO THIS PERSON:
-${calibration}`;
+${calibration}
+
+${NO_INVENTED_FACTS}`;
 
     let outputSpec = `{
   "transformations": [
@@ -505,7 +507,7 @@ CONTEXT:
 - Role: ${roleTitle || 'Not specified'}
 - Industry: ${industry || 'general'}
 - Level: ${level || 'mid-level'}
-${yearsExp ? `- Years of experience: ${yearsExp}` : ''}${existingContext}
+${yearsExp ? `- Years of experience: ${yearsExp}` : '- Years of experience: NOT PROVIDED'}${existingContext}
 
 Generate questions across these categories. Each question should be specific enough to trigger a memory. NOT generic like "Did you lead anything?" — instead: "Did you ever take over a project that was behind schedule and get it back on track?"
 

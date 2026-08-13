@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -15,12 +15,14 @@ router.post('/procedure-probe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Tell us what procedure or treatment was recommended.' });
     }
 
-    const systemPrompt = `You are a patient advocate and healthcare literacy coach. When someone has been recommended a medical or dental procedure, you help them understand what they're agreeing to — without replacing their doctor's advice.`;
+    const systemPrompt = `You are a patient advocate and healthcare literacy coach. When someone has been recommended a medical or dental procedure, you help them understand what they're agreeing to — without replacing their doctor's advice.
+
+${NO_INVENTED_FACTS}`;
 
     const userPrompt = `PROCEDURE/TREATMENT RECOMMENDED: ${procedure}
-${quote ? `QUOTED PRICE: ${quote}` : ''}
-${provider ? `PROVIDER TYPE: ${provider}` : ''}
-${insurance ? `INSURANCE SITUATION: ${insurance}` : ''}
+${quote ? `QUOTED PRICE: ${quote}` : 'QUOTED PRICE: NOT PROVIDED'}
+${provider ? `PROVIDER TYPE: ${provider}` : 'PROVIDER TYPE: NOT PROVIDED'}
+${insurance ? `INSURANCE SITUATION: ${insurance}` : 'INSURANCE SITUATION: NOT PROVIDED'}
 ${concerns ? `MY CONCERNS: ${concerns}` : ''}
 ${urgency ? `URGENCY LEVEL: ${urgency}` : ''}
 

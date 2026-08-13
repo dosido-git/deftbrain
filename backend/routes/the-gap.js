@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
+const { withLanguage, withLocaleContext, callClaudeWithRetry, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -25,7 +25,9 @@ router.post('/the-gap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Tell us a bit more — what topic or concept is this about?' });
     }
 
-    const systemPrompt = `You are an expert academic diagnostician. When a student says "I don't understand X", most people try to re-explain X. You do something different: you trace BACKWARDS through the prerequisite chain to find the exact point where their understanding broke.`;
+    const systemPrompt = `You are an expert academic diagnostician. When a student says "I don't understand X", most people try to re-explain X. You do something different: you trace BACKWARDS through the prerequisite chain to find the exact point where their understanding broke.
+
+${NO_INVENTED_FACTS}`;
 
     const levelNote = level === 'high_school' ? 'Student is at the high school level.' 
       : level === 'grad' ? 'Student is at the graduate level — assume strong foundations, look for subtle gaps.'
@@ -33,7 +35,7 @@ router.post('/the-gap', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       : 'Student is at the undergraduate level.';
 
     const userPrompt = `STRUGGLING WITH: "${concept}"
-${subject ? `SUBJECT/COURSE: ${subject}` : ''}
+${subject ? `SUBJECT/COURSE: ${subject}` : 'SUBJECT/COURSE: NOT PROVIDED'}
 ${whatIKnow ? `WHAT I DO UNDERSTAND: ${whatIKnow}` : ''}
 ${whereItBroke ? `WHERE IT BROKE: ${whereItBroke}` : ''}
 LEVEL: ${levelNote}

@@ -405,6 +405,19 @@ async function checkModels() {
   return _modelStatus;
 }
 
+// ── Shared prompt rule: a gap is not a green light ────────────────────
+// Optional fields are interpolated as '' when blank, so a field the visitor
+// left empty does not reach the model as "unknown" — the line simply is not
+// there, and the model reads an absent constraint rather than a missing fact.
+// Layover Maximizer shipped for months telling travellers "0 min — no
+// immigration, US passport" to people who had never said they held one.
+//
+// Two halves, and both are needed. Mark the blanks NOT PROVIDED at the call
+// site so the gap is visible, then append this so it means something.
+const NO_INVENTED_FACTS = `NEVER CONVERT A MISSING FACT INTO AN ASSUMPTION. Anything marked NOT PROVIDED is unknown to you: do not invent a value for it, do not build advice on top of a guess, and say plainly which missing detail would change what you told them. An answer with a stated gap is worth more than a confident one resting on something you made up.
+
+NOT PROVIDED IS A MARKER FOR YOU, NOT A PHRASE FOR THEM. Never write it, or any other label from the brief, into a field the visitor reads — a first test produced "QUOTED PRICE: NOT PROVIDED and INSURANCE SITUATION: NOT PROVIDED" where a cost estimate should have been. Say it the way a person would: "you haven't told me the quoted price yet", "this depends on your insurance".`;
+
 function getModelStatus() { return _modelStatus; }
 
-module.exports = { anthropic, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, MODELS, ALL_MODELS };
+module.exports = { anthropic, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, MODELS, ALL_MODELS };

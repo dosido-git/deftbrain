@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
+const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
@@ -77,7 +77,9 @@ const TYPE_KNOWLEDGE = {
 
 const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — when a VERIFIED CURRENT FACTS block is present in the user message, those figures and programs were web-checked TODAY and OVERRIDE your training knowledge; use them verbatim. For anything not covered by the block, NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step.
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.`
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.
+
+${NO_INVENTED_FACTS}`
 
 async function createParseRetry(params, attempts = 3) {
   let lastErr;
@@ -452,7 +454,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const userPrompt = `QUICK CHECK:
 Bill type: ${billType || 'unknown'}
 Charge: "${charge}"
-${amount ? `Amount: ${sym}${amount}` : ''}
+${amount ? `Amount: ${sym}${amount}` : 'Amount: NOT PROVIDED — do not estimate what the bill is for'}
 
 Return ONLY valid JSON:
 {
@@ -587,7 +589,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const userPrompt = `GENERATE LETTER:
 Type: ${letterType}
 Bill type: ${billType || 'not specified'}
-${amount ? `Amount: ${sym}${amount}` : ''}
+${amount ? `Amount: ${sym}${amount}` : 'Amount: NOT PROVIDED — do not estimate what the bill is for'}
 Situation: ${situation || 'not specified'}
 ${additionalContext ? `Additional context: ${additionalContext}` : ''}
 

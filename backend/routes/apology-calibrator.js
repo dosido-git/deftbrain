@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, NO_INVENTED_FACTS } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
@@ -10,7 +10,9 @@ const PERSONALITY = `Apology calibration expert — part therapist, part communi
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
 
-${NO_QUOTE_RULE}`
+${NO_QUOTE_RULE}
+
+${NO_INVENTED_FACTS}`
 
 // ════════════════════════════════════════════════════════════
 // POST /apology-calibrator — Main calibration
@@ -28,7 +30,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const userPrompt = `CALIBRATE THIS APOLOGY:
 What happened: ${whatHappened}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${situation ? `Context: ${situation}` : ''}
 
 Return ONLY valid JSON:
@@ -181,7 +183,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const userPrompt = `DELIVERY PLAN:
 Situation: ${whatHappened}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${apologyText ? `Their planned apology: "${apologyText}"` : ''}
 
 Return ONLY valid JSON:
@@ -324,7 +326,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const userPrompt = `CULTURAL CALIBRATION:
 Situation: ${whatHappened}
 Cultural context: ${culture}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${setting ? `Setting: ${setting}` : ''}
 
 Return ONLY valid JSON:
@@ -386,7 +388,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const userPrompt = `DECODE THIS APOLOGY:
 What they said: "${theirWords}"
 ${context ? `Context: ${context}` : ''}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 
 Return ONLY valid JSON:
 {
@@ -545,7 +547,7 @@ Write every field with precision — no filler, no padding, no restating what wa
     const userPrompt = `FORGIVENESS NAVIGATION:
 What they did: ${whatTheyDid}
 ${theirApology ? `Their apology: "${theirApology}"` : 'No apology given (or inadequate one)'}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${howYouFeel ? `How I feel: ${howYouFeel}` : ''}
 
 Return ONLY valid JSON:
@@ -621,7 +623,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const userPrompt = `REPAIR ROADMAP:
 What happened: ${whatHappened}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${currentState ? `Current state of things: ${currentState}` : ''}
 ${effortSoFar ? `What I've done so far: ${effortSoFar}` : ''}
 
@@ -705,7 +707,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     const userPrompt = `BUILD AN APOLOGY LETTER:
 What happened: ${whatHappened}
-${relationship ? `Relationship: ${relationship}` : ''}
+${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${tone ? `Preferred tone: ${tone}` : ''}
 ${additionalContext ? `Additional context: ${additionalContext}` : ''}
 
@@ -791,7 +793,7 @@ WHAT THEY SAID (the failed apology):
 HOW THE OTHER PERSON REACTED:
 "${theirReaction.trim()}"
 
-${relationship ? `RELATIONSHIP: ${relationship}` : ''}
+${relationship ? `RELATIONSHIP: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${context ? `CONTEXT: ${context}` : ''}
 
 Diagnose what went wrong and rebuild it completely.
