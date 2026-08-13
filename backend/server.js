@@ -1,5 +1,6 @@
 // backend/server.js
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
@@ -59,6 +60,19 @@ app.get('/api/health/models', async (req, res) => {
 });
 
 // ── Middleware ──
+// Compression, before anything that can produce a body. The app shipped its
+// main bundle uncompressed: 19.9 MB on the wire, which is roughly half a
+// minute of blank screen on mobile data. gzip takes that to 4.3 MB. Express
+// negotiates from Accept-Encoding, so a client that cannot decompress simply
+// gets what it always got.
+//
+// The default filter already skips anything already-encoded and anything with
+// a no-transform directive, and honours `Cache-Control: no-transform`.
+// Server-sent events are the one thing compression famously breaks by
+// buffering; this app has none today, and if one is added it must opt out with
+// `res.setHeader('Cache-Control', 'no-transform')`.
+app.use(compression());
+
 app.use(cors(
   IS_PRODUCTION
     ? { origin: ['https://deftbrain.com', 'https://www.deftbrain.com'] }
