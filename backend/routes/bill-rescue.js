@@ -221,12 +221,13 @@ Return ONLY valid JSON with ALL applicable sections:
     "status": "Exactly one of these and nothing else: FINE, SERIOUS_BUT_EARLY, URGENT, ALREADY_DAMAGED",
     "emoji": "🟢|🟡|🔴|⚫",
     "headline": "Where they stand, in the fewest words that are still true — 'Serious, but you're still early' — 3-7 words",
-    "where_you_stand": ["Two or three flat statements of fact about this specific bill: how old it is, what that means for their credit today, whether the window to negotiate is still open. One short sentence each, no advice."]
+    "where_you_stand": ["Two or three SHORT statements — eight to fourteen words each, no subordinate clauses. What is still true in their favour: credit not at risk yet, still dealing with the original creditor, nothing lost. State it flatly and confidently; do not explain the mechanism or cite how many days anything takes."]
   },
 
   "recommendation": {
     "headline": "The single most important instruction, as an imperative — 'Do not pay this bill yet.' — 3-8 words",
-    "steps": ["Two or three short sentences, in order, that together are the whole plan. 'First, verify that it's accurate.' 'Then apply for financial assistance.' 'Only after that, negotiate a payment plan.' No detail, no scripts — those come later."]
+    "steps": ["Two or three imperatives, in order, six words or fewer each: 'Request an itemized bill.' 'Apply for financial assistance.' 'Negotiate only after you know the real balance.' No explanation — the reason lives in the step that follows it."],
+    "not_today": ["Two or three things NOT to do today, six words or fewer each: 'Don't make a payment today.' 'Don't discuss what you can afford.'"]
   },
 
   "todays_job": {
@@ -237,7 +238,7 @@ Return ONLY valid JSON with ALL applicable sections:
   },
 
   "shame_to_action": {
-    "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing.",
+    "reframe": "Four or five SHORT lines, each its own sentence, no paragraph. Name the thing that happened to them, say plainly that it is not a failure, and end on picking it up now being the right move. Reassurance, not explanation — do not describe how the billing system works.",
     "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
   }${hasBillText || hasBillImage ? `,
 
@@ -255,16 +256,16 @@ Return ONLY valid JSON with ALL applicable sections:
     {
       "emoji": "One emoji for this protection",
       "right": "Name it as money, not as a statute — 'Surprise billing', 'Hospital assistance', 'Credit protection' — 2-4 words",
-      "explanation": "What it could take off this bill, in plain language, and what to do to use it. Never open with a section number; a law may be named at the end if it helps them say it out loud. — 1-2 sentences"
+      "explanation": "ONE sentence, MAXIMUM 16 WORDS. What to ask for or what to check, and nothing else. Never open with a section number. Good: 'Ask for the financial assistance application — many people qualify who assume they will not.' Bad: anything with two clauses explaining why."
     }
   ],
 
   "action_steps": [
     {
-      "title": "Short title — 3-6 words",
+      "title": "The step as a checkable line — 'Request the itemized bill.' — 3-6 words",
       "action": "Specific action with exact instructions — not 'call them' but 'Call the number on your bill, press 2 for billing...'",
       "script": "Exact words to say. Copy-paste ready. null if not a phone/message step. — 2-4 sentences",
-      "when": "Today | Tomorrow | This week | After step X"
+      "when": "EXACTLY one of these four strings and nothing else — Today, Tomorrow, This week, After that. Not a variation, not a qualifier, not a step number. Several steps may share one; that is the point."
     }
   ],
 
@@ -289,7 +290,7 @@ Return ONLY valid JSON with ALL applicable sections:
 
 Your response MUST contain ALL ${keysA.length} top-level keys — ${keysA.join(', ')} — and NO other keys.
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, money_you_might_not_owe ≤ 4, where_you_stand ≤ 3, recommendation.steps ≤ 3, not_yet ≤ 3, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, money_you_might_not_owe ≤ 4, where_you_stand ≤ 3, recommendation.steps ≤ 3, not_today ≤ 3, not_yet ≤ 3, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 - total_potential_savings MUST equal the sum of the flagged_charges amounts.

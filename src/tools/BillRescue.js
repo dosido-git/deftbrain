@@ -75,7 +75,6 @@ const VERDICT_TONE = (status, c) => ({
   ALREADY_DAMAGED: c.danger,
 }[status] || c.cardAlt);
 
-const CURRENCIES = ['$', '€', '£', '¥', '₹', 'R$', 'A$', 'C$', 'CHF', 'kr'];
 
 const STORE_PLANS = 'br-plans';
 const STORE_LOGS = 'br-logs';
@@ -230,7 +229,9 @@ const BillRescue = ({ tool }) => {
   const [billType, setBillType] = usePersistentState('billrescue-bill-type', '');
   const [, setSessionHistory] = usePersistentState('billrescue-history', []);
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState(() => currencySymbol(userLocale, userCurrency));
+  // Follows the header's currency selector — see useLocale. A second
+  // dropdown inside the tool could disagree with it, and did.
+  const currency = sym;
   const [overdueStatus, setOverdueStatus] = useState('');
   const [reason, setReason] = useState([]);
   const [showMore, setShowMore] = useState(false);
@@ -238,7 +239,6 @@ const BillRescue = ({ tool }) => {
     setReason(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
   }, []);
   const [details, setDetails] = useState('');
-  const [canAffordMonthly, setCanAffordMonthly] = useState('');
   const [pastedBill, setPastedBill] = useState('');
   const [billImagePreview, setBillImagePreview] = useState(null);
   const [billImageBase64, setBillImageBase64] = useState(null);
@@ -338,7 +338,6 @@ const BillRescue = ({ tool }) => {
         overdueStatus: overdueStatus || 'unknown',
         reason: reason.length ? reason : null,
         details: details.trim() || null,
-        canAffordMonthly: canAffordMonthly ? Number(canAffordMonthly) : null,
         pastedBill: pastedBill.trim() || null,
         billImageBase64: billImageBase64 || null,
         userLocale, userCurrency, userRegion,
@@ -348,7 +347,7 @@ const BillRescue = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('br_err_analysis'));
     }
-  }, [billType, amount, currency, overdueStatus, reason, details, canAffordMonthly, pastedBill, billImageBase64, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [billType, amount, currency, overdueStatus, reason, details, pastedBill, billImageBase64, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   // ── Triage ──
   const runTriage = useCallback(async () => {
@@ -602,7 +601,7 @@ const BillRescue = ({ tool }) => {
   // ── Reset ──
   const handleReset = useCallback(() => {
     setBillType(''); setAmount(''); setOverdueStatus(''); setReason([]);
-    setDetails(''); setCanAffordMonthly(''); setPastedBill('');
+    setDetails(''); setPastedBill('');
     setBillImagePreview(null); setBillImageBase64(null);
     setResults(null); setError('');
   }, [setBillType, setResults]);
@@ -611,8 +610,7 @@ const BillRescue = ({ tool }) => {
     setBillType('medical');
     setAmount('2400');
     setOverdueStatus('60_days');
-    setReason('cant_afford');
-    setCanAffordMonthly('100');
+    setReason(['cant_afford', 'dont_understand']);
     setDetails(t('br_example_details'));
     setError('');
   }, [setBillType, t]);
@@ -826,13 +824,6 @@ const BillRescue = ({ tool }) => {
   const renderRescue = () => (
     <div className="space-y-4">
       <div className={`${c.card} border rounded-xl p-5`}>
-        <div className="flex items-center justify-end mb-4">
-          <select value={currency} onChange={e => setCurrency(e.target.value)}
-            className={`py-1 px-2 border rounded-lg text-xs font-bold ${c.input} outline-none`}>
-            {CURRENCIES.map(cur => <option key={cur} value={cur}>{cur}</option>)}
-          </select>
-        </div>
-
         {/* ── Tell me about the bill ── */}
         <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_about')}</p>
         <div className="mb-5">
@@ -850,20 +841,12 @@ const BillRescue = ({ tool }) => {
 
         {/* ── How serious is it? — the two facts that set the verdict ── */}
         <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_serious')}</p>
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="mb-3">
           <div>
             <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_how_much')}</label>
             <div className="flex items-center gap-1">
               <span className={`text-xs font-bold ${c.textMuteded}`}>{currency}</span>
               <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0"
-                className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
-            </div>
-          </div>
-          <div>
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_can_pay_monthly')}</label>
-            <div className="flex items-center gap-1">
-              <span className={`text-xs font-bold ${c.textMuteded}`}>{currency}</span>
-              <input type="number" value={canAffordMonthly} onChange={e => setCanAffordMonthly(e.target.value)} placeholder="0"
                 className={`flex-1 px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
             </div>
           </div>
@@ -962,10 +945,15 @@ const BillRescue = ({ tool }) => {
         </div>
 
         <p className={`text-[9px] ${c.textMuteded} mb-1`}>{t('br_privacy')}</p>
-        <p className={`text-[9px] ${c.textMuteded} mb-3`}>
+        <p className={`text-[9px] ${c.textMuteded} mb-1`}>
           {t('br_triage_hint_pre')}{' '}
           <button onClick={() => setView('triage')} className={linkStyle + ' text-[9px]'}>{t('br_triage_hint_link')}</button>{' '}
           {t('br_triage_hint_post')}
+        </p>
+        <p className={`text-[9px] ${c.textMuteded} mb-3`}>
+          {t('br_quick_hint_pre')}{' '}
+          <button onClick={() => { setView('quick'); setError(''); }} className={linkStyle + ' text-[9px]'}>{t('br_quick_hint_link')}</button>{' '}
+          {t('br_quick_hint_post')}
         </p>
 
         {/* Actions */}
@@ -1047,9 +1035,16 @@ const BillRescue = ({ tool }) => {
             {r.recommendation.steps?.length > 0 && (
               <ol className="space-y-1">
                 {r.recommendation.steps.map((line, i) => (
-                  <li key={i} className={`text-sm ${c.textSecondary}`}>{line}</li>
+                  <li key={i} className={`text-sm font-bold ${c.text}`}>{i + 1}. {line}</li>
                 ))}
               </ol>
+            )}
+            {r.recommendation.not_today?.length > 0 && (
+              <div className="mt-2 space-y-0.5">
+                {r.recommendation.not_today.map((x, i) => (
+                  <p key={i} className={`text-xs ${c.textMuteded}`}>✕ {x}</p>
+                ))}
+              </div>
             )}
           </div>
         )}
@@ -1345,13 +1340,6 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* Permission */}
-            {r.permission && (
-              <div className={`${c.success} border-2 rounded-xl p-5 text-center`}>
-                <p className="text-sm font-semibold">💚 {r.permission}</p>
-              </div>
-            )}
-
             {/* ── What you might do next, named as actions rather than as the
                 screens they open. These were nine pills across the top of the
                 form, before the visitor had a bill analysed or any reason to
@@ -1399,6 +1387,11 @@ const BillRescue = ({ tool }) => {
                   </div>
                 </dl>
                 <p className={`text-xs ${c.textMuteded} mt-2`}>{t('br_end_comeback')}</p>
+                {/* Was a green card three sections earlier, where it read as one
+                    more panel. It is the last thing a person should hear. */}
+                {r.permission && (
+                  <p className={`text-sm ${c.textSecondary} mt-3 pt-3 border-t ${c.border}`}>{r.permission}</p>
+                )}
               </div>
             )}
 
