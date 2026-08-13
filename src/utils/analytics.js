@@ -77,7 +77,11 @@ function operatorFlagFromUrl() {
     const v = new URLSearchParams(window.location.search).get('operator');
     if (v === '1') localStorage.setItem('db-operator', '1');
     else if (v === '0') localStorage.removeItem('db-operator');
-    if (v === '1') console.info('[DeftBrain] operator mode ON — this browser sends no metrics (?operator=0 to undo)');
+  } catch (_) {}
+  try {
+    if (isOperator()) {
+      console.info('[DeftBrain] operator mode ON — this browser sends no metrics (?operator=0 to undo)');
+    }
   } catch (_) {}
 }
 function isOperator() {
@@ -210,7 +214,26 @@ if (typeof window !== 'undefined' && !window.__dbAnalyticsInit) {
   wrap('replaceState');
   window.addEventListener('popstate', pageView);
   // "Took it with them": a print is one of the strongest validation signals —
-  // the result is leaving the screen for the real world. beforeprint catches
-  // both the PrintBtn and Cmd/Ctrl+P, so buttons don't need their own beacon.
-  window.addEventListener('beforeprint', () => track('print'));
+  // the result is leaving the screen for the real world.
+  //
+  // beforeprint catches the PrintBtn and Cmd/Ctrl+P — in every engine except
+  // Safari, which has never implemented it and announces a print only by
+  // switching the print media query. A Safari user printing to PDF was
+  // therefore invisible, and "took it" read 0 for sessions that ended in a
+  // saved file. Both paths now funnel through one guarded call, so a browser
+  // that fires both does not count the same print twice.
+  let printingNow = false;
+  const notePrint = () => {
+    if (printingNow) return;
+    printingNow = true;
+    track('print');
+    setTimeout(() => { printingNow = false; }, 3000);
+  };
+  window.addEventListener('beforeprint', notePrint);
+  try {
+    const printMq = window.matchMedia('print');
+    const onPrintMq = (e) => { if (e.matches) notePrint(); };
+    if (printMq.addEventListener) printMq.addEventListener('change', onPrintMq);
+    else if (printMq.addListener) printMq.addListener(onPrintMq);   // older Safari
+  } catch (_) { /* matchMedia absent — nothing to fall back to */ }
 }
