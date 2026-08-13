@@ -1757,3 +1757,71 @@ On conflict: the audit script's constant arrays are the ultimate tiebreaker for 
 ## RTL / logical properties (2026-07-21)
 
 All direction-dependent Tailwind utilities use LOGICAL variants so Arabic mirrors automatically: `ms-`/`me-` (not `ml-`/`mr-`), `ps-`/`pe-`, `text-start`/`text-end`, `start-`/`end-` (positioning), `border-s`/`border-e`, `rounded-s/e/ss/se/es/ee`. Inline styles use `marginInlineStart` etc. In LTR these are pixel-identical to the physical classes. Never introduce new `ml-`/`mr-`/`pl-`/`pr-`/`text-left`/`text-right`/`left-N`/`right-N` classes in tool UI.
+
+
+## Header, example pill and submit shortcut (2026-08-12) — ROLLOUT PENDING
+
+Three header/control conventions agreed on LayoverMaximizer + DateNight. Both
+tools now match; **the other ~123 tools do not yet.** Apply when next touching a
+tool rather than as one sweep.
+
+### PF-30 · No in-card title — icon, then tagline
+
+`ToolPageWrapper` already renders the tool's name as the page `<h1>`. An `<h2>`
+inside the card repeating it makes the visitor read the same words twice before
+reaching an input, and spends the page's first `<h2>` on zero new information.
+
+Delete the `<h2>`. The icon moves onto the tagline, which is the line that
+actually says something:
+
+```jsx
+<p className={`text-sm ${c.textSecondary}`}>
+  <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.tagline ?? t('xxx_tagline')}
+</p>
+```
+
+The tagline STAYS — it is not a duplicate. The wrapper renders `description`;
+this renders `tagline`. Different strings. Keep the `tool?.icon ?? '<emoji>'`
+fallback matching `tools.js` (Clarification 5).
+
+### PF-17c · Try Example pill — the larger spec
+
+The old `px-2.5 py-0.5 text-xs` pill was below a comfortable tap target and the
+dark-mode variant put white text on the tool's pale `headerColor` (measured
+1.41:1). One spec, both themes, dark ink:
+
+```jsx
+<button onClick={loadExample} disabled={loading}
+  style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+  className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+  ✨ {t('xxx_try_example')}
+</button>
+```
+
+Ink in **both** themes — the pill sits on `headerColor`, not on the page
+background, and `headerColor` is pale on 119 of 125 tools. The `+ '80'` alpha
+stays (PF-17b).
+
+### PF-31 · ⌘↵ on the primary submit button
+
+Tools with a Cmd/Ctrl+Enter handler must show it on the control, the way the
+catalog search shows ⌘K — not as a line of prose underneath.
+
+```jsx
+<button onClick={submit} disabled={...} title={t('xxx_cmd_enter')}
+  className={`relative w-full ...`}>
+  {...label...}
+  {!loading && (
+    <kbd aria-hidden="true"
+      className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+      ⌘↵
+    </kbd>
+  )}
+</button>
+```
+
+`relative` on the button, `end-3` not `right-3` so it mirrors in Arabic,
+`hidden sm:flex` because a phone has no Command key, and `title` carries the
+same hint for anyone who cannot see the chip. A tool with no keyboard handler
+gets the handler first — a chip for a shortcut that does nothing is worse than
+no chip.

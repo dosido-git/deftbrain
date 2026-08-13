@@ -3358,10 +3358,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before you book a connection, or the night before you fly it.",
-    give: "Airport, layover length, passport, terminals.",
-    get: "A yes/no/risky verdict backed by real time arithmetic, plus a plan for either staying or going out.",
-    edge: "It does the time math against your actual terminals and passport, so the verdict is about your connection, not a generic one.",
+    when: "Before you book, the night before you fly, or standing in the terminal right now.",
+    give: "The airport, how long you have, and what you want out of it.",
+    get: "Go, stay, or risky — the arithmetic that decided it, one recommended plan, and a time to be back by.",
+    edge: "It won't invent what you didn't tell it. No passport means no immigration estimate, and it says so — then asks for the one fact that would change the answer.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -3385,7 +3385,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "✈️",
   categories: ['Out & About'],
   headerColor: "#ccdfc4",
-  description: "See what you really have time for between flights. Tell it your connection and you get a go / stay / risky verdict with the arithmetic behind it — what five hours become after deplaning, immigration, transit, security and a safety buffer — then one recommended plan for the hours that are actually left, and the safest version of leaving the airport if you decide to go anyway. When a delay changes the picture, it recalculates. It also compares layovers before you book, points you at gate-to-gate routes, finds lounges your cards may cover, packs for the airport you are actually in, and tells you what missing the connection would cost.",
+  description: "Your layover isn't just a block of time. It's a puzzle to solve. DeftBrain looks at your connection, subtracts everything that gets in the way, and tells you what remains. Then it builds a plan around the hours you actually have—not the hours you thought you had.",
   guide: {
     overview: "Layover Maximizer answers one question: what can I realistically do between these two flights? It subtracts deplaning, immigration, transit, security and a safety buffer from your layover, shows you that arithmetic so you can challenge it, and gives you a verdict — go, stay, or risky. Then it recommends one plan rather than a directory: where to eat, whether a lounge is worth the walk, and when to start heading for your gate. Anything it was not told stays unknown rather than assumed, and it says which missing fact would sharpen the answer. Tell it a delay and it re-runs the decision. It also compares layovers before you book, navigates gate-to-gate transfers, packs for the airport you are actually in, generates an offline survival kit, and tells you what missing the connection would cost.",
 

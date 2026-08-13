@@ -813,9 +813,15 @@ const LayoverMaximizer = ({ tool }) => {
               )}
             </div>
 
-            <button onClick={runAnalysis} disabled={loading || !airport.trim()}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            <button onClick={runAnalysis} disabled={loading || !airport.trim()} title={t('lmx_cmd_enter')}
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_analyzing')}</> : <><span>{tool?.icon ?? '✈️'}</span> {t('lmx_btn_analyze')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
         </div>
@@ -2239,12 +2245,14 @@ const LayoverMaximizer = ({ tool }) => {
         <div className="px-5 pt-2.5">
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className={`text-xl font-bold ${c.text}`}>
-                  <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.title ?? t('lmx_title')}
-                </h2>
-                <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('lmx_tagline')}</p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('lmx_try_example')}</button>
+              <div className="min-w-0">
+                <p className={`text-sm ${c.textSecondary}`}>
+                  <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.tagline ?? t('lmx_tagline')}
+                </p>
+                {/* Dark ink in BOTH themes: the pill sits on the tool's own
+                    headerColor, which is pale on almost every tool, so white
+                    text measured 1.41:1 against it and ink measures 4.51:1. */}
+                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('lmx_try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
               {(results || airport.trim() || layoverHours.trim() || nationality.trim()) ? (
