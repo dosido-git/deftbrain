@@ -75,6 +75,25 @@ const TYPE_KNOWLEDGE = {
 - If you're uninsured, ask about retroactive coverage or special enrollment periods.`,
 };
 
+// What Claude accepts, and which block each becomes. Images and PDFs are
+// different content types, not two flavours of the same one.
+const BILL_FILE_TYPES = { 'image/jpeg': 'image', 'image/png': 'image', 'image/webp': 'image', 'application/pdf': 'document' };
+const MAX_BILL_FILE_BYTES = 10 * 1024 * 1024;
+
+// Parses the uploaded data: URL into a content block. Returns null for
+// anything unsupported — an unreadable attachment degrades to advice without
+// the bill in front of it, which is worth more than a failed request.
+function parseBillFile(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== 'string') return null;
+  const match = dataUrl.match(/^data:([a-zA-Z0-9/+.-]+);base64,(.+)$/);
+  if (!match) return null;
+  const [, mediaType, base64Data] = match;
+  const kind = BILL_FILE_TYPES[mediaType];
+  if (!kind || !base64Data) return null;
+  if (base64Data.length * 0.75 > MAX_BILL_FILE_BYTES) return null;
+  return { type: kind, source: { type: 'base64', media_type: mediaType, data: base64Data } };
+}
+
 const PERSONALITY = `Financial advocate who helps people deal with bills without shame. Acknowledge emotional weight first, then give tactical advice. Never judge. Every script must be copy-paste ready. Assistance programs must be real and specific — when a VERIFIED CURRENT FACTS block is present in the user message, those figures and programs were web-checked TODAY and OVERRIDE your training knowledge; use them verbatim. For anything not covered by the block, NEVER invent program names, URLs, or phone numbers for county/local programs; name only programs you are certain exist and serve that area, otherwise describe how to find them (e.g. the hospital's own financial-assistance office). Cite laws only when certain of the bill number; otherwise name the legal right generically. Always start shame-to-action with the smallest possible first step.
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields. Output STRICTLY valid JSON: inside string values never use an unescaped double-quote (") — use single quotes for any quoted speech, so the response always parses.
@@ -178,15 +197,14 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     // Add bill image if provided — shared by BOTH split calls (bill_autopsy
     // lives in call A; input tokens are cheap, identical context keeps halves coherent).
+    // A PDF used to be sent as an image/jpeg block with its `data:` prefix
+    // still attached: the media-type guess only ever chose between two image
+    // types, and the prefix-stripping regex only matched `data:image/...`, so
+    // an uploaded PDF produced an invalid block that the API rejected in
+    // seconds. The interface said "PDF ready", then "Something went wrong".
     const imageBlocks = [];
-    if (hasBillImage) {
-      const mediaType = billImageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-      const base64Data = billImageBase64.replace(/^data:image\/\w+;base64,/, '');
-      imageBlocks.push({
-        type: 'image',
-        source: { type: 'base64', media_type: mediaType, data: base64Data },
-      });
-    }
+    const billBlock = hasBillImage ? parseBillFile(billImageBase64) : null;
+    if (billBlock) imageBlocks.push(billBlock);
 
     const situationBlock = `BILL SITUATION:
 Type: ${billType}
@@ -196,11 +214,11 @@ What's making this hard: ${reasonText || 'NOT PROVIDED'}
 ${hasAfford ? `Can afford monthly: ${sym}${canAffordMonthly}` : 'Monthly budget: Not specified'}
 ${details ? `Additional context: ${details}` : ''}
 ${hasBillText ? `\nPASTED BILL TEXT (analyze for overcharges):\n${pastedBill.substring(0, 2000)}` : ''}
-${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and suspicious items.' : ''}`;
+${billBlock ? '\nTHE BILL ITSELF IS ATTACHED ABOVE. Read it and analyse it for overcharges, duplicates and waivable fees.' : ''}`;
 
     const keysA = [
       'verdict', 'recommendation', 'todays_job', 'shame_to_action',
-      ...(hasBillText || hasBillImage ? ['bill_autopsy'] : []),
+      ...(hasBillText || billBlock ? ['bill_autopsy'] : []),
       'money_you_might_not_owe', 'action_steps', 'phone_script',
       ...(hasAfford || hasAmount ? ['payment_plan'] : []),
       'escalation_ladder',
@@ -240,7 +258,7 @@ Return ONLY valid JSON with ALL applicable sections:
   "shame_to_action": {
     "reframe": "Four or five SHORT lines, each its own sentence, no paragraph. Name the thing that happened to them, say plainly that it is not a failure, and end on picking it up now being the right move. Reassurance, not explanation — do not describe how the billing system works.",
     "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
-  }${hasBillText || hasBillImage ? `,
+  }${hasBillText || billBlock ? `,
 
   "bill_autopsy": {
     "verdict": "LOOKS FAIR | FLAGS FOUND | LIKELY OVERCHARGED",
