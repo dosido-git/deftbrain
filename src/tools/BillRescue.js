@@ -2385,14 +2385,17 @@ const BillRescue = ({ tool }) => {
         </div>
       )}
 
-      {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
+      {view === 'rescue' && renderRescue()}
+      {/* A pointer to another tool, offered AFTER the ask rather than between
+          the visitor and the form. Sitting above the inputs it read as a
+          suggestion to leave before they had done anything. */}
+      {view === 'rescue' && !results && (
+        <p className={`text-xs text-center ${c.textMuted} mt-3`}>
           {t('br_subsweep_pre')}{' '}
           <a href="/SubscriptionTamer" className={linkStyle}>⚔️ {t('br_xref_subsweep')}</a>{' '}
           {t('br_subsweep_post')}
         </p>
       )}
-      {view === 'rescue' && renderRescue()}
       {view === 'rescue' && renderResults()}
       {view === 'quick' && renderQuickCheck()}
       {view === 'triage' && renderTriage()}

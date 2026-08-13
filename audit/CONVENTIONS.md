@@ -1896,3 +1896,46 @@ there is anything behind it before spending a tap.
 history, rut check and date jar at the end of the tool at the owner's explicit
 request. A default is what to do absent a specific instruction; it does not
 override one that exists.
+
+### "Give <tool> the header treatment" — the defined phrase
+
+When the owner asks for the header treatment, it means these four, together:
+
+1. **PF-30** — delete the in-card `<h2>`; icon moves onto the tagline.
+2. **PF-17c** — Try an example on the larger spec, dark ink in both themes.
+3. **PF-31** — `⌘↵` chip on the primary submit button (add the Cmd/Ctrl+Enter
+   handler first if the tool has none).
+4. **PF-33** — the cross-reference line moves below the submit button.
+
+Reference implementations: DateNight, LayoverMaximizer, BillRescue.
+
+### PF-33 · Cross-references sit below the submit button, never above the form
+
+A pointer to another tool is an offer, and an offer belongs after the ask. Above
+the inputs it reads as a suggestion to leave before the visitor has done
+anything — Bill Rescue opened with "Drowning in subscriptions too?" directly
+above its first question.
+
+```jsx
+  {view === 'main' && renderForm()}
+  {view === 'main' && !results && (
+    <p className={`text-xs text-center ${c.textMuted} mt-3`}>
+      {t('xxx_xref_pre')}{' '}
+      <a href="/OtherTool" className={linkStyle}>⚔️ {t('xxx_xref_name')}</a>{' '}
+      {t('xxx_xref_post')}
+    </p>
+  )}
+```
+
+Gated on `!results`, so it disappears once there is an answer to read — at that
+point the end-of-results cross-refs take over. This supersedes nothing in the
+earlier guidance about links at the foot of the tool; it pins down *where* the
+foot is, which is after the primary action and not before it.
+
+**Scan:**
+```bash
+# Any cross-ref <a href="/Tool"> that appears BEFORE the submit button in source
+# order is misplaced. Compare line numbers:
+grep -n 'href="/[A-Z]' ComponentName.js
+grep -n 'onClick={\(analyze\|generate\|submit\|run\)' ComponentName.js
+```
