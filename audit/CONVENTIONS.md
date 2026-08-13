@@ -1822,6 +1822,32 @@ catalog search shows ⌘K — not as a line of prose underneath.
 
 `relative` on the button, `end-3` not `right-3` so it mirrors in Arabic,
 `hidden sm:flex` because a phone has no Command key, and `title` carries the
-same hint for anyone who cannot see the chip. A tool with no keyboard handler
-gets the handler first — a chip for a shortcut that does nothing is worse than
-no chip.
+same hint for anyone who cannot see the chip.
+
+**PF-31 applies only to tools that already have the handler.** A chip for a
+shortcut that does nothing is worse than no chip. Check before adding it:
+
+```bash
+grep -n "metaKey" ComponentName.js
+# No match = do NOT add the chip. Add the handler first, then the chip.
+```
+
+The handler pattern (guards on `canSubmitRef` so it cannot fire on an empty or
+mid-flight form, and on `viewRef` in multi-view tools so ⌘↵ on the Lounges tab
+does not submit the Plan form):
+
+```js
+const canSubmitRef = useRef(false);
+canSubmitRef.current = !!airport.trim();
+useEffect(() => {
+  const handler = (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading
+        && viewRef.current === 'plan' && canSubmitRef.current) handleRef.current?.();
+  };
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}, []);
+```
+
+See also Clarification 7 — a global keydown handler must not swallow keys while
+a SELECT has focus.
