@@ -28,11 +28,38 @@
  *   If key missing in 'en' → return the key itself (safe fallback)
  */
 
-import { RESOURCES } from './locales/index.js';
+import { EN_RESOURCES, SUPPORTED_LANGUAGES, loadLanguage } from './locales/index.js';
+
+// Only the active language is held in memory, and only English is present at
+// first paint — the other twelve arrive as chunks. See locales/index.js.
+const RESOURCES = { en: EN_RESOURCES };
+const loading = new Set();
+
+// Fetch a language once, then wake every mounted t() consumer. Failures are
+// swallowed on purpose: a chunk that will not load leaves the interface in
+// English, which is the same fallback a missing key already takes.
+function ensureLanguage(lang) {
+  if (!lang || RESOURCES[lang] || loading.has(lang)) return;
+  loading.add(lang);
+  loadLanguage(lang)
+    .then(table => { RESOURCES[lang] = table; notify(); })
+    .catch(() => {})
+    .finally(() => loading.delete(lang));
+}
 
 // Subscribers (React components via useSyncExternalStore) notified on language change.
 const listeners = new Set();
-function notify() { listeners.forEach(cb => cb()); }
+
+// useSyncExternalStore re-renders only when the SNAPSHOT changes, and the
+// snapshot used to be i18n.language alone. That was fine while every language
+// was in the bundle, because language changed and the strings were already
+// there. Now a switch to Spanish fires twice — once when the language changes,
+// once when its chunk lands — and the second notify carried an identical
+// snapshot ('es' → 'es'), so React skipped the render that would have shown
+// the Spanish. The revision makes "the table changed" visible to React even
+// when the language name did not.
+let revision = 0;
+function notify() { revision++; listeners.forEach(cb => cb()); }
 
 // Detect language from browser, resolve to supported code or 'en'
 function detectLanguage() {
@@ -43,7 +70,7 @@ function detectLanguage() {
       'en';
     // 'fr-FR' → 'fr', 'pt-BR' → 'pt', 'zh-Hans' → 'zh'
     const base = raw.split('-')[0].toLowerCase();
-    return RESOURCES[base] ? base : 'en';
+    return SUPPORTED_LANGUAGES.includes(base) ? base : 'en';
   } catch {
     return 'en';
   }
@@ -76,9 +103,13 @@ const i18n = {
   // Notifies subscribers so mounted t() consumers re-render.
   setLanguage(lang) {
     const base = String(lang || 'en').split('-')[0].toLowerCase();
-    const next = RESOURCES[base] ? base : 'en';
+    const next = SUPPORTED_LANGUAGES.includes(base) ? base : 'en';
+    // Switch immediately and fetch behind it. Until the chunk lands t()
+    // falls through to English, so the screen stays readable rather than
+    // going blank or showing key names while the network works.
     if (next !== i18n.language) {
       i18n.language = next;
+      ensureLanguage(next);
       notify();
     }
   },
@@ -89,6 +120,10 @@ const i18n = {
     return Promise.resolve();
   },
 
+  // What useSyncExternalStore compares between renders: the active language
+  // AND how many times the catalog has changed under it.
+  snapshot() { return i18n.language + '#' + revision; },
+
   // Subscribe to language changes (for useSyncExternalStore).
   subscribe(cb) {
     listeners.add(cb);
@@ -96,13 +131,17 @@ const i18n = {
   },
 
   // List of supported language codes
-  supportedLngs: Object.keys(RESOURCES),
+  supportedLngs: SUPPORTED_LANGUAGES,
 
   // i18next compatibility shims
   isInitialized: true,
   on() {},   // no-op event emitter stub
   off() {},
 };
+
+// A visitor whose browser is set to something other than English starts the
+// download now rather than on first render.
+ensureLanguage(i18n.language);
 
 export default i18n;
 export const t = (key, vars) => i18n.t(key, vars);

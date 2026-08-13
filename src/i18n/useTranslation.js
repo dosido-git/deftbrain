@@ -18,7 +18,9 @@ import i18n from './index.js';
 
 export const useTranslation = () => {
   // Re-render this component whenever the active language changes.
-  useSyncExternalStore(i18n.subscribe, () => i18n.language, () => i18n.language);
+  // i18n.snapshot(), not i18n.language: a language's strings arrive after the
+  // language itself does now, and React must re-render for the second event too.
+  useSyncExternalStore(i18n.subscribe, i18n.snapshot, i18n.snapshot);
   return {
     t: (key, vars) => i18n.t(key, vars),
     i18n,
