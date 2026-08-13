@@ -852,6 +852,28 @@ const LayoverMaximizer = ({ tool }) => {
               </kbd>
             )}
             </button>
+
+            {/* Always directly beneath the submit button — the one place a
+                visitor can learn once and then find again in every tool.
+                Rendered only when there is something in them: a first-time
+                visitor has no history, and a control that opens an empty
+                screen is not discoverability, it is furniture. */}
+            {(savedLayovers.length > 0 || layoverHistory.length > 0) && (
+              <div className="flex flex-wrap gap-1.5">
+                {savedLayovers.length > 0 && (
+                  <button onClick={() => { setView('saved'); setError(''); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                    {t('lmx_nav_saved_count', { n: savedLayovers.length })}
+                  </button>
+                )}
+                {layoverHistory.length > 0 && (
+                  <button onClick={() => { setView('history'); setError(''); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                    {t('lmx_nav_recent_count', { n: layoverHistory.length })}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -1266,9 +1288,11 @@ const LayoverMaximizer = ({ tool }) => {
               <div>
                 <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1.5`}>{t('lmx_more_help')}</p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {/* Saved and Recent are not here: they live under the submit
+                      button, in the same place in every tool. Two homes for one
+                      control is one more than a visitor can learn. */}
                   {[['compare', t('lmx_more_compare')], ['packing', t('lmx_more_packing')],
-                    ['kit', t('lmx_more_kit')], ['saved', t('lmx_more_saved')],
-                    ['history', t('lmx_more_recent')]].map(([key, label]) => (
+                    ['kit', t('lmx_more_kit')]].map(([key, label]) => (
                     <button key={key} onClick={() => {
                       if (key === 'kit') { setKitAirport(r.airport_code || airport); setKitHours(layoverHours); }
                       setView(key); setError('');
@@ -2340,18 +2364,6 @@ const LayoverMaximizer = ({ tool }) => {
               answering "which airport" — they come back below the answer, as
               actions. Other views keep the full row, or there is no way back. */}
           {view !== 'plan' && renderNav()}
-          {view === 'plan' && !results && (savedLayovers.length > 0 || layoverHistory.length > 0) && (
-            <div className="flex flex-wrap gap-1.5">
-              {['saved', 'history'].filter(k => (k === 'saved' ? savedLayovers.length : layoverHistory.length) > 0).map(k => (
-                <button key={k} onClick={() => { setView(k); setError(''); }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
-                  {k === 'saved'
-                    ? t('lmx_nav_saved_count', { n: savedLayovers.length })
-                    : t('lmx_nav_recent_count', { n: layoverHistory.length })}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 

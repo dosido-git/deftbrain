@@ -1851,3 +1851,48 @@ useEffect(() => {
 
 See also Clarification 7 — a global keydown handler must not swallow keys while
 a SELECT has focus.
+
+### PF-32 · Saved / Recent / History — directly beneath the submit button
+
+Every tool that keeps a list of the visitor's own past work — `Recent`,
+`History`, `Saved`, a journal, a jar — puts the entry point to it in **one
+place: immediately below the primary submit button.** Learn it once, find it in
+every tool.
+
+```jsx
+  </button>
+
+  {(savedItems.length > 0 || history.length > 0) && (
+    <div className="flex flex-wrap gap-1.5">
+      {savedItems.length > 0 && (
+        <button onClick={() => setView('saved')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+          {t('xxx_nav_saved_count', { n: savedItems.length })}
+        </button>
+      )}
+      {history.length > 0 && (
+        <button onClick={() => setView('history')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+          {t('xxx_nav_recent_count', { n: history.length })}
+        </button>
+      )}
+    </div>
+  )}
+```
+
+**Render only when non-empty.** A first-time visitor has no history, and a
+control that opens an empty screen is not discoverability, it is furniture. The
+predictable thing is the *location*, not the presence of the control — the first
+time the pill appears, it appears where it always will.
+
+**One home only.** If the tool also has an after-results "More help" or
+secondary-tools block, Saved and Recent do **not** appear there as well. Two
+homes for one control is one more than a visitor can learn.
+
+**Counts belong in the label** (`Recent (2)`), so the visitor knows whether
+there is anything behind it before spending a tap.
+
+**Exception — an owner instruction beats the default.** DateNight places its
+history, rut check and date jar at the end of the tool at the owner's explicit
+request. A default is what to do absent a specific instruction; it does not
+override one that exists.
