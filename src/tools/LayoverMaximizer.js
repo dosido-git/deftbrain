@@ -268,6 +268,20 @@ const LayoverMaximizer = ({ tool }) => {
   ]);
   const [cmpResults, setCmpResults] = useState(null);
 
+  // Arriving at the comparison with two empty rows, having just typed the
+  // airport and the layover next door, is the tool forgetting what it was told.
+  // Fills the first row only, and never overwrites something already there.
+  const seedCompare = useCallback((code) => {
+    const ap = String(code || airport || '').trim();
+    if (!ap) return;
+    setCmpOptions(prev => {
+      if (prev[0]?.airport?.trim()) return prev;
+      const next = prev.slice();
+      next[0] = { ...next[0], airport: ap, hours: String(layoverHours || '') };
+      return next;
+    });
+  }, [airport, layoverHours]);
+
   // ── Delay Tracker ──
   const [delayMinutes, setDelayMinutes] = useState('');
   const [delayedFlight, setDelayedFlight] = useState('inbound');
@@ -757,7 +771,7 @@ const LayoverMaximizer = ({ tool }) => {
                 connection at all". A link, not a control — it is not the next
                 answer, and it is gone once they are standing in the terminal. */}
             {!isLiveMode && (
-              <button onClick={() => { setView('compare'); setError(''); }}
+              <button onClick={() => { seedCompare(); setView('compare'); setError(''); }}
                 className={`text-xs ${c.skyText} underline underline-offset-2 min-h-[28px] text-start`}>
                 {t('lmx_compare_prompt')}
               </button>
@@ -929,19 +943,13 @@ const LayoverMaximizer = ({ tool }) => {
                 <p className="text-xl font-black">{r.verdict === 'YES' ? t('lmx_verdict_go') : r.verdict === 'NO' ? t('lmx_verdict_stay') : t('lmx_verdict_risky')}</p>
                 <p className="text-sm mt-1">{r.verdict_summary}</p>
 
-                {/* Save + action buttons */}
+                {/* Risk and Lounges moved to "Plans changed?", where they read
+                    as answers to a question rather than as a row of alternatives
+                    to the verdict. Save is the only one with nowhere else. */}
                 <div className="flex justify-center gap-2 mt-3">
                   <button onClick={saveLayover}
                     className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
                     {t('lmx_btn_save')}
-                  </button>
-                  <button onClick={() => { setRiskAirport(r.airport_code || airport); setRiskHours(layoverHours); setView('risk'); }}
-                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
-                    {t('lmx_btn_check_risk')}
-                  </button>
-                  <button onClick={() => { setLoungeAirport(r.airport_code || airport); setView('lounge'); }}
-                    className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold min-h-[32px]`}>
-                    {t('lmx_btn_find_lounges')}
                   </button>
                 </div>
               </div>
@@ -983,13 +991,19 @@ const LayoverMaximizer = ({ tool }) => {
                   {r.time_math.provenance && (
                     <div className={`mt-3 pt-2 border-t ${c.border} space-y-0.5`}>
                       {(r.time_math.provenance.told_us || []).map((x, i) => (
-                        <p key={`t${i}`} className={`text-[10px] ${c.textMuteded}`}>{x} — {t('lmx_prov_told')}</p>
+                        <p key={`t${i}`} className={`text-[10px] ${c.textMuteded}`}>
+                          <span className="font-bold me-1" aria-hidden="true">✓</span>{x} — {t('lmx_prov_told')}
+                        </p>
                       ))}
                       {(r.time_math.provenance.estimated || []).map((x, i) => (
-                        <p key={`e${i}`} className={`text-[10px] ${c.textMuteded}`}>{x} — {t('lmx_prov_estimated')}</p>
+                        <p key={`e${i}`} className={`text-[10px] ${c.textMuteded}`}>
+                          <span className="font-bold me-1" aria-hidden="true">≈</span>{x} — {t('lmx_prov_estimated')}
+                        </p>
                       ))}
                       {(r.time_math.provenance.unknown || []).map((x, i) => (
-                        <p key={`u${i}`} className={`text-[10px] font-bold ${c.danger}`}>{x}</p>
+                        <p key={`u${i}`} className={`text-[10px] font-bold ${c.danger}`}>
+                          <span className="me-1" aria-hidden="true">?</span>{x}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -1041,6 +1055,62 @@ const LayoverMaximizer = ({ tool }) => {
                   </div>
                 </div>
               )}
+
+              {/* THE RECOMMENDATION — out of the collapsible it used to sit
+                  inside, and cut to the moves themselves. A traveller reading a
+                  verdict wants the four things to do next, not four paragraphs
+                  about them; the reasoning is one tap away for anyone who wants
+                  to argue with it. */}
+              {r.best_plan?.headline && (
+                <div className={`${c.highlight} border rounded-xl p-4`}>
+                  <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('lmx_best_plan')}</p>
+                  <p className={`text-sm font-bold ${c.text} mb-2`}>{r.best_plan.headline}</p>
+                  {r.best_plan.steps?.length > 0 && (
+                    <ol className="space-y-1.5 mb-2">
+                      {r.best_plan.steps.map((st, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className={`text-xs font-black ${c.skyText} flex-shrink-0`}>{i + 1}.</span>
+                          <span className="text-xs font-bold">{st.do}</span>
+                          {/^\d{1,2}:\d{2}/.test(String(st.when || '').trim()) && (
+                            <span className={`text-[10px] ${c.textMuteded} ms-auto flex-shrink-0`}>{st.when}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  {r.best_plan.leave_for_gate && (
+                    <p className={`text-xs font-bold ${c.text}`}>🚶 {t('lmx_leave_for_gate')} {r.best_plan.leave_for_gate}</p>
+                  )}
+                  {r.best_plan.why && (
+                    <details className="group mt-2">
+                      <summary className={`cursor-pointer text-[10px] font-bold uppercase tracking-wide ${c.textSecondary} list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                        {t('lmx_why_this')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                      </summary>
+                      <p className="text-xs opacity-90 mt-1.5">{r.best_plan.why}</p>
+                    </details>
+                  )}
+                </div>
+              )}
+
+              {/* The other modes, phrased as the things that go wrong rather
+                  than as the screens they open. A traveller does not want
+                  "Gate-to-Gate"; they want the gate that just changed. */}
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('lmx_plans_changed')}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[['gate', t('lmx_act_gate')], ['delay', t('lmx_act_delayed')],
+                    ['risk', t('lmx_act_miss')], ['lounge', t('lmx_act_lounge')]].map(([key, label]) => (
+                    <button key={key} onClick={() => {
+                      if (key === 'lounge') setLoungeAirport(r.airport_code || airport);
+                      if (key === 'risk') { setRiskAirport(r.airport_code || airport); setRiskHours(layoverHours); }
+                      if (key === 'gate') setG2gAirport(r.airport_code || airport);
+                      setView(key); setError('');
+                    }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* GO EXPLORE */}
               {r.leave_the_airport?.can_leave && r.leave_the_airport?.explore_itinerary?.stops?.length > 0 && (
@@ -1117,33 +1187,13 @@ const LayoverMaximizer = ({ tool }) => {
                       <p className={`text-xs ${c.textMuteded}`}>📍 {r.stay_in_airport.terminal_info}</p>
                     )}
 
-                    {/* The one recommendation, before any list of alternatives */}
-                    {r.best_plan?.headline && (
-                      <div className={`${c.highlight} border rounded-xl p-4`}>
-                        <p className={`text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80`}>{t('lmx_best_plan')}</p>
-                        <p className={`text-sm font-bold ${c.text} mb-2`}>{r.best_plan.headline}</p>
-                        {r.best_plan.steps?.length > 0 && (
-                          <div className="space-y-1.5 mb-2">
-                            {r.best_plan.steps.map((s, i) => (
-                              <div key={i} className="flex gap-2">
-                                <span className={`text-xs font-bold ${c.skyText} flex-shrink-0 min-w-[3.5rem]`}>{s.when}</span>
-                                <span className="text-xs">{s.do}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {r.best_plan.why && <p className="text-xs opacity-90">{r.best_plan.why}</p>}
-                        {r.best_plan.leave_for_gate && (
-                          <p className={`text-xs font-bold ${c.text} mt-2`}>🚶 {t('lmx_leave_for_gate')} {r.best_plan.leave_for_gate}</p>
-                        )}
-                      </div>
+                    {/* Advice and reference were interleaved: where to eat sat
+                        beside where the sockets are. One is a recommendation,
+                        the other is a map legend, and they now say which. */}
+                    {(r.stay_in_airport.food?.length > 0 || r.stay_in_airport.lounges?.length > 0 || r.stay_in_airport.sleep_spots) && (
+                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_recommended_for_you')}</p>
                     )}
 
-                    {r.best_plan?.headline && (r.stay_in_airport.food?.length > 0 || r.stay_in_airport.lounges?.length > 0) && (
-                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide pt-1`}>{t('lmx_other_options')}</p>
-                    )}
-
-                    {/* Food */}
                     {r.stay_in_airport.food?.length > 0 && (
                       <div>
                         <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1.5`}>{t('lmx_stay_food')}</p>
@@ -1184,7 +1234,6 @@ const LayoverMaximizer = ({ tool }) => {
                       </div>
                     )}
 
-                    {/* Sleep, hidden gems, practical */}
                     {r.stay_in_airport.sleep_spots && (
                       <div className={`${c.quoteBg} rounded-lg p-3`}>
                         <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_stay_rest_spots')}</p>
@@ -1192,11 +1241,8 @@ const LayoverMaximizer = ({ tool }) => {
                       </div>
                     )}
 
-                    {r.stay_in_airport.hidden_gems?.length > 0 && (
-                      <div className={`${c.quoteBg} rounded-lg p-3`}>
-                        <p className={`text-[10px] font-bold ${c.textSecondary} uppercase mb-1`}>{t('lmx_stay_hidden_gems')}</p>
-                        {r.stay_in_airport.hidden_gems.map((g, i) => <p key={i} className="text-xs">• {g}</p>)}
-                      </div>
+                    {r.stay_in_airport.practical && Object.values(r.stay_in_airport.practical).some(Boolean) && (
+                      <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide pt-1`}>{t('lmx_useful_while_here')}</p>
                     )}
 
                     {r.stay_in_airport.practical && (
@@ -1250,39 +1296,45 @@ const LayoverMaximizer = ({ tool }) => {
                   after the experience finishes rather than interrupting it. */}
               {(r.best_plan?.headline || r.verdict_summary) && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-                  <p className={`text-sm font-bold ${c.text} mb-1`}>{t('lmx_youre_set')}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>
-                    {r.verdict === 'YES' && r.leave_the_airport?.explore_itinerary?.theme
-                      ? r.leave_the_airport.explore_itinerary.theme
-                      : r.best_plan?.headline || r.verdict_summary}
-                  </p>
-                  {/* best_plan is the airside plan; if the verdict was go, quoting
-                      its gate time here would contradict the excursion above. */}
-                  {r.verdict !== 'YES' && r.best_plan?.leave_for_gate && (
-                    <p className={`text-xs font-bold ${c.text} mt-1`}>🚶 {t('lmx_leave_for_gate')} {r.best_plan.leave_for_gate}</p>
-                  )}
+                  <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lmx_youre_set')}</p>
+                  <dl className="space-y-1.5">
+                    <div>
+                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_plan')}</dt>
+                      <dd className={`text-xs ${c.text}`}>
+                        {r.verdict === 'YES' && r.leave_the_airport?.explore_itinerary?.theme
+                          ? r.leave_the_airport.explore_itinerary.theme
+                          : r.best_plan?.headline || r.verdict_summary}
+                      </dd>
+                    </div>
+                    {/* The first move, lifted out of the plan above — an ending
+                        that repeats the verdict is a summary; one that names the
+                        next physical action is an ending. */}
+                    {r.best_plan?.steps?.[0]?.do && (
+                      <div>
+                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_next')}</dt>
+                        <dd className={`text-xs ${c.text}`}>{r.best_plan.steps[0].do}</dd>
+                      </div>
+                    )}
+                    {/* Whatever is still unknown gets the last word, because it
+                        is the thing that could overturn everything above it. */}
+                    {r.need_to_know?.[0]?.question && (
+                      <div>
+                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_keep_in_mind')}</dt>
+                        <dd className={`text-xs ${c.text}`}>{r.need_to_know[0].question}</dd>
+                      </div>
+                    )}
+                    {/* best_plan is the airside plan; if the verdict was go,
+                        quoting its gate time here would contradict the excursion. */}
+                    {r.verdict !== 'YES' && r.best_plan?.leave_for_gate && (
+                      <div>
+                        <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_end_gate')}</dt>
+                        <dd className={`text-xs ${c.text}`}>{r.best_plan.leave_for_gate}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <p className={`text-xs ${c.textMuteded} mt-2`}>{t('lmx_end_recalc')}</p>
                 </div>
               )}
-
-              {/* The other modes, phrased as the things that go wrong rather
-                  than as the screens they open. A traveller does not want
-                  "Gate-to-Gate"; they want the gate that just changed. */}
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('lmx_plans_changed')}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {[['gate', t('lmx_act_gate')], ['delay', t('lmx_act_delayed')],
-                    ['risk', t('lmx_act_miss')], ['lounge', t('lmx_act_lounge')]].map(([key, label]) => (
-                    <button key={key} onClick={() => {
-                      if (key === 'lounge') setLoungeAirport(r.airport_code || airport);
-                      if (key === 'risk') { setRiskAirport(r.airport_code || airport); setRiskHours(layoverHours); }
-                      if (key === 'gate') setG2gAirport(r.airport_code || airport);
-                      setView(key); setError('');
-                    }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Everything else, once the recommendation is complete. */}
               <div>
@@ -1295,6 +1347,7 @@ const LayoverMaximizer = ({ tool }) => {
                     ['kit', t('lmx_more_kit')]].map(([key, label]) => (
                     <button key={key} onClick={() => {
                       if (key === 'kit') { setKitAirport(r.airport_code || airport); setKitHours(layoverHours); }
+                      if (key === 'compare') seedCompare(r.airport_code || airport);
                       setView(key); setError('');
                     }} className={`text-xs ${c.skyText} underline underline-offset-2 min-h-[28px]`}>
                       {label}

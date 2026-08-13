@@ -12,7 +12,7 @@ export const layoverMaximizer = {
   en: {
     // ── Header / chrome ──
     lmx_title: "Layover Maximizer",
-    lmx_tagline: "Make every layover count",
+    lmx_tagline: "Turn dead time into a memorable part of your trip",
     lmx_analyzing: "Analyzing...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -72,6 +72,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Travel style",
     lmx_btn_analyze: "What do I have time for?",
+    lmx_end_gate: "Start heading for your gate",
+    lmx_why_this: "See why I recommended this",
+    lmx_recommended_for_you: "Recommended for you",
+    lmx_useful_while_here: "Useful while you're here",
+    lmx_end_plan: "Recommended plan",
+    lmx_end_next: "Next action",
+    lmx_end_keep_in_mind: "Keep in mind",
+    lmx_end_recalc: "If anything changes, come back and we'll recalculate.",
     lmx_step1_title: "Tell me about your connection",
     lmx_step2_title: "What would make this worthwhile?",
     lmx_field_at_airport: "Are you already at the airport?",
@@ -157,7 +165,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Terminal Change",
 
     // Go explore section
-    lmx_sec_go_explore: "Go Explore",
+    lmx_sec_go_explore: "If you're determined to leave the airport",
     lmx_explore_visa: "🛂 Visa / Transit",
     lmx_explore_getting: "🚇 Getting to the city",
     lmx_explore_warnings: "⚠️ Warnings",
@@ -170,7 +178,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Maybe",
     lmx_stay_full_lounge_guide: "See full lounge guide →",
     lmx_stay_rest_spots: "😴 Rest spots",
-    lmx_stay_hidden_gems: "✨ Hidden gems",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 Charging",
     lmx_stay_showers: "🚿 Showers",
@@ -355,7 +362,7 @@ export const layoverMaximizer = {
   es: {
     // ── Header / chrome ──
     lmx_title: "Maximizador de Escalas",
-    lmx_tagline: "Aprovecha al máximo cada escala",
+    lmx_tagline: "Convierte el tiempo muerto en una parte memorable de tu viaje",
     lmx_analyzing: "Analizando...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -415,6 +422,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viaje",
     lmx_btn_analyze: "¿Para qué me da tiempo?",
+    lmx_end_gate: "Empieza a ir hacia tu puerta",
+    lmx_why_this: "Por qué lo recomiendo",
+    lmx_recommended_for_you: "Recomendado para ti",
+    lmx_useful_while_here: "Útil mientras estés aquí",
+    lmx_end_plan: "Plan recomendado",
+    lmx_end_next: "Siguiente paso",
+    lmx_end_keep_in_mind: "Ten en cuenta",
+    lmx_end_recalc: "Si algo cambia, vuelve y lo recalculamos.",
     lmx_step1_title: "Cuéntame sobre tu conexión",
     lmx_step2_title: "¿Qué haría que valiera la pena?",
     lmx_field_at_airport: "¿Ya estás en el aeropuerto?",
@@ -500,7 +515,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Cambio de terminal",
 
     // Go explore section
-    lmx_sec_go_explore: "Sal a explorar",
+    lmx_sec_go_explore: "Si estás decidido a salir del aeropuerto",
     lmx_explore_visa: "🛂 Visado / Tránsito",
     lmx_explore_getting: "🚇 Cómo llegar a la ciudad",
     lmx_explore_warnings: "⚠️ Advertencias",
@@ -513,7 +528,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Quizás",
     lmx_stay_full_lounge_guide: "Ver guía completa de salas VIP →",
     lmx_stay_rest_spots: "😴 Zonas de descanso",
-    lmx_stay_hidden_gems: "✨ Joyas ocultas",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 Carga",
     lmx_stay_showers: "🚿 Duchas",
@@ -698,7 +712,7 @@ export const layoverMaximizer = {
   zh: {
     // ── Header / chrome ──
     lmx_title: "中转时间规划器",
-    lmx_tagline: "让每一次中转都不虚度",
+    lmx_tagline: "把空等的时间变成旅程里难忘的一段",
     lmx_analyzing: "分析中...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -758,6 +772,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅行风格",
     lmx_btn_analyze: "我有时间做什么？",
+    lmx_end_gate: "开始前往登机口",
+    lmx_why_this: "为什么这样建议",
+    lmx_recommended_for_you: "给你的建议",
+    lmx_useful_while_here: "在这里可能用得上",
+    lmx_end_plan: "推荐方案",
+    lmx_end_next: "下一步",
+    lmx_end_keep_in_mind: "请留意",
+    lmx_end_recalc: "如果有任何变化，回来我们再算一次。",
     lmx_step1_title: "说说你的中转",
     lmx_step2_title: "怎样才算没白等？",
     lmx_field_at_airport: "你已经在机场了吗？",
@@ -843,7 +865,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "更换航站楼",
 
     // Go explore section
-    lmx_sec_go_explore: "出去探索",
+    lmx_sec_go_explore: "如果你执意要出机场",
     lmx_explore_visa: "🛂 签证 / 过境",
     lmx_explore_getting: "🚇 如何前往市区",
     lmx_explore_warnings: "⚠️ 注意事项",
@@ -856,7 +878,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? 也许",
     lmx_stay_full_lounge_guide: "查看完整贵宾休息室指南 →",
     lmx_stay_rest_spots: "😴 休息区",
-    lmx_stay_hidden_gems: "✨ 隐藏宝藏",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 充电",
     lmx_stay_showers: "🚿 淋浴",
@@ -1041,7 +1062,7 @@ export const layoverMaximizer = {
   hi: {
     // ── Header / chrome ──
     lmx_title: "लेओवर मैक्सिमाइज़र",
-    lmx_tagline: "हर लेओवर को सार्थक बनाएँ",
+    lmx_tagline: "बेकार समय को यात्रा का यादगार हिस्सा बनाएँ",
     lmx_analyzing: "विश्लेषण किया जा रहा है...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1101,6 +1122,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "यात्रा शैली",
     lmx_btn_analyze: "मेरे पास किस चीज़ का समय है?",
+    lmx_end_gate: "अपने गेट की ओर बढ़ना शुरू करें",
+    lmx_why_this: "मैंने यह क्यों सुझाया",
+    lmx_recommended_for_you: "आपके लिए सुझाव",
+    lmx_useful_while_here: "यहाँ रहते हुए काम की बातें",
+    lmx_end_plan: "सुझाई गई योजना",
+    lmx_end_next: "अगला कदम",
+    lmx_end_keep_in_mind: "ध्यान रखें",
+    lmx_end_recalc: "कुछ भी बदले तो लौट आइए, हम दोबारा हिसाब लगा देंगे।",
     lmx_step1_title: "अपने कनेक्शन के बारे में बताएँ",
     lmx_step2_title: "इसे सार्थक क्या बनाएगा?",
     lmx_field_at_airport: "क्या आप पहले से हवाई अड्डे पर हैं?",
@@ -1186,7 +1215,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "टर्मिनल बदलाव",
 
     // Go explore section
-    lmx_sec_go_explore: "बाहर घूमें",
+    lmx_sec_go_explore: "अगर आप हवाई अड्डे से बाहर जाने पर अड़े हैं",
     lmx_explore_visa: "🛂 वीज़ा / ट्रांज़िट",
     lmx_explore_getting: "🚇 शहर तक कैसे पहुँचें",
     lmx_explore_warnings: "⚠️ चेतावनियाँ",
@@ -1199,7 +1228,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? शायद",
     lmx_stay_full_lounge_guide: "पूरी लाउंज गाइड देखें →",
     lmx_stay_rest_spots: "😴 आराम की जगहें",
-    lmx_stay_hidden_gems: "✨ छिपे हुए रत्न",
     lmx_stay_wifi: "📶 वाईफ़ाई",
     lmx_stay_charging: "🔌 चार्जिंग",
     lmx_stay_showers: "🚿 शावर",
@@ -1384,7 +1412,7 @@ export const layoverMaximizer = {
   ar: {
     // ── Header / chrome ──
     lmx_title: "مُحسِّن فترة الترانزيت",
-    lmx_tagline: "اجعل كل فترة ترانزيت ذات قيمة",
+    lmx_tagline: "حوّل الوقت الضائع إلى جزء لا يُنسى من رحلتك",
     lmx_analyzing: "جارٍ التحليل...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1444,6 +1472,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "أسلوب السفر",
     lmx_btn_analyze: "ما الذي يتّسع له وقتي؟",
+    lmx_end_gate: "ابدأ التوجّه إلى بوابتك",
+    lmx_why_this: "لماذا أوصيت بهذا",
+    lmx_recommended_for_you: "موصى به لك",
+    lmx_useful_while_here: "مفيد أثناء وجودك هنا",
+    lmx_end_plan: "الخطة الموصى بها",
+    lmx_end_next: "الخطوة التالية",
+    lmx_end_keep_in_mind: "ضع في اعتبارك",
+    lmx_end_recalc: "إذا تغيّر أي شيء، عُد وسنعيد الحساب.",
     lmx_step1_title: "حدّثني عن رحلة الربط",
     lmx_step2_title: "ما الذي يجعل هذا الانتظار يستحق؟",
     lmx_field_at_airport: "هل أنت في المطار بالفعل؟",
@@ -1529,7 +1565,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "تغيير الصالة",
 
     // Go explore section
-    lmx_sec_go_explore: "اخرج واستكشف",
+    lmx_sec_go_explore: "إذا كنت مصمّمًا على مغادرة المطار",
     lmx_explore_visa: "🛂 التأشيرة / الترانزيت",
     lmx_explore_getting: "🚇 كيفية الوصول إلى المدينة",
     lmx_explore_warnings: "⚠️ تحذيرات",
@@ -1542,7 +1578,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? ربما",
     lmx_stay_full_lounge_guide: "اطّلع على دليل الصالات الكامل →",
     lmx_stay_rest_spots: "😴 أماكن الراحة",
-    lmx_stay_hidden_gems: "✨ كنوز خفية",
     lmx_stay_wifi: "📶 واي فاي",
     lmx_stay_charging: "🔌 الشحن",
     lmx_stay_showers: "🚿 الاستحمام",
@@ -1727,7 +1762,7 @@ export const layoverMaximizer = {
   pt: {
     // ── Header / chrome ──
     lmx_title: "Maximizador de Conexões",
-    lmx_tagline: "Aproveite ao máximo cada conexão",
+    lmx_tagline: "Transforme o tempo morto numa parte memorável da viagem",
     lmx_analyzing: "Analisando...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -1787,6 +1822,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Estilo de viagem",
     lmx_btn_analyze: "Para o que tenho tempo?",
+    lmx_end_gate: "Comece a ir para o seu portão",
+    lmx_why_this: "Por que eu recomendo isso",
+    lmx_recommended_for_you: "Recomendado para você",
+    lmx_useful_while_here: "Útil enquanto estiver aqui",
+    lmx_end_plan: "Plano recomendado",
+    lmx_end_next: "Próximo passo",
+    lmx_end_keep_in_mind: "Tenha em mente",
+    lmx_end_recalc: "Se algo mudar, volte e recalculamos.",
     lmx_step1_title: "Conte sobre a sua conexão",
     lmx_step2_title: "O que faria isso valer a pena?",
     lmx_field_at_airport: "Você já está no aeroporto?",
@@ -1872,7 +1915,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Mudança de terminal",
 
     // Go explore section
-    lmx_sec_go_explore: "Vá explorar",
+    lmx_sec_go_explore: "Se você está decidido a sair do aeroporto",
     lmx_explore_visa: "🛂 Visto / Trânsito",
     lmx_explore_getting: "🚇 Como chegar à cidade",
     lmx_explore_warnings: "⚠️ Avisos",
@@ -1885,7 +1928,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Talvez",
     lmx_stay_full_lounge_guide: "Ver guia completo de salas VIP →",
     lmx_stay_rest_spots: "😴 Áreas de descanso",
-    lmx_stay_hidden_gems: "✨ Joias escondidas",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 Carregamento",
     lmx_stay_showers: "🚿 Chuveiros",
@@ -2070,7 +2112,7 @@ export const layoverMaximizer = {
   fr: {
     // ── Header / chrome ──
     lmx_title: "Maximiseur d'Escale",
-    lmx_tagline: "Tirez le meilleur de chaque escale",
+    lmx_tagline: "Transformez le temps mort en un moment marquant du voyage",
     lmx_analyzing: "Analyse en cours...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2130,6 +2172,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Style de voyage",
     lmx_btn_analyze: "J'ai le temps de faire quoi ?",
+    lmx_end_gate: "Partez vers votre porte",
+    lmx_why_this: "Pourquoi je recommande ceci",
+    lmx_recommended_for_you: "Recommandé pour vous",
+    lmx_useful_while_here: "Utile pendant votre passage",
+    lmx_end_plan: "Plan recommandé",
+    lmx_end_next: "Prochaine action",
+    lmx_end_keep_in_mind: "À garder en tête",
+    lmx_end_recalc: "Si quelque chose change, revenez et on recalcule.",
     lmx_step1_title: "Parlez-moi de votre correspondance",
     lmx_step2_title: "Qu'est-ce qui rendrait ça utile ?",
     lmx_field_at_airport: "Êtes-vous déjà à l'aéroport ?",
@@ -2215,7 +2265,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Changement de terminal",
 
     // Go explore section
-    lmx_sec_go_explore: "Partez explorer",
+    lmx_sec_go_explore: "Si vous tenez vraiment à sortir de l'aéroport",
     lmx_explore_visa: "🛂 Visa / Transit",
     lmx_explore_getting: "🚇 Comment rejoindre la ville",
     lmx_explore_warnings: "⚠️ Avertissements",
@@ -2228,7 +2278,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Peut-être",
     lmx_stay_full_lounge_guide: "Voir le guide complet des salons →",
     lmx_stay_rest_spots: "😴 Coins repos",
-    lmx_stay_hidden_gems: "✨ Trésors cachés",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 Recharge",
     lmx_stay_showers: "🚿 Douches",
@@ -2413,7 +2462,7 @@ export const layoverMaximizer = {
   de: {
     // ── Header / chrome ──
     lmx_title: "Zwischenstopp-Maximierer",
-    lmx_tagline: "Hol das Beste aus jedem Zwischenstopp heraus",
+    lmx_tagline: "Mach aus Wartezeit einen Teil der Reise, an den du dich erinnerst",
     lmx_analyzing: "Wird analysiert...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2473,6 +2522,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Reisestil",
     lmx_btn_analyze: "Wofür reicht meine Zeit?",
+    lmx_end_gate: "Mach dich auf zum Gate",
+    lmx_why_this: "Warum ich das empfehle",
+    lmx_recommended_for_you: "Für dich empfohlen",
+    lmx_useful_while_here: "Nützlich, solange du hier bist",
+    lmx_end_plan: "Empfohlener Plan",
+    lmx_end_next: "Nächster Schritt",
+    lmx_end_keep_in_mind: "Behalte im Kopf",
+    lmx_end_recalc: "Wenn sich etwas ändert, komm wieder — wir rechnen neu.",
     lmx_step1_title: "Erzähl mir von deinem Anschluss",
     lmx_step2_title: "Was wäre es dir wert?",
     lmx_field_at_airport: "Bist du schon am Flughafen?",
@@ -2558,7 +2615,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Terminalwechsel",
 
     // Go explore section
-    lmx_sec_go_explore: "Auf Entdeckungstour",
+    lmx_sec_go_explore: "Wenn du unbedingt raus willst",
     lmx_explore_visa: "🛂 Visum / Transit",
     lmx_explore_getting: "🚇 So kommst du in die Stadt",
     lmx_explore_warnings: "⚠️ Warnungen",
@@ -2571,7 +2628,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Vielleicht",
     lmx_stay_full_lounge_guide: "Vollständigen Lounge-Guide ansehen →",
     lmx_stay_rest_spots: "😴 Ruhebereiche",
-    lmx_stay_hidden_gems: "✨ Geheimtipps",
     lmx_stay_wifi: "📶 WLAN",
     lmx_stay_charging: "🔌 Laden",
     lmx_stay_showers: "🚿 Duschen",
@@ -2756,7 +2812,7 @@ export const layoverMaximizer = {
   ja: {
     // ── Header / chrome ──
     lmx_title: "乗り継ぎ最大活用ツール",
-    lmx_tagline: "すべての乗り継ぎを無駄にしない",
+    lmx_tagline: "待ち時間を、旅の記憶に残る時間に",
     lmx_analyzing: "分析中...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2816,6 +2872,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "旅のスタイル",
     lmx_btn_analyze: "何をする時間がある？",
+    lmx_end_gate: "ゲートへ向かい始める",
+    lmx_why_this: "この提案の理由",
+    lmx_recommended_for_you: "あなたへのおすすめ",
+    lmx_useful_while_here: "滞在中に役立つこと",
+    lmx_end_plan: "おすすめのプラン",
+    lmx_end_next: "次にすること",
+    lmx_end_keep_in_mind: "注意しておくこと",
+    lmx_end_recalc: "何か変わったら、戻ってきてください。計算し直します。",
     lmx_step1_title: "乗り継ぎについて教えてください",
     lmx_step2_title: "どうなれば来た甲斐がありますか？",
     lmx_field_at_airport: "もう空港にいますか？",
@@ -2901,7 +2965,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "ターミナル変更",
 
     // Go explore section
-    lmx_sec_go_explore: "街へ出かける",
+    lmx_sec_go_explore: "どうしても空港を出たいなら",
     lmx_explore_visa: "🛂 ビザ / トランジット",
     lmx_explore_getting: "🚇 市内へのアクセス",
     lmx_explore_warnings: "⚠️ 注意事項",
@@ -2914,7 +2978,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? 場合による",
     lmx_stay_full_lounge_guide: "ラウンジ完全ガイドを見る →",
     lmx_stay_rest_spots: "😴 休憩スポット",
-    lmx_stay_hidden_gems: "✨ 隠れた名所",
     lmx_stay_wifi: "📶 Wi-Fi",
     lmx_stay_charging: "🔌 充電",
     lmx_stay_showers: "🚿 シャワー",
@@ -3099,7 +3162,7 @@ export const layoverMaximizer = {
   ko: {
     // ── Header / chrome ──
     lmx_title: "환승 활용 극대화 도구",
-    lmx_tagline: "모든 환승을 알차게",
+    lmx_tagline: "버려지는 시간을 여행에서 기억에 남는 시간으로",
     lmx_analyzing: "분석 중...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3159,6 +3222,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "여행 스타일",
     lmx_btn_analyze: "무엇을 할 시간이 있나요?",
+    lmx_end_gate: "게이트로 출발하기",
+    lmx_why_this: "이렇게 추천한 이유",
+    lmx_recommended_for_you: "추천드립니다",
+    lmx_useful_while_here: "머무는 동안 유용한 것",
+    lmx_end_plan: "추천 계획",
+    lmx_end_next: "다음 할 일",
+    lmx_end_keep_in_mind: "기억해 두세요",
+    lmx_end_recalc: "뭔가 바뀌면 다시 오세요. 새로 계산해 드릴게요.",
     lmx_step1_title: "환승에 대해 알려주세요",
     lmx_step2_title: "무엇이 있으면 보람 있을까요?",
     lmx_field_at_airport: "이미 공항에 계신가요?",
@@ -3244,7 +3315,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "터미널 변경",
 
     // Go explore section
-    lmx_sec_go_explore: "나가서 둘러보기",
+    lmx_sec_go_explore: "그래도 공항 밖으로 나가겠다면",
     lmx_explore_visa: "🛂 비자 / 환승",
     lmx_explore_getting: "🚇 시내로 가는 방법",
     lmx_explore_warnings: "⚠️ 주의 사항",
@@ -3257,7 +3328,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? 어쩌면",
     lmx_stay_full_lounge_guide: "전체 라운지 가이드 보기 →",
     lmx_stay_rest_spots: "😴 휴식 공간",
-    lmx_stay_hidden_gems: "✨ 숨은 명소",
     lmx_stay_wifi: "📶 와이파이",
     lmx_stay_charging: "🔌 충전",
     lmx_stay_showers: "🚿 샤워",
@@ -3442,7 +3512,7 @@ export const layoverMaximizer = {
   ru: {
     // ── Header / chrome ──
     lmx_title: "Максимайзер пересадок",
-    lmx_tagline: "Используйте каждую пересадку с пользой",
+    lmx_tagline: "Превратите пустое ожидание в запоминающуюся часть поездки",
     lmx_analyzing: "Анализируем...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3502,6 +3572,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Стиль путешествия",
     lmx_btn_analyze: "На что у меня хватит времени?",
+    lmx_end_gate: "Выдвигайтесь к выходу",
+    lmx_why_this: "Почему я это советую",
+    lmx_recommended_for_you: "Рекомендуем вам",
+    lmx_useful_while_here: "Пригодится, пока вы здесь",
+    lmx_end_plan: "Рекомендуемый план",
+    lmx_end_next: "Следующий шаг",
+    lmx_end_keep_in_mind: "Имейте в виду",
+    lmx_end_recalc: "Если что-то изменится, возвращайтесь — пересчитаем.",
     lmx_step1_title: "Расскажите о вашей стыковке",
     lmx_step2_title: "Что сделает это время стоящим?",
     lmx_field_at_airport: "Вы уже в аэропорту?",
@@ -3587,7 +3665,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Смена терминала",
 
     // Go explore section
-    lmx_sec_go_explore: "Отправляйтесь исследовать",
+    lmx_sec_go_explore: "Если вы твёрдо решили выйти из аэропорта",
     lmx_explore_visa: "🛂 Виза / Транзит",
     lmx_explore_getting: "🚇 Как добраться до города",
     lmx_explore_warnings: "⚠️ Предупреждения",
@@ -3600,7 +3678,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Возможно",
     lmx_stay_full_lounge_guide: "Смотреть полный гид по лаунджам →",
     lmx_stay_rest_spots: "😴 Места для отдыха",
-    lmx_stay_hidden_gems: "✨ Скрытые жемчужины",
     lmx_stay_wifi: "📶 Wi-Fi",
     lmx_stay_charging: "🔌 Зарядка",
     lmx_stay_showers: "🚿 Душевые",
@@ -3785,7 +3862,7 @@ export const layoverMaximizer = {
   th: {
     // ── Header / chrome ──
     lmx_title: "ตัวจัดการเวลาต่อเครื่อง",
-    lmx_tagline: "ใช้ทุกช่วงต่อเครื่องให้คุ้มค่า",
+    lmx_tagline: "เปลี่ยนเวลาที่เสียเปล่าให้เป็นช่วงที่น่าจดจำของทริป",
     lmx_analyzing: "กำลังวิเคราะห์...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -3845,6 +3922,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "สไตล์การเดินทาง",
     lmx_btn_analyze: "ฉันมีเวลาทำอะไรได้บ้าง?",
+    lmx_end_gate: "เริ่มเดินไปที่ประตูขึ้นเครื่อง",
+    lmx_why_this: "ทำไมฉันแนะนำแบบนี้",
+    lmx_recommended_for_you: "แนะนำสำหรับคุณ",
+    lmx_useful_while_here: "มีประโยชน์ระหว่างที่อยู่ที่นี่",
+    lmx_end_plan: "แผนที่แนะนำ",
+    lmx_end_next: "สิ่งที่ต้องทำต่อ",
+    lmx_end_keep_in_mind: "อย่าลืมว่า",
+    lmx_end_recalc: "ถ้ามีอะไรเปลี่ยน กลับมาได้ เราจะคำนวณใหม่ให้",
     lmx_step1_title: "เล่าเรื่องการต่อเครื่องของคุณ",
     lmx_step2_title: "อะไรจะทำให้เวลานี้คุ้มค่า?",
     lmx_field_at_airport: "คุณอยู่ที่สนามบินแล้วหรือยัง?",
@@ -3930,7 +4015,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "เปลี่ยนอาคารผู้โดยสาร",
 
     // Go explore section
-    lmx_sec_go_explore: "ออกไปสำรวจ",
+    lmx_sec_go_explore: "ถ้าคุณตั้งใจจะออกจากสนามบินจริงๆ",
     lmx_explore_visa: "🛂 วีซ่า / ทรานซิต",
     lmx_explore_getting: "🚇 วิธีเดินทางเข้าเมือง",
     lmx_explore_warnings: "⚠️ คำเตือน",
@@ -3943,7 +4028,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? อาจจะ",
     lmx_stay_full_lounge_guide: "ดูคู่มือเลานจ์ฉบับเต็ม →",
     lmx_stay_rest_spots: "😴 จุดพักผ่อน",
-    lmx_stay_hidden_gems: "✨ จุดเด็ดที่ซ่อนอยู่",
     lmx_stay_wifi: "📶 ไวไฟ",
     lmx_stay_charging: "🔌 จุดชาร์จ",
     lmx_stay_showers: "🚿 ห้องอาบน้ำ",
@@ -4128,7 +4212,7 @@ export const layoverMaximizer = {
   vi: {
     // ── Header / chrome ──
     lmx_title: "Tối Ưu Thời Gian Quá Cảnh",
-    lmx_tagline: "Tận dụng tối đa mỗi lần quá cảnh",
+    lmx_tagline: "Biến thời gian chết thành một phần đáng nhớ của chuyến đi",
     lmx_analyzing: "Đang phân tích...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -4188,6 +4272,14 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Phong cách du lịch",
     lmx_btn_analyze: "Tôi có thời gian làm gì?",
+    lmx_end_gate: "Bắt đầu đi ra cửa khởi hành",
+    lmx_why_this: "Vì sao tôi khuyên vậy",
+    lmx_recommended_for_you: "Gợi ý cho bạn",
+    lmx_useful_while_here: "Hữu ích khi bạn ở đây",
+    lmx_end_plan: "Kế hoạch được khuyên",
+    lmx_end_next: "Việc tiếp theo",
+    lmx_end_keep_in_mind: "Lưu ý",
+    lmx_end_recalc: "Nếu có gì thay đổi, hãy quay lại và chúng tôi sẽ tính lại.",
     lmx_step1_title: "Kể tôi nghe về chuyến nối của bạn",
     lmx_step2_title: "Điều gì khiến quãng chờ này đáng giá?",
     lmx_field_at_airport: "Bạn đã ở sân bay chưa?",
@@ -4273,7 +4365,7 @@ export const layoverMaximizer = {
     lmx_terminal_change: "Đổi nhà ga",
 
     // Go explore section
-    lmx_sec_go_explore: "Đi khám phá",
+    lmx_sec_go_explore: "Nếu bạn nhất quyết rời sân bay",
     lmx_explore_visa: "🛂 Thị thực / Quá cảnh",
     lmx_explore_getting: "🚇 Cách vào thành phố",
     lmx_explore_warnings: "⚠️ Cảnh báo",
@@ -4286,7 +4378,6 @@ export const layoverMaximizer = {
     lmx_stay_maybe: "? Có lẽ",
     lmx_stay_full_lounge_guide: "Xem hướng dẫn phòng chờ đầy đủ →",
     lmx_stay_rest_spots: "😴 Khu vực nghỉ ngơi",
-    lmx_stay_hidden_gems: "✨ Viên ngọc ẩn",
     lmx_stay_wifi: "📶 WiFi",
     lmx_stay_charging: "🔌 Sạc điện",
     lmx_stay_showers: "🚿 Phòng tắm",

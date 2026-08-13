@@ -24,6 +24,26 @@ function validIanaZone(tz) {
   }
 }
 
+// A clock time or nothing. The model has answered this field's own description
+// back as its value — "null for a clock time — landing time was not provided" —
+// and a truthy string sailed straight into the be-back-by alert. Anything that
+// is not recognisably a time is dropped here, before it can be rendered.
+function clockOrNull(v) {
+  const raw = String(v == null ? '' : v).trim();
+  if (!raw || /^null$/i.test(raw)) return null;
+  const m = /^(\d{1,2}):(\d{2})\s*(am|pm)?$/i.exec(raw);
+  if (!m) return null;
+  let h = Number(m[1]);
+  const min = Number(m[2]);
+  if (min > 59) return null;
+  const mer = m[3] && m[3].toLowerCase();
+  if (mer) {
+    if (h < 1 || h > 12) return null;
+    h = (h % 12) + (mer === 'pm' ? 12 : 0);
+  } else if (h > 23) return null;
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+}
+
 // Accepts 8:30 as well as 08:30, and nothing that is not a wall-clock time.
 function hhmmish(v) {
   const m = /^(\d{1,2}):(\d{2})$/.exec(String(v || '').trim());
@@ -147,7 +167,7 @@ Return ONLY valid JSON with EXACTLY these nine top-level keys:
     "security_reentry_minutes": 40,
     "buffer_minutes": 30,
     "available_city_minutes": 120,
-    "return_by_time": "A clock time ONLY if a landing time was provided. null otherwise — never computed from a typical schedule.",
+    "return_by_time": "HH:MM and nothing else, e.g. 17:40, ONLY if a landing time was provided. Otherwise the JSON value null — not the word null, not a sentence explaining why it is missing.",
     "breakdown_explanation": "Plain English explanation of the math — 1-2 sentences",
     "provenance": {
       "told_us": ["Which figures came from the traveller, e.g. 'Layover duration'"],
@@ -224,7 +244,7 @@ Return ONLY valid JSON with EXACTLY these three top-level keys:
     "steps": [
       {
         "when": "A clock time ONLY if a landing time was provided; otherwise a relative marker like First, Then, After that — 1-3 words",
-        "do": "One concrete action naming a specific place — one sentence"
+        "do": "The move and nothing else, as an imperative: Clear security. Find the Centurion Lounge. Eat at Shake Shack in T4. MAXIMUM 6 WORDS. No because, no if, no dash, no second clause — every reason belongs in why, not here."
       }
     ],
     "why": "Why this plan suits THIS traveller's stated style and time — 1-2 sentences",
@@ -253,7 +273,6 @@ Return ONLY valid JSON with EXACTLY these three top-level keys:
       }
     ],
     "sleep_spots": "Best places to rest/nap — specific locations — one sentence",
-    "hidden_gems": ["Things most travelers don't know about this airport"],
     "practical": {
       "wifi": "WiFi quality and how to connect — one sentence",
       "charging": "Where to find outlets/charging stations — one sentence",
@@ -266,7 +285,7 @@ Return ONLY valid JSON with EXACTLY these three top-level keys:
   "pro_tips": ["3-5 airport-specific pro tips that frequent travelers would know"]
 }
 
-AT MOST 4 steps in best_plan, 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
+AT MOST 4 steps in best_plan, 4 food, 3 lounges, 5 pro_tips.`;
 
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     const [leavePart, stayPart] = await Promise.all([
@@ -286,6 +305,7 @@ AT MOST 4 steps in best_plan, 4 food, 3 lounges, 3 hidden_gems, 5 pro_tips.`;
     const parsed = { ...stayPart, ...leavePart };
     // The model supplies the judgement (what, and how long before); the clock
     // time is subtraction, and subtraction belongs here.
+    if (parsed.time_math) parsed.time_math.return_by_time = clockOrNull(parsed.time_math.return_by_time);
     if (Array.isArray(parsed.live_deadlines)) {
       parsed.live_deadlines = liveDeparture
         ? parsed.live_deadlines
@@ -793,7 +813,7 @@ Return ONLY valid JSON:
     "security_reentry_minutes": 40,
     "buffer_minutes": 30,
     "available_city_minutes": 120,
-    "return_by_time": "A clock time ONLY if a landing time was provided. null otherwise.",
+    "return_by_time": "HH:MM and nothing else, e.g. 17:40, ONLY if a landing time was provided. Otherwise the JSON value null — not the word null, not a sentence explaining why it is missing.",
     "breakdown_explanation": "Plain English explanation of the math after the delay — 1-2 sentences",
     "provenance": {
       "told_us": ["Which figures came from the traveller"],
@@ -807,7 +827,7 @@ Return ONLY valid JSON:
     "steps": [
       {
         "when": "A clock time ONLY if a landing time was provided; otherwise First, Then, After that — 1-3 words",
-        "do": "One concrete action naming a specific place — one sentence"
+        "do": "The move and nothing else, as an imperative: Clear security. Find the Centurion Lounge. Eat at Shake Shack in T4. MAXIMUM 6 WORDS. No because, no if, no dash, no second clause — every reason belongs in why, not here."
       }
     ],
     "why": "Why this is the plan now that the clock has moved — 1-2 sentences",
@@ -834,6 +854,7 @@ AT MOST 4 steps, 3 off_the_table, 3 now_possible, 2 need_to_know. ONE question p
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'layover-maximizer:delay' });
+    if (parsed.time_math) parsed.time_math.return_by_time = clockOrNull(parsed.time_math.return_by_time);
     if (!parsed.new_verdict) {
       return res.status(500).json({ error: 'Could not re-plan your layover. Please try again.' });
     }
