@@ -18,6 +18,11 @@
 // To localize a new tool: create src/i18n/locales/tools/<tool>.js exporting
 // `export const <name> = { en: {...}, ... }`. That is the whole step — the
 // generator, localization-audit.js and localization-smoke.js all discover it.
+//
+// ONE DEV GOTCHA: a running dev server reads ./generated/, which is built by
+// predev:frontend and NOT rebuilt on save. Edit a locale file mid-session and
+// the new keys render as their own names (BR_SEC_ABOUT) until you run
+// `npm run build:locales`. Production is never affected — prebuild regenerates.
 // ──────────────────────────────────────────────────────────────────────
 
 import { base } from './base';

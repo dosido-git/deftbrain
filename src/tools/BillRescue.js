@@ -45,6 +45,36 @@ const REASONS = [
   { value: 'too_scared', tkey: 'br_rs_too_scared' },
 ];
 
+// One colour per verdict, so a 🟡 that means "still early" never looks like
+// a 🔴 that means "this is already on your credit file".
+// The ending names tomorrow's goal as well as today's. That is the first step
+// whose `when` is not today — not step 2, which may also be today.
+function nextAfterToday(steps) {
+  const rest = (steps || []).filter(s2 => !/today/i.test(s2.when || ''));
+  return rest.length ? (rest[0].title || rest[0].action) : null;
+}
+
+// Steps arrive with a when ("Today", "Tomorrow", "After step 3"). Group them
+// in first-seen order — chronological already, and sorting alphabetically
+// would put "After step 3" before "Today".
+function groupByWhen(steps) {
+  const order = [];
+  const bucket = new Map();
+  for (const step of steps || []) {
+    const key = (step.when || '').trim() || '—';
+    if (!bucket.has(key)) { bucket.set(key, []); order.push(key); }
+    bucket.get(key).push(step);
+  }
+  return order.map(k => [k, bucket.get(k)]);
+}
+
+const VERDICT_TONE = (status, c) => ({
+  FINE: c.success,
+  SERIOUS_BUT_EARLY: c.warning,
+  URGENT: c.danger,
+  ALREADY_DAMAGED: c.danger,
+}[status] || c.cardAlt);
+
 const CURRENCIES = ['$', '€', '£', '¥', '₹', 'R$', 'A$', 'C$', 'CHF', 'kr'];
 
 const STORE_PLANS = 'br-plans';
@@ -162,7 +192,6 @@ const BillRescue = ({ tool }) => {
     dropzone:      isDark ? 'border-zinc-600 bg-zinc-900/40' : 'border-gray-300 bg-slate-50',
     escalationNum: isDark ? 'text-cyan-300' : 'text-cyan-700',
     hardModeBadge: isDark ? 'bg-red-900/30 text-red-300 border-red-700' : 'bg-red-50 text-red-700 border-red-200',
-    microStepBg:   isDark ? 'bg-zinc-700/40' : 'bg-slate-50',
     progressTrack: isDark ? 'bg-zinc-700' : 'bg-slate-200',
     stepBorderL:   isDark ? 'border-s-cyan-600' : 'border-s-cyan-400',
     // Resolution outcomes
@@ -203,7 +232,11 @@ const BillRescue = ({ tool }) => {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState(() => currencySymbol(userLocale, userCurrency));
   const [overdueStatus, setOverdueStatus] = useState('');
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState([]);
+  const [showMore, setShowMore] = useState(false);
+  const toggleReason = useCallback((v) => {
+    setReason(prev => prev.includes(v) ? prev.filter(x => x !== v) : [...prev, v]);
+  }, []);
   const [details, setDetails] = useState('');
   const [canAffordMonthly, setCanAffordMonthly] = useState('');
   const [pastedBill, setPastedBill] = useState('');
@@ -303,7 +336,7 @@ const BillRescue = ({ tool }) => {
         amount: amount ? Number(amount) : null,
         currency,
         overdueStatus: overdueStatus || 'unknown',
-        reason: reason || 'cant_afford',
+        reason: reason.length ? reason : null,
         details: details.trim() || null,
         canAffordMonthly: canAffordMonthly ? Number(canAffordMonthly) : null,
         pastedBill: pastedBill.trim() || null,
@@ -568,7 +601,7 @@ const BillRescue = ({ tool }) => {
 
   // ── Reset ──
   const handleReset = useCallback(() => {
-    setBillType(''); setAmount(''); setOverdueStatus(''); setReason('');
+    setBillType(''); setAmount(''); setOverdueStatus(''); setReason([]);
     setDetails(''); setCanAffordMonthly(''); setPastedBill('');
     setBillImagePreview(null); setBillImageBase64(null);
     setResults(null); setError('');
@@ -592,19 +625,36 @@ const BillRescue = ({ tool }) => {
     out += `${amount ? `${t('br_copy_amount')}: ${currency}${amount}` : ''} | ${t('br_copy_status')}: ${overdueStatus || 'unknown'}\n`;
     out += `${'═'.repeat(40)}\n\n`;
 
-    if (r.shame_to_action) {
-      out += `💚 ${r.shame_to_action.reframe}\n`;
-      if (r.shame_to_action.micro_step) out += `\n📌 ${t('br_copy_first_step')}: ${r.shame_to_action.micro_step}\n`;
+    if (r.verdict) {
+      out += `${r.verdict.emoji || ''} ${r.verdict.headline || ''}\n`;
+      (r.verdict.where_you_stand || []).forEach(line => { out += `  ${line}\n`; });
       out += '\n';
+    }
+    if (r.recommendation?.headline) {
+      out += `${t('br_my_recommendation')}: ${r.recommendation.headline}\n`;
+      (r.recommendation.steps || []).forEach(line => { out += `  ${line}\n`; });
+      out += '\n';
+    }
+    if (r.todays_job?.action) {
+      out += `🎯 ${t('br_todays_job')}: ${r.todays_job.action}\n`;
+      if (r.todays_job.why) out += `  ${r.todays_job.why}\n`;
+      (r.todays_job.not_yet || []).forEach(x => { out += `  ✕ ${x}\n`; });
+      // The scripts are the reason people copy this at all — PF-22 keeps them
+      // off the screen as buttons, so the shared copy has to carry them.
+      if (r.todays_job.script) out += `  ${t('br_copy_say')}: "${r.todays_job.script}"\n`;
+      out += '\n';
+    }
+    if (r.shame_to_action?.reframe) {
+      out += `💚 ${r.shame_to_action.reframe}\n\n`;
     }
     if (r.bill_autopsy) {
       out += `🔍 ${t('br_copy_autopsy')}: ${r.bill_autopsy.verdict}\n${r.bill_autopsy.analysis}\n`;
       r.bill_autopsy.flagged_charges?.forEach(f => { out += `  ⚠️ ${f.charge}: ${f.issue}\n`; });
       out += '\n';
     }
-    if (r.know_your_rights?.length) {
-      out += `⚖️ ${t('br_copy_rights')}:\n`;
-      r.know_your_rights.forEach(right => { out += `• ${right.right}: ${right.explanation}\n`; });
+    if (r.money_you_might_not_owe?.length) {
+      out += `💰 ${t('br_sec_money_not_owed')}:\n`;
+      r.money_you_might_not_owe.forEach(right => { out += `• ${right.right}: ${right.explanation}\n`; });
       out += '\n';
     }
     if (r.action_steps?.length) {
@@ -745,6 +795,10 @@ const BillRescue = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // NAV
   // ════════════════════════════════════════════════════════════
+  // Nine pills across the top of a form asking "what kind of bill is it?" are
+  // eight answers to questions nobody has asked yet. They are follow-up
+  // actions, and they now appear as such, under the answer. The full row still
+  // renders on every other view, or there is no way back.
   const renderNav = () => (
     <div className="flex flex-wrap gap-1.5 mb-5">
       {[
@@ -779,8 +833,9 @@ const BillRescue = ({ tool }) => {
           </select>
         </div>
 
-        {/* Bill type */}
-        <div className="mb-4">
+        {/* ── Tell me about the bill ── */}
+        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_about')}</p>
+        <div className="mb-5">
           <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_bill_type')} *</label>
           <div className="flex flex-wrap gap-1.5">
             {BILL_TYPES.map(bt => (
@@ -793,8 +848,9 @@ const BillRescue = ({ tool }) => {
           </div>
         </div>
 
-        {/* Amount + Monthly afford */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
+        {/* ── How serious is it? — the two facts that set the verdict ── */}
+        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('br_sec_serious')}</p>
+        <div className="grid grid-cols-2 gap-2 mb-3">
           <div>
             <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_how_much')}</label>
             <div className="flex items-center gap-1">
@@ -813,8 +869,7 @@ const BillRescue = ({ tool }) => {
           </div>
         </div>
 
-        {/* Overdue status */}
-        <div className="mb-4">
+        <div className="mb-5">
           <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_how_late')}</label>
           <div className="flex flex-wrap gap-1.5">
             {OVERDUE_STATUS.map(os => (
@@ -827,67 +882,83 @@ const BillRescue = ({ tool }) => {
           </div>
         </div>
 
-        {/* Reason */}
-        <div className="mb-4">
-          <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('br_q_why_hard')}</label>
+        {/* ── What's making this difficult? ──
+            Several of these are true at once for most people, and which ones
+            are true changes the advice — "I'm disputing the charges" and "I'm
+            scared to deal with it" lead somewhere different. It used to be a
+            single choice, so the tool only ever heard one of them. */}
+        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-0.5`}>{t('br_sec_difficult')}</p>
+        <p className={`text-[10px] ${c.textMuteded} mb-1.5`}>{t('br_q_why_hard_hint')}</p>
+        <div className="mb-5">
           <div className="flex flex-wrap gap-1.5">
             {REASONS.map(re => (
-              <button key={re.value} onClick={() => setReason(re.value === reason ? '' : re.value)}
+              <button key={re.value} onClick={() => toggleReason(re.value)}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border min-h-[28px] ${
-                  reason === re.value ? c.pillActive : c.pillInactive}`}>
+                  reason.includes(re.value) ? c.pillActive : c.pillInactive}`}>
                 {t(re.tkey)}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Details */}
-        <div className="mb-3">
-          <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_anything_else')}</label>
-          <input type="text" value={details} onChange={e => setDetails(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && billType && !loading) analyze(); }}
-            placeholder={t('br_ph_details')}
-            className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+        {/* Everything below sharpens the answer; none of it is needed to get one. */}
+        <div className={`border-t ${c.border} pt-3 mb-3`}>
+          <button onClick={() => setShowMore(!showMore)}
+            className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
+            {t('br_more_detail')} {showMore ? '▲' : '▼'}
+          </button>
         </div>
 
-        {/* Bill input: paste OR photo */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-          <div>
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_paste_bill')}</label>
-            <textarea value={pastedBill} onChange={e => setPastedBill(e.target.value)}
-              placeholder={t('br_ph_paste_bill')}
-              rows={2}
-              className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2 font-mono`} />
-          </div>
-          <div>
-            <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_upload')}</label>
-            <input type="file" ref={billPhotoRef} accept="image/*,application/pdf" onChange={handleBillPhoto} className="hidden" />
-            {billImagePreview ? (
-              billImagePreview.startsWith('pdf:') ? (
-                <div className={`relative flex items-center gap-2 px-3 py-2 h-16 rounded-lg border ${c.cardAlt}`}>
-                  <span className="text-2xl flex-shrink-0">📄</span>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-bold ${c.text} truncate`}>{billImagePreview.slice(4)}</p>
-                    <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_pdf_ready')}</p>
-                  </div>
-                  <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                    className="bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center flex-shrink-0">✕</button>
+        {showMore && (
+          <>
+            <div className="mb-3">
+              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_anything_else')}</label>
+              <input type="text" value={details} onChange={e => setDetails(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && billType && !loading) analyze(); }}
+                placeholder={t('br_ph_details')}
+                className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
+            </div>
+
+            <div className="mb-3">
+              <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_paste_bill')}</label>
+              <textarea value={pastedBill} onChange={e => setPastedBill(e.target.value)}
+                placeholder={t('br_ph_paste_bill')}
+                rows={2}
+                className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none focus:ring-2 font-mono`} />
+            </div>
+          </>
+        )}
+
+        {/* The photo stays in the open: it is the one optional input that makes
+            the difference between generic advice and a line-by-line autopsy. */}
+        <div className="mb-5">
+          <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_upload')}</label>
+          <input type="file" ref={billPhotoRef} accept="image/*,application/pdf" onChange={handleBillPhoto} className="hidden" />
+          {billImagePreview ? (
+            billImagePreview.startsWith('pdf:') ? (
+              <div className={`relative flex items-center gap-2 px-3 py-2 h-16 rounded-lg border ${c.cardAlt}`}>
+                <span className="text-2xl flex-shrink-0">📄</span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-bold ${c.text} truncate`}>{billImagePreview.slice(4)}</p>
+                  <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_pdf_ready')}</p>
                 </div>
-              ) : (
-                <div className="relative">
-                  <img src={billImagePreview} alt={t('br_alt_bill')} className="w-full h-16 object-cover rounded-lg border" />
-                  <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
-                    className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
-                  <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
-                </div>
-              )
+                <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
+                  className="bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center flex-shrink-0">✕</button>
+              </div>
             ) : (
-              <button onClick={() => billPhotoRef.current?.click()} disabled={compressingImage}
-                className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-xs ${c.dropzone}`}>
-                {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : `📷 ${t('br_upload_cta')}`}
-              </button>
-            )}
-          </div>
+              <div className="relative">
+                <img src={billImagePreview} alt={t('br_alt_bill')} className="w-full h-16 object-cover rounded-lg border" />
+                <button onClick={() => { setBillImagePreview(null); setBillImageBase64(null); if (billPhotoRef.current) billPhotoRef.current.value = ''; }}
+                  className="absolute top-1 end-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] flex items-center justify-center">✕</button>
+                <p className={`text-[9px] ${c.successFg} mt-0.5`}>✅ {t('br_photo_ready')}</p>
+              </div>
+            )
+          ) : (
+            <button onClick={() => billPhotoRef.current?.click()} disabled={compressingImage}
+              className={`w-full h-16 border-2 border-dashed rounded-lg flex items-center justify-center text-xs ${c.dropzone}`}>
+              {compressingImage ? <span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> : `📷 ${t('br_upload_cta')}`}
+            </button>
+          )}
         </div>
 
         <p className={`text-[9px] ${c.textMuteded} mb-1`}>{t('br_privacy')}</p>
@@ -900,10 +971,29 @@ const BillRescue = ({ tool }) => {
         {/* Actions */}
         <div className="flex gap-2 flex-wrap">
           <button onClick={analyze} disabled={loading || !billType}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧾'}</span> {t('br_working')}</> : <><span>🧾</span> {t('br_get_plan')}</>}
           </button>
         </div>
+
+        {/* PF-32 — the visitor's own past work, directly beneath the submit
+            button, in the same place in every tool. */}
+        {!results && (savedPlans.length > 0 || callLogs.length > 0) && (
+          <div className="flex flex-wrap gap-1.5">
+            {savedPlans.length > 0 && (
+              <button onClick={() => { setView('tracker'); setError(''); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                📋 {t('br_nav_tracker')} ({savedPlans.length})
+              </button>
+            )}
+            {callLogs.length > 0 && (
+              <button onClick={() => { setView('log'); setError(''); }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                📞 {t('br_nav_log')} ({callLogs.length})
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -926,23 +1016,74 @@ const BillRescue = ({ tool }) => {
           </div>
         )}
 
-        {/* Shame-to-action */}
-        {r.shame_to_action && (
-              <div className={`${c.highlightBg} border-2 rounded-xl p-5`}>
-                <div className="flex items-start gap-3">
-                  <span className="text-lg flex-shrink-0">💚</span>
-                  <div>
-                    <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('br_first_breath')}</h3>
-                    <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
-                    {r.shame_to_action.micro_step && (
-                      <div className={`mt-3 p-3 rounded-lg ${c.microStepBg}`}>
-                        <p className={`text-xs font-bold ${c.highlightText}`}>📌 {t('br_only_step_today')}: {r.shame_to_action.micro_step}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+        {/* ── The verdict. Someone opening a bill is asking "am I in trouble?",
+            not "which of these nine tools do I want". Everything below this
+            supports a decision they have already been handed. ── */}
+        {r.verdict && (
+          <div className={`border-2 rounded-xl p-5 ${VERDICT_TONE(r.verdict.status, c)}`}>
+            <p className="text-3xl mb-1">{r.verdict.emoji}</p>
+            <p className="text-xl font-black">{r.verdict.headline}</p>
+            {r.verdict.where_you_stand?.length > 0 && (
+              <div className="mt-3 space-y-1">
+                {r.verdict.where_you_stand.map((line, i) => (
+                  <p key={i} className="text-sm">{line}</p>
+                ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Three sentences, and they know exactly where they stand. */}
+        {r.recommendation?.headline && (
+          <div className={`${c.highlightBg} border rounded-xl p-4`}>
+            <p className="text-[10px] font-bold uppercase tracking-wide mb-1 opacity-80">{t('br_my_recommendation')}</p>
+            <p className={`text-base font-black ${c.text} mb-2`}>{r.recommendation.headline}</p>
+            {r.recommendation.steps?.length > 0 && (
+              <ol className="space-y-1">
+                {r.recommendation.steps.map((line, i) => (
+                  <li key={i} className={`text-sm ${c.textSecondary}`}>{line}</li>
+                ))}
+              </ol>
+            )}
+          </div>
+        )}
+
+        {/* ── Today's only job. The most-loved thing in the old output was
+            buried inside a paragraph about breathing; it is now the loudest
+            instruction on the page, with the words to say it one tap away. ── */}
+        {r.todays_job?.action && (
+          <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
+            <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-1`}>🎯 {t('br_todays_job')}</p>
+            <p className={`text-lg font-black ${c.text}`}>{r.todays_job.action}</p>
+            {r.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.todays_job.why}</p>}
+            {r.todays_job.not_yet?.length > 0 && (
+              <div className="mt-3 space-y-0.5">
+                {r.todays_job.not_yet.map((x, i) => (
+                  <p key={i} className={`text-xs ${c.textMuteded}`}>✕ {x}</p>
+                ))}
+              </div>
+            )}
+            {r.todays_job.script && (
+              <details className="group mt-3">
+                <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
+                  📞 {t('br_show_words')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                </summary>
+                <div className={`${c.quoteBg} rounded-lg p-3 mt-2`}>
+                  <p className={`text-xs ${c.text}`}>"{r.todays_job.script}"</p>
+                </div>
+              </details>
+            )}
+          </div>
+        )}
+
+        {/* The reframe stays — it is the difference between a tool and a
+            person — but it is three lines now, not a wall before the answer. */}
+        {r.shame_to_action?.reframe && (
+          <div className={`${c.highlightBg} border rounded-xl p-4`}>
+            <p className={`text-xs font-bold ${c.text} mb-1`}>💚 {t('br_first_breath')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{r.shame_to_action.reframe}</p>
+          </div>
+        )}
 
             {/* Bill autopsy */}
             {r.bill_autopsy && (
@@ -973,13 +1114,14 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* Know your rights */}
-            {r.know_your_rights?.length > 0 && (
-              <Section icon="⚖️" title={t('br_sec_rights')} defaultOpen c={c}>
+            {/* Was "Know Your Rights", which sounds like homework. It is money
+                they may not owe, and that is what it says now. */}
+            {r.money_you_might_not_owe?.length > 0 && (
+              <Section icon="💰" title={t('br_sec_money_not_owed')} defaultOpen c={c}>
                 <div className="space-y-2">
-                  {r.know_your_rights.map((right, i) => (
+                  {r.money_you_might_not_owe.map((right, i) => (
                     <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
-                      <p className="text-xs font-bold">{right.right}</p>
+                      <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
                       <p className="text-[10px] mt-1">{right.explanation}</p>
                     </div>
                   ))}
@@ -987,23 +1129,35 @@ const BillRescue = ({ tool }) => {
               </Section>
             )}
 
-            {/* Action steps */}
+            {/* A numbered list reads like a textbook; a timeline reads like a
+                week. Grouped by when, in the order the model gave them, so
+                "Today" is two items rather than five things all at once — and
+                the script waits behind a disclosure instead of tripling the
+                height of every step. */}
             {r.action_steps?.length > 0 && (
-              <Section icon="📋" title={t('br_sec_action_plan')} defaultOpen c={c}>
-                <div className="space-y-3">
-                  {r.action_steps.map((step, i) => (
-                    <div key={i} className={`${c.quoteBg} rounded-lg p-4 border-s-4 ${c.stepBorderL}`}>
-                      <p className={`text-[10px] font-bold ${c.highlightText} uppercase mb-1`}>{t('br_step')} {i + 1}: {step.title}</p>
-                      <p className={`text-sm ${c.textSecondary} mb-2`}>{step.action}</p>
-                      {step.script && (
-                        <div className={`${c.card} border rounded-lg p-3`}>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('br_say_this')}:</p>
-                          <p className={`text-xs ${c.text}`}>"{step.script}"</p>
-                          <div className="mt-1.5">
+              <Section icon="🗺️" title={t('br_sec_roadmap')} defaultOpen c={c}>
+                <div className="space-y-4">
+                  {groupByWhen(r.action_steps).map(([when, steps]) => (
+                    <div key={when}>
+                      <p className={`text-[10px] font-bold ${c.highlightText} uppercase tracking-wide mb-1.5`}>{when}</p>
+                      <div className="space-y-2">
+                        {steps.map((step, i) => (
+                          <div key={i} className={`${c.quoteBg} rounded-lg p-3 border-s-4 ${c.stepBorderL}`}>
+                            <p className={`text-sm font-bold ${c.text}`}>✓ {step.title}</p>
+                            <p className={`text-xs ${c.textSecondary} mt-0.5`}>{step.action}</p>
+                            {step.script && (
+                              <details className="group mt-2">
+                                <summary className={`cursor-pointer text-[10px] font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
+                                  {t('br_show_words')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                                </summary>
+                                <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
+                                  <p className={`text-xs ${c.text}`}>"{step.script}"</p>
+                                </div>
+                              </details>
+                            )}
                           </div>
-                        </div>
-                      )}
-                      {step.when && <p className={`text-[10px] ${c.textMuteded} mt-2`}>⏰ {step.when}</p>}
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1037,7 +1191,7 @@ const BillRescue = ({ tool }) => {
 
             {/* Phone script */}
             {r.phone_script && (
-              <Section icon="📞" title={t('br_sec_phone_script')} defaultOpen c={c}>
+              <Section icon="📞" title={t('br_sec_phone_script')} c={c}>
                 {r.phone_script.opening && (
                   <div className={`${c.quoteBg} rounded-lg p-3`}>
                     <p className={`text-[10px] font-bold ${c.highlightText} mb-1`}>{t('br_opening')}:</p>
@@ -1192,19 +1346,54 @@ const BillRescue = ({ tool }) => {
               </div>
             )}
 
-            {/* Save + Copy All */}
-            <div className="flex items-center gap-2">
-              <button onClick={savePlan} disabled={planSaved}
-                className={`${planSaved ? c.success + ' border' : c.btnPrimary} px-4 py-2.5 rounded-lg text-xs font-bold min-h-[40px] transition-colors`}>
-                {planSaved ? `✅ ${t('br_saved_to_tracker')}` : `📌 ${t('br_save_plan')}`}
-              </button>
+            {/* ── What you might do next, named as actions rather than as the
+                screens they open. These were nine pills across the top of the
+                form, before the visitor had a bill analysed or any reason to
+                want them. ── */}
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('br_next_actions')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                <button onClick={savePlan} disabled={planSaved}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border min-h-[32px] ${planSaved ? c.success : c.pillInactive}`}>
+                  {planSaved ? `✅ ${t('br_saved_to_tracker')}` : `📌 ${t('br_save_plan')}`}
+                </button>
+                {[['rehearse', `📞 ${t('br_act_rehearse')}`], ['letters', `✉️ ${t('br_act_letter')}`],
+                  ['log', `📋 ${t('br_act_log')}`], ['calendar', `📅 ${t('br_act_calendar')}`],
+                  ['victories', `🏆 ${t('br_act_win')}`]].map(([key, label]) => (
+                  <button key={key} onClick={() => { setView(key); setError(''); }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-            {planSaved && (
-              <p className={`text-[10px] ${c.textMuteded} text-center`}>
-                {t('br_find_it_pre')}{' '}
-                <button onClick={() => setView('tracker')} className={linkStyle + ' text-[10px]'}>📋 {t('br_nav_tracker')}</button>
-                {' '}{t('br_find_it_post')}
-              </p>
+
+            {/* ── The ending. The old page's best sentence was buried in a
+                collapsed section; a bill is a negotiation, not a deadline, and
+                that is what a person should leave with. ── */}
+            {(r.todays_job?.action || r.recommendation?.headline) && (
+              <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('br_youre_set')}</p>
+                <dl className="space-y-1.5">
+                  {r.todays_job?.action && (
+                    <div>
+                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_today')}</dt>
+                      <dd className={`text-xs ${c.text}`}>{r.todays_job.action}</dd>
+                    </div>
+                  )}
+                  {nextAfterToday(r.action_steps) && (
+                    <div>
+                      <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_next')}</dt>
+                      <dd className={`text-xs ${c.text}`}>{nextAfterToday(r.action_steps)}</dd>
+                    </div>
+                  )}
+                  <div>
+                    <dt className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('br_end_remember')}</dt>
+                    <dd className={`text-xs ${c.text}`}>{t('br_end_remember_body')}</dd>
+                  </div>
+                </dl>
+                <p className={`text-xs ${c.textMuteded} mt-2`}>{t('br_end_comeback')}</p>
+              </div>
             )}
 
             <p className={`text-[9px] ${c.textMuteded} text-center px-4`}>
@@ -1420,8 +1609,8 @@ const BillRescue = ({ tool }) => {
                       }`}>{plan.status === 'resolved' ? `✅ ${t('br_status_resolved')}` : plan.status === 'in_progress' ? `🔄 ${t('br_status_in_progress')}` : <><span className="inline-block animate-spin">{tool?.icon ?? '🧾'}</span> {t('br_status_pending')}</>}</span>
                     </div>
                     <p className={`text-[9px] ${c.textMuteded}`}>{new Date(plan.date).toLocaleDateString()}</p>
-                    {plan.results?.shame_to_action?.micro_step && (
-                      <p className={`text-[10px] ${c.textSecondary} mt-0.5 truncate`}>📌 {plan.results.shame_to_action.micro_step}</p>
+                    {(plan.results?.todays_job?.action || plan.results?.shame_to_action?.micro_step) && (
+                      <p className={`text-[10px] ${c.textSecondary} mt-0.5 truncate`}>🎯 {plan.results.todays_job?.action || plan.results.shame_to_action.micro_step}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
@@ -2175,7 +2364,7 @@ const BillRescue = ({ tool }) => {
         </div>
         {/* Tab nav — unified inside header card */}
         <div className="pt-3">
-          {renderNav()}
+          {view !== 'rescue' && renderNav()}
         </div>
       </div>
 

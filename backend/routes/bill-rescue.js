@@ -138,6 +138,9 @@ router.post('/bill-rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const hasBillText = pastedBill && pastedBill.trim().length > 10;
     const hasBillImage = billImageBase64 && billImageBase64.length > 100;
     const isCollections = overdueStatus === 'collections';
+    // "What's making this difficult?" became multi-select — several of these
+    // are true at once for most people, and which ones changes the advice.
+    const reasonText = Array.isArray(reason) ? reason.filter(Boolean).join('; ') : (reason || '');
 
     const typeKnowledge = TYPE_KNOWLEDGE[billType] || '';
 
@@ -189,16 +192,16 @@ Write every field with precision — no filler, no padding, no restating what wa
 Type: ${billType}
 ${hasAmount ? `Amount: ${sym}${amount}` : 'Amount: Not specified'}
 How late: ${overdueStatus || 'unknown'}
-Why it's hard: ${reason || 'not specified'}
+What's making this hard: ${reasonText || 'NOT PROVIDED'}
 ${hasAfford ? `Can afford monthly: ${sym}${canAffordMonthly}` : 'Monthly budget: Not specified'}
 ${details ? `Additional context: ${details}` : ''}
 ${hasBillText ? `\nPASTED BILL TEXT (analyze for overcharges):\n${pastedBill.substring(0, 2000)}` : ''}
 ${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and suspicious items.' : ''}`;
 
     const keysA = [
-      'shame_to_action',
+      'verdict', 'recommendation', 'todays_job', 'shame_to_action',
       ...(hasBillText || hasBillImage ? ['bill_autopsy'] : []),
-      'know_your_rights', 'action_steps', 'phone_script',
+      'money_you_might_not_owe', 'action_steps', 'phone_script',
       ...(hasAfford || hasAmount ? ['payment_plan'] : []),
       'escalation_ladder',
     ];
@@ -210,8 +213,29 @@ ${hasBillImage ? '\nBILL IMAGE: Uploaded above. Analyze for overcharges and susp
 
     const userPromptA = `${situationBlock}
 
+Answer the questions they actually walked in with, in order: am I in trouble, can this ruin my credit, how much do I really have to pay, who do I call, what do I say, what do I do FIRST. Lead with where they stand — everything after that is support for a decision they have already been given.
+
 Return ONLY valid JSON with ALL applicable sections:
 {
+  "verdict": {
+    "status": "Exactly one of these and nothing else: FINE, SERIOUS_BUT_EARLY, URGENT, ALREADY_DAMAGED",
+    "emoji": "🟢|🟡|🔴|⚫",
+    "headline": "Where they stand, in the fewest words that are still true — 'Serious, but you're still early' — 3-7 words",
+    "where_you_stand": ["Two or three flat statements of fact about this specific bill: how old it is, what that means for their credit today, whether the window to negotiate is still open. One short sentence each, no advice."]
+  },
+
+  "recommendation": {
+    "headline": "The single most important instruction, as an imperative — 'Do not pay this bill yet.' — 3-8 words",
+    "steps": ["Two or three short sentences, in order, that together are the whole plan. 'First, verify that it's accurate.' 'Then apply for financial assistance.' 'Only after that, negotiate a payment plan.' No detail, no scripts — those come later."]
+  },
+
+  "todays_job": {
+    "action": "The ONE thing to do today, as an imperative — 'Request an itemized bill.' — 3-8 words",
+    "why": "Why this first and not anything else — one sentence",
+    "not_yet": ["Two or three things NOT to do today, each 2-5 words: 'Don't discuss payment.' 'Don't agree to anything.'"],
+    "script": "The exact words to say or write to get it done, copy-paste ready. null if today's job needs no words."
+  },
+
   "shame_to_action": {
     "reframe": "Warm, specific acknowledgment. Not 'it's okay' — show you understand WHY this is hard. Then reframe: dealing with this IS the responsible thing.",
     "micro_step": "Absurdly small first step. 'Put the bill on your kitchen table.' So easy it feels silly NOT to do it."
@@ -227,8 +251,12 @@ Return ONLY valid JSON with ALL applicable sections:
     "request_itemized": "If relevant: advice to request an itemized bill. null if not medical."
   }` : ''},
 
-  "know_your_rights": [
-    {"right": "Specific legal right for THIS bill type and overdue status.", "explanation": "Plain language + how to use it. — 1-2 sentences"}
+  "money_you_might_not_owe": [
+    {
+      "emoji": "One emoji for this protection",
+      "right": "Name it as money, not as a statute — 'Surprise billing', 'Hospital assistance', 'Credit protection' — 2-4 words",
+      "explanation": "What it could take off this bill, in plain language, and what to do to use it. Never open with a section number; a law may be named at the end if it helps them say it out loud. — 1-2 sentences"
+    }
   ],
 
   "action_steps": [
@@ -261,7 +289,7 @@ Return ONLY valid JSON with ALL applicable sections:
 
 Your response MUST contain ALL ${keysA.length} top-level keys — ${keysA.join(', ')} — and NO other keys.
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, know_your_rights ≤ 4, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): flagged_charges ≤ 5, money_you_might_not_owe ≤ 4, where_you_stand ≤ 3, recommendation.steps ≤ 3, not_yet ≤ 3, action_steps ≤ 5, escalation_ladder ≤ 4, key_phrases ≤ 5. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 - total_potential_savings MUST equal the sum of the flagged_charges amounts.
@@ -279,7 +307,7 @@ Return ONLY valid JSON with ALL applicable sections:
     "never_do": ["3-4 things to NEVER do with collectors"]
   },
 ` : ''}
-  "hardship_letter": "COMPLETE letter ready to send. 150-250 words. Date, 'To Whom It May Concern', situation (${reason}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
+  "hardship_letter": "COMPLETE letter ready to send. 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
 
   "what_they_wont_tell_you": ["3-5 insider facts for this bill type. Game-changers billing depts won't volunteer."],
 
@@ -325,7 +353,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     const [coreHalf, supportHalf] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 4500,
+        max_tokens: 5500,
         system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: contentFor(userPromptA) }],
       }, { label: 'bill-rescue-core' }),
@@ -340,7 +368,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     // Merge in ORIGINAL shape; core half wins any (unexpected) key overlap so
     // the guard field below always comes from the call that owns it.
     const parsed = { ...supportHalf, ...coreHalf };
-    if (!parsed.shame_to_action) {
+    if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
     res.json(stripCites(parsed));

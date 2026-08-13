@@ -5196,9 +5196,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A bill arrives that's wrong, or larger than it should be.",
-    give: "The bill type and details. Or describe a single charge for a quick check.",
-    get: "Phone scripts, dispute letters, your rights, and an escalation ladder.",
+    when: "A bill arrives that's wrong, larger than it should be, or already late.",
+    give: "What kind of bill, how much, and how far behind you are.",
+    get: "Where you stand, one thing to do today, and the words to say when you do it.",
+    edge: "It answers the question you actually have — am I in trouble — before it hands you anything to read. Then one job for today, and nothing else until that's done.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -5217,12 +5218,12 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoDescription: "Turn bill anxiety into a clear plan. Free AI gives negotiation scripts, ready-to-send dispute letters, and a call rehearsal to lower medical and overdue bills.",
   seoTitle: "Medical Bill Negotiation Helper & Scripts",
   title: "Bill Rescue",
-  tagline: "Your bill anxiety ends here",
+  tagline: "A bill isn't a verdict. It's a problem to solve.",
   tags: ['bill', 'medical bill', 'negotiate', 'reduce', 'lower', 'financial', 'debt', 'collections', 'late fee', 'overdue', 'dispute', 'hardship', 'credit', 'waive', 'fight', 'utilities', 'medical', 'rent', 'insurance', 'phone', 'collections', 'scripts', 'letters'],
   icon: "🧾",
   categories: ['The Grind', 'Loot'],
   headerColor: "#c0d8b8",
-  description: "Turn bill anxiety into a clear action plan with 9 tools: paste or photograph a bill for an AI autopsy, Quick Check any charge in 5 seconds, practice negotiation calls with an AI billing rep, generate 7 types of ready-to-send letters, triage multiple bills by priority, track plans, log call outcomes, view your bill calendar, and celebrate victories with a running savings total.",
+  description: "A bill isn't a verdict. It's a problem to solve. DeftBrain looks at the amount, the type of bill, how far behind you are, and the protections available to you. Then it tells you what to do next — one step at a time, with the words to say when you get there.",
   guide: {
     overview: "Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.",
 

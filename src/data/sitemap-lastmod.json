@@ -136,8 +136,8 @@
   "lastmod": "2026-08-07"
  },
  "tool:BillRescue": {
-  "hash": "abe6867ddd31e181d154226315093463fb255b88",
-  "lastmod": "2026-08-07"
+  "hash": "0119594cf0683b93f91136ce72baacdc759c0d59",
+  "lastmod": "2026-08-13"
  },
  "tool:ApologyCalibrator": {
   "hash": "20e7141faad15a3ba7afd5684cb8f7869b35ef00",
@@ -160,7 +160,7 @@
   "lastmod": "2026-08-07"
  },
  "homepage": {
-  "hash": "466c3559fab02f94a3c6ad036366a1fe492e6710",
+  "hash": "7e380b5a465e3de206e078919bed6a453a4082b0",
   "lastmod": "2026-08-13"
  }
 }
