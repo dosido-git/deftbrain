@@ -102,6 +102,9 @@ const billTypeEmoji = (val) => BILL_TYPES.find(b => b.value === val)?.emoji || '
 // ════════════════════════════════════════════════════════════
 // IMAGE COMPRESSION
 // ════════════════════════════════════════════════════════════
+// Matches the route's ceiling (parseBillFile in backend/routes/bill-rescue.js).
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
 function compressImageFile(file) {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith('image/')) { reject(new Error('Invalid file')); return; }
@@ -298,16 +301,27 @@ const BillRescue = ({ tool }) => {
   const handleBillPhoto = useCallback(async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const isImage = file.type.startsWith('image/');
-    const isPdf = file.type === 'application/pdf';
+    // An iPhone photo can arrive with an empty MIME type, so the extension is
+    // the fallback rather than an afterthought.
+    const name = file.name || '';
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(name);
+    const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|tiff?|hei[cf]|avif)$/i.test(name);
     if (!isImage && !isPdf) { setError(t('br_err_upload_type')); return; }
 
     if (isPdf) {
+      // The route drops anything over 10 MB, and used to do it silently — the
+      // attachment simply vanished and the answer arrived without an autopsy.
+      // Say so here, before the upload, with the size that caused it.
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setError(t('br_err_pdf_too_big', { size: (file.size / 1048576).toFixed(1) }));
+        if (billPhotoRef.current) billPhotoRef.current.value = '';
+        return;
+      }
       const reader = new FileReader();
       reader.onerror = () => setError(t('br_err_file_read'));
       reader.onload = (ev) => {
         setBillImageBase64(ev.target.result);
-        setBillImagePreview('pdf:' + file.name);
+        setBillImagePreview('pdf:' + name);
       };
       reader.readAsDataURL(file);
       return;
@@ -318,8 +332,16 @@ const BillRescue = ({ tool }) => {
       const compressed = await compressImageFile(file);
       setBillImageBase64(compressed);
       setBillImagePreview(compressed);
+      setError('');
     } catch (err) {
-      setError(t('br_err_image'));
+      // Every image is re-encoded through a canvas, which means the browser has
+      // to decode it first. Safari reads HEIC; Chrome and Firefox do not, so an
+      // iPhone photo AirDropped to a laptop fails here — and "Image processing
+      // failed" tells someone nothing they can act on. Name the format and the
+      // way out instead.
+      const isHeic = /image\/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(name);
+      setError(isHeic ? t('br_err_heic') : t('br_err_image'));
+      if (billPhotoRef.current) billPhotoRef.current.value = '';
     } finally {
       setCompressingImage(false);
     }
@@ -916,7 +938,7 @@ const BillRescue = ({ tool }) => {
             the difference between generic advice and a line-by-line autopsy. */}
         <div className="mb-5">
           <label className={`text-[10px] font-bold ${c.textMuteded} block mb-0.5`}>{t('br_q_upload')}</label>
-          <input type="file" ref={billPhotoRef} accept="image/*,application/pdf" onChange={handleBillPhoto} className="hidden" />
+          <input type="file" ref={billPhotoRef} accept="image/*,.heic,.heif,application/pdf" onChange={handleBillPhoto} className="hidden" />
           {billImagePreview ? (
             billImagePreview.startsWith('pdf:') ? (
               <div className={`relative flex items-center gap-2 px-3 py-2 h-16 rounded-lg border ${c.cardAlt}`}>
@@ -1007,6 +1029,14 @@ const BillRescue = ({ tool }) => {
             <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('br_your_situation')}</p>
             <p className={`text-sm ${c.textSecondary}`}>{billTypeEmoji(r._input.billType)} {billTypeLabel(r._input.billType, t)}{r._input.amount ? ` — ${r._input.currency || currency}${r._input.amount}` : ''}</p>
             {r._input.details && <p className={`text-xs mt-1.5 ${c.textMuted}`}>{r._input.details}</p>}
+          </div>
+        )}
+
+        {/* The file uploaded but could not be read. Saying nothing would leave
+            someone wondering why there is no line-by-line autopsy. */}
+        {r.attachment_ignored && (
+          <div className={`${c.warning} border rounded-xl p-4`}>
+            <p className="text-xs">⚠️ {t('br_attachment_ignored')}</p>
           </div>
         )}
 

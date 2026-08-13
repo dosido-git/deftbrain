@@ -387,6 +387,9 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
     // Merge in ORIGINAL shape; core half wins any (unexpected) key overlap so
     // the guard field below always comes from the call that owns it.
     const parsed = { ...supportHalf, ...coreHalf };
+    // The visitor watched a file upload. If it could not be used, the answer
+    // has to say so rather than quietly arriving without an autopsy.
+    if (hasBillImage && !billBlock) parsed.attachment_ignored = true;
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate your bill rescue. Please try again.' });
     }
