@@ -679,7 +679,12 @@ const LayoverMaximizer = ({ tool }) => {
       <div className="space-y-4">
         <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
           <div className="space-y-3">
-            {/* Airport */}
+            {/* ── Step 1 · Tell me about your connection ──
+                One question at a time, in the order a person sitting next to
+                you would ask them. Where, how long, and are you there yet —
+                nothing else can be answered until these three are. */}
+            <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>{t('lmx_step1_title')}</p>
+
             <div>
               <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_airport')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
               <input value={airport} onChange={e => setAirport(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') runAnalysis(); }}
@@ -695,12 +700,9 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
             </div>
 
-            {/* HOW LONG — the same question asked two ways. "I have 5 hours"
-                and "my flight leaves at 22:15" are one answer, not two
-                questions, so the toggle belongs here rather than at the head of
-                the form, where it was the first thing every visitor read and
-                the last thing most of them needed. */}
-            {!isLiveMode && (
+            {/* "I have 5 hours" and "my flight leaves at 22:15" answer the same
+                question, so only one of the two fields is ever on screen. */}
+            {!isLiveMode ? (
               <div>
                 <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_duration')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
                 <input type="number" step="0.5" min="0.5" max="24" value={layoverHours}
@@ -708,24 +710,33 @@ const LayoverMaximizer = ({ tool }) => {
                   placeholder={t('lmx_ph_duration')}
                   className={`w-full px-3 py-2 border rounded-lg text-xs ${c.input} outline-none focus:ring-2`} />
               </div>
-            )}
-
-            {/* Live mode toggle */}
-            <div className={`flex items-center gap-2 p-2.5 rounded-lg border ${isLiveMode ? (isDark ? 'border-sky-600 bg-sky-900/20' : 'border-sky-300 bg-sky-50') : c.card}`}>
-              <input type="checkbox" checked={isLiveMode} onChange={() => setIsLiveMode(!isLiveMode)} className="accent-sky-500" />
-              <span className={`text-xs font-bold ${c.text}`}>{t('lmx_live_label')}</span>
-              {isLiveMode && (
-                <div className="flex items-center gap-1 ms-auto">
-                  <span className={`text-[10px] ${c.textMuteded}`}>{t('lmx_live_departure')}</span>
+            ) : (
+              <div>
+                <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_live_departure')} <span className={c.required}>{t('lmx_required_mark')}</span></label>
+                <div className="flex items-center gap-2">
                   <input type="time" value={departureTime} onChange={e => setDepartureTime(e.target.value)}
-                    className={`px-2 py-1 border rounded text-xs ${c.input} outline-none`} />
+                    className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
                   {liveHoursRemaining !== null && (
                     <span className={`text-xs font-black ${liveHoursRemaining < 2 ? c.danger : c.skyText}`}>
                       {t('lmx_unit_h_left', { n: liveHoursRemaining })}
                     </span>
                   )}
                 </div>
-              )}
+              </div>
+            )}
+
+            {/* An unchecked box is not an answer. Asked outright, with a default
+                that is true for most visitors, it becomes one. */}
+            <div>
+              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_at_airport')}</label>
+              <div className="flex flex-wrap gap-1.5">
+                {[[false, t('lmx_no')], [true, t('lmx_yes')]].map(([val, label]) => (
+                  <button key={String(val)} onClick={() => setIsLiveMode(val)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px] ${
+                      isLiveMode === val ? c.pillActive : c.pillInactive
+                    }`}>{label}</button>
+                ))}
+              </div>
             </div>
 
             {/* Which clock this is running on, in the open. If it disagrees with
@@ -740,10 +751,11 @@ const LayoverMaximizer = ({ tool }) => {
                     : t('lmx_live_clock_device', { time: minutesToHhmm(nowMinutes) })}
               </p>
             )}
-            {/* The fork before the planning: if the ticket is not booked, the
+
+            {/* The fork out of the sequence: if the ticket is not booked, the
                 question is not "what can I do here" but "is this the right
-                connection at all". Offered as a link, not a control — it does
-                not belong in the sequence of answers. */}
+                connection at all". A link, not a control — it is not the next
+                answer, and it is gone once they are standing in the terminal. */}
             {!isLiveMode && (
               <button onClick={() => { setView('compare'); setError(''); }}
                 className={`text-xs ${c.skyText} underline underline-offset-2 min-h-[28px] text-start`}>
@@ -751,11 +763,9 @@ const LayoverMaximizer = ({ tool }) => {
               </button>
             )}
 
-            {/* Travel style — where is it, how long, and what do you want from
-                it. Those three are the whole question; everything below sharpens
-                the answer rather than forming it. */}
-            <div>
-              <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_travel_style')}</label>
+            {/* ── Step 2 · What would make this worthwhile? ── */}
+            <div className={`border-t ${c.border} pt-3`}>
+              <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1.5`}>{t('lmx_step2_title')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {TRAVEL_STYLES.map(ts => (
                   <button key={ts.value} onClick={() => setTravelStyle(travelStyle === ts.value ? '' : ts.value)}
@@ -766,15 +776,17 @@ const LayoverMaximizer = ({ tool }) => {
               </div>
             </div>
 
-            {/* The four consequential fields, folded away. Asking every traveller
-                for a passport and two terminal numbers before they have any answer
-                at all is the form doing the tool's work. The toggle says plainly
-                what stays unknowable without them, and the answer asks for
-                whichever one actually mattered. */}
+            {/* ── Only then: the details that make it safer ──
+                Asking every traveller for a passport and two terminal numbers
+                before they have any answer at all is the form doing the tool's
+                work. Grouped the way they matter: who you are and what you are
+                carrying (can you leave at all), then where you land and depart
+                (do you re-clear security), then the one field that buys an
+                exact time to be back by. */}
             <div ref={detailsRef} className={`border-t ${c.border} pt-3`}>
               <button onClick={() => setShowDetails(!showDetails)}
                 className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
-                {t('lmx_details_toggle')} {showDetails ? '▲' : '▼'}
+                🛡️ {t('lmx_details_toggle')} {showDetails ? '▲' : '▼'}
               </button>
               {!showDetails && ![nationality, arrivalTerminal, connectionTerminal, arrivalTime].some(v => String(v || '').trim()) && (
                 <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_details_why')}</p>
@@ -782,20 +794,27 @@ const LayoverMaximizer = ({ tool }) => {
 
               {showDetails && (
                 <div className="mt-3 space-y-3">
+                  <div>
+                    <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_nationality')}</label>
+                    <input value={nationality} onChange={e => setNationality(e.target.value)}
+                      placeholder={t('lmx_ph_nationality')}
+                      className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
+                  </div>
+
+                  <label className="flex items-center gap-2 text-xs cursor-pointer">
+                    <input type="checkbox" checked={hasCheckedBags} onChange={() => setHasCheckedBags(!hasCheckedBags)}
+                      className="accent-sky-500" />
+                    <span className={c.text}>{t('lmx_chk_checked_bags')}</span>
+                  </label>
+
                   <div className="flex flex-wrap gap-2">
-                    <div className="flex-1 min-w-[140px]">
-                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_nationality')}</label>
-                      <input value={nationality} onChange={e => setNationality(e.target.value)}
-                        placeholder={t('lmx_ph_nationality')}
-                        className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
-                    </div>
-                    <div className="flex-1 min-w-[100px]">
+                    <div className="flex-1 min-w-[120px]">
                       <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_arrival_terminal')}</label>
                       <input value={arrivalTerminal} onChange={e => setArrivalTerminal(e.target.value)}
                         placeholder={t('lmx_ph_arrival_terminal')}
                         className={`w-full px-2 py-1.5 border rounded-lg text-xs ${c.input} outline-none`} />
                     </div>
-                    <div className="flex-1 min-w-[100px]">
+                    <div className="flex-1 min-w-[120px]">
                       <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_departure_terminal')}</label>
                       <input value={connectionTerminal} onChange={e => setConnectionTerminal(e.target.value)}
                         placeholder={t('lmx_ph_departure_terminal')}
@@ -803,32 +822,28 @@ const LayoverMaximizer = ({ tool }) => {
                     </div>
                   </div>
 
+                  <label className="flex items-center gap-2 text-xs cursor-pointer">
+                    <input type="checkbox" checked={hasPreCheck} onChange={() => setHasPreCheck(!hasPreCheck)}
+                      className="accent-sky-500" />
+                    <span className={c.text}>{t('lmx_chk_precheck')}</span>
+                  </label>
+
+                  {/* Named for what it buys rather than what it is — this is the
+                      only field that can produce a clock time to be back by. */}
                   {!isLiveMode && (
                     <div>
-                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_landing_time')}</label>
+                      <label className={`text-xs font-bold ${c.textSecondary} block mb-1.5`}>{t('lmx_field_return_time')}</label>
                       <input type="time" value={arrivalTime} onChange={e => setArrivalTime(e.target.value)}
                         className={`px-3 py-2 border rounded-lg text-xs ${c.input} outline-none`} />
+                      <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('lmx_field_landing_time')}</p>
                     </div>
                   )}
-
-                  <div className="flex flex-wrap gap-4">
-                    <label className="flex items-center gap-2 text-xs cursor-pointer">
-                      <input type="checkbox" checked={hasCheckedBags} onChange={() => setHasCheckedBags(!hasCheckedBags)}
-                        className="accent-sky-500" />
-                      <span className={c.text}>{t('lmx_chk_checked_bags')}</span>
-                    </label>
-                    <label className="flex items-center gap-2 text-xs cursor-pointer">
-                      <input type="checkbox" checked={hasPreCheck} onChange={() => setHasPreCheck(!hasPreCheck)}
-                        className="accent-sky-500" />
-                      <span className={c.text}>{t('lmx_chk_precheck')}</span>
-                    </label>
-                  </div>
                 </div>
               )}
             </div>
 
             <button onClick={runAnalysis} disabled={loading || !airport.trim()} title={t('lmx_cmd_enter')}
-            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✈️'}</span> {t('lmx_analyzing')}</> : <><span>{tool?.icon ?? '✈️'}</span> {t('lmx_btn_analyze')}</>}
             {!loading && (
               <kbd aria-hidden="true"
@@ -1227,6 +1242,42 @@ const LayoverMaximizer = ({ tool }) => {
                 </div>
               )}
 
+              {/* The other modes, phrased as the things that go wrong rather
+                  than as the screens they open. A traveller does not want
+                  "Gate-to-Gate"; they want the gate that just changed. */}
+              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+                <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>{t('lmx_plans_changed')}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[['gate', t('lmx_act_gate')], ['delay', t('lmx_act_delayed')],
+                    ['risk', t('lmx_act_miss')], ['lounge', t('lmx_act_lounge')]].map(([key, label]) => (
+                    <button key={key} onClick={() => {
+                      if (key === 'lounge') setLoungeAirport(r.airport_code || airport);
+                      if (key === 'risk') { setRiskAirport(r.airport_code || airport); setRiskHours(layoverHours); }
+                      if (key === 'gate') setG2gAirport(r.airport_code || airport);
+                      setView(key); setError('');
+                    }} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Everything else, once the recommendation is complete. */}
+              <div>
+                <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1.5`}>{t('lmx_more_help')}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  {[['compare', t('lmx_more_compare')], ['packing', t('lmx_more_packing')],
+                    ['kit', t('lmx_more_kit')], ['saved', t('lmx_more_saved')],
+                    ['history', t('lmx_more_recent')]].map(([key, label]) => (
+                    <button key={key} onClick={() => {
+                      if (key === 'kit') { setKitAirport(r.airport_code || airport); setKitHours(layoverHours); }
+                      setView(key); setError('');
+                    }} className={`text-xs ${c.skyText} underline underline-offset-2 min-h-[28px]`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
             </div>
           );
@@ -2284,7 +2335,23 @@ const LayoverMaximizer = ({ tool }) => {
           </div>
         </div>
         <div className="px-5 py-3">
-          {renderNav()}
+          {/* The plan screen asks one thing, so it shows one control. The
+              modes are not navigation a visitor should have to read before
+              answering "which airport" — they come back below the answer, as
+              actions. Other views keep the full row, or there is no way back. */}
+          {view !== 'plan' && renderNav()}
+          {view === 'plan' && !results && (savedLayovers.length > 0 || layoverHistory.length > 0) && (
+            <div className="flex flex-wrap gap-1.5">
+              {['saved', 'history'].filter(k => (k === 'saved' ? savedLayovers.length : layoverHistory.length) > 0).map(k => (
+                <button key={k} onClick={() => { setView(k); setError(''); }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.pillInactive} min-h-[32px]`}>
+                  {k === 'saved'
+                    ? t('lmx_nav_saved_count', { n: savedLayovers.length })
+                    : t('lmx_nav_recent_count', { n: layoverHistory.length })}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
