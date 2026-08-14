@@ -47,6 +47,7 @@ const RELATIONSHIPS = [
   { value: 'Customer/Client', labelKey: 'apc_rel_customer' },
   { value: 'Stranger', labelKey: 'apc_rel_stranger' },
   { value: 'Ex', labelKey: 'apc_rel_ex' },
+  { value: "It's complicated", labelKey: 'apc_rel_complicated' },
 ];
 
 // `value` is the English culture sent to the backend; labelKey is display.
@@ -752,7 +753,11 @@ const ApologyCalibrator = ({ tool }) => {
         <div className="mb-4">
           <p className={`text-sm ${c.textSecondary}`}>{t('apc_cal_subtitle')}</p>
         </div>
-        <label className={`block text-lg font-semibold mb-3 ${c.text}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        <label className={`block text-lg font-semibold mb-1 ${c.text}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
+        {/* "Describe the situation" invited a story. The tool is actually after
+            three things: what happened, who it landed on, and what has happened
+            since — so the field asks for those. */}
+        <p className={`text-xs ${c.textMuted} mb-2`}>{t('apc_cal_what_happened_hint')}</p>
         <textarea value={calForm.whatHappened} onChange={e => setCalForm(p => ({ ...p, whatHappened: e.target.value }))}
           placeholder={t('apc_cal_ph_what_happened')}
           className={`w-full h-32 p-4 border-2 rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
@@ -779,24 +784,7 @@ const ApologyCalibrator = ({ tool }) => {
         )}
         </button>
 
-        {/* PF-32 — the visitor's own past work, directly beneath the submit
-            button, in the same place in every tool. */}
-        {!calResults && (repairs.length > 0 || auditSituations.length > 0) && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {repairs.length > 0 && (
-              <button onClick={() => goToView('repairs')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
-                🔧 {t('apc_tab_repairs')} ({repairs.length})
-              </button>
-            )}
-            {auditSituations.length > 0 && (
-              <button onClick={() => goToView('audit')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
-                📊 {t('apc_tab_audit')} ({auditSituations.length})
-              </button>
-            )}
-          </div>
-        )}
+
         {!calResults && (
           <p className={`text-xs text-center mt-3 ${c.textMuteded}`}>
             {t('apc_cal_draft_prompt')}
@@ -985,12 +973,17 @@ const ApologyCalibrator = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_more_help')}</p>
             <div className="flex flex-wrap gap-1.5">
-              {['practice', 'letter', 'cultural', 'decode', 'forgive', 'fix'].map(id => {
+              {/* PF-32 EXCEPTION (owner, 2026-08-13): Repairs and Audit are NOT
+                  under the submit button on this tool. On a form whose whole job
+                  is one description, a saved-repair pill reads as a competing
+                  workflow. They live here instead, with their counts. */}
+              {['practice', 'letter', 'cultural', 'decode', 'forgive', 'fix', 'repairs', 'audit'].map(id => {
                 const v = VIEWS.find(x => x.id === id);
+                const count = id === 'repairs' ? repairs.length : id === 'audit' ? auditSituations.length : 0;
                 return (
                   <button key={id} onClick={() => goToView(id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
-                    {v.icon} {t(v.labelKey)}
+                    {v.icon} {t(v.labelKey)}{count ? ` (${count})` : ''}
                   </button>
                 );
               })}
@@ -2731,7 +2724,7 @@ const ApologyCalibrator = ({ tool }) => {
                 headerColor. */}
             <div className="min-w-0">
               <p className={`text-sm ${c.textSecondary}`}>
-                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
+                <span className="me-2 text-base">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

@@ -1892,10 +1892,18 @@ homes for one control is one more than a visitor can learn.
 **Counts belong in the label** (`Recent (2)`), so the visitor knows whether
 there is anything behind it before spending a tap.
 
-**Exception — an owner instruction beats the default.** DateNight places its
-history, rut check and date jar at the end of the tool at the owner's explicit
-request. A default is what to do absent a specific instruction; it does not
-override one that exists.
+**Exception — an owner instruction beats the default.** A default is what to do
+absent a specific instruction; it does not override one that exists.
+
+- **DateNight** places its history, rut check and date jar at the end of the
+  tool, at the owner's explicit request.
+- **ApologyCalibrator** (2026-08-13) keeps Repairs and Audit out of the input
+  experience entirely — they sit in the after-results block with their counts.
+  The reasoning generalises and is worth weighing on the next tool: on a form
+  whose whole job is one description, a saved-work pill beside the primary
+  action reads as a competing workflow. Where a tool's form is a single ask,
+  prefer the after-results block; where it is a multi-field form the visitor
+  works through, PF-32's placement under the submit button still holds.
 
 ### "Give <tool> the header treatment" — the defined phrase
 

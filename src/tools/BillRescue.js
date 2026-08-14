@@ -2374,7 +2374,7 @@ const BillRescue = ({ tool }) => {
                 before reaching an input. The icon moves onto the tagline. */}
             <div className="min-w-0">
               <p className={`text-sm ${c.textSecondary}`}>
-                <span className="me-2">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
+                <span className="me-2 text-base">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('br_tagline')}
               </p>
               {!results && (
                 /* PF-17c: dark ink in both themes — the pill sits on the tool's
