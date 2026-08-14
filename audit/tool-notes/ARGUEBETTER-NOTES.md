@@ -42,3 +42,36 @@ Catalog id is `ArgueBetter`, but the backend route file and every endpoint path 
 - 0 pre-existing diff-audit issues on either file before this pass; both files clean after (S7.13 does NOT apply here — `argue-better.js` has one schema per endpoint except fallacy-train's intentional dual-schema, which diff-audit correctly can't statically resolve and flags as a "current issue" on the new-file baseline; confirmed harmless live, both branches tested).
 - Golden: 14/14 cases pass, covering all 13 endpoints (fallacy-train covered twice, once per branch) — includes 4 German cases (2 targeting the enum-pin fix, 1 targeting the prep headroom fix, 1 quoted-speech JSON-safety spot-check via source-check).
 - Browser-verified live (not just curl): Fallacy Gym full cycle (New Exercise → Check → Correct verdict) with zero console errors and zero crashes, on a fresh tab at mobile viewport (375×812) — the exact flow that previously crashed to the CRA error overlay on every attempt.
+
+## Form rewrite (2026-08-14)
+Owner's review: the tool was trying to be three products at once (debate
+simulator, critical-thinking trainer, competitive debating platform), and the
+tension showed in the form.
+
+- **Five formats renamed to five human goals.** Engines unchanged — Freeform,
+  Socratic, Cross-Exam, Lincoln-Douglas and Oxford still drive the prompt and
+  `FORMAT_GUIDE` is untouched. Only the labels moved: Just debate me / Help me
+  think / Cross-examine me / Take the other side / Help me persuade someone.
+  Mapped by meaning, not by position: Socratic is the assumption-challenger
+  (never asserts, never reveals its position), Cross-Exam is the adversarial
+  interrogator, Oxford is the persuade-an-audience engine.
+- Grid went 5 narrow columns → 2 wide, left-aligned like the challenge row.
+  One-word format names fit in 153px; sentences do not.
+- **Category chips and the Topic-area input are gone** (the review's Version A).
+  The position statement already says what it is about, and both were optional
+  hints the route treats as optional — no backend change needed.
+- Challenge descriptions rewritten; the old ones named a persona ("Supreme
+  court — relentless") rather than what happens.
+- **The five tabs are off the front door.** Quick / Prep / Fallacy Gym / Stats
+  were four answers to questions nobody has asked before typing anything. They
+  return under the submit button as "Other ways in"; the row still renders on
+  every non-setup view or there is no way back.
+- PF-30 (in-card `<h2>` deleted), PF-17c, PF-31 (⌘↵ chip — handler already
+  existed and was unadvertised).
+- Route: `opening` had `3-5 paragraphs. — one sentence` in its schema, two
+  instructions that cancel. Dropped the annotation; verified live at 311 words.
+
+**Open, owner's call:** what the tool *is* (the review argues for "test your
+ideas against the strongest criticism you can find" over "debate simulator"),
+and whether the name pulls toward competition rather than curiosity. Neither
+was changed.

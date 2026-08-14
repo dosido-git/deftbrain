@@ -52,7 +52,7 @@ ${format === 'cross-exam' ? '- ONLY ask questions. No statements.' : ''}
 
 Return ONLY valid JSON:
 {
-  "opening": "Your steelman counter-argument (or questions if socratic/cross-exam). 3-5 paragraphs. — one sentence",
+  "opening": "Your steelman counter-argument (or questions if socratic/cross-exam). 3-5 paragraphs.",
   "key_challenges": [{ "point": "specific challenge — one sentence", "why_strong": "why hard to dismiss — one sentence", "type": "empirical | logical | moral | practical | historical" }],
   "acknowledged_strengths": ["1-2 things their position gets right"],
   "closing_question": "One targeted question at the weakest point. — one sentence",

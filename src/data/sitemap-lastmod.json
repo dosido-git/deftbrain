@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "c8ed29d344b124e426b9f55fd0d1fbcaf71c7446",
+  "hash": "9825e1108b73d35496143fe86ffaf1930ccd21a3",
   "lastmod": "2026-08-14"
  },
  "static:about": {
@@ -20,7 +20,7 @@
   "lastmod": "2026-08-14"
  },
  "tool:ArgueBetter": {
-  "hash": "1881e23c2e8856400714183dfe6d4765df7072c1",
+  "hash": "85dea62ab9d5bf97f0b5f99f857afade75ef2f1f",
   "lastmod": "2026-08-14"
  },
  "tool:AwkwardSilenceFiller": {

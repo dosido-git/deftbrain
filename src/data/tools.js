@@ -2983,7 +2983,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You hold a position and have only heard weak versions of the other side.",
-    give: "Your position, a debate format, and how hard you want it.",
+    give: "Your position, how you want it challenged, and how hard.",
     get: "The strongest honest counter-case, then pressure on your answers — plus a scorecard, the fallacies on both sides named, and a replay of where you lost ground.",
     edge: "It argues the best version of the opposing case, not the caricature — which is the only version worth beating.",
   },
@@ -2995,7 +2995,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🥊",
   categories: ['Discourse', 'Diversions'],
   headerColor: "#b8dcd8",
-  description: "The complete intellectual sparring system. State any position and face the steelman — the strongest possible opposing case, not a strawman. Multi-turn debate with fallacy flags, coaching angles, source checks, and strategic concession. Five formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic). Devil's Advocate Prep drills you for real meetings. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots. Highlight Reel analyzes patterns across all debates and assigns a Debater Type.",
+  description: "The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.",
   guide: {
     overview: "Argue Better is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
     howToUse: [
