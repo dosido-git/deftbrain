@@ -38,9 +38,12 @@ const AlternatePath = ({ tool }) => {
     { value: 'today',   label: t('ap_reach_today'),   icon: '🔭', desc: t('ap_reach_today_desc') },
   ];
 
+  // ⚓/🪁 rather than 🧐/🤪: a monocle and a zany face put the two answers on
+  // different axes — one analytical, one comedic — when the actual question is
+  // just how tightly the chain is held. Both of these are about tether.
   const TONES = [
-    { value: 'plausible', label: t('ap_tone_plausible'), icon: '🧐', desc: t('ap_tone_plausible_desc') },
-    { value: 'weird',     label: t('ap_tone_weird'),     icon: '🤪', desc: t('ap_tone_weird_desc') },
+    { value: 'plausible', label: t('ap_tone_plausible'), icon: '⚓', desc: t('ap_tone_plausible_desc') },
+    { value: 'weird',     label: t('ap_tone_weird'),     icon: '🪁', desc: t('ap_tone_weird_desc') },
   ];
 
   const QUICK_PROMPTS = [
@@ -73,6 +76,10 @@ const AlternatePath = ({ tool }) => {
     pillActive:    isDark ? 'bg-cyan-600 border-cyan-600 text-white' : 'bg-cyan-600 border-cyan-600 text-white',
     pillInactive:  isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-300 hover:border-zinc-500' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300',
     required:      isDark ? 'text-amber-400'   : 'text-amber-700',
+    // Start over, in the header toolbar — quiet next to the Try-an-example
+    // pill, since it is one tap from wiping the form. Written out rather than
+    // interpolated: Tailwind only sees class names that appear literally.
+    resetInk:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-gray-500 hover:text-gray-900',
     // divergence banner — cyan-themed accent box for the "what if" statement
     divergenceBg:  isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
     divergenceTxt: isDark ? 'text-cyan-200'    : 'text-cyan-900',
@@ -208,26 +215,36 @@ const AlternatePath = ({ tool }) => {
       {/* ── Input Card ── */}
       <div className={`${c.card} border ${c.border} rounded-2xl p-5 shadow-sm space-y-4`}>
 
-        {/* Header with title + reset */}
-        <div className="flex items-start justify-between gap-3 pb-4 border-b border-zinc-500">
-          <div className="flex-1 min-w-0">
-            {/* PF-30 — the wrapper already prints "Alternate Path" as the page
-                <h1>. The tagline asks the question the title only names. */}
-            <p className={`text-sm ${c.textSecondary}`}>
-              <span className="me-2">{tool?.icon ?? '🌀'}</span>{tool?.tagline ?? t('ap_tagline')}
-            </p>
+        {/* ── Header ────────────────────────────────────────────────────────
+            EXPERIMENT (2026-08-14): Try an example and Start over used to sit
+            in opposite corners of this row, so the header reflowed the moment
+            you typed anything. They do the same kind of thing — replace the
+            whole form's contents — so they read better as one small toolbar
+            under the tagline.
+
+            Start over stays quiet on purpose: same height, no fill, no accent.
+            It is one tap from wiping what you typed, and matching the pill's
+            weight would make the pair a coin-flip. It still only appears when
+            there is something to clear. */}
+        <div className="pb-4 border-b border-zinc-500">
+          {/* PF-30 — the wrapper already prints "Alternate Path" as the page
+              <h1>. The tagline asks the question the title only names. */}
+          <p className={`text-sm ${c.textSecondary}`}>
+            <span className="me-2">{tool?.icon ?? '🌀'}</span>{tool?.tagline ?? t('ap_tagline')}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
-              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+              className="px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
               ✨ {t('try_example')}
             </button>
+            {(results || hasAnyInput) ? (
+              <button onClick={handleReset} disabled={loading}
+                className={`px-4 py-2 rounded-full text-sm font-semibold border ${c.border} ${c.resetInk} transition disabled:opacity-40 whitespace-nowrap`}>
+                ↺ {t('start_over')}
+              </button>
+            ) : null}
           </div>
-          {(results || hasAnyInput) ? (
-            <button
-              onClick={handleReset}
-              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
-            >↺ {t('start_over')}</button>
-          ) : null}
         </div>
 
         {/* Quick prompts — pre-result only */}
