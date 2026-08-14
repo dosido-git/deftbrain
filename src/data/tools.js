@@ -1908,6 +1908,7 @@ export const tools = [
     when: "You want to know whether one moment in history actually changed anything.",
     give: "A historical event, and the one detail you'd change.",
     get: "A plausible alternate timeline, each consequence cascading into the next.",
+    edge: "It is the one thing here that answers what might have happened rather than what you should do — and it will follow an impossible premise as seriously as a real one.",
   },
   seoDescription: "Pick any moment in history, change one detail, and watch the consequences cascade through a plausible alternate timeline — politics, tech, and culture, up to today.",
   seoTitle: "Alternate History Generator - What-If Timelines",
@@ -1917,7 +1918,7 @@ export const tools = [
   icon: "🌀",
   categories: ['What If?'],
   headerColor: "#b8dcd8",
-  description: "Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.",
+  description: "One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.",
   guide: {
     overview: "Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.",
     howToUse: [
@@ -1930,7 +1931,7 @@ export const tools = [
     example: {
       scenario: "You're curious what would have happened if the internet was never invented.",
       action: "Enter 'What if the internet was never invented?'",
-      result: "AI traces cascading consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, with each consequence logically building on the last."
+      result: "A chain of consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, each step following from the one before."
     },
     tips: [
       "Specific pivots produce richer timelines — 'What if Napoleon won at Waterloo' beats 'What if France was different'",

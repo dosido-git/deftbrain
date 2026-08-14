@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "448bea7ea03239956a02af0fc2b4c78b46f42b64",
+  "hash": "c8ed29d344b124e426b9f55fd0d1fbcaf71c7446",
   "lastmod": "2026-08-14"
  },
  "static:about": {
@@ -16,8 +16,8 @@
   "lastmod": "2026-07-14"
  },
  "tool:AlternatePath": {
-  "hash": "62b95fa36d84e09d7ce2be9b489853facaa7468b",
-  "lastmod": "2026-08-07"
+  "hash": "f0479bbea60dc5a43be110587ce8bbd4ae4f55a6",
+  "lastmod": "2026-08-14"
  },
  "tool:ArgueBetter": {
   "hash": "1881e23c2e8856400714183dfe6d4765df7072c1",

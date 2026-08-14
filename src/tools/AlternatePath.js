@@ -24,13 +24,22 @@ const AlternatePath = ({ tool }) => {
   const EXAMPLE = {
     whatIf: t('ap_qp3'),
     yearOrContext: '476 CE — barbarian invasions repelled, Western Empire endures',
-    depth: 'deep',
+    reach: 'today',
+    tone: 'plausible',
   };
 
-  const DEPTHS = [
-    { value: 'quick',  label: t('ap_depth_quick'),  icon: '⚡', desc: t('ap_depth_quick_desc') },
-    { value: 'deep',   label: t('ap_depth_deep'),   icon: '🔬', desc: t('ap_depth_deep_desc') },
-    { value: 'absurd', label: t('ap_depth_absurd'), icon: '🤪', desc: t('ap_depth_absurd_desc') },
+  // "Depth" was one control asking two unrelated questions: quick/deep set how
+  // far the chain runs, absurd set how much realism it owes — so picking
+  // "Absurd" silently also picked a length, and there was no way to ask for a
+  // short weird timeline or a long strict one. Two questions, two controls.
+  const REACHES = [
+    { value: 'decades', label: t('ap_reach_decades'), icon: '⚡', desc: t('ap_reach_decades_desc') },
+    { value: 'today',   label: t('ap_reach_today'),   icon: '🔭', desc: t('ap_reach_today_desc') },
+  ];
+
+  const TONES = [
+    { value: 'plausible', label: t('ap_tone_plausible'), icon: '🧐', desc: t('ap_tone_plausible_desc') },
+    { value: 'weird',     label: t('ap_tone_weird'),     icon: '🤪', desc: t('ap_tone_weird_desc') },
   ];
 
   const QUICK_PROMPTS = [
@@ -76,7 +85,8 @@ const AlternatePath = ({ tool }) => {
 
   // ─── State ───
   const [yearOrContext, setYearOrContext] = useState('');
-  const [depth, setDepth] = useState('quick');
+  const [reach, setReach] = useState('decades');
+  const [tone, setTone] = useState('plausible');
   const [error, setError] = useState('');
   const [whatIf, setWhatIf] = usePersistentState('alternatepath-whatif', '');
 
@@ -98,7 +108,8 @@ const AlternatePath = ({ tool }) => {
       const data = await callToolEndpoint('alternate-path', {
         whatIf: whatIf.trim(),
         yearOrContext: yearOrContext.trim(),
-        depth,
+        reach,
+        tone,
         userLocale,
         userCurrency,
         userRegion,
@@ -118,7 +129,8 @@ const AlternatePath = ({ tool }) => {
   const handleReset = () => {
     setWhatIf('');
     setYearOrContext('');
-    setDepth('quick');
+    setReach('decades');
+    setTone('plausible');
     setResults(null);
     setError('');
   };
@@ -131,9 +143,10 @@ const AlternatePath = ({ tool }) => {
   const loadExample = useCallback(() => {
     setWhatIf(EXAMPLE.whatIf);
     setYearOrContext(EXAMPLE.yearOrContext);
-    setDepth(EXAMPLE.depth);
+    setReach(EXAMPLE.reach);
+    setTone(EXAMPLE.tone);
     setResults(null);
-  }, [setWhatIf, setYearOrContext, setResults, EXAMPLE.whatIf, EXAMPLE.yearOrContext, EXAMPLE.depth]);
+  }, [setWhatIf, setYearOrContext, setResults, EXAMPLE.whatIf, EXAMPLE.yearOrContext, EXAMPLE.reach, EXAMPLE.tone]);
 
   // ─── Build copyable text ───
   const buildFullText = useCallback(() => {
@@ -242,9 +255,13 @@ const AlternatePath = ({ tool }) => {
             placeholder={t('ap_whatif_ph')}
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
           />
+          {/* Permission to play. This is the only required field, and the
+              thing that stops people typing in it is the suspicion that
+              their idea is too silly to submit. */}
+          <p className={`text-xs ${c.textMuteded} mt-1.5`}>{t('ap_whatif_hint')}</p>
         </div>
 
-        {/* Year or context */}
+        {/* Set the scene */}
         <div>
           <label className={`block text-sm font-semibold ${c.labelText} mb-1.5`}>
             {t('ap_year_label')} <span className={`font-normal ${c.textMuteded}`}>{t('ap_optional')}</span>
@@ -258,35 +275,50 @@ const AlternatePath = ({ tool }) => {
           />
         </div>
 
-        {/* Depth */}
+        {/* How far — scope */}
         <div>
-          <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ap_depth_label')}</label>
-          {DEPTHS.map(d => (
-            <button
-              key={d.value}
-              onClick={() => setDepth(d.value)}
-              className={`flex-1 py-2.5 rounded-xl border text-center min-h-[56px] transition-colors ${
-                depth === d.value ? c.pillActive : c.pillInactive
-              }`}
-            >
-              <span className="text-sm font-bold block">{d.icon} {d.label}</span>
-              <span className={`text-[10px] block mt-0.5 ${depth === d.value ? 'opacity-80' : c.textMuteded}`}>{d.desc}</span>
-            </button>
-          ))}
+          <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ap_reach_label')}</label>
+          <div className="grid grid-cols-2 gap-2">
+            {REACHES.map(r => (
+              <button
+                key={r.value}
+                onClick={() => setReach(r.value)}
+                className={`py-2.5 px-2 rounded-xl border text-center min-h-[64px] transition-colors ${
+                  reach === r.value ? c.pillActive : c.pillInactive
+                }`}
+              >
+                <span className="text-sm font-bold block">{r.icon} {r.label}</span>
+                <span className={`text-[10px] block mt-0.5 ${reach === r.value ? 'opacity-80' : c.textMuteded}`}>{r.desc}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuteded}`}>
-          {t('ap_xref_fiction')}{' '}
-          <a href="/FanTheory" className={linkStyle}>🎬 {t('ap_fantheory')}</a>{' '}
-          {t('ap_xref_fiction_after')}
-        </p>
+        {/* How realistic — the other half of the old Depth control */}
+        <div>
+          <label className={`block text-sm font-semibold ${c.labelText} mb-2`}>{t('ap_tone_label')}</label>
+          <div className="grid grid-cols-2 gap-2">
+            {TONES.map(o => (
+              <button
+                key={o.value}
+                onClick={() => setTone(o.value)}
+                className={`py-2.5 px-2 rounded-xl border text-center min-h-[64px] transition-colors ${
+                  tone === o.value ? c.pillActive : c.pillInactive
+                }`}
+              >
+                <span className="text-sm font-bold block">{o.icon} {o.label}</span>
+                <span className={`text-[10px] block mt-0.5 ${tone === o.value ? 'opacity-80' : c.textMuteded}`}>{o.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* Submit + Try example */}
+        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={loading || !whatIf.trim()}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+          title={t('ap_cmd_enter')}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading ? (
             <>
@@ -298,7 +330,24 @@ const AlternatePath = ({ tool }) => {
               <span>{tool?.icon ?? '🌀'}</span> {t('ap_explore')}
             </>
           )}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
         </button>
+
+        {/* Cross-ref — PF-33, after the ask rather than before it. The review
+            asked to leave this link alone and it stays word for word; it moved
+            one element down so it reads as an offer, not an exit sign. */}
+        {!results && (
+          <p className={`text-xs text-center ${c.textMuteded}`}>
+            {t('ap_xref_fiction')}{' '}
+            <a href="/FanTheory" className={linkStyle}>🎬 {t('ap_fantheory')}</a>{' '}
+            {t('ap_xref_fiction_after')}
+          </p>
+        )}
       </div>
 
       {/* ── Error ── */}

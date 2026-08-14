@@ -1,11 +1,11 @@
 {
   "_meta": {
     "tool": "alternate-path",
-    "captured": "2026-07-10",
+    "captured": "2026-07-10 (cases 1-3), 2026-08-14 (cases 4-5)",
     "model": "claude-sonnet-4-6",
     "baseline": "tag alternatepath-v1",
     "how_to_regress": "npm run check:golden alternate-path (needs local backend: node backend/server.js). Re-runs each input live; asserts HTTP 200, no error, every section present/non-empty. ~35-55s/case.",
-    "note": "1 endpoint, sonnet-4-6, max_tokens 6000, withLanguage+withLocaleContext, guard on always-present divergence_point. GUARDS: (1) deep-mode case must return 200 — deep truncated at max_tokens 3000 (8-10 verbose items) → deterministic 500; fixed by capping deep to exactly 8 tight-sentence items + max_tokens 6000. (2) plausibility must be a clean integer 1-10 — schema now forces digits-only (was a discursive string embedding its own '7/10' → banner rendered sentence + double /10 and the low-plaus cross-ref (typeof==='number') was dead). Frontend also normalizes via plausInt() defense-in-depth. DO NOT reverse: deep cap + max_tokens 6000, plausibility integer contract."
+    "note": "1 endpoint, sonnet-4-6, max_tokens 7000, withLanguage+withLocaleContext. The form's old single `depth` control was split into `reach` (decades|today) and `tone` (plausible|weird) on 2026-08-14; `depth` is still accepted and mapped for cached bundles, and legacy-depth-param locks that mapping. long-weird-truncation-guard covers the new worst case — 8 consequences with licence to escalate, in German."
   },
   "cases": [
     {
@@ -14,11 +14,12 @@
       "input": {
         "whatIf": "The Library of Alexandria never burned down",
         "yearOrContext": "48 BCE",
-        "depth": "quick",
         "userLocale": "en-US",
         "userCurrency": "USD",
         "userRegion": "US",
-        "userLanguage": "en-US"
+        "userLanguage": "en-US",
+        "reach": "decades",
+        "tone": "plausible"
       },
       "output": {
         "divergence_point": "In October 48 BCE, Julius Caesar's soldiers do not ignite the ships in Alexandria's harbor, and the fire that historically spread to the Great Library's warehouse annex never starts — Cleopatra, hosting Caesar, personally orders the docks cleared of combustibles after a tense negotiation with the Royal Librarian Apollodorus.",
@@ -67,11 +68,12 @@
       "input": {
         "whatIf": "The Roman Empire never fell in the West",
         "yearOrContext": "476 CE — barbarian invasions repelled",
-        "depth": "deep",
         "userLocale": "en-US",
         "userCurrency": "USD",
         "userRegion": "US",
-        "userLanguage": "en-US"
+        "userLanguage": "en-US",
+        "reach": "today",
+        "tone": "plausible"
       },
       "output": {
         "divergence_point": "In September 476 CE, Emperor Romulus Augustulus, rather than being deposed by Odoacer, is rescued by a loyalist army under General Flavius Orestes' surviving officers who repel the Germanic federates at Ravenna, execute Odoacer, and consolidate imperial authority across the Italian peninsula.",
@@ -137,8 +139,9 @@
       "endpoint": "/api/alternate-path",
       "input": {
         "whatIf": "Dinosaurs never went extinct",
-        "depth": "quick",
-        "userLanguage": "en-US"
+        "userLanguage": "en-US",
+        "reach": "decades",
+        "tone": "plausible"
       },
       "output": {
         "divergence_point": "66 million years ago, the Chicxulub impactor — a 10-km asteroid — misses Earth by 4,000 km on June 3, 66,038,000 BCE, grazing the atmosphere and breaking apart harmlessly over open ocean.",
@@ -179,6 +182,148 @@
         "biggest_surprise": "The most unexpected consequence is that human cognitive evolution accelerates by roughly 100,000 years specifically because of dinosaur predation pressure, meaning in this timeline Homo sapiens reaches roughly our level of social complexity around 100,000 BCE — yet paradoxically never achieves global civilization because dinosaurs keep fracturing territorial expansion into isolated high-intensity nodes.",
         "butterfly_moment": "The 4,000-km miss of the Chicxulub impactor means Troodontids have 65 million additional years to develop social cognition — and it is their existing territorial signaling behavior, not human initiative, that first makes coexistence possible, because humans can read it.",
         "plausibility": 3
+      }
+    },
+    {
+      "name": "long-weird-truncation-guard",
+      "endpoint": "/api/alternate-path",
+      "input": {
+        "whatIf": "Rome never fell",
+        "yearOrContext": "476 CE",
+        "reach": "today",
+        "tone": "weird",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE",
+        "userLanguage": "de"
+      },
+      "output": {
+        "divergence_point": "Am 4. September 476 n. Chr. entscheidet sich Flavius Orestes, anstatt zu fliehen, einen Kompromiss mit Odoaker auszuhandeln: Romulus Augustulus bleibt als Marionettenkaiser im Amt, Odoaker erhält Ländereien in Süditalien — das Weströmische Reich bricht nicht formell zusammen.",
+        "real_history": "In Wirklichkeit setzte Odoaker Romulus Augustulus am 4. September 476 n. Chr. ab und schickte die Kaiserinsignien nach Konstantinopel — ein Datum, das Historiker später als das Ende des Weströmischen Reiches bezeichneten. Westeuropa zerfiel danach in germanische Kleinkönigreiche.",
+        "timeline": [
+          {
+            "year_range": "476–580 n. Chr.",
+            "event": "Das Weströmische Reich stabilisiert sich unter einer Reihe von römisch-germanischen Koregenten: Odoaker, dann Theoderich, regieren faktisch, während latinisierte Kaisertitel die Legitimität wahren.",
+            "because": "Der Kompromiss von 476 schafft einen funktionierenden Präzedenzfall für die Integration germanischer Föderaten ins Reichsgefüge, statt es zu zerstören.",
+            "real_world_contrast": "In Wirklichkeit zerfiel Westeuropa in isolierte Königreiche der Westgoten, Vandalen und Franken, die kaum miteinander kommunizierten."
+          },
+          {
+            "year_range": "580–720 n. Chr.",
+            "event": "Der Islam entsteht zwar in Arabien, stößt aber auf eine geeinte römische Mittelmeergrenze: Die erste arabische Expansion wird am Sinai militärisch gestoppt, und Ägypten bleibt römisch.",
+            "because": "Ein intaktes Weströmisches Reich bedeutet, dass Konstantinopel nie die erschöpfenden Perserkriege allein führen musste und 620 n. Chr. noch über volle Heereskraft verfügt.",
+            "real_world_contrast": "In Wirklichkeit eroberten arabische Truppen bis 641 n. Chr. ganz Ägypten und Syrien, da Byzanz nach den Perserkriegen militärisch ausgeblutet war."
+          },
+          {
+            "year_range": "720–900 n. Chr.",
+            "event": "Ohne islamische Expansion als gemeinsamen Feind zerfällt die fränkische Kirchenmacht: Karl der Große wird nie gekrönt, weil der Papst keine weltliche Schutzmacht braucht.",
+            "because": "Die fränkischen Könige definierten ihre Legitimität wesentlich durch päpstliche Krönung gegen die muslimische Bedrohung — fällt diese weg, bleibt Franken ein Provinzfürst ohne universalen Anspruch.",
+            "real_world_contrast": "In Wirklichkeit krönte Papst Leo III. Karl den Großen am 25. Dezember 800 zum Kaiser — ein Akt, der die westliche Christenheit für Jahrhunderte formte."
+          },
+          {
+            "year_range": "900–1150 n. Chr.",
+            "event": "Das Römische Reich, nun zweisprachig lateinisch-germanisch, entwickelt im Rheinland frühindustrielle Wassermühlen-Netzwerke, weil eine einheitliche Rechtsverwaltung Patentschutz und Handelsrouten sichert.",
+            "because": "Römisches Vertragsrecht, auf einem zusammenhängenden Binnenmarkt von Britannien bis Ägypten angewendet, beschleunigt technologische Investitionen dramatisch.",
+            "real_world_contrast": "In Wirklichkeit bremsten zersplitterte Feudalrechte und Zölle zwischen Hunderten von Herrschaften jede überregionale Technologiediffusion bis ins 13. Jahrhundert."
+          },
+          {
+            "year_range": "1150–1350 n. Chr.",
+            "event": "Die Druckerpresse wird um 1220 n. Chr. in Alexandria erfunden — drei Jahrhunderte früher als Gutenberg — weil griechisch-römische Gelehrsamkeit und arabische Papiertechnologie nie getrennt wurden.",
+            "because": "Ägypten blieb römisch, sodass arabisches Papierwissen direkt in alexandrinische Werkstätten floss, die bereits über römische Mechanik und Metallguss verfügten.",
+            "real_world_contrast": "In Wirklichkeit erfand Johannes Gutenberg den Buchdruck erst um 1450 in Mainz, nachdem Wissen über arabisches Papier über komplizierte Umwege nach Europa gelangt war."
+          },
+          {
+            "year_range": "1350–1550 n. Chr.",
+            "event": "Amerika wird 1342 von einer römisch-normannischen Expedition unter dem Karthaginer Hanno VI. entdeckt, der gezielt nach dem 'Westmeer-Kontinent' suchte, den alexandrinische Gelehrte seit 900 Jahren postulierten.",
+            "because": "Frühe Druckwerke verbreiteten hellenistische Geographietheorie (Eratosthenes, Strabo) massenhaft, was eine Generation von Seefahrern systematisch auf den Atlantik ausrichtete.",
+            "real_world_contrast": "In Wirklichkeit 'entdeckte' Kolumbus Amerika erst 1492, motiviert durch mittelalterliche Handelsrouten-Alternativen — und nannte es irrtümlich Indien."
+          },
+          {
+            "year_range": "1550–1800 n. Chr.",
+            "event": "Amerika wird 'Nova Roma' benannt und systematisch als Provinz erschlossen: Einheimische Völker werden zwar unterworfen, aber nach römischem Muster als Bürger zweiter Klasse integriert, nicht ausgerottet — die Bevölkerung Mesoamerikas überlebt zu 60 Prozent.",
+            "because": "Römisches Provinzrecht schrieb Bürgerrechtserwerb durch Heeresdienst vor, was die nackte Ausrottungspolitik spanischer Conquistadoren strukturell unmöglich machte.",
+            "real_world_contrast": "In Wirklichkeit starben durch Krankheit und Gewalt nach 1492 schätzungsweise 90 Prozent der indigenen Bevölkerung Amerikas."
+          },
+          {
+            "year_range": "1800–2026 n. Chr.",
+            "event": "Das Römische Reich existiert als konstitutionelle Senatsrepublik mit 61 Provinzen auf vier Kontinenten, regiert von einem gewählten Konsulat in Rom, mit Latein als Amtssprache und einer Bevölkerung von 2,3 Milliarden Menschen.",
+            "because": "Frühindustrialisierung, Drucktechnologie, Impfstoffe aus der alexandrinischen Medizinschule und ein einheitlicher Binnenmarkt ermöglichten eine friedlichere, dichtere Modernisierung als die Nationalstaatenkonkurrenz der realen Geschichte.",
+            "real_world_contrast": "In Wirklichkeit gibt es 195 Staaten, zwei Weltkriege haben 80 Millionen Menschen getötet, und die Welt kommuniziert in Dutzenden Nationalsprachen ohne gemeinsame Verwaltungsebene."
+          }
+        ],
+        "today_looks_like": "In Nova Roma Meridionalis (Mexiko-Stadt) pendeln Bürger mit dem Tram zur Arbeit, sprechen daheim Nahuatl-Latein-Kreol und wählen ihren Provinzprätor per App auf dem Staatstelefon — alles mit dem Adler-Siegel des Senats. In Alexandria läuft das weltgrößte Bibliotheksnetz, physisch und digital vernetzt, auf Servern die 'Bibliotheca Universalis' heißen. Die einzige echte Krise: eine separatistische Bewegung der Germano-Provinzen, die sich 'Freie Rheinstädte' nennt und auf Social-Media-Papyrus-Memes setzt.",
+        "biggest_surprise": "Die Überlebensrate der indigenen Amerikaner — direkte Folge des römischen Provinzrechts — ist die moralisch bedeutendste Konsequenz einer Verwaltungsformsache aus dem 5. Jahrhundert.",
+        "butterfly_moment": "Flavius Orestes wählt an einem einzigen Nachmittag im September 476 das Gespräch statt der Flucht — dieser eine Schritt verhindert, dass Odoaker die Insignien nach Konstantinopel schickt, und hält den Mythos des Weströmischen Reiches am Leben.",
+        "plausibility": 4
+      }
+    },
+    {
+      "name": "legacy-depth-param",
+      "endpoint": "/api/alternate-path",
+      "input": {
+        "whatIf": "Dinosaurs never went extinct",
+        "depth": "absurd",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US",
+        "userLanguage": "en-US"
+      },
+      "output": {
+        "divergence_point": "On June 28, 65 million BCE, the Chicxulub impactor — a 10-kilometer asteroid — misses Earth by roughly 800,000 kilometers, passing visibly through the sky as a bright streak before continuing into deep space.",
+        "real_history": "The Chicxulub asteroid struck the Yucatan Peninsula approximately 66 million years ago, triggering a mass extinction that killed roughly 75% of all species including all non-avian dinosaurs, clearing the ecological stage for mammals to diversify and eventually produce primates and humans.",
+        "timeline": [
+          {
+            "year_range": "65 million BCE – 2 million BCE",
+            "event": "Large theropod lineages such as the dromaeosaurids continue evolving under sustained predation pressure, with one clade — the Troodontids — developing enlarged forebrains, binocular vision, and manipulative three-fingered grasps over tens of millions of years.",
+            "because": "Without the extinction event, mammals remain small and nocturnal, so evolutionary pressure rewards the already-large-brained theropods rather than warm-blooded generalist mammals.",
+            "real_world_contrast": "In actual history, Troodontids vanished at the K-Pg boundary, and primate forebrains expanded instead over the next 60 million years."
+          },
+          {
+            "year_range": "2 million BCE – 500,000 BCE",
+            "event": "A Troodontid descendant species, later named Dinosaurus sapiens by alternate-timeline paleontologists, develops rudimentary stone tool use, communal fire, and a territorial social structure in what is now East Africa.",
+            "because": "The enlarged Troodontid forebrain, combined with binocular vision and a grasping hand, crosses the cognitive threshold for tool use at roughly the same timeline that Homo habilis crossed it in real history — convergent evolution of intelligence.",
+            "real_world_contrast": "In real history, Homo habilis was fashioning Oldowan stone tools in East Africa around 2.6 million BCE with no dinosaurian competition present."
+          },
+          {
+            "year_range": "500,000 BCE – 10,000 BCE",
+            "event": "Dinosaurus sapiens spreads across Gondwana-derived continents but never reaches Europe or Asia, blocked by large Titanosaur sauropod herds that function as living geographic barriers — continent-spanning megafauna walls that no small bipedal dinosaur tribe can safely cross.",
+            "because": "Sauropods, without the extinction event, remain abundant enough that their migration corridors through North Africa and the Middle East are perpetually grazed into barren kill-zones, making cross-continental expansion suicidal for small groups.",
+            "real_world_contrast": "Anatomically modern humans crossed from Africa into the Levant roughly 100,000 years ago with no such megafaunal barrier in place."
+          },
+          {
+            "year_range": "10,000 BCE – 1200 CE",
+            "event": "Confined to a sub-Saharan and South American range, Dinosaurus sapiens develops agriculture using domesticated Protoceratopsian livestock and grain crops, building walled city-states whose architecture is optimized for a three-toed bipedal body plan — circular plazas, low ramp-streets, no staircases.",
+            "because": "Agricultural revolution follows the same demographic logic as human history: settled food surplus enables specialization, population growth, and monument-building, regardless of the species doing the building.",
+            "real_world_contrast": "Human civilizations built rectangular grid cities with staircases; the earliest known human city, Catalhoyuk, dates to roughly 7500 BCE in Anatolia."
+          },
+          {
+            "year_range": "1200 CE – 1650 CE",
+            "event": "A Dinosaurus sapiens maritime civilization based in what is now Mozambique develops lateen-rigged sailing vessels and finally breaches the Saharan sauropod barrier by traveling around the African coast, making first contact with a parallel Eurasian civilization of intelligent, smaller-brained but highly social Pachycephalosaurid descendants in 1487 CE.",
+            "because": "Ocean routes bypass the land barriers that blocked expansion for millennia, and the demographic pressure of overcrowded city-states provides the same colonizing motive that drove human Age of Exploration.",
+            "real_world_contrast": "In 1487 CE, real-history Portuguese navigator Bartolomeu Dias rounded the Cape of Good Hope, but he encountered no rival intelligent species — only human peoples."
+          },
+          {
+            "year_range": "1650 CE – 1850 CE",
+            "event": "Contact between the two intelligent dinosaur civilizations triggers the alternate timeline's equivalent of a world war — the Claw Wars — fought with black-powder artillery mounted on domesticated Ankylosaurid war-beasts, ending in 1791 with a negotiated continental partition treaty signed in Nairobi.",
+            "because": "Two independently developed civilizations with incompatible territorial claims and no shared language follow the same collision logic as European-Indigenous contact in real history, but with neither side having a decisive technological advantage, producing stalemate rather than conquest.",
+            "real_world_contrast": "Real-history 1791 saw the Haitian Revolution; the Americas remained human-only civilizations, with European technological dominance making most contacts asymmetric rather than peer conflicts."
+          },
+          {
+            "year_range": "1850 CE – 1970 CE",
+            "event": "Post-war industrialization in both civilizations explodes simultaneously, but fossil fuel extraction is complicated by the fact that coal and oil deposits are dramatically smaller — because the Carboniferous and Cretaceous biomass that created them was partially consumed by living dinosaur ecosystems rather than buried, so both civilizations pivot by necessity to geothermal and wind energy by 1920.",
+            "because": "The Nairobi Treaty created economic incentives for peaceful trade, which accelerated industrial exchange, but resource scarcity forced an energy path that real-history humans never took until the 21st century.",
+            "real_world_contrast": "Real-history industrialization from 1850 onward was almost entirely coal-and-oil-powered, producing the greenhouse gas accumulation that alternate-timeline dinosaurs completely avoided."
+          },
+          {
+            "year_range": "1970 CE – 2026 CE",
+            "event": "By 2026, both civilizations have merged into a single federated planetary government — the Scaled Accord — whose space program launched a crewed mission to Mars in 2019, motivated partly by the fact that the dinosaur homeworld is still ecologically dominated by enormous non-sapient megafauna that make terrestrial expansion physically dangerous and politically complicated.",
+            "because": "A clean energy base, no World Wars, no Cold War nuclear standoff, and a unified geopolitical structure after the Nairobi Treaty allowed compounding technological progress to arrive roughly 50 years ahead of real-history human milestones.",
+            "real_world_contrast": "In real 2026, humanity has not yet landed on Mars, remains fragmented into nearly 200 nation-states, and is still heavily dependent on fossil fuels despite accelerating renewable transition."
+          }
+        ],
+        "today_looks_like": "The Scaled Accord capital in Nairobi is a city of 40 million bipedal dinosaurs where ramp-streets spiral up circular towers and domestic Protoceratopsians graze in rooftop parks tended by municipal herders. The ambient sound of a city street is a mix of infrasonic rumbles and high-pitched clicking — the two civilizations never developed a common spoken language and instead communicate through a shared written glyph system transmitted on flexible wrist-screens. In the background, a sauropod the size of a city block ambles through a designated megafauna corridor that bisects downtown, as it has done every migration season for 60 million years, entirely indifferent to the civilized world built around it.",
+        "biggest_surprise": "The most unexpected consequence is that the absence of fossil fuels — caused by living dinosaurs consuming biomass that would otherwise have become oil — forced a green energy revolution a century before real-history humans needed one, making the alternate timeline cleaner and more technologically advanced despite being biologically stranger.",
+        "butterfly_moment": "The single smallest change with the largest downstream effect is the Troodontid forebrain not being eliminated at the K-Pg boundary — a few hundred extra grams of neural tissue in one theropod lineage eventually produces a space-faring civilization that never burned a barrel of oil.",
+        "plausibility": 4
       }
     }
   ]

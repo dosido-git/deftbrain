@@ -3,8 +3,8 @@
 Alt-history "change one detail, trace the ripples" tool. **Frontend:** `src/tools/AlternatePath.js`. **Backend:** `backend/routes/alternate-path.js` (1 endpoint, 3 depth modes). **Golden:** `audit/alternate-path-golden-sample.json` (3 cases). Verify: `npm run check:golden alternate-path` (needs local backend; ~35–55s/case).
 
 ## Shape
-- **1 endpoint `/api/alternate-path`.** `claude-sonnet-4-6`, `max_tokens: 6000`, `callClaudeWithRetry`, `withLanguage` + `withLocaleContext` (locale ctx harmless here — no economics, no `$` exemplars).
-- Depth modes: `quick` (5 consequences), `deep` (exactly 8), `absurd` (6-8, escalating).
+- **1 endpoint `/api/alternate-path`.** `claude-sonnet-4-6`, `max_tokens: 7000`, `callClaudeWithRetry`, `withLanguage` + `withLocaleContext` (locale ctx harmless here — no economics, no `$` exemplars).
+- **Two controls, not one** (2026-08-14): `reach` = `decades` (exactly 5, ~50 yrs) | `today` (exactly 8, 100+ yrs); `tone` = `plausible` | `weird`. The old single `depth` mixed the two questions — quick/deep was scope, absurd was realism, so picking Absurd silently also picked a length and a short weird timeline was unreachable. `depth` is still accepted and mapped (quick→decades+plausible, deep→today+plausible, absurd→today+weird) for browsers holding a cached bundle across a deploy; locked by the `legacy-depth-param` golden case.
 - Output: `divergence_point`, `real_history`, `timeline[]{year_range,event,because,real_world_contrast}`, `today_looks_like`, `biggest_surprise`, `butterfly_moment`, `plausibility` (integer 1-10). Three-layer sync clean — every field renders; every input reaches the route.
 - Guard keys on always-present `divergence_point` — non-nullable, no false-500.
 - In `LOCALIZED_TOOLS`; dark mode clean.
@@ -15,10 +15,30 @@ Alt-history "change one detail, trace the ripples" tool. **Frontend:** `src/tool
 3. **⚠️ Stripped stray `— one sentence` artifacts** on `today_looks_like` (which contradicted its own "2-3 vivid sentences") and `plausibility` (folded into fix 2).
 
 ## DO NOT silently reverse
-1. **`deep` cap "exactly 8 … one tight sentence" + `max_tokens: 6000`** — together they prevent the deep-mode truncation 500. Don't restore "8-10" or lower max_tokens.
+1. **The `today` cap "exactly 8 … one tight sentence" + `max_tokens: 7000`** — together they prevent the deep-mode truncation 500. Don't restore "8-10" or lower max_tokens.
 2. **`plausibility` integer contract** (backend digits-only instruction + frontend `plausInt()`). Don't reintroduce a prose plausibility — it breaks the banner and the low-plaus cross-ref.
 3. **Guard on `divergence_point`** (top-level always-present) — don't move to a nullable/nested field.
 4. Enum-ish values clean; timeline `year_range` short (rendered as a `whitespace-nowrap` badge).
+
+## Form rewrite (2026-08-14)
+Per the owner's review: this is the one tool that should not be made more
+practical — the charter's "spark wonder and discovery" line is its whole job.
+- `Depth` → **How far should we follow it?** + **How realistic should we be?**
+- `Year or context` → **Set the scene**, placeholder now three scenes rather
+  than a syntax hint ("During World War I · In ancient Rome · Before the
+  Industrial Revolution").
+- Added an invitation under the one required field — "Serious, silly,
+  impossible — try anything." What stops people typing there is the suspicion
+  that their idea is too silly to submit.
+- "Plausible → hilariously extreme" → "Start plausible. End wherever history
+  takes us." A promise instead of a disclaimer.
+- Fan Theory cross-ref kept word for word (the review singled it out) but moved
+  below the submit button per PF-33, and gated on `!results`.
+- ⌘↵ chip added (PF-31 — the handler already existed).
+- `edge` primer line added; "AI traces cascading consequences" removed from the
+  guide example (Charter Appendix A).
+- Descs used to claim "10 consequences" for deep while the route asked for 8.
+  They now say what the route actually does.
 
 ## Known / accepted
 - 0 `audit_v2` baseline issues (clean tool).
