@@ -71,6 +71,9 @@ const CULTURES = [
   { value: 'Filipino', labelKey: 'apc_cul_filipino' },
   { value: 'Thai', labelKey: 'apc_cul_thai' },
   { value: 'Russian', labelKey: 'apc_cul_russian' },
+  { value: 'Vietnamese', labelKey: 'apc_cul_vietnamese' },
+  { value: 'Spanish (Spain)', labelKey: 'apc_cul_spanish' },
+  { value: 'Portuguese (Portugal)', labelKey: 'apc_cul_portuguese' },
 ];
 
 // `value` is the English tone sent to the backend; labelKey is display.
@@ -720,8 +723,27 @@ const ApologyCalibrator = ({ tool }) => {
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
   const resultsRef = useRef(null);
-  handleSubmitRef.current = handleCalibrate;
-  canSubmitRef.current = !!(calForm.whatHappened?.trim()) && view === 'calibrate';
+  // ⌘↵ now appears on every submit button, so it has to submit the form the
+  // visitor is actually looking at. It used to call handleCalibrate no matter
+  // what; a chip on the Practice view advertising that would be a lie.
+  // Readiness mirrors each button's own `disabled` expression — one source of
+  // truth, so the chip never promises something the button refuses.
+  const SUBMITS = {
+    calibrate: [handleCalibrate, !!calForm.whatHappened?.trim() && !calResults],
+    detect:    [handleDetect,    !!detectForm.draft?.trim()],
+    delivery:  [handleDelivery,  !!delForm.whatHappened?.trim()],
+    audit:     [handleAudit,     auditSituations.length >= 2],
+    cultural:  [handleCultural,  !!culForm.whatHappened?.trim() && !!culForm.culture?.trim()],
+    decode:    [handleDecode,    !!decodeForm.theirWords?.trim()],
+    practice:  practiceStarted ? [handlePracticeSend, !!practiceInput?.trim()]
+                              : [handlePracticeStart, !!practiceForm.situation?.trim()],
+    forgive:   [handleForgive,   !!forgiveForm.whatTheyDid?.trim()],
+    roadmap:   [handleRoadmap,   !!roadmapForm.whatHappened?.trim()],
+    letter:    [handleLetter,    !!letterForm.whatHappened?.trim()],
+    fix:       [handleFix,       !!fixForm.whatYouSaid?.trim() && !!fixForm.theirReaction?.trim()],
+  };
+  handleSubmitRef.current = SUBMITS[view]?.[0];
+  canSubmitRef.current = !!SUBMITS[view]?.[1];
 
   useRegisterActions(buildFullText(), tool?.title || 'Apology Calibrator');
 
@@ -1086,8 +1108,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDetect} disabled={loading || !detectForm.draft.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_det_loading')}</> : <><span>🔍</span> {t('apc_det_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -1205,8 +1233,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full h-20 p-3 border rounded-lg outline-none resize-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDelivery} disabled={loading || !delForm.whatHappened.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_del_loading')}</> : <><span>🎯</span> {t('apc_del_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -1391,8 +1425,14 @@ const ApologyCalibrator = ({ tool }) => {
         )}
 
         <button onClick={handleAudit} disabled={loading || auditSituations.length < 2}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_aud_loading')}</> : <><span>📊</span> {t('apc_aud_btn', { n: auditSituations.length })}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         {auditSituations.length < 2 && auditSituations.length > 0 && (
           <p className={`text-sm mt-2 text-center ${c.textMuteded}`}>{t('apc_aud_min_hint')}</p>
@@ -1538,8 +1578,14 @@ const ApologyCalibrator = ({ tool }) => {
         </div>
 
         <button onClick={handleCultural} disabled={loading || !culForm.whatHappened.trim() || !culForm.culture.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_cul_loading')}</> : <><span>🌍</span> {t('apc_cul_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -1658,8 +1704,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleDecode} disabled={loading || !decodeForm.theirWords.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_dec_loading')}</> : <><span>🧐</span> {t('apc_dec_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -1819,9 +1871,15 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
 
             <button onClick={handlePracticeStart} disabled={loading || !practiceForm.situation.trim()}
-              className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
               {loading ? <><Spinner />{t('apc_prac_loading')}</> : <><span>🎭</span> {t('apc_prac_btn')}</>}
-            </button>
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
           </>
         ) : (
           <>
@@ -1913,9 +1971,15 @@ const ApologyCalibrator = ({ tool }) => {
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePracticeSend(); } }}
               className={`flex-1 p-3 border rounded-lg outline-none resize-none h-16 ${c.input} ${c.input}`} />
             <button onClick={handlePracticeSend} disabled={loading || !practiceInput.trim()}
-              className={`px-5 py-2 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              className={`relative px-5 py-2 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40`} title={t('apc_cmd_enter')}>
               {loading ? <Spinner /> : '💬'}
-            </button>
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
 
             <div className="flex gap-2 mt-3">
               <button onClick={() => { setDelForm({ whatHappened: practiceForm.situation, relationship: practiceForm.relationship, apologyText: practiceInput || '' }); setView('delivery'); }}
@@ -1959,8 +2023,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleForgive} disabled={loading || !forgiveForm.whatTheyDid.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_for_loading')}</> : <><span>💜</span> {t('apc_for_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -2110,8 +2180,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleRoadmap} disabled={loading || !roadmapForm.whatHappened.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_road_loading')}</> : <><span>🗺️</span> {t('apc_road_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -2290,8 +2366,14 @@ const ApologyCalibrator = ({ tool }) => {
           className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
 
         <button onClick={handleLetter} disabled={loading || !letterForm.whatHappened.trim()}
-          className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
           {loading ? <><Spinner />{t('apc_let_loading')}</> : <><span>✉️</span> {t('apc_let_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <ErrorBanner />
       </div>
@@ -2454,10 +2536,16 @@ const ApologyCalibrator = ({ tool }) => {
           </div>
           {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
           <button onClick={handleFix} disabled={loading || !fixForm.whatYouSaid.trim() || !fixForm.theirReaction.trim()}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} title={t('apc_cmd_enter')}>
             {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">🔁</span>}
             {t('apc_fix_btn')}
-          </button>
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
         </div>
       </div>
 

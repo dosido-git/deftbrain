@@ -69,6 +69,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Filipino",
     apc_cul_thai: "Thai",
     apc_cul_russian: "Russian",
+    apc_cul_vietnamese: "Vietnamese",
+    apc_cul_spanish: "Spanish (Spain)",
+    apc_cul_portuguese: "Portuguese (Portugal)",
 
     // ── Letter tones (labels; backend value stays English) ──
     apc_tone_vulnerable: "Vulnerable",
@@ -301,7 +304,7 @@ export const apologyCalibrator = {
 
     // ── Cultural view ──
     apc_cul_heading: "Cultural Calibrator",
-    apc_cul_subtitle: "Apology norms vary wildly across cultures. Get calibrated for the context.",
+    apc_cul_subtitle: "Apology norms vary widely across cultures. Get calibrated for the context.",
     apc_cul_ph_what_happened: "Describe the situation...",
     apc_cul_context_label: "Cultural context",
     apc_cul_ph_culture: "Or type a specific culture / region...",
@@ -337,7 +340,7 @@ export const apologyCalibrator = {
 
     // ── Practice view ──
     apc_prac_heading: "Practice Mode",
-    apc_prac_subtitle: "Rehearse your apology before the real conversation. AI plays the person you're apologizing to.",
+    apc_prac_subtitle: "Rehearse your apology before the real conversation. We'll play the person you're apologizing to.",
     apc_prac_ph_situation: "Describe the situation you need to apologize for...",
     apc_prac_difficulty: "Difficulty",
     apc_prac_normal: "🟢 Normal",
@@ -565,6 +568,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Filipina",
     apc_cul_thai: "Tailandesa",
     apc_cul_russian: "Rusa",
+    apc_cul_vietnamese: "Vietnamita",
+    apc_cul_spanish: "Español (España)",
+    apc_cul_portuguese: "Portugués (Portugal)",
 
     apc_tone_vulnerable: "Vulnerable",
     apc_tone_direct: "Directo",
@@ -787,7 +793,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "El reto de esta semana",
 
     apc_cul_heading: "Calibrador Cultural",
-    apc_cul_subtitle: "Las normas de disculpa varían muchísimo entre culturas. Calíbrate para el contexto.",
+    apc_cul_subtitle: "Las normas de disculpa varían mucho entre culturas. Ajústate al contexto.",
     apc_cul_ph_what_happened: "Describe la situación...",
     apc_cul_context_label: "Contexto cultural",
     apc_cul_ph_culture: "O escribe una cultura / región concreta...",
@@ -821,7 +827,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Navegar el perdón →",
 
     apc_prac_heading: "Modo práctica",
-    apc_prac_subtitle: "Ensaya tu disculpa antes de la conversación real. La IA interpreta a la persona a quien te disculpas.",
+    apc_prac_subtitle: "Ensaya tu disculpa antes de la conversación real. Haremos el papel de la persona a la que te disculpas.",
     apc_prac_ph_situation: "Describe la situación por la que necesitas disculparte...",
     apc_prac_difficulty: "Dificultad",
     apc_prac_normal: "🟢 Normal",
@@ -1042,6 +1048,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "菲律宾",
     apc_cul_thai: "泰国",
     apc_cul_russian: "俄罗斯",
+    apc_cul_vietnamese: "越南",
+    apc_cul_spanish: "西班牙",
+    apc_cul_portuguese: "葡萄牙",
 
     apc_tone_vulnerable: "袒露脆弱",
     apc_tone_direct: "直接",
@@ -1264,7 +1273,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "本周挑战",
 
     apc_cul_heading: "文化校准器",
-    apc_cul_subtitle: "不同文化的道歉规范差异极大。根据情境进行校准。",
+    apc_cul_subtitle: "不同文化的道歉方式差别很大。按具体情境来调整。",
     apc_cul_ph_what_happened: "描述当时的情况……",
     apc_cul_context_label: "文化背景",
     apc_cul_ph_culture: "或输入具体的文化/地区……",
@@ -1298,7 +1307,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 引导原谅 →",
 
     apc_prac_heading: "练习模式",
-    apc_prac_subtitle: "在真正谈话前先排练你的道歉。AI 会扮演你要道歉的对象。",
+    apc_prac_subtitle: "在真正开口之前先练一遍。我们来扮演你要道歉的那个人。",
     apc_prac_ph_situation: "描述你需要道歉的情况……",
     apc_prac_difficulty: "难度",
     apc_prac_normal: "🟢 普通",
@@ -1519,6 +1528,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "फ़िलिपीनी",
     apc_cul_thai: "थाई",
     apc_cul_russian: "रूसी",
+    apc_cul_vietnamese: "वियतनामी",
+    apc_cul_spanish: "स्पेनी (स्पेन)",
+    apc_cul_portuguese: "पुर्तगाली (पुर्तगाल)",
 
     apc_tone_vulnerable: "भावुक",
     apc_tone_direct: "सीधा",
@@ -1741,7 +1753,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "इस हफ़्ते की चुनौती",
 
     apc_cul_heading: "सांस्कृतिक कैलिब्रेटर",
-    apc_cul_subtitle: "माफ़ी के नियम संस्कृतियों के बीच बहुत भिन्न होते हैं। संदर्भ के अनुसार कैलिब्रेट हों।",
+    apc_cul_subtitle: "माफ़ी के तौर-तरीके संस्कृतियों में काफ़ी अलग होते हैं। संदर्भ के हिसाब से ढालें।",
     apc_cul_ph_what_happened: "स्थिति का वर्णन करें...",
     apc_cul_context_label: "सांस्कृतिक संदर्भ",
     apc_cul_ph_culture: "या कोई विशिष्ट संस्कृति / क्षेत्र लिखें...",
@@ -1775,7 +1787,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 माफ़ी की दिशा तय करें →",
 
     apc_prac_heading: "अभ्यास मोड",
-    apc_prac_subtitle: "असली बातचीत से पहले अपनी माफ़ी का रिहर्सल करें। AI उस व्यक्ति की भूमिका निभाता है जिससे आप माफ़ी मांग रहे हैं।",
+    apc_prac_subtitle: "असली बातचीत से पहले अपनी माफ़ी का अभ्यास करें। जिस व्यक्ति से माफ़ी माँगनी है, उसका किरदार हम निभाएँगे।",
     apc_prac_ph_situation: "उस स्थिति का वर्णन करें जिसके लिए आपको माफ़ी मांगनी है...",
     apc_prac_difficulty: "कठिनाई",
     apc_prac_normal: "🟢 सामान्य",
@@ -1996,6 +2008,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "فلبيني",
     apc_cul_thai: "تايلاندي",
     apc_cul_russian: "روسي",
+    apc_cul_vietnamese: "فيتنامي",
+    apc_cul_spanish: "إسباني (إسبانيا)",
+    apc_cul_portuguese: "برتغالي (البرتغال)",
 
     apc_tone_vulnerable: "صادق ومنكشف",
     apc_tone_direct: "مباشر",
@@ -2218,7 +2233,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "تحدّي هذا الأسبوع",
 
     apc_cul_heading: "المعاير الثقافي",
-    apc_cul_subtitle: "تختلف أعراف الاعتذار اختلافاً كبيراً بين الثقافات. عايِر نفسك حسب السياق.",
+    apc_cul_subtitle: "تختلف أعراف الاعتذار كثيرًا بين الثقافات. اضبطها بحسب السياق.",
     apc_cul_ph_what_happened: "صِف الموقف...",
     apc_cul_context_label: "السياق الثقافي",
     apc_cul_ph_culture: "أو اكتب ثقافة / منطقة محدّدة...",
@@ -2252,7 +2267,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 وجّه المسامحة →",
 
     apc_prac_heading: "وضع التدريب",
-    apc_prac_subtitle: "تمرّن على اعتذارك قبل المحادثة الحقيقية. يلعب الذكاء الاصطناعي دور الشخص الذي تعتذر له.",
+    apc_prac_subtitle: "تدرّب على اعتذارك قبل الحديث الحقيقي. سنؤدّي نحن دور الشخص الذي تعتذر له.",
     apc_prac_ph_situation: "صِف الموقف الذي تحتاج إلى الاعتذار عنه...",
     apc_prac_difficulty: "الصعوبة",
     apc_prac_normal: "🟢 عادي",
@@ -2473,6 +2488,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Filipina",
     apc_cul_thai: "Tailandesa",
     apc_cul_russian: "Russa",
+    apc_cul_vietnamese: "Vietnamita",
+    apc_cul_spanish: "Espanhol (Espanha)",
+    apc_cul_portuguese: "Português (Portugal)",
 
     apc_tone_vulnerable: "Vulnerável",
     apc_tone_direct: "Direto",
@@ -2695,7 +2713,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "Desafio desta semana",
 
     apc_cul_heading: "Calibrador Cultural",
-    apc_cul_subtitle: "As normas de desculpa variam muito entre culturas. Calibre-se para o contexto.",
+    apc_cul_subtitle: "As normas de desculpa variam muito entre culturas. Calibre para o contexto.",
     apc_cul_ph_what_happened: "Descreva a situação...",
     apc_cul_context_label: "Contexto cultural",
     apc_cul_ph_culture: "Ou digite uma cultura / região específica...",
@@ -2729,7 +2747,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Navegar o perdão →",
 
     apc_prac_heading: "Modo prática",
-    apc_prac_subtitle: "Ensaie sua desculpa antes da conversa real. A IA interpreta a pessoa a quem você está se desculpando.",
+    apc_prac_subtitle: "Ensaie o seu pedido de desculpas antes da conversa real. Nós fazemos o papel da pessoa a quem você vai se desculpar.",
     apc_prac_ph_situation: "Descreva a situação pela qual você precisa se desculpar...",
     apc_prac_difficulty: "Dificuldade",
     apc_prac_normal: "🟢 Normal",
@@ -2950,6 +2968,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Philippine",
     apc_cul_thai: "Thaïlandaise",
     apc_cul_russian: "Russe",
+    apc_cul_vietnamese: "Vietnamien",
+    apc_cul_spanish: "Espagnol (Espagne)",
+    apc_cul_portuguese: "Portugais (Portugal)",
 
     apc_tone_vulnerable: "Vulnérable",
     apc_tone_direct: "Direct",
@@ -3172,7 +3193,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "Le défi de cette semaine",
 
     apc_cul_heading: "Calibrateur Culturel",
-    apc_cul_subtitle: "Les normes d'excuses varient énormément d'une culture à l'autre. Calibrez-vous selon le contexte.",
+    apc_cul_subtitle: "Les codes des excuses varient beaucoup selon les cultures. Ajustez au contexte.",
     apc_cul_ph_what_happened: "Décrivez la situation...",
     apc_cul_context_label: "Contexte culturel",
     apc_cul_ph_culture: "Ou saisissez une culture / région précise...",
@@ -3206,7 +3227,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Naviguer le pardon →",
 
     apc_prac_heading: "Mode entraînement",
-    apc_prac_subtitle: "Répétez vos excuses avant la vraie conversation. L'IA joue la personne à qui vous présentez vos excuses.",
+    apc_prac_subtitle: "Répétez vos excuses avant la vraie conversation. Nous jouerons la personne à qui vous vous excusez.",
     apc_prac_ph_situation: "Décrivez la situation pour laquelle vous devez vous excuser...",
     apc_prac_difficulty: "Difficulté",
     apc_prac_normal: "🟢 Normal",
@@ -3427,6 +3448,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Philippinisch",
     apc_cul_thai: "Thailändisch",
     apc_cul_russian: "Russisch",
+    apc_cul_vietnamese: "Vietnamesisch",
+    apc_cul_spanish: "Spanisch (Spanien)",
+    apc_cul_portuguese: "Portugiesisch (Portugal)",
 
     apc_tone_vulnerable: "Verletzlich",
     apc_tone_direct: "Direkt",
@@ -3649,7 +3673,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "Die Herausforderung dieser Woche",
 
     apc_cul_heading: "Kultur-Kalibrator",
-    apc_cul_subtitle: "Entschuldigungsnormen unterscheiden sich enorm zwischen Kulturen. Kalibriere dich für den Kontext.",
+    apc_cul_subtitle: "Entschuldigungsnormen unterscheiden sich stark zwischen Kulturen. Stell dich auf den Kontext ein.",
     apc_cul_ph_what_happened: "Beschreibe die Situation ...",
     apc_cul_context_label: "Kultureller Kontext",
     apc_cul_ph_culture: "Oder gib eine bestimmte Kultur / Region ein ...",
@@ -3683,7 +3707,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Vergebung navigieren →",
 
     apc_prac_heading: "Übungsmodus",
-    apc_prac_subtitle: "Probe deine Entschuldigung vor dem echten Gespräch. Die KI spielt die Person, bei der du dich entschuldigst.",
+    apc_prac_subtitle: "Üb deine Entschuldigung vor dem echten Gespräch. Wir spielen die Person, bei der du dich entschuldigst.",
     apc_prac_ph_situation: "Beschreibe die Situation, für die du dich entschuldigen musst ...",
     apc_prac_difficulty: "Schwierigkeit",
     apc_prac_normal: "🟢 Normal",
@@ -3904,6 +3928,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "フィリピン",
     apc_cul_thai: "タイ",
     apc_cul_russian: "ロシア",
+    apc_cul_vietnamese: "ベトナム",
+    apc_cul_spanish: "スペイン",
+    apc_cul_portuguese: "ポルトガル",
 
     apc_tone_vulnerable: "率直で無防備",
     apc_tone_direct: "ストレート",
@@ -4126,7 +4153,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "今週のチャレンジ",
 
     apc_cul_heading: "文化キャリブレーター",
-    apc_cul_subtitle: "謝罪の作法は文化によって大きく異なります。状況に合わせて調整しましょう。",
+    apc_cul_subtitle: "謝り方の作法は文化によって大きく異なります。相手の文脈に合わせましょう。",
     apc_cul_ph_what_happened: "状況を説明してください……",
     apc_cul_context_label: "文化的背景",
     apc_cul_ph_culture: "または特定の文化／地域を入力……",
@@ -4160,7 +4187,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 許しをたどる →",
 
     apc_prac_heading: "練習モード",
-    apc_prac_subtitle: "本番の会話の前に謝罪をリハーサルしましょう。AIが、あなたが謝る相手を演じます。",
+    apc_prac_subtitle: "本番の前に謝罪を練習しましょう。相手役はこちらで務めます。",
     apc_prac_ph_situation: "謝る必要のある状況を説明してください……",
     apc_prac_difficulty: "難易度",
     apc_prac_normal: "🟢 普通",
@@ -4381,6 +4408,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "필리핀",
     apc_cul_thai: "태국",
     apc_cul_russian: "러시아",
+    apc_cul_vietnamese: "베트남",
+    apc_cul_spanish: "스페인",
+    apc_cul_portuguese: "포르투갈",
 
     apc_tone_vulnerable: "솔직하고 약한 모습",
     apc_tone_direct: "직설적",
@@ -4603,7 +4633,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "이번 주의 도전",
 
     apc_cul_heading: "문화 캘리브레이터",
-    apc_cul_subtitle: "사과의 규범은 문화마다 크게 다릅니다. 맥락에 맞게 조정하세요.",
+    apc_cul_subtitle: "사과의 방식은 문화마다 크게 다릅니다. 상황에 맞게 조정하세요.",
     apc_cul_ph_what_happened: "상황을 설명하세요...",
     apc_cul_context_label: "문화적 맥락",
     apc_cul_ph_culture: "또는 특정 문화/지역을 입력하세요...",
@@ -4637,7 +4667,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 용서 탐색하기 →",
 
     apc_prac_heading: "연습 모드",
-    apc_prac_subtitle: "실제 대화 전에 사과를 리허설하세요. AI가 당신이 사과하는 상대 역할을 합니다.",
+    apc_prac_subtitle: "실제 대화 전에 사과를 연습해 보세요. 사과할 상대 역은 저희가 맡겠습니다.",
     apc_prac_ph_situation: "사과해야 하는 상황을 설명하세요...",
     apc_prac_difficulty: "난이도",
     apc_prac_normal: "🟢 보통",
@@ -4858,6 +4888,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Филиппинская",
     apc_cul_thai: "Тайская",
     apc_cul_russian: "Русская",
+    apc_cul_vietnamese: "Вьетнамская",
+    apc_cul_spanish: "Испанская (Испания)",
+    apc_cul_portuguese: "Португальская (Португалия)",
 
     apc_tone_vulnerable: "Откровенный",
     apc_tone_direct: "Прямой",
@@ -5080,7 +5113,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "Вызов этой недели",
 
     apc_cul_heading: "Культурный калибратор",
-    apc_cul_subtitle: "Нормы извинений сильно различаются в разных культурах. Откалибруйтесь под контекст.",
+    apc_cul_subtitle: "Нормы извинений сильно различаются между культурами. Подстройтесь под контекст.",
     apc_cul_ph_what_happened: "Опишите ситуацию...",
     apc_cul_context_label: "Культурный контекст",
     apc_cul_ph_culture: "Или введите конкретную культуру / регион...",
@@ -5114,7 +5147,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Пройти путь прощения →",
 
     apc_prac_heading: "Режим практики",
-    apc_prac_subtitle: "Отрепетируйте извинение перед настоящим разговором. ИИ играет человека, перед которым вы извиняетесь.",
+    apc_prac_subtitle: "Отрепетируйте извинение до настоящего разговора. Мы сыграем того, перед кем вы извиняетесь.",
     apc_prac_ph_situation: "Опишите ситуацию, за которую нужно извиниться...",
     apc_prac_difficulty: "Сложность",
     apc_prac_normal: "🟢 Обычный",
@@ -5335,6 +5368,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "ฟิลิปปินส์",
     apc_cul_thai: "ไทย",
     apc_cul_russian: "รัสเซีย",
+    apc_cul_vietnamese: "เวียดนาม",
+    apc_cul_spanish: "สเปน",
+    apc_cul_portuguese: "โปรตุเกส",
 
     apc_tone_vulnerable: "เปิดใจอ่อนโยน",
     apc_tone_direct: "ตรงไปตรงมา",
@@ -5557,7 +5593,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "ความท้าทายสัปดาห์นี้",
 
     apc_cul_heading: "เครื่องปรับระดับตามวัฒนธรรม",
-    apc_cul_subtitle: "ธรรมเนียมการขอโทษแตกต่างกันมากในแต่ละวัฒนธรรม ปรับให้เข้ากับบริบท",
+    apc_cul_subtitle: "ธรรมเนียมการขอโทษต่างกันมากในแต่ละวัฒนธรรม ปรับให้เข้ากับบริบท",
     apc_cul_ph_what_happened: "อธิบายสถานการณ์...",
     apc_cul_context_label: "บริบททางวัฒนธรรม",
     apc_cul_ph_culture: "หรือพิมพ์วัฒนธรรม / ภูมิภาคที่เจาะจง...",
@@ -5591,7 +5627,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 นำทางสู่การให้อภัย →",
 
     apc_prac_heading: "โหมดฝึกซ้อม",
-    apc_prac_subtitle: "ซ้อมคำขอโทษก่อนการสนทนาจริง AI จะรับบทเป็นคนที่คุณกำลังขอโทษ",
+    apc_prac_subtitle: "ซ้อมคำขอโทษก่อนคุยจริง เราจะรับบทเป็นคนที่คุณต้องขอโทษเอง",
     apc_prac_ph_situation: "อธิบายสถานการณ์ที่คุณต้องขอโทษ...",
     apc_prac_difficulty: "ระดับความยาก",
     apc_prac_normal: "🟢 ปกติ",
@@ -5812,6 +5848,9 @@ export const apologyCalibrator = {
     apc_cul_filipino: "Philippines",
     apc_cul_thai: "Thái Lan",
     apc_cul_russian: "Nga",
+    apc_cul_vietnamese: "Việt Nam",
+    apc_cul_spanish: "Tây Ban Nha",
+    apc_cul_portuguese: "Bồ Đào Nha",
 
     apc_tone_vulnerable: "Mềm lòng cởi mở",
     apc_tone_direct: "Thẳng thắn",
@@ -6034,7 +6073,7 @@ export const apologyCalibrator = {
     apc_aud_challenge: "Thử thách tuần này",
 
     apc_cul_heading: "Bộ Hiệu Chỉnh Văn Hóa",
-    apc_cul_subtitle: "Chuẩn mực xin lỗi khác nhau rất nhiều giữa các nền văn hóa. Hãy hiệu chỉnh cho phù hợp với bối cảnh.",
+    apc_cul_subtitle: "Chuẩn mực xin lỗi khác nhau rất nhiều giữa các nền văn hóa. Hãy điều chỉnh theo bối cảnh.",
     apc_cul_ph_what_happened: "Mô tả tình huống...",
     apc_cul_context_label: "Bối cảnh văn hóa",
     apc_cul_ph_culture: "Hoặc nhập một nền văn hóa / khu vực cụ thể...",
@@ -6068,7 +6107,7 @@ export const apologyCalibrator = {
     apc_dec_navigate_forgive: "💜 Điều hướng sự tha thứ →",
 
     apc_prac_heading: "Chế độ luyện tập",
-    apc_prac_subtitle: "Tập dượt lời xin lỗi trước cuộc trò chuyện thật. AI đóng vai người mà bạn đang xin lỗi.",
+    apc_prac_subtitle: "Hãy tập lời xin lỗi trước cuộc trò chuyện thật. Chúng tôi sẽ đóng vai người bạn cần xin lỗi.",
     apc_prac_ph_situation: "Mô tả tình huống bạn cần xin lỗi...",
     apc_prac_difficulty: "Độ khó",
     apc_prac_normal: "🟢 Bình thường",
