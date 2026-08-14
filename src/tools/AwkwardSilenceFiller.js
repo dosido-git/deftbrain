@@ -271,11 +271,15 @@ const AwkwardSilenceFiller = ({ tool }) => {
         {/* Standard header */}
         <div className="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-zinc-500">
           <div className="flex-1 min-w-0">
-            <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-              <span className="me-2">{tool?.icon ?? '💬'}</span>{tool?.title ?? t('asf_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary} mt-1`}>{tool?.tagline ?? t('asf_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '💬'}</span>{tool?.tagline ?? t('asf_tagline')}
+            </p>
+            <button onClick={loadExample} disabled={loading}
+              style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+              ✨ {t('try_example')}
+            </button>
           </div>
           {(results || panicResult || customContext.trim() || scenario || landmines.trim()) ? (
             <button
@@ -346,21 +350,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
 
         {/* ── CUSTOM CONTEXT ── */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
-            {t('asf_describe_label')} <span className={`font-normal ${c.textMuteded}`}>{t('asf_describe_optional')}</span>
-          </label>
-          <input
-            type="text"
-            value={customContext}
-            onChange={e => { setCustomContext(e.target.value); if (e.target.value.trim()) setScenario(''); }}
-            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
-            placeholder={t('asf_describe_ph')}
-            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
-          />
-        </div>
-
-        {/* ── RELATIONSHIP ── */}
-        <div className="mb-4">
           <label className={`text-sm font-bold ${c.label} block mb-2`}>{t('asf_who_label')}</label>
           <div className="flex flex-wrap gap-1.5">
             {RELATIONSHIPS.map(rel => (
@@ -397,6 +386,21 @@ const AwkwardSilenceFiller = ({ tool }) => {
         </div>
 
         {/* ── TOPIC LANDMINES ── */}
+        <div className="mb-4">
+          <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
+            {t('asf_describe_label')} <span className={`font-normal ${c.textMuteded}`}>{t('asf_describe_optional')}</span>
+          </label>
+          <input
+            type="text"
+            value={customContext}
+            onChange={e => { setCustomContext(e.target.value); if (e.target.value.trim()) setScenario(''); }}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
+            placeholder={t('asf_describe_ph')}
+            className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+          />
+        </div>
+
+        {/* ── RELATIONSHIP ── */}
         <div className="mb-5">
           <label className={`text-sm font-bold ${c.label} block mb-1.5`}>
             {t('asf_landmines_label')} <span className={`font-normal ${c.textMuteded}`}>{t('asf_landmines_optional')}</span>
@@ -411,24 +415,24 @@ const AwkwardSilenceFiller = ({ tool }) => {
           />
         </div>
 
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
-          {t('asf_pre_xref_q')}{' '}
-          <a href="/DateNight" className={linkStyle}>{t('asf_xref_datenight')}</a>{' '}
-          {t('asf_pre_xref_tail')}
-        </p>
-
         {/* ── SUBMIT / REFRESH ── */}
         <div className="flex gap-3">
           <button
             onClick={generate}
             disabled={loading || isRunning}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            title={t('asf_cmd_enter')}
+            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading ? (
               <><span className="animate-spin inline-block">{tool?.icon ?? '💬'}</span> {t('asf_generating')}</>
             ) : (
               <><span>{tool?.icon ?? '💬'}</span> {t('asf_generate_btn')}</>
+            )}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
             )}
           </button>
           {results && (
@@ -442,6 +446,41 @@ const AwkwardSilenceFiller = ({ tool }) => {
             </button>
           )}
         </div>
+
+        {/* PF-32 — Recent used to sit at the very bottom of the page, past the
+            results and the cross-refs. One home, under the primary action,
+            collapsed with its count. */}
+        {sessionHistory?.length > 0 && !results && (
+          <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3 mt-3`}>
+            <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
+                🕐 {t('asf_recent_sessions', { n: sessionHistory.length })}
+                <Caret groupOpen className="ms-auto" />
+              </div>
+            </summary>
+            <div className="space-y-1.5 mt-3">
+              {sessionHistory.map(entry => (
+                <button key={entry.id}
+                  onClick={() => setResults(entry.result)}
+                  className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
+                  <span className={c.textMuteded}>
+                    {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                  </span>
+                  <span className={`${c.text} truncate`}>{entry.preview}</span>
+                </button>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {/* PF-33 — an offer belongs after the ask */}
+        {!results && (
+          <p className={`text-xs text-center ${c.textMuteded} mt-3`}>
+            {t('asf_pre_xref_q')}{' '}
+            <a href="/DateNight" className={linkStyle}>{t('asf_xref_datenight')}</a>{' '}
+            {t('asf_pre_xref_tail')}
+          </p>
+        )}
 
       </div>
 
@@ -458,6 +497,27 @@ const AwkwardSilenceFiller = ({ tool }) => {
       {/* ════════════════════════════════════════════════════════ */}
       {r && (
         <div className="space-y-4">
+
+          {/* ── FIRST, THIS MATTERS ─────────────────────────────────────────
+              The output used to open by analysing the silence. Someone who
+              just froze mid-conversation does not need analysis first — they
+              need to know the silence did not mean what they are afraid it
+              meant. Fixed copy, not generated: reassurance that varies run to
+              run is not reassurance. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('asf_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_2')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_3')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('asf_fm_4')}</p>
+          </div>
+
+          {/* ── TODAY'S ONLY JOB ── */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1`}>
+            <p className={`text-sm font-bold ${c.text}`}>🎯 {t('asf_todays_job')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('asf_job_1')}</p>
+            <p className={`text-sm font-bold ${c.text}`}>{t('asf_job_2')}</p>
+          </div>
 
           {/* ── SILENCE REFRAME (prominent) ── */}
           {r.silence_reframe && (
@@ -663,25 +723,6 @@ const AwkwardSilenceFiller = ({ tool }) => {
         </div>
       )}
 
-      {/* ── HISTORY ── */}
-      {sessionHistory?.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('asf_recent_sessions')}</h3>
-          <div className="space-y-1.5">
-            {sessionHistory.map(entry => (
-              <button key={entry.id}
-                onClick={() => setResults(entry.result)}
-                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}
-              >
-                <span className={c.textMuteded}>
-                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                </span>
-                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

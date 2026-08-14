@@ -27,3 +27,26 @@ Frontend-only (backend was already solid):
 
 ## Known / accepted
 - **1 pre-existing `audit_v2` PF-2 flag** ("missing alias `c.label = c.labelText`"): the tool defines `c.label` directly (and uses it) instead of the canonical `c.labelText` + alias. Functionally correct; normalizing would rename the key + touch ~6 usages for zero behavior change. Left as-is; diff-audit confirms edits add none.
+
+## The DeftBrain treatment + form reorder (2026-08-14)
+PF-30 (in-card `<h2>` deleted; icon onto the tagline), PF-17c, PF-31 (⌘↵ chip
+— handler already existed), PF-32 (Recent was at the very BOTTOM of the page,
+past the results and the cross-refs; now a collapsed `<details>` with its count
+directly under the submit button, gated on `!results`), PF-33 (Date Night
+cross-ref moved from above the submit button to below it).
+
+**Form reordered** to the owner's sequence — where am I, who am I talking to,
+how nervous am I, what else should you know: Scenario → Who → Feeling →
+Describe the situation → Anything to avoid. The situation box used to sit
+second, asking for prose before the two one-tap questions.
+
+**"Topic landmines" → "Anything you'd like to avoid?"** The `(optional — things
+to avoid)` suffix went with it; the new label already says that.
+
+**Results now open with reassurance.** Two fixed panels before any analysis:
+"💚 First, this matters" and "🎯 Today's only job." Fixed copy, not generated —
+reassurance that varies run to run is not reassurance.
+
+**Output tightened**: EXACTLY 5 conversation starters (was 5-6), ONE
+body-language tip (was 3-4), ONE exit strategy. One tip you remember beats four
+you don't. Verified live: 5 / 1 / 1.

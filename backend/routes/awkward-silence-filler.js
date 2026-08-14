@@ -81,11 +81,11 @@ Generate conversation rescue material. Return ONLY valid JSON:
     }
   ],
   "body_language": [
-    "3-4 specific non-verbal tips for this scenario. Not generic ('make eye contact') — scenario-specific ('In an elevator, face the door like everyone else. Turning to face them feels confrontational in a small space.')."
+    "EXACTLY ONE specific non-verbal tip for this scenario — the single most useful one. Not generic ('make eye contact'), scenario-specific ('In an elevator, face the door like everyone else — turning to face them reads as confrontational')."
   ],
   "exit_strategies": [
     {
-      "scenario": "When you want to gracefully end this — one sentence",
+      "scenario": "EXACTLY ONE exit — the one most likely to be needed here. When you want to gracefully end this — one sentence",
       "script": "Exact words to exit the conversation politely — 2-4 sentences"
     }
   ],
@@ -95,7 +95,7 @@ Generate conversation rescue material. Return ONLY valid JSON:
   "encouragement": "One warm, specific sentence of encouragement. Not patronizing — something a friend would say. Acknowledge that social anxiety is real but they're handling it. — one sentence"
 }
 
-Generate 5-6 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
+Generate EXACTLY 5 conversation chains with a mix of risk levels. At least 2 should be low-risk.`;
 
         const parsed = await callClaudeWithRetry({
           model: MODELS.FAST,
