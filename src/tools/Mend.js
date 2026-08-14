@@ -2838,8 +2838,8 @@ const Mend = ({ tool }) => {
                 <h1>. PF-17c: dark ink in both themes, on the tool's own pale
                 headerColor. */}
             <div className="min-w-0">
-              <p className={`text-sm ${c.textSecondary}`}>
-                <span className="me-2 text-base">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
+              <p className={`text-base ${c.textSecondary}`}>
+                <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
               </p>
               <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

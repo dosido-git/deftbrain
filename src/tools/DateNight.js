@@ -943,8 +943,8 @@ const DateNight = ({ tool }) => {
                       plan, on budget, anywhere"). Different strings. It also
                       anchors the Try Example pill, which PF-17 places
                       beneath the tagline. */}
-                  <p className={`text-sm ${c.textSecondary}`}>
-                    <span className="me-2 text-base">{tool?.icon ?? '💘'}</span>{tool?.tagline ?? t('dn_tagline')}
+                  <p className={`text-base ${c.textSecondary}`}>
+                    <span className="me-2 text-lg">{tool?.icon ?? '💘'}</span>{tool?.tagline ?? t('dn_tagline')}
                   </p>
                   {/* Dark ink in BOTH themes. The old rule flipped to white text
                       in dark mode — the usual instinct — but the background

@@ -1775,10 +1775,15 @@ Delete the `<h2>`. The icon moves onto the tagline, which is the line that
 actually says something:
 
 ```jsx
-<p className={`text-sm ${c.textSecondary}`}>
-  <span className="me-2">{tool?.icon ?? '✈️'}</span>{tool?.tagline ?? t('xxx_tagline')}
+<p className={`text-base ${c.textSecondary}`}>
+  <span className="me-2 text-lg">{tool?.icon ?? '✈️'}</span>{tool?.tagline ?? t('xxx_tagline')}
 </p>
 ```
+
+`text-base`, not `text-sm` (owner, 2026-08-14). With the `<h2>` gone the tagline
+is the card's opening line, and 14px read as a caption for a title that is no
+longer there. The icon stays one step above it — `text-lg` against `text-base`,
+the same relationship it had against `text-sm`.
 
 The tagline STAYS — it is not a duplicate. The wrapper renders `description`;
 this renders `tagline`. Different strings. Keep the `tool?.icon ?? '<emoji>'`
