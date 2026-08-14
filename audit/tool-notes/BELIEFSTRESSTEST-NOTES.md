@@ -26,3 +26,13 @@ A post-batch headroom spot-check (re-running a near-ceiling case forced to Germa
 main endpoint still **truncated at `max_tokens 3500`** on a realistic German input — the v1
 German test happened to use a shorter input that fit. **Fix:** `max_tokens` 3500 → **5000**.
 Golden gains a `de-truncation-guard` case. Tag → `beliefstresstest-v2`.
+
+## The DeftBrain treatment (2026-08-14)
+PF-30 (in-card `<h2>` deleted — the name was printed twice before the first
+input; icon onto the tagline at `text-lg` over `text-base`), PF-17c (larger
+Try-an-example pill, dark ink both themes), PF-31 (⌘↵ chip — the
+Cmd/Ctrl+Enter handler had been there since the tool shipped, unadvertised),
+PF-32 (Recent was a card of its OWN ABOVE the form, so a returning visitor met
+their old answers before the question; now a collapsed `<details>` with its
+count directly under the submit button), PF-33 (The Final Word cross-ref moved
+from above the submit button to below it).

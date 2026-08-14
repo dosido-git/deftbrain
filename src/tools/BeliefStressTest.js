@@ -161,13 +161,18 @@ const BeliefStressTest = ({ tool }) => {
 
       {/* Persistent header — shown on every screen (PF-16: reset button top-right) */}
       <div className="pb-3 border-b border-zinc-500">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className={`text-xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '🔬'}</span>{tool?.title ?? t('bst_title')}
-            </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bst_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            {/* PF-30 — the wrapper already prints "Belief Stress Test" as the
+                page <h1>. The tagline says what the title only names. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '🔬'}</span>{tool?.tagline ?? t('bst_tagline')}
+            </p>
+            <button onClick={loadExample} disabled={loading}
+              style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+              ✨ {t('try_example')}
+            </button>
           </div>
           {(results || belief.trim()) ? (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
@@ -176,24 +181,6 @@ const BeliefStressTest = ({ tool }) => {
           ) : null}
         </div>
       </div>
-
-      {sessionHistory.length > 0 && !results && (
-        <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('bst_recent')}</h3>
-          <div className="space-y-1.5">
-            {sessionHistory.map(entry => (
-              <button key={entry.id}
-                onClick={() => setResults(entry.result)}
-                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
-                <span className={c.textMuteded}>
-                  {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                </span>
-                <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {!results && (
           <div className={`${c.card} rounded-xl shadow-sm p-5 space-y-4`}>
@@ -226,15 +213,51 @@ const BeliefStressTest = ({ tool }) => {
 
             {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
+            {/* PF-31 — the Cmd/Ctrl+Enter handler has been here since the
+                tool shipped; the chip just says so. */}
+            <button onClick={handleSubmit} disabled={loading || !belief.trim()} title={t('bst_cmd_enter')}
+              className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+              {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="me-2">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
+            </button>
+
+            {/* PF-32 — Recent used to be a card of its own ABOVE the form, so a
+                returning visitor met their old answers before the question.
+                One home, directly under the primary action, collapsed with its
+                count so it is a line rather than a list. */}
+            {sessionHistory.length > 0 && (
+              <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
+                    🕐 {t('bst_recent', { n: sessionHistory.length })}
+                    <Caret groupOpen className="ms-auto" />
+                  </div>
+                </summary>
+                <div className="space-y-1.5 mt-3">
+                  {sessionHistory.map(entry => (
+                    <button key={entry.id}
+                      onClick={() => setResults(entry.result)}
+                      className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} border ${c.border} text-xs`}>
+                      <span className={c.textMuteded}>
+                        {new Date(entry.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                      </span>
+                      <span className={`ms-2 ${c.text}`}>{entry.preview}…</span>
+                    </button>
+                  ))}
+                </div>
+              </details>
+            )}
+
+            {/* PF-33 — an offer belongs after the ask, not above the button */}
             <p className={`text-xs text-center ${c.textMuteded}`}>
               {t('bst_pre_xref')}{' '}
               <a href="/TheFinalWord" className={linkStyle}>{t('bst_finalword')}</a> {t('bst_pre_xref_after')}
             </p>
-
-            <button onClick={handleSubmit} disabled={loading || !belief.trim()}
-              className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}>
-              {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🔬'}</span>{t('bst_running')}</> : <><span className="me-2">{tool?.icon ?? '🔬'}</span>{t('bst_run')}</>}
-            </button>
           </div>
         )}
 

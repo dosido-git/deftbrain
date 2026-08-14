@@ -6,7 +6,8 @@ export const beliefStressTest = {
   en: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Your guiding beliefs, pressure-tested. Where they hold. Where they break.",
-    bst_recent: "Recent Results",
+    bst_recent: "Recent ({{n}})",
+    bst_cmd_enter: "Press ⌘↵ (Ctrl+Enter) to run the test",
     bst_belief_label: "A belief that guides your life",
     bst_belief_ph: "A principle, rule, or conviction you operate by…",
     bst_context_label: "Your context",
@@ -64,7 +65,8 @@ export const beliefStressTest = {
   es: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Tus creencias rectoras, puestas a prueba. Dónde se sostienen. Dónde se quiebran.",
-    bst_recent: "Resultados recientes",
+    bst_recent: "Recientes ({{n}})",
+    bst_cmd_enter: "Pulsa ⌘↵ (Ctrl+Intro) para ejecutar la prueba",
     bst_belief_label: "Una creencia que guía tu vida",
     bst_belief_ph: "Un principio, regla o convicción por el que te riges…",
     bst_context_label: "Tu contexto",
@@ -122,7 +124,8 @@ export const beliefStressTest = {
   zh: {
     bst_title: "Belief Stress Test",
     bst_tagline: "为你的人生信念做压力测试。看它在哪里成立，又在哪里崩塌。",
-    bst_recent: "最近的结果",
+    bst_recent: "最近（{{n}}）",
+    bst_cmd_enter: "按 ⌘↵（Ctrl+Enter）开始测试",
     bst_belief_label: "一条指导你人生的信念",
     bst_belief_ph: "你所遵循的某条原则、规则或信条……",
     bst_context_label: "你的背景",
@@ -180,7 +183,8 @@ export const beliefStressTest = {
   hi: {
     bst_title: "Belief Stress Test",
     bst_tagline: "आपकी मार्गदर्शक मान्यताओं की दबाव-जाँच। कहाँ टिकती हैं। कहाँ टूटती हैं।",
-    bst_recent: "हाल के परिणाम",
+    bst_recent: "हाल के ({{n}})",
+    bst_cmd_enter: "परीक्षण चलाने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     bst_belief_label: "एक मान्यता जो आपके जीवन का मार्गदर्शन करती है",
     bst_belief_ph: "कोई सिद्धांत, नियम या विश्वास जिसके अनुसार आप चलते हैं…",
     bst_context_label: "आपका संदर्भ",
@@ -238,7 +242,8 @@ export const beliefStressTest = {
   ar: {
     bst_title: "Belief Stress Test",
     bst_tagline: "معتقداتك الموجِّهة تحت الضغط. أين تصمد. وأين تنهار.",
-    bst_recent: "النتائج الأخيرة",
+    bst_recent: "الأخيرة ({{n}})",
+    bst_cmd_enter: "اضغط ⌘↵ (Ctrl+Enter) لتشغيل الاختبار",
     bst_belief_label: "معتقد يوجّه حياتك",
     bst_belief_ph: "مبدأ أو قاعدة أو قناعة تسير عليها…",
     bst_context_label: "سياقك",
@@ -296,7 +301,8 @@ export const beliefStressTest = {
   pt: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Suas crenças norteadoras, postas à prova. Onde se sustentam. Onde se quebram.",
-    bst_recent: "Resultados recentes",
+    bst_recent: "Recentes ({{n}})",
+    bst_cmd_enter: "Pressione ⌘↵ (Ctrl+Enter) para rodar o teste",
     bst_belief_label: "Uma crença que guia sua vida",
     bst_belief_ph: "Um princípio, regra ou convicção pelo qual você se orienta…",
     bst_context_label: "Seu contexto",
@@ -354,7 +360,8 @@ export const beliefStressTest = {
   fr: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Vos croyances directrices, mises à l'épreuve. Là où elles tiennent. Là où elles cèdent.",
-    bst_recent: "Résultats récents",
+    bst_recent: "Récents ({{n}})",
+    bst_cmd_enter: "Appuyez sur ⌘↵ (Ctrl+Entrée) pour lancer le test",
     bst_belief_label: "Une croyance qui guide votre vie",
     bst_belief_ph: "Un principe, une règle ou une conviction selon laquelle vous agissez…",
     bst_context_label: "Votre contexte",
@@ -412,7 +419,8 @@ export const beliefStressTest = {
   de: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Deine leitenden Überzeugungen auf dem Prüfstand. Wo sie halten. Wo sie brechen.",
-    bst_recent: "Letzte Ergebnisse",
+    bst_recent: "Zuletzt ({{n}})",
+    bst_cmd_enter: "Drücke ⌘↵ (Strg+Enter), um den Test zu starten",
     bst_belief_label: "Eine Überzeugung, die dein Leben leitet",
     bst_belief_ph: "Ein Grundsatz, eine Regel oder eine Überzeugung, nach der du handelst…",
     bst_context_label: "Dein Kontext",
@@ -470,7 +478,8 @@ export const beliefStressTest = {
   ja: {
     bst_title: "Belief Stress Test",
     bst_tagline: "あなたの指針となる信念をストレステスト。どこで成り立ち、どこで崩れるのか。",
-    bst_recent: "最近の結果",
+    bst_recent: "最近（{{n}}）",
+    bst_cmd_enter: "⌘↵（Ctrl+Enter）でテストを実行",
     bst_belief_label: "あなたの人生を導く信念",
     bst_belief_ph: "あなたが従っている原則・ルール・信条…",
     bst_context_label: "あなたの文脈",
@@ -528,7 +537,8 @@ export const beliefStressTest = {
   ko: {
     bst_title: "Belief Stress Test",
     bst_tagline: "당신을 이끄는 신념을 스트레스 테스트합니다. 어디서 버티고, 어디서 무너지는지.",
-    bst_recent: "최근 결과",
+    bst_recent: "최근 ({{n}})",
+    bst_cmd_enter: "⌘↵ (Ctrl+Enter)로 테스트 실행",
     bst_belief_label: "당신의 삶을 이끄는 신념",
     bst_belief_ph: "당신이 따르는 원칙, 규칙 또는 신념…",
     bst_context_label: "당신의 맥락",
@@ -586,7 +596,8 @@ export const beliefStressTest = {
   ru: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Ваши руководящие убеждения под нагрузкой. Где они держатся. Где ломаются.",
-    bst_recent: "Недавние результаты",
+    bst_recent: "Недавние ({{n}})",
+    bst_cmd_enter: "Нажмите ⌘↵ (Ctrl+Enter), чтобы запустить проверку",
     bst_belief_label: "Убеждение, которое направляет вашу жизнь",
     bst_belief_ph: "Принцип, правило или убеждение, которым вы руководствуетесь…",
     bst_context_label: "Ваш контекст",
@@ -644,7 +655,8 @@ export const beliefStressTest = {
   th: {
     bst_title: "Belief Stress Test",
     bst_tagline: "ทดสอบความเชื่อที่นำทางชีวิตคุณภายใต้แรงกดดัน ดูว่ามันยืนหยัดตรงไหน และพังตรงไหน",
-    bst_recent: "ผลลัพธ์ล่าสุด",
+    bst_recent: "ล่าสุด ({{n}})",
+    bst_cmd_enter: "กด ⌘↵ (Ctrl+Enter) เพื่อเริ่มทดสอบ",
     bst_belief_label: "ความเชื่อที่นำทางชีวิตของคุณ",
     bst_belief_ph: "หลักการ กฎ หรือความเชื่อที่คุณยึดถือ…",
     bst_context_label: "บริบทของคุณ",
@@ -702,7 +714,8 @@ export const beliefStressTest = {
   vi: {
     bst_title: "Belief Stress Test",
     bst_tagline: "Những niềm tin dẫn dắt bạn, được kiểm tra dưới áp lực. Nơi chúng đứng vững. Nơi chúng sụp đổ.",
-    bst_recent: "Kết quả gần đây",
+    bst_recent: "Gần đây ({{n}})",
+    bst_cmd_enter: "Nhấn ⌘↵ (Ctrl+Enter) để chạy kiểm tra",
     bst_belief_label: "Một niềm tin dẫn dắt cuộc đời bạn",
     bst_belief_ph: "Một nguyên tắc, quy tắc hay xác tín mà bạn sống theo…",
     bst_context_label: "Bối cảnh của bạn",
