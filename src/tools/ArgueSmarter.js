@@ -427,7 +427,7 @@ const ArgueSmarter = ({ tool }) => {
           </div>
         )}
         {turn.meta?.concessions?.length > 0 && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs font-bold">✅ {t('dm_conceded')}</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
-        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText}`}>❓ {turn.meta.question}</p></div>}
+        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText} uppercase tracking-wide mb-1`}>❓ {t('dm_open_question')}</p><p className={`text-sm font-bold ${c.text}`}>{turn.meta.question}</p></div>}
         {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}{ch.why_strong ? ` — ${ch.why_strong}` : ''}</p>)}</div>}
         {/* The full argument, after the four things you can act on */}
         <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
@@ -479,27 +479,7 @@ const ArgueSmarter = ({ tool }) => {
         {s.coaching_note && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><p className={`text-xs font-bold ${c.orangeText} mb-1`}>🎯 {t('dm_coachs_note')}</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
         {s.next_debate_suggestion && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.textSecondary}`}>💡 <strong>{t('dm_next')}</strong> {s.next_debate_suggestion}</p></div>}
 
-        {/* ── What changed? ────────────────────────────────────────────────
-            Every DeftBrain outcome ends with a next step. For this tool the
-            next step is not another debate — it is the question of what the
-            debate actually did to the belief. Deliberately unanswerable by
-            the tool: these are for the reader, not fields to fill in. */}
-        <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5 space-y-3`}>
-          <p className={`text-sm font-bold ${c.text}`}>💡 {t('dm_what_changed')}</p>
-          <p className={`text-xs ${c.textMuteded}`}>{t('dm_what_changed_sub')}</p>
-          <ul className={`text-sm ${c.textSecondary} space-y-1.5`}>
-            <li>☐ {t('dm_wc_surprised')}</li>
-            <li>☐ {t('dm_wc_changed_mind')}</li>
-            <li>☐ {t('dm_wc_hardest')}</li>
-            <li>☐ {t('dm_wc_stronger')}</li>
-          </ul>
-        </div>
 
-        <div className={`${c.success} border rounded-xl p-5 space-y-2`}>
-          <p className="text-sm font-bold">💚 {t('dm_youre_set')}</p>
-          <p className="text-sm">{t('dm_youre_set_1')}</p>
-          <p className="text-sm">{t('dm_youre_set_2')}</p>
-        </div>
         <div className="flex flex-wrap gap-2">
           <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? `✅ ${t('dm_audience_judged')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `👥 ${t('dm_audience_verdict')}`}</button>
           <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? `✅ ${t('dm_map_built')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `🗺️ ${t('dm_argument_map')}`}</button>
@@ -853,6 +833,39 @@ const ArgueSmarter = ({ tool }) => {
             ))}
           </div>}
         </div>
+      )}
+
+      {/* ── Closing reflection ────────────────────────────────────────────
+          One home, both flows. It lived inside the debrief, which only exists
+          once you press Finish — so the person reading the strongest criticism
+          of their position, which is exactly when these questions land, never
+          saw it. Rendered once there is an opponent turn to reflect on. */}
+      {(mode === 'scorecard' || mode === 'debate') && debateHistory.some(h => h.speaker === 'ai') && (
+        <>
+        {/* ── What changed? ────────────────────────────────────────────────
+              Every DeftBrain outcome ends with a next step. For this tool the
+              next step is not another debate — it is the question of what the
+              debate actually did to the belief. Deliberately unanswerable by
+              the tool: these are for the reader, not fields to fill in. */}
+          <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5 space-y-3`}>
+            <p className={`text-sm font-bold ${c.text}`}>💡 {t('dm_what_changed')}</p>
+            <p className={`text-xs ${c.textMuteded}`}>{t('dm_what_changed_sub')}</p>
+            <ul className={`text-sm ${c.textSecondary} space-y-1.5`}>
+              <li>· {t('dm_wc_surprised')}</li>
+              <li>· {t('dm_wc_changed_mind')}</li>
+              <li>· {t('dm_wc_hardest')}</li>
+              <li>· {t('dm_wc_stronger')}</li>
+            </ul>
+          </div>
+
+          <div className={`${c.success} border rounded-xl p-5 space-y-2`}>
+            <p className="text-sm font-bold">💚 {t('dm_youre_set')}</p>
+            <p className="text-sm">{t('dm_youre_set_1')}</p>
+            <p className="text-sm">{t('dm_youre_set_2')}</p>
+            <p className="text-sm">{t('dm_youre_set_3')}</p>
+            <p className="text-sm font-bold">{t('dm_youre_set_4')}</p>
+          </div>
+        </>
       )}
 
       {(mode === 'scorecard' || mode === 'debate') && (

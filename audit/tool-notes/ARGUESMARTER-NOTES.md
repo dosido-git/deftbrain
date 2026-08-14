@@ -118,3 +118,20 @@ the same thing as the form heading two elements below it.
 **Left alone:** `seoTitle` keeps its "Debate Practice & Argument Trainer" tail
 (search intent), and the four turn actions — Concede, Coach, Fact-check, Switch
 sides — are untouched per the review.
+
+## Round 2b (2026-08-14) — labels, and the panel nobody could see
+
+- **The open question had no label.** It rendered as a bare `❓ <question>` in
+  an accent box — the only unlabelled section on the page, and the review calls
+  it the strongest element there. Now headed "The question you still have to
+  answer", with the question itself promoted to body weight.
+- `Challenges:` → **"Challenges to your position"**.
+- **The closing reflection panel was invisible.** It was added inside
+  `renderResults()`, which only renders when `mode === 'scorecard'` — i.e. only
+  after pressing Finish. Someone reading the strongest criticism of their
+  position, which is exactly when those four questions land, never saw it. It
+  now lives once at the foot of the tool, gated on `debateHistory.some(h =>
+  h.speaker === 'ai')`, so it appears in both the debate and the debrief.
+  **Lesson: a panel added to a view is only as visible as the view.**
+- "You're set." split into the owner's four separate lines; the checklist uses
+  bullets rather than `☐`, since nothing there is clickable.
