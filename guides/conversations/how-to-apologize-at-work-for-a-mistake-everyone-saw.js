@@ -21,15 +21,15 @@ module.exports = {
   ],
   cta: {
     glyph:    '⚖️',
-    headline: "Get the apology level right — not too much, not too little.",
-    body:     "Describe what happened, who it affected, and the relationship. Get a calibrated apology level (1-5) plus templates for that exact situation — and a clear list of what NOT to say.",
+    headline: "Some situations need a quick acknowledgment. Others need real repair.",
+    body:     "Describe what happened, who it affected, and the relationship. Find out what this needs, get the words for that exact situation, and see what usually makes it worse.",
     features: [
       "5-level harm calibration",
       "Templates for each level",
       "What-not-to-say warnings",
       "Stops over- and under-apologizing"
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
   published: '2026-04-29',

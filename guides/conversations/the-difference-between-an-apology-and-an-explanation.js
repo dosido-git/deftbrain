@@ -32,7 +32,7 @@ module.exports = {
       "Templates for any relationship",
       "Avoids the most common mistakes"
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
   published: '2026-04-29',

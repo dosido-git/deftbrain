@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Get the right size and shape for the apology you owe",
-    body:     "ApologyCalibrator analyzes what happened and the relationship, then returns a calibrated apology level (often 2–3 for ghosting, occasionally 4 for serious cases) with templates that match. The 'what NOT to say' list catches the most common ghost-apology failure modes — over-explanation, manufactured reasons, requests for forgiveness, and length that puts the burden on the recipient.",
+    body:     "Mend reads what happened and the relationship, then tells you what this actually needs — usually an acknowledgment rather than a grand repair, with the words to send. The 'these usually make things worse' list catches the common ghost-apology failure modes: over-explanation, manufactured reasons, asking for forgiveness, and a length that puts the burden on the person you ghosted.",
     features: [
       "5-level calibration prevents over-apologizing for low-stakes ghosting",
       "Templates tuned to relationship type — friend, romantic interest, professional contact",
@@ -66,7 +66,7 @@ module.exports = {
       "Length guidance — when a two-sentence apology is right and when more is needed",
       "Permission framing when contacting them at all would be more disruptive than helpful",
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
 };

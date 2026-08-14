@@ -160,7 +160,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/TheFinalWord.js',
   'src/tools/MoneyDiplomat.js',
   'src/tools/RecipeChaosSolver.js',
-  'src/tools/ApologyCalibrator.js',
+  'src/tools/Mend.js',
   'src/tools/BikeMedic.js',
   'src/tools/FinalWish.js',
   'src/tools/FocusPocus.js',

@@ -8,6 +8,7 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 
 | Old name | New name | Notes |
 |---|---|---|
+| ApologyCalibrator | Mend | Renamed 2026-08-13. "Calibrator" was the only word on the page that sounded like software — everything around it reads "This needs a real conversation", "Today's only job". 301. Backend endpoint stays `/api/apology-calibrator` (locked tool; renaming it would invalidate the golden sample). |
 | ArgumentSimulator | ArgueBetter | Folded into Debate Me (thinking-cluster consolidation, 2026-07-06); Debate Me then renamed Argue Better 2026-07-10. 301. |
 | BillGuiltEraser | BillRescue | Renamed. No `server.js` redirect (added during pre-launch when traffic was negligible — revisit before launch). |
 | BrainDumpStructurer | BrainDumpBuddy | Renamed. Component file is `BrainDumpBuddy.js`. No `server.js` redirect (added pre-launch). |

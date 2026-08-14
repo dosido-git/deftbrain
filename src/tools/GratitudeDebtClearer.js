@@ -1473,7 +1473,7 @@ const GratitudeDebtClearer = ({ tool }) => {
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuteded} mt-4`}>
             {t('gdc_xref_apology_q')}{' '}
-            <a href="/ApologyCalibrator" className={linkStyle}>{t('gdc_apology_calibrator')}</a>{' '}
+            <a href="/Mend" className={linkStyle}>{t('gdc_apology_calibrator')}</a>{' '}
             {t('gdc_xref_apology_help')}
           </p>
         </div>
@@ -1836,7 +1836,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         {results && (
           <p className={`text-xs text-center ${c.textMuteded}`}>
             {t('gdc_xref_close_q')}{' '}
-            <a href="/ApologyCalibrator" className={linkStyle}>{t('gdc_apology_calibrator')}</a>{' '}
+            <a href="/Mend" className={linkStyle}>{t('gdc_apology_calibrator')}</a>{' '}
             {t('gdc_xref_close_help')}
           </p>
         )}

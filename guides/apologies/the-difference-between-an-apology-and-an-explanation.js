@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Find out which one you actually owe — and what to say if it's both",
-    body:     "ApologyCalibrator analyzes what happened and your actual responsibility, then tells you whether an apology is warranted (level 1–5) or whether explanation is the right response instead. The 'what NOT to say' list catches the most common ways apologies and explanations get tangled together, and the calibration prevents the 'apology with a but' that detonates both.",
+    body:     "Mend reads what happened against your actual responsibility, then says plainly whether this needs an apology at all or whether an explanation is the right response. The 'these usually make things worse' list catches the ways the two get tangled together, and heads off the 'apology with a but' that detonates both.",
     features: [
       "5-level calibration tells you when no apology is needed (level 1) — explanation only",
       "Templates separate apology language from explanation language",
@@ -66,7 +66,7 @@ module.exports = {
       "Permission framing when you don't actually owe an apology",
       "Sequencing guidance for situations where both are owed",
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
 };

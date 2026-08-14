@@ -443,7 +443,7 @@ function CultureBriefing({ tool }) {
           <div className="flex flex-wrap gap-3">
             <a href="/LayoverMaximizer" className={`text-xs ${linkStyle}`}>✈️ {t('cb_layover')}</a>
             <a href="/MoneyDiplomat" className={`text-xs ${linkStyle}`}>💰 {t('cb_money_diplomat')}</a>
-            <a href="/ApologyCalibrator" className={`text-xs ${linkStyle}`}>🙏 {t('cb_apology_calibrator')}</a>
+            <a href="/Mend" className={`text-xs ${linkStyle}`}>🙏 {t('cb_apology_calibrator')}</a>
           </div>
         </div>
       </div>

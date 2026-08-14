@@ -1156,7 +1156,7 @@ const DifficultTalkCoach = ({ tool }) => {
               <div className={`p-4 rounded-2xl border ${c.border} ${isDark ? 'bg-zinc-800/60' : 'bg-slate-50'} mt-2`}>
                 <p className={`text-xs ${c.textMuted}`}>
                   {t('dtc_xref_words_q')}{' '}<a href="/VelvetHammer" className={linkStyle}>{t('dtc_xref_velvet')}</a>{' '}
-                  {t('dtc_xref_velvet_tail')}{' '}<a href="/ApologyCalibrator" className={linkStyle}>{t('dtc_xref_apology')}</a>{' '}
+                  {t('dtc_xref_velvet_tail')}{' '}<a href="/Mend" className={linkStyle}>{t('dtc_xref_apology')}</a>{' '}
                   {t('dtc_xref_apology_tail')}
                 </p>
               </div>

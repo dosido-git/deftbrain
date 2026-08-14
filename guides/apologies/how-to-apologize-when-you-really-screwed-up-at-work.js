@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Calibrate the apology to the actual harm you caused",
-    body:     "ApologyCalibrator analyzes what happened, who was affected, and your actual responsibility, then returns a calibrated apology level (1–5) and templates tuned to the situation. For serious mistakes, it produces level 4–5 templates with full accountability framing, plus a 'what NOT to say' list that catches the most common ways serious apologies go sideways.",
+    body:     "Mend reads what happened, who was affected, and your actual responsibility, then tells you what this needs and gives you the words. For a serious mistake that means full accountability rather than a quick sorry — plus one thing to do today, and a 'these usually make things worse' list that catches the ways serious apologies go sideways.",
     features: [
       "5-level calibration system — matches apology weight to actual harm",
       "Templates scaled to relationship (boss, peer, direct report, partner, stranger)",
@@ -66,7 +66,7 @@ module.exports = {
       "Repair-language guidance for serious mistakes (level 4–5)",
       "Permission framing when no apology is needed (level 1)",
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
 };

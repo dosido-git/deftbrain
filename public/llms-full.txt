@@ -50,10 +50,10 @@ Output: Step-by-step caliper alignment with play/pause animation. If it still ru
 ### Bill Rescue
 
 URL: https://deftbrain.com/BillRescue
-Tagline: Your bill anxiety ends here
+Tagline: A bill isn't a verdict. It's a puzzle to solve.
 Categories: The Grind, Loot
 
-Turn bill anxiety into a clear action plan with 9 tools: paste or photograph a bill for an AI autopsy, Quick Check any charge in 5 seconds, practice negotiation calls with an AI billing rep, generate 7 types of ready-to-send letters, triage multiple bills by priority, track plans, log call outcomes, view your bill calendar, and celebrate victories with a running savings total.
+That envelope, email, or collection notice doesn't have to ruin your week. Tell DeftBrain what's happening, and we'll help you turn an intimidating bill into a practical, step-by-step plan for understanding the bill, protecting your rights, reducing what you owe, and deciding what to do next.
 
 **What it does.** Bill Rescue is your complete bill-fighting toolkit — 9 views that take you from 'I'm scared to open this' to 'I saved $1,670 this year.' Quick Check any charge instantly. Get full rescue plans with phone scripts, letters, and insider tips. Practice the actual call with an AI billing rep before you dial. Generate dispute letters, goodwill adjustments, insurance appeals, and more. Track everything: plans, call outcomes, follow-ups, and victories.
 
@@ -965,39 +965,6 @@ Output: Prediction: HIGH intensity — weekend rush, pharmacy counter waits, int
 
 ## Humans
 
-### Apology Calibrator
-
-URL: https://deftbrain.com/ApologyCalibrator
-Tagline: Match your apology to the actual harm caused
-Categories: Humans, Discourse
-
-Calibrates apology level to actual harm caused. 5 levels: no apology needed, brief acknowledgment, simple apology, full accountability apology, major repair. Stops over-apologizing for existing and under-apologizing for real harm. Templates for each level.
-
-**What it does.** Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.
-
-**How to use it.**
-
-1. Describe what happened
-2. Add relationship context (friend/boss/partner/stranger)
-3. Optionally note situation type (work/personal/public)
-4. Get apology level (1=none needed, 5=major repair)
-5. Receive appropriate templates for that level
-6. See what NOT to say and why
-
-**Tips.**
-
-- Level 1-2 are much more common than people think - most interactions don't need apologies
-- Templates scale to relationship (different wording for boss vs close friend)
-- The 'what NOT to say' section prevents common apology mistakes
-- Over-apologizing trains people to expect apologies for normal interactions
-- Under-apologizing (level 3 when you need 4-5) damages relationships
-
-**Example.**
-
-Input: You asked your boss a clarifying question about a project deadline during her lunch break. She seemed slightly annoyed. You're now spiraling about whether you should apologize.
-
-Output: Appropriate level: 1 (No apology needed). Analysis: Actual harm = none (asking work questions is your job). Your responsibility = none (lunch breaks aren't sacred, reasonable question). Over-apologizing red flag: You're apologizing for existing/doing your job. What to say instead: Nothing, or 'Thanks for the quick answer' if you see her later. What NOT to say: 'Sorry to bother you', 'Sorry to interrupt your lunch'. Why: Asking clarifying questions is legitimate. You're not bothering her - you're doing your job. Permission: You don't need to apologize for taking up space or asking reasonable work questions. If she's annoyed, that's about her lunch being interrupted, not about you doing something wrong.
-
 ### Awkward Silence Filler
 
 URL: https://deftbrain.com/AwkwardSilenceFiller
@@ -1332,6 +1299,39 @@ Calculates your luck surface area — the percentage of available serendipity yo
 Input: Remote software engineer, feeling professionally invisible
 
 Output: Current surface: 14%. Invisible wall: professional identity outsourced entirely to employer — no external signal of what you know or care about. Five moves: (1) One technical post per month about something you had to figure out; (2) Next local tech meetup, introduce yourself to one person; (3) Open-source one internal tool with a thoughtful README; (4) One coffee with a former colleague per quarter; (5) Add one line to LinkedIn about what you're interested in next.
+
+### Mend
+
+URL: https://deftbrain.com/Mend
+Tagline: Match your apology to the actual harm caused
+Categories: Humans, Discourse
+
+Not every mistake needs the same apology, and getting the size wrong in either direction makes it worse. Describe what happened and you'll find out what this actually needs — the words to say, the ones that make it worse, and one thing to do today. It corrects over-apologizing as readily as under-apologizing.
+
+**What it does.** Many people over-apologize for minor things ('sorry to bother you' for legitimate questions) or under-apologize for genuine harm. This tool analyzes actual harm vs your responsibility to determine appropriate apology level (1-5) and provides calibrated templates.
+
+**How to use it.**
+
+1. Describe what happened
+2. Add relationship context (friend/boss/partner/stranger)
+3. Optionally note situation type (work/personal/public)
+4. Get apology level (1=none needed, 5=major repair)
+5. Receive appropriate templates for that level
+6. See what NOT to say and why
+
+**Tips.**
+
+- Level 1-2 are much more common than people think - most interactions don't need apologies
+- Templates scale to relationship (different wording for boss vs close friend)
+- The 'what NOT to say' section prevents common apology mistakes
+- Over-apologizing trains people to expect apologies for normal interactions
+- Under-apologizing (level 3 when you need 4-5) damages relationships
+
+**Example.**
+
+Input: You asked your boss a clarifying question about a project deadline during her lunch break. She seemed slightly annoyed. You're now spiraling about whether you should apologize.
+
+Output: Appropriate level: 1 (No apology needed). Analysis: Actual harm = none (asking work questions is your job). Your responsibility = none (lunch breaks aren't sacred, reasonable question). Over-apologizing red flag: You're apologizing for existing/doing your job. What to say instead: Nothing, or 'Thanks for the quick answer' if you see her later. What NOT to say: 'Sorry to bother you', 'Sorry to interrupt your lunch'. Why: Asking clarifying questions is legitimate. You're not bothering her - you're doing your job. Permission: You don't need to apologize for taking up space or asking reasonable work questions. If she's annoyed, that's about her lunch being interrupted, not about you doing something wrong.
 
 ### Money Diplomat
 

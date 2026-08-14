@@ -188,7 +188,7 @@ app.use('/api', (req, res, next) => {
 // Redirects /namestorm → /NameStorm, /plantrescue → /PlantRescue, etc.
 const fs = require('fs');
 const TOOL_IDS = [
-  'AlternatePath','AnalogyEngine','ApologyCalibrator','ArgumentSimulator',
+  'AlternatePath','AnalogyEngine','ArgumentSimulator',
   'AwkwardSilenceFiller','BatchFlow','BeliefStressTest','BikeMedic',
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
@@ -201,7 +201,7 @@ const TOOL_IDS = [
   'Giftology','GratitudeDebtClearer','GravityWell','GriefGuide','HecklerPrep','HistoryToday','IdeaAutopsy',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
-  'MeetingBSDetector','MeetingHijackPreventer','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
+  'MeetingBSDetector','MeetingHijackPreventer','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
@@ -254,6 +254,7 @@ const LEGACY_REDIRECTS = {
   '/RoomReader':                 '/ReadTheRoom',
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
+  '/ApologyCalibrator':          '/Mend',
   '/BillGuiltEraser':            '/BillRescue',
   '/BrainDumpStructurer':        '/BrainDumpBuddy',
   '/BurnoutBreadcrumbTracker':   '/PEP',
@@ -319,6 +320,11 @@ const LEGACY_REDIRECTS = {
   // below normalizes /Ego-Killer → /EgoKiller, but only for slugs whose
   // dash-stripped form is in TOOL_IDS. For renamed tools (whose old name
   // is no longer a current tool ID), kebab variants need explicit entries.
+  // Old lowercase/kebab forms of renamed tools resolve in ONE hop: leaving
+  // the old id in TOOL_IDS would send /apologycalibrator to
+  // /ApologyCalibrator and only then to /Mend.
+  '/apologycalibrator':          '/Mend',
+  '/apology-calibrator':         '/Mend',
   '/say-it-right':               '/PronounceItRight',
   '/where-did-it-go':            '/WhereDidTheTimeGo',
 };

@@ -5322,7 +5322,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "ApologyCalibrator",
+  id: "Mend",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5346,8 +5346,8 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       a: "Acceptance is theirs to give, on their timeline — an apology is complete when it's delivered sincerely, not when it's accepted. Pushing for immediate forgiveness reopens the offense. Say it once, mean it, give space, and let the changed behavior argue for you." },
   ],
   seoDescription: "Match your apology to the actual harm caused. Find out what this really needs, what to say, what makes it worse, and one thing to do today. Free, no signup.",
-  seoTitle: "Apology Message Writer & Calibrator",
-  title: "Apology Calibrator",
+  seoTitle: "Apology Message Writer — Mend",
+  title: "Mend",
   tagline: "Match your apology to the actual harm caused",
   tags: ['sorry', 'apology', 'apologize', 'mistake', 'forgiveness', 'conflict', 'over-apologizing', 'repair', 'relationship', 'accountability', 'letter', 'cultural', 'communication'],
   icon: "⚖️",

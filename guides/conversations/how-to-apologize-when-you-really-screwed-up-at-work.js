@@ -29,7 +29,7 @@ module.exports = {
       "Structural commitment guidance",
       "What-not-to-say warnings"
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
   published: '2026-04-29',

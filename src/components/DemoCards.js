@@ -235,7 +235,7 @@ const EXAMPLE_BUCKETS = {
         'Three options, sharpest first: (1) \u201cIt is nice \u2014 same workload, fewer meetings about meetings.\u201d (2) \u201cI trade the commute for actual outputs. You should try it.\u201d (3) \u201cGlad it looks easy from the outside.\u201d Land one and move on \u2014 don\u2019t relitigate.',
     },
     {
-      id: 'ApologyCalibrator',
+      id: 'Mend',
       title: 'Apology Calibrator',
       icon: '🤝',
       tagline: 'Get the tone, weight, and words exactly right',

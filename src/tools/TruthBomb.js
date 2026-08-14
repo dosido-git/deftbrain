@@ -363,7 +363,7 @@ const TruthBomb = ({ tool }) => {
           <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>{t('tb_related')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/ApologyCalibrator" className={`text-xs ${linkStyle}`}>🤝 {t('tb_apologycalibrator')}</a>
+              <a href="/Mend" className={`text-xs ${linkStyle}`}>🤝 {t('tb_apologycalibrator')}</a>
             </div>
           </div>
         </div>

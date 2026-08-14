@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Get the right size and shape for a public apology",
-    body:     "ApologyCalibrator analyzes the mistake, the audience, and your responsibility, then returns a calibrated apology with templates tuned for public/professional contexts. The 'what NOT to say' list catches over-apology patterns that shrink you in the room, and the calibration prevents both under- and over-correcting in front of an audience.",
+    body:     "Mend analyzes the mistake, the audience, and your responsibility, then returns a calibrated apology with templates tuned for public/professional contexts. The 'what NOT to say' list catches over-apology patterns that shrink you in the room, and the calibration prevents both under- and over-correcting in front of an audience.",
     features: [
       "5-level calibration with templates tuned for public/professional contexts",
       "'What NOT to say' catches the over-apology patterns specific to public mistakes",
@@ -66,7 +66,7 @@ module.exports = {
       "Observable-change language, not feelings-about-the-mistake language",
       "Permission framing when the mistake doesn't actually need a public apology",
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
 };

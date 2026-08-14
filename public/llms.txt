@@ -11,7 +11,7 @@
 ## The Grind
 
 - [Bike Medic](https://deftbrain.com/BikeMedic): A trailside mechanic in your pocket
-- [Bill Rescue](https://deftbrain.com/BillRescue): Your bill anxiety ends here
+- [Bill Rescue](https://deftbrain.com/BillRescue): A bill isn't a verdict. It's a puzzle to solve.
 - [Cut to the Chase](https://deftbrain.com/CutToTheChase): Paste any long document — we'll extract only what affects you
 - [Doctor Visit Prep](https://deftbrain.com/DoctorVisitPrep): Walk in prepared — so you don't waste the visit
 - [Doctor Visit Translator](https://deftbrain.com/DoctorVisitTranslator): Turn medical jargon into plain English
@@ -44,7 +44,6 @@
 
 ## Humans
 
-- [Apology Calibrator](https://deftbrain.com/ApologyCalibrator): Match your apology to the actual harm caused
 - [Awkward Silence Filler](https://deftbrain.com/AwkwardSilenceFiller): Context-appropriate conversation rescues on demand
 - [Comeback Cooker](https://deftbrain.com/ComebackCooker): The perfect response you thought of 3 hours too late.
 - [Conflict Coach](https://deftbrain.com/ConflictCoach): Stop, breathe, and craft the right response
@@ -55,6 +54,7 @@
 - [Gratitude Debt Clearer](https://deftbrain.com/GratitudeDebtClearer): Helps you convert bullet points into polished thank yous.
 - [Gravity Well](https://deftbrain.com/GravityWell): A 90-day plan to pull someone into your orbit — before you ever reach out
 - [Luck Surface](https://deftbrain.com/LuckSurface): Calculate your luck surface area. Expand it with five specific moves.
+- [Mend](https://deftbrain.com/Mend): Match your apology to the actual harm caused
 - [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
 - [Read the Room](https://deftbrain.com/ReadTheRoom): Read the room before you walk in
 - [Social Battery Advisor](https://deftbrain.com/SocialBatteryAdvisor): See where your energy actually goes — and restructure your week around it

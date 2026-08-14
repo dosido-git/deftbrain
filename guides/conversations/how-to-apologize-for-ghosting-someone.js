@@ -25,14 +25,14 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Calibrate the apology to the actual harm.",
-    body:     "Describe the situation and the relationship. Get the right apology level, plus templates that own it without making the other person do emotional work.",
+    body:     "Describe the situation and the relationship. Find out what this actually needs, plus the words to send — ones that own it without making the other person do the emotional work.",
     features: [
       "5-level harm calibration",
       "Relationship-aware templates",
       "What-not-to-say warnings",
       "Avoids over-apologizing"
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
   published: '2026-04-29',

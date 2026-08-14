@@ -114,7 +114,7 @@ function groupRoadmap(steps) {
   return order.map(k => [k, bucket.get(k)]);
 }
 
-const ApologyCalibrator = ({ tool }) => {
+const Mend = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { t } = useTranslation();
@@ -745,7 +745,7 @@ const ApologyCalibrator = ({ tool }) => {
   handleSubmitRef.current = SUBMITS[view]?.[0];
   canSubmitRef.current = !!SUBMITS[view]?.[1];
 
-  useRegisterActions(buildFullText(), tool?.title || 'Apology Calibrator');
+  useRegisterActions(buildFullText(), tool?.title || 'Mend');
 
   // ── Keyboard handler ───────────────────────────────────────
   useEffect(() => {
@@ -2899,6 +2899,6 @@ const ApologyCalibrator = ({ tool }) => {
   );
 };
 
-ApologyCalibrator.displayName = 'ApologyCalibrator';
+Mend.displayName = 'Mend';
 
-export default ApologyCalibrator;
+export default Mend;

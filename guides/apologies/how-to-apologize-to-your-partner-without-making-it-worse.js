@@ -58,7 +58,7 @@ module.exports = {
   cta: {
     glyph:    '⚖️',
     headline: "Get the right apology for the actual hurt",
-    body:     "ApologyCalibrator analyzes what happened, the relationship context, and your actual responsibility, then returns a calibrated apology with templates tuned to a partner specifically. The 'what NOT to say' list catches defensive language like 'but,' 'if you felt,' and other patterns that detonate apologies between partners.",
+    body:     "Mend analyzes what happened, the relationship context, and your actual responsibility, then returns a calibrated apology with templates tuned to a partner specifically. The 'what NOT to say' list catches defensive language like 'but,' 'if you felt,' and other patterns that detonate apologies between partners.",
     features: [
       "5-level calibration with templates tuned for partner / spouse / close relationships",
       "'What NOT to say' catches defensive language and centering-your-feelings patterns",
@@ -66,7 +66,7 @@ module.exports = {
       "Phrasing alternatives for the most common failure modes",
       "Permission framing when an apology isn't needed at all",
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
 };

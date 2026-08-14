@@ -29,7 +29,7 @@ module.exports = {
       "Common-mistake warnings",
       "Stops the apology-into-fight spiral"
     ],
-    toolId:   'ApologyCalibrator',
+    toolId:   'Mend',
     toolName: 'Apology Calibrator',
   },
   published: '2026-04-29',
