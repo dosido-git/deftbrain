@@ -749,10 +749,7 @@ const ApologyCalibrator = ({ tool }) => {
     <div className="space-y-6">
       {/* Form */}
       <div className={`rounded-xl p-6 ${c.card}`}>
-        <div className={`mb-4 pb-3 border-b ${c.border}`}>
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span>{tool.icon}</span> {t('apc_cal_heading')}
-          </h2>
+        <div className="mb-4">
           <p className={`text-sm ${c.textSecondary}`}>{t('apc_cal_subtitle')}</p>
         </div>
         <label className={`block text-lg font-semibold mb-3 ${c.text}`}>{t('apc_cal_what_happened')} <span className={c.required}>*</span></label>
@@ -771,15 +768,42 @@ const ApologyCalibrator = ({ tool }) => {
             className={`w-full p-3 border rounded-lg outline-none ${c.input} ${c.input}`} />
         </div>
 
-        <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim() || !!calResults}
-        className={`w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button onClick={handleCalibrate} disabled={loading || !calForm.whatHappened.trim() || !!calResults} title={t('apc_cmd_enter')}
+        className={`relative w-full mt-5 ${c.btnPrimary} disabled:opacity-40 font-bold text-base py-4 rounded-xl flex items-center justify-center gap-2 min-h-[56px]`}>
         {loading ? <><Spinner />{t('apc_cal_loading')}</> : <><span>⚖️</span> {t('apc_cal_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
-        <p className={`text-xs text-center mt-3 ${c.textMuteded}`}>
-          {t('apc_cal_draft_prompt')}
-          <button onClick={() => setView('detect')} className={linkStyle}>{t('apc_cal_draft_link')}</button>
-          {t('apc_cal_draft_suffix')}
-        </p>
+
+        {/* PF-32 — the visitor's own past work, directly beneath the submit
+            button, in the same place in every tool. */}
+        {!calResults && (repairs.length > 0 || auditSituations.length > 0) && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {repairs.length > 0 && (
+              <button onClick={() => goToView('repairs')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
+                🔧 {t('apc_tab_repairs')} ({repairs.length})
+              </button>
+            )}
+            {auditSituations.length > 0 && (
+              <button onClick={() => goToView('audit')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
+                📊 {t('apc_tab_audit')} ({auditSituations.length})
+              </button>
+            )}
+          </div>
+        )}
+        {!calResults && (
+          <p className={`text-xs text-center mt-3 ${c.textMuteded}`}>
+            {t('apc_cal_draft_prompt')}
+            <button onClick={() => goToView('detect')} className={linkStyle}>{t('apc_cal_draft_link')}</button>
+            {t('apc_cal_draft_suffix')}
+          </p>
+        )}
         <ErrorBanner />
       </div>
 
@@ -953,6 +977,25 @@ const ApologyCalibrator = ({ tool }) => {
               </div>
             </SectionCard>
           )}
+
+          {/* The modes that had no other route in once the tab row came off the
+              front door. Delivery, audit, repairs, the draft checker and the
+              repair roadmap are already reachable from the panels above, so
+              they are not repeated here. */}
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_more_help')}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {['practice', 'letter', 'cultural', 'decode', 'forgive', 'fix'].map(id => {
+                const v = VIEWS.find(x => x.id === id);
+                return (
+                  <button key={id} onClick={() => goToView(id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
+                    {v.icon} {t(v.labelKey)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* The tool never acknowledged that the person apologising is often
               hurting as well. This is the last thing they read. */}
@@ -2657,6 +2700,24 @@ const ApologyCalibrator = ({ tool }) => {
 
   // ════════════════════════════════════════════════════════════
   // MAIN RENDER
+  // Every route into another view carries the situation with it, so nobody
+  // retypes what happened. Was inline in the tab row; the contextual actions
+  // under the answer need exactly the same behaviour.
+  const goToView = (id) => {
+    const shared = calForm.whatHappened || '';
+    const rel = calForm.relationship || '';
+    if (id === 'detect' && !detectForm.context) setDetectForm(f => ({ ...f, context: shared }));
+    if (id === 'delivery' && !delForm.whatHappened) setDelForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
+    if (id === 'cultural' && !culForm.whatHappened) setCulForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
+    if (id === 'decode' && !decodeForm.relationship) setDecodeForm(f => ({ ...f, relationship: rel }));
+    if (id === 'forgive' && !forgiveForm.relationship) setForgiveForm(f => ({ ...f, relationship: rel }));
+    if (id === 'roadmap' && !roadmapForm.whatHappened) setRoadmapForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
+    if (id === 'letter' && !letterForm.whatHappened) setLetterForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
+    if (id === 'fix' && !fixForm.context) setFixForm(f => ({ ...f, context: shared }));
+    if (id === 'practice' && !practiceForm.situation) setPracticeForm(f => ({ ...f, situation: shared, relationship: rel }));
+    setView(id); setError('');
+  };
+
   // ════════════════════════════════════════════════════════════
 
   return (
@@ -2665,12 +2726,14 @@ const ApologyCalibrator = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-start justify-between">
-            <div>
-              <h2 className={`text-xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? t('apc_title')}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('apc_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            {/* PF-30: the wrapper already renders the tool's name as the page
+                <h1>. PF-17c: dark ink in both themes, on the tool's own pale
+                headerColor. */}
+            <div className="min-w-0">
+              <p className={`text-sm ${c.textSecondary}`}>
+                <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
+              </p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {results ? (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
@@ -2679,23 +2742,13 @@ const ApologyCalibrator = ({ tool }) => {
             ) : null}
           </div>
         </div>
-        {/* Tab nav — unified inside header card */}
-        <div className="flex flex-wrap gap-2 pt-3">
+        {/* Twelve tabs above a box that says "what happened?" are eleven
+            answers to questions nobody has asked yet. They come back under the
+            answer, as things you might now want. Other views keep the row, or
+            there is no way back. */}
+        <div className={`flex flex-wrap gap-2 pt-3 ${view === 'calibrate' ? 'hidden' : ''}`}>
           {VIEWS.map(v => (
-            <button key={v.id} onClick={() => {
-                const shared = calForm.whatHappened || '';
-                const rel = calForm.relationship || '';
-                if (v.id === 'detect' && !detectForm.context) setDetectForm(f => ({ ...f, context: shared }));
-                if (v.id === 'delivery' && !delForm.whatHappened) setDelForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
-                if (v.id === 'cultural' && !culForm.whatHappened) setCulForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
-                if (v.id === 'decode' && !decodeForm.relationship) setDecodeForm(f => ({ ...f, relationship: rel }));
-                if (v.id === 'forgive' && !forgiveForm.relationship) setForgiveForm(f => ({ ...f, relationship: rel }));
-                if (v.id === 'roadmap' && !roadmapForm.whatHappened) setRoadmapForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
-                if (v.id === 'letter' && !letterForm.whatHappened) setLetterForm(f => ({ ...f, whatHappened: shared, relationship: rel }));
-                if (v.id === 'fix' && !fixForm.context) setFixForm(f => ({ ...f, context: shared }));
-                if (v.id === 'practice' && !practiceForm.situation) setPracticeForm(f => ({ ...f, situation: shared, relationship: rel }));
-                setView(v.id); setError('');
-              }}
+            <button key={v.id} onClick={() => goToView(v.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${view === v.id ? c.tabActive : c.tabInactive}`}>
               <span>{v.icon}</span>
               <span>{t(v.labelKey)}</span>
