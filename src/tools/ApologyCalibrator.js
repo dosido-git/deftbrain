@@ -770,8 +770,20 @@ const ApologyCalibrator = ({ tool }) => {
 
   const renderCalibrate = () => (
     <div className="space-y-6">
+      {/* Once there is an answer, the form is furniture on paper: a textarea
+          repeating what the reader typed, chips they can't press, and a
+          disabled button. It printed as most of a page. The description
+          itself is worth keeping, so it prints as text instead. */}
+      {calResults && (
+        <div data-print-show className={`hidden rounded-xl p-4 ${c.cardInner}`}>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1`}>{t('apc_print_what_happened')}</p>
+          <p className="text-sm">{calForm.whatHappened}</p>
+          {calForm.relationship && <p className={`text-xs ${c.textSecondary} mt-1`}>{calForm.relationship}</p>}
+        </div>
+      )}
+
       {/* Form */}
-      <div className={`rounded-xl p-6 ${c.card}`}>
+      <div {...(calResults ? { 'data-print-hide': true } : {})} className={`rounded-xl p-6 ${c.card}`}>
         <div className="mb-4">
           <p className={`text-sm ${c.textSecondary}`}>{t('apc_cal_subtitle')}</p>
         </div>
@@ -2825,10 +2837,10 @@ const ApologyCalibrator = ({ tool }) => {
               <p className={`text-sm ${c.textSecondary}`}>
                 <span className="me-2 text-base">{tool?.icon ?? '⚖️'}</span>{tool?.tagline ?? t('apc_tagline')}
               </p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              <button data-print-hide onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {results ? (
-              <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
+              <button data-print-hide onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold`}>
                 {t('apc_start_over')}
               </button>
             ) : null}
@@ -2838,7 +2850,7 @@ const ApologyCalibrator = ({ tool }) => {
             answers to questions nobody has asked yet. They come back under the
             answer, as things you might now want. Other views keep the row, or
             there is no way back. */}
-        <div className={`flex flex-wrap gap-2 pt-3 ${view === 'calibrate' ? 'hidden' : ''}`}>
+        <div data-print-hide className={`flex flex-wrap gap-2 pt-3 ${view === 'calibrate' ? 'hidden' : ''}`}>
           {VIEWS.map(v => (
             <button key={v.id} onClick={() => goToView(v.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ${view === v.id ? c.tabActive : c.tabInactive}`}>

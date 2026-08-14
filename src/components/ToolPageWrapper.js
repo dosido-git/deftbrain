@@ -29,11 +29,13 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     s.id = id;
     s.textContent = `
       [data-print-show-flex] { display: none; }
+      /* Print-only blocks: hidden on screen via Tailwind, shown on paper. */
       @media print {
         /* Hide chrome */
         [data-print-hide] { display: none !important; }
         /* Show print-only branding */
         [data-print-show-flex] { display: flex !important; }
+        [data-print-show] { display: block !important; }
         /* Collapse sidebar grid to single column */
         [data-print-grid] { display: block !important; }
         [data-print-main] { grid-column: 1 / -1 !important; max-width: 100% !important; }
@@ -55,6 +57,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         }
         /* Firefox: prevent page break between header and tool card */
         [data-print-main] > header { break-after: avoid !important; page-break-after: avoid !important; }
+        /* A tall card that cannot be fragmented does not shrink — the engine
+           moves it whole to the next page and overflows from there, leaving
+           the rest of the current page empty. WebKit does this readily, and
+           it is why an Apology Calibrator printout opened with two-thirds of
+           page one blank. Nothing here sets break-inside: avoid, so this only
+           overrides what the engine decides on its own. */
+        [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }
+        /* Interactive controls mean nothing on paper. */
+        [data-print-section] button:disabled { display: none !important; }
         /* ── Dark mode must not survive onto paper ──────────────────────────
            The DeftBrain Print button builds its own light document, so it has
            always come out readable. Cmd+P prints the live DOM, and the rules
