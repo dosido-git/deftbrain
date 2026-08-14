@@ -3157,15 +3157,15 @@ Input: You need to explain machine learning to your chef friend.
 
 Output: Generates analogies like 'The Recipe Refinement' — ML is like a chef who makes a dish 10,000 times, adjusting one ingredient each time based on customer reactions, until they've 'learned' the perfect recipe without anyone giving them the recipe.
 
-### Argue Better
+### Argue Smarter
 
-URL: https://deftbrain.com/ArgueBetter
+URL: https://deftbrain.com/ArgueSmarter
 Tagline: State your position. Face the strongest opposing case.
 Categories: Discourse, Diversions
 
 The complete intellectual sparring system. State any position and face the steelman — the strongest possible opposing case, not a strawman. Multi-turn debate with fallacy flags, coaching angles, source checks, and strategic concession. Five formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic). Devil's Advocate Prep drills you for real meetings. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots. Highlight Reel analyzes patterns across all debates and assigns a Debater Type.
 
-**What it does.** Argue Better is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.
+**What it does.** Argue Smarter is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.
 
 **How to use it.**
 

@@ -194,7 +194,7 @@ const TOOL_IDS = [
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
   'ContractDecoder','CrashPredictor','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
-  'ArgueBetter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
+  'ArgueSmarter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
@@ -255,6 +255,8 @@ const LEGACY_REDIRECTS = {
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
   '/ApologyCalibrator':          '/Mend',
+  '/ArgueBetter':                '/ArgueSmarter',
+  '/argue-better':               '/ArgueSmarter',
   '/BillGuiltEraser':            '/BillRescue',
   '/BrainDumpStructurer':        '/BrainDumpBuddy',
   '/BurnoutBreadcrumbTracker':   '/PEP',
@@ -289,14 +291,14 @@ const LEGACY_REDIRECTS = {
   '/social-energy-audit':        '/SocialBatteryAdvisor',
 
   // Merged tools — thinking-cluster consolidation (2026-07-06).
-  // Argument Simulator → Debate Me, renamed Argue Better 2026-07-10 (the
+  // Argument Simulator → Debate Me, renamed Argue Smarter 2026-07-10 (the
   // superset: multi-turn sparring, 5 formats, both sides). Both old slugs and
   // the interim Debate Me name point straight to the final URL — no chain.
   // Ego Killer → Belief Stress Test (same steelman-and-attack job).
-  '/ArgumentSimulator':          '/ArgueBetter',
-  '/argument-simulator':         '/ArgueBetter',
-  '/DebateMe':                   '/ArgueBetter',
-  '/debate-me':                  '/ArgueBetter',
+  '/ArgumentSimulator':          '/ArgueSmarter',
+  '/argument-simulator':         '/ArgueSmarter',
+  '/DebateMe':                   '/ArgueSmarter',
+  '/debate-me':                  '/ArgueSmarter',
   '/EgoKiller':                  '/BeliefStressTest',
   '/ego-killer':                 '/BeliefStressTest',
 

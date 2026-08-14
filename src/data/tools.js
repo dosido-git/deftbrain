@@ -2978,7 +2978,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 {
   modified: "2026-03-10",
-  id: "ArgueBetter",
+  id: "ArgueSmarter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2988,16 +2988,16 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     edge: "It argues the best version of the opposing case, not the caricature — which is the only version worth beating.",
   },
   seoDescription: "State any position and face the strongest opposing case — a real steelman, not a strawman. Practice debates, spot fallacies, and sharpen your thinking. Free.",
-  seoTitle: "Argue Better: Debate Practice & Argument Trainer",
-  title: "Argue Better",
-  tagline: "State your position. Face the strongest opposing case.",
+  seoTitle: "Argue Smarter: Debate Practice & Argument Trainer",
+  title: "Argue Smarter",
+  tagline: "Test your ideas against the strongest criticism you can find",
   tags: ['debate', 'argue', 'logic', 'steelman', 'critical thinking', 'opinion', 'persuade', 'fallacy', 'rhetoric'],
   icon: "🥊",
   categories: ['Discourse', 'Diversions'],
   headerColor: "#b8dcd8",
   description: "The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.",
   guide: {
-    overview: "Argue Better is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
+    overview: "Argue Smarter is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.",
     howToUse: [
       "🥊 Full Debate: State position, pick format (Freeform/Lincoln-Douglas/Cross-Exam/Oxford/Socratic), set challenge level, go. Use 🤝 to concede strategically, 🧑‍🏫 for coaching angles, 🔍 to source-check claims, 🔄 to switch sides. Adjust difficulty mid-debate",
       "📊 Scorecard + Extras: After 2+ exchanges, end for sharpness score, blind spots, fallacy analysis, coaching note. Then unlock Audience Verdict (who was more persuasive to an undecided observer?) and Argument Map (visual tree of your claims with defended/abandoned branches)",

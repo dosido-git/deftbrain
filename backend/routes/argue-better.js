@@ -52,6 +52,7 @@ ${format === 'cross-exam' ? '- ONLY ask questions. No statements.' : ''}
 
 Return ONLY valid JSON:
 {
+  "strongest_criticism": "The single biggest vulnerability in their position, in ONE sentence. Not a summary of everything below — the one thing that would worry them most if they were honest. Plain language, no jargon.",
   "opening": "Your steelman counter-argument (or questions if socratic/cross-exam). 3-5 paragraphs.",
   "key_challenges": [{ "point": "specific challenge — one sentence", "why_strong": "why hard to dismiss — one sentence", "type": "empirical | logical | moral | practical | historical" }],
   "acknowledged_strengths": ["1-2 things their position gets right"],
@@ -66,13 +67,13 @@ Return ONLY valid JSON:
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterOpen' });
+    }, { label: 'ArgueSmarterOpen' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterOpen]', error);
+    console.error('[ArgueSmarterOpen]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -121,13 +122,13 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterRespond' });
+    }, { label: 'ArgueSmarterRespond' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterRespond]', error);
+    console.error('[ArgueSmarterRespond]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -160,13 +161,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2000,
       system: withLanguage('Side-switching debate partner. Argue their former position better than they did. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterSwitch' });
+    }, { label: 'ArgueSmarterSwitch' });
     if (!parsed.switch_opening) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterSwitch]', error);
+    console.error('[ArgueSmarterSwitch]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -206,13 +207,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Debate coach. Honest, warm, specific. Coaching not grading. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterScorecard' });
+    }, { label: 'ArgueSmarterScorecard' });
     if (!parsed.overall) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterScorecard]', error);
+    console.error('[ArgueSmarterScorecard]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -239,13 +240,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       system: withLanguage('Quick debate challenger. One punch. Steelman only. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterQuick' });
+    }, { label: 'ArgueSmarterQuick' });
     if (!parsed.counter) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterQuick]', error);
+    console.error('[ArgueSmarterQuick]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -281,13 +282,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 4000,
       system: withLanguage('Debate coach. Suggest angles not arguments. Help them think, not think for them. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterCoach' });
+    }, { label: 'ArgueSmarterCoach' });
     if (!parsed.encouragement) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterCoach]', error);
+    console.error('[ArgueSmarterCoach]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -340,13 +341,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2000,
       system: withLanguage('Undecided audience member judging a debate on persuasiveness, not correctness. Fair, specific, thoughtful. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterAudienceJudge' });
+    }, { label: 'ArgueSmarterAudienceJudge' });
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterAudienceJudge]', error);
+    console.error('[ArgueSmarterAudienceJudge]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -406,13 +407,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Argument structure analyst. Map the logical structure of debates into trees. Precise, analytical, visual. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterArgumentMap' });
+    }, { label: 'ArgueSmarterArgumentMap' });
     if (!parsed.user_tree) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterArgumentMap]', error);
+    console.error('[ArgueSmarterArgumentMap]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -463,13 +464,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 3500,
       system: withLanguage('Devil\'s advocate prep coach. Simulate specific audiences and drill on their hardest objections. Practical, specific, actionable. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterPrep' });
+    }, { label: 'ArgueSmarterPrep' });
     if (!parsed.audience_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterPrep]', error);
+    console.error('[ArgueSmarterPrep]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -519,7 +520,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       system: withLanguage('Fallacy training instructor. Create clear, educational exercises. At easy difficulty, fallacies are obvious. At hard, they\'re sophisticated and subtle. Always educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterFallacyTrain' });
+    }, { label: 'ArgueSmarterFallacyTrain' });
 
     // Two distinct schemas share this endpoint: "new exercise" (no userAnswer) always
     // returns `exercise`, never `correct`; "evaluate" (userAnswer present) always
@@ -533,7 +534,7 @@ Return ONLY valid JSON:
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterFallacyTrain]', error);
+    console.error('[ArgueSmarterFallacyTrain]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -574,13 +575,13 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       system: withLanguage('Evidence evaluator. Assess claims for factual accuracy and evidence quality. Honest, specific, educational. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterSourceCheck' });
+    }, { label: 'ArgueSmarterSourceCheck' });
     if (!parsed.claim_type) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterSourceCheck]', error);
+    console.error('[ArgueSmarterSourceCheck]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -621,13 +622,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Rematch debate partner. You have intelligence on their previous weaknesses. Target them specifically. Still fair, still steelman — but surgically aimed at their growth areas. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterRematch' });
+    }, { label: 'ArgueSmarterRematch' });
     if (!parsed.opening && !parsed.response) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterRematch]', error);
+    console.error('[ArgueSmarterRematch]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -676,13 +677,13 @@ Write every field with precision — no filler, no padding, no restating what wa
       max_tokens: 2500,
       system: withLanguage('Meta-analyst of debating patterns. You find patterns across multiple debates that no single scorecard reveals. Insightful, specific, growth-oriented. Return ONLY valid JSON. No markdown.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' ' + NO_QUOTE_RULE,
       messages: [{ role: 'user', content: prompt }]
-    }, { label: 'ArgueBetterHighlightReel' });
+    }, { label: 'ArgueSmarterHighlightReel' });
     if (!parsed.overall_profile) {
       return res.status(500).json({ error: 'Could not generate the debate response. Please try again.' });
     }
     res.json(parsed);
   } catch (error) {
-    console.error('[ArgueBetterHighlightReel]', error);
+    console.error('[ArgueSmarterHighlightReel]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

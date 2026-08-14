@@ -124,7 +124,7 @@
 ## Discourse
 
 - [Analogy Engine](https://deftbrain.com/AnalogyEngine): Explain anything to anyone — using their world.
-- [Argue Better](https://deftbrain.com/ArgueBetter): State your position. Face the strongest opposing case.
+- [Argue Smarter](https://deftbrain.com/ArgueSmarter): State your position. Face the strongest opposing case.
 - [Context Collapse](https://deftbrain.com/ContextCollapse): See how different people will read the same message — before you send it
 - [Pronounce It Right](https://deftbrain.com/PronounceItRight): Names, food, places, brands — never mispronounce anything again
 - [The Final Word](https://deftbrain.com/TheFinalWord): Arguments settled. Facts checked. No appeals.

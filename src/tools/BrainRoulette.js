@@ -1244,7 +1244,7 @@ const BrainRoulette = ({ tool }) => {
           {!result && (
             <p className={`text-xs text-center ${c.textMuted}`}>
               {t('br_xref_debate_pre')}{' '}
-              <a href="/ArgueBetter" className={linkStyle}>{t('br_xref_debate_link')}</a>{' '}
+              <a href="/ArgueSmarter" className={linkStyle}>{t('br_xref_debate_link')}</a>{' '}
               {t('br_xref_debate_post')}
             </p>
           )}

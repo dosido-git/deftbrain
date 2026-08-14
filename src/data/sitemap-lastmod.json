@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "9825e1108b73d35496143fe86ffaf1930ccd21a3",
+  "hash": "22dc960e5564777a70ed433861bf11b4c2a8f935",
   "lastmod": "2026-08-14"
  },
  "static:about": {
@@ -19,8 +19,8 @@
   "hash": "f0479bbea60dc5a43be110587ce8bbd4ae4f55a6",
   "lastmod": "2026-08-14"
  },
- "tool:ArgueBetter": {
-  "hash": "85dea62ab9d5bf97f0b5f99f857afade75ef2f1f",
+ "tool:ArgueSmarter": {
+  "hash": "5c6d2a5cadedf49f8954e166edb46d1023d9b922",
   "lastmod": "2026-08-14"
  },
  "tool:AwkwardSilenceFiller": {

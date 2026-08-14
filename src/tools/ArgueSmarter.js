@@ -34,7 +34,7 @@ const FORMATS = [
   { id: 'freeform',        icon: '🗣️', labelKey: 'dm_fmt_freeform',  descKey: 'dm_fmt_freeform_desc' },
   { id: 'socratic',        icon: '🤔', labelKey: 'dm_fmt_socratic',  descKey: 'dm_fmt_socratic_desc' },
   { id: 'cross-exam',      icon: '❓', labelKey: 'dm_fmt_crossexam', descKey: 'dm_fmt_crossexam_desc' },
-  { id: 'lincoln-douglas', icon: '🏛️', labelKey: 'dm_fmt_ld',        descKey: 'dm_fmt_ld_desc' },
+  { id: 'lincoln-douglas', icon: '🧭', labelKey: 'dm_fmt_ld',        descKey: 'dm_fmt_ld_desc' },
   { id: 'oxford',          icon: '🎯', labelKey: 'dm_fmt_oxford',    descKey: 'dm_fmt_oxford_desc' },
 ];
 
@@ -53,7 +53,7 @@ const STARTERS = [
   { cat: '🏛️', key: 'dm_starter_voting' },
 ];
 
-const ArgueBetter = ({ tool }) => {
+const ArgueSmarter = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
 
   const { isDark } = useTheme();
@@ -212,7 +212,7 @@ const ArgueBetter = ({ tool }) => {
         setCoreTension(data.debate_context?.core_tension || '');
         setDebateHistory([
           { speaker: 'user', text: position, side: data.debate_context?.user_side, timestamp: now() },
-          { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
+          { speaker: 'ai', text: data.opening, side: data.debate_context?.ai_side, timestamp: now(), meta: { headline: data.strongest_criticism, challenges: data.key_challenges, concessions: data.acknowledged_strengths, question: data.closing_question } },
         ]);
         setTurnCount(1); setMode('debate');
       }
@@ -372,9 +372,9 @@ const ArgueBetter = ({ tool }) => {
 
   // ═══ TEXT BUILDER ═══
   const buildText = (h = debateHistory, sc = scorecardData) => {
-    let out = `🥊 Argue Better\n${userSide} vs ${aiSide} | ${level} | ${format} | ${turnCount} turns\n${'═'.repeat(40)}\n\n`;
+    let out = `🥊 Argue Smarter\n${userSide} vs ${aiSide} | ${level} | ${format} | ${turnCount} turns\n${'═'.repeat(40)}\n\n`;
     (h || debateHistory).filter(x => x.speaker !== 'system').forEach(x => { out += `[${x.speaker === 'user' ? 'YOU' : 'OPP'} — ${x.side}]:\n${x.text}\n\n`; });
-    if (sc) out += `\n📊 SCORECARD: ${sc.overall?.thinking_sharpness}/10\n${sc.overall?.assessment}\n🎯 ${sc.coaching_note || ''}\n`;
+    if (sc) out += `\n🔍 WHAT CAME OUT OF IT\n${sc.overall?.assessment}\n🎯 ${sc.coaching_note || ''}\n`;
     return out + BRAND;
   };
 
@@ -383,7 +383,7 @@ const ArgueBetter = ({ tool }) => {
     return buildText();
   }, [scorecardData, debateHistory, userSide, aiSide, level, format, turnCount]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'Argue Better');
+  useRegisterActions(buildFullText(), tool?.title || 'Argue Smarter');
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [debateHistory, loading, showCoach]);
   useEffect(() => { if (scorecardData) resultsRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [scorecardData]);
@@ -412,13 +412,28 @@ const ArgueBetter = ({ tool }) => {
           {time && <span className={`text-xs ${c.textMuteded} ms-auto`}>{time}</span>}
           {turn.meta?.isConcession && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.greenBadge}`}>🤝</span>}
         </div>
-        <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
+        {/* ── Order (owner's review, 2026-08-14) ─────────────────────────
+            The one-sentence vulnerability, then what the position gets right,
+            then the open question, then the categorised challenges — and the
+            long prose last. It used to lead with four paragraphs of academic
+            argument, which is the most impressive thing on the page and the
+            least readable; everything a person needs to act on was underneath
+            it. The prose is still there in full. It is just no longer the
+            first thing you have to get through. */}
+        {turn.meta?.headline && (
+          <div className={`${c.accentCard} border rounded-lg p-3`}>
+            <p className={`text-xs font-bold ${c.orangeText} uppercase tracking-wide mb-1`}>🥊 {t('dm_strongest_criticism')}</p>
+            <p className={`text-sm font-bold ${c.text}`}>{turn.meta.headline}</p>
+          </div>
+        )}
         {turn.meta?.concessions?.length > 0 && <div className={`${c.success} border rounded-lg p-2`}><p className="text-xs font-bold">✅ {t('dm_conceded')}</p>{turn.meta.concessions.map((x, j) => <p key={j} className="text-xs">• {x}</p>)}</div>}
+        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText}`}>❓ {turn.meta.question}</p></div>}
+        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}{ch.why_strong ? ` — ${ch.why_strong}` : ''}</p>)}</div>}
+        {/* The full argument, after the four things you can act on */}
+        <p className={`text-sm ${c.textSecondary} whitespace-pre-line`}>{turn.text}</p>
         {turn.meta?.fallacies?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">⚠️ {t('dm_fallacy')}</p>{turn.meta.fallacies.map((f, j) => <div key={j} className="mt-1"><p className="text-xs"><strong>{f.type}:</strong> {f.in_text}</p><p className="text-xs">{f.suggestion}</p></div>)}</div>}
         {turn.meta?.pressure && <p className={`text-xs ${c.textMuteded}`}>🎯 <strong>{t('dm_pressure_point')}</strong> {turn.meta.pressure}</p>}
         {turn.meta?.momentum?.note && <p className={`text-xs ${c.textMuteded} italic`}>📈 <strong>{t('dm_momentum')}</strong> {turn.meta.momentum.note}</p>}
-        {turn.meta?.question && <div className={`${c.accentCard} border rounded-lg p-3`}><p className={`text-xs font-bold ${c.orangeText}`}>❓ {turn.meta.question}</p></div>}
-        {turn.meta?.challenges?.length > 0 && <div className={`${c.cardAlt} rounded-lg p-3 space-y-1`}><p className={`text-xs font-bold ${c.text}`}>{t('dm_challenges')}</p>{turn.meta.challenges.map((ch, j) => <p key={j} className={`text-xs ${c.textSecondary}`}>• <strong>{ch.type}:</strong> {ch.point}{ch.why_strong ? ` — ${ch.why_strong}` : ''}</p>)}</div>}
         {turn.meta?.newAngles?.length > 0 && <div className={`${c.infoCard} border rounded-lg p-2`}><p className="text-xs font-bold">🆕 {t('dm_missed')}</p>{turn.meta.newAngles.map((a, j) => <p key={j} className="text-xs">• {a}</p>)}</div>}
         {turn.meta?.fallacyTraps?.length > 0 && <div className={`${c.warning} border rounded-lg p-2`}><p className="text-xs font-bold">🪤 {t('dm_fallacy_traps')}</p>{turn.meta.fallacyTraps.map((f, j) => <p key={j} className="text-xs">• {f}</p>)}</div>}
       </div>
@@ -452,7 +467,7 @@ const ArgueBetter = ({ tool }) => {
     return (
       <div ref={resultsRef} className="space-y-4">
         <div className={`${c.accentCard} border rounded-xl p-5`}>
-          <div className="flex items-center justify-between mb-3"><h3 className={`font-bold text-lg ${c.text}`}>📊 {t('dm_scorecard')}</h3><span className={`text-2xl font-black ${c.orangeText}`}>{s.overall?.thinking_sharpness}/10</span></div>
+          <div className="flex items-center justify-between mb-3"><h3 className={`font-bold text-lg ${c.text}`}>🔍 {t('dm_scorecard')}</h3></div>
           <p className={`text-sm ${c.textSecondary}`}>{s.overall?.assessment}</p>
           {s.overall?.growth_moment && <p className={`text-sm ${c.orangeText} mt-2`}>🌱 {s.overall.growth_moment}</p>}
         </div>
@@ -463,6 +478,28 @@ const ArgueBetter = ({ tool }) => {
         {s.position_evolved && <div className={`${c.highlightCard} border rounded-xl p-4`}><p className="text-sm">🔄 {s.position_evolved}</p></div>}
         {s.coaching_note && <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5`}><p className={`text-xs font-bold ${c.orangeText} mb-1`}>🎯 {t('dm_coachs_note')}</p><p className={`text-sm ${c.text}`}>{s.coaching_note}</p></div>}
         {s.next_debate_suggestion && <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-sm ${c.textSecondary}`}>💡 <strong>{t('dm_next')}</strong> {s.next_debate_suggestion}</p></div>}
+
+        {/* ── What changed? ────────────────────────────────────────────────
+            Every DeftBrain outcome ends with a next step. For this tool the
+            next step is not another debate — it is the question of what the
+            debate actually did to the belief. Deliberately unanswerable by
+            the tool: these are for the reader, not fields to fill in. */}
+        <div className={`${c.card} border-2 ${c.orangeBorder2} rounded-xl p-5 space-y-3`}>
+          <p className={`text-sm font-bold ${c.text}`}>💡 {t('dm_what_changed')}</p>
+          <p className={`text-xs ${c.textMuteded}`}>{t('dm_what_changed_sub')}</p>
+          <ul className={`text-sm ${c.textSecondary} space-y-1.5`}>
+            <li>☐ {t('dm_wc_surprised')}</li>
+            <li>☐ {t('dm_wc_changed_mind')}</li>
+            <li>☐ {t('dm_wc_hardest')}</li>
+            <li>☐ {t('dm_wc_stronger')}</li>
+          </ul>
+        </div>
+
+        <div className={`${c.success} border rounded-xl p-5 space-y-2`}>
+          <p className="text-sm font-bold">💚 {t('dm_youre_set')}</p>
+          <p className="text-sm">{t('dm_youre_set_1')}</p>
+          <p className="text-sm">{t('dm_youre_set_2')}</p>
+        </div>
         <div className="flex flex-wrap gap-2">
           <button onClick={handleAudience} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{audienceData ? `✅ ${t('dm_audience_judged')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `👥 ${t('dm_audience_verdict')}`}</button>
           <button onClick={handleArgMap} disabled={loading} className={`flex-1 py-2.5 rounded-xl font-bold text-xs ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>{argMapData ? `✅ ${t('dm_map_built')}` : loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🥊'}</span></> : `🗺️ ${t('dm_argument_map')}`}</button>
@@ -655,6 +692,10 @@ const ArgueBetter = ({ tool }) => {
             <button onClick={handleSwitch} disabled={loading} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>🔄 {t('dm_switch_sides')}</button>
             <button onClick={handleScorecard} disabled={loading || debateHistory.length < 4} className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} disabled:opacity-40`}>📊 {t('dm_score_finish')}</button>
           </div>
+          {/* "2 more exchanges to unlock scoring" made the goal winning
+              rather than understanding. The debrief still needs a couple of
+              exchanges to have anything to say, so the line stays — it just
+              says what it is now. */}
           {debateHistory.filter(h => h.speaker !== 'system').length < 4 && (
             <p className={`text-xs ${c.textMuted} text-center`}>
               {4 - debateHistory.filter(h => h.speaker !== 'system').length === 1
@@ -823,5 +864,5 @@ const ArgueBetter = ({ tool }) => {
   );
 };
 
-ArgueBetter.displayName = 'ArgueBetter';
-export default ArgueBetter;
+ArgueSmarter.displayName = 'ArgueSmarter';
+export default ArgueSmarter;

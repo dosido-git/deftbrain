@@ -474,7 +474,7 @@ const ComebackCooker = ({ tool }) => {
             </p>
             <p className={`text-xs ${c.textMuted} text-center`}>
               {t('cc_xref_practice_q')}{' '}
-              <a href="/ArgueBetter" className={linkStyle}>🥊 {t('cc_argumentsimulator')}</a>{' '}
+              <a href="/ArgueSmarter" className={linkStyle}>🥊 {t('cc_argumentsimulator')}</a>{' '}
               {t('cc_xref_practice_post')}
             </p>
           </div>

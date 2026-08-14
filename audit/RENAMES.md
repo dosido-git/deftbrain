@@ -9,14 +9,15 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 | Old name | New name | Notes |
 |---|---|---|
 | ApologyCalibrator | Mend | Renamed 2026-08-13. "Calibrator" was the only word on the page that sounded like software — everything around it reads "This needs a real conversation", "Today's only job". 301. Backend endpoint stays `/api/apology-calibrator` (locked tool; renaming it would invalidate the golden sample). |
-| ArgumentSimulator | ArgueBetter | Folded into Debate Me (thinking-cluster consolidation, 2026-07-06); Debate Me then renamed Argue Better 2026-07-10. 301. |
+| ArgueBetter | ArgueSmarter | Renamed 2026-08-14. "Argue Better" pulled the experience toward competition; the tool's job is better thinking, not better arguing. Display name, id, component file and 301 all moved. **Backend route stays `argue-better.js` / `/api/argue-better-*` and i18n stays `dm_`** — same as Mend, which kept `apology-calibrator.js`. |
+| ArgumentSimulator | ArgueSmarter | Folded into Debate Me (thinking-cluster consolidation, 2026-07-06); Debate Me then renamed Argue Better 2026-07-10. 301. |
 | BillGuiltEraser | BillRescue | Renamed. No `server.js` redirect (added during pre-launch when traffic was negligible — revisit before launch). |
 | BrainDumpStructurer | BrainDumpBuddy | Renamed. Component file is `BrainDumpBuddy.js`. No `server.js` redirect (added pre-launch). |
 | BurnoutBreadcrumbTracker | PEP | Folded into PEP. No `server.js` redirect (added pre-launch). |
 | ConfrontationCoach | ConflictCoach | Consolidated with `ConflictTextCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
 | ConflictTextCoach | ConflictCoach | Consolidated with `ConfrontationCoach` into a single `ConflictCoach` tool. No `server.js` redirect (added pre-launch). |
 | ContrastReport | WhichLife | What If? (single-path) folded into The Contrast Report (2026-07-06); survivor took the "What If?" name, then renamed **Which Life?** 2026-07-10 (collided with the "What If?" *category*). Endpoint stays `contrast-report`, i18n `cr_`. 301. |
-| DebateMe | ArgueBetter | Renamed 2026-07-10 ("Debate Me" undersold a serious steelman/fallacy trainer). i18n stays `dm_`. 301. Route file/endpoints renamed `debate-me.js`/`debate-*` → `argue-better.js`/`argue-better-*` on first audit-lock, 2026-07-16 (naming-consistency pass — the endpoint-stability exception below no longer applies to this tool). |
+| DebateMe | ArgueSmarter | Renamed 2026-07-10 ("Debate Me" undersold a serious steelman/fallacy trainer). i18n stays `dm_`. 301. Route file/endpoints renamed `debate-me.js`/`debate-*` → `argue-better.js`/`argue-better-*` on first audit-lock, 2026-07-16 (naming-consistency pass — the endpoint-stability exception below no longer applies to this tool). |
 | DifficultTalkRehearser | DifficultTalkCoach | Renamed. Component file is `DifficultTalkCoach.js`. No `server.js` redirect (added pre-launch). |
 | DopamineMenuBuilder | PEP | Stands for "Personal Energy Planner." Component file is `PEP.js`, backend is `pep.js`, tools.js id is `"PEP"`. localStorage keys migrated `dmb-*`/`dopamine-*` → `pep-*`. Tagline: "Personal Energy Planner — understand your energy, plan around it." `server.js` has a 301 redirect. |
 | EgoKiller | BeliefStressTest | Folded into Belief Stress Test (same steelman-and-attack job; BST is the systematic superset), 2026-07-06. 301. |

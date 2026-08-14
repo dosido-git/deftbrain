@@ -438,8 +438,8 @@ const EXAMPLE_BUCKETS = {
         'Freelancing isn\u2019t inconsistency \u2014 it\u2019s a portfolio. The narrative: \u201cI spent three years choosing my clients, owning full campaigns end-to-end, and learning to work without a safety net.\u201d That\u2019s stronger than \u201cI executed what my manager approved.\u201d The risk is in how you tell it, not what it was. Lead with results.',
     },
     {
-      id: 'ArgueBetter',
-      title: 'Argue Better',
+      id: 'ArgueSmarter',
+      title: 'Argue Smarter',
       icon: '⚔️',
       tagline: 'Steel-man your position. Demolish theirs.',
       input:

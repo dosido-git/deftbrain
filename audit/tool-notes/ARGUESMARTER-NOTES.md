@@ -1,4 +1,4 @@
-# ArgueBetter — architecture & lock notes (`arguebetter-v1`)
+# ArgueSmarter (was ArgueBetter) — architecture & lock notes (`arguebetter-v1`)
 
 First-ever audit-kit lock for this tool (built pre-audit-kit; never had a golden sample, NOTES.md, or git tag before this pass). Complete intellectual sparring system: state a position, face a steelman opponent across 5 debate formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic), get coached, fact-checked, scored, judged by an undecided audience, and mapped into an argument tree. Plus 4 standalone modes: Quick Spar, Devil's Advocate Prep, Fallacy Gym, and cross-debate Highlight Reel. **Frontend:** `src/tools/ArgueBetter.js`. **Backend:** `backend/routes/argue-better.js` (13 endpoints). **Golden:** `audit/argue-better-golden-sample.json` (14 cases). **Catalog:** `src/data/tools.js`, category `Diversions`/`What If?`, headerColor `#b8dcd8`.
 
@@ -75,3 +75,46 @@ tension showed in the form.
 ideas against the strongest criticism you can find" over "debate simulator"),
 and whether the name pulls toward competition rather than curiosity. Neither
 was changed.
+
+## Round 2 (2026-08-14) — renamed, output reordered, scoring de-gamified
+
+**Renamed ArgueBetter → ArgueSmarter** (owner approved). "Argue Better" pulled
+the experience toward competition; the tool's job is better thinking. Display
+name, `tools.js` id, component file, 301 and RENAMES.md all moved. **The
+backend route stays `argue-better.js` / `/api/argue-better-*` and i18n stays
+`dm_`** — same as Mend keeping `apology-calibrator.js`. Two traps the rename
+sprang, both caught by the gates: `scripts/localization-audit.js` keys its
+allowlist on the file path, so the rename silently dropped the tool from the
+gate (125 → 124 with no failure); and `/DebateMe` already had a redirect row,
+so adding another produced a duplicate-key lint error.
+
+**Format labels revised again.** Round 2 changed three of round 1's five:
+Lincoln-Douglas is "Explore values" (not "Take the other side" — LD really is
+the value-premise format), Cross-Exam is "Ask me hard questions", and Socratic
+takes "Challenge my assumptions" as its *label* rather than its description.
+Icon 🏛️ → 🧭 for Explore values.
+
+**Output hierarchy reordered.** An opponent turn now reads: the one-sentence
+strongest criticism → what your argument gets right → the open question → the
+categorised challenges → the full prose. It used to lead with four paragraphs
+of academic argument — the most impressive thing on the page and the least
+readable, with everything actionable underneath it. New backend field
+`strongest_criticism` on `/argue-better-open` (additive; the guard is on
+`opening`, untouched).
+
+**Scoring: competitive framing dropped, debrief kept** (owner's call). Gone:
+the `/10` number at the head of the debrief, and "2 more exchanges to unlock
+scoring" — a countdown to a score is a countdown to a game. The debrief itself
+is intact and renamed "What came out of it"; `thinking_sharpness` still comes
+back from the route and is simply not rendered.
+
+**New closing panel** — "💡 What changed?" (four questions the tool
+deliberately cannot answer) and "💚 You're set."
+
+**Tagline** now states the mission: "Test your ideas against the strongest
+criticism you can find." This also retired a repetition — the old tagline said
+the same thing as the form heading two elements below it.
+
+**Left alone:** `seoTitle` keeps its "Debate Practice & Argument Trainer" tail
+(search intent), and the four turn actions — Concede, Coach, Fact-check, Switch
+sides — are untouched per the review.

@@ -642,7 +642,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           {comfort === 'panicking' && (
             <p className={`text-xs text-center ${c.textMuteded}`}>
               {t('asf_panic_xref_q')}{' '}
-              <a href="/ArgueBetter" className={linkStyle}>{t('asf_xref_argsim')}</a>{' '}
+              <a href="/ArgueSmarter" className={linkStyle}>{t('asf_xref_argsim')}</a>{' '}
               {t('asf_panic_xref_tail')}
             </p>
           )}

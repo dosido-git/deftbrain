@@ -71,7 +71,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/DecisionCoach.js',
   'src/tools/FakeReviewDetective.js',
   'src/tools/PlainTalk.js',
-  'src/tools/ArgueBetter.js',
+  'src/tools/ArgueSmarter.js',
   'src/tools/RoommateCourt.js',
   'src/tools/ResearchDecoder.js',
   'src/tools/PetWeirdnessDecoder.js',
