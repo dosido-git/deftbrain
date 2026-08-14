@@ -52,3 +52,23 @@ cross-ref moved from above the submit button to below it).
 - **"💚 First, this matters"** ahead of the analogies and **"🎯 Today's only
   job"** after the teaching tip. Both fixed copy, not generated — reassurance
   that varies run to run is not reassurance.
+
+## Second review pass (2026-08-14)
+- **Output order left alone** — one sentence → five analogies → key insight →
+  misconceptions → go deeper → teaching tip. The owner explicitly said not to
+  touch it.
+- **"First, this matters" MOVED** from the top of the results to immediately
+  before the teaching tip, per the owner's placement, and rewritten to five
+  lines. The reasoning holds up: by that point they have read five analogies
+  and are about to be told how to deliver one, which is when the doubt shows
+  up — not before they have seen anything.
+- **`common_misconceptions` is now `{myth, reality}`**, rendered as a scannable
+  ❌ / ➡️ pair instead of a paragraph each. EXACTLY 3, with hard word caps (8 /
+  12) — the first attempt without caps came back with 4 items and
+  parenthetical asides that broke the two-line shape. The renderer tolerates a
+  plain string too, because a result cached in localStorage before this change
+  is still the old shape.
+- **"In one sentence"** promoted from `text-base` to `text-lg`.
+- **`Today's only job` kept.** The owner's structure list for this pass does not
+  mention it, but the previous pass on the same file explicitly asked for it and
+  this one does not ask for its removal. Worth confirming.

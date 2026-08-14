@@ -44,7 +44,10 @@ Generate tailored analogies. Return ONLY valid JSON:
   "the_key_insight": "The single most important thing to understand about this concept, stated plainly. The sentence that makes everything click. — one sentence",
 
   "common_misconceptions": [
-    "2-3 things people commonly get wrong about this concept, and the quick correction."
+    {
+      "myth": "EXACTLY 3 of these. What people wrongly believe, as ONE short claim of AT MOST 8 words. No explanation, no parentheses, no second sentence.",
+      "reality": "The correction, as ONE short claim of AT MOST 12 words. No explanation, no parentheses, no second sentence. These render as a scannable myth/fact pair, so a paragraph here breaks the layout."
+    }
   ],
 
   "go_deeper": "If they want to learn more, what's the next concept to understand? One sentence pointing them forward.",

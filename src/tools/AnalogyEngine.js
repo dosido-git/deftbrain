@@ -372,22 +372,10 @@ const AnalogyEngine = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* One-liner */}
-          {/* ── FIRST, THIS MATTERS ─────────────────────────────────────
-              Fixed copy ahead of the analogies. Someone who cannot explain
-              a thing they understand tends to read that as a failure of their
-              own understanding; it usually isn't. Not generated — reassurance
-              that varies run to run is not reassurance. */}
-          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
-            <p className={`text-sm font-bold ${c.text}`}>💚 {t('ae_first_matters')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_1')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_2')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_3')}</p>
-          </div>
-
           {results?.one_liner && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>{t('ae_one_sentence')}</p>
-              <p className={`text-base font-bold ${c.text} leading-relaxed`}>{results?.one_liner}</p>
+              <p className={`text-lg font-bold ${c.text} leading-snug`}>{results?.one_liner}</p>
             </div>
           )}
 
@@ -448,9 +436,18 @@ const AnalogyEngine = ({ tool }) => {
           {results?.common_misconceptions?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
               <p className={`text-xs font-bold ${c.text} mb-2 uppercase tracking-wider`}>🚫 {t('ae_misconceptions')}</p>
-              <div className="space-y-1.5">
+              <div className="space-y-2.5">
                 {results?.common_misconceptions?.map((m, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
+                  /* Objects since 2026-08-14; a result cached before then is
+                     still a plain string, so both shapes render. */
+                  typeof m === 'string' ? (
+                    <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {m}</p>
+                  ) : (
+                    <div key={i} className="space-y-0.5">
+                      <p className={`text-xs ${c.textSecondary} leading-snug`}>❌ {m?.myth}</p>
+                      <p className={`text-xs font-semibold ${c.text} leading-snug`}>➡️ {m?.reality}</p>
+                    </div>
+                  )
                 ))}
               </div>
             </div>
@@ -462,7 +459,21 @@ const AnalogyEngine = ({ tool }) => {
               <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
                 <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>📚 {t('ae_go_deeper')}</p>
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.go_deeper}</p>
-                {results?.go_deeper_concept && (
+                {/* ── FIRST, THIS MATTERS ─────────────────────────────────
+                Owner's placement: right before the teaching tip, not at the
+                top. By this point they have read five analogies and are about
+                to be told how to deliver one — that is the moment the doubt
+                shows up, not before they have seen anything. Fixed copy, not
+                generated. */}
+            <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2 sm:col-span-2`}>
+              <p className={`text-sm font-bold ${c.text}`}>💚 {t('ae_first_matters')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_1')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_2')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_3')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_4')}</p>
+            </div>
+
+            {results?.go_deeper_concept && (
                   <button
                     onClick={() => generate({ concept: results.go_deeper_concept, audience })}
                     disabled={loading}
