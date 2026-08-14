@@ -36,3 +36,19 @@ handler already existed, unadvertised), PF-32 (Recent was at the foot of the
 page past the results and cross-refs; now a collapsed `<details>` with its
 count directly under the submit button, gated on `!results`), PF-33 (Plain Talk
 cross-ref moved from above the submit button to below it).
+
+## Rewrite (2026-08-14)
+- **Description** replaced. The old one was a feature list ("generates tailored
+  analogies… why it works, where it breaks down, accuracy ratings, and a
+  teaching tip"). Now the owner's line, which states the actual principle:
+  the right explanation begins with the listener, not the subject.
+- **"Their interests or world (optional — makes analogies way better)" →
+  "What do they already know? (optional)"**, placeholder now four concrete
+  examples. Shifts the emphasis from *interests* to *existing knowledge*, which
+  is how analogies actually work — you build from what someone already has.
+- **Depth labels describe goals, not outcomes**: Quick grasp → "Just enough to
+  get it", Solid understanding → "Understand how it works", Deep dive →
+  "Really dig into it". The three engine values are unchanged.
+- **"💚 First, this matters"** ahead of the analogies and **"🎯 Today's only
+  job"** after the teaching tip. Both fixed copy, not generated — reassurance
+  that varies run to run is not reassurance.

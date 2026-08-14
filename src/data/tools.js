@@ -1094,7 +1094,7 @@ export const tools = [
   icon: "💡",
   categories: ['Discourse', 'Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Describe a concept and who you're explaining it to. Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.",
+  description: "The right explanation doesn't begin with the subject. It begins with the listener. Tell DeftBrain what you're trying to explain and who you're explaining it to, and we'll translate it into their world.",
   guide: {
     overview: "AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.",
     howToUse: [

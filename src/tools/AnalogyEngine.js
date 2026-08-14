@@ -372,6 +372,18 @@ const AnalogyEngine = ({ tool }) => {
         <div ref={resultsRef} className="space-y-4">
 
           {/* One-liner */}
+          {/* ── FIRST, THIS MATTERS ─────────────────────────────────────
+              Fixed copy ahead of the analogies. Someone who cannot explain
+              a thing they understand tends to read that as a failure of their
+              own understanding; it usually isn't. Not generated — reassurance
+              that varies run to run is not reassurance. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('ae_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_2')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ae_fm_3')}</p>
+          </div>
+
           {results?.one_liner && (
             <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} mb-1 uppercase tracking-wider`}>{t('ae_one_sentence')}</p>
@@ -467,6 +479,13 @@ const AnalogyEngine = ({ tool }) => {
                 <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{results?.teaching_tip}</p>
               </div>
             )}
+
+            {/* ── TODAY'S ONLY JOB ── */}
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1 mt-3`}>
+              <p className={`text-sm font-bold ${c.text}`}>🎯 {t('ae_todays_job')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('ae_job_1')}</p>
+              <p className={`text-sm font-bold ${c.text}`}>{t('ae_job_2')}</p>
+            </div>
           </div>
 
           {/* Conditional cross-ref: accuracy concerns */}
