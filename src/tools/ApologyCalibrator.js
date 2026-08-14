@@ -995,11 +995,18 @@ const ApologyCalibrator = ({ tool }) => {
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_more_help')}</p>
             <div className="flex flex-wrap gap-1.5">
-              {/* PF-32 EXCEPTION (owner, 2026-08-13): Repairs and Audit are NOT
-                  under the submit button on this tool. On a form whose whole job
-                  is one description, a saved-repair pill reads as a competing
-                  workflow. They live here instead, with their counts. */}
-              {['practice', 'letter', 'cultural', 'decode', 'forgive', 'fix', 'repairs', 'audit'].map(id => {
+              {/* Every view except the one you are on — the same set, in the
+                  same order, as the tab row that appears elsewhere. It used to
+                  list only the views with no inline route from the panels
+                  above, which stopped being explainable once Repairs and Audit
+                  joined for the PF-32 exception, and was never visible to a
+                  visitor anyway: they just saw Roadmap present in one place and
+                  missing in another.
+                  PF-32 EXCEPTION (owner, 2026-08-13): Repairs and Audit are not
+                  under the submit button on this tool — on a form whose whole
+                  job is one description, a saved-work pill beside the primary
+                  action reads as a competing workflow. */}
+              {VIEWS.filter(x => x.id !== 'calibrate').map(({ id }) => {
                 const v = VIEWS.find(x => x.id === id);
                 const count = id === 'repairs' ? repairs.length : id === 'audit' ? auditSituations.length : 0;
                 return (
@@ -2797,6 +2804,10 @@ const ApologyCalibrator = ({ tool }) => {
     if (id === 'fix' && !fixForm.context) setFixForm(f => ({ ...f, context: shared }));
     if (id === 'practice' && !practiceForm.situation) setPracticeForm(f => ({ ...f, situation: shared, relationship: rel }));
     setView(id); setError('');
+    // Without this you keep whatever scroll position the previous view left
+    // you at — and after a long set of results that is the bottom of the page,
+    // so the view you just chose opens at its end.
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   };
 
   // ════════════════════════════════════════════════════════════
