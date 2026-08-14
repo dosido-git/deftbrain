@@ -1947,3 +1947,62 @@ foot is, which is after the primary action and not before it.
 grep -n 'href="/[A-Z]' ComponentName.js
 grep -n 'onClick={\(analyze\|generate\|submit\|run\)' ComponentName.js
 ```
+
+---
+
+### PF-34 · Disclosure triangles come from `<Caret>`, never written inline
+
+Every collapse/expand arrow in the product renders through
+`src/components/Caret.js`. Do not type `▼`, `▲`, or `▾` into a component.
+
+```jsx
+import Caret from '../components/Caret';
+
+// React-controlled toggle
+<button onClick={() => setOpen(!open)} className="flex items-center gap-2 w-full">
+  <span className="text-xs font-bold">{t('xxx_section')}</span>
+  <Caret open={open} className="ms-auto" />
+</button>
+
+// Native <details class="group"> — CSS knows the state, React does not
+<details className="group">
+  <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+    <div className="flex items-center gap-2">
+      Good to Know
+      <Caret groupOpen className="ms-auto" />
+    </div>
+  </summary>
+  …
+</details>
+```
+
+Why it is a component and not a convention: the glyph was inline at 215 sites
+across 85 files, each inheriting whatever size the surrounding markup gave it —
+mostly `text-xs`, often nothing, and in one place `fontSize: 9`. A visitor
+reported them as uncomfortably small, and there was no single place to answer
+that. Now there is one: the `SIZE` constant in `Caret.js`.
+
+Three things the component handles that inline glyphs kept getting wrong:
+
+- **`▾` is not a small `▼`, it is a different character** — U+25BE is literally
+  named SMALL triangle and draws about half the ink of U+25BC at the same
+  `font-size`. Mixing them makes two disclosures on one page look like two
+  different controls. `Caret` uses `▼` for both forms.
+- **`shrink-0`** — these sit at the end of a flex heading row with `ms-auto`,
+  beside a label that wraps on a phone. Without it the caret is what gets
+  squeezed, which is backwards.
+- **`aria-hidden`** — the state belongs to the `<button aria-expanded>` or
+  `<summary>` that owns it. A screen reader announcing "black down-pointing
+  triangle" after the label is noise.
+
+**Not disclosures, leave them alone:** `▶️`/`⏸`/`⏹` transport controls in the
+timer tools, `▶` step markers, and the indicators on the header language and
+currency selects — those decorate a native select's own hit area rather than
+being targets themselves.
+
+**Scan:**
+```bash
+# Any raw disclosure glyph left in a component. Media/step markers use ▶ and
+# are excluded by the character class.
+grep -rn '▼\|▲\|▾' src/tools src/components | grep -v 'components/Caret.js'
+```
