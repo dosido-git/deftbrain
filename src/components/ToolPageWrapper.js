@@ -268,8 +268,16 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                     #78716c/#8a8275 only cleared AA by a hair (4.53/4.67:1),
                     while #6e6659 and #a8a29a give 5.3:1 and 7:1. max-w widened
                     so the larger text still breaks after "deft (adj.) —"
-                    instead of wrapping to three lines. */}
-                <p className={`text-xs leading-snug mt-1.5 max-w-[34ch] ${isDark ? 'text-[#a8a29a]' : 'text-[#6e6659]'}`}>
+                    instead of wrapping to three lines.
+
+                    Hidden below sm: at 375px the gloss made this block 294px
+                    wide inside a 351px bar that also holds the Dashboard
+                    button, and the wrapper is flex-shrink-0, so the header
+                    overflowed by 37px and every tool page scrolled sideways.
+                    The word "deft" is a nice thing to explain once on a wide
+                    screen; it is not worth a horizontal scrollbar on a
+                    phone. */}
+                <p className={`hidden sm:block text-xs leading-snug mt-1.5 max-w-[34ch] ${isDark ? 'text-[#a8a29a]' : 'text-[#6e6659]'}`}>
                   <span className="font-bold">deft</span> <span className="italic">(adj.)</span> — skillful, nimble, clever.
                 </p>
               </div>
