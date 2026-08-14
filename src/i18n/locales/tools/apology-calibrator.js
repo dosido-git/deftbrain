@@ -16,6 +16,7 @@ export const apologyCalibrator = {
     // ── Tabs ──
     apc_tab_calibrate: "Calibrate",
     apc_more_help: "More help",
+    apc_more_ways: "More ways I can help",
     apc_cmd_enter: "Press ⌘↵ when you're ready",
     apc_tab_fix: "Fix It",
     apc_tab_detect: "Detect",
@@ -519,6 +520,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "Más ayuda",
 
+    apc_more_ways: "Otras formas en que puedo ayudar",
+
     apc_cmd_enter: "Pulsa ⌘↵ cuando estés listo",
     apc_tab_fix: "Arreglar",
     apc_tab_detect: "Detectar",
@@ -999,6 +1002,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "校准",
 
     apc_more_help: "更多帮助",
+
+    apc_more_ways: "我还能帮上什么",
 
     apc_cmd_enter: "准备好后按 ⌘↵",
     apc_tab_fix: "修补",
@@ -1481,6 +1486,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "और मदद",
 
+    apc_more_ways: "मैं और कैसे मदद कर सकता हूँ",
+
     apc_cmd_enter: "तैयार हों तो ⌘↵ दबाएँ",
     apc_tab_fix: "सुधारें",
     apc_tab_detect: "पहचानें",
@@ -1961,6 +1968,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "المعايرة",
 
     apc_more_help: "مزيد من المساعدة",
+
+    apc_more_ways: "طرق أخرى يمكنني المساعدة بها",
 
     apc_cmd_enter: "اضغط ⌘↵ عندما تكون جاهزًا",
     apc_tab_fix: "الإصلاح",
@@ -2443,6 +2452,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "Mais ajuda",
 
+    apc_more_ways: "Outras formas de ajudar",
+
     apc_cmd_enter: "Pressione ⌘↵ quando estiver pronto",
     apc_tab_fix: "Consertar",
     apc_tab_detect: "Detectar",
@@ -2923,6 +2934,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "Calibrer",
 
     apc_more_help: "Plus d'aide",
+
+    apc_more_ways: "D'autres façons de vous aider",
 
     apc_cmd_enter: "Appuyez sur ⌘↵ quand vous êtes prêt",
     apc_tab_fix: "Réparer",
@@ -3405,6 +3418,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "Mehr Hilfe",
 
+    apc_more_ways: "Womit ich sonst helfen kann",
+
     apc_cmd_enter: "Drück ⌘↵, wenn du so weit bist",
     apc_tab_fix: "Korrigieren",
     apc_tab_detect: "Erkennen",
@@ -3885,6 +3900,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "調整",
 
     apc_more_help: "ほかのお手伝い",
+
+    apc_more_ways: "ほかにできること",
 
     apc_cmd_enter: "準備ができたら ⌘↵ を押してください",
     apc_tab_fix: "立て直す",
@@ -4367,6 +4384,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "더 도와드릴까요",
 
+    apc_more_ways: "더 도울 수 있는 것들",
+
     apc_cmd_enter: "준비되면 ⌘↵ 를 누르세요",
     apc_tab_fix: "바로잡기",
     apc_tab_detect: "감지",
@@ -4847,6 +4866,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "Калибровка",
 
     apc_more_help: "Ещё помощь",
+
+    apc_more_ways: "Чем ещё могу помочь",
 
     apc_cmd_enter: "Нажмите ⌘↵, когда будете готовы",
     apc_tab_fix: "Исправить",
@@ -5329,6 +5350,8 @@ export const apologyCalibrator = {
 
     apc_more_help: "ความช่วยเหลือเพิ่มเติม",
 
+    apc_more_ways: "ฉันช่วยอะไรได้อีกบ้าง",
+
     apc_cmd_enter: "กด ⌘↵ เมื่อพร้อม",
     apc_tab_fix: "แก้ไข",
     apc_tab_detect: "ตรวจจับ",
@@ -5809,6 +5832,8 @@ export const apologyCalibrator = {
     apc_tab_calibrate: "Hiệu chỉnh",
 
     apc_more_help: "Trợ giúp thêm",
+
+    apc_more_ways: "Những cách khác tôi có thể giúp",
 
     apc_cmd_enter: "Nhấn ⌘↵ khi bạn sẵn sàng",
     apc_tab_fix: "Sửa lại",

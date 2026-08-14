@@ -106,6 +106,8 @@ Return ONLY valid JSON:
 
 AT MOST 5 why_it_landed, 7 roadmap, 4 not_yet.
 
+SAY IT ONCE. The verdict, the reassurance, today's job, and the closing are four different jobs, and a first draft of this tool taught the same lesson in all four — "this needs a real conversation", "ask to talk, not apologize again", "a text apology is an acknowledgment, not a repair", and then today's action repeated at the end. Do not restate the verdict anywhere except level_name. todays_job.why explains why THIS action comes first, not why the verdict is what it is. closing must not name the action again — it is about them, not the task.
+
 VOICE. Short sentences. No clinical register — not 'the injured party', not 'emotional labour', not 'accountability framework'. Write the way a friend who happens to know this well would say it out loud. The best lines in this tool sound like: 'Texting at 9pm after dinner ended is the floor, not a credit.' and 'You need to do it in a medium that matches the size of the hurt.' Aim there.`;
 
     const parsed = await callClaudeWithRetry({

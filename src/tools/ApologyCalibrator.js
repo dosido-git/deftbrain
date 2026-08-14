@@ -883,23 +883,9 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
           )}
 
-          {/* Was "Situation Analysis" with five clinical labels — What
-              happened / Harm caused / Your responsibility / Intent vs Impact
-              / Context. Same content, said the way a person would say it, and
-              collapsed: it explains a verdict they have already been given. */}
-          {calResults.why_it_landed?.length > 0 && (
-            <SectionCard title={t('apc_why_landed')} icon="🔍" collapsed>
-              <div className="space-y-3">
-                {calResults.why_it_landed.map((x, i) => (
-                  <div key={i}>
-                    <p className={`text-sm font-bold ${c.text}`}>{x.point}</p>
-                    {x.detail && <p className={`text-sm ${c.textSecondary}`}>{x.detail}</p>}
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-          )}
-
+          {/* "Fine — what do I actually say?" is the next thought after being
+              told what this needs, so the scripts come before the reasoning
+              rather than after it. */}
           {/* Templates */}
           {calResults.apology_templates?.length > 0 && (
             <SectionCard title={t('apc_cal_section_what_to_say')} icon="💬">
@@ -912,6 +898,23 @@ const ApologyCalibrator = ({ tool }) => {
                     <p className={`italic ${c.text}`}>"{tpl.option}"</p>
                     {tpl.when_to_use && <p className={`text-sm mt-2 ${c.textMuteded}`}>{tpl.when_to_use}</p>}
                     {tpl.strength && <p className={`text-sm mt-1 ${c.textMuteded}`}><span className="me-1">💪</span>{tpl.strength}</p>}
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+
+          {/* Was "Situation Analysis" with five clinical labels — What
+              happened / Harm caused / Your responsibility / Intent vs Impact
+              / Context. Same content, said the way a person would say it, and
+              collapsed: it explains a verdict they have already been given. */}
+          {calResults.why_it_landed?.length > 0 && (
+            <SectionCard title={t('apc_why_landed')} icon="🔍" collapsed>
+              <div className="space-y-3">
+                {calResults.why_it_landed.map((x, i) => (
+                  <div key={i}>
+                    <p className={`text-sm font-bold ${c.text}`}>{x.point}</p>
+                    {x.detail && <p className={`text-sm ${c.textSecondary}`}>{x.detail}</p>}
                   </div>
                 ))}
               </div>
@@ -1000,49 +1003,15 @@ const ApologyCalibrator = ({ tool }) => {
             </SectionCard>
           )}
 
-          {/* The modes that had no other route in once the tab row came off the
-              front door. Delivery, audit, repairs, the draft checker and the
-              repair roadmap are already reachable from the panels above, so
-              they are not repeated here. */}
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('apc_more_help')}</p>
-            <div className="flex flex-wrap gap-1.5">
-              {/* Every view except the one you are on — the same set, in the
-                  same order, as the tab row that appears elsewhere. It used to
-                  list only the views with no inline route from the panels
-                  above, which stopped being explainable once Repairs and Audit
-                  joined for the PF-32 exception, and was never visible to a
-                  visitor anyway: they just saw Roadmap present in one place and
-                  missing in another.
-                  PF-32 EXCEPTION (owner, 2026-08-13): Repairs and Audit are not
-                  under the submit button on this tool — on a form whose whole
-                  job is one description, a saved-work pill beside the primary
-                  action reads as a competing workflow. */}
-              {VIEWS.filter(x => x.id !== 'calibrate').map(({ id }) => {
-                const v = VIEWS.find(x => x.id === id);
-                const count = id === 'repairs' ? repairs.length : id === 'audit' ? auditSituations.length : 0;
-                return (
-                  <button key={id} onClick={() => goToView(id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
-                    {v.icon} {t(v.labelKey)}{count ? ` (${count})` : ''}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* The tool never acknowledged that the person apologising is often
               hurting as well. This is the last thing they read. */}
+          {/* It used to restate today's action here, which the visitor had
+              already read twice. The closing line is the only thing left,
+              given the room to land. */}
           {calResults.closing && (
-            <div className={`${c.calmBg} border rounded-xl p-5`}>
+            <div className={`${c.calmBg} border-2 rounded-xl p-6`}>
               <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('apc_youre_set')}</p>
-              {calResults.todays_job?.action && (
-                <p className={`text-sm ${c.text} mb-2`}>
-                  <span className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide block`}>{t('apc_end_today')}</span>
-                  {calResults.todays_job.action}
-                </p>
-              )}
-              <p className={`text-sm ${c.textSecondary}`}>{calResults.closing}</p>
+              <p className={`text-base leading-relaxed ${c.text}`}>{calResults.closing}</p>
             </div>
           )}
 
@@ -1083,6 +1052,40 @@ const ApologyCalibrator = ({ tool }) => {
 
           <div className="flex justify-between items-center flex-wrap gap-2">
           </div>
+          {/* Eight more features, arriving straight after five pages of
+              building trust, read as a product interrupting a conversation.
+              Last on the page now, and folded away until asked for. */}
+          <details className="group">
+            <summary className={`cursor-pointer text-xs font-bold ${c.textMuted} uppercase tracking-wide list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
+              {t('apc_more_ways')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+            </summary>
+            <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-2`}>
+              <div className="flex flex-wrap gap-1.5">
+              {/* Every view except the one you are on — the same set, in the
+                  same order, as the tab row that appears elsewhere. It used to
+                  list only the views with no inline route from the panels
+                  above, which stopped being explainable once Repairs and Audit
+                  joined for the PF-32 exception, and was never visible to a
+                  visitor anyway: they just saw Roadmap present in one place and
+                  missing in another.
+                  PF-32 EXCEPTION (owner, 2026-08-13): Repairs and Audit are not
+                  under the submit button on this tool — on a form whose whole
+                  job is one description, a saved-work pill beside the primary
+                  action reads as a competing workflow. */}
+              {VIEWS.filter(x => x.id !== 'calibrate').map(({ id }) => {
+                const v = VIEWS.find(x => x.id === id);
+                const count = id === 'repairs' ? repairs.length : id === 'audit' ? auditSituations.length : 0;
+                return (
+                  <button key={id} onClick={() => goToView(id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.tabInactive} min-h-[32px]`}>
+                    {v.icon} {t(v.labelKey)}{count ? ` (${count})` : ''}
+                  </button>
+                );
+              })}
+            </div>
+            </div>
+          </details>
+
         </div>
       )}
 
