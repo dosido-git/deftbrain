@@ -1897,6 +1897,11 @@ absent a specific instruction; it does not override one that exists.
 
 - **DateNight** places its history, rut check and date jar at the end of the
   tool, at the owner's explicit request.
+- **AlternatePath** (2026-08-14) takes the single-ask branch below: one
+  what-if is the whole form, so Recent stays at the foot of the tool — but as a
+  collapsed `<details>` with its count in the label, not an always-open list of
+  six buttons under an invitation to imagine something. Collapsed-with-count is
+  the shape to reach for when a tool has no view system to navigate to.
 - **ApologyCalibrator** (2026-08-13) keeps Repairs and Audit out of the input
   experience entirely — they sit in the after-results block with their counts.
   The reasoning generalises and is worth weighing on the next tool: on a form

@@ -40,6 +40,13 @@ practical — the charter's "spark wonder and discovery" line is its whole job.
 - Descs used to claim "10 consequences" for deep while the route asked for 8.
   They now say what the route actually does.
 
+## The DeftBrain treatment (2026-08-14)
+PF-30 (in-card `<h2>` deleted — the name was printed twice before the first
+input; icon moved onto the tagline), PF-17c (larger Try-an-example pill, dark
+ink in both themes), PF-31 + PF-33 (landed with the form rewrite), PF-32 via
+its single-ask exception: Recent stays at the foot but is now a collapsed
+`<details>` labelled `Recent timelines (n)` with a shared `<Caret>`.
+
 ## Known / accepted
 - 0 `audit_v2` baseline issues (clean tool).
 - Depth buttons carry a `flex-1` with no flex parent (they stack full-width by design — label + desc). Cosmetic dead class; left as-is.
