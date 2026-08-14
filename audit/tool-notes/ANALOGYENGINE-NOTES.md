@@ -28,3 +28,11 @@ The `go_deeper` panel used to be dead text. Now the backend also returns **`go_d
 - 0 `audit_v2` baseline issues.
 - Mobile pass (375px): input + results clean post-fix — no overflow/crush; tool inputs ≥16px, only chrome locale `<select>`s <16px. (Render-layer — not in the golden.)
 - Sibling note: AlternatePath has the same "no flex parent" pattern on its depth buttons, but they're block-level (stack full-width, look intentional) — deliberately left as-is there.
+
+## The DeftBrain treatment (2026-08-14)
+PF-30 (in-card `<h2>` deleted; icon onto the tagline at `text-lg` over
+`text-base`), PF-17c (larger Try-an-example pill), PF-31 (⌘↵ chip — the
+handler already existed, unadvertised), PF-32 (Recent was at the foot of the
+page past the results and cross-refs; now a collapsed `<details>` with its
+count directly under the submit button, gated on `!results`), PF-33 (Plain Talk
+cross-ref moved from above the submit button to below it).
