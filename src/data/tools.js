@@ -1554,7 +1554,7 @@ export const tools = [
   icon: "💬",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "Context-appropriate conversation fillers for awkward silences. 5-7 safe options from environmental observations to light questions. Matched to setting (work/party/date/family). Includes body language tips, exit strategies, and what NOT to say.",
+  description: "Not every silence needs rescuing. But when it does, we'll help you find something natural to say.",
   guide: {
     overview: "Awkward silences happen. This tool provides 5-7 conversation fillers appropriate for your specific context - safe, low-risk things to say that restart conversation without forcing it. Ranges from environmental observations to light questions to polite exits.",
     

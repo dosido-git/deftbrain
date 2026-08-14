@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "22dc960e5564777a70ed433861bf11b4c2a8f935",
+  "hash": "08c6627546fc17a4ce1003a9c86856f937e694fe",
   "lastmod": "2026-08-14"
  },
  "static:about": {
@@ -24,7 +24,7 @@
   "lastmod": "2026-08-14"
  },
  "tool:AwkwardSilenceFiller": {
-  "hash": "0fb2efa96461d87bc5979ffd202728e57f7813c6",
+  "hash": "74eacd14c4667b211f172135d652898e49acb1c8",
   "lastmod": "2026-08-14"
  },
  "tool:BillRescue": {
