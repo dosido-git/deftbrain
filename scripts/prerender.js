@@ -42,7 +42,10 @@ const TOOLS_FILE = path.join(ROOT, 'src', 'data', 'tools.js');
 const GUIDES_DIR = path.join(ROOT, 'guides');
 const SITE_NAME  = 'DeftBrain';
 const SITE_URL   = 'https://deftbrain.com';
-const DEFAULT_DESCRIPTION = 'DeftBrain offers 100+ free AI-powered tools for productivity, communication, health, finance, and more. Get instant, intelligent help for real-life problems.';
+// The fallback meta description for any page without its own. Kept in step
+// with public/index.html, and free of the machinery — the homepage already
+// says "guided experiences", and the machinery stays out of it.
+const DEFAULT_DESCRIPTION = "Let's think it through together. 125+ free guided experiences for real life — read a lease, check a repair quote, spot a scam, prepare for a doctor visit. No signup, nothing stored.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
 
 // Source of truth: src/data/tool-og-slugs.json — single shared map
