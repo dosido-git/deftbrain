@@ -33,20 +33,29 @@ What happened: ${whatHappened}
 ${relationship ? `Relationship: ${relationship}` : 'Relationship: NOT PROVIDED'}
 ${situation ? `Context: ${situation}` : ''}
 
+You are not scoring them. Someone typing this in has already worked out that they got it wrong; what they need is an ally helping them repair something they care about, not an expert grading the damage. Every field lands on a person who feels bad already.
+
 Return ONLY valid JSON:
 {
   "appropriate_apology_level": 3,
-  "level_name": "Simple apology — 3-6 words",
-  "level_emoji": "🟡",
-  "why_this_level": "Clear explanation of why this level is right for this situation — one sentence",
+  "level_name": "What this actually needs, as a plain sentence a friend would say — 'This needs a real conversation.', 'A short, direct sorry is enough.', 'This one needs repair, not just words.' NEVER a number, never the word Level, never a grade. — 4-8 words",
+  "level_emoji": "🟢|🟡|🔴",
+  "why_this_level": "Two or three SHORT lines, each its own sentence. Open with what is still intact ('Your friendship isn't broken.'), then what actually happened, then the opening they still have. Not a ruling — a read of where things stand.",
 
-  "situation_analysis": {
-    "what_actually_happened": "Objective summary of the situation — one sentence",
-    "actual_harm_caused": "What impact this had on the other person — one sentence",
-    "your_responsibility_level": "high|medium|low|none",
-    "intent_vs_impact": "Your intent may have been X, but the impact was Y — one sentence",
-    "relationship_context": "How the relationship affects the apology — 1-2 sentences"
+  "todays_job": {
+    "action": "The ONE thing to do today, as an imperative — 'Ask for a real conversation.' — 3-7 words",
+    "why": "Why this and not another message — one sentence",
+    "not_yet": ["Two or three things NOT to do today, 2-6 words each: 'Not another apology text.' 'No long explanation.'"]
   },
+
+  "first_this_matters": "Four or five SHORT lines, each its own sentence. Name what was actually lost from the other person's side, say plainly that this does not make them a bad person, and end on being here now counting for something. Reassurance, not analysis.",
+
+  "why_it_landed": [
+    {
+      "point": "A single bolded claim, as a flat statement — 'The problem wasn't missing the dinner.' — 4-9 words",
+      "detail": "One sentence underneath it, plain and unclinical."
+    }
+  ],
 
   "apology_templates": [
     {
@@ -83,12 +92,25 @@ Return ONLY valid JSON:
     "what": "What follow-up action to take — one sentence",
     "when": "When to do it — one sentence",
     "behavior_change": "What to do differently going forward — one sentence"
-  }
-}`;
+  },
+
+  "roadmap": [
+    {
+      "when": "EXACTLY one of these four strings and nothing else — Today, During the conversation, Afterward, Next time. Several steps may share one.",
+      "step": "One checkable line, an imperative — 'Name the specific failure.' 'Don't lead with work.' — 3-8 words"
+    }
+  ],
+
+  "closing": "The last thing they read. Two or three short lines: an apology is an attempt to repair something that matters, not a performance; they cannot control whether they are forgiven, only whether they are honest and give the other person room. End on the fact that this is what they are already doing."
+}
+
+AT MOST 5 why_it_landed, 7 roadmap, 4 not_yet.
+
+VOICE. Short sentences. No clinical register — not 'the injured party', not 'emotional labour', not 'accountability framework'. Write the way a friend who happens to know this well would say it out loud. The best lines in this tool sound like: 'Texting at 9pm after dinner ended is the floor, not a credit.' and 'You need to do it in a medium that matches the size of the hurt.' Aim there.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
+      max_tokens: 3500,
       system: withLanguage(systemPrompt, userLanguage),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'apology-calibrator' });

@@ -97,6 +97,19 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 
 // ════════════════════════════════════════════════════════════
 // Component
 // ════════════════════════════════════════════════════════════
+// Roadmap steps arrive with a `when` from a fixed set; group in first-seen
+// order, which is already chronological.
+function groupRoadmap(steps) {
+  const order = [];
+  const bucket = new Map();
+  for (const s of steps || []) {
+    const key = (s.when || '').trim() || '—';
+    if (!bucket.has(key)) { bucket.set(key, []); order.push(key); }
+    bucket.get(key).push(s.step);
+  }
+  return order.map(k => [k, bucket.get(k)]);
+}
+
 const ApologyCalibrator = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -117,6 +130,7 @@ const ApologyCalibrator = ({ tool }) => {
     tabInactive: isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
     badge: isDark ? 'bg-zinc-700 text-zinc-200' : 'bg-gray-100 text-gray-700',
     success: isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    calmBg: isDark ? 'bg-emerald-900/20 border-emerald-800' : 'bg-emerald-50 border-emerald-200',
     level1: isDark ? 'bg-emerald-900/40 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-400 text-emerald-900',
     level2: isDark ? 'bg-sky-900/40 border-sky-600 text-sky-200' : 'bg-sky-50 border-sky-400 text-sky-900',
     level3: isDark ? 'bg-amber-900/40 border-amber-600 text-amber-200' : 'bg-amber-50 border-amber-400 text-amber-900',
@@ -633,12 +647,27 @@ const ApologyCalibrator = ({ tool }) => {
     </div>
   );
 
-  const SectionCard = ({ title, icon, children, accent }) => (
+  // `collapsed` turns the card into a disclosure. The reference material —
+  // why it landed, what still needs repair, the follow-up plan — is excellent
+  // and should not be the first thing between someone and their next move.
+  const SectionCard = ({ title, icon, children, accent, collapsed }) => (
     <div className={`rounded-xl p-5 ${accent || c.card}`}>
-      <h3 className={`text-lg font-bold mb-3 ${accent ? '' : c.text}`}>
-        {icon && <span className="me-2">{icon}</span>}{title}
-      </h3>
-      {children}
+      {collapsed ? (
+        <details className="group">
+          <summary className={`cursor-pointer text-lg font-bold ${accent ? '' : c.text} list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
+            {icon && <span className="me-2">{icon}</span>}{title}
+            <span className="ms-2 text-xs group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+          </summary>
+          <div className="mt-3">{children}</div>
+        </details>
+      ) : (
+        <>
+          <h3 className={`text-lg font-bold mb-3 ${accent ? '' : c.text}`}>
+            {icon && <span className="me-2">{icon}</span>}{title}
+          </h3>
+          {children}
+        </>
+      )}
     </div>
   );
 
@@ -757,13 +786,16 @@ const ApologyCalibrator = ({ tool }) => {
       {/* Results */}
       {calResults && (
         <div className="space-y-4">
-          {/* Level badge */}
+          {/* The verdict is a sentence now, not a score. "Level 6" reads as a
+              risk rating handed down by an assessor; someone typing this in
+              has already worked out that they got it wrong. The number is
+              still computed — it drives the colour — but it is not shown. */}
           {calResults.appropriate_apology_level && (
             <div className={`border-4 rounded-xl p-6 ${levelColor(calResults.appropriate_apology_level)}`}>
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
                   <h2 className="text-2xl font-bold">
-                    {calResults.level_emoji || ''} {t('apc_aud_level_badge', { level: calResults.appropriate_apology_level })}: {calResults.level_name || t(LEVEL_NAME_KEYS[calResults.appropriate_apology_level])}
+                    {calResults.level_emoji || ''} {calResults.level_name || t(LEVEL_NAME_KEYS[calResults.appropriate_apology_level])}
                   </h2>
                   {calResults.why_this_level && <p className="text-lg mt-2 opacity-90">{calResults.why_this_level}</p>}
                 </div>
@@ -781,25 +813,43 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
           )}
 
-          {/* Situation analysis */}
-          {calResults.situation_analysis && (
-            <SectionCard title={t('apc_cal_section_analysis')} icon="🔎">
-              <div className="space-y-2">
-                {calResults.situation_analysis.what_actually_happened && (
-                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_what_happened')}</strong> {calResults.situation_analysis.what_actually_happened}</p>
-                )}
-                {calResults.situation_analysis.actual_harm_caused && (
-                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_harm')}</strong> {calResults.situation_analysis.actual_harm_caused}</p>
-                )}
-                {calResults.situation_analysis.your_responsibility_level && (
-                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_responsibility')}</strong> {calResults.situation_analysis.your_responsibility_level}</p>
-                )}
-                {calResults.situation_analysis.intent_vs_impact && (
-                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_intent')}</strong> {calResults.situation_analysis.intent_vs_impact}</p>
-                )}
-                {calResults.situation_analysis.relationship_context && (
-                  <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_lbl_context')}</strong> {calResults.situation_analysis.relationship_context}</p>
-                )}
+          {/* Reassurance before analysis. They already feel bad; the tool's job
+              is to help them repair it, not to confirm the damage. */}
+          {calResults.first_this_matters && (
+            <div className={`${c.calmBg} border rounded-xl p-5`}>
+              <p className={`text-sm font-bold ${c.text} mb-1`}>💚 {t('apc_first_matters')}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{calResults.first_this_matters}</p>
+            </div>
+          )}
+
+          {calResults.todays_job?.action && (
+            <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
+              <p className={`text-[10px] font-bold ${c.textSecondary} uppercase tracking-wide mb-1`}>🎯 {t('apc_todays_job')}</p>
+              <p className={`text-lg font-black ${c.text}`}>{calResults.todays_job.action}</p>
+              {calResults.todays_job.why && <p className={`text-xs ${c.textSecondary} mt-1`}>{calResults.todays_job.why}</p>}
+              {calResults.todays_job.not_yet?.length > 0 && (
+                <div className="mt-3 space-y-0.5">
+                  {calResults.todays_job.not_yet.map((x, i) => (
+                    <p key={i} className={`text-xs ${c.textMuted}`}>✕ {x}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Was "Situation Analysis" with five clinical labels — What
+              happened / Harm caused / Your responsibility / Intent vs Impact
+              / Context. Same content, said the way a person would say it, and
+              collapsed: it explains a verdict they have already been given. */}
+          {calResults.why_it_landed?.length > 0 && (
+            <SectionCard title={t('apc_why_landed')} icon="🔍" collapsed>
+              <div className="space-y-3">
+                {calResults.why_it_landed.map((x, i) => (
+                  <div key={i}>
+                    <p className={`text-sm font-bold ${c.text}`}>{x.point}</p>
+                    {x.detail && <p className={`text-sm ${c.textSecondary}`}>{x.detail}</p>}
+                  </div>
+                ))}
               </div>
             </SectionCard>
           )}
@@ -868,7 +918,7 @@ const ApologyCalibrator = ({ tool }) => {
           {calResults.if_youre_under_apologizing?.applies !== false && calResults.if_youre_under_apologizing && (
             <div className={`rounded-xl border-2 p-5 ${c.underApology}`}>
               <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-orange-200' : 'text-orange-900'}`}>
-                <span className="me-2">🔶</span>{t('apc_cal_under_heading')}
+                <span className="me-2">🔧</span>{t('apc_needs_repair')}
               </h3>
               {calResults.if_youre_under_apologizing.reality_check && (
                 <p className={isDark ? 'text-orange-300' : 'text-orange-800'}>{calResults.if_youre_under_apologizing.reality_check}</p>
@@ -886,9 +936,42 @@ const ApologyCalibrator = ({ tool }) => {
             </div>
           )}
 
+          {/* What / When / Change was three labelled lines of prose. It is a
+              sequence of moments — today, in the room, afterwards, next time —
+              so it reads as one. */}
+          {calResults.roadmap?.length > 0 && (
+            <SectionCard title={t('apc_roadmap')} icon="🗺️">
+              <div className="space-y-3">
+                {groupRoadmap(calResults.roadmap).map(([when, steps]) => (
+                  <div key={when}>
+                    <p className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide mb-1`}>{when}</p>
+                    {steps.map((st, i) => (
+                      <p key={i} className={`text-sm ${c.textSecondary}`}>✓ {st}</p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+
+          {/* The tool never acknowledged that the person apologising is often
+              hurting as well. This is the last thing they read. */}
+          {calResults.closing && (
+            <div className={`${c.calmBg} border rounded-xl p-5`}>
+              <p className={`text-sm font-bold ${c.text} mb-2`}>💚 {t('apc_youre_set')}</p>
+              {calResults.todays_job?.action && (
+                <p className={`text-sm ${c.text} mb-2`}>
+                  <span className={`text-[10px] font-bold ${c.textMuted} uppercase tracking-wide block`}>{t('apc_end_today')}</span>
+                  {calResults.todays_job.action}
+                </p>
+              )}
+              <p className={`text-sm ${c.textSecondary}`}>{calResults.closing}</p>
+            </div>
+          )}
+
           {/* Follow-up */}
           {calResults.follow_up?.needed && (
-            <SectionCard title={t('apc_cal_section_follow_up')} icon="📅">
+            <SectionCard title={t('apc_cal_section_follow_up')} icon="📅" collapsed>
               <div className="space-y-2">
                 {calResults.follow_up.what && <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_fu_what')}</strong> {calResults.follow_up.what}</p>}
                 {calResults.follow_up.when && <p className={c.textSecondary}><strong className={c.text}>{t('apc_cal_fu_when')}</strong> {calResults.follow_up.when}</p>}
