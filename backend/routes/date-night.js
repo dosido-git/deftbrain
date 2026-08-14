@@ -302,7 +302,7 @@ Return ONLY valid JSON: ${responseSchema(!!venuesBlock)}`;
     // ─── NEXT HELP ───
     // "Anything else you want help with before tonight?" — replaces a related-
     // tools strip that recommended by taxonomy, which is how someone planning
-    // an anniversary got sent to Apology Calibrator.
+    // an anniversary got sent to Mend.
     //
     // The model picks from the real catalog and writes the framing, so the
     // answer is about THIS evening rather than a category. It is a separate

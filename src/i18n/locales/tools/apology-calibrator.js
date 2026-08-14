@@ -1,4 +1,4 @@
-// Apology Calibrator — apc_* keys. Phase 1: English-only canonical key set.
+// Mend (was Apology Calibrator) — apc_* keys. Phase 1: English-only canonical key set.
 // {{interpolation}} (e.g. {{n}}, {{link}}) is substituted at render time.
 // Brand / tool names (DeftBrain, deftbrain.com, Conflict Coach, Difficult Talk
 // Coach, Velvet Hammer, Sorry-Not-Sorry Detector, Relationship Repair Roadmap,
@@ -9,7 +9,7 @@
 export const apologyCalibrator = {
   en: {
     // ── Header / chrome ──
-    apc_title: "Apology Calibrator",
+    apc_title: "Mend",
     apc_tagline: "Find the right level — not too much, not too little",
     apc_start_over: "↺ Start Over",
 
@@ -186,7 +186,7 @@ export const apologyCalibrator = {
     apc_err_icon: "⚠️",
 
     // ── Calibrate view ──
-    apc_cal_heading: "Apology Calibrator",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Some situations need a quick acknowledgment. Others need real repair.",
     apc_cal_what_happened: "What happened?",
     apc_print_what_happened: "What happened",
@@ -512,7 +512,7 @@ export const apologyCalibrator = {
   },
 
   es: {
-    apc_title: "Calibrador de Disculpas",
+    apc_title: "Mend",
     apc_tagline: "Encuentra el nivel justo: ni demasiado, ni muy poco",
     apc_start_over: "↺ Empezar de nuevo",
 
@@ -682,7 +682,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Calibrador de Disculpas",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Algunas situaciones necesitan un reconocimiento rápido. Otras, una reparación de verdad.",
     apc_cal_what_happened: "¿Qué pasó?",
     apc_print_what_happened: "Qué pasó",
@@ -995,7 +995,7 @@ export const apologyCalibrator = {
   },
 
   zh: {
-    apc_title: "道歉校准器",
+    apc_title: "Mend",
     apc_tagline: "找到恰当的力度——不多也不少",
     apc_start_over: "↺ 重新开始",
 
@@ -1165,7 +1165,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "道歉校准器",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "有些事一句认错就够了，有些事需要真正的修补。",
     apc_cal_what_happened: "发生了什么？",
     apc_print_what_happened: "发生了什么",
@@ -1478,7 +1478,7 @@ export const apologyCalibrator = {
   },
 
   hi: {
-    apc_title: "माफ़ी कैलिब्रेटर",
+    apc_title: "Mend",
     apc_tagline: "सही स्तर खोजें — न ज़्यादा, न कम",
     apc_start_over: "↺ फिर से शुरू करें",
 
@@ -1648,7 +1648,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "माफ़ी कैलिब्रेटर",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "कुछ हालात में छोटी-सी स्वीकारोक्ति काफ़ी है। कुछ में असली मरम्मत चाहिए।",
     apc_cal_what_happened: "क्या हुआ?",
     apc_print_what_happened: "क्या हुआ",
@@ -1961,7 +1961,7 @@ export const apologyCalibrator = {
   },
 
   ar: {
-    apc_title: "معاير الاعتذار",
+    apc_title: "Mend",
     apc_tagline: "اعثر على المستوى المناسب — لا أكثر من اللازم ولا أقل",
     apc_start_over: "↺ ابدأ من جديد",
 
@@ -2131,7 +2131,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "معاير الاعتذار",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "بعض المواقف تكفيها كلمة اعتراف سريعة. وبعضها يحتاج إصلاحًا حقيقيًا.",
     apc_cal_what_happened: "ماذا حدث؟",
     apc_print_what_happened: "ما الذي حدث",
@@ -2444,7 +2444,7 @@ export const apologyCalibrator = {
   },
 
   pt: {
-    apc_title: "Calibrador de Desculpas",
+    apc_title: "Mend",
     apc_tagline: "Encontre o nível certo — nem demais, nem de menos",
     apc_start_over: "↺ Começar de novo",
 
@@ -2614,7 +2614,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Calibrador de Desculpas",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Algumas situações pedem um reconhecimento rápido. Outras pedem reparo de verdade.",
     apc_cal_what_happened: "O que aconteceu?",
     apc_print_what_happened: "O que aconteceu",
@@ -2927,7 +2927,7 @@ export const apologyCalibrator = {
   },
 
   fr: {
-    apc_title: "Calibrateur d'Excuses",
+    apc_title: "Mend",
     apc_tagline: "Trouvez le bon niveau — ni trop, ni trop peu",
     apc_start_over: "↺ Recommencer",
 
@@ -3097,7 +3097,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Calibrateur d'Excuses",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Certaines situations demandent une simple reconnaissance. D'autres, une vraie réparation.",
     apc_cal_what_happened: "Que s'est-il passé ?",
     apc_print_what_happened: "Ce qui s'est passé",
@@ -3410,7 +3410,7 @@ export const apologyCalibrator = {
   },
 
   de: {
-    apc_title: "Entschuldigungs-Kalibrator",
+    apc_title: "Mend",
     apc_tagline: "Finde das richtige Maß – nicht zu viel, nicht zu wenig",
     apc_start_over: "↺ Von vorn beginnen",
 
@@ -3580,7 +3580,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Entschuldigungs-Kalibrator",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Manches braucht nur ein kurzes Eingeständnis. Anderes braucht echte Wiedergutmachung.",
     apc_cal_what_happened: "Was ist passiert?",
     apc_print_what_happened: "Was passiert ist",
@@ -3893,7 +3893,7 @@ export const apologyCalibrator = {
   },
 
   ja: {
-    apc_title: "謝罪キャリブレーター",
+    apc_title: "Mend",
     apc_tagline: "ちょうどいい度合いを見つける——多すぎず、少なすぎず",
     apc_start_over: "↺ 最初からやり直す",
 
@@ -4063,7 +4063,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "謝罪キャリブレーター",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "ひと言認めれば済むこともあれば、本当に修復が要ることもあります。",
     apc_cal_what_happened: "何が起きましたか？",
     apc_print_what_happened: "何があったか",
@@ -4376,7 +4376,7 @@ export const apologyCalibrator = {
   },
 
   ko: {
-    apc_title: "사과 캘리브레이터",
+    apc_title: "Mend",
     apc_tagline: "딱 맞는 수준 찾기 — 과하지도, 부족하지도 않게",
     apc_start_over: "↺ 처음부터 다시",
 
@@ -4546,7 +4546,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "사과 캘리브레이터",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "짧은 인정으로 충분한 일도 있고, 진짜 회복이 필요한 일도 있습니다.",
     apc_cal_what_happened: "무슨 일이 있었나요?",
     apc_print_what_happened: "무슨 일이 있었는지",
@@ -4859,7 +4859,7 @@ export const apologyCalibrator = {
   },
 
   ru: {
-    apc_title: "Калибратор извинений",
+    apc_title: "Mend",
     apc_tagline: "Найдите верный уровень — не слишком много и не слишком мало",
     apc_start_over: "↺ Начать заново",
 
@@ -5029,7 +5029,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Калибратор извинений",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Где-то достаточно короткого признания. Где-то нужно настоящее восстановление.",
     apc_cal_what_happened: "Что произошло?",
     apc_print_what_happened: "Что произошло",
@@ -5342,7 +5342,7 @@ export const apologyCalibrator = {
   },
 
   th: {
-    apc_title: "เครื่องปรับระดับคำขอโทษ",
+    apc_title: "Mend",
     apc_tagline: "หาระดับที่พอดี — ไม่มากไป ไม่น้อยไป",
     apc_start_over: "↺ เริ่มใหม่",
 
@@ -5512,7 +5512,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "เครื่องปรับระดับคำขอโทษ",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "บางเรื่องแค่ยอมรับสั้นๆ ก็พอ บางเรื่องต้องซ่อมกันจริงจัง",
     apc_cal_what_happened: "เกิดอะไรขึ้น?",
     apc_print_what_happened: "เกิดอะไรขึ้น",
@@ -5825,7 +5825,7 @@ export const apologyCalibrator = {
   },
 
   vi: {
-    apc_title: "Bộ Hiệu Chỉnh Lời Xin Lỗi",
+    apc_title: "Mend",
     apc_tagline: "Tìm đúng mức độ — không quá nhiều, không quá ít",
     apc_start_over: "↺ Bắt đầu lại",
 
@@ -5995,7 +5995,7 @@ export const apologyCalibrator = {
 
     apc_err_icon: "⚠️",
 
-    apc_cal_heading: "Bộ Hiệu Chỉnh Lời Xin Lỗi",
+    apc_cal_heading: "Mend",
     apc_cal_subtitle: "Có chuyện chỉ cần một lời thừa nhận. Có chuyện cần hàn gắn thật sự.",
     apc_cal_what_happened: "Chuyện gì đã xảy ra?",
     apc_print_what_happened: "Chuyện gì đã xảy ra",

@@ -236,7 +236,7 @@ const EXAMPLE_BUCKETS = {
     },
     {
       id: 'Mend',
-      title: 'Apology Calibrator',
+      title: 'Mend',
       icon: '🤝',
       tagline: 'Get the tone, weight, and words exactly right',
       input:

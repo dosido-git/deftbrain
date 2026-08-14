@@ -5335,7 +5335,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
     { q: "How do I apologize sincerely without making it worse?",
-      a: "A sincere apology names what you did, acknowledges the impact on them, takes responsibility without 'but', and states what changes. What makes it worse: explaining your intentions at length, apologizing for their feelings ('sorry you were upset'), or over-apologizing until they must comfort you. Apology Calibrator drafts the apology matched to what happened and who it's for." },
+      a: "A sincere apology names what you did, acknowledges the impact on them, takes responsibility without 'but', and states what changes. What makes it worse: explaining your intentions at length, apologizing for their feelings ('sorry you were upset'), or over-apologizing until they must comfort you. Mend drafts the apology matched to what happened and who it's for." },
     { q: "What's the difference between an apology and an explanation?",
       a: "An apology centers the other person's experience; an explanation centers your reasoning. Both have a place — but an explanation delivered before responsibility reads as an excuse. The strongest structure is responsibility first, brief context second (only if they ask), repair last." },
     { q: "How do I apologize at work professionally?",
@@ -5373,7 +5373,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     },
     
     tips: [
-      "Level 1-2 are much more common than people think - most interactions don't need apologies",
+      "Small misses are far more common than people think — most interactions don't need an apology at all",
       "Templates scale to relationship (different wording for boss vs close friend)",
       "The 'what NOT to say' section prevents common apology mistakes",
       "Over-apologizing trains people to expect apologies for normal interactions",
