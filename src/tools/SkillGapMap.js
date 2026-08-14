@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -514,7 +515,7 @@ const SkillGapMap = ({ tool }) => {
             <div className={`${c.card} rounded-xl shadow-sm p-4`}>
               <button onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className={`text-xs font-bold ${c.textMuteded}`}>{t('sgm_previous', { count: savedMaps.length })}</span>
-                <span className="text-xs">{expandedSections.saved ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.saved} />
               </button>
               {expandedSections.saved && savedMaps.map((s, i) => (
                 <button key={i} onClick={() => { setCurrentRole(s.from); setTargetRole(s.to); setMode('map'); }}
@@ -770,7 +771,7 @@ const SkillGapMap = ({ tool }) => {
                 )}
                 {interviewData.behavioral_questions?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('behavioral')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>💬</span> {t('sgm_interview_behavioral', { count: interviewData.behavioral_questions.length })} <span>{expandedSections.behavioral ? '▲' : '▼'}</span></button>
+                    <button onClick={() => toggleSection('behavioral')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>💬</span> {t('sgm_interview_behavioral', { count: interviewData.behavioral_questions.length })} <Caret open={expandedSections.behavioral} /></button>
                     {expandedSections.behavioral && interviewData.behavioral_questions.map((bq, i) => (
                       <div key={i} className={`p-3 rounded-lg ${c.cardAlt} mt-2`}>
                         <p className={`text-xs font-bold ${c.text}`}>{bq.question}</p>
@@ -782,7 +783,7 @@ const SkillGapMap = ({ tool }) => {
                 )}
                 {interviewData.questions_to_ask?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('ask')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>❓</span> {t('sgm_interview_smart_qs', { count: interviewData.questions_to_ask.length })} <span>{expandedSections.ask ? '▲' : '▼'}</span></button>
+                    <button onClick={() => toggleSection('ask')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>❓</span> {t('sgm_interview_smart_qs', { count: interviewData.questions_to_ask.length })} <Caret open={expandedSections.ask} /></button>
                     {expandedSections.ask && interviewData.questions_to_ask.map((qa, i) => (
                       <div key={i} className={`p-2 rounded-lg ${c.cardAlt} mt-1.5`}>
                         <p className={`text-xs ${c.text}`}>{qa.question}</p>
@@ -793,7 +794,7 @@ const SkillGapMap = ({ tool }) => {
                 )}
                 {interviewData.technical_questions?.length > 0 && (
                   <div>
-                    <button onClick={() => toggleSection('technical')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>🔧</span> {t('sgm_interview_technical_qs', { count: interviewData.technical_questions.length })} <span>{expandedSections.technical ? '▲' : '▼'}</span></button>
+                    <button onClick={() => toggleSection('technical')} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}><span>🔧</span> {t('sgm_interview_technical_qs', { count: interviewData.technical_questions.length })} <Caret open={expandedSections.technical} /></button>
                     {expandedSections.technical && interviewData.technical_questions.map((tq, i) => (
                       <div key={i} className={`p-3 rounded-lg border ${c.border} mt-2`}>
                         <p className={`text-xs font-bold ${c.text}`}>{tq.question}</p>
@@ -847,7 +848,7 @@ const SkillGapMap = ({ tool }) => {
                           )}
                         </div>
                       </div>
-                      <button onClick={() => toggleSection(gap.id)} className={`text-xs ${c.textMuteded}`}>{expandedSections[gap.id] ? '▲' : '▼'}</button>
+                      <button onClick={() => toggleSection(gap.id)} className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections[gap.id]} /></button>
                     </div>
                   </div>
                   {expandedSections[gap.id] && (
@@ -883,7 +884,7 @@ const SkillGapMap = ({ tool }) => {
             <div className={`${c.card} rounded-xl shadow-sm p-5`}>
               <button onClick={() => toggleSection('transfer')} className={`w-full flex items-center justify-between`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🔄</span> {t('sgm_transferable', { count: results.transferable_skills.length })}</h3>
-                <span className={`text-xs ${c.textMuteded}`}>{expandedSections.transfer ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.transfer} />
               </button>
               {expandedSections.transfer && <div className="space-y-2 mt-3">{results.transferable_skills.map((ts, i) => (
                 <div key={i} className={`p-3 rounded-lg ${c.success} border`}>
@@ -901,7 +902,7 @@ const SkillGapMap = ({ tool }) => {
             <div className={`${c.card} rounded-xl shadow-sm p-5`}>
               <button onClick={() => toggleSection('hidden')} className={`w-full flex items-center justify-between`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span>🕵️</span> {t('sgm_hidden_reqs', { count: results.hidden_requirements.length })}</h3>
-                <span className={`text-xs ${c.textMuteded}`}>{expandedSections.hidden ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.hidden} />
               </button>
               {expandedSections.hidden && <div className="space-y-2 mt-3">{results.hidden_requirements.map((hr, i) => (
                 <div key={i} className={`p-4 rounded-lg border ${c.border}`}>

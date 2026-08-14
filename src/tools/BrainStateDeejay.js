@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -659,7 +660,7 @@ const BrainStateDeejay = ({ tool }) => {
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowSensitivities(!showSensitivities)}
           className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
-          <span className="text-xs">{showSensitivities ? '▲' : '▼'}</span>
+          <Caret open={showSensitivities} />
           {t('bsd_sensitivities')}
           {sensitivities.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{sensitivities.length}</span>}
         </button>
@@ -902,7 +903,7 @@ const BrainStateDeejay = ({ tool }) => {
       <div className="space-y-4" ref={resultsRef}>
         <button onClick={() => setShowInputs(!showInputs)}
           className={`flex items-center gap-2 text-xs font-semibold ${c.btnGhost}`}>
-          <span>{showInputs ? '▲' : '▼'}</span>
+          <Caret open={showInputs} />
           {showInputs ? t('bsd_hide_settings') : t('bsd_show_settings')}
         </button>
 
@@ -1080,7 +1081,7 @@ const BrainStateDeejay = ({ tool }) => {
     <div className={`p-4 rounded-2xl border ${c.warning}`}>
       <button onClick={() => setShowAdjust(!showAdjust)}
         className={`flex items-center gap-2 text-xs font-bold  w-full text-start`}>
-        <span>{showAdjust ? '▲' : '▼'}</span>
+        <Caret open={showAdjust} />
         <span>{t('bsd_adjust_toggle')}</span>
       </button>
       {showAdjust && (
@@ -1150,7 +1151,7 @@ const BrainStateDeejay = ({ tool }) => {
           <span className={`text-base ${c.histAccent}`}>🎧</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('bsd_past_playlists')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-          <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
 
         {showHistory && (
@@ -1167,7 +1168,7 @@ const BrainStateDeejay = ({ tool }) => {
                         {formatDate(entry.date)} · {entry.strategy} · {t('bsd_hist_phases', { count: entry.phases })}
                       </div>
                     </div>
-                    <span className={`text-xs ${c.textMuted} flex-shrink-0`}>{isExp ? '▲' : '▼'}</span>
+                    <Caret open={isExp} className="flex-shrink-0" />
                   </button>
                   {isExp && (
                     <div className={`px-3 pb-3 border-t ${c.border} flex gap-2`}>

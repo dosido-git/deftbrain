@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -312,7 +313,7 @@ const PartyArchitect = ({ tool }) => {
               <button onClick={() => toggleSection('timeline')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>⏱️</span> {t('pa_timeline')}</h3>
-                <span className={c.textMuted}>{expandedSections.timeline ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.timeline} />
               </button>
               {expandedSections.timeline && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
@@ -343,7 +344,7 @@ const PartyArchitect = ({ tool }) => {
               <button onClick={() => toggleSection('mixing')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🤝</span> {t('pa_mixing')}</h3>
-                <span className={c.textMuted}>{expandedSections.mixing ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.mixing} />
               </button>
               {expandedSections.mixing && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>

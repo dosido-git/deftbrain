@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -936,7 +937,7 @@ const LaundroMat = ({ tool }) => {
             className={`w-full flex items-center gap-2 p-4 text-start`}>
             <span>⏱️</span>
             <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide flex-1`}>{t('lmt_custom_timer')}</span>
-            {showCustomTimer ? <span>▴</span> : <span>▾</span>}
+            {<Caret open={showCustomTimer} />}
           </button>
           {showCustomTimer && (
             <div className="px-5 pb-5">

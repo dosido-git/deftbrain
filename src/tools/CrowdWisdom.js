@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -298,7 +299,7 @@ const CrowdWisdom = ({ tool }) => {
                         <p className={`text-xs mt-0.5 ${c.textMuted}`}>{voice.profile}</p>
                       </div>
                     </div>
-                    <span className={`flex-shrink-0 text-sm mt-1 ${c.textMuted}`}>{isOpen ? '▲' : '▼'}</span>
+                    <Caret open={isOpen} className="flex-shrink-0" />
                   </div>
                   {!isOpen && (
                     <p className={`text-sm mt-3 leading-relaxed line-clamp-2 ${c.textSecondary}`}>

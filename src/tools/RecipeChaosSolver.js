@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect, useReducer } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -84,7 +85,7 @@ function Section({ icon, title, badge, children, defaultOpen = false, c }) {
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
           {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${c.warningBox}`}>{badge}</span>}
         </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
     </div>
@@ -1462,7 +1463,7 @@ const RecipeChaosSolver = ({ tool }) => {
                     className={`flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
                     <span>🔬</span>
                     {showScience[idx] ? t('rcs_hide_science') : t('rcs_show_science')}
-                    <span className="text-[9px]">{showScience[idx] ? '▲' : '▼'}</span>
+                    <Caret open={showScience[idx]} />
                   </button>
                   {showScience[idx] && (
                     <div className={`${c.science} border rounded-lg p-3 mt-1.5`}>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -91,7 +92,7 @@ const Section = ({ id, title, icon, expanded, onToggle, children, c, badge }) =>
       <span className="text-lg">{icon}</span>
       <h3 className={`text-lg font-bold ${c.text} flex-1`}>{title}</h3>
       {badge && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500 text-white font-bold">{badge}</span>}
-      <span className={c.textMuteded}>{expanded ? '▲' : '▼'}</span>
+      <Caret open={expanded} />
     </button>
     {expanded && children}
   </div>
@@ -730,16 +731,16 @@ const CrashPredictor = ({ tool }) => {
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>🩸 {t('cpr_cycle_phase')}</label>
                   <div className="flex flex-wrap gap-2">{[{key:'na',label:t('cpr_phase_na')},{key:'menstrual',label:t('cpr_phase_menstrual')},{key:'follicular',label:t('cpr_phase_follicular')},{key:'ovulation',label:t('cpr_phase_ovulation')},{key:'luteal',label:t('cpr_phase_luteal')}].map(p=><button key={p.key} onClick={()=>updateEntry('menstrualPhase',p.key)} className={`text-sm px-3 py-1.5 rounded-full border-2 transition-colors ${currentEntry.menstrualPhase===p.key?c.chipActive:c.chipBase}`}>{p.label}</button>)}</div></div>
 
-                  <button onClick={()=>setShowBiometrics(!showBiometrics)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📟 {t('cpr_biometrics')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ms-1">{showBiometrics?'▲':'▼'}</span></button>
+                  <button onClick={()=>setShowBiometrics(!showBiometrics)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📟 {t('cpr_biometrics')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><Caret open={showBiometrics} className="ms-1" /></button>
                   {showBiometrics&&<div className="grid grid-cols-2 gap-3">{[{k:'hrv',l:t('cpr_bio_hrv'),p:'45'},{k:'restingHR',l:t('cpr_bio_resting_hr'),p:'68'},{k:'sleepHours',l:t('cpr_bio_sleep_hours'),p:'7'},{k:'steps',l:t('cpr_bio_steps'),p:'8000'}].map(f=><div key={f.k}><label className={`text-xs ${c.textMuteded}`}>{f.l}</label><input type="number" step={f.k==='sleepHours'?'0.5':'1'} value={currentEntry.biometrics[f.k]} onChange={e=>updateBiometric(f.k,e.target.value)} placeholder={f.p} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>)}</div>}
 
-                  <button onClick={()=>setShowWeather(!showWeather)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>🌤️ {t('cpr_weather')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ms-1">{showWeather?'▲':'▼'}</span></button>
+                  <button onClick={()=>setShowWeather(!showWeather)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>🌤️ {t('cpr_weather')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><Caret open={showWeather} className="ms-1" /></button>
                   {showWeather&&<div className="grid grid-cols-2 gap-3">
                   <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_conditions')}</label><select value={currentEntry.weather.condition} onChange={e=>updateWeather('condition',e.target.value)} className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}><option value="">{t('cpr_select')}</option><option value="clear">☀️ {t('cpr_wx_clear')}</option><option value="cloudy">☁️ {t('cpr_wx_cloudy')}</option><option value="overcast">🌫️ {t('cpr_wx_overcast')}</option><option value="rain">🌧️ {t('cpr_wx_rain')}</option><option value="storm">⛈️ {t('cpr_wx_storm')}</option><option value="snow">❄️ {t('cpr_wx_snow')}</option><option value="pressure_drop">📉 {t('cpr_wx_pressure_drop')}</option><option value="pressure_rise">📈 {t('cpr_wx_pressure_rise')}</option></select></div>
                   <div><label className={`text-xs ${c.textMuteded}`}>{t('cpr_barometric')}</label><input type="number" value={currentEntry.weather.barometricPressure} onChange={e=>updateWeather('barometricPressure',e.target.value)} placeholder="1013" className={`${c.input} border rounded-lg px-3 py-1.5 text-base w-full mt-1`}/></div>
                   </div>}
 
-                  <button onClick={()=>setShowCalendar(!showCalendar)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📅 {t('cpr_commitments')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><span className="ms-1">{showCalendar?'▲':'▼'}</span></button>
+                  <button onClick={()=>setShowCalendar(!showCalendar)} className={`text-sm font-medium ${c.textSecondary} flex items-center gap-1`}><span>📅 {t('cpr_commitments')}</span><span className={c.textMuteded}>{t('cpr_opt')}</span><Caret open={showCalendar} className="ms-1" /></button>
                   {showCalendar&&<textarea value={currentEntry.calendarContext} onChange={e=>updateEntry('calendarContext',e.target.value)} placeholder={t('cpr_commitments_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-base w-full`}/>}
 
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>📝 {t('cpr_notes')}</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder={t('cpr_notes_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-base w-full`}/></div>

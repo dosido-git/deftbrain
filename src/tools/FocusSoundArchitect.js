@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -2093,7 +2094,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <button onClick={() => setShowTips(!showTips)}
                 className={`flex items-center gap-2 w-full text-sm font-bold ${c.text}`}>
                 <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>💡</span> {t('fsa_tips_adjustments')}
-                <span className={`ms-auto transition-transform ${showTips ? 'rotate-180' : ''}`}>▼</span>
+                <Caret open={showTips} className="ms-auto" />
               </button>
               {showTips && (
                 <div className="mt-4 space-y-3">

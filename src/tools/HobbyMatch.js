@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -353,7 +354,7 @@ const HobbyMatch = ({ tool }) => {
                             </span>
                           </div>
                         </div>
-                        <span className={`${c.textMuteded} flex-shrink-0`}>{isExpanded ? '▲' : '▼'}</span>
+                        <Caret open={isExpanded} className="flex-shrink-0" />
                       </div>
                     </button>
 

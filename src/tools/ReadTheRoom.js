@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -160,7 +161,7 @@ const SectionBlock = ({ id, title, children, c, expandedSections, toggleSection 
   <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
     <button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between">
       <h3 className={`font-bold ${c.text}`}>{title}</h3>
-      <span>{expandedSections[id] ? '▲' : '▼'}</span>
+      <Caret open={expandedSections[id]} />
     </button>
     {expandedSections[id] && (
       <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>
@@ -1060,7 +1061,7 @@ const ReadTheRoom = ({ tool }) => {
                 <div key={tpIdx} className={`${c.cardAlt} border ${c.border} rounded-lg p-4 space-y-2`}>
                   <div className="flex items-center justify-between">
                     <p className={`text-sm font-bold ${c.text}`}>{tp.name} <span className={`text-xs ${c.textMuted}`}>{t('rr_recurring_meta', { relationship: tp.relationship, count: tp.notes.length })}</span></p>
-                    <button onClick={() => setSelectedTrackedPerson(selectedTrackedPerson === tpIdx ? null : tpIdx)} className={`text-xs ${c.accentTxt}`}>{selectedTrackedPerson === tpIdx ? '▲' : '▼'}</button>
+                    <button onClick={() => setSelectedTrackedPerson(selectedTrackedPerson === tpIdx ? null : tpIdx)} className={`text-xs ${c.accentTxt}`}><Caret open={selectedTrackedPerson === tpIdx} /></button>
                   </div>
                   {selectedTrackedPerson === tpIdx && (
                     <div className="space-y-2">
@@ -1613,7 +1614,7 @@ const ReadTheRoom = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <button onClick={() => toggleSection('history')} className="flex items-center justify-between w-full">
             <h3 className={`font-bold ${c.text}`}>{t('rr_recent', { count: sessionHistory.length })}</h3>
-            <span>{expandedSections.sessionHistory ? '▲' : '▼'}</span>
+            <Caret open={expandedSections.sessionHistory} />
           </button>
           {expandedSections.sessionHistory && (
             <div className="mt-3 space-y-1">

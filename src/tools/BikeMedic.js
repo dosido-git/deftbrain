@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -2310,7 +2311,7 @@ const BikeMedic = ({ tool }) => {
               <button onClick={() => setShowInterpreter(!showInterpreter)} className="w-full flex items-center gap-3 text-start">
                 <span className={`text-lg flex-shrink-0`}>🔍</span>
                 <div className="flex-1"><span className={`text-sm font-bold ${c.text}`}>{t('bmd_describe_happening')}</span><span className={`block text-xs ${c.textMuteded}`}>{t('bmd_ai_suggests_category')}</span></div>
-                <span className={`${c.textMuteded} transition-transform ${showInterpreter ? 'rotate-180' : ''}`}>▼</span>
+                <Caret open={showInterpreter} />
               </button>
               {showInterpreter && (
                 <div className="mt-4">
@@ -2596,7 +2597,7 @@ const BikeMedic = ({ tool }) => {
               <div className="mb-6">
                 <button onClick={() => setShowParts(!showParts)} className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} ${c.textSecondary} text-sm font-semibold transition-colors`}>
                   <span>🛒</span> {t('bmd_fix_parts_shopping')}
-                  <span className="ms-auto">{showParts ? '▲' : '▼'}</span>
+                  <Caret open={showParts} className="ms-auto" />
                 </button>
                 {showParts && (
                   <div className={`mt-2 border-2 ${c.border} rounded-xl overflow-hidden`}>

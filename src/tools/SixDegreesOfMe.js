@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -489,7 +490,7 @@ const SixDegreesOfMe = ({ tool }) => {
             </div>
             {count > 0 && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.infoBox}`}>{count}</span>}
           </div>
-          {toggle && <span className={`text-xs ${c.textMuted}`}>{isOpen ? '▲' : '▼'}</span>}
+          {toggle && <Caret open={isOpen} />}
         </button>
 
         {isOpen && (
@@ -504,7 +505,7 @@ const SixDegreesOfMe = ({ tool }) => {
                     <span className="text-sm">{cat.emoji}</span>
                     <span className={`text-xs font-semibold flex-1 ${c.text}`}>{t(cat.labelKey)}</span>
                     {catItems.length > 0 && <span className={`text-[10px] font-bold ${c.profileFilled}`}>✓ {catItems.length}</span>}
-                    <span className="text-[10px]">{isEditing ? '▲' : '▼'}</span>
+                    <Caret open={isEditing} />
                   </button>
                   {isEditing && (
                     <div className="ms-6 mt-1 space-y-2">
@@ -1094,7 +1095,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   className={`w-full text-start p-4 transition-colors ${c.historyCard}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-sm">{isExp ? '▲' : '▼'}</span>
+                      <Caret open={isExp} />
                       <p className={`text-sm font-bold ${c.text} truncate`}>"{h.thingA}" → "{h.thingB}"</p>
                       {h.constraint && <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${c.infoBox}`}>{h.constraint}</span>}
                     </div>

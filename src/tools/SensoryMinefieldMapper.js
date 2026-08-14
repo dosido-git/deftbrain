@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -638,7 +639,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('timeline')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>⏰ {t('smm_intensity_by_time')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.timeline ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.timeline} /></span>
                 </button>
                 {expandedSections.timeline && (
                   <div className="mt-3">
@@ -669,7 +670,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('factors')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>🔍 {t('smm_factor_breakdown')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.factors ? '▼' : '▶'} {t('smm_factors_count', { count: results.factors.length })}</span>
+                  <span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.factors} /> {t('smm_factors_count', { count: results.factors.length })}</span>
                 </button>
                 {(expandedSections.factors !== false) && (
                   <div className="space-y-3 mt-4">
@@ -713,7 +714,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('layout')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>🗺️ {t('smm_layout_intel')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.layout ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.layout} /></span>
                 </button>
                 {expandedSections.layout && (
                   <div className="space-y-4 mt-4">
@@ -786,7 +787,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('scripts')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.accentTxt}`}>💬 {t('smm_what_to_say')}</p>
-                  <span className={`text-xs ${c.textMuteded}`}>{expandedSections.scripts ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuteded}`}><Caret open={expandedSections.scripts} /></span>
                 </button>
                 {expandedSections.scripts && (
                   <div className="space-y-2 mt-3">

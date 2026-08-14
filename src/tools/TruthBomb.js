@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Caret from '../components/Caret';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -304,7 +305,7 @@ const TruthBomb = ({ tool }) => {
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('timing')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕐 {t('tb_timing_title')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.timing ? '▲' : '▼'}</span>
+                <Caret open={expanded.timing} />
               </button>
               {expanded.timing && (
                 <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
@@ -327,7 +328,7 @@ const TruthBomb = ({ tool }) => {
             <div className={`rounded-xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('permission')} className="w-full text-start px-5 py-4 flex items-center justify-between min-h-[44px]">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🤫 {t('tb_permission_title')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.permission ? '▲' : '▼'}</span>
+                <Caret open={expanded.permission} />
               </button>
               {expanded.permission && (
                 <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>

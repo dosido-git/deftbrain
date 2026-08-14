@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -930,7 +931,7 @@ const PlainTalk = ({ tool }) => {
                       <h4 className={`text-sm font-bold ${c.text}`}>
                         📚 {t('plt_glossary', { count: result.jargon_glossary.length })}
                       </h4>
-                      <span className={c.textMuteded}>{showGlossary ? '▲' : '▼'}</span>
+                      <Caret open={showGlossary} />
                     </button>
                     {showGlossary && (
                       <div className="mt-3 space-y-2">
@@ -1047,7 +1048,7 @@ const PlainTalk = ({ tool }) => {
                             }`}>
                               {section.importance}
                             </span>
-                            <span className={c.textMuteded}>{isOpen ? '▲' : '▼'}</span>
+                            <Caret open={isOpen} />
                           </button>
                           {isOpen && (
                             <div className={`px-4 pb-4 border-t ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
@@ -1166,7 +1167,7 @@ const PlainTalk = ({ tool }) => {
                               {section.title}
                               {annotations[section.id] && <span className="ms-1">📝</span>}
                             </p>
-                            <span className={c.textMuteded}>{isOpen ? '▲' : '▼'}</span>
+                            <Caret open={isOpen} />
                           </button>
                           {isOpen && (
                             <div className="grid grid-cols-1 md:grid-cols-2">

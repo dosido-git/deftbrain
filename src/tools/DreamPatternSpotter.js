@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -645,7 +646,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🔍</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_classification')}</h3>
-                  <span className="ms-auto">{expandedSections.dreamClassification ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.dreamClassification} className="ms-auto" />
                 </button>
                 {expandedSections.dreamClassification && (
                   <div className="space-y-3">
@@ -684,7 +685,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📊</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_type_distribution')}</h3>
-                  <span className="ms-auto">{expandedSections.dreamTypeDistribution ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.dreamTypeDistribution} className="ms-auto" />
                 </button>
                 {expandedSections.dreamTypeDistribution && (
                   <div className="grid grid-cols-2 gap-3">
@@ -706,11 +707,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📖</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_themes')}</h3>
-                  {expandedSections.themes ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.themes} className="ms-auto" />
                 </button>
 
                 {expandedSections.themes && (
@@ -773,11 +770,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⭐</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_symbols')}</h3>
-                  {expandedSections.symbols ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.symbols} className="ms-auto" />
                 </button>
 
                 {expandedSections.symbols && (
@@ -831,7 +824,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⭐</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_dream_symbols')}</h3>
-                  <span className="ms-auto">{expandedSections.singleSymbols ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.singleSymbols} className="ms-auto" />
                 </button>
                 {expandedSections.singleSymbols && (
                   <div className="space-y-4">
@@ -870,7 +863,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>💛</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_emotional_sig')}</h3>
-                  <span className="ms-auto">{expandedSections.emotionalSig ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.emotionalSig} className="ms-auto" />
                 </button>
                 {expandedSections.emotionalSig && (
                   <div className={`${c.dreamEmotion} border rounded-lg p-4 space-y-3`}>
@@ -904,7 +897,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>😴</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_sleep_quality')}</h3>
-                  <span className="ms-auto">{expandedSections.sleepQuality ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.sleepQuality} className="ms-auto" />
                 </button>
                 {expandedSections.sleepQuality && (
                   <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
@@ -934,7 +927,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⚠️</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_nightmare_analysis')}</h3>
-                  <span className="ms-auto">{expandedSections.nightmareAnalysis ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.nightmareAnalysis} className="ms-auto" />
                 </button>
                 {expandedSections.nightmareAnalysis && (
                   <div className={`${c.danger} border rounded-lg p-4 space-y-4`}>
@@ -989,7 +982,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>⚠️</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_nightmare_patterns')}</h3>
-                  <span className="ms-auto">{expandedSections.nightmarePattern ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.nightmarePattern} className="ms-auto" />
                 </button>
                 {expandedSections.nightmarePattern && (
                   <div className="space-y-4">
@@ -1060,7 +1053,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>✨</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_lucid_potential_title')}</h3>
-                  <span className="ms-auto">{expandedSections.lucidDreaming ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.lucidDreaming} className="ms-auto" />
                 </button>
                 {expandedSections.lucidDreaming && (
                   <div className="space-y-4">
@@ -1107,7 +1100,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>✨</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_lucid_potential_title')}</h3>
-                  <span className="ms-auto">{expandedSections.lucidPattern ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.lucidPattern} className="ms-auto" />
                 </button>
                 {expandedSections.lucidPattern && (
                   <div className="space-y-4">
@@ -1156,7 +1149,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>😴</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_sleep_patterns')}</h3>
-                  <span className="ms-auto">{expandedSections.sleepPattern ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.sleepPattern} className="ms-auto" />
                 </button>
                 {expandedSections.sleepPattern && (
                   <div className={`${c.cardAlt} border rounded-lg p-4 space-y-3`}>
@@ -1193,7 +1186,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🔗</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_life_connections')}</h3>
-                  <span className="ms-auto">{expandedSections.lifeConnections ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.lifeConnections} className="ms-auto" />
                 </button>
                 {expandedSections.lifeConnections && (
                   <div className="space-y-3">
@@ -1222,11 +1215,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_recurring_people')}</h3>
-                  {expandedSections.people ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.people} className="ms-auto" />
                 </button>
 
                 {expandedSections.people && (
@@ -1259,11 +1248,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>💫</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_emotional_patterns')}</h3>
-                  {expandedSections.emotions ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.emotions} className="ms-auto" />
                 </button>
 
                 {expandedSections.emotions && (
@@ -1297,11 +1282,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📅</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_life_event_correlations')}</h3>
-                  {expandedSections.correlations ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.correlations} className="ms-auto" />
                 </button>
 
                 {expandedSections.correlations && (
@@ -1331,11 +1312,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🧠</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_preoccupations')}</h3>
-                  {expandedSections.preoccupations ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.preoccupations} className="ms-auto" />
                 </button>
 
                 {expandedSections.preoccupations && (
@@ -1369,11 +1346,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_reflection_questions')}</h3>
-                  {expandedSections.questions ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.questions} className="ms-auto" />
                 </button>
 
                 {expandedSections.questions && (
@@ -1403,11 +1376,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>🌙</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_insights')}</h3>
-                  {expandedSections.insights ? (
-                    <span className="ms-auto">▲</span>
-                  ) : (
-                    <span className="ms-auto">▼</span>
-                  )}
+                  <Caret open={expandedSections.insights} className="ms-auto" />
                 </button>
 
                 {expandedSections.insights && (
@@ -1462,7 +1431,7 @@ const DreamPatternSpotter = ({ tool }) => {
                 >
                   <span>📋</span>
                   <h3 className={`text-xl font-bold ${c.text}`}>{t('dps_therapist_export')}</h3>
-                  <span className="ms-auto">{expandedSections.therapistExport ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.therapistExport} className="ms-auto" />
                 </button>
                 {expandedSections.therapistExport && (
                   <div className="space-y-3">

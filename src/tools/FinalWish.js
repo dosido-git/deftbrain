@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -1806,7 +1807,7 @@ async function decrypt(){
         <textarea value={deviceNotes} onChange={e => setDeviceNotes(e.target.value)} placeholder={t('fws_ph_device_notes')} rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} /></div>
       <div className="mb-6">
         <button onClick={() => setShowMemorial(!showMemorial)} className={`flex items-center gap-2 text-sm font-semibold ${c.textSecondary} ${c.cardAltHover} px-3 py-2 rounded-lg`}>
-          {showMemorial ? '▲' : '▼'} {t('fws_memorial_label')} <span className={`text-xs ${c.textMuteded}`}>{t('fws_optional')}</span>
+          <Caret open={showMemorial} /> {t('fws_memorial_label')} <span className={`text-xs ${c.textMuteded}`}>{t('fws_optional')}</span>
         </button>
         {showMemorial && <textarea value={memorialWishes} onChange={e => setMemorialWishes(e.target.value)} placeholder={t('fws_ph_memorial')} rows={3} className={`w-full mt-3 px-4 py-3 rounded-xl border text-sm ${c.input} outline-none`} />}
       </div>

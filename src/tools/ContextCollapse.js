@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -477,7 +478,7 @@ const ContextCollapse = ({ tool }) => {
                 className={`w-full flex items-center gap-2 p-3 rounded-xl ${c.cardAlt} border ${c.border} hover:opacity-80`}>
                 <span>💣</span>
                 <span className={`text-xs font-bold ${c.text} flex-1`}>{t('ctc_worst_case')}</span>
-                <span className={`text-xs ${c.textMuteded}`}>{showNuclear ? '▲' : '▼'}</span>
+                <Caret open={showNuclear} />
               </button>
               {showNuclear && (
                 <div className="mt-2 space-y-2">
@@ -519,7 +520,7 @@ const ContextCollapse = ({ tool }) => {
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ctc_past_analyses')}</span>
               <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-              <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+              <Caret open={showHistory} />
             </button>
             {showHistory && (
               <button

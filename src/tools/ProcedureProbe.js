@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -373,7 +374,7 @@ const ProcedureProbe = ({ tool }) => {
                   <span>❓</span> {t('pp_questions_title')}
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.warning}`}>{r.questions_to_ask.length}</span>
                 </h3>
-                <span className={c.textMuted}>{expandedSections.questions ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.questions} />
               </button>
               {expandedSections.questions && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
@@ -418,7 +419,7 @@ const ProcedureProbe = ({ tool }) => {
               <button onClick={() => toggleSection('expect')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>📋</span> {t('pp_expect_title')}</h3>
-                <span className={c.textMuted}>{expandedSections.expect ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.expect} />
               </button>
               {expandedSections.expect && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -278,7 +279,7 @@ const BeliefStressTest = ({ tool }) => {
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                     🔬 {t('bst_stress_tests')} ({results.stress_tests.length})
                   </p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.tests ? '▲' : '▼'}</span>
+                  <Caret open={expanded.tests} />
                 </button>
                 {expanded.tests && (
                   <div className={`border-t ${c.border}`}>
@@ -305,7 +306,7 @@ const BeliefStressTest = ({ tool }) => {
               <div className={`rounded-2xl border overflow-hidden ${c.card} border ${c.border}`}>
                 <button onClick={() => toggle('hidden')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>🔦 {t('bst_hidden_structure')}</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.hidden ? '▲' : '▼'}</span>
+                  <Caret open={expanded.hidden} />
                 </button>
                 {expanded.hidden && (
                   <div className={`px-5 pb-4 space-y-3 border-t ${c.border} pt-4`}>

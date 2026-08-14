@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -253,7 +254,7 @@ const PronounceItRight = ({ tool }) => {
             <span className="text-base">{emoji}</span>
             <span className={'text-sm font-semibold ' + c.text}>{title}</span>
           </div>
-          <span className={'text-xs ' + c.textMuted}>{open ? '▲' : '▼'}</span>
+          <Caret open={open} />
         </button>
         {open && <div className={'px-4 pb-4 border-t ' + c.border}>{children}</div>}
       </div>
@@ -579,7 +580,7 @@ const PronounceItRight = ({ tool }) => {
           <span>🗣️</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('pir_words_looked_up')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 flex flex-wrap gap-1.5">

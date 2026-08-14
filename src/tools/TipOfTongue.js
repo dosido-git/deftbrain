@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -481,7 +482,7 @@ const TipOfTongue = ({ tool }) => {
           <span>🕐</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tot_past_searches')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">

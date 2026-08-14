@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -520,7 +521,7 @@ const BrainDumpBuddy = ({ tool }) => {
                 {isActionable ? (remaining === 0 ? t('bdb_done_check') : t('bdb_done_left', { count: remaining })) : items.length}
               </span>
           </div>
-          <span className={`text-xs ${c.textMuted}`}>{isOpen ? '▲' : '▼'}</span>
+          <Caret open={isOpen} />
         </button>
         {isOpen && (
           <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
@@ -881,7 +882,7 @@ const BrainDumpBuddy = ({ tool }) => {
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0 ms-2">
                           <span className={`text-xs ${c.textMuted}`}>{new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                          <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '▲' : '▼'}</span>
+                          <Caret open={isExpanded} />
                         </div>
                       </button>
                       {/* Expanded: full dump text + completed tasks */}

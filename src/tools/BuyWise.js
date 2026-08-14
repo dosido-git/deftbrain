@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useReducer, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -98,7 +99,7 @@ function Section({ icon, title, badge, badgeClass, children, defaultOpen = false
             </span>
           )}
         </div>
-        <span className={`text-xs ${c.textMuteded} print:hidden`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {/* Body stays mounted and reveals on print (`hidden print:block`) so a
           printed/exported page shows every section expanded, even ones the
@@ -1462,7 +1463,7 @@ const BuyWise = ({ tool }) => {
                   </span>
                 )}
               </div>
-              <span className={`text-xs ${c.textMuteded}`}>{showPpu ? '▲' : '▼'}</span>
+              <Caret open={showPpu} />
             </button>
             {showPpu && (
               <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
@@ -1520,7 +1521,7 @@ const BuyWise = ({ tool }) => {
                 <h3 className={`text-sm font-bold ${c.text}`}>{t('bw_sec_verdict_card')}</h3>
                 <span className={`text-[9px] font-medium px-2 py-0.5 rounded ${c.highlightBg}`}>{t('bw_shareable')}</span>
               </div>
-              <span className={`text-xs ${c.textMuteded}`}>{showVerdictCard ? '▲' : '▼'}</span>
+              <Caret open={showVerdictCard} />
             </button>
             {showVerdictCard && (
               <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -290,7 +291,7 @@ const UpsellShield = ({ tool }) => {
                   <span>🎯</span> {t('us_playbook_title')}
                   <span className={`text-[9px] px-2 py-0.5 rounded-full ${c.badge}`}>{t('us_tactics_badge', { count: r.their_playbook.length })}</span>
                 </h3>
-                <span className={c.textMuted}>{expandedSections.playbook ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.playbook} />
               </button>
               {expandedSections.playbook && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-4`}>
@@ -323,7 +324,7 @@ const UpsellShield = ({ tool }) => {
               <button onClick={() => toggleSection('power')}
                 className="w-full p-4 flex items-center justify-between text-start min-h-[44px]">
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>💪</span> {t('us_power_title')}</h3>
-                <span className={c.textMuted}>{expandedSections.power ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.power} />
               </button>
               {expandedSections.power && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>

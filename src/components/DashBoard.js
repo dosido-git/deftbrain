@@ -1,5 +1,6 @@
 // src/components/DashBoard.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import Caret from './Caret';
 import { Link } from 'react-router-dom';
 
 import BrandMark from './BrandMark';
@@ -496,7 +497,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
               }}>
                 <span className="db-ex-show">See what the output looks like</span>
                 <span className="db-ex-hide">Hide</span>
-                <span className="db-ex-caret" style={{ fontSize: 10 }}>▼</span>
+                <Caret className="db-ex-caret" />
               </span>
             </span>
           </summary>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -762,7 +763,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">💥</span> {t('dtc_landmines', { count: results.emotional_landmines.length })}
                     </h3>
-                    {expandedSections.landmines ? <span className="text-sm">▲</span> : <span className="text-sm">▼</span>}
+                    {<Caret open={expandedSections.landmines} />}
                   </button>
                   {(expandedSections.landmines !== false) && (
                     <div className="space-y-4 mt-4">
@@ -858,7 +859,7 @@ const DifficultTalkCoach = ({ tool }) => {
                           <div>
                             <button onClick={() => toggleSection(`responses-${idx}`)} className={`flex items-center gap-2 w-full ${c.text}`}>
                               <p className="text-xs font-bold">{t('dtc_what_they_might', { count: approach.anticipated_responses.length })}</p>
-                              {expandedSections[`responses-${idx}`] ? <span className="text-xs">▲</span> : <span className="text-xs">▼</span>}
+                              <Caret open={expandedSections[`responses-${idx}`]} />
                             </button>
                             {expandedSections[`responses-${idx}`] && (
                               <div className="space-y-3 mt-3">
@@ -956,7 +957,7 @@ const DifficultTalkCoach = ({ tool }) => {
                       <h3 className={`font-bold ${c.text}`}>{t('dtc_pushback_title')}</h3>
                       <span className={`text-[10px] ${c.textMuted}`}>{t('dtc_pushback_sub')}</span>
                     </div>
-                    {expandedPushback ? <span className={`text-sm ${c.textMuted}`}>▲</span> : <span className={`text-sm ${c.textMuted}`}>▼</span>}
+                    {<Caret open={expandedPushback} />}
                   </button>
                   {expandedPushback && (
                     <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-4`}>
@@ -1004,7 +1005,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">⚡</span> {t('dtc_body_language')}
                     </h3>
-                    {expandedSections.body ? <span className="text-sm">▲</span> : <span className="text-sm">▼</span>}
+                    {<Caret open={expandedSections.body} />}
                   </button>
                   {expandedSections.body && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -1026,7 +1027,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">🛡️</span> {t('dtc_deescalation')}
                     </h3>
-                    {expandedSections.deescalation ? <span className="text-sm">▲</span> : <span className="text-sm">▼</span>}
+                    {<Caret open={expandedSections.deescalation} />}
                   </button>
                   {expandedSections.deescalation && (
                     <div className="space-y-3 mt-4">
@@ -1074,7 +1075,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     <h3 className="font-bold flex items-center gap-2">
                       <span className="text-lg">🕐</span> {t('dtc_prep_plan')}
                     </h3>
-                    {expandedSections.prep ? <span className="text-sm">▲</span> : <span className="text-sm">▼</span>}
+                    {<Caret open={expandedSections.prep} />}
                   </button>
                   {expandedSections.prep && (
                     <div className="space-y-3 mt-4">

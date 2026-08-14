@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -439,7 +440,7 @@ const LeverageLogic = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('yourLev')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('llog_your_cards')}</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.yourLev ? '▼' : '▶'} {results.your_leverage.length}</span>
+                  <span className={`text-xs ${c.textMuted}`}><Caret open={expandedSections.yourLev} /> {results.your_leverage.length}</span>
                 </button>
                 {expandedSections.yourLev !== false && (
                   <div className="space-y-2.5 mt-3">
@@ -464,7 +465,7 @@ const LeverageLogic = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('theirLev')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('llog_their_cards')}</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.theirLev ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuted}`}><Caret open={expandedSections.theirLev} /></span>
                 </button>
                 {expandedSections.theirLev && (
                   <div className="space-y-2.5 mt-3">
@@ -523,7 +524,7 @@ const LeverageLogic = ({ tool }) => {
             <div className={`${c.card} border rounded-2xl p-5`}>
               <button onClick={() => toggle('anchor')} className="w-full flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('llog_anchoring_calc')}</p>
-                <span className={`text-xs ${c.textMuted}`}>{expandedSections.anchor ? '▼' : '▶'}</span>
+                <span className={`text-xs ${c.textMuted}`}><Caret open={expandedSections.anchor} /></span>
               </button>
               {expandedSections.anchor && (
                 <div className="mt-3 space-y-3">
@@ -617,7 +618,7 @@ const LeverageLogic = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('traps')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('llog_traps_title')}</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.traps ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuted}`}><Caret open={expandedSections.traps} /></span>
                 </button>
                 {expandedSections.traps && (
                   <div className="space-y-2.5 mt-3">
@@ -651,7 +652,7 @@ const LeverageLogic = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('body')} className="w-full flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textSecondary}`}>{t('llog_body_title')}</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.body ? '▼' : '▶'}</span>
+                  <span className={`text-xs ${c.textMuted}`}><Caret open={expandedSections.body} /></span>
                 </button>
                 {expandedSections.body && (
                   <div className="grid grid-cols-2 gap-3 mt-3">

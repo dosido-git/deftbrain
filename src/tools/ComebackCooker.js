@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -393,9 +394,7 @@ const ComebackCooker = ({ tool }) => {
                             <span className={`text-xs ${c.textMuted}`}>{cb.technique}</span>
                           </div>
                         </div>
-                        <span className={`text-sm ${c.textMuted} flex-shrink-0 mt-1`}>
-                          {isOpen ? '▲' : '▼'}
-                        </span>
+                        <Caret open={isOpen} className="flex-shrink-0" />
                       </div>
                     </button>
 

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -680,7 +681,7 @@ const CaptionMagic = ({ tool }) => {
       <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
         <button onClick={() => setShowRemix(!showRemix)}
           className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-start`}>
-          <span>{showRemix ? '▲' : '▼'}</span>
+          <Caret open={showRemix} />
           <span>{t('cm_remix_captions')}</span>
         </button>
         {showRemix && (
@@ -902,7 +903,7 @@ const CaptionMagic = ({ tool }) => {
           <span className={`text-base ${c.textCyan}`}>✨</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('cm_past_captions')}</span>
           <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-          <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">

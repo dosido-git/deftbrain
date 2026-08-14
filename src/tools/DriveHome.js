@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -711,7 +712,7 @@ const DriveHome = ({ tool }) => {
           <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
             <span>{icon}</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
-            <span className={c.textMuted}>{isOpen ? '▲' : '▼'}</span>
+            <Caret open={isOpen} />
           </button>
           {isOpen && <div className="px-4 pb-4">{children}</div>}
         </div>

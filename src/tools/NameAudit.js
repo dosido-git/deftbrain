@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -950,7 +951,7 @@ const NameAudit = ({ tool }) => {
           </h3>
           <div className="flex items-center gap-3">
             {score != null && <ScoreBar score={score} />}
-            {isOpen ? <span>▲</span> : <span>▼</span>}
+            {<Caret open={isOpen} />}
           </div>
         </button>
         {explainerVisible && explainerKey && (
@@ -1149,7 +1150,7 @@ const NameAudit = ({ tool }) => {
                 <span className="flex items-center gap-2 font-semibold text-sm">
                   <span>📜</span> {t('nau_history_title', { count: auditHistory.length })}
                 </span>
-                <span>{showHistory ? '▲' : '▼'}</span>
+                <Caret open={showHistory} />
               </button>
               {showHistory && (
                 <div className="mt-3 space-y-2">

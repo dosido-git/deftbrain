@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -985,7 +986,7 @@ const SafeWalk = ({ tool }) => {
           <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
             <span>{icon}</span>
             <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
-            {isOpen ? <span className={c.textMuted}>▲</span> : <span className={c.textMuted}>▼</span>}
+            {<Caret open={isOpen} />}
           </button>
           {isOpen && <div className="px-4 pb-4">{children}</div>}
         </div>

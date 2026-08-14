@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -389,9 +390,7 @@ const Giftology = ({ tool }) => {
                         </div>
                         <p className={`text-xs ${c.textMuted}`}>{pick.price_range}</p>
                       </div>
-                      <span className={`text-xs ${c.textMuted} flex-shrink-0 mt-1`}>
-                        {isExpanded ? '▲' : '▼'}
-                      </span>
+                      <Caret open={isExpanded} className="flex-shrink-0" />
                     </button>
 
                     {isExpanded && (

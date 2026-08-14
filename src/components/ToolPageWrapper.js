@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Caret from './Caret';
 import { ActionBarProvider, useActionBar } from './ActionBarContext';
 import { ActionBar } from './ActionButtons';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -472,7 +473,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
                 <summary className="cursor-pointer py-2 -my-2 list-none [&::-webkit-details-marker]:hidden">
                   <div className={`text-xs font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-700'} uppercase tracking-wide flex items-center gap-2`}>
                     Good to Know
-                    <span className="ms-auto text-[9px] rotate-0 group-open:rotate-180 transition-transform duration-200" aria-hidden="true">▼</span>
+                    <Caret groupOpen className="ms-auto" />
                   </div>
                 </summary>
                 <ul className="space-y-2 mt-3">

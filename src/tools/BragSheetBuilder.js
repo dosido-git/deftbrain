@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -748,7 +749,7 @@ const BragSheetBuilder = ({ tool }) => {
                       <button onClick={() => toggleSection(`exc-${ci}`)} className={`flex items-center gap-1.5 w-full text-start mb-1.5`}>
                         <span>{cat.icon}</span>
                         <span className={`text-xs font-bold ${c.text}`}>{cat.name}</span>
-                        <span className={`text-[10px] ${c.textMuteded} ms-auto`}>{expandedSections[`exc-${ci}`] === false ? '▼' : '▲'}</span>
+                        <Caret open={expandedSections[`exc-${ci}`] !== false} className="ms-auto" />
                       </button>
                       {expandedSections[`exc-${ci}`] !== false && (
                         <div className="space-y-1.5 ms-5">
@@ -1313,7 +1314,7 @@ const BragSheetBuilder = ({ tool }) => {
                 <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <button onClick={() => toggleSection('star')} className={`w-full flex items-center justify-between ${c.text}`}>
                     <h3 className="font-bold flex items-center gap-2"><span className="text-lg">⭐</span> {t('bsb_star_stories')} ({allStarStories.length})</h3>
-                    <span className="text-sm">{expandedSections.star === false ? '▼' : '▲'}</span>
+                    <Caret open={!(expandedSections.star === false)} />
                   </button>
                   {expandedSections.star !== false && (
                     <div className="space-y-4 mt-4">

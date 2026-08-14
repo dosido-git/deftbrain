@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTheme } from '../hooks/useTheme';
@@ -649,7 +650,7 @@ const SubscriptionTamer = ({ tool }) => {
             <div>
               <button onClick={() => setShowQuickAdd(p => !p)}
                 className={`text-xs font-bold ${c.textSecondary} flex items-center gap-1 min-h-[28px]`}>
-                <span>⚡</span> {t('ss_quick_add')} <span>{showQuickAdd ? '▲' : '▼'}</span>
+                <span>⚡</span> {t('ss_quick_add')} <Caret open={showQuickAdd} />
               </button>
               {showQuickAdd && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -874,7 +875,7 @@ const SubscriptionTamer = ({ tool }) => {
                       {sub.cost_per_use && (
                         <span className={`text-[10px] font-bold ${c.textMuted} hidden sm:inline`}>{fm(sub.cost_per_use, currency)}{t('ss_per_use')}</span>
                       )}
-                      <span className={`text-xs ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span>
+                      <Caret open={expanded} />
                     </div>
                   </button>
                   {expanded && (
@@ -1988,7 +1989,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
         {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
-        <span className={`text-xs ${c.textMuted}`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>{children}</div>}
     </div>

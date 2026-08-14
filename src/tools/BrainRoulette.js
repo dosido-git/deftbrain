@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -953,7 +954,7 @@ const BrainRoulette = ({ tool }) => {
                 <div key={item.topic_tag} className={`rounded-xl overflow-hidden ${c.savedCard} relative group`}>
                   <button onClick={() => setExpandedSavedIdx(isExp ? null : idx)} className={`w-full text-start p-4 ${c.savedItemHover} transition-colors`}>
                     <div className="flex items-start gap-3">
-                      <span className="text-sm mt-0.5">{isExp ? '▲' : '▼'}</span>
+                      <Caret open={isExp} className="mt-0.5" />
                       <div className="flex-1 pe-8">
                         <h4 className={`font-bold text-sm mb-1 ${c.textStrong}`}>{item.title}</h4>
                         {!isExp && <p className={`text-xs leading-relaxed line-clamp-2 ${c.textMuted}`}>{item.hook}</p>}

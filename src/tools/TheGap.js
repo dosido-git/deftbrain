@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -418,7 +419,7 @@ const TheGap = ({ tool }) => {
                 <span className={'text-sm font-semibold ' + c.text}>{t('tg_study_plan')}</span>
                 {results?.study_plan?.total_time && <span className={'text-xs px-2 py-0.5 rounded-full ' + c.badge}>⏱️ {results?.study_plan?.total_time}</span>}
               </div>
-              <span className={'text-xs ' + c.textMuted}>{showPlan ? '▲' : '▼'}</span>
+              <Caret open={showPlan} />
             </button>
             {showPlan && (
               <div className={'px-4 pb-4 border-t ' + c.border + ' space-y-2 mt-3'}>
@@ -440,7 +441,7 @@ const TheGap = ({ tool }) => {
               className={'w-full flex items-center gap-2 p-3 rounded-xl ' + c.cardAlt + ' border hover:opacity-80'}>
               <span>🤔</span>
               <span className={'text-xs font-bold ' + c.text + ' flex-1'}>{t('tg_alt_not_gap')}</span>
-              <span className={'text-xs ' + c.textMuted}>{showAlternatives ? '▲' : '▼'}</span>
+              <Caret open={showAlternatives} />
             </button>
             {showAlternatives && (
               <div className="mt-2 space-y-2">
@@ -566,7 +567,7 @@ const TheGap = ({ tool }) => {
           <span>📝</span>
           <span className={'text-sm font-bold ' + c.text + ' flex-1'}>{t('tg_past_gaps')}</span>
           <span className={'text-xs ' + c.textMuted}>{sessionHistory.length}</span>
-          <span className={'text-xs ' + c.textMuted}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">

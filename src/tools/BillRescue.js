@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { formatCurrency, currencySymbol } from '../utils/formatLocale';
 import { useTheme } from '../hooks/useTheme';
@@ -910,7 +911,7 @@ const BillRescue = ({ tool }) => {
         <div className={`border-t ${c.border} pt-3 mb-3`}>
           <button onClick={() => setShowMore(!showMore)}
             className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
-            {t('br_more_detail')} {showMore ? '▲' : '▼'}
+            {t('br_more_detail')} <Caret open={showMore} />
           </button>
         </div>
 
@@ -1097,7 +1098,7 @@ const BillRescue = ({ tool }) => {
             {r.todays_job.script && (
               <details className="group mt-3">
                 <summary className={`cursor-pointer text-xs font-bold ${c.highlightText} list-none [&::-webkit-details-marker]:hidden min-h-[28px]`}>
-                  📞 {t('br_show_words')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                  📞 {t('br_show_words')} <Caret groupOpen />
                 </summary>
                 <div className={`${c.quoteBg} rounded-lg p-3 mt-2`}>
                   <p className={`text-xs ${c.text}`}>"{r.todays_job.script}"</p>
@@ -1179,7 +1180,7 @@ const BillRescue = ({ tool }) => {
                             {step.script && (
                               <details className="group mt-2">
                                 <summary className={`cursor-pointer text-[10px] font-bold ${c.highlightText} uppercase list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
-                                  {t('br_show_words')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                                  {t('br_show_words')} <Caret groupOpen />
                                 </summary>
                                 <div className={`${c.card} border rounded-lg p-3 mt-1.5`}>
                                   <p className={`text-xs ${c.text}`}>"{step.script}"</p>
@@ -2449,7 +2450,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
           <h3 className={`text-sm font-bold ${c.text}`}>{title}</h3>
           {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.highlightBg}`}>{badge}</span>}
         </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>{children}</div>}
     </div>

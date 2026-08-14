@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -766,7 +767,7 @@ const ArgueBetter = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
           <button onClick={() => setShowLog(!showLog)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium ${c.text}`}>
             <span>📜 {t('dm_debate_log', { count: sessionHistory.length })}</span>
-            <span className={`text-xs ${c.textMuted}`}>{showLog ? '▲' : '▼'}</span>
+            <Caret open={showLog} />
           </button>
           {showLog && <div className="px-4 pb-4 space-y-3">
             <div className="flex justify-end"><button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuteded}`}>{t('dm_clear_all')}</button></div>

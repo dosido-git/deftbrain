@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -53,7 +54,7 @@ function Sec({ icon, title, badge, open, onToggle, children, c }) {
         <span className="text-lg">{icon}</span>
         <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
         {badge != null && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
-        <span className={c.textMuted}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className="mt-4">{children}</div>}
     </div>

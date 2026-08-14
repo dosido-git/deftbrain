@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -760,7 +761,7 @@ const ConflictCoach = ({ tool }) => {
                         <button
                           onClick={() => { setSelectedStrategyIdx(selectedStrategyIdx === idx ? null : idx); setAdjustedResponse(null); setToneLevel(50); }}
                           className={`text-xs ${linkStyle}`}>
-                          {selectedStrategyIdx === idx ? `▲ ${t('cc_hide_tone')}` : `🎚️ ${t('cc_adjust_tone')}`}
+                          {selectedStrategyIdx === idx ? <><Caret open /> {t('cc_hide_tone')}</> : `🎚️ ${t('cc_adjust_tone')}`}
                         </button>
                         {selectedStrategyIdx === idx && (
                           <div className={`mt-2 p-3 rounded ${c.toneSlider}`}>

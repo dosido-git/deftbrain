@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -403,7 +404,7 @@ const EmailUrgencyTriager = ({ tool }) => {
           <div className="flex items-center gap-1 ms-2 flex-shrink-0">
             {tier !== 'optional' && <button onClick={() => markHandled(key, email)} className={`text-sm p-1 rounded ${status === 'done' ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} title={t('eut_done_title')}>✅</button>}
             {tier !== 'optional' && <button onClick={() => openComposer(email)} className={`text-sm p-1 rounded opacity-40 hover:opacity-100`} title={t('eut_compose_title')}>✍️</button>}
-            <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSecondary} text-xs`}>{isExp ? '▲' : '▼'}</button>
+            <button onClick={() => setExpandedEmail(isExp && !expandAll ? null : key)} className={`p-1 rounded ${c.btnSecondary} text-xs`}><Caret open={isExp} /></button>
           </div>
         </div>
         {isExp && (

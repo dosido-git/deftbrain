@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -752,7 +753,7 @@ const WaitingModeLiberator = ({ tool }) => {
                 <span className="me-2">⚙️</span>
                 {t('wml_context_header')}
                 {!contextOpen && <span className={`ms-2 text-xs font-normal ${c.textMuted}`}>({t(ENERGY_LEVELS.find(e => e.id === energy)?.labelKey)}, {anxietyBefore}/10)</span>} </span>
-              <span className={`text-xs ${c.textMuted}`}>{contextOpen ? '▲' : '▼'}</span>
+              <Caret open={contextOpen} />
             </button>
 
             {contextOpen && (<div className="px-4 pb-4 space-y-4 border-t" style={{ borderColor: 'inherit' }}>

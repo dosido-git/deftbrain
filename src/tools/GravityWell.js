@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -268,7 +269,7 @@ const GravityWell = ({ tool }) => {
               <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button onClick={() => toggle('profile')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('gw_profile_title')}</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.profile ? '▲' : '▼'}</span>
+                  <Caret open={expanded.profile} />
                 </button>
                 {expanded.profile && (
                   <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>
@@ -338,7 +339,7 @@ const GravityWell = ({ tool }) => {
               <div onClick={() => toggle('value')} className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
                 <button className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('gw_value_title')}</p>
-                  <span className={`text-sm ${c.textMuteded}`}>{expanded.value ? '▲' : '▼'}</span>
+                  <Caret open={expanded.value} />
                 </button>
                 {expanded.value && (
                   <div className={`px-5 pb-5 space-y-2 border-t ${c.border} pt-4`}>

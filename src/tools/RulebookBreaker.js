@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -378,7 +379,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('loopholes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🕳️ {t('rb_loopholes')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.loopholes ? '▲' : '▼'}</span>
+                <Caret open={expanded.loopholes} />
               </button>
               {expanded.loopholes && (
                 <div className={`border-t ${c.border}`}>
@@ -399,7 +400,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('phrases')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>✨ {t('rb_magic_phrases')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.phrases ? '▲' : '▼'}</span>
+                <Caret open={expanded.phrases} />
               </button>
               {expanded.phrases && (
                 <div className={`border-t ${c.border}`}>
@@ -420,7 +421,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('regulatory')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🏛️ {t('rb_regulatory')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.regulatory ? '▲' : '▼'}</span>
+                <Caret open={expanded.regulatory} />
               </button>
               {expanded.regulatory && (
                 <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-2`}>
@@ -443,7 +444,7 @@ const RulebookBreaker = ({ tool }) => {
             <div className={`rounded-2xl border overflow-hidden ${c.card} ${c.border}`}>
               <button onClick={() => toggle('nuclear')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>💣 {t('rb_nuclear')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.nuclear ? '▲' : '▼'}</span>
+                <Caret open={expanded.nuclear} />
               </button>
               {expanded.nuclear && (
                 <div className={`border-t ${c.border}`}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -1275,7 +1276,7 @@ const NameStorm = ({ tool }) => {
                 <span className="flex items-center gap-2 font-semibold text-sm">
                   <span>📜</span> {t('ns_prev_storms', { count: stormHistory.length })}
                 </span>
-                <span>{showHistory ? '▲' : '▼'}</span>
+                <Caret open={showHistory} />
               </button>
               {showHistory && (
                 <div className="mt-3 space-y-2">

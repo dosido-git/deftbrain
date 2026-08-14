@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -75,7 +76,7 @@ function Section({ icon, title, badge, badgeColor, children, defaultOpen = false
         <span>{icon}</span>
         <span className={`text-xs font-bold flex-1 ${c.text}`}>{title}</span>
         {badge && <span className={`text-[9px] font-black px-2 py-0.5 rounded ${badgeColor || c.badge}`}>{badge}</span>}
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className={`px-4 pb-4 border-t ${c.border} pt-3`}>{children}</div>}
     </div>
@@ -800,7 +801,7 @@ const LayoverMaximizer = ({ tool }) => {
             <div ref={detailsRef} className={`border-t ${c.border} pt-3`}>
               <button onClick={() => setShowDetails(!showDetails)}
                 className={`text-xs font-bold ${c.textSecondary} uppercase min-h-[28px] text-start`}>
-                🛡️ {t('lmx_details_toggle')} {showDetails ? '▲' : '▼'}
+                🛡️ {t('lmx_details_toggle')} <Caret open={showDetails} />
               </button>
               {!showDetails && ![nationality, arrivalTerminal, connectionTerminal, arrivalTime].some(v => String(v || '').trim()) && (
                 <p className={`text-xs ${c.textMuteded} mt-1`}>{t('lmx_details_why')}</p>
@@ -1084,7 +1085,7 @@ const LayoverMaximizer = ({ tool }) => {
                   {r.best_plan.why && (
                     <details className="group mt-2">
                       <summary className={`cursor-pointer text-[10px] font-bold uppercase tracking-wide ${c.textSecondary} list-none [&::-webkit-details-marker]:hidden min-h-[24px]`}>
-                        {t('lmx_why_this')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+                        {t('lmx_why_this')} <Caret groupOpen />
                       </summary>
                       <p className="text-xs opacity-90 mt-1.5">{r.best_plan.why}</p>
                     </details>

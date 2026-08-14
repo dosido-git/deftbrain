@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -241,7 +242,7 @@ const SignalVsNoise = ({ tool }) => {
                   <p className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                     {t('svn_noise_header_a')} {results?.the_noise?.length} {t('svn_noise_header_b')}
                   </p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.noise ? '▲' : '▼'}</span>
+                  <Caret open={expanded.noise} />
                 </button>
                 {expanded.noise && (
                   <div className={`border-t ${c.border}`}>
@@ -272,7 +273,7 @@ const SignalVsNoise = ({ tool }) => {
                   <p className={`text-xs font-black uppercase tracking-widest ${c.debatedText}`}>
                     {t('svn_debated_header_a')} {results?.genuinely_debated?.length} {t('svn_debated_header_b')}
                   </p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.debated ? '▲' : '▼'}</span>
+                  <Caret open={expanded.debated} />
                 </button>
                 {expanded.debated && (
                   <div className={`border-t ${c.border}`}>
@@ -329,7 +330,7 @@ const SignalVsNoise = ({ tool }) => {
               <div className={`rounded-xl border ${c.border} overflow-hidden ${c.card}`}>
                 <button onClick={() => toggle('sources')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                   <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('svn_sources_header')}</p>
-                  <span className={`text-sm ${c.textMuted}`}>{expanded.sources ? '▲' : '▼'}</span>
+                  <Caret open={expanded.sources} />
                 </button>
                 {expanded.sources && (
                   <div className={`border-t ${c.border}`}>

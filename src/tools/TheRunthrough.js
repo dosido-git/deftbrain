@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -311,7 +312,7 @@ const TheRunthrough = ({ tool }) => {
             <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
               <span>🗑️</span> {t('trt_what_was_cut')} ({d.what_was_cut.length})
             </h3>
-            <span className={`text-sm ${c.textMuted}`}>{expandedSections['cuts'] !== false ? '▲' : '▼'}</span>
+            <Caret open={expandedSections['cuts'] !== false} />
           </button>
           {expandedSections['cuts'] !== false && (
             <div className="mt-3 space-y-2">
@@ -405,7 +406,7 @@ const TheRunthrough = ({ tool }) => {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${diff.badge}`}>{t(diff.labelKey)}</span>
-                    <span className={`text-sm ${c.textMuted}`}>{isOpen ? '▲' : '▼'}</span>
+                    <Caret open={isOpen} />
                   </div>
                 </button>
                 {isOpen && (

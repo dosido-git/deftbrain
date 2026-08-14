@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -517,7 +518,7 @@ const MicroAdventureMapper = ({ tool }) => {
       <div className={`p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
         <button onClick={() => setShowAccessibility(!showAccessibility)}
           className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
-          {showAccessibility ? <span>▾</span> : <span>▸</span>}
+          {<Caret open={showAccessibility} />}
           {t('mam_acc_label')}
           {accessibility.length > 0 && <span className={`ms-1 px-1.5 py-0.5 rounded text-[10px] ${c.pillActive}`}>{accessibility.length}</span>}
         </button>
@@ -808,7 +809,7 @@ const MicroAdventureMapper = ({ tool }) => {
                 {adv.total_cost && <><span>·</span><span>{adv.total_cost}</span></>}
               </div>
             </div>
-            {isExpanded ? <span className={`${c.textMuted} flex-shrink-0`}>▲</span> : <span className={`${c.textMuted} flex-shrink-0`}>▼</span>}
+            {<Caret open={isExpanded} className="flex-shrink-0" />}
           </button>
 
           {/* Expanded detail */}
@@ -854,7 +855,7 @@ const MicroAdventureMapper = ({ tool }) => {
           <span className={`${c.journalAccent}`}>📖</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('mam_journal_title')}</span>
           <span className={`text-xs ${c.textMuted}`}>{t('mam_journal_past', { n: pastAdventures.length })}</span>
-          {showJournal ? <span className={`${c.textMuted}`}>▲</span> : <span className={`${c.textMuted}`}>▼</span>}
+          {<Caret open={showJournal} />}
         </button>
 
         {showJournal && (

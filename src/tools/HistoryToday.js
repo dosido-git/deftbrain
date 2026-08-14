@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -252,7 +253,7 @@ const HistoryToday = ({ tool }) => {
             <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-4`}>
               <button onClick={() => toggleSection('saved')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <span className={`text-xs font-bold ${c.textMuteded}`}>{t('ht_previous_searches', { count: savedSearches.length })}</span>
-                <span className="text-xs">{expandedSections.saved ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.saved} />
               </button>
               {expandedSections.saved && (
                 <div className="space-y-1.5 mt-2">
@@ -386,7 +387,7 @@ const HistoryToday = ({ tool }) => {
                 {p.key_figures?.length > 0 && (
                   <div>
                     <button onClick={() => toggleSection(`fig-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
-                      <span>👤</span> {t('ht_key_figures')} <span>{expandedSections[`fig-${idx}`] ? '▲' : '▼'}</span>
+                      <span>👤</span> {t('ht_key_figures')} <Caret open={expandedSections[`fig-${idx}`]} />
                     </button>
                     {expandedSections[`fig-${idx}`] && (
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -440,7 +441,7 @@ const HistoryToday = ({ tool }) => {
                   {deeperData[idx].timeline?.length > 0 && (
                     <div>
                       <button onClick={() => toggleSection(`tl-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded} mb-2`}>
-                        <span>📅</span> {t('ht_timeline_label', { count: deeperData[idx].timeline.length })} <span>{expandedSections[`tl-${idx}`] !== false ? '▲' : '▼'}</span>
+                        <span>📅</span> {t('ht_timeline_label', { count: deeperData[idx].timeline.length })} <Caret open={expandedSections[`tl-${idx}`] !== false} />
                       </button>
                       {expandedSections[`tl-${idx}`] !== false && (
                         <div className={`space-y-0 ms-3 border-s-2 ${isDark ? 'border-cyan-700' : 'border-cyan-200'}`}>
@@ -479,7 +480,7 @@ const HistoryToday = ({ tool }) => {
                   {deeperData[idx].information_environment && (
                     <div>
                       <button onClick={() => toggleSection(`info-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
-                        <span>📡</span> {t('ht_information_environment')} <span>{expandedSections[`info-${idx}`] ? '▲' : '▼'}</span>
+                        <span>📡</span> {t('ht_information_environment')} <Caret open={expandedSections[`info-${idx}`]} />
                       </button>
                       {expandedSections[`info-${idx}`] && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">

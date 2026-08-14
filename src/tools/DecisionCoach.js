@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -544,7 +545,7 @@ const DecisionCoach = ({ tool }) => {
       <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
         <div className="flex items-center gap-2 mb-2">
           <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>{t('dc_saved_prefs')}</label>
-          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? '▲' : t('dc_save_template')}</button>
+          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? <Caret open /> : t('dc_save_template')}</button>
         </div>
         <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder={t('dc_ph_prefs')} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
         {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">{t('dc_template_name_label')}</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('dc_ph_template_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{t('dc_save')}</button></div>)}
@@ -872,7 +873,7 @@ const DecisionCoach = ({ tool }) => {
                     {hasFU && <span className="text-emerald-500">✓</span>}
                   </div>
                 </div>
-                <span className={`text-xs ${c.textMuteded}`}>{isExp ? '▲' : '▼'}</span>
+                <Caret open={isExp} />
               </button>
               {isExp && (() => {
                 const r = entry.results || {};

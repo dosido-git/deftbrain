@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -261,7 +262,7 @@ const LuckSurface = ({ tool }) => {
                               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${mcfg.color(isDark)}`}>{mcfg.icon} {t(mcfg.labelKey)}</span>
                             </div>
                           </div>
-                          <span className={`flex-shrink-0 text-sm mt-1 ${c.textMuteded}`}>{isOpen ? '▲' : '▼'}</span>
+                          <Caret open={isOpen} className="flex-shrink-0" />
                         </div>
                         {!isOpen && <p className={`text-sm mt-2 line-clamp-2 ${c.textMuteded}`}>{move.the_move}</p>}
                       </button>

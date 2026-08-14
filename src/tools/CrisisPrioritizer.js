@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -762,7 +763,7 @@ const CrisisPrioritizer = ({ tool }) => {
 
   const Section = ({ id, title, emoji, children, defaultOpen, badge }) => {
     const isOpen = expanded[id] !== undefined ? expanded[id] : defaultOpen;
-    return <div className={`${c.card} rounded-xl shadow-sm p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.danger} border`}>{badge}</span>}</h3><span className="text-xs">{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
+    return <div className={`${c.card} rounded-xl shadow-sm p-5`}><button onClick={() => toggleExpand(id)} className={`w-full flex items-center justify-between ${c.text}`}><h3 className="font-bold text-sm flex items-center gap-2"><span>{emoji}</span> {title}{badge && <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${c.danger} border`}>{badge}</span>}</h3><Caret open={isOpen} /></button>{isOpen && <div className="mt-4">{children}</div>}</div>;
   };
 
   const CountdownBadge = ({ deadline }) => {

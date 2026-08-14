@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -758,7 +759,7 @@ const DateNight = ({ tool }) => {
         <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
           <button onClick={() => setExpandedConvo(!expandedConvo)} className="w-full p-4 flex justify-between text-start">
             <span className={`text-sm font-bold ${c.text}`}>{results.nostalgia_prompts ? <>💭 {t('dn_reflection_prompts')}</> : <>💬 {t('dn_conversation_starters')}</>}</span>
-            <span className={`text-xs ${c.textMuteded}`}>{expandedConvo ? '▲' : '▼'}</span>
+            <Caret open={expandedConvo} />
           </button>
           {expandedConvo && (
             <div className={`px-4 pb-4 space-y-2 border-t ${c.border} pt-3`}>
@@ -867,7 +868,7 @@ const DateNight = ({ tool }) => {
           The evening's stops still reach the model (see handleRate), so it can
           still learn what this couple likes — it just no longer makes them
           grade three venues to say the plan was good. */}
-      <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.roseText}`}>{showRate ? '▲' : '⭐'} {t('dn_rate_this')}</button>
+      <button onClick={() => setShowRate(!showRate)} className={`text-xs font-bold ${c.roseText}`}>{showRate ? <Caret open /> : '⭐'} {t('dn_rate_this')}</button>
       {showRate && (
         <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
           <div className="flex gap-1">
@@ -1014,7 +1015,7 @@ const DateNight = ({ tool }) => {
                 />
                 {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
                 <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-                  🕐 {t('dn_timing_details')} {showTiming ? '▲' : '▼'}
+                  🕐 {t('dn_timing_details')} <Caret open={showTiming} />
                 </button>
               </div>
               {/* Start time, length and weather — all three have a working
@@ -1112,7 +1113,7 @@ const DateNight = ({ tool }) => {
           {/* Dietary + Restrictions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <button onClick={() => setShowDietary(!showDietary)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-              🍽️ {t('dn_dietary')} {dietary.length > 0 ? `(${dietary.length})` : ''} {showDietary ? '▲' : '▼'}
+              🍽️ {t('dn_dietary')} {dietary.length > 0 ? `(${dietary.length})` : ''} <Caret open={showDietary} />
             </button>
             {showDietary && (
               <div className="mt-2 space-y-2">
@@ -1125,7 +1126,7 @@ const DateNight = ({ tool }) => {
           {/* Partner prefs */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             <button onClick={() => setShowPartner(!showPartner)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
-              👫 {t('dn_partner_prefs')} {showPartner ? '▲' : '▼'}
+              👫 {t('dn_partner_prefs')} <Caret open={showPartner} />
             </button>
             {showPartner && (
               <div className="mt-3 space-y-3">

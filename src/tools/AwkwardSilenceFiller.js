@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -521,7 +522,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                           onClick={() => toggleSection(`chain-${idx}`)}
                           className={`mt-2 text-[10px] font-bold ${c.textSecondary} flex items-center gap-1`}
                         >
-                          <span>{expanded ? '▲' : '▼'}</span>
+                          <Caret open={expanded} />
                           {expanded ? t('asf_hide_flow') : t('asf_see_flow')}
                         </button>
                       )}
@@ -568,7 +569,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>🛡️</span> {t('asf_body_title')}
                 </h3>
-                <span className={c.textMuteded}>{expandedSections.body ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.body} />
               </button>
               {expandedSections.body && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>
@@ -590,7 +591,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>🚪</span> {t('asf_exits_title')}
                 </h3>
-                <span className={c.textMuteded}>{expandedSections.exit ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.exit} />
               </button>
               {expandedSections.exit && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-3`}>
@@ -617,7 +618,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
                 <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
                   <span>🚫</span> {t('asf_not_to_say_title')}
                 </h3>
-                <span className={c.textMuteded}>{expandedSections.avoid ? '▲' : '▼'}</span>
+                <Caret open={expandedSections.avoid} />
               </button>
               {expandedSections.avoid && (
                 <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>

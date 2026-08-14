@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -228,7 +229,7 @@ const ResearchDecoder = ({ tool }) => {
 
   const Section = ({ id, title, children, defaultOpen = false }) => {
     const isOpen = expandedSections[id] ?? defaultOpen;
-    return <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}><button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>{title}</h3><span>{isOpen ? '▲' : '▼'}</span></button>{isOpen && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}</div>;
+    return <div className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}><button onClick={() => toggleSection(id)} className="w-full p-4 flex items-center justify-between"><h3 className={`font-bold ${c.text}`}>{title}</h3><Caret open={isOpen} /></button>{isOpen && <div className={`px-4 pb-4 border-t ${c.border} pt-3 space-y-2`}>{children}</div>}</div>;
   };
 
   const ACCURACY_COLORS = {

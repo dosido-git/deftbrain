@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -652,7 +653,7 @@ const MagicMouth = ({ tool }) => {
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
                     <span>🎬</span> {t('mm_delivery_notes')}
                   </h3>
-                  <span className={`text-sm ${c.textMuteded}`}>{expandedSections['delivery'] !== false ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections['delivery'] !== false} />
                 </button>
                 {expandedSections['delivery'] !== false && (
                   <div className="mt-4 space-y-3">

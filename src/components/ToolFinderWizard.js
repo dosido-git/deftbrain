@@ -9,6 +9,7 @@
 // situations; the user can edit before submitting.
 
 import React, { useState, useCallback, useRef } from 'react';
+import Caret from './Caret';
 import { useTranslation } from '../i18n/useTranslation';
 
 // ════════════════════════════════════════════════════════════
@@ -267,7 +268,7 @@ export default function ToolFinderWizard() {
       }}
     >
       <span>🔍 {t('wizard_intro')}</span>
-      <span style={{ fontSize: 11, marginInlineStart: 8 }}>{isOpen ? '▲' : '▼'}</span>
+      <Caret open={isOpen} />
     </button>
   );
 
@@ -323,7 +324,7 @@ export default function ToolFinderWizard() {
               }}>
                 🔍 {t('wizard_intro')}
               </span>
-              <span style={{ fontSize: 9, color: CLR.warm400 }}>▲</span>
+              <Caret open />
             </button>
             <div style={{
               flex: 1,
@@ -367,7 +368,7 @@ export default function ToolFinderWizard() {
                 color: CLR.warm400,
                 flexShrink: 0,
               }}
-            >▲</button>
+            ><Caret open /></button>
           </div>
 
           {/* Example pills — button is last child, right-aligned via marginInlineStart: auto */}
@@ -438,9 +439,9 @@ export default function ToolFinderWizard() {
               <span style={{ fontSize: 14, fontWeight: 800, color: CLR.navy500 }}>
                 🔍 {t('wizard_intro')}
               </span>
-              <span style={{ fontSize: 9, color: CLR.warm400 }}>▲</span>
+              <Caret open />
             </span>
-            <span style={{ fontSize: 10, color: CLR.warm400 }}>▲</span>
+            <Caret open />
           </button>
 
           {/* Situation callout */}

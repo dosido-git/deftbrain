@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -1359,7 +1360,7 @@ const FocusPocus = ({ tool }) => {
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
             <button onClick={() => setShowOptional(!showOptional)}
               className={`flex items-center gap-2 text-sm font-bold ${c.textSecondary} w-full`}>
-              <span className={`transition-transform ${showOptional ? 'rotate-180' : ''}`}>▼</span>
+              <Caret open={showOptional} />
               {t('fpc_optional_toggle')}
             </button>
             {showOptional && (
@@ -1438,7 +1439,7 @@ const FocusPocus = ({ tool }) => {
               <button onClick={() => setShowHistory(!showHistory)}
                 className={`flex items-center gap-2 w-full text-xs font-bold ${c.textMuteded}`}>
                 {t('fpc_recent_count', { count: Math.min(sessionHistory.length, 15) })}
-                <span className={`ms-auto transition-transform ${showHistory ? 'rotate-180' : ''}`}>▼</span>
+                <Caret open={showHistory} className="ms-auto" />
               </button>
               {showHistory && (
                 <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">

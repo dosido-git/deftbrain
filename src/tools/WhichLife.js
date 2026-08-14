@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -528,7 +529,7 @@ const WhichLife = ({ tool }) => {
               <span>📋</span>
               <span className={`text-sm font-bold ${c.text} flex-1`}>{t('cr_past_decisions')}</span>
               <span className={`text-xs ${c.textMuted}`}>{sessionHistory.length}</span>
-              <span className={`text-xs ${c.textMuted}`}>{showHistory ? '▲' : '▼'}</span>
+              <Caret open={showHistory} />
             </button>
             {showHistory && (
               <button

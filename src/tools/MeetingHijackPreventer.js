@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef, useReducer } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -96,7 +97,7 @@ function Section({ icon, title, badge, open, onToggle, children, c, actions }) {
           <span className="text-lg">{icon}</span>
           <h3 className={`text-sm font-bold ${c.text} flex-1`}>{title}</h3>
           {badge && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{badge}</span>}
-          <span className={c.textMuted}>{open ? '▲' : '▼'}</span>
+          <Caret open={open} />
         </button>
         {actions}
       </div>

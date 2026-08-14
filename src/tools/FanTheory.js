@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -315,7 +316,7 @@ const FanTheory = ({ tool }) => {
                   <p className={`text-xs font-bold ${c.text} truncate`}>🧵 {saved.data.theory_name}</p>
                   <p className={`text-[11px] ${c.textMuted} truncate`}>{saved.title} · {saved.data.one_line}</p>
                 </div>
-                <span className={`text-xs ${c.textMuted} flex-shrink-0`}>{expandedSaved === saved.id ? '▲' : '▼'}</span>
+                <Caret open={expandedSaved === saved.id} className="flex-shrink-0" />
               </button>
               {expandedSaved === saved.id && (
                 <div className={`border-t ${c.border} p-4 space-y-3`}>

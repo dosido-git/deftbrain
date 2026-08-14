@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -560,7 +561,7 @@ const LeaseTrapDetector = ({ tool }) => {
                             <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${riskColor}`}>{p.risk_if_absent === 'high' ? t('ltd_risk_high') : p.risk_if_absent === 'medium' ? t('ltd_risk_medium') : t('ltd_risk_low')}</span>
                             <span className={`text-sm font-bold ${c.text} truncate`}>{p.protection}</span>
                           </div>
-                          <span className={`flex-shrink-0 text-sm ${c.textMuted}`}>{expanded ? '▲' : '▼'}</span>
+                          <Caret open={expanded} className="flex-shrink-0" />
                         </button>
                         {expanded && (
                           <div className={`p-4 border-t space-y-3 ${isDark ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-200 bg-white'}`}>
@@ -770,7 +771,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 <div className={`${c.card} border rounded-2xl p-5`}>
                   <button onClick={() => toggle('deposit')} className="w-full flex items-center justify-between">
                     <p className={`text-sm font-black ${c.text}`}>{t('ltd_security_deposit')}</p>
-                    <span className={`text-xs ${c.textMuted}`}>{expandedSections.deposit ? '▲' : '▼'}</span>
+                    <Caret open={expandedSections.deposit} />
                   </button>
                   {expandedSections.deposit && (
                     <div className="mt-4 space-y-3">
@@ -824,7 +825,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('yellow')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_yellow_flags')} ({results.yellow_flags.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.yellow ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.yellow} />
                 </button>
                 {expandedSections.yellow && (
                   <div className="mt-4 space-y-4">
@@ -853,7 +854,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('unenforceable')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_unenforceable')} ({results.unenforceable_clauses.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.unenforceable ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.unenforceable} />
                 </button>
                 {expandedSections.unenforceable && (
                   <div className="mt-4 space-y-3">
@@ -876,7 +877,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('green')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_green_flags')} ({results.green_flags.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.green ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.green} />
                 </button>
                 {expandedSections.green && (
                   <div className="mt-4 space-y-2">
@@ -896,7 +897,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('missing')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_missing')} ({results.missing_protections.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.missing ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.missing} />
                 </button>
                 {expandedSections.missing && (
                   <div className="mt-4 space-y-3">
@@ -918,7 +919,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('fees')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_unusual_fees')} ({results.unusual_fees.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.fees ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.fees} />
                 </button>
                 {expandedSections.fees && (
                   <div className="mt-4 space-y-3">
@@ -1002,7 +1003,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5 border-s-4 border-s-cyan-500`}>
                 <button onClick={() => toggle('negotiation')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_negotiation_strategy')}</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.negotiation ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.negotiation} />
                 </button>
                 {expandedSections.negotiation && (() => {
                   const ns = results.negotiation_strategy;
@@ -1217,7 +1218,7 @@ const LeaseTrapDetector = ({ tool }) => {
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <button onClick={() => toggle('resources')} className="w-full flex items-center justify-between">
                   <p className={`text-sm font-black ${c.text}`}>{t('ltd_resources')} ({results.resources.length})</p>
-                  <span className={`text-xs ${c.textMuted}`}>{expandedSections.resources ? '▲' : '▼'}</span>
+                  <Caret open={expandedSections.resources} />
                 </button>
                 {expandedSections.resources && (
                   <div className="mt-4 space-y-2">

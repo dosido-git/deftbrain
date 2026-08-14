@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -417,7 +418,7 @@ const RoommateCourt = ({ tool }) => {
         <button onClick={() => toggleSection(key)} className="w-full flex items-center gap-2 p-4 text-start">
           <span>{icon}</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{title}</span>
-          <span>{isOpen ? '▲' : '▼'}</span>
+          <Caret open={isOpen} />
         </button>
         {isOpen && <div className="px-4 pb-4">{children}</div>}
       </div>
@@ -770,7 +771,7 @@ const RoommateCourt = ({ tool }) => {
         <button onClick={() => setShowHistory(!showHistory)} className="w-full flex items-center gap-2 p-4 text-start">
           <span className={`text-sm font-bold ${c.text} flex-1`}>📋 {t('rc_history')}</span>
           <span className={`text-xs ${c.textMuted}`}>{t('rc_rounds', { count: assignHistory.length })}</span>
-          <span>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="px-4 pb-4 space-y-3">

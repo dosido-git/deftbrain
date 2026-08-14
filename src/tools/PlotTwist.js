@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -240,7 +241,7 @@ const PlotTwist = ({ tool }) => {
           <span className={`text-base font-semibold ${c.text}`}>{title}</span>
           {badge && <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{badge}</span>}
         </div>
-        <span className={`text-xs ${c.textMuteded}`}>{open ? '▲' : '▼'}</span>
+        <Caret open={open} />
       </button>
       {open && <div className={`px-5 pb-5 border-t ${c.border}`}>{children}</div>}
     </div>
@@ -558,7 +559,7 @@ const PlotTwist = ({ tool }) => {
           <span className={`text-base ${c.histAccent}`}>🔀</span>
           <span className={`text-sm font-bold ${c.text} flex-1`}>{t('ptw_history_title')}</span>
           <span className={`text-xs ${c.textMuteded}`}>{sessionHistory.length}</span>
-          <span className={`text-xs ${c.textMuteded}`}>{showHistory ? '▲' : '▼'}</span>
+          <Caret open={showHistory} />
         </button>
         {showHistory && (
           <div className="mt-3 space-y-2">

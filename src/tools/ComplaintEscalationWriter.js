@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -964,7 +965,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <button onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
                 <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> {t('cew_legal_leverage', { count: results?.legal_leverage?.length })}</h3>
-                {expandedSections.legal ? <span>▲</span> : <span>▼</span>}
+                {<Caret open={expandedSections.legal} />}
               </button>
               {expandedSections.legal && (
                 <div className="space-y-3 mt-4">
@@ -999,7 +1000,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <h3 className="font-bold flex items-center gap-2">
                   <span>📋</span> {t('cew_evidence_checklist', { done: results?.evidence_checklist?.filter((_, i) => isEvidenceChecked(i)).length, total: results?.evidence_checklist?.length })}
                 </h3>
-                {expandedSections.evidence ? <span>▲</span> : <span>▼</span>}
+                {<Caret open={expandedSections.evidence} />}
               </button>
               {expandedSections.evidence && (
                 <div className="space-y-2 mt-4">
@@ -1375,7 +1376,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
               <button onClick={() => setShowCallScript(!showCallScript)} className={`w-full flex items-center justify-between ${c.text}`}>
                 <h3 className="font-bold flex items-center gap-2"><span>📞</span> {t('cew_call_script')}</h3>
-                {showCallScript ? <span>▲</span> : <span>▼</span>}
+                {<Caret open={showCallScript} />}
               </button>
               {showCallScript && (
                 <div className="space-y-4 mt-4">
@@ -1430,7 +1431,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 <h3 className="font-bold flex items-center gap-2">
                   <span>📜</span> {getCampaignEntries().length === 1 ? t('cew_campaign_log_one', { count: getCampaignEntries().length }) : t('cew_campaign_log', { count: getCampaignEntries().length })}
                 </h3>
-                {expandedSections.campaign ? <span>▲</span> : <span>▼</span>}
+                {<Caret open={expandedSections.campaign} />}
               </button>
               {expandedSections.campaign && (
                 <div className="space-y-3 mt-4">

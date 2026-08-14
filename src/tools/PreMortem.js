@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -300,7 +301,7 @@ const PreMortem = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
                   ⚠️ {t('pm_warning_signs')}
                 </p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.warnings ? '▲' : '▼'}</span>
+                <Caret open={expanded.warnings} />
               </button>
               {expanded.warnings && (
                 <div className={`border-t ${c.border}`}>
@@ -341,7 +342,7 @@ const PreMortem = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
               <button onClick={() => toggle('modes')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🎲 {t('pm_failure_modes')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.modes ? '▲' : '▼'}</span>
+                <Caret open={expanded.modes} />
               </button>
               {expanded.modes && (
                 <div className={`border-t ${c.border}`}>
@@ -381,7 +382,7 @@ const PreMortem = ({ tool }) => {
             <div className={`${c.card} border ${c.border} rounded-2xl overflow-hidden`}>
               <button onClick={() => toggle('assumptions')} className="w-full text-start px-5 py-4 flex items-center justify-between">
                 <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>🔬 {t('pm_assumptions_autopsy')}</p>
-                <span className={`text-sm ${c.textMuted}`}>{expanded.assumptions ? '▲' : '▼'}</span>
+                <Caret open={expanded.assumptions} />
               </button>
               {expanded.assumptions && (
                 <div className={`border-t ${c.border}`}>

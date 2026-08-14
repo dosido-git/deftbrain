@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -100,7 +101,7 @@ function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup, t }) {
               {!expanded && <>{review.isVerified && <span className={`${c.success} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{t('frd_stat_verified')}</span>}{review.wordCount && <span className={`${c.pillGray} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>{review.wordCount}{t('frd_words_suffix')}</span>}</>}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1 flex-shrink-0"><div className={`w-10 h-10 rounded-full ${badgeBg(score)} flex items-center justify-center`}><span className="text-xs font-black">{score}</span></div><span className={`text-xs ${c.textMuteded}`}>{expanded ? '▲' : '▼'}</span></div>
+          <div className="flex flex-col items-center gap-1 flex-shrink-0"><div className={`w-10 h-10 rounded-full ${badgeBg(score)} flex items-center justify-center`}><span className="text-xs font-black">{score}</span></div><Caret open={expanded} /></div>
         </div>
         {expanded && <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'}`}>
           <div className={`${c.quoteBg} p-3 rounded-lg mb-3`}><p className={`text-xs ${c.textSecondary} italic whitespace-pre-wrap`}>{hl || `"${review.rawText}"`}</p></div>
@@ -597,7 +598,7 @@ const FakeReviewDetective = ({ tool }) => {
       {reviewScores && parsedReviews.filter(r => r.daysAgo !== null).length >= 2 && (
         <div className={`${c.card} border rounded-xl p-5`}>
           <button onClick={() => setShowTimeline(!showTimeline)} className={`flex items-center gap-2 w-full text-start`}>
-            <span>🕵️</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_timeline_title')}</h3><span className={c.textMuteded}>{showTimeline ? '▲' : '▼'}</span>
+            <span>🕵️</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_timeline_title')}</h3><Caret open={showTimeline} />
           </button>
           {showTimeline && <div className="mt-3">
             <ForensicsTimeline reviews={parsedReviews} scores={reviewScores} c={c} isDark={isDark} t={t} />
@@ -624,7 +625,7 @@ const FakeReviewDetective = ({ tool }) => {
           <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-start">
             <span>🔬</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_fingerprint_title')}</h3>
             {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-40`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="me-1">{tool?.icon ?? '🔍'}</span>{t('frd_analyze')}</>}</button>}
-            <span className={c.textMuteded}>{showFingerprint ? '▲' : '▼'}</span>
+            <Caret open={showFingerprint} />
           </button>
           {showFingerprint && (fingerprint ? (
             <div className="mt-3 space-y-3">
@@ -705,7 +706,7 @@ const FakeReviewDetective = ({ tool }) => {
           {analysis.playbook?.tactics_detected?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <button onClick={() => setShowPlaybook(!showPlaybook)} className="flex items-center gap-2 w-full text-start">
-                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_playbook_title')}</h3><span className={`text-[10px] ${c.textMuteded}`}>{t('frd_playbook_sub')}</span><span className={c.textMuteded}>{showPlaybook ? '▲' : '▼'}</span>
+                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_playbook_title')}</h3><span className={`text-[10px] ${c.textMuteded}`}>{t('frd_playbook_sub')}</span><Caret open={showPlaybook} />
               </button>
               {showPlaybook && <div className="mt-3 space-y-3">
                 {analysis.playbook.tactics_detected.map((tac, i) => (

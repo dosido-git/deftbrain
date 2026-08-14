@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Caret from '../components/Caret';
 import { useTheme } from '../hooks/useTheme';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -660,7 +661,7 @@ const Mend = ({ tool }) => {
         <details className="group">
           <summary className={`cursor-pointer text-lg font-bold ${accent ? '' : c.text} list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
             {icon && <span className="me-2">{icon}</span>}{title}
-            <span className="ms-2 text-xs group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+            <Caret groupOpen className="ms-2" />
           </summary>
           <div className="mt-3">{children}</div>
         </details>
@@ -1057,7 +1058,7 @@ const Mend = ({ tool }) => {
               Last on the page now, and folded away until asked for. */}
           <details className="group">
             <summary className={`cursor-pointer text-xs font-bold ${c.textMuted} uppercase tracking-wide list-none [&::-webkit-details-marker]:hidden min-h-[32px]`}>
-              {t('apc_more_ways')} <span className="group-open:rotate-180 inline-block transition-transform" aria-hidden="true">▾</span>
+              {t('apc_more_ways')} <Caret groupOpen />
             </summary>
             <div className={`${c.card} border ${c.border} rounded-xl p-4 mt-2`}>
               <div className="flex flex-wrap gap-1.5">
