@@ -114,3 +114,46 @@ the email they came to send.
 Verified live on an airline cancellation: zero percentages, zero violation
 claims, zero attributed intent, zero never-rules, and the legal read came back
 correctly hedged.
+
+## The tone selector was not being honoured (2026-08-15)
+"Firm & Professional" was producing letters indistinguishable from
+"Assertive" — "I intend to pursue every available regulatory and legal avenue",
+subject lines like "Formal Demand for Compensation — Crew Scheduling Failure,
+Consequential Harm". The cause: `toneInstructions.firm` said "references legal
+rights calmly. This is the standard approach." **Describing a tone does not
+produce it.** Each setting now carries a sentence it SHOULD sound like and one
+it must not, and the difference is visible in output:
+
+- firm — no consequence named at all; 14 days noted "without reading as an
+  ultimatum"
+- aggressive — one named next step ("confirm in writing by August 22. If I do
+  not hear back, I will file a complaint with the DOT"). Naming ONE step is
+  fair; threatening every avenue is bluster.
+- empathetic — "I appreciate that, but it does not cover what I actually lost"
+
+A `LETTER_VOICE` block applies to all three: plain human subject lines, facts
+offered as considerations (may support / may be relevant) rather than findings,
+and no strategy talk inside the letter itself. Both constants were hoisted to
+module scope — `regenerate-stage` had its own older copy of `toneInstructions`
+that would have drifted.
+
+**Timeline truncated.** today / day_1 / day_14 stay. The dated day-21 CEO
+outreach, day-30 journalist campaign and day-45 small-claims filing are gone,
+replaced by one undated `after_that` sentence naming what people typically
+explore, without choreography. The tool guides; it does not run a dispute.
+
+**Vocabulary.** Step, not stage or escalation. The five step titles are now
+"Send this today", "If there is no answer", "Going higher up", "Going public",
+"Other routes that exist". Banned from anything a visitor reads: consequential
+harm, general counsel, formal demand, pursuant to, campaign of pressure,
+leverage.
+
+**Tips stopped being leverage.** "A documented missed irreplaceable life event
+creates moral and reputational pressure. Do not soften this detail." now comes
+back as "Mention the missed wedding factually and specifically — specific, real
+consequences often help a company understand the impact." Same advice.
+
+**Not done, and worth a decision:** steps 4 and 5 (going public, chargeback /
+small claims / attorney general) still exist as content. Removing the
+choreography was the fix here; whether the tool should carry them at all is a
+scope question rather than a tone one.

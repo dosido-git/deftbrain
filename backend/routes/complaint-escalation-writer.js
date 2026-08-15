@@ -8,6 +8,43 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // MAIN CAMPAIGN GENERATION
 // ═══════════════════════════════════════════════════════════════
 
+// Tone is chosen by the visitor and was not being honoured — "firm"
+// returned demand letters indistinguishable from "assertive" (owner,
+// 2026-08-15). Describing a tone does not produce it; showing the voice
+// does. Each setting carries a sentence it SHOULD sound like and one it
+// must not.
+const toneInstructions = {
+  firm: `Firm and professional — the default, and the quietest of the three. This is a capable adult asking for a written review, not a lawyer opening a file.
+SOUNDS LIKE: "I am requesting a written review of this situation and an appropriate remedy based on the circumstances described below."
+NEVER SOUNDS LIKE: "I intend to pursue every available regulatory and legal avenue if this matter is not resolved within 14 days."
+Do not announce consequences, deadlines framed as ultimatums, or intentions to escalate. Mention a rule only as context for what you are asking, never as a threat. No legal register: no "formal demand", no "consequential harm", no "pursuant to", no "general counsel".`,
+  aggressive: `Assertive and direct — serious, and explicit that this will not simply be dropped. Still a consumer writing, not counsel.
+SOUNDS LIKE: "I have given this a reasonable amount of time and I am asking for a decision in writing by the 22nd. If it is not resolved I will take it to the DOT."
+NEVER SOUNDS LIKE: "I intend to pursue every available regulatory and legal avenue." Naming ONE specific next step is fair; threatening every avenue is bluster and reads as such.
+Shorter deadline (7 days), named consequence, plain words.`,
+  empathetic: `Warm and resolution-focused. Acknowledge that whoever reads this probably did not cause it. Frame the ask as fixing something, not punishing anyone.
+SOUNDS LIKE: "I know you likely were not involved in what happened, and I would rather sort this out than make it a bigger deal than it is. Here is what happened and what would put it right."
+NEVER SOUNDS LIKE: anything with a deadline in bold or a rule cited as leverage.
+Rules may appear as context for why the request is reasonable, never as pressure.`
+};
+
+// Applies to every tone: the letter is written BY the visitor, in their
+// voice. If they would not say it out loud, it does not belong in it.
+const LETTER_VOICE = `
+LETTER VOICE (all tones). The person sending this is not a lawyer and should
+not sound like one. Write what they could read aloud without wincing.
+- SUBJECT LINES are plain and human: "Cancelled flight UA-2453 on 3 March —
+  requesting reimbursement". Never a caption of claims: not "Formal Demand for
+  Compensation — Crew Scheduling Failure, Consequential Harm".
+- STATE FACTS, OFFER CONSIDERATIONS. "Crew scheduling is explicitly a
+  controllable cause" is a finding you are not in a position to make. Write
+  "crew scheduling is generally treated as within the airline's control, which
+  may support the request". Use may support / may be relevant / may
+  strengthen — never is / constitutes / establishes / is a pattern of conduct.
+- NO STRATEGY TALK inside the letter. No mention of what you will do next, no
+  reference to filings you are considering, no leverage.
+`;
+
 router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, industry, previousAttempts, desiredOutcome, amountAtStake, hasDocumentation, tone, userLanguage, userLocale, userCurrency, userRegion } = req.body;
@@ -15,11 +52,7 @@ router.post('/complaint-escalation-writer', rateLimit(DEFAULT_LIMITS), async (re
     if (!company?.trim()) return res.status(400).json({ error: 'Company name is required' });
     if (!issue?.trim())   return res.status(400).json({ error: 'Issue description is required' });
 
-    const toneInstructions = {
-      firm:       'Firm but professional. Clear, business-like, references legal rights calmly. This is the standard approach.',
-      aggressive: 'Assertive and direct. Use stronger legal language, shorter deadlines (7 days instead of 14), more explicit consequences. Reference specific penalties and enforcement actions. Still professional — never rude — but unmistakably serious.',
-      empathetic: 'Empathetic and resolution-focused. Acknowledge that front-line staff are not at fault. Frame the complaint as seeking fair resolution, not punishment. Still reference legal rights but frame them as context, not threats.'
-    };
+
 
     // Split into two parallel calls (jargon-assassin pattern, 2026-07-19):
     // one 7-section schema at max_tokens 10000 ran ~6 min worst-case on rich
@@ -54,6 +87,12 @@ override anything else in this prompt:
 Tone throughout: an informed, calm consumer who knows the process — not a
 pre-litigation demand.
 
+VOCABULARY. This tool helps people navigate, not fight. Say "step", not
+"stage" or "escalation". Avoid, in anything the visitor reads: consequential
+harm, general counsel, formal demand, pursuant to, remedies, campaign of
+pressure, leverage. Name the first step for what it does — "Send this today" —
+rather than for its position on a ladder.
+
 You are one who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
@@ -64,7 +103,7 @@ DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reaso
 AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
-TONE: ${toneInstructions[tone] || toneInstructions.firm}
+TONE: ${toneInstructions[tone] || toneInstructions.firm}\n${LETTER_VOICE}
 
 REGULATORY CURRENCY: regulations change and get struck down — a letter citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
 
@@ -73,7 +112,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
 {
   "escalation_stages": {
     "stage_1_direct": {
-      "title": "Direct Company Complaint",
+      "title": "Send this today",
       "subject_line": "Email/letter subject line",
       "letter_body": "Complete ready-to-send letter",
       "send_to": [{ "role": "Position/department", "how_to_find": "How to find this contact", "email_pattern": "Common email format if known" }],
@@ -82,7 +121,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "leverage_points_used": ["Legal/regulatory points the letter references"]
     },
     "stage_2_regulatory": {
-      "title": "Regulatory Complaint",
+      "title": "If there is no answer",
       "agency": "Specific agency name",
       "agency_url": "Filing URL",
       "why_this_agency": "Why this is the right regulatory body",
@@ -91,7 +130,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "company_impact": "Why companies take regulatory complaints seriously"
     },
     "stage_3_executive": {
-      "title": "Executive Escalation",
+      "title": "Going higher up",
       "subject_line": "Subject line for executive email",
       "letter_body": "Shorter, more direct letter referencing failed previous attempts",
       "target_contacts": [{ "title": "Executive title", "email_pattern": "Likely email format", "why": "Why this person" }],
@@ -129,6 +168,12 @@ override anything else in this prompt:
 Tone throughout: an informed, calm consumer who knows the process — not a
 pre-litigation demand.
 
+VOCABULARY. This tool helps people navigate, not fight. Say "step", not
+"stage" or "escalation". Avoid, in anything the visitor reads: consequential
+harm, general counsel, formal demand, pursuant to, remedies, campaign of
+pressure, leverage. Name the first step for what it does — "Send this today" —
+rather than for its position on a ladder.
+
 You are one who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
@@ -139,7 +184,7 @@ DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reaso
 AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
-TONE: ${toneInstructions[tone] || toneInstructions.firm}
+TONE: ${toneInstructions[tone] || toneInstructions.firm}\n${LETTER_VOICE}
 
 REGULATORY CURRENCY: regulations change and get struck down — a letter citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
 
@@ -148,7 +193,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
 {
   "escalation_stages": {
     "stage_4_public": {
-      "title": "Public Pressure Campaign",
+      "title": "Going public",
       "social_media_post": "Ready-to-post text under 280 characters for X/Twitter",
       "social_media_long": "Longer version for Facebook/LinkedIn/Reddit",
       "platforms_to_target": ["Where to post for maximum impact"],
@@ -157,7 +202,7 @@ Build the complete 5-stage escalation ladder for THIS situation. Every letter bo
       "media_tip": "Where this kind of issue is usually covered, and what going public does and does not tend to achieve — including the downsides"
     },
     "stage_5_financial_legal": {
-      "title": "Financial & Legal Remedies",
+      "title": "Other routes that exist",
       "chargeback": { "applicable": true, "reason_code": "Specific reason code", "time_window": "How long you have", "how_to_file": "Step-by-step process", "documentation_needed": "What to include", "success_likelihood": "Estimated based on situation" },
       "small_claims": { "applicable": true, "jurisdiction": "Where to file", "filing_fee_range": "Typical cost", "max_claim_amount": "Jurisdictional limit", "typical_outcome": "How these cases usually resolve", "company_response": "Whether company typically settles or sends a lawyer" },
       "attorney_general": { "applicable": true, "how_to_file": "Process", "what_it_triggers": "What happens when you file" }
@@ -194,6 +239,12 @@ override anything else in this prompt:
 Tone throughout: an informed, calm consumer who knows the process — not a
 pre-litigation demand.
 
+VOCABULARY. This tool helps people navigate, not fight. Say "step", not
+"stage" or "escalation". Avoid, in anything the visitor reads: consequential
+harm, general counsel, formal demand, pursuant to, remedies, campaign of
+pressure, leverage. Name the first step for what it does — "Send this today" —
+rather than for its position on a ladder.
+
 You are one who has helped thousands of people get results from unresponsive companies. You combine legal knowledge, corporate psychology, and escalation expertise to build multi-stage campaigns that companies cannot ignore.
 
 COMPANY: ${company}
@@ -204,7 +255,7 @@ DESIRED OUTCOME: ${desiredOutcome || 'Not specified — recommend the most reaso
 AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
 HAS DOCUMENTATION: ${hasDocumentation || 'Not specified'}
 
-TONE: ${toneInstructions[tone] || toneInstructions.firm}
+TONE: ${toneInstructions[tone] || toneInstructions.firm}\n${LETTER_VOICE}
 
 REGULATORY CURRENCY: regulations change and get struck down — leverage citing a dead rule hands the company an easy rebuttal. Cite only rules you are confident are currently in force, with effective dates where known. Specifically: do NOT cite the FTC's 2024 "Click to Cancel" / Negative Option Rule amendments as in-force law (vacated by the 8th Circuit in 2025) — for subscription/cancellation complaints lean on ROSCA and state auto-renewal laws instead. When unsure whether a rule is current, assert the consumer right generically rather than naming the rule.
 
@@ -235,15 +286,13 @@ Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_
   ],
 
   "timeline": {
-    "today": "Gather evidence, prepare documentation",
-    "day_1": "Send Stage 1 letter",
-    "day_14": "If no response, file Stage 2 regulatory complaint",
-    "day_21": "Send Stage 3 executive escalation",
-    "day_30": "If still unresolved, the option of going public — described as a choice with trade-offs, not an attack to execute",
-    "day_45": "If still unresolved, execute Stage 5 financial/legal remedies"
+    "today": "What to gather and get ready",
+    "day_1": "Send the message",
+    "day_14": "If there is no answer, the regulatory complaint — named, with the filing link",
+    "after_that": "One plain sentence naming what people usually do next if it is still unresolved (a chargeback window, small claims, a state consumer office) and that those are worth looking into then. NO date, NO instructions, NO sequence. The tool guides; it does not run a dispute."
   },
 
-  "quick_tips": ["Practical, non-adversarial tips for THIS situation — what to keep, what to put in writing, what to expect. Not pressure tactics, and never phrased as a rule the visitor must never break."],
+  "quick_tips": ["Practical, non-adversarial tips for THIS situation — what to keep, what to put in writing, what to expect. Two rules: never describe a fact as leverage (not 'a missed irreplaceable life event creates moral and reputational pressure' but 'mention the missed wedding factually — specific, real consequences often help a company understand the impact'), and never issue an instruction the visitor must never break. Same advice, different voice."],
 
   "call_script": {
     "opening": "What to say when you pick up or place the call",
@@ -394,11 +443,6 @@ router.post('/complaint-escalation-writer/regenerate-stage', rateLimit(DEFAULT_L
       return res.status(400).json({ error: 'Company and target stage are required' });
     }
 
-    const toneInstructions = {
-      firm:       'Firm but professional.',
-      aggressive: 'Assertive and direct with stronger legal language.',
-      empathetic: 'Empathetic and resolution-focused.'
-    };
 
     const historyNarrative = (campaignHistory || []).map(h =>
       `STAGE ${h.stage}: Sent on ${h.sentDate || 'unknown date'}.\n` +
@@ -438,6 +482,12 @@ override anything else in this prompt:
 Tone throughout: an informed, calm consumer who knows the process — not a
 pre-litigation demand.
 
+VOCABULARY. This tool helps people navigate, not fight. Say "step", not
+"stage" or "escalation". Avoid, in anything the visitor reads: consequential
+harm, general counsel, formal demand, pursuant to, remedies, campaign of
+pressure, leverage. Name the first step for what it does — "Send this today" —
+rather than for its position on a ladder.
+
 You are one. Regenerate Stage ${targetStage} of an escalation campaign based on what has ACTUALLY HAPPENED so far.
 
 COMPANY: ${company}
@@ -445,7 +495,7 @@ INDUSTRY: ${industry || 'Unknown'}
 ORIGINAL ISSUE: ${issue}
 DESIRED OUTCOME: ${desiredOutcome || 'Not specified'}
 AMOUNT AT STAKE: ${amountAtStake || 'Not specified'}
-TONE: ${toneInstructions[tone] || toneInstructions.firm}
+TONE: ${toneInstructions[tone] || toneInstructions.firm}\n${LETTER_VOICE}
 
 ═══ CAMPAIGN HISTORY — WHAT ACTUALLY HAPPENED ═══
 ${historyNarrative || 'No previous stage history available.'}
