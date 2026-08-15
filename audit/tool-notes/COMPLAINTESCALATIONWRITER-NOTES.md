@@ -59,3 +59,29 @@ PF-30 and PF-17c were already in place from the catalog sweep. Added here:
   below it.
 - Description replaced with the owner's copy. The old one was a feature list
   ("Builds a complete multi-stage escalation campaign… identifies…").
+
+## Rewrite (2026-08-15)
+- **Form reordered.** It opened with the company name; the story is what the
+  visitor actually has. Now: What happened? → Company + Industry → Previous
+  attempts → What would make this right? → Campaign Tone → Optional details
+  (`<details>` holding amount at stake and documentation, which are supporting
+  evidence and were sitting in the same four-up grid as the story fields,
+  making them look equally required). Auto-detect on Industry kept — the review
+  singled it out.
+- **"Desired outcome" → "What would make this right?"**
+- **Tone hint shortened** to "Your tone will carry through every stage of the
+  campaign." The old one explained the mechanism (assertive uses stronger legal
+  phrasing, empathetic acknowledges front-line staff) which is a thing to
+  discover, not a thing to read before choosing.
+- **The four feature cards became outcomes** under "You'll leave with:" — a
+  step-by-step roadmap, the regulations that may protect you, letters you can
+  send immediately, a timeline for following up. 📊 → 📅 on the last one.
+- **Output pattern**: 💚 First, this matters ("you're not overreacting"), 🎯
+  Today's only job ("send the next message, don't worry about stage five"), and
+  💚 You're set. at the foot. All fixed copy.
+
+**Owner's closing observation, not acted on.** Bill Rescue speaks to overwhelm;
+this tool speaks to being ignored. Those are different emotional states and the
+next pass should lean into frustration rather than anxiety. The two panels
+above are a start, but the voice of the tool as a whole has not been rewritten
+around it.

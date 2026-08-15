@@ -827,13 +827,16 @@ const ComplaintEscalationWriter = ({ tool }) => {
         {!hasVisited && (
           <div className={`${c.cardAlt} rounded-xl p-5 mb-4`}>
             <h3 className={`text-base font-bold ${c.text} mb-2`}>{t('cew_welcome_title')}</h3>
-            <p className={`text-sm ${c.textSecondary} mb-4`}>{t('cew_welcome_desc')}</p>
+            <p className={`text-sm ${c.textSecondary} mb-3`}>{t('cew_welcome_desc')}</p>
+            {/* "5-stage escalation ladder / legal leverage analysis" described
+                the software. These describe what you walk away holding. */}
+            <p className={`text-sm font-bold ${c.text} mb-2`}>{t('cew_outcomes_lead')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
               {[
                 { emoji: '📨', title: t('cew_feat1_title'), desc: t('cew_feat1_desc') },
                 { emoji: '⚖️', title: t('cew_feat2_title'), desc: t('cew_feat2_desc') },
                 { emoji: '📋', title: t('cew_feat3_title'), desc: t('cew_feat3_desc') },
-                { emoji: '📊', title: t('cew_feat4_title'), desc: t('cew_feat4_desc') },
+                { emoji: '📅', title: t('cew_feat4_title'), desc: t('cew_feat4_desc') },
               ].map((f, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2.5 rounded-xl ${c.card}`}>
                   <span className="text-lg">{f.emoji}</span>
@@ -846,6 +849,20 @@ const ComplaintEscalationWriter = ({ tool }) => {
         )}
 
         <div className={`space-y-4 ${c.text}`}>
+          {/* Issue */}
+          <div>
+            <label className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_issue')} <span className={c.required}>*</span></label>
+              <textarea value={issue} onChange={e => setIssue(e.target.value)}
+              placeholder={t('cew_ph_issue')}
+              rows={6} className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 ${c.input}`} />
+            {issue.length > 0 && issue.length < 100 && (
+              <p className={`text-xs ${c.issueTip} mt-2`}>{t('cew_issue_tip')}</p>
+            )}
+            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_ctrl_enter')}</p>
+          </div>
+
+
+          {/* Who you are dealing with — after the story, not before it */}
           {/* Company */}
           <div>
             <label className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_company')} <span className={c.required}>*</span></label>
@@ -867,16 +884,18 @@ const ComplaintEscalationWriter = ({ tool }) => {
             </div>
           </div>
 
-          {/* Issue */}
-          <div>
-            <label className={`block font-semibold ${c.text} mb-2`}>{t('cew_label_issue')} <span className={c.required}>*</span></label>
-              <textarea value={issue} onChange={e => setIssue(e.target.value)}
-              placeholder={t('cew_ph_issue')}
-              rows={6} className={`w-full p-4 border rounded-xl outline-none text-sm resize-y focus:ring-2 ${c.input}`} />
-            {issue.length > 0 && issue.length < 100 && (
-              <p className={`text-xs ${c.issueTip} mt-2`}>{t('cew_issue_tip')}</p>
-            )}
-            <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cew_ctrl_enter')}</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { label: t('cew_label_prev'), value: previousAttempts, setter: setPreviousAttempts, placeholder: t('cew_ph_prev') },
+              { label: t('cew_label_outcome'),   value: desiredOutcome,   setter: setDesiredOutcome,   placeholder: t('cew_ph_outcome', { sym }) },
+            ].map(({ label, value, setter, placeholder }) => (
+              <div key={label}>
+                <label className={`block text-sm font-semibold ${c.text} mb-2`}>{label}</label>
+                  <textarea value={value} onChange={e => setter(e.target.value)} rows={2}
+                  placeholder={placeholder} className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 ${c.input}`} />
+              </div>
+            ))}
           </div>
 
           {/* Tone */}
@@ -895,10 +914,22 @@ const ComplaintEscalationWriter = ({ tool }) => {
           </div>
 
           {/* Details grid */}
+
+          {/* ── Optional details ─────────────────────────────────────
+              Amount at stake and what documentation you have are supporting
+              evidence, not the heart of the problem. They sat in the same
+              four-up grid as the story fields, which made them look equally
+              required. */}
+          <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <div className={`flex items-center gap-2 font-semibold ${c.text}`}>
+                {t('cew_optional_details')}
+                <Caret groupOpen className="ms-auto" />
+              </div>
+            </summary>
+            <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { label: t('cew_label_prev'), value: previousAttempts, setter: setPreviousAttempts, placeholder: t('cew_ph_prev') },
-              { label: t('cew_label_outcome'),   value: desiredOutcome,   setter: setDesiredOutcome,   placeholder: t('cew_ph_outcome', { sym }) },
               { label: t('cew_label_amount'),   value: amountAtStake,    setter: setAmountAtStake,    placeholder: t('cew_ph_amount', { sym }) },
               { label: t('cew_label_docs'), value: hasDocumentation, setter: setHasDocumentation, placeholder: t('cew_ph_docs') },
             ].map(({ label, value, setter, placeholder }) => (
@@ -909,6 +940,8 @@ const ComplaintEscalationWriter = ({ tool }) => {
               </div>
             ))}
           </div>
+            </div>
+          </details>
 
           {error && (
             <div className={`p-4 rounded-xl flex items-start gap-3 border ${c.danger}`}>
@@ -953,6 +986,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
           ═══════════════════════════════════════════════════════════════ */}
       {results && (
         <div ref={resultsRef} className="space-y-4">
+
+          {/* Fixed copy. Someone arrives here having already been ignored once
+              — the first thing they need is that this is normal and
+              survivable, not a ladder diagram. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('cew_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('cew_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('cew_fm_2')}</p>
+          </div>
+
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1`}>
+            <p className={`text-sm font-bold ${c.text}`}>🎯 {t('cew_todays_job')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('cew_job_1')}</p>
+            <p className={`text-sm font-bold ${c.text}`}>{t('cew_job_2')}</p>
+          </div>
 
           {/* Situation Assessment */}
           {results?.situation_assessment && (() => {
@@ -1466,6 +1514,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
               )}
             </div>
           )}
+
+          <div className={`${c.success} border rounded-xl p-5 space-y-2`}>
+            <p className="text-sm font-bold">💚 {t('cew_youre_set')}</p>
+            <p className="text-sm">{t('cew_ys_1')}</p>
+            <p className="text-sm">{t('cew_ys_2')}</p>
+          </div>
 
           {/* Cross-references (post-result) */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
