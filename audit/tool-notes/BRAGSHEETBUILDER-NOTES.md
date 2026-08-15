@@ -25,3 +25,33 @@ Turns humble, self-deprecating accomplishment descriptions into powerful, metric
 - 0 baseline `audit_v2` / backend-audit issues.
 - main/refine/voice-match/radar/tailor left as-is — verified fine, incl. **main at 8 German accomplishments** (~2637 tok at 4000). Accomplishments are unbounded in the UI, so a pathological 15+ German brag sheet could still pressure main's 4000 — not fixed (unrealistic; note for future if reported).
 - Golden `interview-matrix` case has `gaps` neutralized to `[]` (variable — empty when interview coverage is complete); `questions`/`categories` stay non-empty (always 10–12 / 6×3).
+
+## Rewrite + DeftBrain treatment (2026-08-15)
+Owner's framing: this is a confidence tool, not a résumé tool. People arrive
+thinking "I know I worked hard but I can't explain why", not "I need a brag
+sheet."
+
+- **Description and tagline** replaced with the owner's copy.
+- **Form reordered.** It asked four questions (role, years, industry, level)
+  BEFORE the only one that matters. Now: accomplishments → what's this for →
+  tone → "Tell us a little about yourself (optional)", a `<details>` holding
+  role, experience, industry and career level. Role + experience had to be
+  lifted out of the header card, and level had to be split from tone, which
+  shared a card.
+- **"Can't remember?"** moved from the right end of the label row to directly
+  under "(be as humble as you want)", where it answers the sentence above it.
+- **Two fixed panels** at the head of the results: 💚 First, this matters and
+  🎯 Today's only job.
+- PF-31 ⌘↵ chip; PF-30/17c were already in place from the catalog sweep.
+
+**PF-15 gotcha worth knowing.** The reorder made the audit flag three fields as
+required-without-an-asterisk: `voiceSample`, `tweakInstruction`, `newEntry`.
+None were new. The rule pairs a field with the **nearest `<label>` preceding it
+in source order** — moving blocks changed which label each one paired with.
+They are all post-result secondary actions whose buttons are disabled until
+filled, which is not the same as being required of the visitor. The rule's own
+sr-only exemption covers exactly this case, so each got an `sr-only` label —
+which they needed anyway, since two of them had no programmatic label at all.
+Chasing the asterisks instead would have put a false `*` on three optional
+fields, and the audit reports only one at a time, so it looks like whack-a-mole
+until you read the rule.

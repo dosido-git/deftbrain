@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "08c6627546fc17a4ce1003a9c86856f937e694fe",
-  "lastmod": "2026-08-14"
+  "hash": "9512cd046a2f63a92649b9d69b797c9c66257d3f",
+  "lastmod": "2026-08-15"
  },
  "static:about": {
   "hash": "fd6635f5d7af8b1c3e6be0a5139c3bcda14fe500",
@@ -32,8 +32,8 @@
   "lastmod": "2026-08-14"
  },
  "tool:BragSheetBuilder": {
-  "hash": "5ef3ddb9d2a53d4104540c127e72840e15c44be4",
-  "lastmod": "2026-08-07"
+  "hash": "74d601a90d73ca47dc8aa886b2dde5da8a11ff59",
+  "lastmod": "2026-08-15"
  },
  "tool:ChaosPilot": {
   "hash": "206c362c19cdd83ffbaa9436b8f997b8e06eacd9",

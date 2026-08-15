@@ -611,23 +611,6 @@ const BragSheetBuilder = ({ tool }) => {
                 <span>🗓️</span> {t('bsb_journal')} {journal.length > 0 ? `(${journal.length})` : ''}
               </button>
             </div>
-            {/* Role + Experience — first inputs, unified inside header card */}
-            <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_your_role')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
-                <input type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
-                  placeholder={t('bsb_role_ph')}
-                  className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
-              </div>
-              <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_years_exp')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
-                <input type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
-                  placeholder={t('bsb_years_ph')}
-                  className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
-              </div>
-            </div>
           </>
         )}
       </div>
@@ -682,58 +665,16 @@ const BragSheetBuilder = ({ tool }) => {
         <div className="space-y-5">
 
 
-          {/* Industry */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_industry')}</label>
-            <div className="flex flex-wrap gap-2">
-              {INDUSTRIES.map(ind => (
-                <button key={ind.value} onClick={() => setIndustry(industry === ind.value ? '' : ind.value)}
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(industry === ind.value)}`}>{ind.label}</button>
-              ))}
-            </div>
-          </div>
-
-          {/* Level + Tone */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-5`}>
-            <div>
-              <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_career_level')}</label>
-              <div className="flex flex-wrap gap-2">
-                {LEVELS.map(lv => (
-                  <button key={lv.value} onClick={() => setLevel(level === lv.value ? '' : lv.value)}
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(level === lv.value)}`}>{lv.icon} {lv.label}</button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_tone')}</label>
-              <div className="flex flex-wrap gap-2">
-                {TONES.map(t => (
-                  <button key={t.value} onClick={() => setTone(t.value)}
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(tone === t.value)}`}>{t.icon} {t.label}</button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Purposes */}
-          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_what_for')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_pick_all')}</span></label>
-            <div className="flex flex-wrap gap-2">
-              {PURPOSES.map(p => (
-                <button key={p.value} onClick={() => togglePurpose(p.value)}
-                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-1.5 ${c.chip(purposes.includes(p.value))}`}><span>{p.icon}</span> {p.label}</button>
-              ))}
-            </div>
-          </div>
-
           {/* Accomplishments */}
           <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2">
               <label className={`font-semibold ${c.text}`}>{t('bsb_your_accomplishments')} <span className={c.required}>*</span> <span className={`font-normal ${c.textMuteded}`}>{t('bsb_humble_hint')}</span></label>
-              <button onClick={handleExcavate} disabled={excavatorLoading}
-                className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg ${c.excavatorBtn} disabled:opacity-40`}>
-                {excavatorLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> : <span>🧠</span>} {t('bsb_cant_remember')}
-              </button>
+              <div className="mt-1.5">
+                <button onClick={handleExcavate} disabled={excavatorLoading}
+                  className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg ${c.excavatorBtn} disabled:opacity-40`}>
+                  {excavatorLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> : <span>🧠</span>} {t('bsb_cant_remember')}
+                </button>
+              </div>
             </div>
 
             {/* Excavator results */}
@@ -800,10 +741,91 @@ const BragSheetBuilder = ({ tool }) => {
             </div>
           </div>
 
+          {/* Purposes */}
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_what_for')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_pick_all')}</span></label>
+            <div className="flex flex-wrap gap-2">
+              {PURPOSES.map(p => (
+                <button key={p.value} onClick={() => togglePurpose(p.value)}
+                  className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-1.5 ${c.chip(purposes.includes(p.value))}`}><span>{p.icon}</span> {p.label}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tone — stays visible; the review called it one of the
+              best selectors on the site. */}
+          <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+            <div>
+              <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_tone')}</label>
+              <div className="flex flex-wrap gap-2">
+                {TONES.map(t => (
+                  <button key={t.value} onClick={() => setTone(t.value)}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(tone === t.value)}`}>{t.icon} {t.label}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Tell us a little about yourself ─────────────────────
+              Role, experience, industry and career level all used to come
+              BEFORE the accomplishments. None of them matter more than what
+              you actually did, and asking four of them first is what makes a
+              person close the tab. Collapsed, and optional. */}
+          <details className={`group ${c.card} rounded-xl shadow-sm p-4`}>
+            <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <div className={`flex items-center gap-2 font-semibold ${c.text}`}>
+                {t('bsb_about_you')}
+                <Caret groupOpen className="ms-auto" />
+              </div>
+            </summary>
+            <div className="space-y-5 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_your_role')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
+                  <input type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
+                    placeholder={t('bsb_role_ph')}
+                    className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                </div>
+                <div>
+                  <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('bsb_years_exp')} <span className={`font-normal ${c.textMuteded}`}>{t('bsb_optional')}</span></label>
+                  <input type="number" value={yearsExp} onChange={e => setYearsExp(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') entryRef.current?.focus(); }}
+                    placeholder={t('bsb_years_ph')}
+                    className={`w-full p-3 border rounded-xl outline-none text-sm focus:ring-2 focus:ring-cyan-300 ${c.input}`} />
+                </div>
+              </div>
+              <div>
+              <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_industry')}</label>
+              <div className="flex flex-wrap gap-2">
+                {INDUSTRIES.map(ind => (
+                  <button key={ind.value} onClick={() => setIndustry(industry === ind.value ? '' : ind.value)}
+                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(industry === ind.value)}`}>{ind.label}</button>
+                ))}
+              </div>
+              </div>
+              <div>
+                <label className={`block font-semibold ${c.text} mb-3`}>{t('bsb_career_level')}</label>
+                <div className="flex flex-wrap gap-2">
+                  {LEVELS.map(lv => (
+                    <button key={lv.value} onClick={() => setLevel(level === lv.value ? '' : lv.value)}
+                      className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${c.chip(level === lv.value)}`}>{lv.icon} {lv.label}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </details>
+
           {/* Submit */}
           <button onClick={handleBuild} disabled={loading || (accomplishments.length === 0 && !currentEntry.trim())}
-          className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>
-          {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_transforming')}</>) : (<><span className="text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_build')}</>)}
+          title={t('bsb_cmd_enter')}
+          className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>          {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_transforming')}</>) : (<><span className="text-lg">{tool?.icon ?? '🏆'}</span> {t('bsb_build')}</>)}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span className="text-lg flex-shrink-0 mt-0.5">⚠️</span><p className="text-sm">{error}</p></div>}
@@ -837,6 +859,25 @@ const BragSheetBuilder = ({ tool }) => {
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
         <div ref={resultsRef} className="space-y-5">
+          {/* ── FIRST, THIS MATTERS ────────────────────────────────────
+              Fixed copy, before the polished bullets. Someone opening this
+              tool is not short of achievements — they are short of the belief
+              that theirs count. Not generated: reassurance that varies run to
+              run is not reassurance. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('bsb_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('bsb_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('bsb_fm_2')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('bsb_fm_3')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('bsb_fm_4')}</p>
+          </div>
+
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1`}>
+            <p className={`text-sm font-bold ${c.text}`}>🎯 {t('bsb_todays_job')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('bsb_job_1')}</p>
+            <p className={`text-sm font-bold ${c.text}`}>{t('bsb_job_2')}</p>
+          </div>
+
           {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
             <span className={`text-sm font-semibold ${c.text}`}>🏆 {transforms.length} {transforms.length !== 1 ? t('bsb_transformed_many') : t('bsb_transformed_one')}</span>
@@ -854,7 +895,8 @@ const BragSheetBuilder = ({ tool }) => {
           {addingMore && (
             <div className={`${c.card} rounded-xl shadow-sm p-5 border-s-4 ${c.addMoreBorder}`}>
               <p className={`text-sm font-semibold ${c.text} mb-2`}>➕ {t('bsb_add_another')}</p>
-              <input type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
+              <label htmlFor="bsb-new-entry" className="sr-only">{t('bsb_add_another')}</label>
+              <input id="bsb-new-entry" type="text" value={newEntry} onChange={e => setNewEntry(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddSingle(); } }}
                 placeholder={t('bsb_describe_ph')} autoFocus className={`flex-1 p-3 border rounded-xl outline-none text-sm ${c.input}`} />
               <button onClick={handleAddSingle} disabled={addSingleLoading || !newEntry.trim()}
@@ -933,13 +975,16 @@ const BragSheetBuilder = ({ tool }) => {
                       </>
                     )}
                     {tweakingIdx === idx && (
-                      <div className="flex gap-2 w-full mt-1">
-                        <input type="text" value={tweakInstruction} onChange={e => setTweakInstruction(e.target.value)}
+                      <div className="w-full mt-1">
+                      <label htmlFor={`bsb-tweak-${idx}`} className="sr-only">{t('bsb_tweak_label')}</label>
+                      <div className="flex gap-2 w-full">
+                        <input id={`bsb-tweak-${idx}`} type="text" value={tweakInstruction} onChange={e => setTweakInstruction(e.target.value)}
                           onKeyDown={e => { if (e.key === 'Enter') handleTweak(idx, tweakInstruction); }}
                           placeholder={t('bsb_tweak_ph')} autoFocus className={`flex-1 p-2 border rounded-lg text-xs outline-none ${c.input}`} />
                         <button onClick={() => handleTweak(idx, tweakInstruction)} disabled={tweakLoading || !tweakInstruction.trim()}
                           className={`${c.btnPrimary} disabled:opacity-40 px-3 rounded-lg text-xs font-bold`}>{tweakLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🏆'}</span> : '✓'}</button>
                         <button onClick={() => { setTweakingIdx(null); setTweakInstruction(''); }} className={`text-xs ${c.textMuteded}`}>✕</button>
+                      </div>
                       </div>
                     )}
                   </div>
@@ -1223,7 +1268,13 @@ const BragSheetBuilder = ({ tool }) => {
               <div className={`${c.card} rounded-xl shadow-sm p-6 space-y-4`}>
                 <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✍️</span> {t('bsb_voice_title')}</h3>
                 <p className={`text-sm ${c.textSecondary}`}>{t('bsb_voice_desc')}</p>
-                <textarea value={voiceSample} onChange={e => setVoiceSample(e.target.value)} rows={5} placeholder={t('bsb_voice_ph')}
+                {/* sr-only: PF-15's documented exemption. The button is disabled
+                    until this is filled, but the field is not required OF THE
+                    VISITOR — it is required of a secondary action they may
+                    never take. A visual asterisk would say otherwise. The
+                    label exists because the input had none at all. */}
+                <label htmlFor="bsb-voice-sample" className="sr-only">{t('bsb_voice_label')}</label>
+                <textarea id="bsb-voice-sample" value={voiceSample} onChange={e => setVoiceSample(e.target.value)} rows={5} placeholder={t('bsb_voice_ph')}
                   className={`w-full p-3 border rounded-xl outline-none text-sm resize-y ${c.input}`} />
                 <button onClick={handleVoiceMatch} disabled={voiceLoading || !voiceSample.trim()}
                   className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${c.btnPrimary} disabled:opacity-40`}>
