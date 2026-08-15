@@ -1780,6 +1780,12 @@ actually says something:
 </p>
 ```
 
+**Applied catalog-wide on 2026-08-14** — 126 tools now render this header and
+the PF-17c pill. Three tools are deliberate exceptions: BrainDumpBuddy's second
+header sits in a flex row with a status chip and has no tagline beside it, so
+its title is the only label there; ComplaintEscalationWriter's `tool?.title` is
+a `useRegisterActions` argument, not a heading.
+
 `text-base`, not `text-sm` (owner, 2026-08-14). With the `<h2>` gone the tagline
 is the card's opening line, and 14px read as a caption for a title that is no
 longer there. The icon stays one step above it — `text-lg` against `text-base`,

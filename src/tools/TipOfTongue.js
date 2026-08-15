@@ -52,7 +52,6 @@ const TipOfTongue = ({ tool }) => {
     input:         isDark ? 'bg-[#1a1816] border-[#3d3630] text-[#f0eeea] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20'
                           : 'bg-[#faf8f5] border-[#d5cab8] text-[#3d3935] placeholder-[#8a8275] focus:border-[#4a6a8a] focus:ring-[#4a6a8a]/20',
     text:          isDark ? 'text-[#f0eeea]'  : 'text-[#3d3935]',
-    headingTxt:    isDark ? 'text-[#f3efe8]'  : 'text-[#1e2a3a]',
     textSecondary: isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
     textMuted:     isDark ? 'text-zinc-400'  : 'text-[#6e675c]',
     labelText:     isDark ? 'text-[#c8c3b9]'  : 'text-[#5a544a]',
@@ -536,11 +535,11 @@ const TipOfTongue = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         <div className="pb-3 border-b border-zinc-500 flex items-center justify-between gap-3">
           <div>
-            <h2 className={`text-xl font-bold ${c.headingTxt}`}>
-              <span className="me-2">{tool?.icon ?? '💭'}</span>{tool?.title ?? t('tot_title')}
-            </h2>
-            <p className={`text-sm ${c.textMuted}`}>{tool?.tagline ?? t('tot_tagline')}</p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '💭'}</span>{tool?.tagline ?? t('tot_tagline')}
+            </p>
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {(results || description.trim()) && (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>↺ {t('tot_start_over')}</button>

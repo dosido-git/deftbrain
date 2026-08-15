@@ -982,9 +982,11 @@ const DecisionCoach = ({ tool }) => {
       {/* Header + streak */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
-          <h2 className={`text-2xl font-bold ${c.text}`}><span className="me-2">{tool?.icon ?? '🎯'}</span>{tool?.title ?? t('dc_title')}</h2>
-          <p className={`text-sm ${c.textMuteded}`}>{tool?.tagline ?? t('dc_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '🎯'}</span>{tool?.tagline ?? t('dc_tagline')}
+          </p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
             <div className="flex items-center gap-3 mt-1 flex-wrap">
               {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {t('dc_streak', { count: followThroughStreak })}</span>}

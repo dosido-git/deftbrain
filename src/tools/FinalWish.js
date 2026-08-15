@@ -1183,11 +1183,11 @@ async function decrypt(){
       {renderToasts()}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
         <div className="pb-3 border-b border-zinc-500">
-          <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-            <span className="me-2">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
-          </h2>
-          <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
-          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{tool?.tagline ?? t('fws_tagline')}
+          </p>
+          <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
         </div>
       </div>
 
@@ -2059,10 +2059,10 @@ async function decrypt(){
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 py-3`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className={`text-lg font-bold ${c.text} flex items-center gap-2`}>
-              <span className="me-1">{tool?.icon ?? '📜'}</span>{tool?.title ?? t('fws_title')}
-            </h2>
-            <p className={`text-xs ${c.textSecondary}`}>{tool?.tagline ?? t('fws_tagline')}</p>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{tool?.tagline ?? t('fws_tagline')}
+            </p>
           </div>
           {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
           {hasInput ? (

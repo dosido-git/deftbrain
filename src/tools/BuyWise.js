@@ -2806,11 +2806,11 @@ const BuyWise = ({ tool }) => {
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className={`text-xl font-bold ${c.text} flex items-center gap-2`}>
-                <span className="me-2">{tool?.icon ?? '💲'}</span>{tool?.title ?? t('bw_title')}
-              </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('bw_tagline')}</p>
-              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className={`mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border disabled:opacity-40 ${isDark ? 'text-white border-white/40' : 'text-gray-800 border-transparent'}`}>{t('try_example')}</button>
+              {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+              <p className={`text-base ${c.textSecondary}`}>
+                <span className="me-2 text-lg">{tool?.icon ?? '💲'}</span>{tool?.tagline ?? t('bw_tagline')}
+              </p>
+              <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             <div className="flex items-center gap-2">
               {(!!results || !!product.trim()) && (
