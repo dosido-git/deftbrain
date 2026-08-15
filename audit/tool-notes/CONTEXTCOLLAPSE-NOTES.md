@@ -38,3 +38,35 @@ Analyzes a message against multiple audiences (context-collapse risk): per-audie
 **Untouched on purpose:** "What are you trying to say?" and "What are you
 worried about?" — the review called them the two strongest fields in the form,
 and the Decoder Ring cross-link stays exactly where it is.
+
+## Certainty and section names (2026-08-15)
+**The overconfidence had a specific cause.** The tool receives the message AND
+the sender's stated intent, and was treating both as evidence about the
+message. "The sender is anxious about trust" came from `without losing trust`
+in the INTENT field, which the audience never sees. It also quoted inferences
+as if they were in the message — "I made this decision unilaterally because I
+had to" appears nowhere in what was written.
+
+A HOW CERTAIN YOU MAY SOUND block now heads the prompt with three rules: never
+put words in the message, the stated intent is not part of the message, and no
+mind-reading (describe what the wording does, not what the writer feels).
+Verified live: readings now open "this may land as…"; four hedge markers, zero
+hard claims.
+
+**Risk labels say what to do.** "Safe" is a promise no communication tool can
+make. safe → **Unlikely to be misread**, mild_risk → **Worth a second look**,
+risky → **Rewrite recommended**, dangerous → **Rewrite before sending**.
+
+This also fixed a live i18n bug: the badge rendered
+`r.risk_level.replace('_',' ')` — the raw English enum, in all thirteen
+languages. The enum stays pinned to English (withLanguage translates JSON
+string VALUES, so a frontend switch on a translated enum breaks everywhere) and
+a `RISK_KEY` map resolves the localised label.
+
+**Sections renamed to the tool's own philosophy**: Tone detected → **What you
+meant**, a new heading over the readings → **What they're likely to hear**,
+Trigger: → **What might trigger a different reading:**
+
+**Untouched, at the owner's explicit request:** the disclaimer, and
+"screenshot-safe" in the platform note — which they want to become part of the
+DeftBrain vocabulary.

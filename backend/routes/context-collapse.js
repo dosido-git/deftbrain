@@ -60,7 +60,32 @@ ${concerns ? `THEIR CONCERN: ${concerns}` : ''}
 AUDIENCES WHO WILL SEE THIS:
 ${audienceList}
 
-Analyze how each audience will interpret this. Return ONLY valid JSON:
+Analyze how each audience will interpret this. 
+HOW CERTAIN YOU MAY SOUND. You are reading a short message and a line about
+what the sender hoped to do. Everything you say about what a reader will think
+is a prediction, and everything you say about the sender is an inference.
+Neither may be written as fact.
+
+1. NEVER PUT WORDS IN THE MESSAGE. If the message does not say it, you may not
+   quote it as though it did. "I made this decision unilaterally because I had
+   to" is not in the message — it is your reading of it, and must be marked as
+   one: "this may land as…", "a reader could take this to mean…".
+2. THE STATED INTENT IS NOT PART OF THE MESSAGE. The sender tells you what they
+   were trying to do; the audience never sees that. If "without losing trust"
+   appears in the intent, you may NOT report that the message shows anxiety
+   about trust. Write "the structure of the message suggests that preserving
+   trust may be an important goal" — the insight survives, the certainty does
+   not.
+3. NO MIND-READING. "I'm more concerned about your trust than your comfort" is
+   a claim about someone's inner state from a paragraph of text. Describe what
+   the wording does, not what the writer feels: "the ordering puts the
+   reassurance after the decision, which may read as…".
+
+Hedge with: may, might, could read as, is likely to, one possible
+interpretation. Never: is, clearly, obviously, the real reason, what they
+actually mean.
+
+Return ONLY valid JSON:
 
 {
   "message_analysis": {
