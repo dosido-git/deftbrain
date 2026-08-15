@@ -12,7 +12,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
-      accomplishments, industry, level, purposes,
+      accomplishments, industry, level, purposes, purposeOther,
       roleTitle, yearsExp, tone, userLanguage,
     } = req.body;
 
@@ -25,6 +25,9 @@ router.post('/brag-sheet-builder', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const wantInterview = purposes?.includes('interview');
     const wantReview = purposes?.includes('review');
     const wantRaise = purposes?.includes('raise');
+    // "Something else" — the visitor names the use themselves, so the section
+    // is one open block shaped by what they typed rather than a fixed schema.
+    const wantOther = purposes?.includes('other') && !!purposeOther?.trim();
 
     const LEVEL_GUIDANCE = {
       student: 'Student or new grad. Academic projects, internships, and extracurriculars ARE real accomplishments. Frame leadership of a class project as seriously as managing a corporate initiative. Quantify everything.',
@@ -118,6 +121,11 @@ ${NO_INVENTED_FACTS}`;
     if (wantReview) {
       outputSpec += `,
   "performance_review": "Self-assessment paragraph, 150-200 words. Professional, confident, specific."`;
+    }
+
+    if (wantOther) {
+      outputSpec += `,
+  "custom_output": "Write what they asked for: ${String(purposeOther).trim().slice(0, 200)}. Use their accomplishments as the raw material. Match the tone setting. 150-250 words, ready to use as-is — no preamble, no explanation of what you are about to write."`;
     }
 
     if (wantRaise) {

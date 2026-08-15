@@ -109,6 +109,7 @@ const BragSheetBuilder = ({ tool }) => {
     { value: 'resume', label: t('bsb_pur_resume'), icon: '📄' }, { value: 'linkedin', label: t('bsb_pur_linkedin'), icon: '💼' },
     { value: 'interview', label: t('bsb_pur_interview'), icon: '💬' }, { value: 'review', label: t('bsb_pur_review'), icon: '⭐' },
     { value: 'raise', label: t('bsb_pur_raise'), icon: '📈' },
+    { value: 'other', label: t('bsb_pur_other'), icon: '✏️' },
   ];
   const TONES = [
     { value: 'confident', label: t('bsb_tone_confident'), icon: '🔥' },
@@ -179,6 +180,7 @@ const BragSheetBuilder = ({ tool }) => {
   const [industry, setIndustry] = usePersistentState('brag-industry', '');
   const [level, setLevel] = usePersistentState('brag-level', '');
   const [purposes, setPurposes] = usePersistentState('brag-purposes', ['resume']);
+  const [purposeOther, setPurposeOther] = usePersistentState('brag-purpose-other', '');
   const [roleTitle, setRoleTitle] = usePersistentState('brag-role-title', '');
   const [yearsExp, setYearsExp] = usePersistentState('brag-years-exp', '');
   const [tone, setTone] = usePersistentState('brag-tone', 'balanced');
@@ -222,6 +224,7 @@ const BragSheetBuilder = ({ tool }) => {
       const data = await callToolEndpoint('brag-sheet-builder', {
         accomplishments: all, industry: industry || 'general', level: level || 'mid',
         purposes: purposes.length > 0 ? purposes : ['resume'],
+        purposeOther: purposeOther.trim() || null,
         roleTitle: roleTitle.trim() || null, yearsExp: yearsExp ? Number(yearsExp) : null,
         tone: tone || 'balanced', userLanguage: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
@@ -276,7 +279,7 @@ const BragSheetBuilder = ({ tool }) => {
     try {
       const data = await callToolEndpoint('brag-sheet-add-single', {
         newAccomplishment: text, existingTransformations: results?.transformations || [],
-        industry, level, roleTitle: roleTitle.trim() || null, purposes, tone,
+        industry, level, roleTitle: roleTitle.trim() || null, purposes, purposeOther: purposeOther.trim() || null, tone,
         userLanguage: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
       });
@@ -333,7 +336,7 @@ const BragSheetBuilder = ({ tool }) => {
       const data = await callToolEndpoint('brag-sheet-refine', {
         originalTransformations: currentTransforms, metricsAnswers: answers,
         industry: industry || 'general', level: level || 'mid',
-        roleTitle: roleTitle.trim() || null, purposes, tone: tone || 'balanced',
+        roleTitle: roleTitle.trim() || null, purposes, purposeOther: purposeOther.trim() || null, tone: tone || 'balanced',
         userLanguage: navigator.language || 'en',
         userLocale, userCurrency, userRegion,
       });
@@ -750,6 +753,19 @@ const BragSheetBuilder = ({ tool }) => {
                   className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-1.5 ${c.chip(purposes.includes(p.value))}`}><span>{p.icon}</span> {p.label}</button>
               ))}
             </div>
+            {/* Free text only once "Something else" is chosen — an empty box
+                for a purpose you did not pick is furniture. */}
+            {purposes.includes('other') && (
+              <div className="mt-4">
+                <label htmlFor="bsb-purpose-other" className={`block text-sm font-semibold ${c.text} mb-1.5`}>
+                  {t('bsb_pur_other_label')}
+                </label>
+                <input id="bsb-purpose-other" type="text" value={purposeOther}
+                  onChange={e => setPurposeOther(e.target.value)}
+                  placeholder={t('bsb_pur_other_ph')}
+                  className={`w-full p-3 border rounded-xl outline-none text-sm ${c.input}`} />
+              </div>
+            )}
           </div>
 
           {/* Tone — stays visible; the review called it one of the
@@ -1409,6 +1425,15 @@ const BragSheetBuilder = ({ tool }) => {
                   <div className={`${c.cardAlt} rounded-lg p-4`}><p className={`text-sm ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.linkedin_about}</p></div>
                 </div>
               )}
+              {r.custom_output && (
+                <div className={`${c.card} rounded-xl shadow-sm p-6`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">✏️</span> {t('bsb_custom_output')}</h3>
+                  </div>
+                  <div className={`${c.cardAlt} rounded-lg p-4`}><p className={`text-sm ${c.text} whitespace-pre-wrap leading-relaxed`}>{r.custom_output}</p></div>
+                </div>
+              )}
+
               {r.performance_review && (
                 <div className={`${c.card} rounded-xl shadow-sm p-6`}>
                   <div className="flex items-center justify-between mb-3">

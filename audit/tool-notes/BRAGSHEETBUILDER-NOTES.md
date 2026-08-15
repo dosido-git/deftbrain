@@ -55,3 +55,13 @@ which they needed anyway, since two of them had no programmatic label at all.
 Chasing the asterisks instead would have put a false `*` on three optional
 fields, and the audit reports only one at a time, so it looks like whack-a-mole
 until you read the rule.
+
+### "Something else" purpose (2026-08-15)
+Sixth chip in "What is this for?", revealing a free-text field only once it is
+picked. Sends `purposeOther`; the route sets `wantOther` and appends a
+`custom_output` section built from what they typed, capped at 200 chars into
+the prompt. The other five purposes each add a fixed schema key
+(`resume_bullets`, `linkedin_about`, …), which a free-text purpose cannot — so
+this one is a single open block instructed by the visitor's own words, using
+the same accomplishments and tone. Verified live: a grant-application brief
+came back at 208 words, ready to paste.
