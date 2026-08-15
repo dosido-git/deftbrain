@@ -50,3 +50,20 @@ The extra sentence under the tagline ("You don't need a perfect schedule. You
 just need fewer gear changes.") is gone at the owner's request, and `bf_lede`
 with it. The header is one line of grey again. The tagline change made in the
 same pass stays.
+
+## Output trimmed (2026-08-15)
+- **Setup detail collapsed per batch.** Tools needed, focus setup, the break
+  and the focus preset were four blocks of operational detail under EVERY
+  batch — a five-batch plan read as a manual. One `<details>` per batch now:
+  "Show setup tips ▾". `why_batched` stays visible; that is the part doing the
+  teaching, and the owner was explicit that the explanation should remain.
+  The separate focus-preset toggle in the batch header row went with it, and
+  its `showFocusPreset` state was removed rather than left orphaned.
+- **Action bar reweighted** from four equal buttons to three tiers: ♻️
+  Re-optimize primary (filled), 💾 Template secondary (outlined), 🤝 Share
+  tertiary (quiet text).
+- **"What's next?" left the bar.** It can only say anything once a batch is
+  ticked off, so it renders under the batches, gated on
+  `batches.some((_, bi) => isBatchDone(bi))`. Kept rather than deleted — the
+  owner said "not even sure it needs to be there", which is doubt, not a
+  decision. One line to remove if it should go.

@@ -172,8 +172,6 @@ const BatchFlow = ({ tool }) => {
   const [calibResult, setCalibResult] = useState(null);
   const [calibLoading, setCalibLoading] = useState(false);
 
-  const [showFocusPreset, setShowFocusPreset] = useState({});
-
   // ─── Insights / Journal ───
   const [insightsResult, setInsightsResult] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -253,7 +251,7 @@ const BatchFlow = ({ tool }) => {
     setDumpMode(false); setDumpText(''); setExpandedBatch(null); setExpandResult(null);
     setMovingTask(null); setProgressResult(null); setShowShare(false); setShareResult(null);
     setAbResult(null); setShowTimeInput(null); setActualTimes({});
-    setCalibResult(null); setShowFocusPreset({}); setResistResult(null);
+    setCalibResult(null); setResistResult(null);
     setRebatchResult(null); setRebatchLoading(false); setLastMove(null);
     setLocationResult(null); setLocationLoading(false); setHomeBase('');
   };
@@ -796,11 +794,15 @@ const BatchFlow = ({ tool }) => {
         {/* Controls */}
         <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
           <div className="flex items-center gap-3"><span className={`text-sm font-semibold ${c.text}`}>{t('bf_batches_count', { count: (results.batches || []).length })}</span>{batchProgress.total > 0 && <div className="flex items-center gap-2"><div className={`w-24 h-2 rounded-full ${isDark ? 'bg-zinc-700' : 'bg-gray-200'} overflow-hidden`}><div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${batchProgress.pct}%` }} /></div><span className={`text-xs font-bold ${batchProgress.pct === 100 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>{batchProgress.done}/{batchProgress.total}</span></div>}</div>
+          {/* Four equal-weight buttons made every action look equally
+              important. Re-optimize is the one you want after reading the
+              plan; template is occasional; share is rare. "What's next?" left
+              the bar entirely — it can only say something once a batch is
+              ticked off, so it appears down there instead. */}
           <div className="flex items-center gap-2 flex-wrap">
-            <button onClick={handleProgress} disabled={progressLoading} className={`disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={progressLoading} icon="🔄">{t('bf_whats_next')}</Spin></button>
-            <button onClick={() => setShowShare(!showShare)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>🤝 {t('bf_share')}</button>
-            <button onClick={() => setShowSaveTemplate(!showSaveTemplate)} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}>💾 {t('bf_template')}</button>
-            <button onClick={handleRebatch} disabled={rebatchLoading} className={`disabled:opacity-40 px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnSecondary}`}><Spin on={rebatchLoading} icon="♻️">{t('bf_reoptimize')}</Spin></button>
+            <button onClick={handleRebatch} disabled={rebatchLoading} className={`disabled:opacity-40 px-4 py-2 rounded-lg text-xs font-bold ${c.btnPrimary}`}><Spin on={rebatchLoading} icon="♻️">{t('bf_reoptimize')}</Spin></button>
+            <button onClick={() => setShowSaveTemplate(!showSaveTemplate)} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${c.border} ${c.textSecondary}`}>💾 {t('bf_template')}</button>
+            <button onClick={() => setShowShare(!showShare)} className={`px-2 py-1.5 rounded-lg text-xs font-semibold ${c.textMuteded} hover:underline`}>🤝 {t('bf_share')}</button>
           </div>
         </div>
 
@@ -813,6 +815,15 @@ const BatchFlow = ({ tool }) => {
         {/* Share / Template / Progress panels */}
         {showShare && <div ref={sharePanelRef} className={`${c.success} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">🤝 {t('bf_share_title')}</h4><button onClick={() => { setShowShare(false); setShareResult(null); }} className={`text-xs ${c.textMuteded}`}>✕</button></div><p className={`text-xs ${c.textSecondary}`}>{t('bf_share_intro')}</p><Pill options={RECIPIENT_OPTS} value={shareRecipient} setter={setShareRecipient} /><button onClick={handleShare} disabled={shareLoading} className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={shareLoading} icon="📱">{t('bf_share_generate')}</Spin></button>{shareResult && <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-2`}><p className="text-sm whitespace-pre-line">{shareResult.message}</p>{shareResult.check_in_time && <p className={`text-xs ${c.textMuteded}`}>⏰ {t('bf_share_checkin', { val: shareResult.check_in_time })}</p>}{shareResult.tone_note && <p className={`text-xs ${c.textMuteded} italic`}>{shareResult.tone_note}</p>}</div>}</div>}
         {showSaveTemplate && <div ref={savePanelRef} className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}><div className="flex justify-between"><h4 className="font-bold text-sm">💾 {t('bf_save_title')}</h4><button onClick={() => setShowSaveTemplate(false)} className={`text-xs ${c.textMuteded}`}>✕</button></div><input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('bf_save_ph')} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input}`} /><button onClick={handleSaveTemplate} disabled={saveTemplateLoading || !templateName.trim()} className={`w-full py-2 rounded-xl text-sm font-bold ${c.btnPrimary} disabled:opacity-40`}><Spin on={saveTemplateLoading} icon="💾">{t('bf_save_btn')}</Spin></button></div>}
+        {/* "What's next?" can only say something once a batch is ticked
+            off, so it lives here rather than in the action bar. */}
+        {(results.batches || []).some((_, bi) => isBatchDone(bi)) && !progressResult && !progressLoading && (
+          <button onClick={handleProgress}
+            className={`w-full py-2.5 rounded-lg text-xs font-bold border ${c.border} ${c.textSecondary}`}>
+            🔄 {t('bf_whats_next')}
+          </button>
+        )}
+
         {(progressResult || progressLoading) && <div ref={progressPanelRef} className={`${c.cardAlt} border rounded-xl p-5 space-y-3`}>
           <div className="flex justify-between"><h4 className="font-bold text-sm">🔄 {t('bf_progress_title')}</h4>{!progressLoading && <button onClick={() => setProgressResult(null)} className={`text-xs ${c.textMuteded}`}>✕</button>}</div>
           {progressLoading ? (
@@ -863,22 +874,11 @@ const BatchFlow = ({ tool }) => {
               <div className="flex items-center gap-3"><span className="text-2xl">{mi.emoji}</span><div><h4 className={`font-bold text-sm ${done ? 'line-through' : ''} ${c.text}`}>{batch.batch_name}</h4><p className={`text-xs ${c.textSecondary}`}>{batch.suggested_time} · {batch.estimated_duration}{batch.energy_required ? ` · ${t('bf_energy_required', { val: batch.energy_required })}` : ''}</p></div></div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${modeStyle(batch.cognitive_mode)}`}>{mi.label}</span>
-                {batch.focus_preset && <button onClick={() => setShowFocusPreset(p => ({ ...p, [bi]: !p[bi] }))} className={`text-xs font-bold ${c.textMuteded}`}>{showFocusPreset[bi] ? `🎯 ${t('bf_focus_hide')}` : `🎯 ${t('bf_focus_setup')}`}</button>}
                 {!done && <button onClick={() => handleExpandBatch(batch)} disabled={expandLoading && expandedBatch === batch.batch_id} className={`disabled:opacity-40 text-xs font-bold ${c.textMuteded}`}><Spin on={expandLoading && expandedBatch === batch.batch_id} icon="🔍">{t('bf_expand')}</Spin></button>}
                 {!done && <button onClick={() => markBatchComplete(bi)} className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✓ {t('bf_all_done')}</button>}
                 {done && <button onClick={() => setShowTimeInput(showTimeInput === bi ? null : bi)} className={`text-xs font-bold ${isDark ? 'text-amber-300' : 'text-amber-600'}`}>⏱️ {t('bf_log_time')}</button>}
               </div>
             </div>
-
-            {/* Focus Preset */}
-            {showFocusPreset[bi] && batch.focus_preset && <div className={`mb-3 p-3 rounded-lg ${c.cardAlt} border ${c.border} grid grid-cols-2 sm:grid-cols-3 gap-2`}>
-              <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🔔</span> {batch.focus_preset.notifications}</div>
-              <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🎵</span> {batch.focus_preset.music}</div>
-              <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🖥️</span> {batch.focus_preset.workspace}</div>
-              <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>📱</span> {batch.focus_preset.phone}</div>
-              <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🌐</span> {batch.focus_preset.browser_tabs}</div>
-              <div className="text-xs col-span-2 sm:col-span-1"><span className={`font-bold ${c.textMuteded}`}>✨</span> {batch.focus_preset.ritual}</div>
-            </div>}
 
             {/* Time input (after batch completion) */}
             {showTimeInput === bi && <div className={`mb-3 p-3 rounded-lg ${c.warning} border space-y-2`}>
@@ -892,9 +892,34 @@ const BatchFlow = ({ tool }) => {
 
             {movingTask && movingTask.fromBatchId !== batch.batch_id && <button onClick={() => handleMoveTask(movingTask.task, movingTask.fromBatchId, batch.batch_id)} className={`w-full py-2 rounded-lg border-2 border-dashed text-xs font-bold ${isDark ? 'border-emerald-600 text-emerald-400' : 'border-emerald-400 text-emerald-600'}`}>📥 {t('bf_move_here')}</button>}
 
-            {batch.tools_needed?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>🔧 {batch.tools_needed.join(', ')}</p>}
-            {batch.environment_tip && <p className={`text-xs ${c.textMuteded}`}>🎯 {batch.environment_tip}</p>}
-            {batch.break_after && <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-600'} mt-2`}>☕ {batch.break_after}</p>}
+            {/* ── Setup tips ───────────────────────────────────────────
+                Tools, focus setup and the break were four blocks of operational
+                detail under every batch, which made a five-batch plan read as
+                a manual. `why_batched` stays visible — that is the part doing
+                the teaching. The rest is what you want once you sit down. */}
+            {(batch.tools_needed?.length > 0 || batch.environment_tip || batch.break_after || batch.focus_preset) && (
+              <details className={`group mt-2 ${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <div className={`flex items-center gap-2 text-xs font-bold ${c.textMuteded}`}>
+                    {t('bf_setup_tips')}
+                    <Caret groupOpen className="ms-auto" />
+                  </div>
+                </summary>
+                <div className="space-y-1.5 mt-3">
+                  {batch.tools_needed?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>🔧 {batch.tools_needed.join(', ')}</p>}
+                  {batch.environment_tip && <p className={`text-xs ${c.textMuteded}`}>🎯 {batch.environment_tip}</p>}
+                  {batch.break_after && <p className={`text-xs ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>☕ {batch.break_after}</p>}
+                  {batch.focus_preset && <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                  <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🔔</span> {batch.focus_preset.notifications}</div>
+                  <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🎵</span> {batch.focus_preset.music}</div>
+                  <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🖥️</span> {batch.focus_preset.workspace}</div>
+                  <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>📱</span> {batch.focus_preset.phone}</div>
+                  <div className="text-xs"><span className={`font-bold ${c.textMuteded}`}>🌐</span> {batch.focus_preset.browser_tabs}</div>
+                  <div className="text-xs col-span-2 sm:col-span-1"><span className={`font-bold ${c.textMuteded}`}>✨</span> {batch.focus_preset.ritual}</div>
+                  </div>}
+                </div>
+              </details>
+            )}
 
             {expandResult && expandedBatch === batch.batch_id && <div className={`mt-4 ${c.cardAlt} rounded-lg p-4 border ${c.border} space-y-3`}><p className={`text-xs font-bold uppercase ${c.textMuteded}`}>{t('bf_step_by_step')}</p>{expandResult.prep_steps?.length > 0 && <div>{expandResult.prep_steps.map((s, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {s}</p>)}</div>}{(expandResult.execution_plan || []).map((step, si) => <div key={si} className={`${c.card} border ${c.border} rounded-lg p-3`}><p className={`text-sm font-semibold ${c.text}`}>{si + 1}. {step.task}</p><p className={`text-xs ${c.textSecondary}`}>→ {step.first_action}</p>{step.momentum_tip && <p className={`text-xs italic ${c.textMuteded}`}>💡 {step.momentum_tip}</p>}<p className={`text-xs ${c.textMuteded}`}>✓ {step.done_signal} · ⏱️ {step.time_estimate}</p></div>)}{expandResult.batch_complete_reward && <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`}>🎁 {expandResult.batch_complete_reward}</p>}<button onClick={() => { setExpandedBatch(null); setExpandResult(null); }} className={`text-xs font-bold ${c.textMuteded}`}>{t('bf_close')}</button></div>}
           </div>;
