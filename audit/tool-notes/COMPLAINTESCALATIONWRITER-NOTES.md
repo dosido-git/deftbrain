@@ -192,3 +192,32 @@ copy fix:
 2. **The ✓ considerations format** for "Why your position may be stronger than
    you think" — the content is hedged now but still renders as prose blocks,
    not the short ticked list the heading implies.
+
+## Progressive reveal + ✓ considerations (2026-08-15)
+Both remaining items from the review.
+
+**Progressive reveal.** "Today's only job: send the next message, don't worry
+about step five yet" was contradicted by a tab row showing all five at once.
+`unlockedThrough` counts CONSECUTIVE sent steps from 1 — deliberately not a
+max() over sent steps, because jumping to step 4 should not silently open 2 and
+3. The tab row filters on it, and a `useEffect` clamps `activeStage` so nobody
+is left standing on a step that just closed.
+
+**The escape hatch is not optional.** The sent state only exists if someone
+pressed Mark as Sent. A person who actually sent the letter and never pressed
+it would be locked out of their own plan forever, so the notice under the tab
+row carries "show them all anyway". Verified: one tab by default, five after
+the hatch, notice gone once used.
+
+**Step labels renamed at the source.** `stageConfig` reads `cew_stage1_label`…
+`cew_stage5_label`, which the vocabulary sweep had missed because they live in
+the component, not in the prose strings: Direct Complaint → **Send this**,
+Regulatory Filing → **If no answer**, Executive Escalation → **Higher up**,
+Public Pressure → **Going public**, Financial & Legal → **Other routes**.
+
+**✓ considerations.** New `consideration` field on each `legal_leverage` entry
+— one line, at most 18 words, phrased as a consideration and not a finding,
+with worked good/bad examples in the schema. Rendered as a ticked list at the
+top of the section, above the detail blocks, so the content finally matches the
+heading. Verified live: "Crew scheduling is generally considered a controllable
+disruption." (15-16 words each, three of them, none asserting a breach.)

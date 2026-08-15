@@ -272,6 +272,7 @@ Build the strategy layer for THIS situation. Keep arrays tight: at most 3 legal_
   "legal_leverage": [
     {
       "law_or_regulation": "Specific law name and section",
+      "consideration": "ONE short line for a ticked list under the heading 'Why your position may be stronger than you think'. At most 18 words, phrased as a consideration and not a finding. GOOD: 'Crew scheduling is generally considered a controllable disruption.' 'Airlines often carry extra obligations during overnight, airline-caused delays.' BAD: anything starting 'This is', anything with 'clearly' or 'explicitly', anything asserting the company broke a rule.",
       "what_it_protects": "What right it gives the consumer",
       "how_it_applies": "How it may apply to THIS situation — hedged. 'Based on what you described, this appears inconsistent with…' Never 'this is a violation'.",
       "consequence_for_company": "What the rule obliges the company to do, and what is at stake for them if it is not met. Describe the rule, not their guilt.",

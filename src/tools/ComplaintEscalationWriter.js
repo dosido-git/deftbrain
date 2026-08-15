@@ -197,6 +197,12 @@ const ComplaintEscalationWriter = ({ tool }) => {
   // ─── Session state ───
   const [error,              setError]              = useState('');
   const [activeStage,        setActiveStage]        = useState(1);
+  // "Today's only job: send the next message, don't worry about step five yet"
+  // was immediately contradicted by showing all five steps at once. A step
+  // opens when the one before it has been marked sent. `showAllSteps` is the
+  // escape hatch — someone who actually sent the letter but never pressed the
+  // button must not be locked out of their own plan.
+  const [showAllSteps,       setShowAllSteps]       = useState(false);
   const [expandedSections,   setExpandedSections]   = useState({});
   const [responseText,       setResponseText]       = useState('');
   const [responseAnalysis,   setResponseAnalysis]   = useState(null);
@@ -262,6 +268,21 @@ const ComplaintEscalationWriter = ({ tool }) => {
   };
 
   // ─── Stage progress ───
+  // How far the plan is open: 1, plus each consecutive step whose predecessor
+  // has been sent. Not a max() over sent steps — jumping to step 4 should not
+  // silently open 2 and 3.
+  const unlockedThrough = (() => {
+    if (!activeComplaintId) return 1;
+    const prog = stageProgress[activeComplaintId] || {};
+    let n = 1;
+    while (n < 5 && prog[n] && prog[n].sent) n += 1;
+    return n;
+  })();
+  const isStepOpen = (n) => showAllSteps || n <= unlockedThrough;
+  useEffect(() => { if (!isStepOpen(activeStage)) setActiveStage(unlockedThrough); },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [unlockedThrough, showAllSteps, activeStage]);
+
   const getStageStatus = (stageNum) => {
     if (!activeComplaintId) return null;
     return stageProgress[activeComplaintId]?.[stageNum] || null;
@@ -1009,7 +1030,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
 
             {/* Stage Tabs */}
             <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
-              {stageConfig.map(stage => {
+              {stageConfig.filter(stage => isStepOpen(stage.num)).map(stage => {
                 const isActive = activeStage === stage.num;
                 const sc = stageColors(stage.color, 'badge');
                 const status = getStageStatus(stage.num);
@@ -1023,6 +1044,18 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 );
               })}
             </div>
+
+            {/* What is behind the steps that have not opened yet. Without this
+                the tab row just looks short — the visitor should know the rest
+                exists and what brings it. */}
+            {!showAllSteps && unlockedThrough < 5 && (
+              <p className={`text-xs ${c.textMuteded} mb-5`}>
+                {t('cew_next_unlocks')}{' '}
+                <button onClick={() => setShowAllSteps(true)} className={`underline font-semibold ${c.textSecondary}`}>
+                  {t('cew_show_all_steps')}
+                </button>
+              </p>
+            )}
 
             {/* Campaign Progress */}
             {activeComplaintId && Object.keys(stageProgress[activeComplaintId] || {}).length > 0 && (
@@ -1393,6 +1426,19 @@ const ComplaintEscalationWriter = ({ tool }) => {
                 </button>
                 {expandedSections.legal && (
                   <div className="space-y-3 mt-4">
+                    {/* The heading promises considerations; give them first, as
+                        the short ticked list it implies. The detail below is
+                        for whoever wants the citation. */}
+                    {results?.legal_leverage?.some(l => l.consideration) && (
+                      <ul className="space-y-1.5 mb-4">
+                        {results?.legal_leverage?.filter(l => l.consideration).map((law, i) => (
+                          <li key={i} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
+                            <span className={`flex-shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>✓</span>
+                            <span>{law.consideration}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {results?.legal_leverage?.map((law, idx) => (
                       <div key={idx} className={`p-4 rounded-lg border ${c.border}`}>
                         <div className="flex items-start justify-between gap-2 mb-1">
