@@ -654,6 +654,47 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // zero, the per-country column is MISSING DATA, not a finding, and must
     // never be rendered as "no interaction" — that reads as evidence of bots
     // and is how this shipped wrong the first time.
+    // ── Prompt-cache viability ───────────────────────────────────────
+    // Anthropic flags a low cache hit rate and estimates a saving from token
+    // volume alone. Volume is the wrong question: a cache WRITE costs 1.25x a
+    // normal token and a HIT costs 0.1x, so a prefix needs roughly two hits
+    // per write before caching saves anything. What matters is whether the
+    // same prompt prefix recurs inside the TTL.
+    //
+    // This measures the OPTIMISTIC case. tool_run carries the tool but not the
+    // language, and the real cache key is tool+language+locale+currency —
+    // 27 routes build the system string from all four. So a run counted as a
+    // hit here might still miss in production. If even this number is small,
+    // caching cannot pay, and no restructuring is worth doing.
+    const TTL_MIN = 5;
+    const runsByTool = {};
+    for (const e of events) {
+      if (e.event !== 'tool_run' || !e.at) continue;
+      const tool = (e.props && e.props.tool) || '?';
+      const ms = Date.parse(e.at);
+      if (Number.isNaN(ms)) continue;
+      (runsByTool[tool] = runsByTool[tool] || []).push(ms);
+    }
+    let cacheRuns = 0, cacheWouldHit = 0;
+    const cacheRows = Object.entries(runsByTool).map(([tool, times]) => {
+      times.sort((a, b) => a - b);
+      let hits = 0;
+      for (let i = 1; i < times.length; i++) {
+        if (times[i] - times[i - 1] <= TTL_MIN * 60 * 1000) hits++;
+      }
+      cacheRuns += times.length; cacheWouldHit += hits;
+      return { tool, runs: times.length, hits };
+    }).filter(r => r.runs >= 2).sort((a, b) => b.hits - a.hits || b.runs - a.runs).slice(0, 12);
+    const cacheRate = cacheRuns ? Math.round(cacheWouldHit / cacheRuns * 100) : 0;
+    // Two hits per write to break even, so a rate under ~67% loses money.
+    const cacheVerdict = cacheRuns < 30
+      ? 'Not enough runs yet to tell — this needs a few hundred before it means anything.'
+      : cacheRate >= 67
+        ? 'Worth doing. Move the stable PERSONALITY into its own cached system block, with the language and locale directives AFTER it — today they are concatenated, so every language x locale pair is a different prefix.'
+        : 'Not worth doing yet. Below roughly 67% the cache writes cost more than the hits save, and this figure is already the optimistic one.';
+    const cacheTable = cacheRows.map(r =>
+      `<tr><td>${escH(r.tool)}</td><td>${r.runs}</td><td>${r.hits}</td><td>${pct(r.hits, r.runs)}</td></tr>`).join('');
+
     // ── Second tool visited ──────────────────────────────────────────
     // One row per FIRST tool of a session, listing where people went next.
     // The pairing is done in the browser (analytics.js) because events carry
@@ -741,6 +782,10 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Prompt-cache viability</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">A cache write costs 1.25x a normal token; a hit costs 0.1x — so a prompt prefix needs roughly <b>two hits per write</b> before caching saves money. This counts a run as a would-be hit when the same tool ran again within ${TTL_MIN} minutes. It is the <b>optimistic</b> figure: the real cache key also includes language, locale and currency, which 27 routes build into the system string, so production would fragment further.</p>
+    <p style="font-size:13px;margin:0 0 8px"><b>${cacheWouldHit} of ${cacheRuns} runs</b> (${cacheRate}%) would have hit a warm cache. ${escH(cacheVerdict)}</p>
+    <table><tr><th>tool</th><th>runs</th><th>would hit</th><th>rate</th></tr>${cacheTable || '<tr><td colspan="4" style="color:#888">No tool has run twice yet in this range.</td></tr>'}</table>
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
