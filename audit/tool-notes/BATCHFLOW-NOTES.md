@@ -44,3 +44,9 @@ look like?", "Time available" → "How much time do you have?", "Energy pattern"
 productive day are not the same thing; you are not distracted, your brain is
 changing gears) at the top, 🎯 Today's only job under it, and 💚 You're set. at
 the foot. All fixed copy, not generated.
+
+### Reverted 2026-08-15
+The extra sentence under the tagline ("You don't need a perfect schedule. You
+just need fewer gear changes.") is gone at the owner's request, and `bf_lede`
+with it. The header is one line of grey again. The tagline change made in the
+same pass stays.

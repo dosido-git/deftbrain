@@ -1785,10 +1785,11 @@ actually says something:
 tagline — the owner spotted it immediately when comparing three tools side by
 side. Sixty-four cards were renormalised on 2026-08-14.
 
-**One line of grey text, not two.** The tagline is the only muted line in the
-header unless a tool has a genuine second idea to state. Batch Flow briefly had
-a tagline that said "minimize mental gear-shifting" above a lede that said
-"fewer gear changes" — the same sentence twice, which reads as two taglines.
+**One line of grey text.** The tagline is the only muted line in the header.
+Batch Flow briefly carried a second sentence under it; two lines of the same
+grey read as two taglines whatever they say, and it was removed (owner,
+2026-08-15). If an idea is worth stating before the form, it belongs in the
+`description` the wrapper renders above the card — not as a second subtitle.
 
 **Applied catalog-wide on 2026-08-14** — 126 tools now render this header and
 the PF-17c pill. Three tools are deliberate exceptions: BrainDumpBuddy's second
