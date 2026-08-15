@@ -2533,12 +2533,12 @@ export const tools = [
   seoDescription: "Paste any confusing or passive-aggressive message and instantly decode the subtext, what they really want, red flags, and 3 ready-to-send responses. Free, no signup.",
   seoTitle: "Text Message Subtext Decoder",
   title: "Decoder Ring",
-  tagline: "Decode what they actually mean beneath what they said",
+  tagline: "Explore what might be happening beneath the words",
   tags: ['message', 'subtext', 'passive aggressive', 'email', 'text', 'meaning', 'tone', 'confusing'],
   icon: "🔍",
   categories: ['Humans'],
   headerColor: "#e0b8b8",
-  description: "Paste any confusing message and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.",
+  description: "Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.",
   guide: {
     overview: "Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.",
     howToUse: [

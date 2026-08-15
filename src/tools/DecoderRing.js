@@ -125,6 +125,7 @@ const DecoderRing = ({ tool }) => {
   const [showStrategies, setShowStrategies] = useState(true);
   const [showFlags, setShowFlags] = useState(false);
   const [sessionHistory, setSessionHistory] = usePersistentState('decoder-ring-history', []);
+  const [whatsConfusing, setWhatsConfusing] = usePersistentState('decoder-ring-confusing', '');
 
   // Input
   const [message, setMessage] = usePersistentState('decoder-ring-message', '');
@@ -156,6 +157,7 @@ const DecoderRing = ({ tool }) => {
         source: source || null,
         relationship: relationship || null,
         additionalContext: additionalContext.trim() || null,
+        whatsConfusing: whatsConfusing.trim() || null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
@@ -164,7 +166,7 @@ const DecoderRing = ({ tool }) => {
       setError(err.message || t('dr_err_failed'));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message, source, relationship, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [message, source, relationship, additionalContext, whatsConfusing, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = () => {
     const examples = [
@@ -309,19 +311,6 @@ const DecoderRing = ({ tool }) => {
         <span className={`text-xs ${c.textMuted} mt-2 block`}>{t('dr_char_count', { count: message.length })}</span>
       </div>
 
-      {/* Source */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dr_source_label')}</label>
-        <div className="flex flex-wrap gap-1.5">
-          {SOURCE_OPTIONS.map(opt => (
-            <Pill key={opt.value} active={source === opt.value}
-              onClick={() => setSource(source === opt.value ? '' : opt.value)}>
-              {opt.emoji} {t(opt.key)}
-            </Pill>
-          ))}
-        </div>
-      </div>
-
       {/* Relationship */}
       <div className={`${c.card} border rounded-xl p-5`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dr_who_label')}</label>
@@ -329,6 +318,19 @@ const DecoderRing = ({ tool }) => {
           {RELATIONSHIP_OPTIONS.map(opt => (
             <Pill key={opt.value} active={relationship === opt.value}
               onClick={() => setRelationship(relationship === opt.value ? '' : opt.value)}>
+              {opt.emoji} {t(opt.key)}
+            </Pill>
+          ))}
+        </div>
+      </div>
+
+      {/* Source */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dr_source_label')}</label>
+        <div className="flex flex-wrap gap-1.5">
+          {SOURCE_OPTIONS.map(opt => (
+            <Pill key={opt.value} active={source === opt.value}
+              onClick={() => setSource(source === opt.value ? '' : opt.value)}>
               {opt.emoji} {t(opt.key)}
             </Pill>
           ))}
@@ -344,14 +346,31 @@ const DecoderRing = ({ tool }) => {
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
 
+      {/* What's confusing — the visitor's own question, which is usually
+          sharper than anything the tool would infer on its own. */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <label htmlFor="dr-confusing" className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dr_confusing_label')}</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>{t('dr_confusing_help')}</p>
+        <input id="dr-confusing" type="text" value={whatsConfusing} onChange={e => setWhatsConfusing(e.target.value)}
+          placeholder={t('dr_confusing_ph')}
+          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+      </div>
+
       {/* Decode button */}
       <button onClick={decode}
         disabled={loading || !message.trim()}
-        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+        title={t('dr_cmd_enter')}
+        className={`relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
           loading || !message.trim() ? c.btnDis : c.btnPrimary
         } disabled:opacity-40`}>
         {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {t('dr_decoding')}</>
           : <><span>{tool?.icon ?? '🔍'}</span> {t('dr_decode')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
       </button>
     </div>
   );

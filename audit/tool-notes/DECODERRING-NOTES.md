@@ -14,3 +14,23 @@ Decodes the subtext of a received message: surface reading, decoded layers (phra
 ## Known / accepted
 - 0 baseline audit issues (was already clean — callClaudeWithRetry, guard correct). No truncation at 4000 (DE ~45s).
 - Golden neutralizes `flags.red_flags`/`green_flags` to `[]` (variable — a benign message may have none); decoded_layers/response_strategies stay non-empty.
+
+## Rewrite + DeftBrain treatment (2026-08-15)
+- **The tool was built on a phrase it cannot deliver.** "Decode what they
+  actually mean beneath what they said" — nobody can know what someone actually
+  meant from a message. Tagline → "Explore what might be happening beneath the
+  words"; the results label → "What they might mean"; the prompt's "SUBTEXT
+  ANALYSIS: What they actually mean" → "What they MIGHT mean", plus a HOW
+  CERTAIN YOU MAY SOUND block. Same failure mode as Context Collapse, and the
+  same fix: change the field descriptions, not only the preamble.
+- **Form reordered** — Who sent it? now comes before Where did this come from?
+  Who it is from does more work than the channel.
+- **"Backstory" → "Is there anything we should know?"**
+- **New optional field: "😟 What's confusing about this?"** with the owner's
+  examples. The visitor's own question is usually sharper than anything the
+  tool would infer, and the prompt is told to answer it directly — still as a
+  reading, not a verdict.
+- PF-31 chip; PF-30/17c came in with the catalog sweep.
+
+**Left alone:** two guide TITLES still contain "actually mean" — they are
+published pages with their own URLs and search intent, not the tool's voice.

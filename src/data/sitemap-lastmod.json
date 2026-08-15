@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "3fbadd6927470cf3581839e03ac16e6365600d51",
+  "hash": "2a6c7bee1e9cb2ef347fee68748b75a7d70fe18c",
   "lastmod": "2026-08-15"
  },
  "static:about": {
@@ -48,8 +48,8 @@
   "lastmod": "2026-08-15"
  },
  "tool:DecoderRing": {
-  "hash": "8c6913ddf823ec809ef1a36155f3616b0ad63a1f",
-  "lastmod": "2026-08-07"
+  "hash": "59a704e6ed52daa7b288e024ca01013e095e20f7",
+  "lastmod": "2026-08-15"
  },
  "tool:DifficultTalkCoach": {
   "hash": "ad7579c426073477a5d41b02f384c57dcee4cd65",
