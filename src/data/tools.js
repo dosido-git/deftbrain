@@ -2833,7 +2833,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: '⚡',
   categories: ['The Office', 'Do It!'],
   headerColor: "#d4dde8",
-  description: 'Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.',
+  description: "A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.",
   guide: {
     overview: "BatchFlow groups your tasks by how your brain needs to work — not just by topic or deadline. Every time you switch between creative thinking, analytical work, social communication, or physical tasks, your brain pays a recovery tax of 15–25 minutes. BatchFlow eliminates unnecessary switches by sorting your tasks into coherent batches, scheduling them around your energy curve and fixed commitments, and giving you a ready-to-execute plan. Add your tasks, tell it what kind of day you're having and when your energy peaks, and get a complete batched schedule — with focus environment tips, break suggestions, and time estimates — in seconds.",
     howToUse: [
@@ -2881,7 +2881,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🧘",
   categories: ['Energy'],
   headerColor: "#ccdfc4",
-  description: "A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.",
+  description: "For the days you don't want to move. The inputs — your energy, what hurts, and what actually happened today (bad sleep, long meeting, emotional day) — change the routine itself, not just the duration. Modes scale from a 2-minute floor to a weekly menu, with targeted body relief, sleep wind-downs, and recovery protocols for life events. History tracks how movement shifts your energy; Prove It shows whether it's actually helping you — in your own numbers.",
   guide: {
       overview: "LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.",
 
@@ -4032,7 +4032,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: '🎲',
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
-  description: 'Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can\'t stop thinking about.',
+  description: "Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can't stop thinking about.",
   guide: {
     overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
 
@@ -4173,7 +4173,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   ogIcon: '👗',
   categories: ['The Grind'],
   headerColor: "#d4dde8",
-  description: 'AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.',
+  description: "AI picks complete outfits from your wardrobe based on weather, activities, mood, and sensory needs. Perfect for anyone overwhelmed by daily choices.",
   guide: {
     overview: "Decision fatigue is real, especially when it comes to picking outfits. This tool learns your wardrobe and suggests complete outfit combinations based on your day's needs. It considers weather, activities, your mood, comfort preferences, and sensory requirements. Particularly helpful for anyone who finds daily outfit decisions overwhelming.",
     
@@ -4227,7 +4227,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: '🪴',
   categories: ['The Grind'],
   headerColor: "#1e2a3a",
-  description: 'Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.',
+  description: "Diagnose struggling plants and get step-by-step rescue plans. Upload a photo or describe symptoms to identify species, analyze problems (yellowing, wilting, spots), and receive prioritized action plans with recovery timelines.",
   guide: {
     overview: "Your plant is dying and you don't know why. This tool uses AI image analysis to identify your plant species, diagnose problems (overwatering, pests, nutrient deficiency), and provide a prioritized rescue plan. Upload a photo of the affected leaves/stems or describe symptoms, and get expert advice within seconds.",
     
@@ -6283,7 +6283,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: '💪',
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: 'Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.',
+  description: "Pre-game toolkit for interviews, presentations, hard conversations, dates, and medical appointments. Breaks down fear, builds a prep plan, and has an SOS mode for live panic.",
   guide: {
     overview: "Nerve Check is a pre-event confidence builder for any high-stakes moment. It works in two modes: Prep (before the event) and SOS (during live panic). In Prep mode, you describe what you're facing and get a fear breakdown — what's a real risk vs. what your brain is inflating — plus a custom preparation plan, a confidence anchor, and a 'worst case + survive it' walkthrough. SOS mode is for when you're already in it: a 60-second reset sequence calibrated to your situation.",
     howToUse: [
