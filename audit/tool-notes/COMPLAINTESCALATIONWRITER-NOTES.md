@@ -48,3 +48,14 @@ Verified live: rich fridge-saga input 357s → **84s** (4.3×). Golden 3/3.
 1. The parallel split; merging back re-creates the 6-min worst case.
 2. The ALL-SIX-KEYS rule in the strategy prompt — it pins against trailing-key omission.
 3. NO_QUOTE_RULE in both prompts (rich quote-heavy inputs previously broke JSON → retry loop).
+
+## The DeftBrain treatment (2026-08-15)
+PF-30 and PF-17c were already in place from the catalog sweep. Added here:
+- **PF-31** ⌘↵ chip on Build — the handler existed, unadvertised.
+- **PF-32** the history toggle was a chip in the HEADER, sitting beside the
+  tool's own name. It now renders under the submit button, full width, with
+  its count in the label (`cew_history` became `Past complaints ({{n}})`).
+- **PF-33** the Plain Talk cross-ref moved from above the submit button to
+  below it.
+- Description replaced with the owner's copy. The old one was a feature list
+  ("Builds a complete multi-stage escalation campaign… identifies…").

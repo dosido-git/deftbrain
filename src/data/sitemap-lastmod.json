@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "e694f77e503e121520141215b907c21179567859",
+  "hash": "0632ea0301d2de999a9915ab492584aaf456e428",
   "lastmod": "2026-08-15"
  },
  "static:about": {
@@ -40,8 +40,8 @@
   "lastmod": "2026-08-15"
  },
  "tool:ComplaintEscalationWriter": {
-  "hash": "4e4cd829bd1108147cb9c9fed8cd1e27838a55e1",
-  "lastmod": "2026-08-07"
+  "hash": "9c916559b6f378493471783e664026020d96daaf",
+  "lastmod": "2026-08-15"
  },
  "tool:ContextCollapse": {
   "hash": "9a275ee72d15b07951c30c6bede70d32d7e0ed1a",

@@ -736,11 +736,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
               {hasResults && (
                 <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>↺ {t('start_over')}</button>
               )}
-              {complaintHistory.length > 0 && (
-                <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs flex items-center gap-1`}>
-                  <span>📁</span> {t('cew_history', { count: complaintHistory.length })}
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -827,11 +822,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
             </div>
           </div>
         )}
-
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
-          {t('cew_xref_pre_q')} <a href="/PlainTalk" className={linkStyle}>🗣️ {t('cew_xref_plaintalk')}</a> {t('cew_xref_pre_tail')}
-        </p>
 
         {/* First-visit welcome */}
         {!hasVisited && (
@@ -928,11 +918,33 @@ const ComplaintEscalationWriter = ({ tool }) => {
           )}
 
           <button onClick={handleSubmit} disabled={loading || !company.trim() || !issue.trim()}
-          className={`w-full py-4 px-6 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 min-h-[48px] shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all ${loading ? c.loadingSubmit : c.btnPrimary}`}>
+          title={t('cew_cmd_enter')}
+          className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 min-h-[48px] shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all ${loading ? c.loadingSubmit : c.btnPrimary}`}>
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '📧'}</span> {t('cew_building')}</>
             : <><span>{tool?.icon ?? '📧'}</span> {t('cew_build_btn')}</>}
+
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
+
+          {/* PF-32 — the history toggle was a chip in the header, beside the
+              tool's own name. One home, under the primary action. */}
+          {complaintHistory.length > 0 && (
+            <button onClick={() => setShowHistory(!showHistory)}
+              className={`w-full mt-3 px-3 py-2.5 rounded-lg text-xs font-bold border ${c.border} ${c.textSecondary} flex items-center justify-center gap-1.5`}>
+              <span>📁</span> {t('cew_history', { n: complaintHistory.length })}
+            </button>
+          )}
+
+          {/* PF-33 — an offer belongs after the ask */}
+          <p className={`text-xs text-center ${c.textMuted} mt-3`}>
+            {t('cew_xref_pre_q')} <a href="/PlainTalk" className={linkStyle}>🗣️ {t('cew_xref_plaintalk')}</a> {t('cew_xref_pre_tail')}
+          </p>
         </div>
       </div>
 

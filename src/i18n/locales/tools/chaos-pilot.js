@@ -5,6 +5,7 @@ export const chaosPilot = {
   en: {
     chp_title: "Chaos Pilot",
     chp_tagline: "One calculated disruption. Small change. Big ripple.",
+    chp_cmd_enter: "Press ⌘↵ (Ctrl+Enter) to design it",
     chp_routine_label: "Your typical week, hour by hour",
     chp_routine_ph: "Walk me through a normal week — wake up time, work routine, evenings, weekends. The more specific, the better the disruption.",
     chp_submit_hint: "Ctrl+Enter to submit",
@@ -54,6 +55,7 @@ export const chaosPilot = {
   es: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Una alteración calculada. Cambio pequeño. Onda grande.",
+    chp_cmd_enter: "Pulsa ⌘↵ (Ctrl+Intro) para diseñarlo",
     chp_routine_label: "Tu semana típica, hora por hora",
     chp_routine_ph: "Cuéntame una semana normal: hora de despertar, rutina de trabajo, tardes, fines de semana. Cuanto más específico, mejor será la alteración.",
     chp_submit_hint: "Ctrl+Enter para enviar",
@@ -103,6 +105,7 @@ export const chaosPilot = {
   zh: {
     chp_title: "Chaos Pilot",
     chp_tagline: "一次精心设计的打断。小改变，大涟漪。",
+    chp_cmd_enter: "按 ⌘↵（Ctrl+Enter）开始设计",
     chp_routine_label: "你典型的一周，一小时一小时地说",
     chp_routine_ph: "给我讲讲普通的一周——起床时间、工作安排、晚上、周末。越具体，扰动就越精准。",
     chp_submit_hint: "按 Ctrl+Enter 提交",
@@ -152,6 +155,7 @@ export const chaosPilot = {
   hi: {
     chp_title: "Chaos Pilot",
     chp_tagline: "एक सोची-समझी हलचल। छोटा बदलाव, बड़ी लहर।",
+    chp_cmd_enter: "डिज़ाइन करने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     chp_routine_label: "आपका आम हफ़्ता, घंटे-दर-घंटे",
     chp_routine_ph: "मुझे एक सामान्य हफ़्ते के बारे में बताएँ — उठने का समय, काम की दिनचर्या, शामें, सप्ताहांत। जितना विस्तृत, हलचल उतनी ही बेहतर।",
     chp_submit_hint: "भेजने के लिए Ctrl+Enter",
@@ -201,6 +205,7 @@ export const chaosPilot = {
   ar: {
     chp_title: "Chaos Pilot",
     chp_tagline: "اضطراب محسوب. تغيير صغير، أثر كبير.",
+    chp_cmd_enter: "اضغط ⌘↵ (Ctrl+Enter) لتصميمه",
     chp_routine_label: "أسبوعك المعتاد، ساعة بساعة",
     chp_routine_ph: "صف لي أسبوعاً عادياً — وقت الاستيقاظ، روتين العمل، الأمسيات، عطلات نهاية الأسبوع. كلما زادت التفاصيل، كان الاضطراب أفضل.",
     chp_submit_hint: "اضغط Ctrl+Enter للإرسال",
@@ -250,6 +255,7 @@ export const chaosPilot = {
   pt: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Uma ruptura calculada. Mudança pequena. Onda grande.",
+    chp_cmd_enter: "Pressione ⌘↵ (Ctrl+Enter) para desenhar",
     chp_routine_label: "Sua semana típica, hora a hora",
     chp_routine_ph: "Me conte uma semana normal — hora de acordar, rotina de trabalho, noites, fins de semana. Quanto mais específico, melhor a disrupção.",
     chp_submit_hint: "Ctrl+Enter para enviar",
@@ -299,6 +305,7 @@ export const chaosPilot = {
   fr: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Une perturbation calculée. Petit changement, grande onde.",
+    chp_cmd_enter: "Appuyez sur ⌘↵ (Ctrl+Entrée) pour le concevoir",
     chp_routine_label: "Votre semaine type, heure par heure",
     chp_routine_ph: "Décrivez-moi une semaine normale — heure de réveil, routine de travail, soirées, week-ends. Plus c'est précis, meilleure sera la perturbation.",
     chp_submit_hint: "Ctrl+Entrée pour envoyer",
@@ -348,6 +355,7 @@ export const chaosPilot = {
   de: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Eine kalkulierte Störung. Kleine Änderung, große Welle.",
+    chp_cmd_enter: "Drücke ⌘↵ (Strg+Enter) zum Entwerfen",
     chp_routine_label: "Deine typische Woche, Stunde für Stunde",
     chp_routine_ph: "Beschreibe mir eine normale Woche — Aufstehzeit, Arbeitsalltag, Abende, Wochenenden. Je konkreter, desto besser die Störung.",
     chp_submit_hint: "Strg+Enter zum Senden",
@@ -397,6 +405,7 @@ export const chaosPilot = {
   ja: {
     chp_title: "Chaos Pilot",
     chp_tagline: "計算されたひとつの揺さぶり。小さな変化、大きな波紋。",
+    chp_cmd_enter: "⌘↵（Ctrl+Enter）で設計",
     chp_routine_label: "あなたの典型的な一週間を、時間ごとに",
     chp_routine_ph: "普通の一週間を教えてください——起床時間、仕事の流れ、夜、週末。具体的なほど、揺さぶりも的確になります。",
     chp_submit_hint: "Ctrl+Enter で送信",
@@ -446,6 +455,7 @@ export const chaosPilot = {
   ko: {
     chp_title: "Chaos Pilot",
     chp_tagline: "계산된 흔들기 하나. 작은 변화, 큰 파장.",
+    chp_cmd_enter: "⌘↵ (Ctrl+Enter)로 설계하기",
     chp_routine_label: "당신의 일상적인 한 주를, 시간 단위로",
     chp_routine_ph: "평범한 한 주를 들려주세요 — 기상 시간, 업무 루틴, 저녁, 주말. 구체적일수록 더 좋은 흔들기가 나옵니다.",
     chp_submit_hint: "Ctrl+Enter로 제출",
@@ -495,6 +505,7 @@ export const chaosPilot = {
   ru: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Одно рассчитанное нарушение. Малое изменение, большая волна.",
+    chp_cmd_enter: "Нажмите ⌘↵ (Ctrl+Enter), чтобы спроектировать",
     chp_routine_label: "Ваша типичная неделя, час за часом",
     chp_routine_ph: "Опишите обычную неделю — время подъёма, рабочий распорядок, вечера, выходные. Чем конкретнее, тем точнее встряхивание.",
     chp_submit_hint: "Ctrl+Enter, чтобы отправить",
@@ -544,6 +555,7 @@ export const chaosPilot = {
   th: {
     chp_title: "Chaos Pilot",
     chp_tagline: "การสะกิดที่คำนวณมาแล้ว เปลี่ยนนิดเดียว กระเพื่อมไกล",
+    chp_cmd_enter: "กด ⌘↵ (Ctrl+Enter) เพื่อออกแบบ",
     chp_routine_label: "สัปดาห์ทั่วไปของคุณ ทีละชั่วโมง",
     chp_routine_ph: "เล่าสัปดาห์ปกติให้ฟัง — เวลาตื่น กิจวัตรการทำงาน ช่วงเย็น วันหยุดสุดสัปดาห์ ยิ่งเจาะจง การเขย่าก็ยิ่งดี",
     chp_submit_hint: "กด Ctrl+Enter เพื่อส่ง",
@@ -593,6 +605,7 @@ export const chaosPilot = {
   vi: {
     chp_title: "Chaos Pilot",
     chp_tagline: "Một cú xáo trộn có tính toán. Thay đổi nhỏ, lan toả lớn.",
+    chp_cmd_enter: "Nhấn ⌘↵ (Ctrl+Enter) để thiết kế",
     chp_routine_label: "Tuần điển hình của bạn, từng giờ một",
     chp_routine_ph: "Hãy kể tôi nghe một tuần bình thường — giờ thức dậy, lịch làm việc, buổi tối, cuối tuần. Càng cụ thể, cú xáo trộn càng hiệu quả.",
     chp_submit_hint: "Ctrl+Enter để gửi",

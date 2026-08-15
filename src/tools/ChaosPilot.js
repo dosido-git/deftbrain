@@ -260,11 +260,18 @@ const ChaosPilot = ({ tool }) => {
           <button
             onClick={handleSubmit}
             disabled={loading || !routine.trim()}
-            className={`w-full w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
+            title={t('chp_cmd_enter')}
+            className={`relative w-full py-3 min-h-[48px] rounded-xl font-bold disabled:opacity-40 transition-colors flex items-center justify-center gap-2 ${c.btnPrimary}`}
           >
             {loading
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎰'}</span> {t('chp_designing')}</>
               : <><span>{tool?.icon ?? '🎰'}</span> {t('chp_give_disruption')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
           </button>
 
           {/* Pre-result cross-ref — below submit button */}

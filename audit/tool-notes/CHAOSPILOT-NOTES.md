@@ -45,3 +45,8 @@ minute three, a very specific feeling will arrive... that feeling is the
 pattern defending itself") as a reusable pattern worth borrowing into Bill
 Rescue, Alternate Path, One Percenter and Spiral Stopper. Predicting the
 resistance rather than pretending it will not come. Worth a deliberate pass.
+
+### ⌘↵ chip (2026-08-15)
+PF-31 on the primary submit. The second `handleSubmit` button ("give me a
+different one", post-results) deliberately has no chip — one shortcut, one
+control. Cleaned a duplicated `w-full` on the primary while in there.
