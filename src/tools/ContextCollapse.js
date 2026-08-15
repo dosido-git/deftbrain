@@ -155,9 +155,9 @@ const ContextCollapse = ({ tool }) => {
     setPlatform('email');
     setMessage(t('ctc_ex_message'));
     setAudiences([
-      { label: t('ctc_ex_aud1_label'), relationship: t('ctc_ex_aud1_rel'), context: '' },
-      { label: t('ctc_ex_aud2_label'), relationship: t('ctc_ex_aud2_rel'), context: '' },
-      { label: t('ctc_ex_aud3_label'), relationship: t('ctc_ex_aud3_rel'), context: '' },
+      { label: t('ctc_ex_aud1_label'), relationship: '', context: '' },
+      { label: t('ctc_ex_aud2_label'), relationship: '', context: '' },
+      { label: t('ctc_ex_aud3_label'), relationship: '', context: '' },
     ]);
     setIntent(t('ctc_ex_intent'));
     setConcerns(t('ctc_ex_concerns'));
@@ -309,20 +309,15 @@ const ContextCollapse = ({ tool }) => {
                         className={`px-2 py-1 rounded-lg text-xs transition-colors ${c.removeBtn}`}>✕</button>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text" value={a.relationship}
-                      onChange={e => updateAudience(idx, 'relationship', e.target.value)}
-                      placeholder={t('ctc_relationship_ph')}
-                      className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
-                    />
-                    <input
-                      type="text" value={a.context}
-                      onChange={e => updateAudience(idx, 'context', e.target.value)}
-                      placeholder={t('ctc_context_ph')}
-                      className={`px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
-                    />
-                  </div>
+                  {/* Relationship folded into the label above ("My boss
+                      (manager)") — three decisions per audience became two.
+                      Context stays, on its own line, plainly optional. */}
+                  <input
+                    type="text" value={a.context}
+                    onChange={e => updateAudience(idx, 'context', e.target.value)}
+                    placeholder={t('ctc_context_ph')}
+                    className={`w-full px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`}
+                  />
                 </div>
               ))}
             </div>
@@ -356,10 +351,17 @@ const ContextCollapse = ({ tool }) => {
           <button
           onClick={analyze}
           disabled={!canAnalyze}
-          className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px] ${canAnalyze ? c.btnPrimary : c.btnDisabled}`}>
+          title={t('ctc_cmd_enter')}
+          className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px] ${canAnalyze ? c.btnPrimary : c.btnDisabled}`}>
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '📢'}</span> {t('ctc_analyzing')}</>
             : <><span>{tool?.icon ?? '📢'}</span> {t('ctc_submit')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {error && (
@@ -375,6 +377,20 @@ const ContextCollapse = ({ tool }) => {
           ══════════════════════════════════════════ */}
       {results && (
         <div ref={resultsRef} className="space-y-4">
+
+          {/* Fixed copy. The visitor is about to be shown three ways their
+              message could land badly — the frame matters before the list. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('ctc_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ctc_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ctc_fm_2')}</p>
+          </div>
+
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1`}>
+            <p className={`text-sm font-bold ${c.text}`}>🎯 {t('ctc_todays_job')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('ctc_job_1')}</p>
+            <p className={`text-sm font-bold ${c.text}`}>{t('ctc_job_2')}</p>
+          </div>
 
           {/* Verdict */}
           {results?.verdict && (() => {

@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "c0bf033b8196b82e89ae3a69726bc3f5d54ee27e",
+  "hash": "3fbadd6927470cf3581839e03ac16e6365600d51",
   "lastmod": "2026-08-15"
  },
  "static:about": {
@@ -44,8 +44,8 @@
   "lastmod": "2026-08-15"
  },
  "tool:ContextCollapse": {
-  "hash": "9a275ee72d15b07951c30c6bede70d32d7e0ed1a",
-  "lastmod": "2026-08-14"
+  "hash": "7f8eeb0092d5ce0b567419c8d907b8744070413a",
+  "lastmod": "2026-08-15"
  },
  "tool:DecoderRing": {
   "hash": "8c6913ddf823ec809ef1a36155f3616b0ad63a1f",

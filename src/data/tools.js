@@ -2448,7 +2448,7 @@ export const tools = [
   icon: "📢",
   categories: ['Discourse'],
   headerColor: "#e0b8b8",
-  description: "About to send a text, post something, or make an announcement that multiple people will see? Context Collapse previews how each audience interprets it. Your boss reads it as professional boundary-setting. Your coworker reads it as passive-aggressive. Your mom reads it as a cry for help. See the gaps between your intent and each audience's reading, get risk ratings per audience, and rewrite suggestions that thread the needle. The tool that prevents the social media post that gets you fired and the group chat message that starts a war.",
+  description: "A message doesn't mean the same thing to everyone who reads it. Tell DeftBrain what you're about to send, and we'll show you where your intent and your audience's interpretation may not match.",
   guide: {
     overview: "Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.",
     howToUse: [
