@@ -21,3 +21,26 @@ Task-batching / cognitive-flow planner. **Frontend:** `src/tools/BatchFlow.js` (
 - **1 `audit_v2`/backend flag S7.13 is a FALSE POSITIVE:** it claims the `expand-batch` guard (`!parsed.execution_plan`) can't match "this route's schema" — but the backend audit only inspects the FIRST (generate) schema; `execution_plan` IS a top-level key in `expand-batch`'s own schema, and expand-batch returns 200 live (verified). The multi-action route is the audit's blind spot; the guard is correct.
 - Mobile pass (375px): input + results clean — the hour-by-hour heatmap fits (10 blocks + legend), no overflow, no crushed columns. (Render-layer — not in the golden.)
 - Golden: `unbatchable` + `fixed_commitments_placed` are neutralized to `[]` in the generate cases (variable — depend on input/model routing; the core `batches`/`heatmap` are always non-empty). RecipeChaosSolver/BDB precedent.
+
+## The DeftBrain treatment + form reorder (2026-08-14)
+PF-30, PF-17c, PF-31 (⌘↵ chip replaces the `bf_shortcut_hint` prose line),
+PF-32 (Recent moved from mid-page to a collapsed `<details>` with its count
+under the submit button), PF-33.
+
+**Form reordered** to the owner's sequence: what do I have to do → how much
+time → when do I work best → what kind of day. The day-type question used to
+come first, which asks the visitor to characterise a day they have not yet
+described. The task list is now the first thing on the screen.
+
+**Three power-user chips collapsed behind "More options ▾"** — paste-a-list,
+location mode, fixed times. As three chips above the task box they made the
+first screen read as a settings panel.
+
+**Labels made conversational**: "What kind of day?" → "What's today going to
+look like?", "Time available" → "How much time do you have?", "Energy pattern"
+→ "When do you usually do your best work?"
+
+**Three fixed panels in the results**: 💚 First, this matters (a busy day and a
+productive day are not the same thing; you are not distracted, your brain is
+changing gears) at the top, 🎯 Today's only job under it, and 💚 You're set. at
+the foot. All fixed copy, not generated.

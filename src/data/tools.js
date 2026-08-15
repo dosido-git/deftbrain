@@ -2881,7 +2881,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🧘",
   categories: ['Energy'],
   headerColor: "#ccdfc4",
-  description: "For the days you don't want to move. The inputs — your energy, what hurts, and what actually happened today (bad sleep, long meeting, emotional day) — change the routine itself, not just the duration. Modes scale from a 2-minute floor to a weekly menu, with targeted body relief, sleep wind-downs, and recovery protocols for life events. History tracks how movement shifts your energy; Prove It shows whether it's actually helping you — in your own numbers.",
+  description: "A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.",
   guide: {
       overview: "LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.",
 
