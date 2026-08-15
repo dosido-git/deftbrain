@@ -1389,7 +1389,7 @@ const FocusSoundArchitect = ({ tool }) => {
         }
       `}</style>
       {/* ── Persistent header card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
         <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}

@@ -194,7 +194,7 @@ const RulebookBreaker = ({ tool }) => {
 
       {/* ── Input card ── */}
       {!results && !loading && (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
 
           {/* Header */}
           <div className="pb-3 border-b border-zinc-500">
@@ -289,7 +289,7 @@ const RulebookBreaker = ({ tool }) => {
 
       {/* ── Results-phase header card with reset (ternary, not && — PF-3 replace-mode) ── */}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between">
               <div>

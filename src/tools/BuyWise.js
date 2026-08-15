@@ -2802,7 +2802,7 @@ const BuyWise = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* Persistent header */}
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl px-5 pt-2.5 pb-5`}>
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-center justify-between gap-3">
             <div>

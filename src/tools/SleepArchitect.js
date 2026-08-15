@@ -444,7 +444,7 @@ function SleepArchitect({ tool }) {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-start justify-between gap-3">

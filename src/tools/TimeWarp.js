@@ -170,7 +170,7 @@ const TimeWarp = ({ tool }) => {
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* Input */}
-      <div className={`${c.card} border rounded-xl p-5`}>
+      <div className={`${c.card} border rounded-xl px-5 pt-2.5 pb-5`}>
         <div className={`mb-4 pb-3 border-b border-zinc-500`}>
           <div className="flex items-start justify-between gap-3">
             <div>

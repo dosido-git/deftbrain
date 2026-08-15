@@ -170,7 +170,7 @@ const VelvetHammer = ({ tool }) => {
 
   return (<div className={`space-y-4 ${c.text}`}>
 
-      {/* Header */} {/* Input card */} <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      {/* Header */} {/* Input card */} <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
 
         {/* Header inside card */} <div className={`flex items-center justify-between pb-3 border-b ${c.border}`}>
           <div>

@@ -209,7 +209,7 @@ const AlternatePath = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input Card ── */}
-      <div className={`${c.card} border ${c.border} rounded-2xl p-5 shadow-sm space-y-4`}>
+      <div className={`${c.card} border ${c.border} rounded-2xl px-5 pt-2.5 pb-5 shadow-sm space-y-4`}>
 
         {/* Header — tagline + Try an example on the left, Start over opposite */}
         <div className="flex items-start justify-between gap-3 pb-4 border-b border-zinc-500">

@@ -197,7 +197,7 @@ const ProcedureProbe = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Input card ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
 
         {/* Header — inset border-b */}
         <div className="pb-3 border-b border-zinc-500">

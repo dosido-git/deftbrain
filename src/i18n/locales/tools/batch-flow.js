@@ -4,7 +4,7 @@
 export const batchFlow = {
   en: {
     bf_title: "Batch Flow",
-    bf_tagline: "Batch similar tasks to protect your focus and minimize mental gear-shifting",
+    bf_tagline: "Your tasks, grouped so the day stops fighting you",
     bf_energy_morning_l: "🌅 Morning Person",
     bf_energy_morning_d: "Peak 8-11am",
     bf_energy_slow_l: "☕ Slow Starter",
@@ -189,7 +189,7 @@ export const batchFlow = {
   },
   es: {
     bf_title: "Batch Flow",
-    bf_tagline: "Agrupa tareas similares para proteger tu concentración y minimizar los cambios mentales",
+    bf_tagline: "Tus tareas, agrupadas para que el día deje de pelearse contigo",
     bf_energy_morning_l: "🌅 Madrugador",
     bf_energy_morning_d: "Pico 8-11h",
     bf_energy_slow_l: "☕ Arranque lento",
@@ -374,7 +374,7 @@ export const batchFlow = {
   },
   zh: {
     bf_title: "Batch Flow",
-    bf_tagline: "把相似的任务归类成批，保护专注力，减少思维切换的消耗",
+    bf_tagline: "把任务归拢，让这一天不再跟你较劲",
     bf_energy_morning_l: "🌅 晨型人",
     bf_energy_morning_d: "高峰 上午8-11点",
     bf_energy_slow_l: "☕ 慢热型",
@@ -559,7 +559,7 @@ export const batchFlow = {
   },
   hi: {
     bf_title: "Batch Flow",
-    bf_tagline: "एक जैसे कामों को बैच में बाँटें ताकि ध्यान बना रहे और दिमागी अदला-बदली कम हो",
+    bf_tagline: "आपके काम ऐसे समूह में, कि दिन आपसे न लड़े",
     bf_energy_morning_l: "🌅 सुबह वाले",
     bf_energy_morning_d: "शिखर सुबह 8-11",
     bf_energy_slow_l: "☕ धीमी शुरुआत",
@@ -744,7 +744,7 @@ export const batchFlow = {
   },
   ar: {
     bf_title: "Batch Flow",
-    bf_tagline: "اجمع المهام المتشابهة في دفعات لحماية تركيزك وتقليل التنقل الذهني",
+    bf_tagline: "مهامك مجمّعة، حتى يتوقف اليوم عن مقاومتك",
     bf_energy_morning_l: "🌅 شخص صباحي",
     bf_energy_morning_d: "الذروة 8-11 صباحاً",
     bf_energy_slow_l: "☕ بداية بطيئة",
@@ -929,7 +929,7 @@ export const batchFlow = {
   },
   pt: {
     bf_title: "Batch Flow",
-    bf_tagline: "Agrupe tarefas semelhantes em lotes para proteger seu foco e reduzir trocas mentais",
+    bf_tagline: "Suas tarefas agrupadas para o dia parar de brigar com você",
     bf_energy_morning_l: "🌅 Pessoa matinal",
     bf_energy_morning_d: "Pico 8-11h",
     bf_energy_slow_l: "☕ Começo lento",
@@ -1114,7 +1114,7 @@ export const batchFlow = {
   },
   fr: {
     bf_title: "Batch Flow",
-    bf_tagline: "Regroupez les tâches similaires par lots pour protéger votre concentration et limiter les changements mentaux",
+    bf_tagline: "Vos tâches regroupées pour que la journée cesse de vous résister",
     bf_energy_morning_l: "🌅 Lève-tôt",
     bf_energy_morning_d: "Pic 8h-11h",
     bf_energy_slow_l: "☕ Démarrage lent",
@@ -1299,7 +1299,7 @@ export const batchFlow = {
   },
   de: {
     bf_title: "Batch Flow",
-    bf_tagline: "Bündle ähnliche Aufgaben, um deinen Fokus zu schützen und mentales Umschalten zu minimieren",
+    bf_tagline: "Deine Aufgaben so gruppiert, dass der Tag aufhört, sich zu wehren",
     bf_energy_morning_l: "🌅 Frühaufsteher",
     bf_energy_morning_d: "Hoch 8-11 Uhr",
     bf_energy_slow_l: "☕ Langsamer Start",
@@ -1484,7 +1484,7 @@ export const batchFlow = {
   },
   ja: {
     bf_title: "Batch Flow",
-    bf_tagline: "似たタスクをまとめて、集中力を守り、頭の切り替えを最小限に",
+    bf_tagline: "一日と噛み合うように、やることをまとめ直す",
     bf_energy_morning_l: "🌅 朝型",
     bf_energy_morning_d: "ピーク 午前8-11時",
     bf_energy_slow_l: "☕ エンジン後がけ",
@@ -1669,7 +1669,7 @@ export const batchFlow = {
   },
   ko: {
     bf_title: "Batch Flow",
-    bf_tagline: "비슷한 작업을 묶어 집중력을 지키고 머릿속 전환을 줄이세요",
+    bf_tagline: "하루가 당신과 싸우지 않도록 일을 묶어 드립니다",
     bf_energy_morning_l: "🌅 아침형 인간",
     bf_energy_morning_d: "최고조 오전 8-11시",
     bf_energy_slow_l: "☕ 느린 시동",
@@ -1854,7 +1854,7 @@ export const batchFlow = {
   },
   ru: {
     bf_title: "Batch Flow",
-    bf_tagline: "Группируйте похожие задачи в пакеты, чтобы защитить фокус и реже переключаться",
+    bf_tagline: "Ваши задачи, сгруппированные так, чтобы день перестал сопротивляться",
     bf_energy_morning_l: "🌅 Жаворонок",
     bf_energy_morning_d: "Пик 8-11 утра",
     bf_energy_slow_l: "☕ Медленный старт",
@@ -2039,7 +2039,7 @@ export const batchFlow = {
   },
   th: {
     bf_title: "Batch Flow",
-    bf_tagline: "จัดงานคล้าย ๆ กันเป็นชุดเพื่อปกป้องสมาธิและลดการสลับโหมดในหัว",
+    bf_tagline: "จัดกลุ่มงานของคุณ เพื่อให้วันนี้เลิกฝืนกับคุณ",
     bf_energy_morning_l: "🌅 คนตื่นเช้า",
     bf_energy_morning_d: "พีค 8-11 น.",
     bf_energy_slow_l: "☕ เริ่มช้า",
@@ -2224,7 +2224,7 @@ export const batchFlow = {
   },
   vi: {
     bf_title: "Batch Flow",
-    bf_tagline: "Gom các tác vụ giống nhau thành cụm để bảo vệ sự tập trung và giảm việc chuyển đổi trong đầu",
+    bf_tagline: "Gom việc của bạn lại để ngày hôm nay thôi chống lại bạn",
     bf_energy_morning_l: "🌅 Người buổi sáng",
     bf_energy_morning_d: "Đỉnh 8-11 sáng",
     bf_energy_slow_l: "☕ Khởi động chậm",

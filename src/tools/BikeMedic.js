@@ -1488,7 +1488,7 @@ const BikeMedic = ({ tool }) => {
 
   // ── Persistent tool header — used by all sub-screens ──────────
   const renderPersistentHeader = (screenLabel) => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -2235,7 +2235,7 @@ const BikeMedic = ({ tool }) => {
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
 
         {/* Tool Header — unified card with profile bar */}
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between">
               <div>

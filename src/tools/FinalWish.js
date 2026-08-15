@@ -1181,7 +1181,7 @@ async function decrypt(){
   const renderWelcome = () => (
     <div className={`space-y-4 ${c.text}`}>
       {renderToasts()}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 mb-4`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
         <div className="pb-3 border-b border-zinc-500">
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
           <p className={`text-base ${c.textSecondary}`}>

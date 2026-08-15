@@ -175,7 +175,7 @@ const PartyArchitect = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── INPUT CARD ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">
           <div className="flex items-start justify-between gap-3">
             <div>

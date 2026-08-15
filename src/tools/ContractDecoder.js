@@ -204,7 +204,7 @@ function ContractDecoder({ tool }) {
   }[results.overall_risk] ?? { bg: c.warning, txt: c.warningTxt, icon: '📋', label: t('cd_risk_reviewed') } : null;
 
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -425,7 +425,7 @@ function ContractDecoder({ tool }) {
       {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('cd_xref_lease_q')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('cd_lease')}</a> {t('cd_xref_lease_tail')}</p>}
       {!results && renderInput()}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between">
               <div>

@@ -437,7 +437,7 @@ const GentlePushGenerator = ({ tool }) => {
   // ─── Persistent header (shared across all views; reset shown except on setup) ───
   // Single source for the header so there is exactly one reset button in markup (PF-16).
   const renderPersistentHeader = (mode) => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
       <div className="pb-3 border-b border-zinc-500">
         <div className="flex items-center justify-between gap-3">
           <div>

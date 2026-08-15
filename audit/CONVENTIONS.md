@@ -1780,6 +1780,16 @@ actually says something:
 </p>
 ```
 
+**Top padding is part of the spec.** The card holding the header opens with
+`px-5 pt-2.5` (10px), not `p-5` (20px). Twenty reads as a blank line above the
+tagline — the owner spotted it immediately when comparing three tools side by
+side. Sixty-four cards were renormalised on 2026-08-14.
+
+**One line of grey text, not two.** The tagline is the only muted line in the
+header unless a tool has a genuine second idea to state. Batch Flow briefly had
+a tagline that said "minimize mental gear-shifting" above a lede that said
+"fewer gear changes" — the same sentence twice, which reads as two taglines.
+
 **Applied catalog-wide on 2026-08-14** — 126 tools now render this header and
 the PF-17c pill. Three tools are deliberate exceptions: BrainDumpBuddy's second
 header sits in a flex row with a status chip and has no tagline beside it, so

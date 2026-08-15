@@ -306,7 +306,7 @@ const TheDebrief = ({ tool }) => {
   // INPUT
   // ════════════════════════════════════════════════════════════
   const renderInput = () => (
-    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
+    <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
       <div className="pb-3 border-b border-zinc-500">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -768,7 +768,7 @@ const TheDebrief = ({ tool }) => {
 
       {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
       {results ? (
-        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
+        <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
           <div className="pb-3 border-b border-zinc-500">
             <div className="flex items-start justify-between">
               <div>
