@@ -70,3 +70,34 @@ Trigger: → **What might trigger a different reading:**
 **Untouched, at the owner's explicit request:** the disclaimer, and
 "screenshot-safe" in the platform note — which they want to become part of the
 DeftBrain vocabulary.
+
+## Why the first hedging pass did not hold (2026-08-15)
+A STANCE block at the top of a prompt does not survive a field description that
+demonstrates the opposite. `tone_detected` said "not just 'friendly' but
+'casually assertive with an undercurrent of frustration'" — that is where
+"steel confidence" came from. `subtext` asked "what does this communicate
+between the lines that the sender might not realize?", which is an invitation
+to psychoanalyse. `emotional_impact` said "how this makes them FEEL". The
+nearest example wins; the same lesson as the tone selector in Complaint
+Escalation Writer. **Fix the fields, not just the preamble.**
+
+- `tone_detected` → **Overall impression**: 3-4 short plain lines, explicitly
+  no metaphor, describing the message rather than the person. Live: "Decisive
+  and solution-focused. / Minimal emotional labor. / Frames delay as a quality
+  choice, not a failure. / No acknowledgment of impact on the receiver."
+- `subtext` → **One possible reading**: a first-person paraphrase of what the
+  WORDS convey, with both offending sentences quoted in the schema as BAD
+  examples. Live: "I identified problems and I am taking action to fix them. /
+  The decision is already made."
+- `reads_as` must hedge; `emotional_impact` may not state a feeling as fact.
+
+**Confidence per reading.** New `confidence: high | medium | low`, pinned
+English like the risk enum, rendered as ●●● / ●●○ / ●○○ plus a localised
+label. The rule ties it to the relationship: professional and transactional is
+high, close or emotionally complex is low, and a parent's reading is inherently
+more speculative than a manager's. Live on a three-audience run: boss high, mum
+low, friends high — exactly the asymmetry the owner described. It does per
+reading what the disclaimer does once at the foot.
+
+**Owner's verdict, recorded:** the structure is finished. From here the work is
+calibrating the model's confidence, not moving sections around.

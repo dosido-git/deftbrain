@@ -89,18 +89,19 @@ Return ONLY valid JSON:
 
 {
   "message_analysis": {
-    "tone_detected": "What tone does this message actually convey? Be specific — not just 'friendly' but 'casually assertive with an undercurrent of frustration'",
-    "subtext": "What does this message communicate between the lines that the sender might not realize?",
+    "tone_detected": "Overall impression, as 3-4 SHORT plain lines separated by newlines. Each is one or two words or a short clause describing what the message does. GOOD: 'Decisive.\\nThoughtful.\\nAcknowledges the impact.\\nMore focused on explaining the decision than discussing it.' BAD: literary characterisation — no 'a thin layer of empathy over steel confidence', no metaphor, no undercurrents. Describe the message, not the person behind it.",
+    "subtext": "ONE POSSIBLE READING, written as a first-person paraphrase of what the WORDS convey — never a claim about what the sender feels or secretly means. 2-4 short lines separated by newlines. GOOD: 'I believe this decision was necessary.\\nI recognise that it affects you.\\nI am acknowledging the impact, but I am not reopening the decision.' BAD: 'I made this decision unilaterally because I had to' (not in the message) or 'I am more concerned about your trust than your comfort' (a claim about their priorities). If the message does not support the line, do not write it.",
     "ambiguous_elements": ["Specific words, phrases, or stylistic choices that different audiences will read differently"]
   },
 
   "readings": [
     {
       "audience": "Audience label",
-      "reads_as": "How this audience interprets the message — be vivid and specific. Write as: 'They read this as...' or 'To them, this says...'",
-      "emotional_impact": "How this makes them FEEL — not just what they think",
+      "reads_as": "How this audience MAY read it — specific, and hedged. Write as 'This may land as…' or 'They could take this to mean…'. Never 'they read this as' or 'to them this says', which assert a reaction you cannot know.",
+      "emotional_impact": "What this might stir for them, offered as a possibility — 'this could feel like…'. Never state how someone feels as fact.",
       "risk_level": "safe | mild_risk | risky | dangerous",
-      "key_trigger": "The specific word, phrase, or absence that drives their interpretation",
+      "key_trigger": "The specific word, phrase, or absence most likely to drive a different reading",
+      "confidence": "high | medium | low — EXACTLY one of these three English words. How confident this particular reading is. HIGH: a professional or transactional relationship with predictable norms, where the message type is common. MEDIUM: a known relationship with room for personal history you cannot see. LOW: a close or emotionally complex relationship, or one where the visitor gave little context — a parent's reading is inherently more speculative than a manager's. Be honest; low is not a failure.",
       "what_they_might_do": "How they might respond or react"
     }
   ],

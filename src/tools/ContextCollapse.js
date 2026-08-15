@@ -19,6 +19,11 @@ const riskEmoji  = (level) => level === 'safe' ? '✅' : level === 'mild_risk' ?
 // so a frontend switch on a translated enum breaks in twelve languages. The
 // LABEL is what gets localised; the badge used to print the raw enum.
 const RISK_KEY = { safe: 'ctc_risk_safe', mild_risk: 'ctc_risk_mild', risky: 'ctc_risk_risky', dangerous: 'ctc_risk_dangerous' };
+// How speculative a given reading is. A parent's is inherently less certain
+// than a manager's, and saying so out loud does the same work as the
+// disclaimer at the foot — per reading, where it can actually be acted on.
+const CONF_KEY = { high: 'ctc_conf_high', medium: 'ctc_conf_medium', low: 'ctc_conf_low' };
+const CONF_DOT = { high: '●●●', medium: '●●○', low: '●○○' };
 
 const PLATFORMS = [
   { value: 'text',         emoji: '💬', tkey: 'ctc_pf_text' },
@@ -421,9 +426,9 @@ const ContextCollapse = ({ tool }) => {
           {results?.message_analysis && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>🔍 {t('ctc_tone_detected')}</p>
-              <p className={`text-sm ${c.text} mb-2`}>{results?.message_analysis?.tone_detected}</p>
+              <p className={`text-sm ${c.text} mb-2 whitespace-pre-line`}>{results?.message_analysis?.tone_detected}</p>
               {results?.message_analysis?.subtext && (
-                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 {t('ctc_subtext')} {results?.message_analysis?.subtext}</p>
+                <p className={`text-xs ${c.textSecondary} mb-2`}>💭 {t('ctc_subtext')}<br /><span className="whitespace-pre-line">{results?.message_analysis?.subtext}</span></p>
               )}
               {results?.message_analysis?.ambiguous_elements?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
@@ -445,6 +450,11 @@ const ContextCollapse = ({ tool }) => {
                   <span>{riskEmoji(r.risk_level)}</span>
                   <span className={`text-sm font-bold ${c.text}`}>{r.audience}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.badge}`}>{t(RISK_KEY[r.risk_level] || 'ctc_risk_mild')}</span>
+                  {r.confidence && (
+                    <span className={`text-[10px] font-semibold ${c.textMuteded}`} title={t('ctc_confidence')}>
+                      {CONF_DOT[r.confidence] || CONF_DOT.medium} {t(CONF_KEY[r.confidence] || 'ctc_conf_medium')}
+                    </span>
+                  )}
                 </div>
                 <p className={`text-sm ${c.text} mb-2`}>{r.reads_as}</p>
                 {r.emotional_impact && <p className={`text-xs ${c.textSecondary} mb-1`}>💭 {t('ctc_feels')} {r.emotional_impact}</p>}
