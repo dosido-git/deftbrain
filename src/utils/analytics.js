@@ -172,7 +172,31 @@ function pageView() {
   if (p === lastPath) return;
   lastPath = p;
   track('page_view', visitContext());
+  trackSecondTool(p);
   if (rescanSections) rescanSections();
+}
+
+// ── "What did they open next?" ────────────────────────────────────────────
+// Events carry no session id — deliberately, there is nothing to join on — so
+// the pairing has to happen in the browser. The first tool page of a session
+// is remembered in sessionStorage; the next DIFFERENT tool page fires one
+// `second_tool` with both ends of the hop, and the flag is retired so a
+// session reports at most one pair. Third and fourth tools are not tracked:
+// the question is what a tool leads to, not the whole path.
+//
+// Tool routes are the catalog's own convention — /PascalCase at the root.
+// Matching the shape rather than importing the catalog keeps this file free
+// of a 5,000-line dependency it would only use for an includes() check.
+const TOOL_PATH = /^\/[A-Z][A-Za-z0-9]*$/;
+function trackSecondTool(path) {
+  if (!TOOL_PATH.test(path)) return;
+  try {
+    const first = sessionStorage.getItem('db-first-tool');
+    if (!first) { sessionStorage.setItem('db-first-tool', path); return; }
+    if (first === path) return;              // reload or a return trip, not a hop
+    sessionStorage.removeItem('db-first-tool');
+    track('second_tool', { from: first.slice(1), to: path.slice(1) });
+  } catch (_) { /* private mode — the pair is simply not reported */ }
 }
 
 // ── Human-session signal: fire `interact` ONCE per session on the first real

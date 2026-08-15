@@ -654,6 +654,31 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     // zero, the per-country column is MISSING DATA, not a finding, and must
     // never be rendered as "no interaction" — that reads as evidence of bots
     // and is how this shipped wrong the first time.
+    // ── Second tool visited ──────────────────────────────────────────
+    // One row per FIRST tool of a session, listing where people went next.
+    // The pairing is done in the browser (analytics.js) because events carry
+    // no session id — there is deliberately nothing to join on server-side.
+    // A session contributes at most one pair, so `hops` is a count of
+    // sessions that moved on, not of navigations.
+    const hops = events.filter(e => e.event === 'second_tool' && e.props && e.props.from && e.props.to);
+    const nextBy = {};
+    for (const e of hops) {
+      const from = String(e.props.from).slice(0, 40);
+      const to = String(e.props.to).slice(0, 40);
+      (nextBy[from] = nextBy[from] || {})[to] = (nextBy[from][to] || 0) + 1;
+    }
+    // Denominator is views of the first tool — "of the people who opened this,
+    // how many opened another one" is the question worth answering.
+    const nextRows = Object.entries(nextBy)
+      .sort((a, b) => Object.values(b[1]).reduce((x, y) => x + y, 0) - Object.values(a[1]).reduce((x, y) => x + y, 0))
+      .map(([from, tos]) => {
+        const total = Object.values(tos).reduce((a, b) => a + b, 0);
+        const seen = (tools[from] && tools[from].views) || 0;
+        const list = Object.entries(tos).sort((a, b) => b[1] - a[1]).slice(0, 5)
+          .map(([to, n]) => `${escH(to)} <b>${n}</b>`).join(' · ');
+        return `<tr><td>${escH(from)}</td><td>${total}</td><td>${seen ? pct(total, seen) : '—'}</td><td>${list}</td></tr>`;
+      }).join('');
+
     const interactAll = events.filter(e => e.event === 'interact');
     const interactLocated = interactAll.filter(e => e.location);
     for (const e of interactLocated) locInteract[e.location] = (locInteract[e.location] || 0) + 1;
@@ -716,6 +741,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <table>${secRows || '<tr><td style="color:#888">No data yet \u2014 section markers went live 2026-08-07, so anything before that reports nothing. This is MISSING DATA, not zero reach.</td></tr>'}</table>
     <h2>Tools</h2>
     <table><tr><th>tool</th><th>views</th><th>runs</th><th>view→run</th><th>delivered</th><th>server err</th><th>render err</th><th>thin</th><th>avg time</th><th>took it</th><th>helpful</th></tr>${toolRows || '<tr><td colspan=11 style="color:#888">No data yet.</td></tr>'}</table>
+    <h2>Second tool visited</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
+    <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
