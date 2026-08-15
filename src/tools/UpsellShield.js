@@ -264,7 +264,7 @@ const UpsellShield = ({ tool }) => {
 
       {results && (
         <div className="space-y-4">
-          <div ref={resultsRef} data-results-anchor />
+          <div data-copy-results ref={resultsRef} data-results-anchor />
 
           {r.situation_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>

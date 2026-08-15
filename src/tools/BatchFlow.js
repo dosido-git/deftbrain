@@ -773,7 +773,7 @@ const BatchFlow = ({ tool }) => {
       </div>}
 
       {/* ═══ RESULTS VIEW ═══ */}
-      {results && <div ref={resultsRef} className="space-y-5">
+      {results && <div data-copy-results ref={resultsRef} className="space-y-5">
         {/* ── FIRST, THIS MATTERS ─────────────────────────────────────────
             Fixed copy, ahead of the plan. The visitor arrived because their day
             is a mess and they suspect that is a failure of discipline. It

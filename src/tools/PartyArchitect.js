@@ -293,7 +293,7 @@ const PartyArchitect = ({ tool }) => {
       {/* ── RESULTS ── */}
       {results && (
         <div className="space-y-4">
-          <div ref={resultsRef} />
+          <div data-copy-results ref={resultsRef} />
 
           {r.event_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>

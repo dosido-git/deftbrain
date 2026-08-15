@@ -2085,3 +2085,56 @@ something that contradicts the tool's premise (a contented person in a tool
 about ruts), and a non-English one. ChaosPilot's hedging and voice rules were
 confirmed this way; the same sweep is what showed the tool has no "you might
 be fine" path.
+
+---
+
+### PF-36 · Copy comes from the page, not from a second implementation
+
+The Copy button serialises the rendered result via
+`serializeResults()` in `src/utils/copyFromDom.js`. Do not hand-write a copy
+string as the primary path.
+
+**Why.** Print calls `window.print()` on the live DOM, so it always contained
+every section, in order, current. Copy read a hand-authored summary written
+separately inside each of 126 tools — whatever that tool's author remembered,
+frozen at whatever the result shape was that day. Context Collapse rendered
+seven result sections and copied three, silently dropping the one about where
+misunderstandings happen. Every tool had its own version of that gap and no way
+to notice it, because nothing compares the two.
+
+**Mark the results container.** One attribute, on the element that wraps the
+rendered output:
+
+```jsx
+<div data-copy-results ref={resultsRef} className="space-y-4">
+```
+
+Without it the serialiser falls back to all of `<main>`, which drags in the
+form's own labels and the pre-result cross-reference. 82 tools carry the marker
+(every one with a `resultsRef`); the rest still work, just less tidily.
+
+**`buildFullText()` stays.** It is the fallback when `serializeResults()`
+returns null — no results on screen yet, or too little text to be worth
+pasting — and it is still what Share sends. A tool the serialiser cannot read
+behaves exactly as it did before, never worse. That fallback is the entire
+safety story for a change that touches every tool at once.
+
+**Excluded from the copy, structurally rather than by name:**
+
+| Skipped | Because |
+| --- | --- |
+| `button`, `input`, `textarea`, `select`, `label`, `form`, `kbd` | Controls, not content |
+| `[data-print-hide]`, `[data-copy-hide]`, `[aria-hidden]` | Already hidden from print or from a reader |
+| A collapsed `<details>` | One line on screen is one line in the clipboard |
+| Any block that is ≥2 links and little else | The related-tools row. Structural, because matching its heading would need doing in thirteen languages |
+
+**Markdown, not ALL CAPS.** This gets pasted into Notes, Docs, Slack and email,
+where `## Heading` and `- item` render and `VERDICT:` does not. Output opens
+with the tool name and the date, so a result found three weeks later still says
+what it was.
+
+**One trap worth knowing.** A rule that joins a bare one-word line onto the
+line above (to reunite `medium` with its label) will happily weld the next
+audience's name onto the end of the previous sentence — "…I have data behind
+it. (Mom)". It must not fire when the previous line ends in sentence
+punctuation.

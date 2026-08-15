@@ -594,7 +594,7 @@ const MagicMouth = ({ tool }) => {
 
         {/* Results */}
         {mode === 'ask' && results && (
-          <div ref={resultsRef} className="space-y-5">
+          <div data-copy-results ref={resultsRef} className="space-y-5">
 
             {/* Situation read + difficulty */}
             <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-5`}>

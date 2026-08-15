@@ -274,7 +274,7 @@ const WhereDidTheTimeGo = ({ tool }) => {
           </div>
         ) : null}
 
-        {/* Results */} {results && (<div ref={resultsRef} data-results-anchor className="space-y-5">
+        {/* Results */} {results && (<div data-copy-results ref={resultsRef} data-results-anchor className="space-y-5">
 
             {/* Validation first */} {results?.what_you_actually_did && (<div className={`${c.card} ${c.success} border border-s-4 rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5`}>

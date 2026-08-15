@@ -1078,7 +1078,7 @@ const CrisisPrioritizer = ({ tool }) => {
       </div>}
 
       {/* ═══ RESULTS VIEW ═══ */}
-      {results && !showBreather && <div ref={resultsRef} className="space-y-5">
+      {results && !showBreather && <div data-copy-results ref={resultsRef} className="space-y-5">
 
         {/* Controls */}
         <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>

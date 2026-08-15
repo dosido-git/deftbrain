@@ -970,7 +970,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
           {/* ════════ STARTERS VIEW ════════ */}
           {view === 'starters' && selectedPerson && (
-            <div ref={resultsRef} className="space-y-5">
+            <div data-copy-results ref={resultsRef} className="space-y-5">
               <button onClick={() => { setView('dashboard'); setStarters(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('ffa_back')}</button>
 
               {startersLoading && (
@@ -1374,7 +1374,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
           {/* ════════ NEW: SAY-IT COACH VIEW ════════ */}
           {view === 'sayit' && sayItPerson && (
-            <div ref={resultsRef} className="space-y-5">
+            <div data-copy-results ref={resultsRef} className="space-y-5">
               <button onClick={() => { setView('dashboard'); setSayItData(null); }} className={`text-sm font-semibold px-4 py-2 rounded-xl ${c.btnSecondary}`}>{t('ffa_back')}</button>
 
               {sayItLoading && (

@@ -271,7 +271,7 @@ const CrowdWisdom = ({ tool }) => {
 
       {/* Results */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Question header */}
           <div className={`rounded-xl border p-5 ${c.card} ${c.border}`}>

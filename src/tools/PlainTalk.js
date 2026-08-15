@@ -716,7 +716,7 @@ const PlainTalk = ({ tool }) => {
 
         {/* ─── RESULTS PHASE ─── */}
         {(result || compareOnly) && (
-          <div ref={resultsRef} className="space-y-4">
+          <div data-copy-results ref={resultsRef} className="space-y-4">
 
             {/* Reading Level Bar */}
             <ReadingLevelBar level={result?.reading_level} />

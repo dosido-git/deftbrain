@@ -2153,7 +2153,7 @@ const FocusPocus = ({ tool }) => {
 
           {/* Show break results if available */}
           {results && (
-            <div ref={resultsRef} className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
+            <div data-copy-results ref={resultsRef} className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
               <h4 className={`text-sm font-bold ${c.text} mb-2`}>{results?.headline}</h4>
               <p className={`text-xs ${c.textSecondary}`}>{results?.message}</p>
             </div>

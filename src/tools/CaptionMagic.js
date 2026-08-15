@@ -736,7 +736,7 @@ const CaptionMagic = ({ tool }) => {
     const captions = results.captions || [];
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Results header */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className={`text-sm font-bold ${c.text}`}>{t('cm_your_captions')}</h3>

@@ -541,7 +541,7 @@ const FakeReviewDetective = ({ tool }) => {
 
       {/* INSTANT STATS */}
       {stats && (
-        <div ref={resultsRef} className={`${c.card} border rounded-xl p-6`}>
+        <div data-copy-results ref={resultsRef} className={`${c.card} border rounded-xl p-6`}>
           <h3 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}><span>📊</span> {t('frd_stats')} <span className={`text-[10px] font-bold ${c.textMuteded} uppercase`}>{t('frd_instant')}</span>
             {confidence && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${confidence.color === 'green' ? c.success : confidence.color === 'amber' ? c.warning : c.danger} border`}>{t(confidence.labelKey, { count: confidence.count })}</span>}
           </h3>

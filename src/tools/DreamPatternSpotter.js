@@ -614,7 +614,7 @@ const DreamPatternSpotter = ({ tool }) => {
 
         {/* Results */}
         {results && (
-          <div ref={resultsRef} className="space-y-6">
+          <div data-copy-results ref={resultsRef} className="space-y-6">
 
             {/* Pattern Analysis Header (for multi-dream) */}
             {results?.pattern_analysis && (

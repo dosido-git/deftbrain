@@ -261,7 +261,7 @@ Write the lede.`;
 
       {/* Results */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
             <div className="flex items-start justify-between gap-3">

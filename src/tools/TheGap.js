@@ -292,7 +292,7 @@ const TheGap = ({ tool }) => {
     const gap = results?.likely_gap;
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Analysis */}
         {results?.concept_analysis && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>

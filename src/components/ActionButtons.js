@@ -3,6 +3,7 @@ import { track } from '../utils/analytics';
 import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
+import { serializeResults } from '../utils/copyFromDom';
 
 /**
  * Shared action buttons for tool output: Copy, Share, Print.
@@ -49,15 +50,25 @@ const btnClass = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-
  *   label    — button text (default: "Copy")
  *   onCopied — optional callback after successful copy
  */
-export const CopyBtn = ({ content, label, onCopied }) => {
+export const CopyBtn = ({ content, label, onCopied, title }) => {
   const [copied, setCopied] = useState(false);
   const s = useButtonStyles();
   const { t } = useTranslation();
 
   const COPY_HEADER = 'DeftBrain · deftbrain.com\n\n';
-  const wrappedContent = COPY_HEADER + content;
+
+  // Prefer what is actually on screen. `content` is the tool's own
+  // buildFullText(), hand-written per tool and usually a subset of the
+  // rendered result — see src/utils/copyFromDom.js. serializeResults returns
+  // null whenever it is not confident, and then this behaves exactly as it
+  // did before, so no tool can regress.
+  const resolveContent = useCallback(() => {
+    const fromDom = serializeResults(title || 'DeftBrain');
+    return COPY_HEADER + (fromDom || content);
+  }, [content, title]);
 
   const handleCopy = useCallback(async () => {
+    const wrappedContent = resolveContent();
     try {
       await navigator.clipboard.writeText(wrappedContent);
       track('copy'); // "took it with them" — validation signal
@@ -82,7 +93,7 @@ export const CopyBtn = ({ content, label, onCopied }) => {
         console.error('Copy failed:', fallbackErr);
       }
     }
-  }, [wrappedContent, onCopied]);
+  }, [resolveContent, onCopied]);
 
   return (
     <button onClick={handleCopy} className={`${btnClass} ${copied ? s.success : s.base}`}>
@@ -246,7 +257,7 @@ export const ActionBar = ({
 }) => {
   return (
     <div data-print-hide className="flex items-center gap-2">
-      {showCopy && <CopyBtn content={content} label={copyLabel} onCopied={onCopied} />}
+      {showCopy && <CopyBtn content={content} title={title} label={copyLabel} onCopied={onCopied} />}
       {showShare && <ShareBtn content={content} title={title} url={shareUrl} />}
       {/* PrintBtn takes only `label`. It prints the RENDERED page via
           window.print() plus the print CSS in ToolPageWrapper — data-print-hide

@@ -249,7 +249,7 @@ const TheAlibi = ({ tool }) => {
   const renderResults = () => {
     if (!results) return null;
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Situation read */}
         {results?.situation_read && (
           <div className={'p-5 rounded-2xl border-2 ' + c.tipBg}>

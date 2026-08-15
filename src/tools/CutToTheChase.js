@@ -211,7 +211,7 @@ const CutToTheChase = ({ tool }) => {
     const hasSaves = results?.saves_you_money?.length > 0;
 
     return (
-      <div ref={resultsRef} className="space-y-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4">
         {/* TL;DR */}
         <div className={`p-5 rounded-2xl border-2 ${hasActions ? c.actionBg : c.tipBg}`}>
           <div className="flex items-center gap-2 mb-2">

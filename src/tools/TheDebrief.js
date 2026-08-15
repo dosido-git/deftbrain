@@ -783,7 +783,7 @@ const TheDebrief = ({ tool }) => {
       ) : null}
 
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
           {mode === 'distill' && renderDistill()}
           {mode === 'followup' && renderFollowup()}
           {mode === 'series' && renderSeries()}

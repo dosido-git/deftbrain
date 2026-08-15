@@ -376,7 +376,7 @@ const ContextCollapse = ({ tool }) => {
           RESULTS
           ══════════════════════════════════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Fixed copy. The visitor is about to be shown three ways their
               message could land badly — the frame matters before the list. */}

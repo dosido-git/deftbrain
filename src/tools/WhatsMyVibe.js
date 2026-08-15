@@ -217,7 +217,7 @@ const WhatsMyVibe = ({ tool }) => {
           <p className="text-sm">{error}</p>
         </div>
       )} {/* ── Results ── */} {results && (<div className="space-y-4">
-          <div ref={resultsRef} data-results-anchor />
+          <div data-copy-results ref={resultsRef} data-results-anchor />
 
           {/* Vibe title */} {results?.vibe_title && (<div className={`${c.vibe} border-2 rounded-xl p-6 text-center`}>
               <span className="text-4xl block mb-3">✨</span>

@@ -1310,7 +1310,7 @@ const SixDegreesOfMe = ({ tool }) => {
           )}
 
           {/* Chain result */}
-          <div ref={resultsRef}>
+          <div data-copy-results ref={resultsRef}>
             {result && renderChainVisualization(result, { showWhatIf: true })}
           </div>
 

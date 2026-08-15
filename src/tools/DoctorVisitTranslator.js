@@ -625,7 +625,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* ══════════ RESULTS MODE ══════════ */}
       {mode === 'results' && results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button

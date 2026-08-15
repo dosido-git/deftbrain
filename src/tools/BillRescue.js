@@ -1023,7 +1023,7 @@ const BillRescue = ({ tool }) => {
     if (!results) return null;
     const r = results;
     return (
-      <div ref={resultsRef} className="space-y-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4">
         {/* Recap of what the user told us — anchors persisted results on revisits */}
         {r._input && (
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

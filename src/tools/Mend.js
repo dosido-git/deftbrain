@@ -2866,7 +2866,7 @@ const Mend = ({ tool }) => {
       </div>
 
         {/* Active view */}
-        <div ref={resultsRef}>
+        <div data-copy-results ref={resultsRef}>
         {view === 'calibrate' && renderCalibrate()}
         {view === 'fix' && renderFix()}
         {view === 'detect' && renderDetect()}

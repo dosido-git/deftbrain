@@ -874,7 +874,7 @@ const BragSheetBuilder = ({ tool }) => {
 
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-5">
+        <div data-copy-results ref={resultsRef} className="space-y-5">
           {/* ── FIRST, THIS MATTERS ────────────────────────────────────
               Fixed copy, before the polished bullets. Someone opening this
               tool is not short of achievements — they are short of the belief

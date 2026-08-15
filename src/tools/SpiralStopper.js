@@ -430,7 +430,7 @@ const SpiralStopper = ({ tool }) => {
       )}
 
       {mode === 'spiral' && view === 'result' && spiralResult && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
           <div className="flex gap-3">
             <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>📝 {t('sps_debrief_btn')}</button>
           </div>
@@ -538,7 +538,7 @@ const SpiralStopper = ({ tool }) => {
       )}
 
       {mode === 'crashed' && view === 'result' && crashResult && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
           <div className="flex gap-3">
             <button onClick={() => setView('debrief')} className={`px-4 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`}>📝 {t('sps_debrief_btn')}</button>
           </div>

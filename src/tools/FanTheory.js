@@ -341,7 +341,7 @@ const FanTheory = ({ tool }) => {
 
       {/* Current generated theory */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
           <div className={`${c.warningBox} border-2 rounded-xl p-5 text-center`}>
             <span className="text-3xl block mb-2">🧵</span>
             <p className={`text-lg font-black ${c.text} mb-2`}>{results.theory_name}</p>

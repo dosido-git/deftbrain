@@ -857,7 +857,7 @@ const VirtualBodyDouble = ({ tool }) => {
     return (<div className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
 
-          <div ref={resultsRef} data-results-anchor />
+          <div data-copy-results ref={resultsRef} data-results-anchor />
 
           {/* Celebration */} <div className={`${c.success} border rounded-xl p-6 text-center`}>
             <span className="text-4xl block mb-3">🎉</span>

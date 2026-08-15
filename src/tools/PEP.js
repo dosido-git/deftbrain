@@ -695,7 +695,7 @@ const PEP = ({ tool }) => {
       </div>}
 
       {/* ═══ RESULTS ═══ */}
-      {results && <div ref={resultsRef} className="space-y-5">
+      {results && <div data-copy-results ref={resultsRef} className="space-y-5">
         <div className={`${c.card} rounded-xl shadow-sm p-4 flex items-center justify-between flex-wrap gap-3`}>
           <div className="flex items-center gap-2 flex-wrap"><span className={`text-sm font-semibold ${c.text}`}>{ENERGY_EMOJIS[energy]} {energy}/10</span>{mood && <span className={`text-xs px-2 py-0.5 rounded-full ${c.warning} border`}>{MOOD_OPTS.find(m => m.v === mood)?.l}</span>}{environment && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>{ENV_OPTS.find(e => e.v === environment)?.l}</span>}<span className={`text-xs ${c.textMuted}`}>{getTimeOfDayLabel(getTimeOfDay())}</span></div>
           <div className="flex items-center gap-2 flex-wrap">

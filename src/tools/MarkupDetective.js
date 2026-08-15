@@ -279,7 +279,7 @@ const MarkupDetective = ({ tool }) => {
 
       {/* ═══ RESULTS ═══ */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Verdict banner */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>

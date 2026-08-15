@@ -369,7 +369,7 @@ const AlternatePath = ({ tool }) => {
 
       {/* ── Results ── */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Divergence banner */}
           <div className={`${c.divergenceBg} border-2 rounded-2xl p-5 text-center`}>

@@ -1364,7 +1364,7 @@ const TheFinalWord = ({ tool }) => {
         )}
 
         {/* ═══════ VERDICT CARDS ═══════ */}
-        <div ref={resultsRef}>
+        <div data-copy-results ref={resultsRef}>
 
         {/* Quick Question Result */}
         {result?._mode === 'question' && (

@@ -422,7 +422,7 @@ const WhichLife = ({ tool }) => {
           RESULTS
           ═══════════════════════════════════════════════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-6">
+        <div data-copy-results ref={resultsRef} className="space-y-6">
 
           {/* Decision framed */}
           {results?.decision_framed && (

@@ -465,7 +465,7 @@ const ArgueSmarter = ({ tool }) => {
     if (mode !== 'scorecard' || !scorecardData) return null;
     const s = scorecardData;
     return (
-      <div ref={resultsRef} className="space-y-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4">
         <div className={`${c.accentCard} border rounded-xl p-5`}>
           <div className="flex items-center justify-between mb-3"><h3 className={`font-bold text-lg ${c.text}`}>🔍 {t('dm_scorecard')}</h3></div>
           <p className={`text-sm ${c.textSecondary}`}>{s.overall?.assessment}</p>

@@ -1006,7 +1006,7 @@ const ComplaintEscalationWriter = ({ tool }) => {
           RESULTS
           ═══════════════════════════════════════════════════════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Fixed copy. Someone arrives here having already been ignored once
               — the first thing they need is that this is normal and

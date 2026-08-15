@@ -344,7 +344,7 @@ const PlotTwist = ({ tool }) => {
     const opts = results?.options_analysis || [];
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* The Real Question */}
         {results?.the_real_question && (
           <div className={`p-5 rounded-2xl border-2 ${c.insightBg}`}>

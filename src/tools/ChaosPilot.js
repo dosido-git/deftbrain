@@ -305,7 +305,7 @@ const ChaosPilot = ({ tool }) => {
 
       {/* ── Results ── */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Regenerate */}
           <div className="flex items-center justify-start">

@@ -1341,7 +1341,7 @@ const NameStorm = ({ tool }) => {
 
       {/* ═══════════════ RESULTS VIEW ═══════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-5">
+        <div data-copy-results ref={resultsRef} className="space-y-5">
 
           {/* Controls */}
           <div className={`${c.card} rounded-xl shadow-sm p-4 space-y-3`}>

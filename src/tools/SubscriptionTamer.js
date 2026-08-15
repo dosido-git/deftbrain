@@ -734,7 +734,7 @@ const SubscriptionTamer = ({ tool }) => {
   const renderResults = () => {
     if (!results || view !== 'sweep') return null;
     return (
-      <div ref={resultsRef} className="space-y-5">
+      <div data-copy-results ref={resultsRef} className="space-y-5">
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className={`${c.card} border rounded-xl p-4 text-center`}>

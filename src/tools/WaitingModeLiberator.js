@@ -912,7 +912,7 @@ const WaitingModeLiberator = ({ tool }) => {
     return (<div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
-          {/* Results anchor */} <div ref={resultsRef} data-results-anchor />
+          {/* Results anchor */} <div data-copy-results ref={resultsRef} data-results-anchor />
 
           {/* Hero countdown */} <div className={`${c.hero} border-2 rounded-2xl p-6 text-center shadow-lg`}>
             {showPrepAlert ? (<>
@@ -1065,7 +1065,7 @@ const WaitingModeLiberator = ({ tool }) => {
           )} {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
               {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
-              <div ref={resultsRef} data-results-anchor />
+              <div data-copy-results ref={resultsRef} data-results-anchor />
               {/* Time reflection */} {debriefData.time_reflection && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <p className={`text-sm ${c.accentLightText}`}><span>⏱️</span> {debriefData.time_reflection}</p>
                 </div>

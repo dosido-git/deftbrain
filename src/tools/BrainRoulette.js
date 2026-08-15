@@ -1251,7 +1251,7 @@ const BrainRoulette = ({ tool }) => {
 
           {/* Result card */}
           {result && (
-            <div ref={resultsRef} className={`rounded-2xl overflow-hidden mb-5 border ${c.border} ${c.card}`}>
+            <div data-copy-results ref={resultsRef} className={`rounded-2xl overflow-hidden mb-5 border ${c.border} ${c.card}`}>
               <div className={`px-6 py-4 ${c.resultHeader}`}>
                 <h2 className="text-xl font-bold text-white">{result.title}</h2>
                 {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}

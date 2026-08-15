@@ -951,7 +951,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
     const r = results;
 
     return (
-      <div ref={resultsRef} className="space-y-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_back_to_log')}</button>
         </div>

@@ -349,7 +349,7 @@ const ComebackCooker = ({ tool }) => {
           RESULTS
           ════════════════════════════════════════════════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Regenerate — top of results */}
           <div className="flex items-center justify-start gap-3 flex-wrap">

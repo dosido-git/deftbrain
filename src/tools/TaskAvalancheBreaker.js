@@ -845,7 +845,7 @@ const TaskAvalancheBreaker = ({ tool }) => {
 
       {/* ═══════════════ RESULTS ═══════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-6">
+        <div data-copy-results ref={resultsRef} className="space-y-6">
 
           {/* Adaptive Controls + Copy */}
           <div className={`${c.card} border ${c.border} rounded-xl p-4 flex gap-3 flex-wrap`}>

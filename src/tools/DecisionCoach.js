@@ -598,7 +598,7 @@ const DecisionCoach = ({ tool }) => {
     const steps = Array.isArray(results?.execution_instructions) ? results?.execution_instructions : [];
     const alts = d.alternatives_eliminated || [];
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>

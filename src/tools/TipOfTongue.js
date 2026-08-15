@@ -279,7 +279,7 @@ const TipOfTongue = ({ tool }) => {
     const matches = results.matches || [];
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {results.category_detected && (
           <p className={'text-xs font-medium ' + c.textMuted}>{t('tot_looking_for')} {results.category_detected}</p>
         )}

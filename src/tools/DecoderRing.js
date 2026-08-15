@@ -363,7 +363,7 @@ const DecoderRing = ({ tool }) => {
     if (!results) return null;
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {results?.surface_reading && (
           <p className={`text-xs font-medium ${c.textMuted} text-center italic`}>{t('dr_surface_prefix')} "{results.surface_reading}"</p>
         )}

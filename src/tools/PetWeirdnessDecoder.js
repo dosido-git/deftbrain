@@ -677,7 +677,7 @@ const PetWeirdnessDecoder = ({ tool }) => {
 
       {/* ═══════════ RESULTS ═══════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-6">
+        <div data-copy-results ref={resultsRef} className="space-y-6">
           {/* Action Bar — Copy/Print available in the top ActionBar via useRegisterActions */}
           <div className={`${c.card} border ${c.border} rounded-xl p-4 flex gap-2 flex-wrap`}>
             <button onClick={() => setShowDiary(true)} className={`${c.btnSecondary} px-3 py-1.5 rounded text-xs`}>📄 {t('pwd_diary')}</button>

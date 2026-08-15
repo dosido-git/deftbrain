@@ -398,7 +398,7 @@ const GhostWriter = ({ tool }) => {
     if (!results?.versions?.length) return null;
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Version tabs */}
         <div className={`${c.card} ${c.border} border rounded-xl overflow-hidden`}>
           <div className={`flex border-b ${c.border}`}>

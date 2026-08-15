@@ -900,7 +900,7 @@ const LayoverMaximizer = ({ tool }) => {
           const availableMin = timeBudget?.availableMin || 0;
           const hasUnknownDeduction = !!timeBudget?.provisional;
           return (
-            <div ref={resultsRef} className="space-y-4">
+            <div data-copy-results ref={resultsRef} className="space-y-4">
               {/* A traveller already at the airport reads the clock first and the
                   verdict second. Durations are for planning; these are moments. */}
               {isLiveMode && liveMinutesRemaining !== null && (

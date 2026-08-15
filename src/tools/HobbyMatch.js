@@ -306,7 +306,7 @@ const HobbyMatch = ({ tool }) => {
 
       {/* Error */}
       {error && (
-        <div ref={resultsRef} className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
+        <div data-copy-results ref={resultsRef} className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>
           <span className="flex-shrink-0 mt-0.5">⚠️</span>
           <p className="text-sm">{error}</p>
         </div>
@@ -316,7 +316,7 @@ const HobbyMatch = ({ tool }) => {
       {/* RESULTS                                                  */}
       {/* ══════════════════════════════════════════════════════════ */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* ── PROFILE READ ── */}
           {r.profile_read && (

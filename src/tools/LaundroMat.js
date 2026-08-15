@@ -1014,7 +1014,7 @@ const LaundroMat = ({ tool }) => {
       if (!adviceResults) return null;
       const r = adviceResults;
       return (
-        <div ref={resultsRef} className="space-y-4 mt-5">
+        <div data-copy-results ref={resultsRef} className="space-y-4 mt-5">
           {/* Assessment */}
           {r.load_assessment && (
             <div className={`p-4 rounded-xl border ${c.skyCard}`}>

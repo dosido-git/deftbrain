@@ -503,7 +503,7 @@ const MiseEnPlace = ({ tool }) => {
     if (!results) return null;
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Selected Meal header */}
         {results.selected_meal && (
           <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>

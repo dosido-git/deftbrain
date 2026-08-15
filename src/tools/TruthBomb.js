@@ -226,7 +226,7 @@ const TruthBomb = ({ tool }) => {
       {/* Results */}
       {results && (
         <div className="space-y-4">
-          <div ref={resultsRef} data-results-anchor />
+          <div data-copy-results ref={resultsRef} data-results-anchor />
           {/* What it's really about */}
           {results?.the_thing_examined && (
             <div className={`rounded-xl border p-5 space-y-3 ${c.card} ${c.border}`}>

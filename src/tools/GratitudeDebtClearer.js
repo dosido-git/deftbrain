@@ -1482,7 +1482,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
         {/* Results Section */}
         {results && (
-          <div ref={resultsRef} className="space-y-6">
+          <div data-copy-results ref={resultsRef} className="space-y-6">
             {/* Awkwardness Acknowledgment */}
             {results.if_you_feel_awkward && (
               <div className={`border-2 rounded-xl p-5 ${c.accentCard}`}>

@@ -242,7 +242,7 @@ const VelvetHammer = ({ tool }) => {
         {error && <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>} </div>
 
       {/* Results */} {results && (<div className="space-y-4">
-          <div ref={resultsRef} data-results-anchor />
+          <div data-copy-results ref={resultsRef} data-results-anchor />
 
           {/* Rage audit */} {results.rage_audit && (<div className={`${c.warning} border rounded-xl p-4`}>
               <p className={`text-xs font-bold mb-1`}>🔬 {t('vh_rage_audit')}</p>

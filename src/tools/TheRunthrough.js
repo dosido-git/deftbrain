@@ -742,7 +742,7 @@ const TheRunthrough = ({ tool }) => {
 
         {/* Results */}
         {results && (
-          <div ref={resultsRef} className="space-y-5">
+          <div data-copy-results ref={resultsRef} className="space-y-5">
             {results.mode === 'cut' && <CutResults data={results.data} />}
             {results.mode === 'anticipate' && <AnticipateResults data={results.data} />}
             {results.mode === 'hook' && <HookResults data={results.data} />}

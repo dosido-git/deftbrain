@@ -1751,7 +1751,7 @@ const FocusSoundArchitect = ({ tool }) => {
       {/* PLAYER + RECIPE                                     */}
       {/* ═══════════════════════════════════════════════════ */}
       {recipe && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Transport bar */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 ${!isPlaying ? (isDark ? 'ring-2 ring-cyan-500/40' : 'ring-2 ring-cyan-300') : ''}`}>

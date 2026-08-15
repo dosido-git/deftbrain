@@ -354,7 +354,7 @@ const Bookmark = ({ tool }) => {
     const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results?.media_type] || '🔖';
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Header */}
         <div className={'p-5 rounded-2xl border-2 ' + c.tip}>
           <div className="flex items-center gap-2 mb-2">

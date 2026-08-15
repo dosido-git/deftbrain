@@ -356,7 +356,7 @@ const PronounceItRight = ({ tool }) => {
     const ctx = results.context_info;
 
     return (
-      <div ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {/* Hero pronunciation */}
         <div className={'p-6 rounded-2xl border-2 ' + c.phonBg + ' text-center'}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{results.language_of_origin || t('pir_pronunciation')}</p>
@@ -541,7 +541,7 @@ const PronounceItRight = ({ tool }) => {
   const renderBatch = () => {
     if (!batchResults?.guides?.length) return null;
     return (
-      <div ref={resultsRef} className="space-y-3 mt-4">
+      <div data-copy-results ref={resultsRef} className="space-y-3 mt-4">
         <p className={'text-xs font-bold ' + c.textMuted + ' uppercase'}>🗣️ {t('pir_batch_count', { count: batchResults.guides.length })}</p>
         {batchResults.guides.map((g, i) => (
           <div key={i} className={c.card + ' border rounded-xl p-4'}>

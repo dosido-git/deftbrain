@@ -565,7 +565,7 @@ const DateNight = ({ tool }) => {
     if (!results || showInputs) return null;
     const stops = results.itinerary || [];
     return (
-    <div ref={resultsRef} className="space-y-4">
+    <div data-copy-results ref={resultsRef} className="space-y-4">
       <button onClick={() => setShowInputs(true)} className={`text-xs font-bold ${c.roseText}`}>✏️ {t('dn_edit')} · {location} · {fm(budget)}{isFuture ? ` · ${plannedDateLabel}` : ''}</button>
 
       {/* Header */}

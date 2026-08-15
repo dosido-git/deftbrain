@@ -723,7 +723,7 @@ const MicroAdventureMapper = ({ tool }) => {
     );
 
     return (
-      <div ref={resultsRef}>
+      <div data-copy-results ref={resultsRef}>
         {/* Edit toggle */}
         <button onClick={() => setShowInputs(!showInputs)}
           className={`flex items-center gap-2 text-xs font-semibold ${c.btnGhost} mb-4`}>

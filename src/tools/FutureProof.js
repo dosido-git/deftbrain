@@ -326,7 +326,7 @@ const FutureProof = ({ tool }) => {
       )}
 
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Trajectory banner */}
           {results?.trajectory && (() => {

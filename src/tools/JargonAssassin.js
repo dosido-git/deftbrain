@@ -399,7 +399,7 @@ const JargonAssassin = ({ tool }) => {
       </div>}
 
       {/* ═══ RESULTS ═══ */}
-      {mode === 'results' && results && <div ref={resultsRef} className="space-y-4">
+      {mode === 'results' && results && <div data-copy-results ref={resultsRef} className="space-y-4">
         {/* Summary + Danger */}
         <div className={`${c.accentCard} border rounded-xl p-5`}>
           <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 {t('jarg_summary')}</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.success : results.danger_score.level === 'caution' ? c.warning : c.danger} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>

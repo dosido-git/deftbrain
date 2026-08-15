@@ -260,7 +260,7 @@ const NameThatFeeling = ({ tool }) => {
 
       {/* ── Results ── */}
       {results && (
-        <div ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="space-y-4">
 
           {/* Best match */}
           {results?.best_match && (

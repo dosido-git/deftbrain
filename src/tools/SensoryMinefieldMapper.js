@@ -612,7 +612,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
 
         {/* ════════ RESULTS ════════ */}
         {view === 'results' && results && (
-          <div ref={resultsRef} className="space-y-5">
+          <div data-copy-results ref={resultsRef} className="space-y-5">
 
             {/* Summary */}
             {results.location_summary && (

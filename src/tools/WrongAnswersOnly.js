@@ -254,7 +254,7 @@ const WrongAnswersOnly = ({ tool }) => {
         </div>
       )} {/* Results */} {results && (<div className="space-y-4">
           <div className="flex justify-end">
-            <div ref={resultsRef} data-results-anchor />
+            <div data-copy-results ref={resultsRef} data-results-anchor />
           </div>
 
           {/* Question + Wrongness meter */} {results.question_rephrased && (<div className={`${c.infoBox} border-2 rounded-xl p-5`}>
