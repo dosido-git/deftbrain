@@ -35,19 +35,32 @@ const RELATIONSHIP_OPTIONS = [
   { value: 'stranger', emoji: '👤', key: 'dr_rel_stranger' },
 ];
 
+// Keyed on `technique_key`, which the prompt pins to these exact English
+// strings and never translates. The visible label (`technique`) IS translated,
+// so matching on it only ever worked in English — every other language fell
+// through to the generic fallback.
+//
+// The vocabulary is deliberately descriptive rather than diagnostic. A label
+// like "passive aggression" or "plausible deniability" is a verdict on a person
+// we have never met, delivered to someone already unsure whether they are
+// overreacting. "Indirect frustration" and "unclear intentions" describe the
+// same thing the message is doing without convicting anyone of it.
 const TECHNIQUE_EMOJIS = {
-  'passive aggression': '😤',
-  'hedging': '🌫️',
-  'guilt trip': '😔',
-  'genuine warmth': '💛',
-  'power move': '👑',
-  'non-answer': '🤷',
-  'emotional bid': '🫴',
-  'deflection': '↩️',
-  'boundary setting': '🛡️',
-  'sarcasm': '🙃',
-  'love bombing': '💐',
-  'minimizing': '📉',
+  warmth: '💛',
+  softening: '🌫️',
+  indirect_frustration: '😤',
+  emotional_pressure: '😔',
+  mixed_signals: '🔀',
+  unclear_intentions: '❓',
+  no_clear_answer: '🤷',
+  setting_the_terms: '📌',
+  reaching_out: '🫴',
+  changing_the_subject: '↩️',
+  setting_a_limit: '🛡️',
+  playing_it_down: '📉',
+  sarcasm: '🙃',
+  intense_affection: '💐',
+  plain_speech: '💬',
 };
 
 // ════════════════════════════════════════════════════════════
@@ -98,6 +111,8 @@ const DecoderRing = ({ tool }) => {
     barAmber:      'bg-amber-500',
     barRed:        'bg-red-500',
     barGreen:      'bg-green-500',
+    // Ambiguity is neutral information, not an alarm — it gets a neutral bar.
+    barSlate:      isDark ? 'bg-zinc-400' : 'bg-slate-400',
     // Translation highlight
     transBg:       isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
     transText:     isDark ? 'text-amber-300' : 'text-amber-800',
@@ -123,7 +138,9 @@ const DecoderRing = ({ tool }) => {
   // Sections
   const [showLayers, setShowLayers] = useState(true);
   const [showStrategies, setShowStrategies] = useState(true);
-  const [showFlags, setShowFlags] = useState(false);
+  // Open. This is the section people came for — "is this a big deal?" — and it
+  // was the only one hidden behind a click.
+  const [showFlags, setShowFlags] = useState(true);
   const [sessionHistory, setSessionHistory] = usePersistentState('decoder-ring-history', []);
   const [whatsConfusing, setWhatsConfusing] = usePersistentState('decoder-ring-confusing', '');
 
@@ -255,7 +272,8 @@ const DecoderRing = ({ tool }) => {
 
   // Score bar
   const ScoreBar = ({ label, value, max = 10, color = 'navy' }) => {
-    const barColor = color === 'gold' ? c.barAmber : color === 'red' ? c.barRed : color === 'green' ? c.barGreen : c.barCyan;
+    const barColor = color === 'gold' ? c.barAmber : color === 'red' ? c.barRed
+      : color === 'green' ? c.barGreen : color === 'slate' ? c.barSlate : c.barCyan;
     return (
       <div className="flex items-center gap-3">
         <span className={`text-xs font-medium ${c.textMuted} w-24 shrink-0`}>{label}</span>
@@ -383,21 +401,37 @@ const DecoderRing = ({ tool }) => {
 
     return (
       <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
+        {/* Fixed copy. Someone arrives here already unsure whether they are
+            overreacting; naming that is worth more than any single reading
+            below it. */}
+        <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+          <p className={`text-sm font-bold ${c.text}`}>💚 {t('dr_first_matters')}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{t('dr_fm_1')}</p>
+        </div>
+
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-5 space-y-1`}>
+          <p className={`text-sm font-bold ${c.text}`}>🎯 {t('dr_todays_job')}</p>
+          <p className={`text-sm ${c.textSecondary}`}>{t('dr_job_1')}</p>
+          <p className={`text-sm font-bold ${c.text}`}>{t('dr_job_2')}</p>
+        </div>
+
         {results?.surface_reading && (
           <p className={`text-xs font-medium ${c.textMuted} text-center italic`}>{t('dr_surface_prefix')} "{results.surface_reading}"</p>
         )}
-        {/* Overall Translation — the headline */}
+        {/* One reading — the headline. Not "what they meant": the label has to
+            carry the same hedge the sentence inside it does. */}
         {results?.overall_translation && (
           <div className={`p-5 rounded-2xl border-2 ${c.transBg}`}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg">🔑</span>
+              <span className="text-lg">🗝️</span>
               <span className={`text-sm font-bold ${c.transText}`}>{t('dr_actually_mean')}</span>
             </div>
             <p className={`text-base leading-relaxed ${c.text}`}>{results?.overall_translation}</p>
           </div>
         )}
 
-        {/* What they want */}
+        {/* What they might want — conditional on the reading above, and it says
+            so, so the uncertainty is structural and not just a softer verb. */}
         {results?.what_they_want && (
           <div className={`p-4 rounded-xl ${c.inset}`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dr_what_they_want')}</p>
@@ -429,8 +463,13 @@ const DecoderRing = ({ tool }) => {
               <ScoreBar label={t('dr_tone_warmth')} value={results?.tone_rating?.warmth} color="gold" />
               <ScoreBar label={t('dr_tone_directness')} value={results?.tone_rating?.directness} color="navy" />
               <ScoreBar label={t('dr_tone_sincerity')} value={results?.tone_rating?.sincerity} color="green" />
-              <ScoreBar label={t('dr_tone_manipulation')} value={results?.tone_rating?.manipulation} color="red" />
+              <ScoreBar label={t('dr_tone_ambiguity')} value={results?.tone_rating?.ambiguity} color="slate" />
             </div>
+            {/* Turns the bar into advice. A high ambiguity score is the tool
+                telling you how loosely to hold everything above it. */}
+            {results?.tone_rating?.ambiguity >= 7 && (
+              <p className={`text-xs ${c.textMuted} mt-3`}>{t('dr_ambiguity_high')}</p>
+            )}
           </div>
         )}
 
@@ -462,7 +501,7 @@ const DecoderRing = ({ tool }) => {
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>
-                        {TECHNIQUE_EMOJIS[layer.technique?.toLowerCase()] || '🔮'} {layer.technique}
+                        {TECHNIQUE_EMOJIS[layer.technique_key] || '🔮'} {layer.technique}
                       </span>
                       {layer.confidence && (
                         <span className={`text-[10px] ${c.textMuted}`}>{t('dr_confidence')} {layer.confidence}</span>
@@ -502,8 +541,8 @@ const DecoderRing = ({ tool }) => {
 
         {/* Response Strategies */}
         {results?.response_strategies?.length > 0 && (
-          <Section title={t('dr_respond_title')} emoji="💬" open={showStrategies}
-            onToggle={() => setShowStrategies(!showStrategies)} badge={t('dr_respond_badge', { count: results?.response_strategies?.length })}>
+          <Section title={t('dr_respond_title', { count: results?.response_strategies?.length })} emoji="💬" open={showStrategies}
+            onToggle={() => setShowStrategies(!showStrategies)}>
             <div className="space-y-3 mt-4">
               {results?.response_strategies?.map((strat, idx) => (
                 <div key={idx} className={`p-4 rounded-xl border ${c.border} ${c.cardAlt}`}>

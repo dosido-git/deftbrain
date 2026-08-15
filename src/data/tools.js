@@ -2516,10 +2516,6 @@ export const tools = [
     ]
   }
 },
-// ── DecoderRing tools.js entry ──
-// Replace the existing entry (search for id: "DecoderRing")
-// Changes: modified date, pitfalls added, description trimmed to 1 sentence
-
 {
   modified: "2026-03-11",
   id: "DecoderRing",
@@ -2528,9 +2524,9 @@ export const tools = [
   primer: {
     when: "A message arrived and the words don't match the feeling.",
     give: "The exact message and where it came from.",
-    get: "What's underneath — passive aggression, hedging, a power move, a non-answer, or genuine warmth — and how to respond.",
+    get: "What the message could mean, how loosely to hold that, and three ways you could reply.",
   },
-  seoDescription: "Paste any confusing or passive-aggressive message and instantly decode the subtext, what they really want, red flags, and 3 ready-to-send responses. Free, no signup.",
+  seoDescription: "Paste a confusing or passive-aggressive message and see what it might mean, what's worth noticing, and 3 ready-to-send replies. Free, no signup.",
   seoTitle: "Text Message Subtext Decoder",
   title: "Decoder Ring",
   tagline: "Explore what might be happening beneath the words",
@@ -2540,7 +2536,7 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.",
   guide: {
-    overview: "Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.",
+    overview: "Decoder Ring looks at the pragmatics, subtext, and emotional undercurrent of a message and lays out how it could reasonably be read — often more than one way. It doesn't tell you what the sender meant; nobody can know that from a message. It widens the range of readings you're considering, rates how ambiguous the message actually is, and gives you three different ways to reply.",
     howToUse: [
       "Paste the exact message you received — wording and tone matter",
       "Select where it came from (text, email, Slack, dating app, etc.)",
@@ -2551,16 +2547,16 @@ export const tools = [
     example: {
       scenario: "You receive a text from your partner: 'Hey! So I was thinking about what you said and I totally get where you're coming from. I just think maybe we should take some time to think about things separately.'",
       action: "Paste the message, select 'Text message' and 'Partner/Spouse', add context about a recent argument.",
-      result: "Decoder Ring identifies hedging + emotional distancing, reveals the subtext is a request for space without wanting to say it directly, flags the 'totally fine either way' as people-pleasing masking anxiety, and generates 3 responses: 'give space gracefully', 'ask directly what they need', and 'acknowledge and reconnect'."
+      result: "Decoder Ring scores the message 8/10 for ambiguity and says so plainly: it could be a request for breathing room, or a first step toward more distance, and the message alone doesn't settle it. It walks through each line with both readings side by side, notes that 'totally fine either way' could be genuine or could be withdrawal, and gives you 3 ways to reply — ask directly, give space, or address the decision that started it — each with its own downside."
     },
     tips: [
-      "Paste the EXACT wording — paraphrasing loses the tone cues AI analyzes",
-      "Adding relationship context dramatically improves accuracy for ambiguous messages",
-      "Confidence ratings help you know when to trust the read vs. take it with a grain of salt",
+      "Paste the EXACT wording — paraphrasing loses the tone cues the read depends on",
+      "Adding relationship context makes a much bigger difference than people expect on an ambiguous message",
+      "Check the ambiguity score first. A high one means the message genuinely supports several readings, and no tool can narrow it further",
       "Response strategies include risk assessments — check the downsides before sending"
     ],
     pitfalls: [
-      "Don't paste paraphrased versions — exact wording is what reveals passive aggression, hedging, and tone",
+      "Don't paste paraphrased versions — the exact wording is where the tone lives",
       "The tool reads the message in isolation; wildly different backstory context can change the read significantly",
       "Response strategies are starting points, not scripts — adapt them to your voice"
     ]
