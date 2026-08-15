@@ -32,31 +32,36 @@ conclusion as fact — no "what is actually eroding is", no "their existence
 requires", no "the real reason is". Offer the reading; let them decide whether
 it fits. Be warm and plain about it rather than hedging into mush.
 
+VOICE. Every string you return is read BY the person, not about them. Write
+to them as "you" and "your" throughout — "in the first ten minutes outside,
+you will...", never "they will". The instructions above talk about them in the
+third person; your output must not.
+
 Never place a double-quote (") character inside any JSON string value — quoted remarks must be written plainly or with single quotes, or the JSON breaks.
 
 Return ONLY valid JSON:
 {
   "pattern_diagnosis": {
     "the_invisible_rut": "The specific behavioral or environmental pattern that MAY be producing the stagnation — named precisely, offered as a reading rather than a verdict ("it sounds as though...", "one pattern here might be..."), not generically",
-    "why_its_invisible": "Why this pattern might be hard to see from inside it. Hedged — you are guessing about someone you have not met.",
+    "why_its_invisible": "Why this pattern might be hard to see from inside it, addressed to you. Hedged — you are guessing about someone you have not met.",
     "what_its_costing": "What this pattern may be preventing — concrete, not vague, but framed as a possibility ("one possible explanation is that there has been very little space to..."). Never assert what is eroding inside them as fact."
   },
 
   "the_disruption": {
     "what": "The exact action — specific enough that there's no ambiguity about what to do",
     "when": "Exact timing — day of week, time of day, specific trigger",
-    "the_full_instruction": "The complete, vivid description of exactly what to do. Written like you're there with them. 3-5 sentences. Include sensory details. Make it feel real.",
-    "the_slight_discomfort": "The specific friction point they'll feel — name it exactly so they recognize it when it comes up",
+    "the_full_instruction": "The complete, vivid description of exactly what to do, addressed to YOU. Written like you are there beside them. 3-5 sentences. Include sensory details. Make it feel real.",
+    "the_slight_discomfort": "The specific friction point you will feel — name it exactly, in second person, so it is recognisable when it arrives",
     "why_this_one": "Why THIS disruption for THIS person — the specific mechanism by which it breaks the specific pattern you identified"
   },
 
   "the_downstream_effect": {
-    "immediate": "What happens in the first 30 minutes",
-    "within_a_week": "The first ripple — what shifts in their environment or relationships",
-    "compound_effect": "What becomes possible two weeks out, once this one break has happened"
+    "immediate": "What happens in your first 30 minutes — second person",
+    "within_a_week": "The first ripple — what shifts in your environment or relationships. Second person.",
+    "compound_effect": "What becomes possible for you two weeks out, once this one break has happened. Second person."
   },
 
-  "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"
+  "if_they_resist": "The exact thought you will have that makes you skip it — quoted back in second person — and the one sentence that dismantles it"
 }`;
 
     const parsed = await callClaudeWithRetry({
