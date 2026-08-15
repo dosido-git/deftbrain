@@ -157,3 +157,38 @@ consequences often help a company understand the impact." Same advice.
 small claims / attorney general) still exist as content. Removing the
 choreography was the fix here; whether the tool should carry them at all is a
 scope question rather than a tone one.
+
+## Campaign → plan (2026-08-15)
+The owner's "single biggest change": nobody arrives wanting to launch a
+campaign. 35 visitor-facing strings rewritten across 13 languages, plus 8 in
+the catalog entry.
+
+  Escalation strategist  →  Your resolution guide
+  Escalation campaign    →  Your resolution plan
+  Escalation roadmap     →  A step-by-step plan for what to do next
+  Escalation ladder      →  Your resolution path
+  Campaign Tone          →  Tone
+  Build Escalation Campaign → Build My Plan
+  Stage N                →  Step N
+  Campaign Log           →  Your record
+  "time to escalate"     →  "time for the next step"
+
+**Deliberately left**, both because they are the owner's call rather than a
+copy fix:
+- `title` / `seoTitle` — the tool is still called Complaint Escalation Writer.
+  Renaming it is a 301, a sitemap entry and a RENAMES row, like Mend and
+  ArgueSmarter.
+- The FAQ question "How long should I wait before escalating a complaint?" —
+  that is what people type into a search box, and rewriting it to match the
+  in-product voice would cost the match.
+
+**Still open from the same review:**
+1. **Progressive reveal.** "Today's only job: send the next message, don't
+   worry about stage five yet" is immediately contradicted by showing all five
+   steps, the timeline and small claims at once. The fix is to show step 1 and
+   the date to expect a reply, and unlock step 2 on Mark as Sent — the campaign
+   log already tracks sent state, so the state exists; it is the render that
+   shows everything.
+2. **The ✓ considerations format** for "Why your position may be stronger than
+   you think" — the content is hedged now but still renders as prose blocks,
+   not the short ticked list the heading implies.

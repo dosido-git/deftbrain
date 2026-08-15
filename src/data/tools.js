@@ -3689,7 +3689,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You've complained once, been fobbed off, and stopped.",
     give: "The company, the industry, and what happened — dates, amounts, promises, names.",
-    get: "A five-stage escalation campaign with the laws that apply, letters, and who to contact at each step.",
+    get: "A step-by-step plan with the rules that may apply, the letters to send, and who to contact at each step.",
     edge: "Most complaints fail because people don't know what leverage they have. This finds the statute and the regulator before it writes a word.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
@@ -3709,7 +3709,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   seoDescription: "Won't they make it right? Get a full escalation campaign — ready-to-send complaint letters, cited laws, chargeback steps — to win your refund. Free, no signup.",
   seoTitle: "Complaint Letter & Refund Escalation Writer",
   title: "Complaint Escalation Writer",
-  tagline: "Full escalation campaigns that companies can't ignore",
+  tagline: "A clear plan for when a company stops answering",
   tags: ['complaint', 'customer service', 'escalate', 'refund', 'manager', 'dispute', 'letter', 'consumer rights', 'legal', 'chargeback', 'negotiate', 'advocate', 'rights', 'BBB', 'FTC', 'regulate', 'company', 'billing'],
   icon: "📧",
   categories: ['Loot', 'Discourse'],
@@ -3724,9 +3724,9 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "Note previous resolution attempts, desired outcome, amount at stake, and what documentation you have",
       "Review the Situation Assessment to understand your legal position and likelihood of success",
       "Check the Evidence Checklist and gather documentation before sending anything",
-      "Start with Stage 1 (Direct Complaint) — copy the letter and send it",
-      "If Stage 1 fails, move to Stage 2 (Regulatory Filing) and continue up the ladder as needed",
-      "Follow the Campaign Timeline for when to execute each stage"
+      "Start with step 1 — copy the letter and send it today",
+      "If there is no answer, step 2 is the regulatory complaint — and only if you need it",
+      "The timeline tells you when each step is due"
     ],
     
     example: {
@@ -3737,10 +3737,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     
     tips: [
       "The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers",
-      "Always gather your evidence BEFORE sending Stage 1 — the Evidence Checklist tells you exactly what to collect",
+      "Gather your evidence before you send step 1 — the checklist tells you exactly what to collect",
       "The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights",
-      "Stage 2 (Regulatory Filing) is often the most powerful — companies are required to respond to regulatory complaints within specific timelines",
-      "Don't skip straight to Stage 5 — the escalation ladder builds a documented trail that strengthens each subsequent stage"
+      "The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines",
+      "There is no need to jump ahead — each step leaves a record that makes the next one easier"
     ]
   }
 },
