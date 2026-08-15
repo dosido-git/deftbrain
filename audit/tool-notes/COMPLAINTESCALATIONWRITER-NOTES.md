@@ -85,3 +85,32 @@ this tool speaks to being ignored. Those are different emotional states and the
 next pass should lean into frustration rather than anxiety. The two panels
 above are a start, but the voice of the tool as a whole has not been rewritten
 around it.
+
+## Output rewrite — the strategist, not the litigator (2026-08-15)
+A STANCE block now heads all seven prompts, with three rules that override
+everything below them:
+
+1. **No invented precision.** `estimated_resolution_likelihood` is deleted from
+   the schema and the renderer. "82% if the full ladder is followed" implied a
+   dataset, a methodology and a model, none of which exist.
+2. **No legal conclusions.** "A clear, documentable violation" became "based on
+   what you have described, this appears inconsistent with <rule>, which may
+   strengthen your position." State the rule confidently, its application to
+   this case tentatively.
+3. **No attributed intent, no war.** `company_reputation` may describe process
+   and typical timelines, never motive — "deliberately tiered to exhaust
+   complainants" is unprovable and not ours to say. Pressure coaching is out:
+   no never-soften, no never-counter-propose, no framing a phone call as a
+   trap. Public and regulatory steps are options with trade-offs, described
+   including the downsides.
+
+**Output reordered** so the thing you can send comes third: First this matters
+→ Today's only job → the escalation ladder (Stage 1, the letter, is the default
+tab) → evidence checklist → "⚖️ Why your position may be stronger than you
+think" (situation assessment + legal leverage, collapsed) → timeline → tips →
+call script → You're set. Three statutes no longer stand between someone and
+the email they came to send.
+
+Verified live on an airline cancellation: zero percentages, zero violation
+claims, zero attributed intent, zero never-rules, and the legal read came back
+correctly hedged.

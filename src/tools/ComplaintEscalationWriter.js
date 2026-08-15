@@ -1002,87 +1002,6 @@ const ComplaintEscalationWriter = ({ tool }) => {
             <p className={`text-sm font-bold ${c.text}`}>{t('cew_job_2')}</p>
           </div>
 
-          {/* Situation Assessment */}
-          {results?.situation_assessment && (() => {
-            const sev = severityConfig[results?.situation_assessment?.severity] || severityConfig.medium;
-            return (
-              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${c[sev.borderKey]}`}>
-                <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
-                  <div className="flex gap-3 text-sm">
-                    {results?.situation_assessment?.legal_strength && <span className={c.textSecondary}>{t('cew_legal_position')} <strong className={c.text}>{results?.situation_assessment?.legal_strength}</strong></span>}
-                    {results?.situation_assessment?.estimated_resolution_likelihood && <span className={c.textSecondary}>{t('cew_success_est')} <strong className={c.text}>{results?.situation_assessment?.estimated_resolution_likelihood}</strong></span>}
-                  </div>
-                </div>
-                <p className={`font-semibold ${c.text} mb-2`}>{results?.situation_assessment?.key_insight}</p>
-                {results?.situation_assessment?.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results?.situation_assessment?.company_reputation}</p>}
-              </div>
-            );
-          })()}
-
-          {/* Legal Leverage */}
-          {results?.legal_leverage?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <button onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> {t('cew_legal_leverage', { count: results?.legal_leverage?.length })}</h3>
-                {<Caret open={expandedSections.legal} />}
-              </button>
-              {expandedSections.legal && (
-                <div className="space-y-3 mt-4">
-                  {results?.legal_leverage?.map((law, idx) => (
-                    <div key={idx} className={`p-4 rounded-lg border ${c.border}`}>
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
-                      </div>
-                      {law.what_it_protects && <p className={`text-xs font-semibold ${c.textSecondary} mb-1`}>{law.what_it_protects}</p>}
-                      <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
-                      <p className={`text-xs ${c.textMuteded}`}>{t('cew_company_risk')} {law.consequence_for_company}</p>
-                      {law.time_limit_days && (
-                        <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${timeLimitBg(law.time_limit_days)}`}>
-                          <span className="text-xs">{law.time_limit_days <= 30 ? '🚨' : law.time_limit_days <= 90 ? '⏰' : '📅'}</span>
-                          <span className={`text-xs font-bold ${timeLimitTxt(law.time_limit_days)}`}>
-                            {t('cew_filing_window')} {law.time_limit_note || t('cew_days_approx', { days: law.time_limit_days })}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Evidence Checklist */}
-          {results?.evidence_checklist?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
-              <button onClick={() => toggleSection('evidence')} className={`w-full flex items-center justify-between ${c.text}`}>
-                <h3 className="font-bold flex items-center gap-2">
-                  <span>📋</span> {t('cew_evidence_checklist', { done: results?.evidence_checklist?.filter((_, i) => isEvidenceChecked(i)).length, total: results?.evidence_checklist?.length })}
-                </h3>
-                {<Caret open={expandedSections.evidence} />}
-              </button>
-              {expandedSections.evidence && (
-                <div className="space-y-2 mt-4">
-                  {renderHint('evidence', t('cew_evidence_hint'))}
-                  {results?.evidence_checklist?.map((item, idx) => (
-                    <div key={idx} onClick={() => toggleEvidence(idx)}
-                      className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${isEvidenceChecked(idx) ? c.evidenceChecked : c.cardAlt}`}>
-                      <input type="checkbox" checked={isEvidenceChecked(idx)} readOnly className={`mt-1 w-4 h-4 rounded ${c.checkboxAccent}`} />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuteded} line-through` : c.text}`}>{item.item}</p>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
-                        </div>
-                        <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.how}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* ── ESCALATION LADDER ── */}
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
             <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}><span>⚡</span> {t('cew_escalation_ladder')}</h3>
@@ -1405,6 +1324,100 @@ const ComplaintEscalationWriter = ({ tool }) => {
               </div>
             )}
           </div>
+
+          {/* Evidence Checklist */}
+          {results?.evidence_checklist?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+              <button onClick={() => toggleSection('evidence')} className={`w-full flex items-center justify-between ${c.text}`}>
+                <h3 className="font-bold flex items-center gap-2">
+                  <span>📋</span> {t('cew_evidence_checklist', { done: results?.evidence_checklist?.filter((_, i) => isEvidenceChecked(i)).length, total: results?.evidence_checklist?.length })}
+                </h3>
+                {<Caret open={expandedSections.evidence} />}
+              </button>
+              {expandedSections.evidence && (
+                <div className="space-y-2 mt-4">
+                  {renderHint('evidence', t('cew_evidence_hint'))}
+                  {results?.evidence_checklist?.map((item, idx) => (
+                    <div key={idx} onClick={() => toggleEvidence(idx)}
+                      className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${isEvidenceChecked(idx) ? c.evidenceChecked : c.cardAlt}`}>
+                      <input type="checkbox" checked={isEvidenceChecked(idx)} readOnly className={`mt-1 w-4 h-4 rounded ${c.checkboxAccent}`} />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className={`text-sm font-semibold ${isEvidenceChecked(idx) ? `${c.textMuteded} line-through` : c.text}`}>{item.item}</p>
+                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${evidencePriority[item.priority] || evidencePriorityDefault}`}>{item.priority}</span>
+                        </div>
+                        <p className={`text-xs ${c.textSecondary} mt-0.5`}>{item.how}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Why your position may be stronger than you think ──────
+              The statutes and the read on the situation used to sit between
+              "today's only job" and the letter you came for. Most people will
+              not read three regulations before sending an email — and the ones
+              who want them still get them, one tap away. */}
+          <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <div className={`flex items-center gap-2 font-semibold ${c.text}`}>
+                ⚖️ {t('cew_why_stronger')}
+                <Caret groupOpen className="ms-auto" />
+              </div>
+            </summary>
+            <div className="space-y-4 mt-4">
+            {/* Situation Assessment */}
+            {results?.situation_assessment && (() => {
+              const sev = severityConfig[results?.situation_assessment?.severity] || severityConfig.medium;
+              return (
+                <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 border-s-4 ${c[sev.borderKey]}`}>
+                  <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${c[sev.bgKey]} ${c[sev.colorKey]} border ${c[sev.borderKey]}`}>{sev.label}</span>
+                    <div className="flex gap-3 text-sm">
+                      {results?.situation_assessment?.legal_strength && <span className={c.textSecondary}>{t('cew_legal_position')} <strong className={c.text}>{results?.situation_assessment?.legal_strength}</strong></span>}
+                    </div>
+                  </div>
+                  <p className={`font-semibold ${c.text} mb-2`}>{results?.situation_assessment?.key_insight}</p>
+                  {results?.situation_assessment?.company_reputation && <p className={`text-sm ${c.textSecondary}`}>{results?.situation_assessment?.company_reputation}</p>}
+                </div>
+              );
+            })()}
+            {/* Legal Leverage */}
+            {results?.legal_leverage?.length > 0 && (
+              <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
+                <button onClick={() => toggleSection('legal')} className={`w-full flex items-center justify-between ${c.text}`}>
+                  <h3 className="font-bold flex items-center gap-2"><span>⚖️</span> {t('cew_legal_leverage', { count: results?.legal_leverage?.length })}</h3>
+                  {<Caret open={expandedSections.legal} />}
+                </button>
+                {expandedSections.legal && (
+                  <div className="space-y-3 mt-4">
+                    {results?.legal_leverage?.map((law, idx) => (
+                      <div key={idx} className={`p-4 rounded-lg border ${c.border}`}>
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className={`font-bold ${c.text} text-sm`}>{law.law_or_regulation}</p>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${legalStrengthBadge[law.strength] || legalStrengthDefault}`}>{law.strength}</span>
+                        </div>
+                        {law.what_it_protects && <p className={`text-xs font-semibold ${c.textSecondary} mb-1`}>{law.what_it_protects}</p>}
+                        <p className={`text-sm ${c.textSecondary} mb-1`}>{law.how_it_applies}</p>
+                        <p className={`text-xs ${c.textMuteded}`}>{t('cew_company_risk')} {law.consequence_for_company}</p>
+                        {law.time_limit_days && (
+                          <div className={`mt-2 flex items-center gap-2 px-2.5 py-1.5 rounded-lg ${timeLimitBg(law.time_limit_days)}`}>
+                            <span className="text-xs">{law.time_limit_days <= 30 ? '🚨' : law.time_limit_days <= 90 ? '⏰' : '📅'}</span>
+                            <span className={`text-xs font-bold ${timeLimitTxt(law.time_limit_days)}`}>
+                              {t('cew_filing_window')} {law.time_limit_note || t('cew_days_approx', { days: law.time_limit_days })}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            </div>
+          </details>
 
           {/* Timeline */}
           {results?.timeline && (

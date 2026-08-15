@@ -7,6 +7,7 @@ export const complaintEscalationWriter = {
   en: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Full escalation campaigns that companies can't ignore",
+    cew_why_stronger: "Why your position may be stronger than you think",
     cew_optional_details: "Optional details",
     cew_outcomes_lead: "You'll leave with:",
     cew_first_matters: "First, this matters",
@@ -108,7 +109,6 @@ export const complaintEscalationWriter = {
     cew_build_btn: "Build Escalation Campaign",
     // Situation assessment
     cew_legal_position: "Legal position:",
-    cew_success_est: "Success est:",
     // Legal leverage
     cew_legal_leverage: "Your Legal Leverage ({{count}})",
     cew_company_risk: "Company risk:",
@@ -273,6 +273,7 @@ export const complaintEscalationWriter = {
   es: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Campañas de escalamiento completas que las empresas no pueden ignorar",
+    cew_why_stronger: "Por qué tu posición puede ser más fuerte de lo que crees",
     cew_optional_details: "Detalles opcionales",
     cew_outcomes_lead: "Te llevarás:",
     cew_first_matters: "Primero, esto importa",
@@ -364,7 +365,6 @@ export const complaintEscalationWriter = {
     cew_building: "Creando tu campaña de escalamiento...",
     cew_build_btn: "Crear campaña de escalamiento",
     cew_legal_position: "Posición legal:",
-    cew_success_est: "Éxito estimado:",
     cew_legal_leverage: "Tus palancas legales ({{count}})",
     cew_company_risk: "Riesgo para la empresa:",
     cew_filing_window: "Plazo para presentar:",
@@ -513,6 +513,7 @@ export const complaintEscalationWriter = {
   zh: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "公司无法忽视的完整升级投诉攻势",
+    cew_why_stronger: "为什么你的处境可能比你以为的更有利",
     cew_optional_details: "可选补充",
     cew_outcomes_lead: "你会拿到：",
     cew_first_matters: "先说一件重要的事",
@@ -604,7 +605,6 @@ export const complaintEscalationWriter = {
     cew_building: "正在构建你的升级攻势……",
     cew_build_btn: "构建升级攻势",
     cew_legal_position: "法律地位：",
-    cew_success_est: "成功预估：",
     cew_legal_leverage: "你的法律筹码（{{count}}）",
     cew_company_risk: "公司风险：",
     cew_filing_window: "申诉时限：",
@@ -753,6 +753,7 @@ export const complaintEscalationWriter = {
   hi: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "पूरी एस्केलेशन मुहिम जिन्हें कंपनियाँ नज़रअंदाज़ नहीं कर सकतीं",
+    cew_why_stronger: "आपका पक्ष आपकी सोच से मज़बूत क्यों हो सकता है",
     cew_optional_details: "वैकल्पिक जानकारी",
     cew_outcomes_lead: "आपको मिलेगा:",
     cew_first_matters: "पहले, यह अहम है",
@@ -844,7 +845,6 @@ export const complaintEscalationWriter = {
     cew_building: "आपकी एस्केलेशन मुहिम बनाई जा रही है...",
     cew_build_btn: "एस्केलेशन मुहिम बनाएँ",
     cew_legal_position: "कानूनी स्थिति:",
-    cew_success_est: "सफलता अनुमान:",
     cew_legal_leverage: "आपका कानूनी लीवरेज ({{count}})",
     cew_company_risk: "कंपनी का जोखिम:",
     cew_filing_window: "शिकायत की समय-सीमा:",
@@ -993,6 +993,7 @@ export const complaintEscalationWriter = {
   ar: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "حملات تصعيد كاملة لا تستطيع الشركات تجاهلها",
+    cew_why_stronger: "لماذا قد يكون موقفك أقوى مما تظن",
     cew_optional_details: "تفاصيل اختيارية",
     cew_outcomes_lead: "ستخرج بـ:",
     cew_first_matters: "أولاً، هذا مهم",
@@ -1084,7 +1085,6 @@ export const complaintEscalationWriter = {
     cew_building: "جارٍ إنشاء حملة التصعيد الخاصة بك...",
     cew_build_btn: "إنشاء حملة التصعيد",
     cew_legal_position: "الموقف القانوني:",
-    cew_success_est: "تقدير النجاح:",
     cew_legal_leverage: "أوراقك القانونية ({{count}})",
     cew_company_risk: "مخاطر الشركة:",
     cew_filing_window: "مهلة التقديم:",
@@ -1233,6 +1233,7 @@ export const complaintEscalationWriter = {
   pt: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Campanhas completas de escalonamento que as empresas não conseguem ignorar",
+    cew_why_stronger: "Por que sua posição pode ser mais forte do que você pensa",
     cew_optional_details: "Detalhes opcionais",
     cew_outcomes_lead: "Você vai sair com:",
     cew_first_matters: "Primeiro, isto importa",
@@ -1324,7 +1325,6 @@ export const complaintEscalationWriter = {
     cew_building: "Criando sua campanha de escalonamento...",
     cew_build_btn: "Criar campanha de escalonamento",
     cew_legal_position: "Posição jurídica:",
-    cew_success_est: "Êxito estimado:",
     cew_legal_leverage: "Sua alavancagem jurídica ({{count}})",
     cew_company_risk: "Risco para a empresa:",
     cew_filing_window: "Prazo para registrar:",
@@ -1473,6 +1473,7 @@ export const complaintEscalationWriter = {
   fr: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Des campagnes d'escalade complètes que les entreprises ne peuvent ignorer",
+    cew_why_stronger: "Pourquoi votre position est peut-être plus solide que vous ne le pensez",
     cew_optional_details: "Détails facultatifs",
     cew_outcomes_lead: "Vous repartirez avec :",
     cew_first_matters: "D'abord, ceci compte",
@@ -1564,7 +1565,6 @@ export const complaintEscalationWriter = {
     cew_building: "Création de votre campagne d'escalade...",
     cew_build_btn: "Créer la campagne d'escalade",
     cew_legal_position: "Position juridique :",
-    cew_success_est: "Réussite estimée :",
     cew_legal_leverage: "Vos leviers juridiques ({{count}})",
     cew_company_risk: "Risque pour l'entreprise :",
     cew_filing_window: "Délai de dépôt :",
@@ -1713,6 +1713,7 @@ export const complaintEscalationWriter = {
   de: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Vollständige Eskalationskampagnen, die Unternehmen nicht ignorieren können",
+    cew_why_stronger: "Warum deine Position stärker sein könnte, als du denkst",
     cew_optional_details: "Optionale Angaben",
     cew_outcomes_lead: "Du gehst raus mit:",
     cew_first_matters: "Zuerst: das ist wichtig",
@@ -1804,7 +1805,6 @@ export const complaintEscalationWriter = {
     cew_building: "Deine Eskalationskampagne wird erstellt...",
     cew_build_btn: "Eskalationskampagne erstellen",
     cew_legal_position: "Rechtliche Position:",
-    cew_success_est: "Erfolgsschätzung:",
     cew_legal_leverage: "Deine rechtlichen Hebel ({{count}})",
     cew_company_risk: "Risiko für das Unternehmen:",
     cew_filing_window: "Einreichungsfrist:",
@@ -1953,6 +1953,7 @@ export const complaintEscalationWriter = {
   ja: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "企業が無視できない、完全なエスカレーション攻勢",
+    cew_why_stronger: "あなたの立場が思っているより強いかもしれない理由",
     cew_optional_details: "任意の情報",
     cew_outcomes_lead: "持ち帰れるもの：",
     cew_first_matters: "まず、大事なこと",
@@ -2044,7 +2045,6 @@ export const complaintEscalationWriter = {
     cew_building: "エスカレーション攻勢を構築中...",
     cew_build_btn: "エスカレーション攻勢を構築",
     cew_legal_position: "法的立場：",
-    cew_success_est: "成功見込み：",
     cew_legal_leverage: "あなたの法的レバレッジ（{{count}}）",
     cew_company_risk: "会社のリスク：",
     cew_filing_window: "申立ての期限：",
@@ -2193,6 +2193,7 @@ export const complaintEscalationWriter = {
   ko: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "기업이 무시할 수 없는 완전한 단계별 항의 캠페인",
+    cew_why_stronger: "당신의 입장이 생각보다 강할 수 있는 이유",
     cew_optional_details: "선택 입력",
     cew_outcomes_lead: "가져가실 것:",
     cew_first_matters: "먼저, 이것부터",
@@ -2284,7 +2285,6 @@ export const complaintEscalationWriter = {
     cew_building: "에스컬레이션 캠페인을 구성하는 중...",
     cew_build_btn: "에스컬레이션 캠페인 구성",
     cew_legal_position: "법적 입장:",
-    cew_success_est: "성공 추정:",
     cew_legal_leverage: "당신의 법적 지렛대 ({{count}})",
     cew_company_risk: "회사 위험:",
     cew_filing_window: "신고 기한:",
@@ -2433,6 +2433,7 @@ export const complaintEscalationWriter = {
   ru: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Полные кампании эскалации, которые компании не смогут проигнорировать",
+    cew_why_stronger: "Почему ваша позиция может быть сильнее, чем кажется",
     cew_optional_details: "Необязательные детали",
     cew_outcomes_lead: "Вы уйдёте с:",
     cew_first_matters: "Сначала — это важно",
@@ -2524,7 +2525,6 @@ export const complaintEscalationWriter = {
     cew_building: "Создаём вашу кампанию эскалации...",
     cew_build_btn: "Создать кампанию эскалации",
     cew_legal_position: "Юридическая позиция:",
-    cew_success_est: "Оценка успеха:",
     cew_legal_leverage: "Ваши юридические рычаги ({{count}})",
     cew_company_risk: "Риск для компании:",
     cew_filing_window: "Срок подачи:",
@@ -2673,6 +2673,7 @@ export const complaintEscalationWriter = {
   th: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "แคมเปญยกระดับร้องเรียนแบบครบวงจรที่บริษัทเพิกเฉยไม่ได้",
+    cew_why_stronger: "ทำไมจุดยืนของคุณอาจแข็งกว่าที่คิด",
     cew_optional_details: "รายละเอียดเพิ่มเติม",
     cew_outcomes_lead: "คุณจะได้กลับไปพร้อม:",
     cew_first_matters: "ก่อนอื่น เรื่องนี้สำคัญ",
@@ -2764,7 +2765,6 @@ export const complaintEscalationWriter = {
     cew_building: "กำลังสร้างแคมเปญยกระดับของคุณ...",
     cew_build_btn: "สร้างแคมเปญยกระดับ",
     cew_legal_position: "สถานะทางกฎหมาย:",
-    cew_success_est: "ประเมินความสำเร็จ:",
     cew_legal_leverage: "อำนาจต่อรองทางกฎหมายของคุณ ({{count}})",
     cew_company_risk: "ความเสี่ยงของบริษัท:",
     cew_filing_window: "ระยะเวลายื่นเรื่อง:",
@@ -2913,6 +2913,7 @@ export const complaintEscalationWriter = {
   vi: {
     cew_title: "Complaint Escalation Writer",
     cew_tagline: "Chiến dịch leo thang khiếu nại hoàn chỉnh mà các công ty không thể phớt lờ",
+    cew_why_stronger: "Vì sao lập trường của bạn có thể mạnh hơn bạn tưởng",
     cew_optional_details: "Chi tiết không bắt buộc",
     cew_outcomes_lead: "Bạn sẽ có:",
     cew_first_matters: "Trước hết, điều này quan trọng",
@@ -3004,7 +3005,6 @@ export const complaintEscalationWriter = {
     cew_building: "Đang xây dựng chiến dịch leo thang của bạn...",
     cew_build_btn: "Xây dựng chiến dịch leo thang",
     cew_legal_position: "Vị thế pháp lý:",
-    cew_success_est: "Ước tính thành công:",
     cew_legal_leverage: "Đòn bẩy pháp lý của bạn ({{count}})",
     cew_company_risk: "Rủi ro cho công ty:",
     cew_filing_window: "Thời hạn nộp:",
