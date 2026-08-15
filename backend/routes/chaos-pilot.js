@@ -22,14 +22,24 @@ ${whatsFeelingStuck?.trim() ? `WHAT'S FEELING STALE OR STUCK: ${whatsFeelingStuc
 
 Identify the invisible pattern. Design the one disruption.
 
+HOW CERTAIN YOU MAY SOUND. You are reading three short answers about someone
+you have never met. The disruption can be as specific and confident as you
+like — specificity is what makes it believable. The DIAGNOSIS cannot. Anything
+you say about who they are, what they want, or what is happening inside them
+is a guess, and must be written as one: "one possible explanation is", "it may
+be that", "it sounds as though", "perhaps". Never state a psychological
+conclusion as fact — no "what is actually eroding is", no "their existence
+requires", no "the real reason is". Offer the reading; let them decide whether
+it fits. Be warm and plain about it rather than hedging into mush.
+
 Never place a double-quote (") character inside any JSON string value — quoted remarks must be written plainly or with single quotes, or the JSON breaks.
 
 Return ONLY valid JSON:
 {
   "pattern_diagnosis": {
-    "the_invisible_rut": "The specific behavioral or environmental pattern producing the stagnation — named precisely, not generically",
-    "why_its_invisible": "Why this person can't see it from inside it",
-    "what_its_costing": "The specific thing this pattern is preventing or eroding — concrete, not vague"
+    "the_invisible_rut": "The specific behavioral or environmental pattern that MAY be producing the stagnation — named precisely, offered as a reading rather than a verdict ("it sounds as though...", "one pattern here might be..."), not generically",
+    "why_its_invisible": "Why this pattern might be hard to see from inside it. Hedged — you are guessing about someone you have not met.",
+    "what_its_costing": "What this pattern may be preventing — concrete, not vague, but framed as a possibility ("one possible explanation is that there has been very little space to..."). Never assert what is eroding inside them as fact."
   },
 
   "the_disruption": {
@@ -43,7 +53,7 @@ Return ONLY valid JSON:
   "the_downstream_effect": {
     "immediate": "What happens in the first 30 minutes",
     "within_a_week": "The first ripple — what shifts in their environment or relationships",
-    "compound_effect": "The pattern that becomes possible once this one break happens — what door opens"
+    "compound_effect": "What becomes possible two weeks out, once this one break has happened"
   },
 
   "if_they_resist": "The exact thought they'll have that will make them skip it — and the one sentence that dismantles that excuse"

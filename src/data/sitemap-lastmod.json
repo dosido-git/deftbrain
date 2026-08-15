@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "9512cd046a2f63a92649b9d69b797c9c66257d3f",
+  "hash": "e694f77e503e121520141215b907c21179567859",
   "lastmod": "2026-08-15"
  },
  "static:about": {
@@ -36,8 +36,8 @@
   "lastmod": "2026-08-15"
  },
  "tool:ChaosPilot": {
-  "hash": "206c362c19cdd83ffbaa9436b8f997b8e06eacd9",
-  "lastmod": "2026-08-07"
+  "hash": "2c27afdf520951ffd9260de2e3dd94b838f67df5",
+  "lastmod": "2026-08-15"
  },
  "tool:ComplaintEscalationWriter": {
   "hash": "4e4cd829bd1108147cb9c9fed8cd1e27838a55e1",

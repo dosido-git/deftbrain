@@ -768,12 +768,12 @@ export const tools = [
   seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
   seoTitle: "Break Out of a Rut: Routine Disruptor",
   title: "Chaos Pilot",
-  tagline: "One calculated disruption. Not random — strategically chaotic.",
+  tagline: "One calculated disruption. Small change. Big ripple.",
   tags: ['stuck', 'rut', 'routine', 'bored', 'stagnant', 'change', 'habit', 'shake up', 'motivation', 'growth', 'pattern', 'disruption', 'intervention', 'novelty', 'life change', 'burnout', 'monotony'],
   icon: "🎰",
   categories: ['What If?', 'Veer'],
   headerColor: "#b8dcd8",
-  description: "Diagnoses the invisible rut you're stuck in — the behavioral pattern producing stagnation — and designs one specific, strategically uncomfortable disruption to break it. Not random novelty. One surgical intervention with exact timing, a full instruction, and a pre-empted excuse for when you want to skip it.",
+  description: "When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.",
   guide: {
       overview: "ChaosPilot diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.",
       howToUse: [

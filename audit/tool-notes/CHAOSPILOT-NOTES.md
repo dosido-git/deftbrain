@@ -22,3 +22,26 @@ Diagnoses the invisible behavioral rut producing someone's stagnation, then desi
 - 0 baseline `audit_v2` / backend-audit issues.
 - No arrays in the schema → nothing neutralized in the golden; every section is a required object/string.
 - Live EN+DE verified 200 / no leaks post-refactor.
+
+## Rewrite (2026-08-15)
+- **Description and tagline** replaced with the owner's copy.
+- **The diagnosis is now hedged; the disruption is not.** The tool was reading
+  three short form fields and returning psychological verdicts as fact — "what
+  is actually atrophying is...", "their existence requires justification
+  through service". Beautiful writing, possibly wrong about the person reading
+  it. The prompt now carries an explicit rule: the disruption may be as
+  specific and confident as it likes, because specificity is what makes it
+  believable, but anything said about who they are is a guess and must read as
+  one ("one possible explanation is", "it sounds as though", "it may be"). The
+  three `pattern_diagnosis` fields repeat the rule where it is easiest to
+  ignore. Verified live: three hedge markers, zero hard verdicts.
+- **"The door that opens" → "Two weeks from now."** Every other label in the
+  ripple section is plain and time-anchored (first 30 minutes, within a week);
+  the door was the only metaphor.
+- Disclaimer untouched, at the owner's explicit request.
+
+**Open idea, not acted on.** The owner flagged `the_slight_discomfort` ("around
+minute three, a very specific feeling will arrive... that feeling is the
+pattern defending itself") as a reusable pattern worth borrowing into Bill
+Rescue, Alternate Path, One Percenter and Spiral Stopper. Predicting the
+resistance rather than pretending it will not come. Worth a deliberate pass.
