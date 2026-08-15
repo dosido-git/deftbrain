@@ -45,8 +45,8 @@ Generate tailored analogies. Return ONLY valid JSON:
 
   "common_misconceptions": [
     {
-      "myth": "EXACTLY 3 of these. What people wrongly believe, as ONE short claim of AT MOST 8 words. No explanation, no parentheses, no second sentence.",
-      "reality": "The correction, as ONE short claim of AT MOST 12 words. No explanation, no parentheses, no second sentence. These render as a scannable myth/fact pair, so a paragraph here breaks the layout."
+      "myth": "2-4 of these — however many are genuinely distinct. Do not pad to reach a number, and do not split one misconception into two. What people wrongly believe, as ONE claim: a single sentence, no parenthetical, no second clause explaining it. If it needs an explanation it is not a misconception, it is a lesson — cut it or move the substance into the correction.",
+      "reality": "The correction, as ONE sentence — aim for about 15 words. That is a target, not a cliff: go over when the correction genuinely needs it, but a 30-word answer means you are explaining rather than correcting. No parenthetical — not one, anywhere; if you reach for brackets, the thing inside them is either the real point or cuttable. These render as a two-line pair, so length is what breaks the format."
     }
   ],
 

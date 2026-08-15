@@ -2033,3 +2033,55 @@ being targets themselves.
 # are excluded by the character class.
 grep -rn '▼\|▲\|▾' src/tools src/components | grep -v 'components/Caret.js'
 ```
+
+---
+
+### PF-35 · Constrain the shape, anchor the length, never both hard
+
+A cap written to fix one over-long output will clip a different input that
+genuinely needed the room. Caps come in two kinds and only one of them should
+be a fixed number.
+
+**Safety caps stay hard numbers.** Some limits exist so the response fits in
+`max_tokens` — exceed them and the JSON truncates mid-array and the endpoint
+500s. AlternatePath's `today` mode is the worked example: "exactly 8
+consequences … keep EACH field to one tight sentence" plus `max_tokens: 7000`.
+That is not a style preference, it is the fix for a deterministic outage. Do
+not soften a cap without checking whether it is load-bearing — the tool-notes
+files record which ones are.
+
+**Quality caps become shape rules.** A word count is a cliff: 12 words is fine
+until the input needs 14. Three things generalise where a number does not:
+
+| Instead of | Write |
+| --- | --- |
+| `EXACTLY 3` | `2-4 — however many are genuinely distinct. Do not pad to reach a number` |
+| `AT MOST 12 words` | `one sentence — aim for about 15 words. A target, not a cliff` |
+| `keep it short` | `no parenthetical — not one, anywhere` |
+| an arbitrary limit | the reason: `these render as a two-line pair, so length breaks the format` |
+
+**Pair a soft anchor with a hard shape rule.** Measured on AnalogyEngine's
+misconceptions across three concepts:
+
+- `EXACTLY 3` + `AT MOST 8/12 words` → rigid: three every time, whatever the
+  concept deserved.
+- shape rule alone → counts adapted (3/4/3) but lengths ran 21-33 words and
+  parentheticals crept back.
+- shape rule + `about 15 words` target + `no parenthetical, not one` → counts
+  adapt (4/4/3), lengths land 14-25 with a median of 21, zero parentheticals
+  in eleven pairs.
+
+The soft anchor moves the distribution; the absolute rule holds the format. A
+hard number tries to do both and does neither well.
+
+**Prefer a selection to a count.** "The single most useful one", "the one most
+likely to be needed here" self-scale to the input in a way "exactly one" does
+not, and read as judgement rather than rationing.
+
+**Verify with stress inputs, not the input that prompted the fix.** A rule
+confirmed only against the case that revealed it is indistinguishable from a
+patch. Three that catch most of it: something very short ("gym work sleep"),
+something that contradicts the tool's premise (a contented person in a tool
+about ruts), and a non-English one. ChaosPilot's hedging and voice rules were
+confirmed this way; the same sweep is what showed the tool has no "you might
+be fine" path.
