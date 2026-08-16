@@ -3646,7 +3646,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🗣️",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "Generates multiple strategic approaches with exact scripts, predicted pushback, and counter-responses for any hard conversation — setting boundaries, giving feedback, saying no, or addressing disrespect. Includes a live practice mode where AI responds in character with real-time coaching.",
+  description: "Some conversations become difficult long before they actually happen. Tell DeftBrain what's weighing on you, and we'll help you plan the conversation, practice it, and prepare for what might happen next.",
   guide: {
     overview: "The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.",
     howToUse: [

@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "2a6c7bee1e9cb2ef347fee68748b75a7d70fe18c",
-  "lastmod": "2026-08-15"
+  "hash": "1b94f85285fb11945951e96a8ef9d8b9722412db",
+  "lastmod": "2026-08-16"
  },
  "static:about": {
   "hash": "fd6635f5d7af8b1c3e6be0a5139c3bcda14fe500",
@@ -48,12 +48,12 @@
   "lastmod": "2026-08-15"
  },
  "tool:DecoderRing": {
-  "hash": "59a704e6ed52daa7b288e024ca01013e095e20f7",
+  "hash": "743fb6114edfde966f283969eef392ccfde6b87c",
   "lastmod": "2026-08-15"
  },
  "tool:DifficultTalkCoach": {
-  "hash": "ad7579c426073477a5d41b02f384c57dcee4cd65",
-  "lastmod": "2026-08-14"
+  "hash": "993fafb3c21fdc73d30d58d9bc7bc6eeb295ff00",
+  "lastmod": "2026-08-16"
  },
  "tool:DoctorVisitPrep": {
   "hash": "1d6d90a977894bd0bf8f52f746ec4536227efc26",

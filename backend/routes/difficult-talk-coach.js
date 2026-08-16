@@ -35,18 +35,23 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
     }
 
     const goalsList = goals.map(g => {
+      // Six live keys. The retired ones are kept as aliases so a strategy
+      // saved before the consolidation still resolves to prose rather than
+      // being passed through raw as "addressDisrespect".
       const goalMap = {
         setBoundary: 'set a boundary',
-        requestChange: 'request a change',
-        addressConflict: 'address a conflict',
+        requestChange: 'ask for a change',
         giveFeedback: 'give feedback',
-        askForSomething: 'ask for something',
-        endRelationship: 'end or step back from the relationship',
-        apologize: 'deliver a genuine apology',
         sayNo: 'say no to a request',
-        addressDisrespect: 'address disrespect or mistreatment',
-        pushBack: 'push back on an unreasonable demand',
-        declineNoExplain: 'decline without owing an explanation'
+        repairRelationship: 'repair the relationship',
+        endRelationship: 'step away from the relationship',
+        // retired 2026-08-15
+        addressConflict: 'ask for a change, addressing an ongoing conflict',
+        askForSomething: 'ask for something',
+        apologize: 'repair the relationship with a genuine apology',
+        addressDisrespect: 'ask for a change, addressing disrespect',
+        pushBack: 'ask for a change, pushing back on an unreasonable demand',
+        declineNoExplain: 'say no without owing an explanation'
       };
       return goalMap[g] || g;
     }).join(', ');
@@ -64,7 +69,7 @@ CONVERSATION CONTEXT
 
 TOPIC: ${topic}
 RELATIONSHIP: ${relationship}
-COMMUNICATION STYLE PREFERENCE: ${communicationStyle || 'Direct'}
+COMMUNICATION STYLE PREFERENCE: ${communicationStyle || 'Straightforward'} (Gentle = soft landing, lots of cushioning; Collaborative = invites them into solving it; Straightforward = plain and unhedged, no softening padding; Firm = holds the line, warm but immovable)
 EXPECTED RESISTANCE LEVEL: ${resistanceLevel || 50}/100
 GOALS: ${goalsList}
 BIGGEST FEAR: ${biggestFear || 'Not specified'}
