@@ -4,6 +4,9 @@
 // LinkedIn, deftbrain.com) stay as-is across languages.
 export const ghostWriter = {
   en: {
+    ghw_lbl_remember: "🎯 What's the one thing you hope the reader remembers?",
+    ghw_hint_remember: "Strong letters make one clear claim and then prove it. This is yours.",
+    ghw_ph_remember: "e.g. 'They make everyone around them better' or 'They solve problems nobody else notices'",
     ghw_lbl_why: "❤️ Why are you recommending this person?",
     ghw_hint_why: "A recommendation is an act of advocacy. This is the part only you can write.",
     ghw_ph_why: "e.g. 'They changed how my team works' or 'I don't want their best work to go unnoticed'",
@@ -91,6 +94,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   es: {
+    ghw_lbl_remember: "🎯 ¿Qué es lo único que esperas que el lector recuerde?",
+    ghw_hint_remember: "Las cartas fuertes hacen una sola afirmación clara y la demuestran. Esta es la tuya.",
+    ghw_ph_remember: "p. ej. 'Hace mejores a todos los que la rodean' o 'Resuelve problemas que nadie más nota'",
     ghw_lbl_why: "❤️ ¿Por qué recomiendas a esta persona?",
     ghw_hint_why: "Una recomendación es ponerse de parte de alguien. Esta es la parte que solo tú puedes escribir.",
     ghw_ph_why: "p. ej. 'Cambiaron la forma de trabajar de mi equipo' o 'No quiero que su mejor trabajo pase desapercibido'",
@@ -178,6 +184,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   zh: {
+    ghw_lbl_remember: "🎯 你最希望读信的人记住哪一点？",
+    ghw_hint_remember: "好的推荐信只提出一个明确的判断，然后加以佐证。这就是你的判断。",
+    ghw_ph_remember: "例如：他们让身边的每个人都变得更好；或：他们解决别人都没注意到的问题",
     ghw_lbl_why: "❤️ 你为什么要推荐这个人？",
     ghw_hint_why: "推荐信是为一个人发声。这一部分只有你写得出来。",
     ghw_ph_why: "例如：他们改变了我们团队的工作方式；或：我不想让他们最好的成果被埋没",
@@ -265,6 +274,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   hi: {
+    ghw_lbl_remember: "🎯 आप चाहते हैं कि पढ़ने वाला एक बात ज़रूर याद रखे — वह क्या है?",
+    ghw_hint_remember: "अच्छी चिट्ठी एक साफ़ बात कहती है और फिर उसे साबित करती है। यह आपकी वह बात है।",
+    ghw_ph_remember: "जैसे 'वे अपने आसपास के हर व्यक्ति को बेहतर बना देते हैं' या 'वे उन समस्याओं को हल करते हैं जो किसी और को दिखतीं ही नहीं'",
     ghw_lbl_why: "❤️ आप इस व्यक्ति की सिफ़ारिश क्यों कर रहे हैं?",
     ghw_hint_why: "सिफ़ारिश किसी के पक्ष में खड़े होने का काम है। यह हिस्सा सिर्फ़ आप ही लिख सकते हैं।",
     ghw_ph_why: "जैसे 'उन्होंने मेरी टीम के काम करने का तरीक़ा बदल दिया' या 'मैं नहीं चाहता कि उनका बेहतरीन काम अनदेखा रह जाए'",
@@ -352,6 +364,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ar: {
+    ghw_lbl_remember: "🎯 ما الشيء الوحيد الذي تتمنى أن يتذكره القارئ؟",
+    ghw_hint_remember: "الرسائل القوية تطرح فكرة واحدة واضحة ثم تُثبتها. هذه فكرتك.",
+    ghw_ph_remember: "مثال: يجعلون كل من حولهم أفضل — أو: يحلّون مشكلات لا ينتبه إليها أحد",
     ghw_lbl_why: "❤️ لماذا تُوصي بهذا الشخص؟",
     ghw_hint_why: "التوصية موقف تنتصر فيه لشخص. هذا الجزء لا يستطيع كتابته سواك.",
     ghw_ph_why: "مثال: غيّروا طريقة عمل فريقي — أو: لا أريد لأفضل ما قدّموه أن يمرّ دون أن يلاحظه أحد",
@@ -439,6 +454,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   pt: {
+    ghw_lbl_remember: "🎯 Qual é a única coisa que você espera que o leitor lembre?",
+    ghw_hint_remember: "Cartas fortes fazem uma única afirmação clara e a comprovam. Esta é a sua.",
+    ghw_ph_remember: "ex.: 'Deixa todo mundo à sua volta melhor' ou 'Resolve problemas que ninguém mais percebe'",
     ghw_lbl_why: "❤️ Por que você está recomendando esta pessoa?",
     ghw_hint_why: "Uma recomendação é tomar partido por alguém. Esta é a parte que só você pode escrever.",
     ghw_ph_why: "ex.: 'Mudaram a forma como minha equipe trabalha' ou 'Não quero que o melhor trabalho deles passe despercebido'",
@@ -526,6 +544,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   fr: {
+    ghw_lbl_remember: "🎯 Quelle est la seule chose que vous voulez que le lecteur retienne ?",
+    ghw_hint_remember: "Une bonne lettre avance une seule idée claire, puis la démontre. Voici la vôtre.",
+    ghw_ph_remember: "ex. : 'Cette personne rend meilleurs tous ceux qui l'entourent' ou 'Elle règle des problèmes que personne ne voit'",
     ghw_lbl_why: "❤️ Pourquoi recommandez-vous cette personne ?",
     ghw_hint_why: "Une recommandation, c'est prendre parti pour quelqu'un. C'est la partie que vous seul pouvez écrire.",
     ghw_ph_why: "ex. : 'Ils ont changé la façon de travailler de mon équipe' ou 'Je ne veux pas que leur meilleur travail passe inaperçu'",
@@ -613,6 +634,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   de: {
+    ghw_lbl_remember: "🎯 Was soll dem Lesenden vor allem in Erinnerung bleiben?",
+    ghw_hint_remember: "Starke Schreiben stellen eine klare Behauptung auf und belegen sie. Das ist deine.",
+    ghw_ph_remember: "z. B. „Alle um sie herum werden besser“ oder „Sie löst Probleme, die sonst niemandem auffallen“",
     ghw_lbl_why: "❤️ Warum empfiehlst du diese Person?",
     ghw_hint_why: "Eine Empfehlung heißt, sich für jemanden einzusetzen. Diesen Teil kannst nur du schreiben.",
     ghw_ph_why: "z. B. „Sie haben die Arbeitsweise meines Teams verändert“ oder „Ich möchte nicht, dass ihre beste Arbeit unbemerkt bleibt“",
@@ -700,6 +724,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ja: {
+    ghw_lbl_remember: "🎯 読む人にいちばん覚えていてほしいことは？",
+    ghw_hint_remember: "強い推薦状は、はっきりした主張をひとつ立てて、それを裏づけます。それがこの一文です。",
+    ghw_ph_remember: "例：「まわりの人みんなを良くする人です」「誰も気づかない問題を解決してくれます」",
     ghw_lbl_why: "❤️ この人を推薦する理由は？",
     ghw_hint_why: "推薦とは、その人のために声を上げることです。ここはあなたにしか書けません。",
     ghw_ph_why: "例：「チームの働き方を変えてくれた」「この人の一番いい仕事を見過ごされたくない」",
@@ -787,6 +814,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ko: {
+    ghw_lbl_remember: "🎯 읽는 사람이 딱 하나 기억한다면, 무엇이었으면 하나요?",
+    ghw_hint_remember: "좋은 추천서는 분명한 주장 하나를 세우고 그것을 증명합니다. 그 주장이 여기 들어갑니다.",
+    ghw_ph_remember: "예: '주변 사람들을 더 나아지게 만듭니다' 또는 '아무도 못 보는 문제를 찾아 해결합니다'",
     ghw_lbl_why: "❤️ 이 사람을 추천하는 이유는 무엇인가요?",
     ghw_hint_why: "추천은 그 사람을 위해 나서는 일입니다. 이 부분은 당신만 쓸 수 있습니다.",
     ghw_ph_why: "예: '우리 팀이 일하는 방식을 바꿔 놓았습니다' 또는 '이 사람의 가장 좋은 성과가 묻히지 않았으면 합니다'",
@@ -874,6 +904,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ru: {
+    ghw_lbl_remember: "🎯 Что читателю стоит запомнить в первую очередь?",
+    ghw_hint_remember: "Сильные письма выдвигают одно ясное утверждение и доказывают его. Вот ваше.",
+    ghw_ph_remember: "например: «Рядом с ними все становятся лучше» или «Они решают проблемы, которых больше никто не замечает»",
     ghw_lbl_why: "❤️ Почему вы рекомендуете этого человека?",
     ghw_hint_why: "Рекомендация — это заступничество. Эту часть можете написать только вы.",
     ghw_ph_why: "например: «Они изменили то, как работает моя команда» или «Не хочу, чтобы их лучшая работа осталась незамеченной»",
@@ -961,6 +994,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   th: {
+    ghw_lbl_remember: "🎯 สิ่งเดียวที่คุณอยากให้ผู้อ่านจดจำคืออะไร",
+    ghw_hint_remember: "จดหมายที่ดีเสนอข้อสรุปชัดเจนเพียงข้อเดียวแล้วพิสูจน์มัน นี่คือข้อของคุณ",
+    ghw_ph_remember: "เช่น 'เขาทำให้ทุกคนรอบตัวดีขึ้น' หรือ 'เขาแก้ปัญหาที่ไม่มีใครสังเกตเห็น'",
     ghw_lbl_why: "❤️ ทำไมคุณถึงแนะนำคนคนนี้",
     ghw_hint_why: "การแนะนำคือการยืนหยัดเพื่อใครสักคน ส่วนนี้มีเพียงคุณเท่านั้นที่เขียนได้",
     ghw_ph_why: "เช่น 'เขาเปลี่ยนวิธีทำงานของทีมผม' หรือ 'ผมไม่อยากให้ผลงานที่ดีที่สุดของเขาถูกมองข้าม'",
@@ -1048,6 +1084,9 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   vi: {
+    ghw_lbl_remember: "🎯 Điều duy nhất bạn mong người đọc nhớ là gì?",
+    ghw_hint_remember: "Một lá thư mạnh đưa ra một khẳng định rõ ràng rồi chứng minh nó. Đây là khẳng định của bạn.",
+    ghw_ph_remember: "ví dụ: 'Họ khiến mọi người xung quanh trở nên tốt hơn' hoặc 'Họ giải quyết những vấn đề không ai để ý'",
     ghw_lbl_why: "❤️ Vì sao bạn muốn giới thiệu người này?",
     ghw_hint_why: "Giới thiệu là đứng ra bảo chứng cho ai đó. Phần này chỉ mình bạn viết được.",
     ghw_ph_why: "ví dụ: 'Họ đã thay đổi cách làm việc của cả nhóm tôi' hoặc 'Tôi không muốn công việc tốt nhất của họ bị bỏ qua'",

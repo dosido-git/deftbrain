@@ -79,6 +79,7 @@ const EXAMPLES = [
     anecdotes: ['Led rebrand of onboarding flow that cut drop-off by 34%', 'Managed 4 engineers without formal authority during a hiring freeze'],
     duration: '3 years',
     whyRecommending: "They grew into the job faster than anyone I've managed, and their resume undersells them badly.",
+    oneThingRemembered: 'They make the people around them better without ever making it about themselves.',
     additionalContext: 'Known for staying calm in crises and never missing a deadline',
   },
 ];
@@ -150,6 +151,7 @@ const GhostWriter = ({ tool }) => {
   const [anecdotes, setAnecdotes] = useState(['']);
   const [duration, setDuration] = useState('');
   const [whyRecommending, setWhyRecommending] = useState('');
+  const [oneThingRemembered, setOneThingRemembered] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [previousResults, setPreviousResults] = useState(null);
   const [error, setError] = useState('');
@@ -180,6 +182,7 @@ const GhostWriter = ({ tool }) => {
     setAnecdotes(ex.anecdotes);
     setDuration(ex.duration);
     setWhyRecommending(ex.whyRecommending);
+    setOneThingRemembered(ex.oneThingRemembered);
     setAdditionalContext(ex.additionalContext);
   };
 
@@ -225,6 +228,7 @@ const GhostWriter = ({ tool }) => {
         anecdotes: anecdotes.filter(a => a.trim()).length > 0 ? anecdotes.filter(a => a.trim()) : null,
         duration: duration.trim() || null,
         whyRecommending: whyRecommending.trim() || null,
+        oneThingRemembered: oneThingRemembered.trim() || null,
         formalityLevel,
         additionalContext: additionalContext.trim() || null,
         userLocale, userCurrency, userRegion,
@@ -232,7 +236,7 @@ const GhostWriter = ({ tool }) => {
       setResults(data);
       saveToHistory(data);
     } catch (err) { setError(err.message || t('ghw_err_generate')); }
-  }, [recipientName, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, formalityLevel, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [recipientName, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, oneThingRemembered, formalityLevel, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
   handleSubmitRef.current = generate;
 
   const handleRefine = useCallback(async (version) => {
@@ -261,7 +265,7 @@ const GhostWriter = ({ tool }) => {
   const handleReset = useCallback(() => {
     setRecipientName(''); setYourRelationship(''); setWhatFor('');
     setQualities([]); setAnecdotes(['']); setDuration('');
-    setWhyRecommending(''); setAdditionalContext(''); setResults(null); setError('');
+    setWhyRecommending(''); setOneThingRemembered(''); setAdditionalContext(''); setResults(null); setError('');
     setRefinedVersions({}); setRefiningVersion(null); setPreviousResults(null);
   }, []);
 
@@ -343,15 +347,6 @@ const GhostWriter = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInputSections = () => (
     <>
-      {/* Why — the advocacy behind the letter, before any of the mechanics */}
-      <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
-        <label htmlFor="ghw-why" className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_why')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('ghw_hint_why')}</p>
-        <textarea id="ghw-why" rows={2} value={whyRecommending} onChange={e => setWhyRecommending(e.target.value)}
-          placeholder={t('ghw_ph_why')}
-          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
-      </div>
-
       {/* Letter type — which also sets the tone */}
       <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('ghw_lbl_letter_type')}</label>
@@ -368,6 +363,16 @@ const GhostWriter = ({ tool }) => {
             <Pill key={opt.value} active={formalityLevel === opt.value} onClick={() => setFormalityLevel(opt.value)}>{t(opt.labelKey)}</Pill>
           ))}
         </div>
+      </div>
+
+      {/* The one claim. Everything below it — the traits, the stories — is the
+          evidence for it, so it is asked before them rather than after. */}
+      <div className={`${c.card} ${c.border} border rounded-xl p-5`}>
+        <label htmlFor="ghw-remember" className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('ghw_lbl_remember')}</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>{t('ghw_hint_remember')}</p>
+        <textarea id="ghw-remember" rows={2} value={oneThingRemembered} onChange={e => setOneThingRemembered(e.target.value)}
+          placeholder={t('ghw_ph_remember')}
+          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
       </div>
 
       {/* Qualities */}
@@ -660,19 +665,32 @@ const GhostWriter = ({ tool }) => {
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
               </div>
             </div>
+            {/* Duration is a two-word answer, so it keeps a half column; the
+                two below expect sentences and get the full width. */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_applying_for')}</label>
-                <input type="text" value={whatFor} onChange={e => setWhatFor(e.target.value)}
-                  placeholder={t('ghw_ph_applying_for')}
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-              </div>
               <div>
                 <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_duration')}</label>
                 <input type="text" value={duration} onChange={e => setDuration(e.target.value)}
                   placeholder={t('ghw_ph_duration')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
               </div>
+            </div>
+
+            {/* The reason for writing sits above the destination: the opportunity
+                matters, but it is not what makes the letter worth writing. */}
+            <div>
+              <label htmlFor="ghw-why" className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_lbl_why')}</label>
+              <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('ghw_hint_why')}</p>
+              <textarea id="ghw-why" rows={2} value={whyRecommending} onChange={e => setWhyRecommending(e.target.value)}
+                placeholder={t('ghw_ph_why')}
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium ${c.labelText} mb-1`}>{t('ghw_q_applying_for')}</label>
+              <input type="text" value={whatFor} onChange={e => setWhatFor(e.target.value)}
+                placeholder={t('ghw_ph_applying_for')}
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
             </div>
 
             {/* Pre-result cross-ref */}

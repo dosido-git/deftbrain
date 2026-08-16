@@ -18,6 +18,7 @@ router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       anecdotes,
       duration,
       whyRecommending,
+      oneThingRemembered,
       formalityLevel,
       additionalContext,
       userLanguage,
@@ -48,6 +49,7 @@ HOW LONG YOU'VE KNOWN THEM: ${duration || 'Not specified'}
 FORMALITY LEVEL: ${formalityLevel || 'professional'}
 
 WHY THE WRITER IS RECOMMENDING THEM: ${whyRecommending || 'Not stated'}
+THE ONE THING THE WRITER WANTS THE READER TO REMEMBER: ${oneThingRemembered || 'Not stated'}
 
 QUALITIES TO HIGHLIGHT:
 ${qualitiesList}
@@ -58,7 +60,8 @@ ${anecdotesList}
 ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 
 WRITING INSTRUCTIONS:
-0. A recommendation is an act of advocacy, not a summary of a CV. If the writer said why they are recommending this person, that conviction is the spine of the letter — let it shape which evidence you lead with and how the close lands. Never quote the writer's reason back at the reader verbatim, and never write a sentence like 'they are recommending them because...'. Show the belief through what the letter chooses to say.
+0a. If the writer named the one thing they want remembered, that is the letter's single claim. Make it the thing the whole letter argues for — every version, whatever its structure. Do not state it as a slogan and move on; the anecdotes and qualities below are the evidence for it, so choose and frame them to prove that claim specifically.
+0b. A recommendation is an act of advocacy, not a summary of a CV. If the writer said why they are recommending this person, that conviction is the spine of the letter — let it shape which evidence you lead with and how the close lands. Never quote the writer's reason back at the reader verbatim, and never write a sentence like 'they are recommending them because...'. Show the belief through what the letter chooses to say.
 `;
 
     const perVersionInstructions = `2. For each version:
