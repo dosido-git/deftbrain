@@ -4,6 +4,9 @@
 // Jargon Assassin, Acme Corp) stay as-is across languages.
 export const noiseCanceler = {
   en: {
+    nc_ex2_situation: "My flat was flooded by the upstairs neighbour's washing machine three weeks ago. I am trying to work out what my own contents policy actually covers before I ring them.",
+    nc_ex2_concerns: "Whether 'escape of water' covers someone else's appliance, whether the three weeks has already cost me the claim, and what 'betterment' means when they replace a ten-year-old carpet.",
+    nc_ex2_doc: "SECTION 4 — ESCAPE OF WATER\n\n4.1 We will cover loss of or damage to the contents caused by water escaping from any fixed water or heating installation, or from any domestic appliance connected to such an installation.\n\n4.2 We will not cover:\n(a) damage occurring where the premises have been unoccupied for more than 30 consecutive days, unless the water supply has been turned off at the main and the system drained;\n(b) the cost of repairing or replacing the installation or appliance from which the water escaped;\n(c) damage caused by water entering the premises from outside the building;\n(d) any amount in respect of wear, tear or gradual deterioration.\n\nSECTION 9 — YOUR OBLIGATIONS\n\n9.3 You must notify us as soon as reasonably possible, and in any event within 30 days, of any event which may give rise to a claim. Failure to do so may prejudice your claim to the extent that our position has been adversely affected.\n\n9.7 Where we replace an item with a new equivalent and the replacement represents a material improvement on the item lost or damaged, we may make a proportionate deduction to reflect that improvement.\n\nSECTION 12 — RECOVERY FROM THIRD PARTIES\n\n12.1 We are entitled to pursue recovery in your name against any party responsible for the loss. You must provide all reasonable assistance and must not, without our written consent, admit liability or make any agreement with such a party that prejudices our right of recovery.",
     nc_title: "Noise Canceler",
     nc_tagline: "Paste a long document, tell us your situation — we'll extract only what affects you",
     nc_default_doc_label: "Document",
@@ -74,6 +77,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Especially the non-compete and the arbitration clause — how enforceable are these in practice, and what's typical?",
   },
   es: {
+    nc_ex2_situation: "Se me inundó el piso por la lavadora del vecino de arriba hace tres semanas. Intento averiguar qué cubre realmente mi seguro de contenido antes de llamarles.",
+    nc_ex2_concerns: "Si «escape de agua» cubre el electrodoméstico de otro, si las tres semanas ya me han costado la reclamación, y qué significa «depreciación» cuando sustituyen una moqueta de diez años.",
+    nc_ex2_doc: "SECCIÓN 4 — ESCAPE DE AGUA\n\n4.1 Cubriremos la pérdida o el daño del contenido causado por el agua que escape de cualquier instalación fija de agua o calefacción, o de cualquier electrodoméstico conectado a dicha instalación.\n\n4.2 No cubriremos:\n(a) daños producidos cuando la vivienda haya estado desocupada más de 30 días consecutivos, salvo que se haya cerrado la llave de paso y vaciado la instalación;\n(b) el coste de reparar o sustituir la instalación o el aparato del que escapó el agua;\n(c) daños causados por agua que entre en la vivienda desde el exterior del edificio;\n(d) importe alguno por desgaste, uso o deterioro gradual.\n\nSECCIÓN 9 — SUS OBLIGACIONES\n\n9.3 Deberá notificarnos tan pronto como sea razonablemente posible, y en todo caso dentro de los 30 días, cualquier hecho que pueda dar lugar a una reclamación. No hacerlo podrá perjudicar su reclamación en la medida en que nuestra posición se haya visto afectada negativamente.\n\n9.7 Cuando sustituyamos un bien por uno nuevo equivalente y la sustitución suponga una mejora sustancial respecto del bien perdido o dañado, podremos aplicar una deducción proporcional que refleje dicha mejora.\n\nSECCIÓN 12 — REPETICIÓN FRENTE A TERCEROS\n\n12.1 Tenemos derecho a ejercitar en su nombre la reclamación contra cualquier responsable del siniestro. Usted deberá prestar toda la asistencia razonable y no podrá, sin nuestro consentimiento por escrito, admitir responsabilidad ni celebrar acuerdo alguno con dicha parte que perjudique nuestro derecho de repetición.",
     nc_title: "Noise Canceler",
     nc_tagline: "Pega un documento largo, cuéntanos tu situación — extraeremos solo lo que te afecta",
     nc_default_doc_label: "Documento",
@@ -144,6 +150,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Especialmente la cláusula de no competencia y la de arbitraje — ¿qué tan exigibles son en la práctica y qué es lo habitual?",
   },
   zh: {
+    nc_ex2_situation: "三周前楼上邻居的洗衣机把我家淹了。打电话之前，我想先弄清楚我自己的家财险到底保什么。",
+    nc_ex2_concerns: "「水渍外溢」是否包括别人家的电器；拖了三周会不会已经让我丧失索赔资格；以及他们更换一块十年的地毯时，所谓「折旧」到底是什么意思。",
+    nc_ex2_doc: "第四节 — 水渍外溢\n\n4.1 因固定给水或供暖装置、或与该装置连接的任何家用电器发生漏水，导致室内财产灭失或损坏的，本公司予以赔付。\n\n4.2 下列情形不予赔付：\n（a）房屋连续空置超过 30 日期间发生的损失，但已关闭总阀并排空管路者除外；\n（b）修理或更换漏水的装置或电器本身的费用；\n（c）自建筑物外部进入室内的水所造成的损失；\n（d）任何因磨损、老化或逐渐劣化所致的金额。\n\n第九节 — 您的义务\n\n9.3 对于可能引发索赔的任何事件，您须在合理可行的最短时间内通知本公司，且无论如何不得迟于 30 日。未按期通知的，在本公司地位因此受到不利影响的范围内，可能损及您的索赔权利。\n\n9.7 若本公司以全新同类物品予以更换，且该更换相对于灭失或损坏物品构成实质性改善的，本公司可按比例扣减以反映该项改善。\n\n第十二节 — 向第三方追偿\n\n12.1 本公司有权以您的名义向对损失负有责任的任何一方追偿。您须提供一切合理协助，且未经本公司书面同意，不得承认责任或与该方达成任何损及本公司追偿权的协议。",
     nc_title: "Noise Canceler",
     nc_tagline: "粘贴一份冗长的文件，告诉我们你的情况——我们只提取对你有影响的内容",
     nc_default_doc_label: "文件",
@@ -214,6 +223,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "尤其是竞业禁止条款和仲裁条款——它们在实际中可执行性如何，怎样才算常见做法？",
   },
   hi: {
+    nc_ex2_situation: "तीन हफ़्ते पहले ऊपर वाले पड़ोसी की वॉशिंग मशीन से मेरा फ़्लैट भर गया। फ़ोन करने से पहले समझना चाहता हूँ कि मेरी अपनी कंटेंट्स पॉलिसी असल में क्या कवर करती है।",
+    nc_ex2_concerns: "क्या 'पानी का रिसाव' किसी और के उपकरण को कवर करता है, क्या तीन हफ़्ते की देरी से मेरा दावा ही ख़त्म हो गया, और दस साल पुराना कालीन बदलते समय 'बेटरमेंट' का क्या मतलब होता है।",
+    nc_ex2_doc: "धारा 4 — पानी का रिसाव\n\n4.1 किसी स्थायी जल या हीटिंग प्रतिष्ठापन से, अथवा उससे जुड़े किसी घरेलू उपकरण से पानी रिसने के कारण घरेलू सामान की हानि या क्षति को हम कवर करेंगे।\n\n4.2 हम इन्हें कवर नहीं करेंगे:\n(क) ऐसी क्षति जो परिसर के लगातार 30 दिन से अधिक ख़ाली रहने के दौरान हुई हो, जब तक कि मुख्य वाल्व बंद कर प्रणाली ख़ाली न कर दी गई हो;\n(ख) जिस प्रतिष्ठापन या उपकरण से पानी रिसा, उसकी मरम्मत या प्रतिस्थापन की लागत;\n(ग) इमारत के बाहर से परिसर में आए पानी से हुई क्षति;\n(घ) घिसावट, टूट-फूट या क्रमिक क्षय के संबंध में कोई राशि।\n\nधारा 9 — आपके दायित्व\n\n9.3 दावे को जन्म दे सकने वाली किसी भी घटना की सूचना आपको यथासंभव शीघ्र और किसी भी स्थिति में 30 दिनों के भीतर हमें देनी होगी। ऐसा न करने पर, जिस सीमा तक हमारी स्थिति प्रतिकूल रूप से प्रभावित हुई हो, आपका दावा प्रभावित हो सकता है।\n\n9.7 जहाँ हम किसी वस्तु के स्थान पर नई समकक्ष वस्तु देते हैं और वह प्रतिस्थापन खोई या क्षतिग्रस्त वस्तु की तुलना में सारवान सुधार है, वहाँ हम उस सुधार को दर्शाने के लिए आनुपातिक कटौती कर सकते हैं।\n\nधारा 12 — तृतीय पक्ष से वसूली\n\n12.1 हानि के लिए उत्तरदायी किसी भी पक्ष के विरुद्ध आपके नाम पर वसूली करने का हमें अधिकार है। आपको हर उचित सहयोग देना होगा और हमारी लिखित सहमति के बिना आप न तो उत्तरदायित्व स्वीकार करेंगे और न ही ऐसा कोई समझौता करेंगे जो हमारे वसूली अधिकार को क्षति पहुँचाए।",
     nc_title: "Noise Canceler",
     nc_tagline: "एक लंबा दस्तावेज़ चिपकाएँ, अपनी स्थिति बताएँ — हम केवल वही निकालेंगे जो आप पर असर डालता है",
     nc_default_doc_label: "दस्तावेज़",
@@ -284,6 +296,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "खासकर गैर-प्रतिस्पर्धा और मध्यस्थता की धारा — व्यवहार में ये कितनी लागू होती हैं, और सामान्य रूप से क्या होता है?",
   },
   ar: {
+    nc_ex2_situation: "غمرت شقتي المياه من غسالة الجار في الطابق العلوي قبل ثلاثة أسابيع. أحاول أن أفهم ما تغطيه وثيقة تأمين محتويات منزلي فعلاً قبل أن أتصل بهم.",
+    nc_ex2_concerns: "هل يغطي بند «تسرب المياه» جهازاً يخص شخصاً آخر، وهل أضاعت الأسابيع الثلاثة مطالبتي، وما معنى «التحسين» حين يستبدلون سجادة عمرها عشر سنوات.",
+    nc_ex2_doc: "القسم 4 — تسرب المياه\n\n4.1 نغطي فقد أو تلف المحتويات الناجم عن تسرب المياه من أي تركيبات ثابتة للمياه أو التدفئة، أو من أي جهاز منزلي موصول بتلك التركيبات.\n\n4.2 لا نغطي:\n(أ) الضرر الواقع في فترة بقاء المسكن خالياً أكثر من 30 يوماً متتالية، ما لم يُغلق مصدر المياه الرئيسي وتُفرَّغ الشبكة؛\n(ب) تكلفة إصلاح أو استبدال التركيبة أو الجهاز الذي تسربت منه المياه؛\n(ج) الضرر الناجم عن دخول المياه إلى المسكن من خارج المبنى؛\n(د) أي مبلغ يتعلق بالبلى أو التآكل أو التدهور التدريجي.\n\nالقسم 9 — التزاماتك\n\n9.3 عليك إخطارنا في أقرب وقت ممكن عملياً، وعلى أي حال خلال 30 يوماً، بأي واقعة قد تنشأ عنها مطالبة. والإخفاق في ذلك قد يضر بمطالبتك بالقدر الذي تأثر به موقفنا سلباً.\n\n9.7 حين نستبدل بنداً ببديل جديد مكافئ، ويمثل البديل تحسناً جوهرياً على البند المفقود أو التالف، يجوز لنا إجراء خصم تناسبي يعكس ذلك التحسن.\n\nالقسم 12 — الرجوع على الغير\n\n12.1 يحق لنا الرجوع باسمك على أي طرف مسؤول عن الخسارة. وعليك تقديم كل مساعدة معقولة، ولا يجوز لك، دون موافقتنا الخطية، الإقرار بالمسؤولية أو إبرام أي اتفاق مع ذلك الطرف يضر بحقنا في الرجوع.",
     nc_title: "Noise Canceler",
     nc_tagline: "ألصق مستنداً طويلاً، أخبرنا بوضعك — وسنستخلص فقط ما يؤثر عليك",
     nc_default_doc_label: "مستند",
@@ -354,6 +369,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "خاصة بند عدم المنافسة وبند التحكيم — ما مدى قابلية تطبيقهما عملياً، وما هو المعتاد؟",
   },
   pt: {
+    nc_ex2_situation: "O meu apartamento ficou inundado pela máquina de lavar do vizinho de cima há três semanas. Estou a tentar perceber o que a minha apólice de recheio cobre de facto antes de lhes telefonar.",
+    nc_ex2_concerns: "Se «fuga de água» cobre o eletrodoméstico de outra pessoa, se as três semanas já me custaram a participação, e o que significa «depreciação» quando substituem uma alcatifa de dez anos.",
+    nc_ex2_doc: "SECÇÃO 4 — FUGA DE ÁGUA\n\n4.1 Cobrimos a perda ou dano do recheio causado por água proveniente de qualquer instalação fixa de água ou aquecimento, ou de qualquer eletrodoméstico ligado a essa instalação.\n\n4.2 Não cobrimos:\n(a) danos ocorridos quando o imóvel esteve desocupado por mais de 30 dias consecutivos, salvo se a água tiver sido fechada na torneira de segurança e o sistema esvaziado;\n(b) o custo de reparar ou substituir a instalação ou o aparelho de onde saiu a água;\n(c) danos causados por água que entre no imóvel a partir do exterior do edifício;\n(d) qualquer montante relativo a desgaste, uso ou deterioração gradual.\n\nSECÇÃO 9 — AS SUAS OBRIGAÇÕES\n\n9.3 Deve notificar-nos logo que razoavelmente possível e, em qualquer caso, no prazo de 30 dias, de qualquer facto que possa dar origem a uma participação. A falta de notificação pode prejudicar a sua participação na medida em que a nossa posição tenha sido afetada.\n\n9.7 Quando substituímos um bem por um novo equivalente e essa substituição representa uma melhoria material face ao bem perdido ou danificado, podemos aplicar uma dedução proporcional que reflita essa melhoria.\n\nSECÇÃO 12 — SUB-ROGAÇÃO\n\n12.1 Temos o direito de exercer, em seu nome, o direito de regresso contra qualquer responsável pelo sinistro. Deve prestar toda a assistência razoável e não pode, sem o nosso consentimento escrito, admitir responsabilidade nem celebrar qualquer acordo com esse terceiro que prejudique o nosso direito de regresso.",
     nc_title: "Noise Canceler",
     nc_tagline: "Cole um documento longo, conte-nos sua situação — vamos extrair só o que afeta você",
     nc_default_doc_label: "Documento",
@@ -424,6 +442,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Principalmente a cláusula de não concorrência e a de arbitragem — quão exigíveis são na prática e o que é comum?",
   },
   fr: {
+    nc_ex2_situation: "Mon appartement a été inondé par le lave-linge du voisin du dessus il y a trois semaines. J'essaie de comprendre ce que couvre réellement mon assurance contenu avant de les appeler.",
+    nc_ex2_concerns: "Si « dégât des eaux » couvre l'appareil d'un tiers, si les trois semaines m'ont déjà coûté la déclaration, et ce que veut dire « vétusté » quand on remplace une moquette de dix ans.",
+    nc_ex2_doc: "SECTION 4 — DÉGÂT DES EAUX\n\n4.1 Nous couvrons la perte ou la détérioration du contenu causée par une fuite d'eau provenant d'une installation fixe d'eau ou de chauffage, ou d'un appareil ménager raccordé à une telle installation.\n\n4.2 Nous ne couvrons pas :\n(a) les dommages survenus alors que le logement est resté inoccupé plus de 30 jours consécutifs, sauf si l'arrivée d'eau a été coupée au compteur et l'installation vidangée ;\n(b) le coût de réparation ou de remplacement de l'installation ou de l'appareil d'où provient la fuite ;\n(c) les dommages causés par une eau pénétrant dans le logement depuis l'extérieur du bâtiment ;\n(d) toute somme au titre de l'usure ou de la détérioration progressive.\n\nSECTION 9 — VOS OBLIGATIONS\n\n9.3 Vous devez nous informer dans les meilleurs délais raisonnables et, en tout état de cause, dans les 30 jours, de tout événement susceptible de donner lieu à une déclaration. À défaut, votre déclaration peut être compromise dans la mesure où notre position s'en trouve affectée.\n\n9.7 Lorsque nous remplaçons un bien par un équivalent neuf et que ce remplacement constitue une amélioration substantielle par rapport au bien perdu ou endommagé, nous pouvons appliquer une déduction proportionnelle au titre de la vétusté.\n\nSECTION 12 — RECOURS CONTRE LES TIERS\n\n12.1 Nous sommes fondés à exercer en votre nom tout recours contre le responsable du sinistre. Vous devez apporter toute assistance raisonnable et ne pouvez, sans notre accord écrit, reconnaître une responsabilité ni conclure avec ce tiers un accord portant atteinte à notre droit de recours.",
     nc_title: "Noise Canceler",
     nc_tagline: "Collez un long document, dites-nous votre situation — nous n'extrairons que ce qui vous concerne",
     nc_default_doc_label: "Document",
@@ -494,6 +515,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Surtout la clause de non-concurrence et celle d'arbitrage — quelle est leur force exécutoire en pratique, et qu'est-ce qui est habituel ?",
   },
   de: {
+    nc_ex2_situation: "Vor drei Wochen hat die Waschmaschine des Nachbarn über mir meine Wohnung überflutet. Ich versuche herauszufinden, was meine Hausratversicherung tatsächlich abdeckt, bevor ich dort anrufe.",
+    nc_ex2_concerns: "Ob „Leitungswasserschaden“ das Gerät eines Dritten abdeckt, ob die drei Wochen den Anspruch schon gekostet haben, und was „Neuwertvorteil“ heißt, wenn ein zehn Jahre alter Teppich ersetzt wird.",
+    nc_ex2_doc: "ABSCHNITT 4 — LEITUNGSWASSER\n\n4.1 Wir ersetzen Verlust oder Beschädigung des Hausrats durch Wasser, das aus einer fest verlegten Wasser- oder Heizungsanlage oder aus einem daran angeschlossenen Haushaltsgerät austritt.\n\n4.2 Nicht ersetzt werden:\n(a) Schäden, die eintreten, während die Wohnung länger als 30 aufeinanderfolgende Tage unbewohnt war, es sei denn, die Wasserzufuhr wurde am Haupthahn abgesperrt und die Anlage entleert;\n(b) die Kosten für Reparatur oder Ersatz der Anlage oder des Geräts, aus dem das Wasser austrat;\n(c) Schäden durch Wasser, das von außerhalb des Gebäudes eindringt;\n(d) jeglicher Betrag für Abnutzung, Verschleiß oder allmähliche Verschlechterung.\n\nABSCHNITT 9 — IHRE OBLIEGENHEITEN\n\n9.3 Sie müssen uns sobald zumutbar möglich, jedenfalls aber innerhalb von 30 Tagen, jedes Ereignis anzeigen, das zu einem Anspruch führen kann. Eine Verletzung dieser Obliegenheit kann Ihren Anspruch in dem Umfang beeinträchtigen, in dem unsere Position dadurch nachteilig berührt wurde.\n\n9.7 Ersetzen wir eine Sache durch eine neuwertige gleichartige und stellt der Ersatz eine wesentliche Verbesserung gegenüber der verlorenen oder beschädigten Sache dar, können wir einen anteiligen Abzug für diese Verbesserung vornehmen.\n\nABSCHNITT 12 — REGRESS GEGEN DRITTE\n\n12.1 Wir sind berechtigt, Ansprüche in Ihrem Namen gegen jeden für den Schaden Verantwortlichen geltend zu machen. Sie haben jede zumutbare Unterstützung zu leisten und dürfen ohne unsere schriftliche Zustimmung weder eine Haftung anerkennen noch mit einem solchen Dritten eine Vereinbarung treffen, die unser Regressrecht beeinträchtigt.",
     nc_title: "Noise Canceler",
     nc_tagline: "Füge ein langes Dokument ein, schildere deine Lage — wir filtern nur heraus, was dich betrifft",
     nc_default_doc_label: "Dokument",
@@ -564,6 +588,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Besonders das Wettbewerbsverbot und die Schiedsklausel — wie durchsetzbar sind diese in der Praxis und was ist üblich?",
   },
   ja: {
+    nc_ex2_situation: "三週間前、上の階の洗濯機で自宅が水浸しになりました。電話する前に、自分の家財保険が実際どこまで補償するのかを確かめたいです。",
+    nc_ex2_concerns: "「漏水」が他人の家電による場合も対象になるのか、三週間経っていることで請求権を失っていないか、そして十年使った絨毯を交換するときの「新旧交換差益」とは何を意味するのか。",
+    nc_ex2_doc: "第4条 — 漏水\n\n4.1 当社は、固定された給水設備もしくは暖房設備、またはこれらに接続された家庭用機器から水が漏れたことにより生じた家財の滅失または損傷を補償します。\n\n4.2 次のものは補償しません。\n(a) 建物が連続して30日を超えて無人であった間に生じた損害。ただし元栓を閉止し配管の水抜きを行っていた場合を除く。\n(b) 漏水した設備または機器そのものの修理費用または交換費用。\n(c) 建物の外部から屋内に浸入した水による損害。\n(d) 摩耗、劣化または経年による部分に相当する額。\n\n第9条 — ご契約者の義務\n\n9.3 保険金請求の原因となりうる事故については、合理的に可能なかぎり速やかに、いかなる場合も30日以内に当社へご通知ください。これを怠った場合、当社の立場が不利益を被った限度において、ご請求が制限されることがあります。\n\n9.7 当社が同等の新品をもって代替し、その代替が滅失または損傷した物件と比べて実質的な改良にあたる場合、当社はその改良分を反映した按分控除を行うことがあります。\n\n第12条 — 第三者に対する求償\n\n12.1 当社は、損害について責任を負う者に対し、ご契約者の名において求償する権利を有します。ご契約者は合理的な協力をすべて行うものとし、当社の書面による同意なく、責任を認め、または当社の求償権を害する合意を当該第三者と行ってはなりません。",
     nc_title: "Noise Canceler",
     nc_tagline: "長い文書を貼り付け、あなたの状況を教えてください — あなたに関係する部分だけを抽出します",
     nc_default_doc_label: "文書",
@@ -634,6 +661,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "特に競業避止条項と仲裁条項について — 実際にどの程度強制力があり、一般的にはどうなのか？",
   },
   ko: {
+    nc_ex2_situation: "3주 전 윗집 세탁기 때문에 저희 집이 물에 잠겼습니다. 전화하기 전에 제 가재도구 보험이 실제로 무엇을 보장하는지 알아보려 합니다.",
+    nc_ex2_concerns: "'누수'가 남의 가전제품으로 인한 경우도 보장되는지, 3주가 지나 이미 청구권을 잃은 것은 아닌지, 그리고 10년 된 카펫을 교체할 때 '신구교환공제'가 무슨 뜻인지.",
+    nc_ex2_doc: "제4조 — 누수\n\n4.1 회사는 고정된 급수 또는 난방 설비, 혹은 그에 연결된 가정용 기기에서 물이 새어 발생한 가재도구의 멸실 또는 손상을 보상합니다.\n\n4.2 다음은 보상하지 않습니다.\n(가) 주거지가 연속 30일을 초과하여 비어 있는 동안 발생한 손해. 다만 급수를 원밸브에서 차단하고 배관의 물을 뺀 경우는 제외합니다.\n(나) 물이 샌 설비 또는 기기 자체의 수리비 또는 교체비.\n(다) 건물 외부에서 주거지 내부로 유입된 물로 인한 손해.\n(라) 마모, 노후 또는 점진적 열화에 해당하는 금액.\n\n제9조 — 계약자의 의무\n\n9.3 청구 사유가 될 수 있는 사고는 합리적으로 가능한 한 신속히, 어떠한 경우에도 30일 이내에 회사에 통지하여야 합니다. 이를 게을리한 경우, 회사의 지위가 불리하게 영향을 받은 범위에서 청구가 제한될 수 있습니다.\n\n9.7 회사가 동등한 신품으로 대체하고 그 대체가 멸실 또는 손상된 물건에 비하여 실질적인 개선에 해당하는 경우, 회사는 그 개선분을 반영하여 비례 공제를 할 수 있습니다.\n\n제12조 — 제3자에 대한 대위\n\n12.1 회사는 손해에 책임이 있는 자에 대하여 계약자의 명의로 구상권을 행사할 권리가 있습니다. 계약자는 합리적인 협조를 모두 제공하여야 하며, 회사의 서면 동의 없이 책임을 인정하거나 회사의 구상권을 해치는 합의를 해당 당사자와 체결하여서는 안 됩니다.",
     nc_title: "Noise Canceler",
     nc_tagline: "긴 문서를 붙여넣고 상황을 알려주세요 — 당신에게 영향을 주는 부분만 뽑아드립니다",
     nc_default_doc_label: "문서",
@@ -704,6 +734,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "특히 경업금지 조항과 중재 조항 — 실제로 얼마나 강제력이 있으며 보통은 어떤가요?",
   },
   ru: {
+    nc_ex2_situation: "Три недели назад мою квартиру залило из-за стиральной машины соседей сверху. Хочу понять, что на самом деле покрывает мой полис на имущество, прежде чем звонить.",
+    nc_ex2_concerns: "Покрывает ли «протечка воды» чужую технику, не лишили ли меня три недели права на возмещение и что означает «улучшение», когда меняют десятилетний ковёр.",
+    nc_ex2_doc: "РАЗДЕЛ 4 — ПРОТЕЧКА ВОДЫ\n\n4.1 Мы возмещаем утрату или повреждение имущества, вызванные вытеканием воды из стационарной водопроводной или отопительной системы либо из подключённого к ней бытового прибора.\n\n4.2 Мы не возмещаем:\n(а) ущерб, возникший в период, когда помещение оставалось незанятым более 30 дней подряд, если только вода не была перекрыта на вводе, а система осушена;\n(б) стоимость ремонта или замены самой системы либо прибора, из которого вытекла вода;\n(в) ущерб от воды, проникшей в помещение снаружи здания;\n(г) любые суммы, относящиеся к износу или постепенному ухудшению.\n\nРАЗДЕЛ 9 — ВАШИ ОБЯЗАННОСТИ\n\n9.3 Вы обязаны уведомить нас в кратчайший разумно возможный срок и в любом случае в течение 30 дней о любом событии, которое может повлечь заявление о возмещении. Неисполнение может ограничить ваше требование в той мере, в какой наше положение было ухудшено.\n\n9.7 Если мы заменяем предмет новым эквивалентом и такая замена представляет собой существенное улучшение по сравнению с утраченным или повреждённым предметом, мы вправе произвести пропорциональный вычет, отражающий это улучшение.\n\nРАЗДЕЛ 12 — СУБРОГАЦИЯ\n\n12.1 Мы вправе от вашего имени предъявлять требования к любому лицу, ответственному за ущерб. Вы обязаны оказывать всё разумное содействие и не вправе без нашего письменного согласия признавать ответственность либо заключать с таким лицом соглашения, ущемляющие наше право требования.",
     nc_title: "Noise Canceler",
     nc_tagline: "Вставьте длинный документ, расскажите о своей ситуации — мы извлечём только то, что касается вас",
     nc_default_doc_label: "Документ",
@@ -774,6 +807,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "Особенно пункт о неконкуренции и об арбитраже — насколько они применимы на практике и что считается обычным?",
   },
   th: {
+    nc_ex2_situation: "อพาร์ตเมนต์ผมน้ำท่วมเพราะเครื่องซักผ้าของเพื่อนบ้านชั้นบนเมื่อสามสัปดาห์ก่อน ผมพยายามหาว่ากรมธรรม์ทรัพย์สินของผมคุ้มครองอะไรบ้างก่อนจะโทรไป",
+    nc_ex2_concerns: "ข้อว่า 'น้ำรั่วไหล' ครอบคลุมเครื่องใช้ไฟฟ้าของคนอื่นหรือไม่ สามสัปดาห์ที่ผ่านไปทำให้เสียสิทธิเรียกร้องแล้วหรือยัง และคำว่า 'ส่วนต่างของใหม่แทนเก่า' หมายความว่าอย่างไรเมื่อเขาเปลี่ยนพรมอายุสิบปี",
+    nc_ex2_doc: "หมวด 4 — น้ำรั่วไหล\n\n4.1 บริษัทจะคุ้มครองการสูญหายหรือเสียหายของทรัพย์สินภายในที่เกิดจากน้ำที่รั่วไหลจากระบบน้ำหรือระบบทำความร้อนแบบติดตั้งถาวร หรือจากเครื่องใช้ในบ้านที่ต่อพ่วงกับระบบดังกล่าว\n\n4.2 บริษัทจะไม่คุ้มครอง:\n(ก) ความเสียหายที่เกิดขึ้นในช่วงที่สถานที่ถูกทิ้งว่างติดต่อกันเกิน 30 วัน เว้นแต่ได้ปิดน้ำที่มาตรวัดหลักและถ่ายน้ำออกจากระบบแล้ว;\n(ข) ค่าซ่อมหรือค่าเปลี่ยนระบบหรือเครื่องใช้ที่เป็นต้นเหตุของการรั่วไหล;\n(ค) ความเสียหายจากน้ำที่ไหลเข้าสู่สถานที่จากภายนอกอาคาร;\n(ง) จำนวนใด ๆ อันเกิดจากการสึกหรอหรือการเสื่อมสภาพตามกาลเวลา\n\nหมวด 9 — หน้าที่ของผู้เอาประกันภัย\n\n9.3 ท่านต้องแจ้งบริษัทโดยเร็วที่สุดเท่าที่ทำได้ตามสมควร และไม่ว่ากรณีใดต้องภายใน 30 วัน สำหรับเหตุการณ์ใดที่อาจก่อให้เกิดการเรียกร้อง หากไม่แจ้ง อาจกระทบต่อสิทธิเรียกร้องของท่านเท่าที่ฐานะของบริษัทได้รับผลกระทบในทางลบ\n\n9.7 หากบริษัทเปลี่ยนทรัพย์สินด้วยของใหม่ที่เทียบเท่า และการเปลี่ยนนั้นถือเป็นการปรับปรุงอย่างมีนัยสำคัญเมื่อเทียบกับทรัพย์สินที่สูญหายหรือเสียหาย บริษัทอาจหักลดตามสัดส่วนเพื่อสะท้อนการปรับปรุงดังกล่าว\n\nหมวด 12 — การรับช่วงสิทธิจากบุคคลภายนอก\n\n12.1 บริษัทมีสิทธิดำเนินการเรียกร้องในนามของท่านต่อบุคคลใดที่ต้องรับผิดต่อความเสียหาย ท่านต้องให้ความช่วยเหลือตามสมควรทุกประการ และต้องไม่ยอมรับความรับผิดหรือทำความตกลงใด ๆ กับบุคคลนั้นอันเป็นการกระทบสิทธิรับช่วงของบริษัท เว้นแต่ได้รับความยินยอมเป็นหนังสือจากบริษัท",
     nc_title: "Noise Canceler",
     nc_tagline: "วางเอกสารยาว ๆ แล้วบอกสถานการณ์ของคุณ — เราจะดึงเฉพาะส่วนที่ส่งผลต่อคุณ",
     nc_default_doc_label: "เอกสาร",
@@ -844,6 +880,9 @@ export const noiseCanceler = {
     nc_ex_concerns: "โดยเฉพาะข้อห้ามแข่งขันและข้ออนุญาโตตุลาการ — ในทางปฏิบัติบังคับใช้ได้แค่ไหน และอะไรคือเรื่องปกติ?",
   },
   vi: {
+    nc_ex2_situation: "Căn hộ của tôi bị ngập do máy giặt nhà hàng xóm tầng trên cách đây ba tuần. Tôi đang cố hiểu hợp đồng bảo hiểm tài sản của mình thực sự bảo hiểm những gì trước khi gọi cho họ.",
+    nc_ex2_concerns: "Liệu 'rò rỉ nước' có bao gồm thiết bị của người khác không, ba tuần trôi qua đã khiến tôi mất quyền yêu cầu bồi thường chưa, và 'khấu hao thay mới' nghĩa là gì khi họ thay tấm thảm mười năm tuổi.",
+    nc_ex2_doc: "MỤC 4 — RÒ RỈ NƯỚC\n\n4.1 Chúng tôi bảo hiểm mất mát hoặc hư hỏng tài sản trong nhà do nước rò rỉ từ hệ thống cấp nước hoặc sưởi cố định, hoặc từ bất kỳ thiết bị gia dụng nào đấu nối vào hệ thống đó.\n\n4.2 Chúng tôi không bảo hiểm:\n(a) thiệt hại xảy ra khi nơi ở bị bỏ trống liên tục quá 30 ngày, trừ khi đã khóa van tổng và xả cạn hệ thống;\n(b) chi phí sửa chữa hoặc thay thế chính hệ thống hoặc thiết bị đã rò rỉ;\n(c) thiệt hại do nước từ bên ngoài tòa nhà tràn vào;\n(d) mọi khoản liên quan đến hao mòn hoặc xuống cấp dần theo thời gian.\n\nMỤC 9 — NGHĨA VỤ CỦA NGƯỜI ĐƯỢC BẢO HIỂM\n\n9.3 Quý vị phải thông báo cho chúng tôi sớm nhất có thể một cách hợp lý, và trong mọi trường hợp trong vòng 30 ngày, về bất kỳ sự kiện nào có thể dẫn đến yêu cầu bồi thường. Việc không thông báo có thể làm phương hại yêu cầu của quý vị trong phạm vi vị thế của chúng tôi bị ảnh hưởng bất lợi.\n\n9.7 Khi chúng tôi thay một vật bằng vật mới tương đương và việc thay thế đó là một cải thiện đáng kể so với vật bị mất hoặc hư hỏng, chúng tôi có thể khấu trừ theo tỷ lệ để phản ánh phần cải thiện đó.\n\nMỤC 12 — THẾ QUYỀN ĐỐI VỚI BÊN THỨ BA\n\n12.1 Chúng tôi có quyền nhân danh quý vị đòi bồi hoàn từ bất kỳ bên nào chịu trách nhiệm về tổn thất. Quý vị phải hỗ trợ mọi mặt hợp lý và không được, nếu không có văn bản đồng ý của chúng tôi, thừa nhận trách nhiệm hoặc ký kết bất kỳ thỏa thuận nào với bên đó làm phương hại quyền đòi bồi hoàn của chúng tôi.",
     nc_title: "Noise Canceler",
     nc_tagline: "Dán một tài liệu dài, cho chúng tôi biết hoàn cảnh của bạn — chúng tôi sẽ chỉ trích ra phần ảnh hưởng tới bạn",
     nc_default_doc_label: "Tài liệu",
