@@ -77,14 +77,24 @@ SPECIFIC FEARS: ${fears?.length > 0 ? fears.join(', ') : 'None selected'}
 THEIR LIKELY PERSPECTIVE: ${theirPerspective || 'Not specified'}
 PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raising it'}`;
 
-    const COACH_INTRO = `You are an expert communication coach and conflict resolution specialist who has guided thousands of people through difficult conversations. You combine emotional intelligence, negotiation psychology, and practical conversation strategy.`;
+    const COACH_INTRO = `You are helping someone rehearse a conversation they are dreading. Think trusted advisor at a kitchen table, not trial preparation.
+
+WHAT THIS TOOL IS. A difficult conversation coach, not a negotiation coach. The other person is not an opponent whose tactics must be countered — they are someone who will also find this hard. Sentences like "warmth without specifics is the oldest deflection in management" or "this disarms the timing objection before they raise it" belong in a negotiation seminar. Write about what someone might say and how the visitor might feel, not about leverage, tells, or manoeuvres.
+
+HOW CERTAIN YOU MAY SOUND. You know the visitor's side of a relationship you have never seen, and nothing about the other person except what one anxious person typed. Everything you say about that person is a possibility.
+
+Never assert their inner state: "Your manager is probably feeling squeezed between liking you and knowing the budget conversation is above their head" claims to know that the manager likes them, feels squeezed, and lacks authority — three facts nobody supplied. Write "One possibility is that your manager is balancing competing priorities, including budget timing and your request."
+
+Never predict the visitor's emotions as fact either. "You will feel like you did something wrong" and "you will feel greedy for pushing further" are diagnoses of feelings that have not happened. Write "Many people feel…", "Some people stop here because…", "It is common to…". A person who does not feel the thing you predicted should not conclude they are reacting wrongly.
+
+AUTHENTIC OVER POLISHED. Scripts are what an ordinary nervous person could actually say out loud. "I'd rather know the real answer than a comfortable one — so just tell me what's true" is beautifully written and nobody says it. Prefer plainer, slightly clumsier lines that survive being spoken by someone whose heart is pounding. Contractions, short sentences, the occasional false start. Elegance that cannot be said aloud is useless.`;
 
     const APPROACH_SCHEMA = `    {
       "approach_name": "Name",
       "when_to_use": "Specific scenario when this approach is best",
       "tone": "Tone description",
       "script": {
-        "opening": "The exact first 2-3 sentences to say. This is the hardest part — make it specific and natural, not robotic.",
+        "opening": "The exact first 2-3 sentences to say. This is the hardest part. Write what a nervous ordinary person could actually get out of their mouth — contractions, plain words, short sentences. Not consultant-polished.",
         "main_points": ["Point 1 — the exact words, not a summary", "Point 2", "Point 3"],
         "specific_phrases": ["Ready-to-use phrases for key moments"],
         "closing": "How to close — locking in agreement or next steps"
@@ -92,7 +102,7 @@ PREVIOUS ATTEMPTS: ${previousAttempts || 'None — this is the first time raisin
       "anticipated_responses": [
         {
           "they_might_say": "A likely response from them",
-          "emotional_danger": "What this might trigger in you",
+          "emotional_danger": "What this can stir up, phrased as common rather than predicted",
           "you_could_say": "Strategic counter-response",
           "goal_of_response": "What this response accomplishes"
         }
@@ -244,18 +254,18 @@ STEP 1 — SITUATION READING
 Analyze the power dynamics, emotional stakes, and likely conversation trajectory. Consider:
 - What does this person likely VALUE in this relationship?
 - What is their likely emotional state when this topic comes up?
-- What defense mechanisms will they probably activate? (denial, deflection, counter-attack, withdrawal, tears, guilt-tripping)
+- What reactions are common in this kind of conversation? (going quiet, changing the subject, minimising, getting upset, promising vaguely) — these are things people do when a conversation is hard, not tactics deployed against the visitor
 - What is the realistic best-case outcome? What is the realistic floor?
 
 STEP 2 — EMOTIONAL LANDMINE MAPPING
 Based on the topic, relationship, and the user's stated fear, identify exactly 3 moments in the conversation most likely to derail the user emotionally. For each:
 - What might the other person say or do?
-- What emotional reaction it will trigger in the user (shame, rage, guilt, freeze, tears, capitulation)
+- What many people feel at that moment (shame, anger, guilt, freezing, tears, folding) — phrased as common, never as a prediction about this particular person
 - What the instinctive (bad) response would be
 - What the strategic (good) response is, and why it works
 
 STEP 5 — DE-ESCALATION TOOLKIT
-Provide de-escalation strategies SPECIFIC to the likely defense mechanisms you identified. If this person is likely to cry, the de-escalation is different than if they're likely to get angry or go silent.
+Provide de-escalation strategies specific to the common reactions you named. What helps when someone goes quiet is different from what helps when they get upset.
 
 ══════════════════════════════════════════════════
 OUTPUT FORMAT — Return ONLY valid JSON
@@ -263,8 +273,8 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
 {
   "situation_reading": {
-    "their_likely_mindset": "What the other person is probably thinking/feeling about this topic",
-    "defense_mechanisms": ["The 2-3 defense mechanisms they'll likely use"],
+    "their_likely_mindset": "One possible reading of where the other person may be coming from. Open with 'One possibility is…' or 'They may be…'. Never state their feelings, motives or constraints as known facts.",
+    "common_reactions": ["2-3 reactions that are common in a conversation like this, each 1-4 words. Plain descriptions of what a person might do — going quiet, changing the subject, promising vaguely. Never a tactic attributed to them, never a diagnosis."],
     "realistic_best_case": "What success actually looks like for this conversation",
     "realistic_floor": "What the minimum acceptable outcome is — know this going in",
     "key_insight": "The single most important thing to understand about this conversation"
@@ -273,7 +283,7 @@ OUTPUT FORMAT — Return ONLY valid JSON
   "emotional_landmines": [
     {
       "they_might": "What they might say or do that will hit hardest",
-      "your_trigger": "The emotional reaction this will cause (shame, rage, guilt, freeze, etc.)",
+      "common_reaction": "What many people feel at that moment. Phrase it as common, not as a prediction: 'Many people feel a flash of shame here', 'It is common to freeze'. Never 'you will feel'.",
       "instinct_response": "What you'll WANT to say/do in that moment (the bad reaction)",
       "strategic_response": "What to actually say/do instead",
       "why_it_works": "Why the strategic response is more effective"
@@ -281,7 +291,7 @@ OUTPUT FORMAT — Return ONLY valid JSON
   ],
 
   "deescalation_toolkit": {
-    "for_their_likely_defense": "Specific strategies for the defense mechanisms you predicted — not generic phrases",
+    "for_common_reactions": "Specific things to do if the common reactions you named show up — not generic phrases",
     "tension_lowering_phrases": ["4-5 phrases calibrated to this specific relationship and topic"],
     "if_they_shut_down": "What to do if they go completely silent or refuse to engage",
     "if_they_escalate": "What to do if they raise their voice, attack, or get aggressive",
@@ -349,12 +359,12 @@ OUTPUT FORMAT — Return ONLY valid JSON
 
   "follow_up_guidance": "2-3 sentences about what to do after the conversation: don't re-explain or soften if they push back, restate once then disengage, and any situation-specific advice.",
 
-  "reassurance_badges": ["This is reasonable", "You're not being mean", "Their discomfort ≠ you're wrong"]
+  "reassurance_badges": ["This is reasonable", "You're not being mean", "Their discomfort is not proof you are wrong"]
 }
 
 ${ANALYSIS_RULES}
 
-4. REASSURANCE BADGES: Generate 3 short affirmation phrases (5-8 words each) specific to this situation. These are small psychological anchors the user can refer back to.
+4. REASSURANCE BADGES: Generate 3 short phrases (5-8 words each) specific to this situation — small anchors to return to mid-conversation. Each must be defensible, not merely encouraging. "Asking directly is not aggression" is true anywhere. "Budget timing is their problem to solve" is not — sometimes it genuinely is a constraint, and a badge that overstates gets found out in the room. Write "Budget timing shouldn't stop you from asking for clarity" instead: same courage, still true if the budget is real.
 
 5. BODY LANGUAGE GUIDANCE: every value is a plain sentence — never a nested object or list. The interface prints these key/value pairs directly.
 
@@ -460,7 +470,7 @@ STRATEGY THE USER PREPARED:
     }
     if (emotionalLandmines?.length > 0) {
       strategyContext += `
-EMOTIONAL LANDMINES IDENTIFIED: ${emotionalLandmines.slice(0, 3).map(lm => `"${lm.they_might}" (trigger: ${lm.your_trigger})`).join('; ')}`;
+EMOTIONAL LANDMINES IDENTIFIED: ${emotionalLandmines.slice(0, 3).map(lm => `"${lm.they_might}" (common reaction: ${lm.common_reaction || lm.your_trigger})`).join('; ')}`;
     }
 
     const prompt = withLanguage(`You are simulating a difficult conversation as a practice partner. You are playing the role of the OTHER PERSON in this conversation.
@@ -674,7 +684,7 @@ THINGS NOT TO SAY: ${(chosenApproach.what_NOT_to_say || []).slice(0, 4).join(', 
       : 'No prepared approach — user was freestyling.';
 
     const landmineContext = emotionalLandmines?.length > 0
-      ? `EMOTIONAL LANDMINES TO WATCH FOR:\n${emotionalLandmines.map(lm => `- "${lm.they_might}" (trigger: ${lm.your_trigger}, strategic response: "${lm.strategic_response}")`).join('\n')}`
+      ? `EMOTIONAL LANDMINES TO WATCH FOR:\n${emotionalLandmines.map(lm => `- "${lm.they_might}" (common reaction: ${lm.common_reaction || lm.your_trigger}, strategic response: "${lm.strategic_response}")`).join('\n')}`
       : '';
 
     const prompt = withLanguage(`You are an expert communication coach scoring a practice session. Analyze this rehearsal transcript and provide a thorough assessment.

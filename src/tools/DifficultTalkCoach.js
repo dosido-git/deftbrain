@@ -425,7 +425,7 @@ const DifficultTalkCoach = ({ tool }) => {
     const sr = results.situation_reading;
     if (sr) { lines.push('SITUATION READING', sr.key_insight, `Best case: ${sr.realistic_best_case}`, `Floor: ${sr.realistic_floor}`, ''); }
     results.emotional_landmines?.forEach((lm, i) => {
-      lines.push(`LANDMINE ${i + 1}: ${lm.they_might}`, `Your trigger: ${lm.your_trigger}`, `Instead of: ${lm.instinct_response}`, `Say: ${lm.strategic_response}`, '');
+      lines.push(`LANDMINE ${i + 1}: ${lm.they_might}`, `${t('dtc_your_trigger')}: ${lm.common_reaction ?? lm.your_trigger}`, `Instead of: ${lm.instinct_response}`, `Say: ${lm.strategic_response}`, '');
     });
     results.conversation_approaches?.forEach(a => {
       lines.push(`═══ ${a.approach_name.toUpperCase()} ═══`, `Opening: ${a.script.opening}`, '', a.script.main_points.join('\n'), '', `Closing: ${a.script.closing}`, '');
@@ -472,9 +472,8 @@ const DifficultTalkCoach = ({ tool }) => {
 
   // ─── RENDER ───
   return (
-    <div className={`space-y-4 ${c.text}`}>
-      {/* Range slider thumb styling */}
-      <style>{`
+    <>
+    <style>{`
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
@@ -497,6 +496,7 @@ const DifficultTalkCoach = ({ tool }) => {
           box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
       `}</style>
+    <div className={`space-y-4 ${c.text}`}>
       {/* Header */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
         <div className="pb-3 border-b border-zinc-500 flex items-center justify-between">
@@ -775,7 +775,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     </div>
                     <div className={`p-3 rounded-lg ${c.cardAlt}`}>
                       <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('dtc_likely_defenses')}</p>
-                      {results.situation_reading.defense_mechanisms?.map((d, i) => (
+                      {(results.situation_reading.common_reactions ?? results.situation_reading.defense_mechanisms)?.map((d, i) => (
                         <span key={i} className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium me-1 mb-1 ${c.warning} border`}>{d}</span>
                       ))}
                     </div>
@@ -809,9 +809,9 @@ const DifficultTalkCoach = ({ tool }) => {
                             <p className="text-sm font-medium italic">"{lm.they_might}"</p>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <div className={`p-3 rounded-lg ${c.warning} border`}>
-                              <p className="text-xs font-bold mb-1">{t('dtc_your_trigger')}</p>
-                              <p className="text-sm">{lm.your_trigger}</p>
+                            <div className={`p-3 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                              <p className={`text-xs font-bold mb-1 ${c.textMuted}`}>{t('dtc_your_trigger')}</p>
+                              <p className="text-sm">{lm.common_reaction ?? lm.your_trigger}</p>
                             </div>
                             <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/10 border-red-800' : 'bg-red-50 border-red-200'} border`}>
                               <p className={`text-xs font-bold mb-1 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('dtc_instinct')}</p>
@@ -1066,10 +1066,10 @@ const DifficultTalkCoach = ({ tool }) => {
                   </button>
                   {expandedSections.deescalation && (
                     <div className="space-y-3 mt-4">
-                      {results.deescalation_toolkit.for_their_likely_defense && (
+                      {(results.deescalation_toolkit.for_common_reactions ?? results.deescalation_toolkit.for_their_likely_defense) && (
                         <div className={`p-4 rounded-lg ${c.highlight} border`}>
                           <p className="text-xs font-bold mb-1">{t('dtc_for_defense')}</p>
-                          <p className="text-sm">{results.deescalation_toolkit.for_their_likely_defense}</p>
+                          <p className="text-sm">{results.deescalation_toolkit.for_common_reactions ?? results.deescalation_toolkit.for_their_likely_defense}</p>
                         </div>
                       )}
                       {results.deescalation_toolkit.tension_lowering_phrases?.length > 0 && (
@@ -1908,6 +1908,7 @@ const DifficultTalkCoach = ({ tool }) => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
