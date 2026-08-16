@@ -644,14 +644,6 @@ const DoctorVisitTranslator = ({ tool }) => {
             </div>
           </div>
 
-          {/* F3: Interaction banner */}
-          {results.medication_safety?.known_med_interactions && !results.medication_safety.known_med_interactions.toLowerCase().includes('no significant') && (
-            <div className={`${c.danger} border-2 rounded-xl p-4 flex items-start gap-2`}>
-              <span>⚠️</span>
-              <div><p className="text-sm font-bold">{t('dvt_interaction_title')}</p><p className="text-xs mt-1">{results.medication_safety.known_med_interactions}</p><p className={`text-[10px] ${c.textMuted} mt-1`}>{t('dvt_discuss_doctor')}</p></div>
-            </div>
-          )}
-
           {/* Summary */}
           {results.plain_english_summary && (
             <Sec icon="📖" title={t('dvt_sec_summary')} open={secs.summary} onToggle={() => tog('summary')} c={c}>
@@ -662,6 +654,16 @@ const DoctorVisitTranslator = ({ tool }) => {
                 </div>
               ))}</div>
             </Sec>
+          )}
+
+          {/* Medication notes — after the summary, deliberately. Read what is
+              happening first; this is a question to take to a pharmacist, not
+              a danger that should greet you at the top of the page. */}
+          {results.medication_safety?.known_med_interactions && !results.medication_safety.known_med_interactions.toLowerCase().includes('no significant') && (
+            <div className={`${c.highlight} border rounded-xl p-4 flex items-start gap-2`}>
+              <span>💊</span>
+              <div><p className="text-sm font-bold">{t('dvt_interaction_title')}</p><p className="text-xs mt-1">{results.medication_safety.known_med_interactions}</p><p className={`text-[10px] ${c.textMuted} mt-1`}>{t('dvt_discuss_doctor')}</p></div>
+            </div>
           )}
 
           {/* F4: Comparison */}

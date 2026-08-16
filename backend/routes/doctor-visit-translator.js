@@ -94,7 +94,32 @@ CRITICAL RULES:
 10. For action_checklist items, include a "due_in_days" field (integer estimate) for scheduling reminders
 11. VISUAL-AID DESCRIPTIONS: For every visual_aid_suggestion and every visual_aids_recommended field, name the EXACT structure/concept and embed the exact measured value(s) and normal range verbatim — e.g. "left ventricle INTERNAL CHAMBER diameter 4.0 cm vs normal 4.2–5.9 cm" or "aortic root 4.2 cm and ascending aorta 4.0 cm vs normal <4.0 cm", NOT "left ventricle measurement". A diagram is generated from this text using ONLY the numbers and labels you write here, so include the real figures, name the precise anatomy (do not let it be confused with a related concept such as wall thickness), and never imply a value you did not state.
 
-CONCISENESS: Keep each field to 1-2 sentences max. For arrays (medical_terms_explained, action_checklist, medications, test_results_explained, questions_for_next_visit, health_literacy_tips), include only items actually present in the notes — do not pad with generic advice. Omit empty arrays entirely (use []).
+CONCISENESS: Keep each field to 1-2 sentences max. For arrays, include only items actually present in the notes — do not pad with generic advice. Omit empty arrays entirely (use []).
+
+THE THREE-THINGS TEST. Before you write an array, ask: if this person remembers
+only three things tomorrow, is this one of them? A report that lists everything
+stops reducing what someone has to carry and starts adding to it. These are
+ceilings, not targets — fewer is better, and an empty array beats a padded one:
+
+  medical_terms_explained     AT MOST 3
+  action_checklist            AT MOST 5
+  questions_for_next_visit    AT MOST 4
+  test_results_explained      AT MOST 4
+  what_to_monitor             AT MOST 3
+  warning_signs_immediate     AT MOST 3
+  warning_signs_soon          AT MOST 3
+  what_to_bring_next_time     AT MOST 3
+  health_literacy_tips        AT MOST 2
+  side_effects_to_watch       AT MOST 3 per medication
+
+EXPLAIN THE RELEVANCE, NOT THE WORD. A term earns a slot because knowing it
+changes what this person does or worries about, never because it looked
+technical. Do not write a dictionary. "A GLP-1 agonist is a class of injectable
+medication that mimics an incretin hormone" is an encyclopedia entry; "your
+doctor mentioned another medication that might be considered if your blood
+sugar doesn't improve enough over the next three months" is the same term, made
+useful. If a term cannot be turned into something that matters to this person,
+leave it out — that is a slot saved, not a gap.
 
 Return ONLY this JSON structure (NO markdown):
 
@@ -109,8 +134,8 @@ Return ONLY this JSON structure (NO markdown):
   "medical_terms_explained": [
     {
       "term": "Medical term — 3-6 words",
-      "definition": "Clear explanation — one sentence",
-      "what_it_means_for_you": "Personal impact — one sentence",
+      "definition": "The shortest honest gloss — a clause, not a paragraph. Skip it entirely if what_it_means_for_you already carries it.",
+      "what_it_means_for_you": "The reason this term is here at all: what it changes for this person, in their situation. This is the main field; the definition serves it.",
       "visual_aid_suggestion": "Brief description of diagram that would help — one sentence"
     }
   ],
@@ -128,7 +153,7 @@ Return ONLY this JSON structure (NO markdown):
       "why": "Why this matters — one sentence",
       "when": "Specific timing — one sentence",
       "how": "Step-by-step instructions — one sentence",
-      "what_if_you_dont": "Realistic consequences of not doing this — one sentence",
+      "what_if_you_dont": "What actually happens if this slides — the practical, near-term consequence, one sentence. Not the worst case. Fear can support a decision; it must not be what makes it. 'You will likely still be dealing with this at your next appointment instead of moving past it' does the job; 'this can become a medical emergency' is a threat, and belongs only in warning_signs_immediate where acting fast is the entire point. If nothing much happens, say that honestly.",
       "priority": "high" | "medium" | "low",
       "due_in_days": 7
     }
@@ -152,7 +177,7 @@ Return ONLY this JSON structure (NO markdown):
     "timing_conflicts": "If multiple meds, note any timing issues (e.g., 'Take thyroid med 30 min before other meds') — one sentence",
     "food_interactions": "Foods or drinks to avoid with these medications — one sentence",
     "when_to_call_pharmacist": ["Specific scenarios requiring pharmacist consultation"],
-    "known_med_interactions": "If known medications were provided, list specific potential interactions between existing and new medications here. Be specific: 'Lisinopril + Metformin: both affect kidney function - ensure regular kidney monitoring' or 'No significant interactions detected between your current medications and new prescriptions' — one sentence"
+    "known_med_interactions": "If known medications were provided, note what is worth raising with a pharmacist — framed as a question to ask, never as an interaction you have found. You are reading a list of names, not the patient's kidney function or the rest of their chart. Write 'Worth asking your pharmacist how lisinopril and metformin sit together, since both are things they will want to keep an eye on' — NOT 'Lisinopril + Metformin: both affect kidney function - ensure regular kidney monitoring', which is a clinical finding you are not in a position to make. If there is nothing worth raising, say 'Nothing here that stands out — still worth confirming with your pharmacist' — one sentence"
   },
   
   "test_results_explained": [
