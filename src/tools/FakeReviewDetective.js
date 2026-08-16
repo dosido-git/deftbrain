@@ -530,17 +530,6 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       </div>
 
-      {/* URL EXTRACTION */}
-      <div className={`${c.card} border rounded-xl p-5`}>
-        <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-sm font-bold ${c.text}`}>{t('frd_import_title')}</h3><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
-        <div className="flex gap-2">
-          <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
-            <input type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
-          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> ...</> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
-        </div>
-        <p className={`text-[11px] ${c.textMuteded} mt-1.5`}>{t('frd_url_note')}</p>
-      </div>
-
       {/* INPUT + SOURCE TAG */}
       <div className={`${c.card} border rounded-xl p-6`}>
         <div className="flex items-center gap-3 mb-4">
@@ -582,9 +571,30 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       )}
 
+      {/* URL EXTRACTION */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-sm font-bold ${c.text}`}>{t('frd_import_title2')}</h3><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
+        <div className="flex gap-2">
+          <div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-sm">🔗</span>
+            <label htmlFor="frd-url" className="sr-only">{t('frd_url_a11y')}</label>
+            <input id="frd-url" type="url" value={productUrl} onChange={e => setProductUrl(e.target.value)} placeholder={t('frd_url_ph')} className={`w-full ps-9 pe-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} disabled={isRunning} /></div>
+          <button onClick={extractFromUrl} disabled={!productUrl.trim() || isRunning} className={`${c.btnSecondary} disabled:opacity-40 font-semibold px-4 py-2.5 rounded-lg text-sm whitespace-nowrap`}>{phase === 'extracting' ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> ...</> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_extract')}</>}</button>
+        </div>
+        <p className={`text-[11px] ${c.textMuteded} mt-1.5`}>{t('frd_url_note')}</p>
+      </div>
+
       {/* INSTANT STATS */}
       {stats && (
-        <div data-copy-results ref={resultsRef} className={`${c.card} border rounded-xl p-6`}>
+        <div data-copy-results ref={resultsRef} className="space-y-4">
+          {/* Fixed copy. Everything below is scores and flags; this is the
+              reason any of it is worth reading. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-5 space-y-2`}>
+            <p className={`text-sm font-bold ${c.text}`}>💚 {t('frd_first_matters')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_1')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('frd_fm_2')}</p>
+          </div>
+
+          <div className={`${c.card} border rounded-xl p-6`}>
           <h3 className={`text-sm font-bold ${c.text} mb-4 flex items-center gap-2`}><span>📊</span> {t('frd_stats')} <span className={`text-[10px] font-bold ${c.textMuteded} uppercase`}>{t('frd_instant')}</span>
             {confidence && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${confidence.color === 'green' ? c.success : confidence.color === 'amber' ? c.warning : c.danger} border`}>{t(confidence.labelKey, { count: confidence.count })}</span>}
           </h3>
@@ -604,6 +614,7 @@ const FakeReviewDetective = ({ tool }) => {
               {!stats.hasTimingCluster && stats.verifiedPercent >= 40 && stats.genericPraiseCount === 0 && <div className={`${c.success} border rounded-lg p-3 flex items-start gap-2`}><span>✅</span><p className="text-xs">{t('frd_no_red_flags')}</p></div>}
             </div>
           </div>
+        </div>
         </div>
       )}
 
