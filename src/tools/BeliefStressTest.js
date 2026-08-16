@@ -117,7 +117,8 @@ const BeliefStressTest = ({ tool }) => {
   };
 
   const loadExample = useCallback(() => {
-    setBelief(t(pickExample('BeliefStressTest', ['bst_ex1', 'bst_ex2'])));
+    setBelief(t(pickExample('BeliefStressTest',
+      ['bst_ex1', 'bst_ex2', 'bst_ex3', 'bst_ex4', 'bst_ex5', 'bst_ex6', 'bst_ex7', 'bst_ex8'])));
     setContext('');
     setResults(null);
   }, [setBelief, setResults, t]);

@@ -4,7 +4,6 @@
 // tool's own display vocabulary and are translated per language.
 export const beliefStressTest = {
   en: {
-    bst_ex2: "I'm not a creative person",
     bst_title: "Belief Stress Test",
     bst_tagline: "Your guiding beliefs, pressure-tested. Where they hold. Where they break.",
     bst_recent: "Recent ({{n}})",
@@ -64,7 +63,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "VERDICT:",
   },
   es: {
-    bst_ex2: "No soy una persona creativa",
     bst_title: "Belief Stress Test",
     bst_tagline: "Tus creencias rectoras, puestas a prueba. Dónde se sostienen. Dónde se quiebran.",
     bst_recent: "Recientes ({{n}})",
@@ -124,7 +122,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "VEREDICTO:",
   },
   zh: {
-    bst_ex2: "我不是那种有创造力的人",
     bst_title: "Belief Stress Test",
     bst_tagline: "为你的人生信念做压力测试。看它在哪里成立，又在哪里崩塌。",
     bst_recent: "最近（{{n}}）",
@@ -184,7 +181,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "结论：",
   },
   hi: {
-    bst_ex2: "मैं रचनात्मक इंसान नहीं हूँ",
     bst_title: "Belief Stress Test",
     bst_tagline: "आपकी मार्गदर्शक मान्यताओं की दबाव-जाँच। कहाँ टिकती हैं। कहाँ टूटती हैं।",
     bst_recent: "हाल के ({{n}})",
@@ -244,7 +240,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "फैसला:",
   },
   ar: {
-    bst_ex2: "أنا لست شخصاً مبدعاً",
     bst_title: "Belief Stress Test",
     bst_tagline: "معتقداتك الموجِّهة تحت الضغط. أين تصمد. وأين تنهار.",
     bst_recent: "الأخيرة ({{n}})",
@@ -304,7 +299,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "الحُكم:",
   },
   pt: {
-    bst_ex2: "Não sou uma pessoa criativa",
     bst_title: "Belief Stress Test",
     bst_tagline: "Suas crenças norteadoras, postas à prova. Onde se sustentam. Onde se quebram.",
     bst_recent: "Recentes ({{n}})",
@@ -364,7 +358,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "VEREDICTO:",
   },
   fr: {
-    bst_ex2: "Je ne suis pas quelqu'un de créatif",
     bst_title: "Belief Stress Test",
     bst_tagline: "Vos croyances directrices, mises à l'épreuve. Là où elles tiennent. Là où elles cèdent.",
     bst_recent: "Récents ({{n}})",
@@ -424,7 +417,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "VERDICT :",
   },
   de: {
-    bst_ex2: "Ich bin einfach kein kreativer Mensch",
     bst_title: "Belief Stress Test",
     bst_tagline: "Deine leitenden Überzeugungen auf dem Prüfstand. Wo sie halten. Wo sie brechen.",
     bst_recent: "Zuletzt ({{n}})",
@@ -484,7 +476,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "URTEIL:",
   },
   ja: {
-    bst_ex2: "自分にはクリエイティブなところがない",
     bst_title: "Belief Stress Test",
     bst_tagline: "あなたの指針となる信念をストレステスト。どこで成り立ち、どこで崩れるのか。",
     bst_recent: "最近（{{n}}）",
@@ -544,7 +535,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "判定：",
   },
   ko: {
-    bst_ex2: "나는 창의적인 사람이 아니다",
     bst_title: "Belief Stress Test",
     bst_tagline: "당신을 이끄는 신념을 스트레스 테스트합니다. 어디서 버티고, 어디서 무너지는지.",
     bst_recent: "최근 ({{n}})",
@@ -604,7 +594,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "판정:",
   },
   ru: {
-    bst_ex2: "Я не творческий человек",
     bst_title: "Belief Stress Test",
     bst_tagline: "Ваши руководящие убеждения под нагрузкой. Где они держатся. Где ломаются.",
     bst_recent: "Недавние ({{n}})",
@@ -664,7 +653,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "ВЕРДИКТ:",
   },
   th: {
-    bst_ex2: "ฉันไม่ใช่คนที่มีความคิดสร้างสรรค์",
     bst_title: "Belief Stress Test",
     bst_tagline: "ทดสอบความเชื่อที่นำทางชีวิตคุณภายใต้แรงกดดัน ดูว่ามันยืนหยัดตรงไหน และพังตรงไหน",
     bst_recent: "ล่าสุด ({{n}})",
@@ -724,7 +712,6 @@ export const beliefStressTest = {
     bst_copy_verdict: "คำตัดสิน:",
   },
   vi: {
-    bst_ex2: "Tôi không phải người sáng tạo",
     bst_title: "Belief Stress Test",
     bst_tagline: "Những niềm tin dẫn dắt bạn, được kiểm tra dưới áp lực. Nơi chúng đứng vững. Nơi chúng sụp đổ.",
     bst_recent: "Gần đây ({{n}})",
