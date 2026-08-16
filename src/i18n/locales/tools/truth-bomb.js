@@ -4,6 +4,10 @@
 // ApologyCalibrator, DeftBrain) stay as-is across languages.
 export const truthBomb = {
   en: {
+    tb_ex2_who: "My sister",
+    tb_ex2_thing: "That I have hosted every family gathering for six years and I am tired of it, and that when she says 'you're just better at it' what I hear is that it is settled.",
+    tb_ex2_why: "Because she will say I should have spoken up years ago, and she will be right. And because part of me did want to be the one who does it well.",
+    tb_ex2_context: "We get on well. Two kids each, she lives twenty minutes away. Nobody ever actually decided that I host — it just kept being true until it became the arrangement.",
     tb_title: "Truth Bomb",
     tb_tagline: "The thing you know but won't say — explored, costed, and scripted three ways",
     tb_hook: "This is private. No judgment here — just clarity.",
@@ -65,6 +69,10 @@ export const truthBomb = {
     tb_ex_context: "15+ year friendship, we live in different cities now but talk weekly. Their other close friends are all in their drinking circle.",
   },
   es: {
+    tb_ex2_who: "Mi hermana",
+    tb_ex2_thing: "Que llevo seis años organizando todas las reuniones familiares y estoy cansada, y que cuando dice «es que a ti se te da mejor» lo que yo oigo es que ya está decidido.",
+    tb_ex2_why: "Porque dirá que debería haberlo dicho hace años, y tendrá razón. Y porque una parte de mí sí quería ser la que lo hace bien.",
+    tb_ex2_context: "Nos llevamos bien. Dos hijos cada una, vive a veinte minutos. Nadie decidió nunca que yo fuera la anfitriona — simplemente siguió siendo así hasta que se convirtió en el acuerdo.",
     tb_title: "Truth Bomb",
     tb_tagline: "Eso que sabes pero no dices — explorado, con su costo y guionizado de tres maneras",
     tb_hook: "Esto es privado. Aquí no se juzga, solo se busca claridad.",
@@ -126,6 +134,10 @@ export const truthBomb = {
     tb_ex_context: "Amistad de más de 15 años, ahora vivimos en ciudades distintas pero hablamos cada semana. Sus otros amigos cercanos están todos en su círculo de copas.",
   },
   zh: {
+    tb_ex2_who: "我妹妹",
+    tb_ex2_thing: "六年来所有的家庭聚会都是我在张罗，我累了。她说「你比较擅长这个」的时候，我听到的是：这事就这么定了。",
+    tb_ex2_why: "因为她会说我早就该开口，而她说得没错。也因为我心里有一部分，确实想当那个「做得好」的人。",
+    tb_ex2_context: "我们关系不错。各有两个孩子，她住二十分钟车程外。从来没有人真正决定过由我来办——只是一直如此，久了就成了默认。",
     tb_title: "Truth Bomb",
     tb_tagline: "你心知肚明却说不出口的话——剖析、衡量代价，并给出三种表达方式",
     tb_hook: "这是私密的。这里没有评判，只有清晰。",
@@ -187,6 +199,10 @@ export const truthBomb = {
     tb_ex_context: "15 年以上的友情，现在我们住在不同城市，但每周都会聊。他其他的好朋友都在他的酒友圈里。",
   },
   hi: {
+    tb_ex2_who: "मेरी बहन",
+    tb_ex2_thing: "कि छह साल से हर पारिवारिक जमावड़ा मैं ही करती आई हूँ और अब थक गई हूँ — और जब वो कहती है 'तुम ये बेहतर कर लेती हो', तो मुझे सुनाई देता है कि बात तय हो चुकी है।",
+    tb_ex2_why: "क्योंकि वो कहेगी कि मुझे सालों पहले बोल देना चाहिए था — और वो सही होगी। और इसलिए भी कि मेरा एक हिस्सा वाकई चाहता था कि यह काम मैं ही अच्छे से करूँ।",
+    tb_ex2_context: "हमारी बनती अच्छी है। दोनों के दो-दो बच्चे, वो बीस मिनट की दूरी पर रहती है। किसी ने कभी तय नहीं किया कि मेज़बानी मैं करूँगी — बस होता चला गया और वही व्यवस्था बन गई।",
     tb_title: "Truth Bomb",
     tb_tagline: "वह बात जो आप जानते हैं पर कहते नहीं — पड़ताल, उसकी कीमत, और तीन तरह से कहने के तरीके",
     tb_hook: "यह निजी है। यहाँ कोई फैसला नहीं — बस स्पष्टता।",
@@ -248,6 +264,10 @@ export const truthBomb = {
     tb_ex_context: "15 साल से ज़्यादा पुरानी दोस्ती, अब हम अलग शहरों में रहते हैं पर हर हफ़्ते बात होती है। उसके बाकी करीबी दोस्त सब उसी शराब वाले घेरे में हैं।",
   },
   ar: {
+    tb_ex2_who: "أختي",
+    tb_ex2_thing: "أنني أستضيف كل لقاءات العائلة منذ ست سنوات وقد تعبت، وأنها حين تقول «أنتِ أفضل في هذا» فما أسمعه هو أن الأمر قد حُسم.",
+    tb_ex2_why: "لأنها ستقول إنه كان عليّ أن أتكلم منذ سنوات، وستكون محقة. ولأن جزءاً مني كان يريد فعلاً أن يكون هو من يتقن ذلك.",
+    tb_ex2_context: "علاقتنا جيدة. لكل منا طفلان، وتسكن على بعد عشرين دقيقة. لم يقرر أحد قط أن أكون أنا المضيفة — استمر الأمر فحسب حتى صار هو الترتيب.",
     tb_title: "Truth Bomb",
     tb_tagline: "الأمر الذي تعرفه لكنك لا تقوله — نستكشفه ونحسب ثمنه ونصوغه بثلاث طرق",
     tb_hook: "هذا خاص. لا حكم هنا — فقط وضوح.",
@@ -309,6 +329,10 @@ export const truthBomb = {
     tb_ex_context: "صداقة تزيد عن 15 عاماً، نعيش الآن في مدينتين مختلفتين لكننا نتحدث أسبوعياً. أصدقاؤه المقربون الآخرون جميعهم ضمن دائرة الشرب نفسها.",
   },
   pt: {
+    tb_ex2_who: "A minha irmã",
+    tb_ex2_thing: "Que há seis anos organizo todos os encontros de família e estou cansada, e que quando ela diz «é que tu tens mais jeito» o que eu ouço é que o assunto está encerrado.",
+    tb_ex2_why: "Porque ela vai dizer que eu devia ter falado há anos, e vai ter razão. E porque uma parte de mim queria mesmo ser a que faz aquilo bem.",
+    tb_ex2_context: "Damo-nos bem. Duas crianças cada uma, ela mora a vinte minutos. Ninguém decidiu que eu recebo — foi acontecendo até virar o combinado.",
     tb_title: "Truth Bomb",
     tb_tagline: "Aquilo que você sabe mas não diz — explorado, com seu custo e roteirizado de três formas",
     tb_hook: "Isto é privado. Aqui não se julga — só se busca clareza.",
@@ -370,6 +394,10 @@ export const truthBomb = {
     tb_ex_context: "Amizade de mais de 15 anos, hoje moramos em cidades diferentes mas conversamos toda semana. Os outros amigos próximos dele estão todos no círculo de bebida.",
   },
   fr: {
+    tb_ex2_who: "Ma sœur",
+    tb_ex2_thing: "Que j'organise toutes les réunions de famille depuis six ans et que j'en ai assez, et que quand elle dit « toi tu fais ça mieux », ce que j'entends c'est que c'est réglé.",
+    tb_ex2_why: "Parce qu'elle dira que j'aurais dû le dire il y a des années, et elle aura raison. Et parce qu'une partie de moi voulait vraiment être celle qui le fait bien.",
+    tb_ex2_context: "On s'entend bien. Deux enfants chacune, elle habite à vingt minutes. Personne n'a jamais décidé que ce serait moi — c'est resté vrai jusqu'à devenir l'arrangement.",
     tb_title: "Truth Bomb",
     tb_tagline: "Ce que vous savez mais ne dites pas — exploré, son coût évalué et scénarisé de trois façons",
     tb_hook: "C'est privé. Aucun jugement ici — juste de la clarté.",
@@ -431,6 +459,10 @@ export const truthBomb = {
     tb_ex_context: "Amitié de plus de 15 ans, on vit dans des villes différentes maintenant mais on se parle chaque semaine. Ses autres amis proches font tous partie de son cercle de fête.",
   },
   de: {
+    tb_ex2_who: "Meine Schwester",
+    tb_ex2_thing: "Dass ich seit sechs Jahren jedes Familientreffen ausrichte und müde bin — und dass ich, wenn sie sagt „du kannst das eben besser“, höre: damit ist es entschieden.",
+    tb_ex2_why: "Weil sie sagen wird, ich hätte das vor Jahren ansprechen sollen — und sie hat recht. Und weil ein Teil von mir wirklich diejenige sein wollte, die das gut macht.",
+    tb_ex2_context: "Wir verstehen uns gut. Je zwei Kinder, sie wohnt zwanzig Minuten weg. Niemand hat je entschieden, dass ich ausrichte — es war einfach immer so, bis es die Regel wurde.",
     tb_title: "Truth Bomb",
     tb_tagline: "Das, was du weißt, aber nicht sagst — beleuchtet, mit Kosten beziffert und in drei Varianten formuliert",
     tb_hook: "Das ist privat. Kein Urteil hier — nur Klarheit.",
@@ -492,6 +524,10 @@ export const truthBomb = {
     tb_ex_context: "Über 15 Jahre Freundschaft, wir leben jetzt in verschiedenen Städten, telefonieren aber wöchentlich. Seine anderen engen Freunde gehören alle zu seinem Trinkkreis.",
   },
   ja: {
+    tb_ex2_who: "妹",
+    tb_ex2_thing: "六年間、家族の集まりはすべて私が引き受けてきて、もう疲れたということ。そして妹が「お姉ちゃんのほうが向いてるから」と言うとき、私にはそれが「この件は決まり」と聞こえるということ。",
+    tb_ex2_why: "妹に「もっと前に言えばよかったのに」と言われるだろうし、それは正しいからです。そして私自身、それを上手にこなす人でいたい気持ちも確かにあったからです。",
+    tb_ex2_context: "仲は良いです。お互い子どもが二人、妹の家までは車で二十分。私が引き受けると決めた人は誰もいません。ただそうであり続けて、いつのまにか取り決めになりました。",
     tb_title: "Truth Bomb",
     tb_tagline: "わかっているのに言えないこと——掘り下げ、代償を見積もり、3通りの言い方に。",
     tb_hook: "これは非公開です。ここに評価はありません——ただ明晰さだけ。",
@@ -553,6 +589,10 @@ export const truthBomb = {
     tb_ex_context: "15年以上の友情で、今は別々の街に住んでいるけれど毎週話している。彼の他の親しい友人はみんな飲み仲間の輪の中。",
   },
   ko: {
+    tb_ex2_who: "여동생",
+    tb_ex2_thing: "6년째 가족 모임을 전부 내가 준비하고 있고 이제 지쳤다는 것. 그리고 동생이 '언니가 더 잘하잖아'라고 할 때 나에게는 그게 '이건 정해진 일'로 들린다는 것.",
+    tb_ex2_why: "동생이 '진작 말하지 그랬어'라고 할 텐데, 그 말이 맞기 때문입니다. 그리고 제 안에도 그걸 잘 해내는 사람이고 싶은 마음이 분명히 있었기 때문입니다.",
+    tb_ex2_context: "사이는 좋습니다. 둘 다 아이가 둘이고, 동생은 20분 거리에 삽니다. 제가 하기로 정한 사람은 아무도 없었어요. 그냥 계속 그래오다가 그게 규칙이 됐습니다.",
     tb_title: "Truth Bomb",
     tb_tagline: "알면서도 말하지 못하는 것 — 들여다보고, 대가를 따져보고, 세 가지로 대본을 만들어 드립니다",
     tb_hook: "이건 비공개입니다. 여기엔 판단이 없어요 — 오직 명료함뿐.",
@@ -614,6 +654,10 @@ export const truthBomb = {
     tb_ex_context: "15년 넘은 우정이고, 지금은 다른 도시에 살지만 매주 통화해요. 그 친구의 다른 가까운 친구들은 다 술자리 무리예요.",
   },
   ru: {
+    tb_ex2_who: "Моя сестра",
+    tb_ex2_thing: "Что я шесть лет принимаю все семейные сборы и устала, и что когда она говорит «у тебя это просто лучше получается», я слышу: вопрос закрыт.",
+    tb_ex2_why: "Потому что она скажет, что мне следовало сказать об этом много лет назад, и будет права. И потому что часть меня действительно хотела быть той, кто делает это хорошо.",
+    tb_ex2_context: "Мы ладим. У каждой по двое детей, она живёт в двадцати минутах. Никто никогда не решал, что принимаю я — просто так повелось и стало порядком.",
     tb_title: "Truth Bomb",
     tb_tagline: "То, что вы знаете, но не говорите — разобрано, оценено по цене и оформлено тремя способами",
     tb_hook: "Это конфиденциально. Здесь нет осуждения — только ясность.",
@@ -675,6 +719,10 @@ export const truthBomb = {
     tb_ex_context: "Дружбе больше 15 лет, теперь живём в разных городах, но созваниваемся каждую неделю. Все его остальные близкие друзья — из той же компании, где пьют.",
   },
   th: {
+    tb_ex2_who: "น้องสาวของฉัน",
+    tb_ex2_thing: "ว่าฉันเป็นเจ้าภาพงานรวมญาติทุกครั้งมาหกปีแล้วและเหนื่อยแล้ว และเวลาที่เธอพูดว่า 'พี่ทำได้ดีกว่า' สิ่งที่ฉันได้ยินคือเรื่องนี้จบไปแล้ว",
+    tb_ex2_why: "เพราะเธอจะบอกว่าฉันน่าจะพูดตั้งนานแล้ว และเธอก็พูดถูก และเพราะส่วนหนึ่งของฉันก็อยากเป็นคนที่ทำเรื่องนี้ได้ดีจริง ๆ",
+    tb_ex2_context: "เราสนิทกันดี ต่างมีลูกคนละสองคน เธออยู่ห่างออกไปยี่สิบนาที ไม่เคยมีใครตัดสินใจว่าฉันต้องเป็นเจ้าภาพ — มันแค่เป็นแบบนั้นเรื่อยมาจนกลายเป็นข้อตกลง",
     tb_title: "Truth Bomb",
     tb_tagline: "สิ่งที่คุณรู้แต่ไม่ยอมพูด — สำรวจ ตีราคา และเรียบเรียงเป็นสามแบบ",
     tb_hook: "นี่เป็นเรื่องส่วนตัว ไม่มีการตัดสินที่นี่ — มีแต่ความกระจ่าง",
@@ -736,6 +784,10 @@ export const truthBomb = {
     tb_ex_context: "เป็นเพื่อนกันมากว่า 15 ปี ตอนนี้อยู่คนละเมืองแต่คุยกันทุกสัปดาห์ เพื่อนสนิทคนอื่น ๆ ของเขาอยู่ในวงเหล้าเดียวกันหมด",
   },
   vi: {
+    tb_ex2_who: "Em gái tôi",
+    tb_ex2_thing: "Rằng suốt sáu năm nay tôi lo mọi buổi họp mặt gia đình và tôi mệt rồi, và khi em bảo 'chị làm việc đó giỏi hơn mà', điều tôi nghe thấy là chuyện này đã được chốt.",
+    tb_ex2_why: "Vì em sẽ bảo lẽ ra tôi phải nói từ nhiều năm trước, và em đúng. Và vì một phần trong tôi thật sự muốn là người làm việc đó giỏi.",
+    tb_ex2_context: "Chúng tôi hợp nhau. Mỗi người hai con, em ở cách hai mươi phút. Chưa ai từng quyết định rằng tôi là người đứng ra tổ chức — chỉ là cứ thế mãi rồi thành lệ.",
     tb_title: "Truth Bomb",
     tb_tagline: "Điều bạn biết nhưng không nói — được khám phá, định giá và soạn thành ba cách",
     tb_hook: "Đây là riêng tư. Không phán xét ở đây — chỉ có sự sáng tỏ.",

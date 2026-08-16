@@ -4,6 +4,10 @@
 // AT&T, iPhone 16) stay as-is across languages.
 export const upsellShield = {
   en: {
+    us_ex2_situation: "Meeting the funeral director tomorrow to arrange my father's cremation",
+    us_ex2_want: "A simple cremation, no viewing, no casket upgrade. He was explicit about this and wrote it down.",
+    us_ex2_budget: "Around {{sym}}1,800. There is no estate to draw on — this comes out of my own account.",
+    us_ex2_concerns: "That saying no to anything will look like I did not love him. I have been told the basic option is 'what most families find rather bare'. I cried twice on the phone and I will be on my own in the room.",
     us_title: "Upsell Shield",
     us_tagline: "Walk into high-pressure sales prepared",
     us_hook: "Sales environments are scripted. The anchoring, the urgency, the manager routine — it's all rehearsed. UpsellShield maps the exact playbook they'll run and puts the counter-moves in your hands before you walk in the door.",
@@ -66,6 +70,10 @@ export const upsellShield = {
     us_sit_realestate: "Real estate open house",
   },
   es: {
+    us_ex2_situation: "Mañana tengo cita con la funeraria para organizar la incineración de mi padre",
+    us_ex2_want: "Una incineración sencilla, sin velatorio ni ataúd mejorado. Él lo dejó dicho y por escrito.",
+    us_ex2_budget: "Unos {{sym}}1.800. No hay herencia de la que tirar: sale de mi propia cuenta.",
+    us_ex2_concerns: "Que decir que no a algo parezca que no lo quería. Ya me han dicho que la opción básica es «lo que a la mayoría de las familias le resulta bastante escueto». Lloré dos veces por teléfono y estaré sola allí.",
     us_title: "Upsell Shield",
     us_tagline: "Entra preparado a una venta de alta presión",
     us_hook: "Los entornos de venta están guionizados. El anclaje, la urgencia, la rutina del gerente: todo está ensayado. UpsellShield traza el guion exacto que usarán y pone las contramedidas en tus manos antes de cruzar la puerta.",
@@ -128,6 +136,10 @@ export const upsellShield = {
     us_sit_realestate: "Jornada de puertas abiertas inmobiliaria",
   },
   zh: {
+    us_ex2_situation: "明天要去殡仪馆安排父亲的火化事宜",
+    us_ex2_want: "简单火化，不设瞻仰，不升级棺木。这是他明确交代过并且写下来的。",
+    us_ex2_budget: "大约 {{sym}}1,800。没有遗产可用——这笔钱是从我自己的账户里出的。",
+    us_ex2_concerns: "怕拒绝任何一项，看起来就像我不够爱他。他们已经说过，最基本的方案「多数家庭会觉得太过简朴」。我在电话里哭了两次，而且到时候只有我一个人在场。",
     us_title: "Upsell Shield",
     us_tagline: "有备而来，从容应对高压推销",
     us_hook: "销售场景都是有剧本的。锚定、制造紧迫感、找经理那一套——全是排练好的。UpsellShield 帮你还原他们将要使用的完整套路，在你踏进门之前就把反制招数交到你手中。",
@@ -190,6 +202,10 @@ export const upsellShield = {
     us_sit_realestate: "房产开放日",
   },
   hi: {
+    us_ex2_situation: "कल अंतिम संस्कार निदेशक से मिलकर पिता के दाह-संस्कार की व्यवस्था करनी है",
+    us_ex2_want: "साधारण दाह-संस्कार, कोई दर्शन नहीं, कोई महँगा ताबूत नहीं। उन्होंने यह साफ़ कहा था और लिखकर भी रखा था।",
+    us_ex2_budget: "करीब {{sym}}1,800। कोई संपत्ति नहीं है जिससे यह निकले — यह मेरे अपने खाते से जा रहा है।",
+    us_ex2_concerns: "कि किसी भी चीज़ के लिए 'ना' कहना ऐसा लगेगा जैसे मुझे उनसे प्यार नहीं था। मुझसे कहा जा चुका है कि बेसिक विकल्प 'ज़्यादातर परिवारों को काफ़ी सूना लगता है'। मैं फ़ोन पर दो बार रो चुकी हूँ और वहाँ अकेली रहूँगी।",
     us_title: "Upsell Shield",
     us_tagline: "उच्च-दबाव वाली बिक्री में तैयार होकर जाएं",
     us_hook: "बिक्री का माहौल पूरी तरह स्क्रिप्टेड होता है। एंकरिंग, जल्दबाज़ी, मैनेजर वाला तरीका — सब पहले से रिहर्स किया हुआ है। UpsellShield ठीक उसी प्लेबुक का खाका खींचता है जो वे चलाएंगे, और दरवाज़े से अंदर जाने से पहले ही जवाबी चालें आपके हाथ में दे देता है।",
@@ -252,6 +268,10 @@ export const upsellShield = {
     us_sit_realestate: "रियल एस्टेट ओपन हाउस",
   },
   ar: {
+    us_ex2_situation: "غداً موعدي مع مدير دار الجنازات لترتيب حرق جثمان والدي",
+    us_ex2_want: "حرق بسيط، بلا عزاء مفتوح ولا ترقية للنعش. لقد قال ذلك صراحةً وكتبه.",
+    us_ex2_budget: "نحو {{sym}}1,800. لا توجد تركة يُسحب منها — المبلغ من حسابي الخاص.",
+    us_ex2_concerns: "أن رفض أي شيء سيبدو وكأنني لم أحبه. قيل لي إن الخيار الأساسي «يجده معظم الأهالي بسيطاً أكثر من اللازم». بكيت مرتين على الهاتف وسأكون وحدي في تلك الغرفة.",
     us_title: "Upsell Shield",
     us_tagline: "ادخل إلى عمليات البيع عالية الضغط مستعدًا",
     us_hook: "بيئات البيع مكتوبة سلفًا. التثبيت السعري، والإلحاح، وروتين المدير — كله مُتدرَّب عليه. يرسم UpsellShield الخطة الدقيقة التي سيتبعونها ويضع الردود المضادة بين يديك قبل أن تدخل من الباب.",
@@ -314,6 +334,10 @@ export const upsellShield = {
     us_sit_realestate: "يوم مفتوح عقاري",
   },
   pt: {
+    us_ex2_situation: "Amanhã tenho reunião com a agência funerária para tratar da cremação do meu pai",
+    us_ex2_want: "Uma cremação simples, sem velório nem caixão melhorado. Ele foi explícito e deixou escrito.",
+    us_ex2_budget: "Cerca de {{sym}}1.800. Não há herança de onde tirar — sai da minha conta.",
+    us_ex2_concerns: "Que dizer que não a alguma coisa pareça que não gostava dele. Já me disseram que a opção básica é «o que a maioria das famílias acha demasiado despido». Chorei duas vezes ao telefone e vou estar sozinha na sala.",
     us_title: "Upsell Shield",
     us_tagline: "Entre preparado em vendas de alta pressão",
     us_hook: "Ambientes de venda são roteirizados. A ancoragem, a urgência, a rotina do gerente — tudo é ensaiado. O UpsellShield mapeia o roteiro exato que vão usar e coloca os contra-ataques nas suas mãos antes de você entrar pela porta.",
@@ -376,6 +400,10 @@ export const upsellShield = {
     us_sit_realestate: "Visita aberta de imóvel",
   },
   fr: {
+    us_ex2_situation: "Demain, rendez-vous avec le directeur des pompes funèbres pour organiser la crémation de mon père",
+    us_ex2_want: "Une crémation simple, sans exposition, sans cercueil haut de gamme. Il l'avait dit clairement et mis par écrit.",
+    us_ex2_budget: "Environ {{sym}}1 800. Il n'y a pas de succession pour couvrir cela : ça sort de mon compte.",
+    us_ex2_concerns: "Que refuser quoi que ce soit donne l'impression que je ne l'aimais pas. On m'a déjà dit que la formule de base est « ce que la plupart des familles trouvent bien dépouillé ». J'ai pleuré deux fois au téléphone et je serai seule dans la pièce.",
     us_title: "Upsell Shield",
     us_tagline: "Entrez préparé dans une vente sous haute pression",
     us_hook: "Les environnements de vente sont scénarisés. L'ancrage, l'urgence, le coup du manager — tout est répété. UpsellShield cartographie le scénario exact qu'ils vont dérouler et met les contre-attaques entre vos mains avant même que vous franchissiez la porte.",
@@ -438,6 +466,10 @@ export const upsellShield = {
     us_sit_realestate: "Visite libre immobilière",
   },
   de: {
+    us_ex2_situation: "Morgen Termin beim Bestatter, um die Einäscherung meines Vaters zu regeln",
+    us_ex2_want: "Eine einfache Einäscherung, keine Aufbahrung, kein teurerer Sarg. Er hat das ausdrücklich gesagt und aufgeschrieben.",
+    us_ex2_budget: "Etwa {{sym}}1.800. Es gibt keinen Nachlass, aus dem man das nehmen könnte — das geht von meinem eigenen Konto.",
+    us_ex2_concerns: "Dass ein Nein zu irgendetwas so aussieht, als hätte ich ihn nicht geliebt. Mir wurde schon gesagt, die Basisvariante sei „das, was die meisten Familien recht karg finden“. Ich habe am Telefon zweimal geweint und werde allein dort sitzen.",
     us_title: "Upsell Shield",
     us_tagline: "Geh vorbereitet in Verkaufsgespräche mit hohem Druck",
     us_hook: "Verkaufsumgebungen folgen einem Drehbuch. Das Ankern, die Dringlichkeit, die Manager-Masche — alles ist einstudiert. UpsellShield zeichnet genau das Drehbuch nach, das sie abspulen werden, und legt dir die Gegenzüge in die Hand, bevor du zur Tür hereinkommst.",
@@ -500,6 +532,10 @@ export const upsellShield = {
     us_sit_realestate: "Immobilien-Besichtigungstermin",
   },
   ja: {
+    us_ex2_situation: "明日、葬儀社の担当者と会って父の火葬の手配をします",
+    us_ex2_want: "簡素な火葬。お別れの会も、棺のグレードアップもなし。本人がはっきりそう言い、書き残していました。",
+    us_ex2_budget: "だいたい {{sym}}1,800。使える遺産はありません。自分の口座から出します。",
+    us_ex2_concerns: "何かを断ることが、父を愛していなかったように見えるのではないかということ。基本プランは「たいていのご家族には少し寂しく感じられるもの」だと、すでに言われました。電話では二度泣きましたし、その場には私ひとりで行きます。",
     us_title: "Upsell Shield",
     us_tagline: "高圧的な営業に備えて臨もう",
     us_hook: "営業の場は台本どおりです。アンカリング、焦らせ、店長を呼ぶ流れ——すべてリハーサル済み。UpsellShield は相手が使う台本そのものを描き出し、ドアをくぐる前にあなたの手に切り返しの手を握らせます。",
@@ -562,6 +598,10 @@ export const upsellShield = {
     us_sit_realestate: "不動産のオープンハウス",
   },
   ko: {
+    us_ex2_situation: "내일 장례지도사를 만나 아버지 화장을 준비합니다",
+    us_ex2_want: "간소한 화장, 참배 절차 없이, 관 업그레이드 없이. 아버지가 분명히 말씀하셨고 적어두기까지 하셨습니다.",
+    us_ex2_budget: "약 {{sym}}1,800. 쓸 수 있는 유산은 없습니다 — 제 통장에서 나갑니다.",
+    us_ex2_concerns: "무언가를 거절하면 아버지를 사랑하지 않은 것처럼 보일까 봐 걱정입니다. 기본 옵션은 '대부분의 가족이 다소 허전하게 느끼는' 것이라는 말을 이미 들었습니다. 통화 중에 두 번 울었고, 그 자리에는 저 혼자 갑니다.",
     us_title: "Upsell Shield",
     us_tagline: "고압적인 영업에 대비해서 들어가세요",
     us_hook: "영업 현장은 모두 각본이 있습니다. 앵커링, 다급함 유발, 매니저 부르기 루틴 — 전부 리허설된 것입니다. UpsellShield는 그들이 펼칠 정확한 각본을 그려내고, 문을 들어서기 전에 반격 수를 당신 손에 쥐여 줍니다.",
@@ -624,6 +664,10 @@ export const upsellShield = {
     us_sit_realestate: "부동산 오픈하우스",
   },
   ru: {
+    us_ex2_situation: "Завтра встреча с распорядителем похорон — оформляем кремацию отца",
+    us_ex2_want: "Простая кремация, без прощания и без «улучшенного» гроба. Он сказал об этом прямо и записал.",
+    us_ex2_budget: "Около {{sym}}1 800. Наследства, из которого можно взять, нет — это с моего собственного счёта.",
+    us_ex2_concerns: "Что отказ от чего-либо будет выглядеть так, будто я его не любила. Мне уже сказали, что базовый вариант — «то, что большинству семей кажется довольно голым». Я дважды плакала по телефону и буду там одна.",
     us_title: "Upsell Shield",
     us_tagline: "Входите в жёсткие продажи подготовленным",
     us_hook: "Продажи разыграны по сценарию. Якорение, спешка, фокус с менеджером — всё отрепетировано. UpsellShield раскрывает точный сценарий, который они разыграют, и вкладывает контрприёмы вам в руки ещё до того, как вы войдёте в дверь.",
@@ -686,6 +730,10 @@ export const upsellShield = {
     us_sit_realestate: "День открытых дверей у риелтора",
   },
   th: {
+    us_ex2_situation: "พรุ่งนี้จะไปพบผู้จัดการงานศพเพื่อจัดการเรื่องฌาปนกิจของพ่อ",
+    us_ex2_want: "ฌาปนกิจแบบเรียบง่าย ไม่ต้องมีพิธีเปิดโลง ไม่ต้องอัปเกรดโลง ท่านบอกไว้ชัดเจนและเขียนไว้ด้วย",
+    us_ex2_budget: "ราว {{sym}}1,800 ไม่มีมรดกให้ใช้ — เงินก้อนนี้ออกจากบัญชีผมเอง",
+    us_ex2_concerns: "กลัวว่าการปฏิเสธอะไรสักอย่างจะดูเหมือนฉันไม่ได้รักท่าน มีคนบอกแล้วว่าแพ็กเกจพื้นฐานคือ 'สิ่งที่ครอบครัวส่วนใหญ่รู้สึกว่าโล่งเกินไป' ฉันร้องไห้สองครั้งตอนคุยโทรศัพท์ และจะต้องไปอยู่ในห้องนั้นคนเดียว",
     us_title: "Upsell Shield",
     us_tagline: "เดินเข้าไปเจอการขายแบบกดดันอย่างเตรียมพร้อม",
     us_hook: "บรรยากาศการขายล้วนมีบทเตรียมไว้ ทั้งการตั้งราคาอ้างอิง การเร่งให้รีบ และมุกเรียกผู้จัดการ — ทุกอย่างซ้อมมาแล้ว UpsellShield วาดบทที่พวกเขาจะใช้ออกมาให้เห็นชัด และมอบหมัดสวนกลับไว้ในมือคุณก่อนที่คุณจะก้าวเข้าประตู",
@@ -748,6 +796,10 @@ export const upsellShield = {
     us_sit_realestate: "บ้านเปิดให้ชมอสังหาฯ",
   },
   vi: {
+    us_ex2_situation: "Ngày mai gặp người lo tang lễ để sắp xếp việc hỏa táng cho bố tôi",
+    us_ex2_want: "Hỏa táng đơn giản, không viếng, không nâng cấp quan tài. Bố tôi đã nói rõ và ghi lại.",
+    us_ex2_budget: "Khoảng {{sym}}1.800. Không có di sản nào để trang trải — khoản này lấy từ tài khoản của tôi.",
+    us_ex2_concerns: "Rằng từ chối bất cứ thứ gì sẽ trông như tôi không thương bố. Người ta đã nói gói cơ bản là 'thứ mà phần lớn gia đình thấy khá trống trải'. Tôi đã khóc hai lần qua điện thoại và sẽ chỉ có một mình trong phòng đó.",
     us_title: "Upsell Shield",
     us_tagline: "Bước vào cuộc bán hàng áp lực cao với sự chuẩn bị",
     us_hook: "Môi trường bán hàng đều có kịch bản. Chiêu neo giá, tạo gấp gáp, màn gọi quản lý — tất cả đều được diễn tập. UpsellShield phác họa đúng kịch bản họ sẽ dùng và trao những đòn phản công vào tay bạn trước khi bạn bước qua cửa.",
