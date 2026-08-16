@@ -4,6 +4,8 @@
 // Logic, Decision Coach) stay identical across languages.
 export const futureProof = {
   en: {
+    fp_ex2_subject: "Running a two-van plumbing business",
+    fp_ex2_context: "Twenty-two years in, two vans, three people including me. Work comes from word of mouth and a listing site that now takes a bigger cut every year and puts sponsored firms above me. My eldest has no interest in taking it on. I am 54.",
     fp_title: "Future Proof",
     fp_tagline: "The 5-year trajectory on any skill, career, or bet — before you go all in",
     fp_q_label: "What are you stress-testing?",
@@ -75,6 +77,8 @@ export const futureProof = {
     fp_copy_action: "ONE ACTION:",
   },
   es: {
+    fp_ex2_subject: "Llevar un negocio de fontanería con dos furgonetas",
+    fp_ex2_context: "Veintidós años en esto, dos furgonetas, tres personas contándome a mí. El trabajo llega por el boca a boca y por un portal que cada año se queda un porcentaje mayor y coloca a empresas patrocinadas por encima de mí. A mi hijo mayor no le interesa cogerlo. Tengo 54 años.",
     fp_title: "Future Proof",
     fp_tagline: "La trayectoria a 5 años de cualquier habilidad, carrera o apuesta — antes de jugártelo todo",
     fp_q_label: "¿Qué estás poniendo a prueba?",
@@ -146,6 +150,8 @@ export const futureProof = {
     fp_copy_action: "UNA ACCIÓN:",
   },
   zh: {
+    fp_ex2_subject: "经营一家有两辆车的水暖公司",
+    fp_ex2_context: "干了二十二年，两辆车，加上我一共三个人。活儿靠口碑和一个平台，那平台每年抽成越来越高，还把付费的同行排在我前面。我大儿子对接手没兴趣。我五十四了。",
     fp_title: "Future Proof",
     fp_tagline: "在你全力投入之前，看清任何技能、职业或押注的五年走向",
     fp_q_label: "你想压力测试什么？",
@@ -217,6 +223,8 @@ export const futureProof = {
     fp_copy_action: "一个行动：",
   },
   hi: {
+    fp_ex2_subject: "दो वैन वाला प्लंबिंग का काम चलाना",
+    fp_ex2_context: "बाईस साल हो गए, दो वैन, मुझे मिलाकर तीन लोग। काम मुँहज़ुबानी और एक लिस्टिंग साइट से आता है, जो हर साल ज़्यादा कमीशन लेती है और पैसे देने वाली फ़र्मों को मुझसे ऊपर दिखाती है। मेरे बड़े बेटे की इसमें कोई दिलचस्पी नहीं। मेरी उम्र 54 है।",
     fp_title: "Future Proof",
     fp_tagline: "किसी भी कौशल, करियर या दांव का 5-साल का रुझान — पूरी तरह जुटने से पहले",
     fp_q_label: "आप किसका परीक्षण कर रहे हैं?",
@@ -288,6 +296,8 @@ export const futureProof = {
     fp_copy_action: "एक कदम:",
   },
   ar: {
+    fp_ex2_subject: "إدارة شركة سباكة بشاحنتين",
+    fp_ex2_context: "اثنتان وعشرون سنة في المهنة، شاحنتان، وثلاثة أشخاص بمن فيهم أنا. العمل يأتي من السمعة ومن موقع إعلانات صار يأخذ نسبة أكبر كل سنة ويضع الشركات المدفوعة فوقي. ابني الأكبر لا يرغب في استلامها. عمري 54.",
     fp_title: "Future Proof",
     fp_tagline: "مسار السنوات الخمس لأي مهارة أو مهنة أو رهان — قبل أن تخوض بكل ما لديك",
     fp_q_label: "ما الذي تختبر صموده؟",
@@ -359,6 +369,8 @@ export const futureProof = {
     fp_copy_action: "إجراء واحد:",
   },
   pt: {
+    fp_ex2_subject: "Gerir um negócio de canalização com duas carrinhas",
+    fp_ex2_context: "Vinte e dois anos nisto, duas carrinhas, três pessoas contando comigo. O trabalho vem do boca a boca e de um portal que leva uma fatia maior a cada ano e põe empresas patrocinadas acima de mim. O meu mais velho não tem interesse em ficar com isto. Tenho 54 anos.",
     fp_title: "Future Proof",
     fp_tagline: "A trajetória de 5 anos de qualquer habilidade, carreira ou aposta — antes de apostar tudo",
     fp_q_label: "O que você está testando ao limite?",
@@ -430,6 +442,8 @@ export const futureProof = {
     fp_copy_action: "UMA AÇÃO:",
   },
   fr: {
+    fp_ex2_subject: "Diriger une entreprise de plomberie à deux camionnettes",
+    fp_ex2_context: "Vingt-deux ans de métier, deux camionnettes, trois personnes moi compris. Le travail vient du bouche-à-oreille et d'un site d'annonces qui prend une part plus grosse chaque année et place les entreprises sponsorisées au-dessus de moi. Mon aîné n'a aucune envie de reprendre. J'ai 54 ans.",
     fp_title: "Future Proof",
     fp_tagline: "La trajectoire à 5 ans de toute compétence, carrière ou pari — avant de tout miser",
     fp_q_label: "Qu'est-ce que vous mettez à l'épreuve ?",
@@ -501,6 +515,8 @@ export const futureProof = {
     fp_copy_action: "UNE ACTION :",
   },
   de: {
+    fp_ex2_subject: "Einen Sanitärbetrieb mit zwei Fahrzeugen führen",
+    fp_ex2_context: "Zweiundzwanzig Jahre im Geschäft, zwei Fahrzeuge, drei Leute mit mir. Aufträge kommen über Mundpropaganda und ein Portal, das jedes Jahr mehr einbehält und gesponserte Betriebe über mich stellt. Mein Ältester will den Betrieb nicht übernehmen. Ich bin 54.",
     fp_title: "Future Proof",
     fp_tagline: "Die 5-Jahres-Entwicklung jeder Fähigkeit, Karriere oder Wette — bevor du alles riskierst",
     fp_q_label: "Was stellst du auf den Prüfstand?",
@@ -572,6 +588,8 @@ export const futureProof = {
     fp_copy_action: "EINE AKTION:",
   },
   ja: {
+    fp_ex2_subject: "二台体制の水道設備業を営むこと",
+    fp_ex2_context: "この仕事について二十二年、車二台、私を入れて三人です。仕事は口コミと、年々手数料が上がり広告を出した同業を私より上に並べる掲載サイトから来ます。長男は継ぐ気がありません。私は五十四歳です。",
     fp_title: "Future Proof",
     fp_tagline: "全力を注ぐ前に、あらゆるスキル・キャリア・賭けの5年後の行方を見極める",
     fp_q_label: "何をストレステストしますか？",
@@ -643,6 +661,8 @@ export const futureProof = {
     fp_copy_action: "ひとつの行動：",
   },
   ko: {
+    fp_ex2_subject: "밴 두 대로 배관 사업을 운영하는 일",
+    fp_ex2_context: "이 일을 한 지 22년, 밴 두 대, 저를 포함해 세 명입니다. 일감은 입소문과 등록 사이트에서 오는데, 그 사이트는 해마다 수수료를 더 떼고 광고를 낸 업체를 제 위에 올립니다. 큰아이는 물려받을 생각이 없습니다. 저는 쉰넷입니다.",
     fp_title: "Future Proof",
     fp_tagline: "올인하기 전에, 어떤 기술·커리어·베팅이든 5년 후의 흐름을 확인하세요",
     fp_q_label: "무엇을 스트레스 테스트하고 있나요?",
@@ -714,6 +734,8 @@ export const futureProof = {
     fp_copy_action: "하나의 행동:",
   },
   ru: {
+    fp_ex2_subject: "Управление сантехнической фирмой с двумя машинами",
+    fp_ex2_context: "Двадцать два года в деле, две машины, трое вместе со мной. Заказы идут из сарафанного радио и с площадки, которая каждый год забирает больше и ставит проплаченные фирмы выше меня. Старший сын перенимать дело не хочет. Мне 54.",
     fp_title: "Future Proof",
     fp_tagline: "Пятилетняя траектория любого навыка, карьеры или ставки — прежде чем рискнуть всем",
     fp_q_label: "Что вы проверяете на прочность?",
@@ -785,6 +807,8 @@ export const futureProof = {
     fp_copy_action: "ОДНО ДЕЙСТВИЕ:",
   },
   th: {
+    fp_ex2_subject: "การทำธุรกิจประปาที่มีรถสองคัน",
+    fp_ex2_context: "ทำมายี่สิบสองปี รถสองคัน สามคนรวมผมด้วย งานมาจากปากต่อปากและเว็บลงประกาศที่หักเปอร์เซ็นต์มากขึ้นทุกปี แถมยังดันเจ้าที่จ่ายเงินขึ้นเหนือผม ลูกชายคนโตไม่คิดจะรับช่วงต่อ ผมอายุ 54 แล้ว",
     fp_title: "Future Proof",
     fp_tagline: "ทิศทาง 5 ปีของทักษะ อาชีพ หรือการเดิมพันใด ๆ — ก่อนที่คุณจะทุ่มสุดตัว",
     fp_q_label: "คุณกำลังทดสอบความทนทานของอะไร?",
@@ -856,6 +880,8 @@ export const futureProof = {
     fp_copy_action: "หนึ่งการกระทำ:",
   },
   vi: {
+    fp_ex2_subject: "Điều hành một cơ sở sửa ống nước hai xe",
+    fp_ex2_context: "Hai mươi hai năm trong nghề, hai xe, ba người kể cả tôi. Việc đến từ truyền miệng và một trang đăng tin mỗi năm ăn phần trăm nhiều hơn, lại xếp các đơn vị trả tiền lên trên tôi. Con trai lớn không muốn tiếp quản. Tôi 54 tuổi.",
     fp_title: "Future Proof",
     fp_tagline: "Quỹ đạo 5 năm của bất kỳ kỹ năng, sự nghiệp hay canh bạc nào — trước khi bạn dốc toàn lực",
     fp_q_label: "Bạn đang kiểm tra độ bền của điều gì?",

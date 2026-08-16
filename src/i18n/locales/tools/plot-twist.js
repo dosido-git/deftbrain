@@ -3,6 +3,9 @@
 // stay as-is across languages. No currency in this tool — no {{sym}} interpolation.
 export const plotTwist = {
   en: {
+    ptw_ex2_decision: "My father can no longer live alone. Either he moves in with us, or we find a care home he does not want to go to. My brother lives abroad and has offered to help pay but not to be here.",
+    ptw_ex2_opt1: "Move him in with us",
+    ptw_ex2_opt2: "Find a care home",
     ptw_title: "Plot Twist",
     ptw_tagline: "See every angle of a tough decision — then decide with clarity",
     ptw_decision_label: "What's the decision?",
@@ -80,6 +83,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Stay at current job",
   },
   es: {
+    ptw_ex2_decision: "Mi padre ya no puede vivir solo. O se viene a vivir con nosotros, o buscamos una residencia a la que él no quiere ir. Mi hermano vive fuera y se ha ofrecido a ayudar con el dinero, pero no a estar aquí.",
+    ptw_ex2_opt1: "Que se venga a vivir con nosotros",
+    ptw_ex2_opt2: "Buscar una residencia",
     ptw_title: "Plot Twist",
     ptw_tagline: "Mira cada ángulo de una decisión difícil — y decide con claridad",
     ptw_decision_label: "¿Cuál es la decisión?",
@@ -157,6 +163,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Quedarme en el trabajo actual",
   },
   zh: {
+    ptw_ex2_decision: "我父亲已经无法独自生活了。要么搬来跟我们住，要么送去他并不想去的养老院。我弟弟在国外，说可以出钱，但不会回来。",
+    ptw_ex2_opt1: "接他来跟我们住",
+    ptw_ex2_opt2: "送去养老院",
     ptw_title: "Plot Twist",
     ptw_tagline: "看清艰难决定的每个角度——然后清醒地做出选择",
     ptw_decision_label: "你要做什么决定？",
@@ -234,6 +243,9 @@ export const plotTwist = {
     ptw_ex_opt2: "留在目前的工作",
   },
   hi: {
+    ptw_ex2_decision: "मेरे पिता अब अकेले नहीं रह सकते। या तो वे हमारे साथ आ जाएँ, या हम कोई केयर होम ढूँढें जहाँ वे जाना नहीं चाहते। मेरा भाई विदेश में है — पैसे देने को तैयार है, पर यहाँ रहने को नहीं।",
+    ptw_ex2_opt1: "उन्हें अपने साथ रखना",
+    ptw_ex2_opt2: "केयर होम ढूँढना",
     ptw_title: "Plot Twist",
     ptw_tagline: "किसी कठिन निर्णय का हर पहलू देखें — फिर स्पष्टता से फैसला करें",
     ptw_decision_label: "निर्णय क्या है?",
@@ -311,6 +323,9 @@ export const plotTwist = {
     ptw_ex_opt2: "मौजूदा नौकरी में बने रहना",
   },
   ar: {
+    ptw_ex2_decision: "لم يعد والدي قادراً على العيش وحده. إما أن ينتقل للعيش معنا، أو نبحث عن دار رعاية لا يريد الذهاب إليها. أخي يعيش في الخارج وعرض المساعدة بالمال، لا بالحضور.",
+    ptw_ex2_opt1: "أن ينتقل للعيش معنا",
+    ptw_ex2_opt2: "البحث عن دار رعاية",
     ptw_title: "Plot Twist",
     ptw_tagline: "انظر إلى كل زاوية من قرار صعب — ثم قرّر بوضوح",
     ptw_decision_label: "ما هو القرار؟",
@@ -388,6 +403,9 @@ export const plotTwist = {
     ptw_ex_opt2: "البقاء في الوظيفة الحالية",
   },
   pt: {
+    ptw_ex2_decision: "O meu pai já não consegue viver sozinho. Ou vem viver connosco, ou procuramos um lar onde ele não quer ir. O meu irmão vive no estrangeiro e ofereceu-se para ajudar a pagar, mas não para estar cá.",
+    ptw_ex2_opt1: "Trazê-lo para viver connosco",
+    ptw_ex2_opt2: "Procurar um lar",
     ptw_title: "Plot Twist",
     ptw_tagline: "Veja cada ângulo de uma decisão difícil — e decida com clareza",
     ptw_decision_label: "Qual é a decisão?",
@@ -465,6 +483,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Ficar no emprego atual",
   },
   fr: {
+    ptw_ex2_decision: "Mon père ne peut plus vivre seul. Soit il vient habiter chez nous, soit on cherche une maison de retraite où il ne veut pas aller. Mon frère vit à l'étranger et propose d'aider financièrement, pas d'être présent.",
+    ptw_ex2_opt1: "Le faire venir vivre chez nous",
+    ptw_ex2_opt2: "Chercher une maison de retraite",
     ptw_title: "Plot Twist",
     ptw_tagline: "Voyez chaque angle d'une décision difficile — puis décidez en toute clarté",
     ptw_decision_label: "Quelle est la décision ?",
@@ -542,6 +563,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Rester à l'emploi actuel",
   },
   de: {
+    ptw_ex2_decision: "Mein Vater kann nicht mehr allein leben. Entweder er zieht zu uns, oder wir suchen ein Heim, in das er nicht will. Mein Bruder lebt im Ausland und bietet an, mitzuzahlen — nicht, da zu sein.",
+    ptw_ex2_opt1: "Ihn zu uns holen",
+    ptw_ex2_opt2: "Ein Heim suchen",
     ptw_title: "Plot Twist",
     ptw_tagline: "Betrachte jeden Blickwinkel einer schweren Entscheidung — und entscheide mit Klarheit",
     ptw_decision_label: "Worum geht es bei der Entscheidung?",
@@ -619,6 +643,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Im jetzigen Job bleiben",
   },
   ja: {
+    ptw_ex2_decision: "父がもう一人では暮らせません。うちに引き取るか、本人が行きたがらない施設を探すか。弟は海外にいて、お金は出すが来ることはできないと言っています。",
+    ptw_ex2_opt1: "うちに引き取る",
+    ptw_ex2_opt2: "施設を探す",
     ptw_title: "Plot Twist",
     ptw_tagline: "難しい決断をあらゆる角度から見て、明確に決める",
     ptw_decision_label: "どんな決断ですか？",
@@ -696,6 +723,9 @@ export const plotTwist = {
     ptw_ex_opt2: "今の仕事に留まる",
   },
   ko: {
+    ptw_ex2_decision: "아버지가 더는 혼자 지낼 수 없습니다. 저희 집으로 모시거나, 본인이 가기 싫어하는 요양원을 찾아야 합니다. 동생은 외국에 있고 돈은 보태겠다지만 와 있을 수는 없다고 합니다.",
+    ptw_ex2_opt1: "우리 집으로 모신다",
+    ptw_ex2_opt2: "요양원을 찾는다",
     ptw_title: "Plot Twist",
     ptw_tagline: "어려운 결정을 모든 각도에서 살펴보고, 명확하게 결정하세요",
     ptw_decision_label: "어떤 결정인가요?",
@@ -773,6 +803,9 @@ export const plotTwist = {
     ptw_ex_opt2: "지금 직장에 남기",
   },
   ru: {
+    ptw_ex2_decision: "Отец больше не может жить один. Либо он переезжает к нам, либо мы ищем дом престарелых, куда он ехать не хочет. Брат живёт за границей и готов помогать деньгами, но не присутствием.",
+    ptw_ex2_opt1: "Забрать его к себе",
+    ptw_ex2_opt2: "Найти дом престарелых",
     ptw_title: "Plot Twist",
     ptw_tagline: "Рассмотрите все стороны трудного решения — и решите ясно",
     ptw_decision_label: "Какое это решение?",
@@ -850,6 +883,9 @@ export const plotTwist = {
     ptw_ex_opt2: "Остаться на нынешней работе",
   },
   th: {
+    ptw_ex2_decision: "พ่อผมอยู่คนเดียวไม่ไหวแล้ว ไม่ย้ายมาอยู่กับเรา ก็ต้องหาบ้านพักคนชราที่ท่านไม่อยากไป น้องชายอยู่ต่างประเทศ เสนอจะช่วยออกเงิน แต่ไม่ได้มาอยู่ด้วย",
+    ptw_ex2_opt1: "รับท่านมาอยู่ด้วย",
+    ptw_ex2_opt2: "หาบ้านพักคนชรา",
     ptw_title: "Plot Twist",
     ptw_tagline: "มองทุกแง่มุมของการตัดสินใจที่ยากลำบาก — แล้วตัดสินใจอย่างชัดเจน",
     ptw_decision_label: "เป็นการตัดสินใจเรื่องอะไร?",
@@ -927,6 +963,9 @@ export const plotTwist = {
     ptw_ex_opt2: "อยู่กับงานปัจจุบันต่อไป",
   },
   vi: {
+    ptw_ex2_decision: "Bố tôi không thể sống một mình nữa. Hoặc bố về ở với chúng tôi, hoặc tìm một viện dưỡng lão mà bố không muốn vào. Em trai tôi ở nước ngoài, đề nghị góp tiền nhưng không thể có mặt.",
+    ptw_ex2_opt1: "Đón bố về ở cùng",
+    ptw_ex2_opt2: "Tìm viện dưỡng lão",
     ptw_title: "Plot Twist",
     ptw_tagline: "Nhìn mọi góc độ của một quyết định khó — rồi quyết định một cách rõ ràng",
     ptw_decision_label: "Quyết định là gì?",
