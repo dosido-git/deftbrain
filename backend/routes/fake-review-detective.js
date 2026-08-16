@@ -103,7 +103,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -188,7 +188,7 @@ Return ONLY valid JSON:
   "playbook": {
     "tactics_detected": [
       {
-        "name": "Review Seeding",
+        "name": "Name the trick the way one person would describe it to another — 2-4 plain words. 'Borrowed trust' or 'the someone-else-loved-it move', NOT 'credibility laundering'. If a phrase would look at home in a paper on consumer psychology, it is the wrong phrase here: the reader has to recognise the pattern in the wild six months from now, and they will not be carrying a glossary. Prefer words a friend would use over words a discipline would use.",
         "icon": "🌱",
         "description": "Brief explanation of what this tactic is — 1-2 sentences",
         "evidence_here": "How it shows up in these specific reviews",
@@ -207,7 +207,7 @@ EXACTLY TWO tactics in playbook.tactics_detected — the two that show up most c
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-2' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
@@ -277,7 +277,7 @@ Return ONLY valid JSON:
           system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
           messages: [{ role: 'user', content: userPrompt }],
         }, { label: 'fake-review-detective-4' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
+        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('unified_trust_score' in parsed)) {
           return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
         }
         return res.json(parsed);
