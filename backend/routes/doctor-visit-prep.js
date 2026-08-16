@@ -126,21 +126,35 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
 The goal is NOT diagnosis. The goal is: the patient walks in knowing exactly what to say in the first two minutes, which questions matter most, and what they should mention even if the doctor does not ask.
 
-WHERE YOU MAY NAME A CONDITION. Exactly one place: red_flag_symptoms_to_report,
-and only to justify why that symptom needs seeing quickly — "these can signal a
-kidney infection or nerve compression that needs urgent evaluation" earns its
-place because someone has to know why not to wait. Nowhere else. Do not explain
-mechanisms, offer differentials, rank likelihoods, or tell the patient what
-their symptoms suggest. Every other section turns their situation into things
-to SAY and ASK; the moment it starts explaining pathology, this stops being
-visit prep and becomes a diagnosis the patient did not ask you for and cannot
-check. When a condition would be the natural thing to name, write the question
-that gets a doctor to name it instead.
+NEVER NAME A CONDITION. Not anywhere, including the red flags. "These can
+signal a kidney infection or kidney stone" tells someone what to be afraid of;
+what they actually need is what to DO, and the doing does not depend on the
+name. Write the urgency as an instruction instead:
 
-AVOID THE WORD DIAGNOSIS in anything the patient reads. "What are the most
-likely explanations?" is the question; "possible causes" is the topic. The tool
-works hard not to be a diagnostic instrument and its own vocabulary should not
-suggest otherwise.
+  "These symptoms shouldn't wait for a scheduled appointment."
+  "These deserve same-day medical attention."
+  "Call the office before your appointment rather than waiting for it."
+
+Every red flag names the SYMPTOM and the ACTION and stops there. A named disease
+is an anchor the patient carries into the room and cannot check, and it does not
+make them move any faster than a plain instruction does.
+
+The same holds everywhere else: no mechanisms, no differentials, no ranked
+likelihoods, no telling the patient what their symptoms suggest. Every section
+turns their situation into things to SAY and ASK. When a condition would be the
+natural thing to name, write the question that gets a doctor to name it instead.
+
+AVOID THE WORD DIAGNOSIS in anything the patient reads. "Possible causes" is
+the topic.
+
+AVOID THE WORD LIKELY and its family — probably, most likely, chances are.
+Each reads as a probability estimate you are in no position to make.
+
+  "What are the most likely explanations?"  →  "What explanations best fit
+                                                what we're seeing?"
+  "The doctor will likely ask this."        →  "Doctors usually ask about this."
+
+State what is typical, or ask the question. Never rate a chance.
 
 CHIEF CONCERN: ${chiefConcern.trim()}${detailBlock}${durationBlock}${severityBlock}${modifiersBlock}${medsBlock}${knownMedsBlock}${allergiesBlock}${historyBlock}${worryBlock}${outcomeBlock}${apptBlock}${bilingualInstructions}
 
@@ -173,7 +187,7 @@ Return ONLY this JSON structure (NO markdown, NO code fences):
     "Specific thing the patient should say proactively. Each item is a single, concrete sentence — not advice, not a category."
   ],
   "red_flag_symptoms_to_report": [
-    "If any symptom from the patient's description warrants urgent mention, list it here with a short reason. Only populate this array if the patient's input actually suggests a red flag. If not, return an empty array — do not invent red flags."
+    "A symptom worth acting on quickly, followed by WHAT TO DO about it — same-day care, a call to the office before the appointment, or raising it first at the appointment. Name the symptom and the action; never name a condition. 'If you develop burning when you urinate, blood in your urine, fever or chills, do not wait for the appointment — those need same-day attention.' Only populate this array if the patient's own description actually warrants it. If not, return an empty array — do not invent red flags."
   ],
   "pre_visit_checklist": [
     "Specific, actionable prep items the patient can check off before walking in. Examples: 'Write down the exact dates your symptoms started.' 'Bring your medication bottles in a bag.' 'Measure your blood pressure twice a day for three days before the visit.' Be specific to this patient's situation, not generic."
