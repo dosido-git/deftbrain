@@ -6,6 +6,8 @@
 // value (e.g. tab/mode labels) is intentional — keep it inside the string.
 export const sixDegreesOfMe = {
   en: {
+    sdm_example2_thingA: "My grandmother's allotment",
+    sdm_example2_thingB: "Why I can't delegate anything",
     sdm_tagline: "Find the hidden chains between any two parts of your life",
     sdm_cat_education_label: "Education",
     sdm_cat_education_ph: "\"Studied philosophy at UT Austin, switched from pre-med\"",
@@ -143,6 +145,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   es: {
+    sdm_example2_thingA: "El huerto de mi abuela",
+    sdm_example2_thingB: "Por qué no sé delegar nada",
     sdm_tagline: "Encuentra las cadenas ocultas entre dos partes cualesquiera de tu vida",
     sdm_cat_education_label: "Educación",
     sdm_cat_education_ph: "\"Estudié filosofía en la UT Austin, dejé el premédico\"",
@@ -280,6 +284,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   zh: {
+    sdm_example2_thingA: "我外婆的菜园",
+    sdm_example2_thingB: "为什么我什么都不肯交给别人",
     sdm_tagline: "发现你生活中任意两个部分之间隐藏的连接链",
     sdm_cat_education_label: "教育经历",
     sdm_cat_education_ph: "「在德州大学奥斯汀分校读哲学，从医学预科转过来」",
@@ -417,6 +423,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   hi: {
+    sdm_example2_thingA: "मेरी दादी का बगीचा",
+    sdm_example2_thingB: "मैं कोई काम किसी और को क्यों नहीं सौंप पाता",
     sdm_tagline: "अपने जीवन के किन्हीं दो हिस्सों के बीच छिपी हुई कड़ियाँ खोजें",
     sdm_cat_education_label: "शिक्षा",
     sdm_cat_education_ph: "\"UT ऑस्टिन में दर्शनशास्त्र पढ़ा, प्री-मेड से बदलाव किया\"",
@@ -554,6 +562,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   ar: {
+    sdm_example2_thingA: "حديقة جدتي",
+    sdm_example2_thingB: "لماذا لا أستطيع تفويض أي شيء",
     sdm_tagline: "اكتشف السلاسل الخفية بين أي جزأين من حياتك",
     sdm_cat_education_label: "التعليم",
     sdm_cat_education_ph: "\"درست الفلسفة في جامعة تكساس بأوستن، بعد أن تحولت عن الطب\"",
@@ -691,6 +701,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   pt: {
+    sdm_example2_thingA: "A horta da minha avó",
+    sdm_example2_thingB: "Porque é que não consigo delegar nada",
     sdm_tagline: "Encontre as cadeias ocultas entre quaisquer duas partes da sua vida",
     sdm_cat_education_label: "Educação",
     sdm_cat_education_ph: "\"Estudei filosofia na UT Austin, larguei o pré-medicina\"",
@@ -828,6 +840,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   fr: {
+    sdm_example2_thingA: "Le potager de ma grand-mère",
+    sdm_example2_thingB: "Pourquoi je n'arrive à déléguer rien du tout",
     sdm_tagline: "Trouvez les chaînes cachées entre deux parties quelconques de votre vie",
     sdm_cat_education_label: "Études",
     sdm_cat_education_ph: "\"Étudié la philosophie à UT Austin, abandonné la prémed\"",
@@ -965,6 +979,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   de: {
+    sdm_example2_thingA: "Der Schrebergarten meiner Großmutter",
+    sdm_example2_thingB: "Warum ich nichts abgeben kann",
     sdm_tagline: "Finde die verborgenen Ketten zwischen zwei beliebigen Teilen deines Lebens",
     sdm_cat_education_label: "Bildung",
     sdm_cat_education_ph: "\"Habe Philosophie an der UT Austin studiert, vom Medizinstudium gewechselt\"",
@@ -1102,6 +1118,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   ja: {
+    sdm_example2_thingA: "祖母の畑",
+    sdm_example2_thingB: "なぜ私は何ひとつ人に任せられないのか",
     sdm_tagline: "あなたの人生のどんな2つの部分の間にも隠れたつながりの連鎖を見つけよう",
     sdm_cat_education_label: "学歴",
     sdm_cat_education_ph: "「UTオースティンで哲学を専攻、医学部進学コースから転向」",
@@ -1239,6 +1257,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   ko: {
+    sdm_example2_thingA: "할머니의 텃밭",
+    sdm_example2_thingB: "내가 아무것도 위임하지 못하는 이유",
     sdm_tagline: "당신 삶의 어떤 두 부분 사이에 숨어 있는 연결 고리를 찾아보세요",
     sdm_cat_education_label: "학력",
     sdm_cat_education_ph: "\"UT 오스틴에서 철학 전공, 의예과에서 전향\"",
@@ -1376,6 +1396,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   ru: {
+    sdm_example2_thingA: "Огород моей бабушки",
+    sdm_example2_thingB: "Почему я не умею ничего делегировать",
     sdm_tagline: "Найдите скрытые цепочки между любыми двумя частями вашей жизни",
     sdm_cat_education_label: "Образование",
     sdm_cat_education_ph: "\"Изучал философию в UT Austin, перешёл с подготовки к медицине\"",
@@ -1513,6 +1535,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   th: {
+    sdm_example2_thingA: "สวนผักของยาย",
+    sdm_example2_thingB: "ทำไมฉันถึงมอบหมายงานให้ใครไม่ได้เลย",
     sdm_tagline: "ค้นหาสายเชื่อมโยงที่ซ่อนอยู่ระหว่างสองส่วนใดก็ตามในชีวิตของคุณ",
     sdm_cat_education_label: "การศึกษา",
     sdm_cat_education_ph: "\"เรียนปรัชญาที่ UT Austin หลังเปลี่ยนจากสายเตรียมแพทย์\"",
@@ -1650,6 +1674,8 @@ export const sixDegreesOfMe = {
     sdm_related_dream: "🌙 Dream Pattern Spotter",
   },
   vi: {
+    sdm_example2_thingA: "Mảnh vườn của bà tôi",
+    sdm_example2_thingB: "Vì sao tôi không giao việc cho ai được",
     sdm_tagline: "Tìm những chuỗi liên kết ẩn giữa hai phần bất kỳ trong cuộc đời bạn",
     sdm_cat_education_label: "Học vấn",
     sdm_cat_education_ph: "\"Học triết học tại UT Austin, chuyển từ dự bị y khoa\"",

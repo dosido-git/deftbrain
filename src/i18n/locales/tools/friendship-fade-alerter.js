@@ -5,6 +5,8 @@
 // (e.g. button labels that include an icon) is intentional — keep it inside the string.
 export const friendshipFadeAlerter = {
   en: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Best man at my wedding. We stopped talking after the falling out about the flat deposit, which was six years ago and neither of us has mentioned since. I have no idea if he'd want to hear from me.",
     ffa_tagline: "Never lose touch with people you care about",
     ffa_rel_close_friend: "Close Friend",
     ffa_rel_friend: "Friend",
@@ -185,6 +187,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 If You'd Rather Not Say It",
   },
   es: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Fue mi padrino de boda. Dejamos de hablarnos tras la bronca por la fianza del piso, hace ya seis años, y ninguno de los dos lo ha vuelto a mencionar. No tengo ni idea de si querría saber de mí.",
     ffa_tagline: "Nunca pierdas el contacto con las personas que te importan",
     ffa_rel_close_friend: "Amigo cercano",
     ffa_rel_friend: "Amigo",
@@ -365,6 +369,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 Si prefieres no decirlo",
   },
   zh: {
+    ffa_example2_name: "丹尼",
+    ffa_example2_notes: "他是我婚礼的伴郎。自从为了租房押金那次闹翻，我们就没再联系过，那已经是六年前的事，谁也没再提起。我完全不知道他还想不想收到我的消息。",
     ffa_tagline: "永远不会与你在乎的人失去联系",
     ffa_rel_close_friend: "挚友",
     ffa_rel_friend: "朋友",
@@ -545,6 +551,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 如果你宁愿不说出口",
   },
   hi: {
+    ffa_example2_name: "डैनी आर.",
+    ffa_example2_notes: "मेरी शादी में बेस्ट मैन था। फ़्लैट के डिपॉज़िट को लेकर झगड़े के बाद बात बंद हो गई — छह साल हो गए, और हममें से किसी ने दोबारा ज़िक्र नहीं किया। पता नहीं वो मुझसे सुनना भी चाहेगा या नहीं।",
     ffa_tagline: "उन लोगों से कभी संपर्क न खोएं जिनकी आप परवाह करते हैं",
     ffa_rel_close_friend: "करीबी दोस्त",
     ffa_rel_friend: "दोस्त",
@@ -725,6 +733,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 अगर आप यह कहना न चाहें",
   },
   ar: {
+    ffa_example2_name: "داني ر.",
+    ffa_example2_notes: "كان إشبيني في زفافي. توقفنا عن الكلام بعد الخلاف حول تأمين الشقة، وذلك قبل ست سنوات ولم يذكره أي منا منذ ذلك الحين. لا أعرف إن كان يرغب في أن أتواصل معه.",
     ffa_tagline: "لا تفقد التواصل أبدًا مع الأشخاص الذين تهتم بهم",
     ffa_rel_close_friend: "صديق مقرب",
     ffa_rel_friend: "صديق",
@@ -905,6 +915,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 إذا كنت تفضّل عدم قول ذلك",
   },
   pt: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Foi o meu padrinho de casamento. Deixámos de falar depois da zanga por causa da caução do apartamento, há seis anos, e nenhum de nós voltou a tocar no assunto. Não faço ideia se ele quereria ter notícias minhas.",
     ffa_tagline: "Nunca perca o contato com as pessoas de quem você gosta",
     ffa_rel_close_friend: "Amigo próximo",
     ffa_rel_friend: "Amigo",
@@ -1085,6 +1097,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 Se você preferir não dizer",
   },
   fr: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Il était mon témoin de mariage. On ne se parle plus depuis la brouille sur la caution de l'appartement, il y a six ans, et aucun de nous n'en a reparlé. Je n'ai aucune idée s'il aurait envie d'avoir de mes nouvelles.",
     ffa_tagline: "Ne perdez jamais le contact avec les gens qui comptent",
     ffa_rel_close_friend: "Ami proche",
     ffa_rel_friend: "Ami",
@@ -1265,6 +1279,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 Si vous préférez ne rien dire",
   },
   de: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Er war mein Trauzeuge. Seit dem Streit um die Wohnungskaution reden wir nicht mehr — sechs Jahre her, und keiner von uns hat es je wieder erwähnt. Ich habe keine Ahnung, ob er von mir hören wollen würde.",
     ffa_tagline: "Verliere nie den Kontakt zu Menschen, die dir wichtig sind",
     ffa_rel_close_friend: "Enge Freundin/Freund",
     ffa_rel_friend: "Freund/Freundin",
@@ -1445,6 +1461,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 Falls du es lieber nicht sagen möchtest",
   },
   ja: {
+    ffa_example2_name: "ダニー",
+    ffa_example2_notes: "結婚式のベストマンでした。部屋の敷金をめぐって揉めてから連絡が途絶えたままです。六年前の話で、どちらもその後ふれていません。彼が私からの連絡を望むかどうか、まったくわかりません。",
     ffa_tagline: "大切な人と決して疎遠にならないために",
     ffa_rel_close_friend: "親友",
     ffa_rel_friend: "友人",
@@ -1625,6 +1643,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 言いたくない場合",
   },
   ko: {
+    ffa_example2_name: "대니",
+    ffa_example2_notes: "제 결혼식 들러리였습니다. 전세 보증금 문제로 크게 다툰 뒤로 연락이 끊겼어요. 벌써 6년 전 일이고, 둘 다 그 얘기를 다시 꺼낸 적이 없습니다. 그가 제 연락을 반가워할지 전혀 모르겠어요.",
     ffa_tagline: "소중한 사람들과 결코 연락이 끊기지 않도록",
     ffa_rel_close_friend: "절친",
     ffa_rel_friend: "친구",
@@ -1805,6 +1825,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 말하고 싶지 않다면",
   },
   ru: {
+    ffa_example2_name: "Дэнни Р.",
+    ffa_example2_notes: "Он был свидетелем на моей свадьбе. Мы перестали общаться после ссоры из-за залога за квартиру — шесть лет назад, и с тех пор ни один из нас об этом не заговаривал. Понятия не имею, захочет ли он услышать меня.",
     ffa_tagline: "Никогда не теряйте связь с дорогими вам людьми",
     ffa_rel_close_friend: "Близкий друг",
     ffa_rel_friend: "Друг",
@@ -1985,6 +2007,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 Если вы предпочли бы не говорить этого",
   },
   th: {
+    ffa_example2_name: "แดนนี่",
+    ffa_example2_notes: "เขาเป็นเพื่อนเจ้าบ่าวในงานแต่งของผม เราเลิกคุยกันหลังทะเลาะเรื่องเงินมัดจำห้องเช่า ผ่านมาหกปีแล้วและไม่มีใครพูดถึงมันอีกเลย ผมไม่รู้ว่าเขาจะอยากได้ยินจากผมไหม",
     ffa_tagline: "อย่าขาดการติดต่อกับคนที่คุณห่วงใย",
     ffa_rel_close_friend: "เพื่อนสนิท",
     ffa_rel_friend: "เพื่อน",
@@ -2165,6 +2189,8 @@ export const friendshipFadeAlerter = {
     ffa_rather_not_say: "🔄 หากคุณไม่อยากพูดออกไป",
   },
   vi: {
+    ffa_example2_name: "Danny R.",
+    ffa_example2_notes: "Cậu ấy là phù rể đám cưới tôi. Chúng tôi ngừng nói chuyện sau vụ cãi nhau về tiền cọc căn hộ, sáu năm trước, và cả hai chưa ai nhắc lại. Tôi không biết cậu ấy có muốn nghe tin từ tôi không.",
     ffa_tagline: "Đừng bao giờ mất liên lạc với những người bạn quan tâm",
     ffa_rel_close_friend: "Bạn thân",
     ffa_rel_friend: "Bạn bè",

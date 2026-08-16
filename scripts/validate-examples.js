@@ -55,6 +55,18 @@ for (const file of fs.readdirSync(TOOLS).filter(f => f.endsWith('.js'))) {
     cut += b - a;
   }
 
+  // Boolean-keyed option objects — `concerns: { noise: true, smells: true }` —
+  // select by KEY, so a misspelt key fails exactly as silently as a misspelt
+  // value. SensoryMinefieldMapper shipped `unpredictable: true` past the
+  // value-only version of this check.
+  for (const m2 of block.matchAll(/\b(?:concerns|challenges|activities|emotional|symptoms|warningSigns)\s*:\s*\{([^}]*)\}/g)) {
+    for (const [, key] of m2[1].matchAll(/(\w+)\s*:\s*(?:true|false)/g)) {
+      if (!outside.includes(`'${key}'`) && !outside.includes(`"${key}"`) && !new RegExp(`\\b${key}\\s*:`).test(outside)) {
+        bad.push(`   ${file.replace('.js', '').padEnd(24)} { ${key}: true } — not an option`);
+      }
+    }
+  }
+
   for (const [, field, value] of block.matchAll(/(\w+)\s*:\s*'([a-z][a-z0-9_-]{1,22})'/g)) {
     if (field.toLowerCase().endsWith('key') || field === 'id') continue;
     if (FREE_TEXT.has(field) || value === 'true' || value === 'false') continue;

@@ -3,6 +3,8 @@
 // across languages. This tool has no currency values, so no {{sym}} is used.
 export const nameThatFeeling = {
   en: {
+    ntf_ex2_desc: "A friend told me their good news and I felt something drop before I felt happy for them. The happy part was real. So was the other part, and I don't have a word for it that isn't just 'jealous', which isn't quite right either.",
+    ntf_ex2_context: "They deserved it completely and I'd have been upset for them if it hadn't happened. It passed in about a minute. I still think about it.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Describe a feeling you can't name — I'll find the word",
     ntf_q_label: "What does it feel like?",
@@ -45,6 +47,8 @@ export const nameThatFeeling = {
     ntf_error: "Search failed",
   },
   es: {
+    ntf_ex2_desc: "Un amigo me contó una buena noticia y sentí que algo se me caía antes de alegrarme por él. La alegría era real. Lo otro también, y no tengo una palabra para eso que no sea «envidia», que tampoco encaja del todo.",
+    ntf_ex2_context: "Se lo merecía del todo, y me habría dolido por él si no le hubiera pasado. Se me pasó en un minuto. Y sigo dándole vueltas.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Describe una emoción que no sabes nombrar — yo encontraré la palabra",
     ntf_q_label: "¿Cómo se siente?",
@@ -87,6 +91,8 @@ export const nameThatFeeling = {
     ntf_error: "La búsqueda falló",
   },
   zh: {
+    ntf_ex2_desc: "朋友告诉我他的好消息，我先是心里一沉，然后才为他高兴。高兴是真的。那一沉也是真的，可我找不到一个词来形容它——除了「嫉妒」，而那又不太准确。",
+    ntf_ex2_context: "他完全配得上这个消息，如果没成，我反而会替他难过。那种感觉大概一分钟就过去了。可我到现在还在想。",
     ntf_title: "Name That Feeling",
     ntf_tagline: "描述一种你说不出名字的感受——我来帮你找到那个词",
     ntf_q_label: "那是什么感觉？",
@@ -129,6 +135,8 @@ export const nameThatFeeling = {
     ntf_error: "搜索失败",
   },
   hi: {
+    ntf_ex2_desc: "एक दोस्त ने अपनी खुशखबरी सुनाई और खुश होने से पहले भीतर कुछ बैठ-सा गया। खुशी सच्ची थी। वो दूसरी चीज़ भी सच्ची थी, और उसके लिए मेरे पास 'जलन' के अलावा कोई शब्द नहीं — और वो भी ठीक नहीं बैठता।",
+    ntf_ex2_context: "वो पूरी तरह इसके हक़दार थे, और अगर ऐसा न होता तो मुझे उनके लिए दुख होता। वो एहसास एक मिनट में चला गया। फिर भी मैं उसके बारे में सोचता रहता हूँ।",
     ntf_title: "Name That Feeling",
     ntf_tagline: "ऐसी भावना बताएं जिसका नाम आपको नहीं पता — मैं उसका शब्द ढूंढ दूंगा",
     ntf_q_label: "यह कैसा महसूस होता है?",
@@ -171,6 +179,8 @@ export const nameThatFeeling = {
     ntf_error: "खोज विफल",
   },
   ar: {
+    ntf_ex2_desc: "أخبرني صديق بخبر سعيد، فشعرت بشيء يهبط في داخلي قبل أن أفرح له. الفرح كان حقيقياً. والشيء الآخر كان حقيقياً أيضاً، وليس لدي كلمة له سوى «الغيرة»، وهي ليست دقيقة تماماً.",
+    ntf_ex2_context: "كان يستحق ذلك تماماً، ولو لم يحدث لحزنت من أجله. زال الشعور خلال دقيقة تقريباً. ومع ذلك ما زلت أفكر فيه.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "صف شعوراً لا تعرف اسمه — وسأجد لك الكلمة",
     ntf_q_label: "كيف هو الشعور؟",
@@ -213,6 +223,8 @@ export const nameThatFeeling = {
     ntf_error: "فشل البحث",
   },
   pt: {
+    ntf_ex2_desc: "Um amigo contou-me uma boa notícia e senti algo cair antes de ficar feliz por ele. A alegria era real. A outra coisa também, e não tenho palavra para isso que não seja «inveja», que também não encaixa bem.",
+    ntf_ex2_context: "Merecia-o inteiramente, e teria ficado triste por ele se não tivesse acontecido. Passou-me num minuto. Continuo a pensar nisso.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Descreva um sentimento que você não sabe nomear — eu acho a palavra",
     ntf_q_label: "Como é essa sensação?",
@@ -255,6 +267,8 @@ export const nameThatFeeling = {
     ntf_error: "A busca falhou",
   },
   fr: {
+    ntf_ex2_desc: "Un ami m'a annoncé une bonne nouvelle et j'ai senti quelque chose tomber avant d'être content pour lui. La joie était réelle. L'autre chose aussi, et je n'ai pas de mot pour ça, à part « jalousie », qui ne convient pas non plus.",
+    ntf_ex2_context: "Il le méritait entièrement, et j'aurais été triste pour lui si ça n'était pas arrivé. C'est passé en une minute. J'y repense encore.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Décrivez une émotion que vous ne savez pas nommer — je trouverai le mot",
     ntf_q_label: "Ça fait quel effet ?",
@@ -297,6 +311,8 @@ export const nameThatFeeling = {
     ntf_error: "La recherche a échoué",
   },
   de: {
+    ntf_ex2_desc: "Ein Freund hat mir gute Nachrichten erzählt, und in mir ist etwas abgesackt, bevor ich mich für ihn gefreut habe. Die Freude war echt. Das andere auch, und ich habe kein Wort dafür außer „Neid“, und das trifft es auch nicht.",
+    ntf_ex2_context: "Er hatte es vollkommen verdient, und wäre es nicht passiert, hätte es mir für ihn leidgetan. Nach einer Minute war es weg. Ich denke trotzdem daran.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Beschreibe ein Gefühl, das du nicht benennen kannst — ich finde das Wort",
     ntf_q_label: "Wie fühlt es sich an?",
@@ -339,6 +355,8 @@ export const nameThatFeeling = {
     ntf_error: "Suche fehlgeschlagen",
   },
   ja: {
+    ntf_ex2_desc: "友人からいい知らせを聞いて、喜ぶより先に何かがすとんと落ちました。うれしいのは本当です。落ちたほうも本当で、それを言い表す言葉が「嫉妬」しか見つからない。でもそれもぴったりではありません。",
+    ntf_ex2_context: "その人は本当にそれに値する人で、もしうまくいかなかったら私のほうが落ち込んだと思います。その感じは一分ほどで消えました。それでもまだ考えてしまいます。",
     ntf_title: "Name That Feeling",
     ntf_tagline: "名前のつけられない気持ちを説明してください — その言葉を見つけます",
     ntf_q_label: "どんな感じですか？",
@@ -381,6 +399,8 @@ export const nameThatFeeling = {
     ntf_error: "検索に失敗しました",
   },
   ko: {
+    ntf_ex2_desc: "친구가 좋은 소식을 전했는데, 축하하는 마음보다 먼저 무언가가 툭 내려앉았습니다. 기쁜 건 진심이었어요. 내려앉은 것도 진심이었고요. 그걸 부를 말이 '질투'밖에 떠오르지 않는데, 그것도 정확하진 않습니다.",
+    ntf_ex2_context: "그 친구는 충분히 그럴 자격이 있었고, 만약 안 됐다면 제가 더 속상했을 거예요. 그 느낌은 1분쯤 뒤에 사라졌습니다. 그런데도 계속 생각납니다.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "이름 붙일 수 없는 감정을 설명해 주세요 — 제가 그 단어를 찾아드릴게요",
     ntf_q_label: "어떤 느낌인가요?",
@@ -423,6 +443,8 @@ export const nameThatFeeling = {
     ntf_error: "검색 실패",
   },
   ru: {
+    ntf_ex2_desc: "Друг рассказал хорошую новость, и внутри что-то оборвалось раньше, чем я успел за него порадоваться. Радость была настоящей. И то, другое, тоже. У меня нет для этого слова, кроме «зависть», а оно не подходит.",
+    ntf_ex2_context: "Он вполне это заслужил, и если бы не сложилось, я бы расстроился за него. Ощущение прошло за минуту. Я всё равно о нём думаю.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Опишите чувство, которому не можете дать имя — я найду слово",
     ntf_q_label: "Каково это ощущение?",
@@ -465,6 +487,8 @@ export const nameThatFeeling = {
     ntf_error: "Поиск не удался",
   },
   th: {
+    ntf_ex2_desc: "เพื่อนเล่าข่าวดีให้ฟัง แล้วมีบางอย่างในใจตกวูบก่อนที่ฉันจะดีใจกับเขา ความดีใจนั้นจริง สิ่งที่ตกวูบก็จริง และฉันไม่มีคำเรียกมันนอกจาก 'อิจฉา' ซึ่งก็ไม่ตรงเสียทีเดียว",
+    ntf_ex2_context: "เขาสมควรได้รับมันเต็มที่ ถ้าไม่ได้ ฉันคงเสียใจแทนเขาด้วยซ้ำ ความรู้สึกนั้นหายไปในราวหนึ่งนาที แต่ฉันก็ยังคิดถึงมันอยู่",
     ntf_title: "Name That Feeling",
     ntf_tagline: "อธิบายความรู้สึกที่คุณเรียกชื่อไม่ถูก — ฉันจะหาคำให้",
     ntf_q_label: "มันรู้สึกอย่างไร?",
@@ -507,6 +531,8 @@ export const nameThatFeeling = {
     ntf_error: "ค้นหาไม่สำเร็จ",
   },
   vi: {
+    ntf_ex2_desc: "Một người bạn báo tin vui, và trong tôi có gì đó chùng xuống trước khi tôi kịp mừng cho họ. Niềm vui là thật. Cái kia cũng thật, và tôi không có từ nào gọi nó ngoài 'ghen tị', mà từ đó cũng không đúng hẳn.",
+    ntf_ex2_context: "Bạn ấy hoàn toàn xứng đáng, và nếu không được thì tôi còn buồn thay. Cảm giác đó qua đi trong khoảng một phút. Vậy mà tôi vẫn nghĩ về nó.",
     ntf_title: "Name That Feeling",
     ntf_tagline: "Hãy mô tả một cảm giác bạn không gọi tên được — tôi sẽ tìm ra từ ngữ cho nó",
     ntf_q_label: "Cảm giác đó như thế nào?",

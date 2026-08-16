@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { PendingBtn, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -273,8 +274,12 @@ const SixDegreesOfMe = ({ tool }) => {
   };
 
   const loadExample = () => {
-    setThingA(t('sdm_example_thingA'));
-    setThingB(t('sdm_example_thingB'));
+    const ex = pickExample('SixDegreesOfMe', [
+      { a: 'sdm_example_thingA',  b: 'sdm_example_thingB' },
+      { a: 'sdm_example2_thingA', b: 'sdm_example2_thingB' },
+    ]);
+    setThingA(t(ex.a));
+    setThingB(t(ex.b));
     setError('');
   };
 

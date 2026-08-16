@@ -4,6 +4,8 @@
 // Spiral Stopper) stay as-is across languages.
 export const sensoryMinefieldMapper = {
   en: {
+    smm_ex2_location: "Regional hospital, outpatient wing",
+    smm_ex2_notes: "Appointment at 09:00 but they tell you to arrive at 08:30 and it never runs on time. I cannot leave and come back — if they call your name and you are not there you go to the end. Last time I was in that waiting room for two hours.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Preview any place before you go",
     smm_start_over: "Start Over",
@@ -197,6 +199,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "Going after work — usually wiped by then",
   },
   es: {
+    smm_ex2_location: "Hospital comarcal, ala de consultas externas",
+    smm_ex2_notes: "La cita es a las 09:00 pero te dicen que llegues a las 08:30 y nunca va puntual. No puedo salir y volver: si te llaman y no estás, vas al final. La última vez estuve dos horas en esa sala de espera.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Echa un vistazo a cualquier lugar antes de ir",
     smm_start_over: "Empezar de nuevo",
@@ -365,6 +369,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "Voy después del trabajo — suelo estar agotado para entonces",
   },
   zh: {
+    smm_ex2_location: "区医院门诊楼",
+    smm_ex2_notes: "预约是九点，但他们让你八点半到，而且从来不准时。我又不能出去再回来——叫到名字你不在，就得排到最后。上次我在候诊室坐了两个小时。",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "出发前先预览任何场所",
     smm_start_over: "重新开始",
@@ -533,6 +539,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "下班后去——那时通常已经精疲力尽",
   },
   hi: {
+    smm_ex2_location: "ज़िला अस्पताल, ओपीडी विंग",
+    smm_ex2_notes: "अपॉइंटमेंट 9 बजे का है पर कहते हैं 8:30 पहुँचिए, और कभी समय पर नहीं चलता। मैं बाहर जाकर वापस भी नहीं आ सकता — नाम पुकारा गया और आप नहीं हैं तो सबसे आख़िर में नंबर आता है। पिछली बार दो घंटे उसी वेटिंग रूम में बैठा रहा।",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "जाने से पहले किसी भी जगह का पूर्वावलोकन करें",
     smm_start_over: "फिर से शुरू करें",
@@ -701,6 +709,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "काम के बाद जा रहा हूँ — तब तक आमतौर पर थक चुका होता हूँ",
   },
   ar: {
+    smm_ex2_location: "المستشفى الإقليمي، جناح العيادات الخارجية",
+    smm_ex2_notes: "الموعد الساعة 9:00 لكنهم يطلبون الحضور 8:30، ولا يلتزمون بالوقت أبداً. لا أستطيع الخروج والعودة — إن نادوا اسمك ولم تكن موجوداً تعود إلى آخر الدور. آخر مرة جلست ساعتين في تلك الغرفة.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "اطّلع على أي مكان قبل أن تذهب",
     smm_start_over: "ابدأ من جديد",
@@ -869,6 +879,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "ذاهب بعد العمل — عادةً أكون منهكاً حينها",
   },
   pt: {
+    smm_ex2_location: "Hospital distrital, ala de consultas externas",
+    smm_ex2_notes: "A consulta é às 09:00 mas dizem para chegar às 08:30 e nunca cumprem a hora. Não posso sair e voltar — se chamam o nome e não estamos lá, vamos para o fim. Da última vez estive duas horas naquela sala de espera.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Veja como é qualquer lugar antes de ir",
     smm_start_over: "Recomeçar",
@@ -1037,6 +1049,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "Indo depois do trabalho — geralmente estou exausto a essa hora",
   },
   fr: {
+    smm_ex2_location: "Hôpital régional, aile des consultations externes",
+    smm_ex2_notes: "Le rendez-vous est à 9h mais on vous dit d'arriver à 8h30 et ça n'est jamais à l'heure. Je ne peux pas sortir et revenir : s'ils appellent votre nom et que vous n'êtes pas là, vous repassez à la fin. La dernière fois, deux heures dans cette salle d'attente.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Découvrez n'importe quel endroit avant d'y aller",
     smm_start_over: "Recommencer",
@@ -1205,6 +1219,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "J'y vais après le travail — je suis généralement épuisé à ce moment-là",
   },
   de: {
+    smm_ex2_location: "Kreiskrankenhaus, Ambulanztrakt",
+    smm_ex2_notes: "Der Termin ist um 9:00, man soll aber um 8:30 da sein, und pünktlich ist es nie. Rausgehen und wiederkommen geht nicht — wird dein Name aufgerufen und du bist weg, kommst du ans Ende. Letztes Mal saß ich zwei Stunden in diesem Wartezimmer.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Sieh dir jeden Ort vorab an, bevor du hingehst",
     smm_start_over: "Neu anfangen",
@@ -1373,6 +1389,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "Gehe nach der Arbeit — bin dann meist erschöpft",
   },
   ja: {
+    smm_ex2_location: "地域病院の外来棟",
+    smm_ex2_notes: "予約は9時ですが8時半に来るように言われ、時間どおりに進んだためしがありません。外に出て戻ることもできません。名前を呼ばれたときにいないと最後尾に回されます。前回はあの待合室に二時間いました。",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "行く前にどんな場所かをプレビュー",
     smm_start_over: "最初からやり直す",
@@ -1541,6 +1559,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "仕事の後に行く — その頃にはたいてい疲れ果てている",
   },
   ko: {
+    smm_ex2_location: "지역 병원 외래 병동",
+    smm_ex2_notes: "예약은 9시인데 8시 30분까지 오라고 하고, 제시간에 진행된 적이 없습니다. 나갔다 올 수도 없어요 — 이름을 불렀는데 없으면 맨 뒤로 밀립니다. 지난번에는 그 대기실에 두 시간 있었습니다.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "가기 전에 어떤 장소인지 미리 보기",
     smm_start_over: "다시 시작",
@@ -1709,6 +1729,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "퇴근 후에 감 — 그 시간이면 보통 진이 빠짐",
   },
   ru: {
+    smm_ex2_location: "Областная больница, амбулаторное крыло",
+    smm_ex2_notes: "Приём в 9:00, но просят прийти к 8:30, и вовремя не начинают никогда. Выйти и вернуться нельзя: назовут фамилию, а тебя нет — и ты в конце очереди. В прошлый раз я просидел в этой приёмной два часа.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Загляните в любое место до того, как пойти",
     smm_start_over: "Начать заново",
@@ -1877,6 +1899,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "Иду после работы — к тому времени обычно вымотан",
   },
   th: {
+    smm_ex2_location: "โรงพยาบาลประจำจังหวัด ตึกผู้ป่วยนอก",
+    smm_ex2_notes: "นัดเก้าโมง แต่เขาให้มาถึงแปดโมงครึ่ง และไม่เคยตรงเวลาเลย ผมออกไปแล้วกลับมาก็ไม่ได้ — ถ้าเรียกชื่อแล้วไม่อยู่ ต้องไปต่อท้ายคิว ครั้งที่แล้วผมนั่งในห้องรอสองชั่วโมง",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "ดูตัวอย่างสถานที่ใด ๆ ก่อนไป",
     smm_start_over: "เริ่มใหม่",
@@ -2045,6 +2069,8 @@ export const sensoryMinefieldMapper = {
     smm_ex_notes: "ไปหลังเลิกงาน — ตอนนั้นมักจะหมดแรงแล้ว",
   },
   vi: {
+    smm_ex2_location: "Bệnh viện khu vực, khu khám ngoại trú",
+    smm_ex2_notes: "Lịch hẹn 9h nhưng họ bảo đến lúc 8h30, và chưa bao giờ đúng giờ. Tôi không thể ra ngoài rồi quay lại — gọi tên mà không có mặt là phải xuống cuối. Lần trước tôi ngồi trong phòng chờ hai tiếng.",
     smm_title: "Sensory Minefield Mapper",
     smm_tagline: "Xem trước bất kỳ địa điểm nào trước khi đi",
     smm_start_over: "Bắt đầu lại",
