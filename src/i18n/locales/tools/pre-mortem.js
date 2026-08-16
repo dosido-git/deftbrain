@@ -4,6 +4,9 @@
 // stay as-is across languages.
 export const preMortem = {
   en: {
+    pm_ex2_plan: "Merge the two support teams into one queue under a single manager, starting in six weeks.",
+    pm_ex2_stakes: "Eleven people's jobs change shape. Two managers become one. If it goes badly, response times slip in front of the customers we just signed, and the person who is not made manager will probably leave.",
+    pm_ex2_assumptions: "That the two teams' processes are close enough to merge. That the one who is not promoted will stay. That six weeks is enough notice. That customers will not notice the transition. That I have been told the real reasons for the merge.",
     pm_title: "Pre-Mortem",
     pm_tagline: "The obituary for your plan — written before you execute it.",
     pm_xref_pre: "Still deciding?",
@@ -65,6 +68,9 @@ export const preMortem = {
     pm_copy_one_thing: "THE ONE THING:",
   },
   es: {
+    pm_ex2_plan: "Fusionar los dos equipos de soporte en una sola cola bajo un único responsable, dentro de seis semanas.",
+    pm_ex2_stakes: "El trabajo de once personas cambia de forma. Dos responsables pasan a ser uno. Si sale mal, los tiempos de respuesta se resienten justo delante de los clientes que acabamos de firmar, y quien no quede como responsable probablemente se marche.",
+    pm_ex2_assumptions: "Que los procesos de ambos equipos son lo bastante parecidos para fusionarse. Que quien no sea ascendido se quedará. Que seis semanas bastan de aviso. Que los clientes no notarán la transición. Que me han contado los motivos reales de la fusión.",
     pm_title: "Pre-Mortem",
     pm_tagline: "El obituario de tu plan — escrito antes de ejecutarlo.",
     pm_xref_pre: "¿Aún lo estás decidiendo?",
@@ -126,6 +132,9 @@ export const preMortem = {
     pm_copy_one_thing: "LA ÚNICA COSA:",
   },
   zh: {
+    pm_ex2_plan: "六周后把两个客服团队合并成一个工单队列，由一名主管统一负责。",
+    pm_ex2_stakes: "十一个人的岗位形态都会变，两位主管变成一位。一旦搞砸，响应时间会在我们刚签下的客户面前下滑，而没当上主管的那位大概率会走。",
+    pm_ex2_assumptions: "假设两个团队的流程接近到可以合并；假设没被提拔的那位会留下；假设六周的通知时间够用；假设客户不会察觉过渡；假设有人把合并的真实原因告诉了我。",
     pm_title: "Pre-Mortem",
     pm_tagline: "你计划的讣告——在执行之前就写好。",
     pm_xref_pre: "还在犹豫？",
@@ -187,6 +196,9 @@ export const preMortem = {
     pm_copy_one_thing: "唯一要做的事：",
   },
   hi: {
+    pm_ex2_plan: "छह हफ़्ते बाद दोनों सपोर्ट टीमों को एक ही क्यू में, एक ही मैनेजर के अधीन मिला देना।",
+    pm_ex2_stakes: "ग्यारह लोगों के काम का स्वरूप बदलेगा। दो मैनेजर घटकर एक होंगे। अगर बिगड़ा, तो जिन ग्राहकों को हमने अभी जोड़ा है उन्हीं के सामने रिस्पॉन्स टाइम गिरेगा, और जो मैनेजर नहीं बनेगा वो शायद छोड़कर चला जाएगा।",
+    pm_ex2_assumptions: "कि दोनों टीमों की प्रक्रियाएँ इतनी मिलती-जुलती हैं कि मिल सकें। कि जिसे प्रमोशन नहीं मिलेगा वो रुकेगा। कि छह हफ़्ते की सूचना काफ़ी है। कि ग्राहकों को बदलाव का पता नहीं चलेगा। कि विलय की असली वजहें मुझे बता दी गई हैं।",
     pm_title: "Pre-Mortem",
     pm_tagline: "आपकी योजना का शोक-संदेश — उसे अमल में लाने से पहले लिखा गया।",
     pm_xref_pre: "अब भी तय कर रहे हैं?",
@@ -248,6 +260,9 @@ export const preMortem = {
     pm_copy_one_thing: "एक काम:",
   },
   ar: {
+    pm_ex2_plan: "دمج فريقي الدعم في طابور واحد تحت إدارة شخص واحد، بدءاً بعد ستة أسابيع.",
+    pm_ex2_stakes: "أعمال أحد عشر شخصاً ستتغير طبيعتها. مديران يصيران واحداً. وإن ساء الأمر، ستتأخر أزمنة الاستجابة أمام العملاء الذين تعاقدنا معهم للتو، ومن لا يصبح مديراً سيغادر على الأرجح.",
+    pm_ex2_assumptions: "أن عمليات الفريقين متقاربة بما يكفي للدمج. وأن من لا يُرقَّى سيبقى. وأن ستة أسابيع مهلة كافية. وأن العملاء لن يلاحظوا الانتقال. وأنني أُخبرت بالأسباب الحقيقية للدمج.",
     pm_title: "Pre-Mortem",
     pm_tagline: "نعي خطتك — مكتوب قبل أن تنفّذها.",
     pm_xref_pre: "ما زلت تقرّر؟",
@@ -309,6 +324,9 @@ export const preMortem = {
     pm_copy_one_thing: "الشيء الوحيد:",
   },
   pt: {
+    pm_ex2_plan: "Fundir as duas equipas de suporte numa única fila sob um só responsável, daqui a seis semanas.",
+    pm_ex2_stakes: "O trabalho de onze pessoas muda de forma. Dois responsáveis passam a um. Se correr mal, os tempos de resposta caem à frente dos clientes que acabámos de assinar, e quem não ficar como responsável provavelmente sai.",
+    pm_ex2_assumptions: "Que os processos das duas equipas são suficientemente próximos para fundir. Que quem não for promovido fica. Que seis semanas chegam como aviso. Que os clientes não vão notar a transição. Que me contaram as razões verdadeiras da fusão.",
     pm_title: "Pre-Mortem",
     pm_tagline: "O obituário do seu plano — escrito antes de você executá-lo.",
     pm_xref_pre: "Ainda decidindo?",
@@ -370,6 +388,9 @@ export const preMortem = {
     pm_copy_one_thing: "A ÚNICA COISA:",
   },
   fr: {
+    pm_ex2_plan: "Fusionner les deux équipes support en une seule file sous un seul manager, dans six semaines.",
+    pm_ex2_stakes: "Le travail de onze personnes change de forme. Deux managers deviennent un. Si ça tourne mal, les délais de réponse se dégradent devant les clients qu'on vient de signer, et celui qui ne sera pas nommé partira sans doute.",
+    pm_ex2_assumptions: "Que les processus des deux équipes sont assez proches pour fusionner. Que celui qui ne sera pas promu restera. Que six semaines de préavis suffisent. Que les clients ne verront pas la transition. Qu'on m'a dit les vraies raisons de la fusion.",
     pm_title: "Pre-Mortem",
     pm_tagline: "La nécrologie de votre plan — écrite avant de l'exécuter.",
     pm_xref_pre: "Vous hésitez encore ?",
@@ -431,6 +452,9 @@ export const preMortem = {
     pm_copy_one_thing: "LA SEULE CHOSE :",
   },
   de: {
+    pm_ex2_plan: "Die beiden Support-Teams in sechs Wochen zu einer Queue unter einer Leitung zusammenlegen.",
+    pm_ex2_stakes: "Die Arbeit von elf Leuten verändert sich. Aus zwei Führungskräften wird eine. Geht es schief, rutschen die Antwortzeiten ausgerechnet vor den gerade gewonnenen Kunden ab, und wer nicht Manager wird, geht vermutlich.",
+    pm_ex2_assumptions: "Dass die Prozesse beider Teams nah genug beieinanderliegen. Dass die nicht beförderte Person bleibt. Dass sechs Wochen Vorlauf reichen. Dass Kunden den Übergang nicht merken. Dass man mir die echten Gründe für die Zusammenlegung genannt hat.",
     pm_title: "Pre-Mortem",
     pm_tagline: "Der Nachruf auf deinen Plan — geschrieben, bevor du ihn umsetzt.",
     pm_xref_pre: "Noch am Überlegen?",
@@ -492,6 +516,9 @@ export const preMortem = {
     pm_copy_one_thing: "DIE EINE SACHE:",
   },
   ja: {
+    pm_ex2_plan: "六週間後をめどに、二つのサポートチームを一本のキューに統合し、責任者を一人にする。",
+    pm_ex2_stakes: "十一人の仕事のかたちが変わります。マネージャー二人が一人になります。うまくいかなければ、契約したばかりの顧客の目の前で応答時間が悪化し、マネージャーにならなかったほうはおそらく辞めます。",
+    pm_ex2_assumptions: "二つのチームの進め方が統合できるほど近いこと。昇進しなかったほうが残ること。六週間の予告で足りること。顧客が移行に気づかないこと。そして、統合の本当の理由を私が聞かされていること。",
     pm_title: "Pre-Mortem",
     pm_tagline: "あなたの計画の死亡記事 — 実行する前に書く。",
     pm_xref_pre: "まだ迷っていますか？",
@@ -553,6 +580,9 @@ export const preMortem = {
     pm_copy_one_thing: "たったひとつのこと：",
   },
   ko: {
+    pm_ex2_plan: "6주 뒤부터 두 개의 지원 팀을 한 명의 관리자 아래 하나의 큐로 통합한다.",
+    pm_ex2_stakes: "열한 명의 업무 형태가 바뀝니다. 매니저 두 명이 한 명이 됩니다. 잘못되면 이제 막 계약한 고객들 앞에서 응답 시간이 늘어지고, 매니저가 되지 못한 쪽은 아마 떠날 겁니다.",
+    pm_ex2_assumptions: "두 팀의 프로세스가 합칠 수 있을 만큼 비슷하다는 것. 승진하지 못한 쪽이 남는다는 것. 6주면 충분한 예고라는 것. 고객이 전환을 눈치채지 못한다는 것. 그리고 통합의 진짜 이유를 내가 들었다는 것.",
     pm_title: "Pre-Mortem",
     pm_tagline: "당신 계획의 부고 — 실행하기 전에 미리 써 봅니다.",
     pm_xref_pre: "아직 고민 중이신가요?",
@@ -614,6 +644,9 @@ export const preMortem = {
     pm_copy_one_thing: "단 한 가지:",
   },
   ru: {
+    pm_ex2_plan: "Через шесть недель объединить две команды поддержки в одну очередь под одним руководителем.",
+    pm_ex2_stakes: "У одиннадцати человек меняется характер работы. Из двух руководителей остаётся один. Если пойдёт плохо, время ответа просядет на глазах у клиентов, которых мы только что подписали, а тот, кто не станет руководителем, скорее всего уйдёт.",
+    pm_ex2_assumptions: "Что процессы двух команд достаточно близки, чтобы их объединить. Что тот, кого не повысят, останется. Что шести недель предупреждения хватит. Что клиенты не заметят перехода. Что мне назвали настоящие причины слияния.",
     pm_title: "Pre-Mortem",
     pm_tagline: "Некролог вашему плану — написанный до того, как вы его осуществите.",
     pm_xref_pre: "Всё ещё решаете?",
@@ -675,6 +708,9 @@ export const preMortem = {
     pm_copy_one_thing: "ОДНА ВЕЩЬ:",
   },
   th: {
+    pm_ex2_plan: "รวมทีมซัพพอร์ตสองทีมเข้าเป็นคิวเดียวภายใต้ผู้จัดการคนเดียว โดยเริ่มในอีกหกสัปดาห์",
+    pm_ex2_stakes: "งานของสิบเอ็ดคนจะเปลี่ยนรูปแบบ ผู้จัดการสองคนเหลือหนึ่ง ถ้าพลาด เวลาตอบกลับจะแย่ลงต่อหน้าลูกค้าที่เพิ่งเซ็นสัญญา และคนที่ไม่ได้เป็นผู้จัดการก็คงลาออก",
+    pm_ex2_assumptions: "ว่ากระบวนการทำงานของสองทีมใกล้เคียงพอจะรวมกันได้ ว่าคนที่ไม่ได้เลื่อนตำแหน่งจะอยู่ต่อ ว่าหกสัปดาห์เป็นการแจ้งล่วงหน้าที่พอเพียง ว่าลูกค้าจะไม่รู้สึกถึงช่วงเปลี่ยนผ่าน และว่าผมได้รับรู้เหตุผลที่แท้จริงของการรวมทีม",
     pm_title: "Pre-Mortem",
     pm_tagline: "คำไว้อาลัยให้แผนของคุณ — เขียนก่อนที่คุณจะลงมือทำ",
     pm_xref_pre: "ยังตัดสินใจอยู่ใช่ไหม?",
@@ -736,6 +772,9 @@ export const preMortem = {
     pm_copy_one_thing: "สิ่งเดียว:",
   },
   vi: {
+    pm_ex2_plan: "Sáp nhập hai đội hỗ trợ thành một hàng đợi dưới quyền một quản lý, bắt đầu sau sáu tuần.",
+    pm_ex2_stakes: "Công việc của mười một người thay đổi hình hài. Hai quản lý còn một. Nếu hỏng, thời gian phản hồi sẽ tụt ngay trước mắt những khách hàng vừa ký, và người không được làm quản lý nhiều khả năng sẽ nghỉ.",
+    pm_ex2_assumptions: "Rằng quy trình của hai đội đủ giống nhau để sáp nhập. Rằng người không được thăng chức sẽ ở lại. Rằng sáu tuần là đủ thời gian báo trước. Rằng khách hàng sẽ không nhận ra sự chuyển đổi. Và rằng tôi đã được cho biết lý do thật sự của việc sáp nhập.",
     pm_title: "Pre-Mortem",
     pm_tagline: "Cáo phó cho kế hoạch của bạn — viết trước khi bạn thực hiện.",
     pm_xref_pre: "Vẫn đang phân vân?",
