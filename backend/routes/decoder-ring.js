@@ -75,8 +75,8 @@ Return ONLY valid JSON:
       "phrase": "the exact phrase or section being decoded",
       "surface": "what it literally says",
       "subtext": "what it might ALSO be doing — hedged. 'One reading is…', 'This could…'. Never 'this means' or 'what they want is'.",
-      "technique_key": "EXACTLY ONE of these keys, in English, never translated: warmth | softening | indirect_frustration | emotional_pressure | mixed_signals | unclear_intentions | no_clear_answer | setting_the_terms | reaching_out | changing_the_subject | setting_a_limit | playing_it_down | sarcasm | intense_affection | plain_speech",
-      "technique": "a short plain-language label for that key, 1-3 words, in the reply language. Describe what the words do, never what the person is. Say 'indirect frustration', not 'passive aggression'; 'unclear intentions', not 'plausible deniability'; 'mixed signals', not 'reverse pressure'; 'setting the terms', not 'power move'.",
+      "technique_key": "EXACTLY ONE of these keys, in English, never translated: warmth | softening | indirect_frustration | emotional_pressure | mixed_signals | unclear_intentions | no_clear_answer | handing_off_responsibility | reaching_out | changing_the_subject | setting_a_limit | playing_it_down | sarcasm | intense_affection | plain_speech",
+      "technique": "a short plain-language label for that key, 1-3 words, in the reply language. Describe the EFFECT the words have, never a strategy you are attributing to the sender. Say 'indirect frustration', not 'passive aggression'; 'unclear intentions', not 'plausible deniability'; 'mixed signals', not 'reverse pressure'; 'handing off responsibility', not 'power move' or 'setting the terms' — the first describes where the next move now sits, the others accuse someone of a tactic.",
       "confidence": "high, medium, or low"
     }
   ],
@@ -109,15 +109,16 @@ Return ONLY valid JSON:
   "tone_rating": {
     "warmth": 5,
     "directness": 5,
-    "sincerity": 7,
-    "ambiguity": 4
+    "ambiguity": 4,
+    "emotional_intensity": 5
   }
 }
 
 IMPORTANT RULES:
 - Sometimes "sounds good" just means "sounds good." A plain message gets plain_speech, an empty red_flags array, and a low ambiguity score. Do not manufacture depth that is not there.
-- tone_rating scores are 1-10 and rate the MESSAGE, not the sender. warmth: how warm it reads. directness: how plainly it states its point. sincerity: how much it reads as meaning what it says. ambiguity: how many different ways it could reasonably be read — 1 = only one sensible reading, 10 = genuinely could go several ways. Rate ambiguity honestly; a high score tells the reader to hold your interpretation loosely, which is useful information.
-- Do not score, rank, or quantify the sender's intentions. There is no manipulation score and you must not invent one.
+- tone_rating has EXACTLY these four keys, scored 1-10, and every one of them rates the MESSAGE rather than the sender. warmth: how warm it reads. directness: how plainly it states its point. ambiguity: how many different ways it could reasonably be read — 1 = only one sensible reading, 10 = genuinely could go several ways. emotional_intensity: how much feeling the wording carries, from flat and transactional to highly charged. Rate ambiguity honestly; a high score tells the reader to hold your interpretation loosely, which is useful information.
+- These bars are drawn as filled meters and a full bar reads as certainty, so nothing that scores a person may appear among them. Do not score, rank, or quantify the sender's intentions, sincerity, honesty, or manipulation, and do not add a fifth key for any of it. A reader trusts a filled bar more than a paragraph of caveats, so the bar must never assert something the caveats walk back.
+- emotional_intensity and emotional_undercurrent.intensity describe the same thing and must agree: 1-3 is low, 4-7 is medium, 8-10 is high.
 - When confidence is low, say so. Don't overinterpret ambiguous messages.
 - decoded_layers should have 2-6 entries depending on message complexity.
 - response_strategies should have exactly 3 entries with genuinely different approaches.

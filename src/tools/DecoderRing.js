@@ -53,7 +53,7 @@ const TECHNIQUE_EMOJIS = {
   mixed_signals: '🔀',
   unclear_intentions: '❓',
   no_clear_answer: '🤷',
-  setting_the_terms: '📌',
+  handing_off_responsibility: '🤲',
   reaching_out: '🫴',
   changing_the_subject: '↩️',
   setting_a_limit: '🛡️',
@@ -111,8 +111,11 @@ const DecoderRing = ({ tool }) => {
     barAmber:      'bg-amber-500',
     barRed:        'bg-red-500',
     barGreen:      'bg-green-500',
-    // Ambiguity is neutral information, not an alarm — it gets a neutral bar.
-    barSlate:      isDark ? 'bg-zinc-400' : 'bg-slate-400',
+    // No per-axis bar colour. Four measurements of one message do not have
+    // four meanings, and a hue invites the reader to supply one — green reads
+    // as good, red as bad. That colour-coded valence is what made the old
+    // Manipulation bar land as an accusation. A full bar now means "a lot of
+    // this" and nothing else.
     // Translation highlight
     transBg:       isDark ? 'bg-amber-900/20 border-amber-700/40' : 'bg-amber-50 border-amber-300',
     transText:     isDark ? 'text-amber-300' : 'text-amber-800',
@@ -273,7 +276,7 @@ const DecoderRing = ({ tool }) => {
   // Score bar
   const ScoreBar = ({ label, value, max = 10, color = 'navy' }) => {
     const barColor = color === 'gold' ? c.barAmber : color === 'red' ? c.barRed
-      : color === 'green' ? c.barGreen : color === 'slate' ? c.barSlate : c.barCyan;
+      : color === 'green' ? c.barGreen : c.barCyan;
     return (
       <div className="flex items-center gap-3">
         <span className={`text-xs font-medium ${c.textMuted} w-24 shrink-0`}>{label}</span>
@@ -449,7 +452,8 @@ const DecoderRing = ({ tool }) => {
                 {results?.emotional_undercurrent?.primary_emotion}
                 {results?.emotional_undercurrent?.secondary_emotion ? ` + ${results?.emotional_undercurrent?.secondary_emotion}` : ''}
               </span>
-              <span className={`text-xs ${c.emotionText}`}>({results?.emotional_undercurrent?.intensity})</span>
+              {/* Intensity is a bar below now. Two renderings of one value can
+                  disagree; the numeric one is the more precise of the two. */}
             </div>
             <p className={`text-sm ${c.emotionText}`}>{results?.emotional_undercurrent?.summary}</p>
           </div>
@@ -460,10 +464,14 @@ const DecoderRing = ({ tool }) => {
           <div className={`p-5 rounded-2xl border ${c.card}`}>
             <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>{t('dr_tone_analysis')}</p>
             <div className="space-y-2">
-              <ScoreBar label={t('dr_tone_warmth')} value={results?.tone_rating?.warmth} color="gold" />
-              <ScoreBar label={t('dr_tone_directness')} value={results?.tone_rating?.directness} color="navy" />
-              <ScoreBar label={t('dr_tone_sincerity')} value={results?.tone_rating?.sincerity} color="green" />
-              <ScoreBar label={t('dr_tone_ambiguity')} value={results?.tone_rating?.ambiguity} color="slate" />
+              {/* Four axes, and every one of them measures the MESSAGE.
+                  Sincerity was the last survivor that did not: "do they mean
+                  what they say" is a verdict on a person, which is the same
+                  claim Manipulation was making with a friendlier label. */}
+              <ScoreBar label={t('dr_tone_warmth')} value={results?.tone_rating?.warmth} />
+              <ScoreBar label={t('dr_tone_directness')} value={results?.tone_rating?.directness} />
+              <ScoreBar label={t('dr_tone_ambiguity')} value={results?.tone_rating?.ambiguity} />
+              <ScoreBar label={t('dr_tone_intensity')} value={results?.tone_rating?.emotional_intensity} />
             </div>
             {/* Turns the bar into advice. A high ambiguity score is the tool
                 telling you how loosely to hold everything above it. */}
@@ -541,7 +549,9 @@ const DecoderRing = ({ tool }) => {
 
         {/* Response Strategies */}
         {results?.response_strategies?.length > 0 && (
-          <Section title={t('dr_respond_title', { count: results?.response_strategies?.length })} emoji="💬" open={showStrategies}
+          <Section title={results?.response_strategies?.length === 3
+              ? t('dr_respond_title')
+              : t('dr_respond_title_n', { count: results?.response_strategies?.length })} emoji="💬" open={showStrategies}
             onToggle={() => setShowStrategies(!showStrategies)}>
             <div className="space-y-3 mt-4">
               {results?.response_strategies?.map((strat, idx) => (
