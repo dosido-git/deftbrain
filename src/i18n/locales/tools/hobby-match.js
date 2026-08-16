@@ -4,6 +4,10 @@
 // Six Degrees of Me) stay identical across languages.
 export const hobbyMatch = {
   en: {
+    hm_ex2_personality: "Sociable but exhausted. Likes finishing things. Hates anything that needs a group at a fixed time.",
+    hm_ex2_schedule: "Twenty minutes after bedtime, most nights. Occasionally a whole Saturday morning if my partner takes the toddler.",
+    hm_ex2_physical: "Fine, just permanently tired. Nothing that needs leaving the flat after 7pm.",
+    hm_ex2_tried: "Book club (could never finish the book in time). An online course I stopped opening. Knitting, which I liked but the needles live in a drawer now.",
     hm_tagline: "Discover hobbies you didn't know existed",
     hm_xref_intro: "Not sure what energizes you?",
     hm_braindump: "Brain Dump Buddy",
@@ -62,6 +66,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Tried yoga (boring), guitar (gave up after a month), running (knees), chess (loved it but plateaued)",
   },
   es: {
+    hm_ex2_personality: "Sociable pero agotada. Le gusta terminar las cosas. Odia cualquier cosa que exija un grupo a una hora fija.",
+    hm_ex2_schedule: "Veinte minutos después de acostarla, casi todas las noches. De vez en cuando un sábado por la mañana entero si mi pareja se lleva a la peque.",
+    hm_ex2_physical: "Bien, solo permanentemente cansada. Nada que implique salir de casa después de las 7.",
+    hm_ex2_tried: "Club de lectura (nunca conseguía acabar el libro a tiempo). Un curso online que dejé de abrir. Punto, que me gustaba, pero las agujas viven en un cajón.",
     hm_tagline: "Descubre pasatiempos que no sabías que existían",
     hm_xref_intro: "¿No sabes qué te da energía?",
     hm_braindump: "Brain Dump Buddy",
@@ -120,6 +128,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Probé yoga (aburrido), guitarra (lo dejé tras un mes), correr (rodillas), ajedrez (me encantó pero me estanqué)",
   },
   zh: {
+    hm_ex2_personality: "喜欢与人相处，但很累。喜欢把事情做完。讨厌任何需要一群人在固定时间到场的活动。",
+    hm_ex2_schedule: "多数晚上哄睡之后有二十分钟。偶尔如果伴侣带孩子出去，能空出整个周六上午。",
+    hm_ex2_physical: "身体没问题，只是长期疲惫。不要任何晚上七点以后需要出门的活动。",
+    hm_ex2_tried: "读书会（书从来读不完）。一个后来再没打开过的网课。编织，其实挺喜欢，但针现在收在抽屉里。",
     hm_tagline: "发现你从不知道存在的爱好",
     hm_xref_intro: "不确定什么能让你充满活力？",
     hm_braindump: "Brain Dump Buddy",
@@ -178,6 +190,10 @@ export const hobbyMatch = {
     hm_ex_tried: "试过瑜伽（无聊）、吉他（一个月后放弃）、跑步（膝盖）、国际象棋（很爱但停滞了）",
   },
   hi: {
+    hm_ex2_personality: "मिलनसार पर थकी हुई। चीज़ें पूरी करना पसंद है। ऐसी कोई चीज़ नहीं चाहिए जिसमें तय समय पर पूरा ग्रुप जुटना पड़े।",
+    hm_ex2_schedule: "ज़्यादातर रातों को सुलाने के बाद बीस मिनट। कभी-कभार पूरा शनिवार सुबह, अगर साथी बच्चे को संभाल ले।",
+    hm_ex2_physical: "ठीक हूँ, बस हमेशा थकी रहती हूँ। शाम सात बजे के बाद घर से निकलने वाली कोई चीज़ नहीं।",
+    hm_ex2_tried: "बुक क्लब (किताब कभी समय पर ख़त्म ही नहीं होती थी)। एक ऑनलाइन कोर्स जिसे खोलना बंद कर दिया। बुनाई, जो अच्छी लगती थी, पर सलाइयाँ अब दराज़ में पड़ी हैं।",
     hm_tagline: "ऐसे शौक खोजें जिनके बारे में आप जानते भी नहीं थे",
     hm_xref_intro: "पता नहीं कौन-सी चीज़ आपको ऊर्जा देती है?",
     hm_braindump: "Brain Dump Buddy",
@@ -236,6 +252,10 @@ export const hobbyMatch = {
     hm_ex_tried: "योग आज़माया (बोरिंग), गिटार (एक महीने बाद छोड़ दिया), दौड़ (घुटने), शतरंज (बहुत पसंद आया पर ठहराव आ गया)",
   },
   ar: {
+    hm_ex2_personality: "اجتماعية لكنها منهكة. تحب أن تُنهي ما تبدأه. تكره أي نشاط يتطلب مجموعة في وقت محدد.",
+    hm_ex2_schedule: "عشرون دقيقة بعد نوم الطفل، في معظم الليالي. وأحياناً صباح سبت كامل إن أخذ شريكي الصغير.",
+    hm_ex2_physical: "بخير، لكنني متعبة على الدوام. لا شيء يتطلب الخروج من البيت بعد السابعة مساءً.",
+    hm_ex2_tried: "نادي كتاب (لم أكن أنهي الكتاب في وقته أبداً). دورة إلكترونية توقفت عن فتحها. الحياكة، وقد أحببتها، لكن الإبر صارت في الدرج.",
     hm_tagline: "اكتشف هوايات لم تكن تعرف بوجودها",
     hm_xref_intro: "لست متأكداً ممّا يمنحك الطاقة؟",
     hm_braindump: "Brain Dump Buddy",
@@ -294,6 +314,10 @@ export const hobbyMatch = {
     hm_ex_tried: "جرّبت اليوغا (مملّة)، الغيتار (تركته بعد شهر)، الجري (الركبتان)، الشطرنج (أحببته لكن توقّف تقدّمي)",
   },
   pt: {
+    hm_ex2_personality: "Sociável mas exausta. Gosta de acabar as coisas. Detesta o que exige um grupo a uma hora marcada.",
+    hm_ex2_schedule: "Vinte minutos depois de a deitar, quase todas as noites. De vez em quando uma manhã de sábado inteira se o meu companheiro levar a pequena.",
+    hm_ex2_physical: "Bem, só permanentemente cansada. Nada que obrigue a sair de casa depois das 19h.",
+    hm_ex2_tried: "Clube de leitura (nunca conseguia acabar o livro a tempo). Um curso online que deixei de abrir. Tricô, que gostava, mas as agulhas vivem numa gaveta.",
     hm_tagline: "Descubra hobbies que você nem sabia que existiam",
     hm_xref_intro: "Não sabe o que te dá energia?",
     hm_braindump: "Brain Dump Buddy",
@@ -352,6 +376,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Tentei ioga (chato), violão (desisti depois de um mês), corrida (joelhos), xadrez (amei mas estagnei)",
   },
   fr: {
+    hm_ex2_personality: "Sociable mais épuisée. Aime terminer ce qu'elle commence. Déteste tout ce qui impose un groupe à heure fixe.",
+    hm_ex2_schedule: "Vingt minutes après le coucher, la plupart des soirs. De temps en temps tout un samedi matin si mon conjoint prend la petite.",
+    hm_ex2_physical: "Ça va, juste fatiguée en permanence. Rien qui oblige à sortir après 19h.",
+    hm_ex2_tried: "Club de lecture (jamais fini le livre à temps). Un cours en ligne que j'ai arrêté d'ouvrir. Le tricot, que j'aimais bien, mais les aiguilles dorment dans un tiroir.",
     hm_tagline: "Découvrez des loisirs dont vous ignoriez l'existence",
     hm_xref_intro: "Vous ne savez pas ce qui vous donne de l'énergie ?",
     hm_braindump: "Brain Dump Buddy",
@@ -410,6 +438,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Essayé le yoga (ennuyeux), la guitare (abandonné après un mois), la course (genoux), les échecs (adoré mais plafonné)",
   },
   de: {
+    hm_ex2_personality: "Gesellig, aber erschöpft. Bringt Dinge gern zu Ende. Hasst alles, wofür eine Gruppe zu einer festen Zeit nötig ist.",
+    hm_ex2_schedule: "Zwanzig Minuten nach dem Zubettbringen, an den meisten Abenden. Gelegentlich ein ganzer Samstagvormittag, wenn mein Partner die Kleine nimmt.",
+    hm_ex2_physical: "Körperlich in Ordnung, nur dauerhaft müde. Nichts, wofür ich nach 19 Uhr aus der Wohnung müsste.",
+    hm_ex2_tried: "Lesekreis (das Buch nie rechtzeitig durchbekommen). Ein Onlinekurs, den ich irgendwann nicht mehr geöffnet habe. Stricken, mochte ich, aber die Nadeln liegen inzwischen in einer Schublade.",
     hm_tagline: "Entdecke Hobbys, von denen du nicht wusstest, dass es sie gibt",
     hm_xref_intro: "Du weißt nicht, was dir Energie gibt?",
     hm_braindump: "Brain Dump Buddy",
@@ -468,6 +500,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Yoga probiert (langweilig), Gitarre (nach einem Monat aufgegeben), Laufen (Knie), Schach (geliebt, aber stagniert)",
   },
   ja: {
+    hm_ex2_personality: "人と過ごすのは好きだけれど、とにかく疲れている。物事を完成させるのが好き。決まった時間に集まる必要があるものは苦手。",
+    hm_ex2_schedule: "たいていの夜、寝かしつけたあとの二十分。パートナーが子どもを見てくれる日は、土曜の午前がまるごと空くこともあります。",
+    hm_ex2_physical: "体は問題ありませんが、慢性的に疲れています。夜七時以降に外へ出るものは無理です。",
+    hm_ex2_tried: "読書会（本を期限までに読み終えられたためしがない）。開かなくなったオンライン講座。編み物は好きでしたが、いま針は引き出しの中です。",
     hm_tagline: "存在を知らなかった趣味を見つけよう",
     hm_xref_intro: "何に元気をもらえるか分からない？",
     hm_braindump: "Brain Dump Buddy",
@@ -526,6 +562,10 @@ export const hobbyMatch = {
     hm_ex_tried: "ヨガを試した（退屈）、ギター（1か月でやめた）、ランニング（膝）、チェス（大好きだったが伸び悩んだ）",
   },
   ko: {
+    hm_ex2_personality: "사람은 좋아하지만 지쳐 있습니다. 뭔가를 끝내는 걸 좋아합니다. 정해진 시간에 여럿이 모여야 하는 건 질색입니다.",
+    hm_ex2_schedule: "대부분의 밤, 재우고 난 뒤 20분. 가끔 배우자가 아이를 봐주면 토요일 오전 전체.",
+    hm_ex2_physical: "몸은 괜찮고, 그냥 늘 피곤합니다. 저녁 7시 이후에 집을 나서야 하는 건 안 됩니다.",
+    hm_ex2_tried: "북클럽(책을 제때 다 읽은 적이 없습니다). 어느 순간부터 열지 않게 된 온라인 강의. 뜨개질은 좋아했는데 지금 바늘은 서랍 속에 있습니다.",
     hm_tagline: "존재하는지도 몰랐던 취미를 발견하세요",
     hm_xref_intro: "무엇이 당신에게 활력을 주는지 모르겠나요?",
     hm_braindump: "Brain Dump Buddy",
@@ -584,6 +624,10 @@ export const hobbyMatch = {
     hm_ex_tried: "요가 시도(지루함), 기타(한 달 만에 포기), 달리기(무릎), 체스(아주 좋아했지만 정체됨)",
   },
   ru: {
+    hm_ex2_personality: "Общительная, но вымотанная. Любит доводить до конца. Терпеть не может всё, что требует группы в фиксированное время.",
+    hm_ex2_schedule: "Двадцать минут после укладывания, почти каждый вечер. Иногда целое субботнее утро, если партнёр забирает малышку.",
+    hm_ex2_physical: "Со здоровьем нормально, просто постоянно уставшая. Ничего, ради чего надо выходить из дома после семи.",
+    hm_ex2_tried: "Книжный клуб (никогда не успевала дочитать). Онлайн-курс, который перестала открывать. Вязание — нравилось, но спицы теперь лежат в ящике.",
     hm_tagline: "Откройте хобби, о существовании которых вы не знали",
     hm_xref_intro: "Не знаете, что даёт вам энергию?",
     hm_braindump: "Brain Dump Buddy",
@@ -642,6 +686,10 @@ export const hobbyMatch = {
     hm_ex_tried: "Пробовал йогу (скучно), гитару (бросил через месяц), бег (колени), шахматы (полюбил, но застрял)",
   },
   th: {
+    hm_ex2_personality: "เข้ากับคนได้ดีแต่เหนื่อยมาก ชอบทำอะไรให้จบ เกลียดกิจกรรมที่ต้องรวมกลุ่มตามเวลาที่กำหนด",
+    hm_ex2_schedule: "ยี่สิบนาทีหลังกล่อมลูกนอน แทบทุกคืน บางครั้งได้ทั้งเช้าวันเสาร์ถ้าคู่ของฉันพาลูกออกไป",
+    hm_ex2_physical: "ร่างกายปกติ แค่เหนื่อยตลอดเวลา ไม่เอากิจกรรมที่ต้องออกจากบ้านหลังหนึ่งทุ่ม",
+    hm_ex2_tried: "ชมรมหนังสือ (อ่านไม่เคยจบทัน) คอร์สออนไลน์ที่เลิกเปิดไปเอง ถักนิตติ้งซึ่งชอบอยู่ แต่ตอนนี้ไม้ถักอยู่ในลิ้นชัก",
     hm_tagline: "ค้นพบงานอดิเรกที่คุณไม่เคยรู้ว่ามีอยู่",
     hm_xref_intro: "ไม่แน่ใจว่าอะไรทำให้คุณมีพลัง?",
     hm_braindump: "Brain Dump Buddy",
@@ -700,6 +748,10 @@ export const hobbyMatch = {
     hm_ex_tried: "เคยลองโยคะ (น่าเบื่อ) กีตาร์ (เลิกหลังหนึ่งเดือน) วิ่ง (เข่า) หมากรุก (ชอบมากแต่ไปต่อไม่ได้)",
   },
   vi: {
+    hm_ex2_personality: "Hòa đồng nhưng kiệt sức. Thích làm xong việc. Ghét mọi thứ đòi hỏi cả nhóm phải có mặt đúng giờ.",
+    hm_ex2_schedule: "Hai mươi phút sau khi cho con ngủ, hầu như tối nào cũng vậy. Thỉnh thoảng được trọn buổi sáng thứ Bảy nếu bạn đời trông con.",
+    hm_ex2_physical: "Sức khỏe ổn, chỉ là lúc nào cũng mệt. Không làm gì phải ra khỏi nhà sau 7 giờ tối.",
+    hm_ex2_tried: "Câu lạc bộ sách (chưa bao giờ đọc kịp). Một khóa học online mà tôi ngừng mở. Đan len, tôi vốn thích, nhưng kim đan giờ nằm trong ngăn kéo.",
     hm_tagline: "Khám phá những sở thích bạn chưa từng biết là có",
     hm_xref_intro: "Không chắc điều gì tiếp thêm năng lượng cho bạn?",
     hm_braindump: "Brain Dump Buddy",

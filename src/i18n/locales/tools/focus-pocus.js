@@ -9,6 +9,9 @@
 // value (e.g. nudge messages, button labels with leading icon) is intentional and kept in.
 export const focusPocus = {
   en: {
+    fpc_ex2_activity: "Sort the box of paperwork from Dad's flat",
+    fpc_ex2_obligations: "Nothing today. That is part of the problem — it has waited four months already.",
+    fpc_ex2_missed: "Tea, a bin bag, and the radio on so it is not silent",
     // ── Header ──
     fpc_title: "Focus Pocus",
     fpc_tagline: "Lock in your focus session, get pulled out when time is up",
@@ -369,6 +372,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Focus session",
   },
   es: {
+    fpc_ex2_activity: "Ordenar la caja de papeles del piso de papá",
+    fpc_ex2_obligations: "Hoy nada. Ese es parte del problema: ya lleva cuatro meses esperando.",
+    fpc_ex2_missed: "Té, una bolsa de basura y la radio puesta para que no haya silencio",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Concéntrate en tu sesión de enfoque y sal cuando se acabe el tiempo",
     fpc_ex_activity: "Terminar la propuesta de presupuesto del T3 — al menos las cifras principales y la sección de personal",
@@ -664,6 +670,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Sesión de enfoque",
   },
   zh: {
+    fpc_ex2_activity: "整理爸爸家里带回来的那箱文件",
+    fpc_ex2_obligations: "今天没有别的安排。这正是问题所在——它已经放了四个月了。",
+    fpc_ex2_missed: "一杯茶、一个垃圾袋，还有开着的收音机，别让屋里太安静",
     fpc_title: "Focus Pocus",
     fpc_tagline: "锁定你的专注时段，时间一到就把你拉出来",
     fpc_ex_activity: "完成第三季度预算方案——至少把核心数字和人员编制部分搞定",
@@ -959,6 +968,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "专注时段",
   },
   hi: {
+    fpc_ex2_activity: "पापा के फ़्लैट से लाए काग़ज़ों का डिब्बा छाँटना",
+    fpc_ex2_obligations: "आज कुछ नहीं है। दिक्कत भी यही है — यह चार महीने से पड़ा है।",
+    fpc_ex2_missed: "चाय, एक कचरा बैग, और रेडियो चलता हुआ ताकि सन्नाटा न रहे",
     fpc_title: "Focus Pocus",
     fpc_tagline: "अपने फ़ोकस सत्र में जुट जाइए, समय पूरा होते ही बाहर निकल आइए",
     fpc_ex_activity: "तीसरी तिमाही का बजट प्रस्ताव पूरा करना — कम से कम मुख्य आँकड़े और स्टाफ़ वाला हिस्सा",
@@ -1254,6 +1266,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "फ़ोकस सत्र",
   },
   ar: {
+    fpc_ex2_activity: "فرز صندوق الأوراق الذي جاء من شقة أبي",
+    fpc_ex2_obligations: "لا شيء اليوم. وهذا جزء من المشكلة — فقد انتظر أربعة أشهر بالفعل.",
+    fpc_ex2_missed: "شاي، وكيس قمامة، والمذياع مفتوح كي لا يسود الصمت",
     fpc_title: "Focus Pocus",
     fpc_tagline: "ادخل في جلسة تركيزك، واخرج منها عند انتهاء الوقت",
     fpc_ex_activity: "إنهاء مقترح ميزانية الربع الثالث — على الأقل الأرقام الرئيسية وقسم عدد الموظفين",
@@ -1549,6 +1564,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "جلسة تركيز",
   },
   pt: {
+    fpc_ex2_activity: "Arrumar a caixa de papelada do apartamento do pai",
+    fpc_ex2_obligations: "Hoje nada. Isso é parte do problema — já esperou quatro meses.",
+    fpc_ex2_missed: "Chá, um saco do lixo, e o rádio ligado para não ficar em silêncio",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Mergulhe na sua sessão de foco e saia quando o tempo acabar",
     fpc_ex_activity: "Finalizar a proposta de orçamento do 3º tri — pelo menos os números principais e a parte de pessoal",
@@ -1844,6 +1862,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Sessão de foco",
   },
   fr: {
+    fpc_ex2_activity: "Trier le carton de papiers de l'appartement de papa",
+    fpc_ex2_obligations: "Rien aujourd'hui. C'est une partie du problème : ça attend déjà depuis quatre mois.",
+    fpc_ex2_missed: "Du thé, un sac-poubelle, et la radio allumée pour que ce ne soit pas silencieux",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Plongez dans votre session de concentration, on vous en sort quand le temps est écoulé",
     fpc_ex_activity: "Terminer la proposition de budget du T3 — au moins les chiffres clés et la partie effectifs",
@@ -2139,6 +2160,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Session de concentration",
   },
   de: {
+    fpc_ex2_activity: "Den Karton mit Papieren aus Papas Wohnung sortieren",
+    fpc_ex2_obligations: "Heute nichts. Das ist Teil des Problems — es wartet schon vier Monate.",
+    fpc_ex2_missed: "Tee, ein Müllsack, und das Radio an, damit es nicht still ist",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Tauche in deine Fokus-Session ein und werde herausgeholt, wenn die Zeit um ist",
     fpc_ex_activity: "Den Q3-Budgetvorschlag fertigstellen — zumindest die Kernzahlen und den Personal-Abschnitt",
@@ -2434,6 +2458,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Fokus-Session",
   },
   ja: {
+    fpc_ex2_activity: "父の部屋から持ち帰った書類の箱を片づける",
+    fpc_ex2_obligations: "今日は何もありません。それがまさに問題で、もう四か月放ってあります。",
+    fpc_ex2_missed: "お茶、ごみ袋、それと静かすぎないようにラジオをつけておくこと",
     fpc_title: "Focus Pocus",
     fpc_tagline: "集中セッションに没入し、時間が来たら引き戻してもらおう",
     fpc_ex_activity: "第3四半期の予算案を仕上げる——少なくとも主要な数字と人員のセクション",
@@ -2729,6 +2756,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "集中セッション",
   },
   ko: {
+    fpc_ex2_activity: "아버지 집에서 가져온 서류 상자 정리하기",
+    fpc_ex2_obligations: "오늘은 아무 일정도 없습니다. 그게 문제의 일부예요 — 벌써 넉 달째 미뤄왔습니다.",
+    fpc_ex2_missed: "차 한 잔, 쓰레기봉투, 그리고 너무 조용하지 않게 켜둘 라디오",
     fpc_title: "Focus Pocus",
     fpc_tagline: "집중 세션에 몰입하고, 시간이 끝나면 빠져나오세요",
     fpc_ex_activity: "3분기 예산안 마무리하기 — 최소한 핵심 수치와 인력 섹션은",
@@ -3024,6 +3054,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "집중 세션",
   },
   ru: {
+    fpc_ex2_activity: "Разобрать коробку с бумагами из папиной квартиры",
+    fpc_ex2_obligations: "Сегодня ничего. В этом и дело — оно ждёт уже четыре месяца.",
+    fpc_ex2_missed: "Чай, мусорный пакет и включённое радио, чтобы не было тишины",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Погрузитесь в сессию фокуса — мы вытащим вас, когда время выйдет",
     fpc_ex_activity: "Завершить бюджетное предложение за 3-й квартал — хотя бы ключевые цифры и раздел по штату",
@@ -3319,6 +3352,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "Сессия фокуса",
   },
   th: {
+    fpc_ex2_activity: "จัดกล่องเอกสารที่ขนมาจากบ้านพ่อ",
+    fpc_ex2_obligations: "วันนี้ไม่มีอะไร นั่นแหละคือส่วนหนึ่งของปัญหา — มันรออยู่มาสี่เดือนแล้ว",
+    fpc_ex2_missed: "ชาสักถ้วย ถุงขยะหนึ่งใบ และเปิดวิทยุไว้ไม่ให้เงียบเกินไป",
     fpc_title: "Focus Pocus",
     fpc_tagline: "ดิ่งเข้าสู่ช่วงโฟกัสของคุณ แล้วถูกดึงออกมาเมื่อหมดเวลา",
     fpc_ex_activity: "ทำข้อเสนอด้านงบประมาณไตรมาส 3 ให้เสร็จ — อย่างน้อยตัวเลขหลักและส่วนของกำลังคน",
@@ -3614,6 +3650,9 @@ export const focusPocus = {
     fpc_fallback_focus_session: "ช่วงโฟกัส",
   },
   vi: {
+    fpc_ex2_activity: "Sắp xếp thùng giấy tờ mang về từ căn hộ của bố",
+    fpc_ex2_obligations: "Hôm nay không có gì. Đó cũng là một phần của vấn đề — nó đã đợi bốn tháng rồi.",
+    fpc_ex2_missed: "Một tách trà, một túi rác, và bật radio cho đỡ im ắng",
     fpc_title: "Focus Pocus",
     fpc_tagline: "Đắm mình vào phiên tập trung, được kéo ra khi hết giờ",
     fpc_ex_activity: "Hoàn thành đề xuất ngân sách quý 3 — ít nhất là các con số chính và phần nhân sự",
