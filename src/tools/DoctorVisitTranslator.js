@@ -7,6 +7,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { track } from '../utils/analytics';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -412,8 +413,12 @@ const DoctorVisitTranslator = ({ tool }) => {
   const loadExample = () => {
     setResults(null); setError(''); setPdfFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
-    setDocumentType('visit');
-    setDoctorNotes("Type 2 diabetes follow-up. A1C today 7.8% (was 8.2% three months ago). Adding metformin 500mg twice daily with meals. Continue lisinopril 10mg. Repeat A1C and basic metabolic panel in 3 months. Call if fasting BG over 300 or symptoms of hypoglycemia. Consider GLP-1 agonist if A1C does not improve. Patient tolerating current meds well, BP 128/82, weight down 4 lbs.");
+    const ex = pickExample('DoctorVisitTranslator', [
+      { type: 'visit', notes: "Type 2 diabetes follow-up. A1C today 7.8% (was 8.2% three months ago). Adding metformin 500mg twice daily with meals. Continue lisinopril 10mg. Repeat A1C and basic metabolic panel in 3 months. Call if fasting BG over 300 or symptoms of hypoglycemia. Consider GLP-1 agonist if A1C does not improve. Patient tolerating current meds well, BP 128/82, weight down 4 lbs." },
+      { type: 'insurance-eob', notes: "EXPLANATION OF BENEFITS - THIS IS NOT A BILL\n\nProvider: Riverside Imaging Associates\nDate of service: 07/14/2026\nCPT 72148 MRI lumbar spine w/o contrast\n\nAmount billed .......... 2,840.00\nPlan discount .......... -1,962.00\nAllowed amount .......... 878.00\nPlan paid .............. 526.80\nDeductible applied ..... 0.00\nCoinsurance ............ 351.20\nPATIENT RESPONSIBILITY . 351.20\n\nRemark N130: Consult plan benefit documents for information regarding restrictions for this service.\nRemark PR-2: Coinsurance amount." },
+    ]);
+    setDocumentType(ex.type);
+    setDoctorNotes(ex.notes);
     setVisitType('Follow-up');
     setConcerns('Worried about starting a new medication — what side effects should I watch for, and will it interact with my current meds?');
     setCurrentMedications('Lisinopril 10mg daily');

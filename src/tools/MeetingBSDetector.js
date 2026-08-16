@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -261,9 +262,15 @@ const MeetingBSDetector = ({ tool }) => {
   }, [meetingText, duration, attendees, callToolEndpoint, addToHistory, t]);
 
   const loadExample = () => {
-    setMeetingText('Weekly engineering all-hands. Standing 60-min meeting, 22 attendees. Agenda: "Status updates from each team lead." No prep, no decisions, just everyone reports out what they did last week. Recurring for 6 months.');
-    setDuration('1');
-    setAttendees('22');
+    const ex = pickExample('MeetingBSDetector', [
+      { text: 'Weekly engineering all-hands. Standing 60-min meeting, 22 attendees. Agenda: "Status updates from each team lead." No prep, no decisions, just everyone reports out what they did last week. Recurring for 6 months.',
+        duration: '1', attendees: '22' },
+      { text: 'Pricing alignment workshop. 90 minutes, 9 attendees, one-off. Agenda: "Align on FY26 pricing direction ahead of the exec review." Pre-read is a 40-slide deck circulated the night before. The person who actually signs off on pricing is not invited — they are in the exec review it is preparing for.',
+        duration: '1.5', attendees: '9' },
+    ]);
+    setMeetingText(ex.text);
+    setDuration(ex.duration);
+    setAttendees(ex.attendees);
     setError('');
   };
 
