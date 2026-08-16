@@ -11,7 +11,7 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // ═══════════════════════════════════════════════════
 router.post('/history-today', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { event, context, userLanguage } = req.body;
+    const { event, context, motivation, userLanguage } = req.body;
 
     if (!event?.trim()) {
       return res.status(400).json({ error: 'Describe a current event, trend, or controversy.' });
@@ -19,6 +19,22 @@ router.post('/history-today', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const contextNote = context?.trim()
       ? `\nUSER'S SPECIFIC ANGLE: "${context}" — weight your parallel selection toward this framing.`
+      : '';
+
+    // Keyed on the frontend's stable ids, never on the visible labels — those
+    // are translated, and an English-keyed lookup would drop the steer in the
+    // other twelve languages without failing loudly.
+    // The same event is a different question depending on who is asking it.
+    // This steers what gets selected and what the write-up dwells on — it does
+    // not license a different standard of evidence.
+    const MOTIVATION_STEER = {
+      understand: 'They want to understand the situation. Lead with the parallel whose mechanism is clearest, and spend the explanation on how it worked rather than on how it ended.',
+      worried: 'They are worried about where this leads. Do not soothe and do not alarm — be concrete about how the historical cases actually resolved, how long resolution took, and what made the difference between the ones that ended badly and the ones that did not.',
+      decision: 'They have a decision to make. Favour parallels with a decision point in them, and be specific about what signals preceded the turn, who was exposed, and what the people who read it correctly did differently — without telling them what to decide.',
+      curious: 'They are reading for interest. Favour the parallel that is genuinely surprising over the one that is merely apt, and keep the hedging to what is actually necessary.',
+    };
+    const motivationNote = motivation && MOTIVATION_STEER[motivation]
+      ? `\nWHY THEY ARE ASKING: ${MOTIVATION_STEER[motivation]}`
       : '';
 
     // Shared system core — each call wraps its OWN withLanguage(...) around this.
@@ -31,6 +47,7 @@ YOUR PRINCIPLES:
 - Be specific. Names, dates, numbers. Not "in ancient Rome" but "during the Crisis of the Third Century, specifically 235-284 CE."
 - Avoid the 5 most overused analogies (fall of Rome, Weimar Germany, 1930s appeasement, dot-com bubble, Titanic) UNLESS they are genuinely the best structural match. Reach deeper.
 - Present multiple parallels. The truth is usually a composite.
+- Think structurally, write plainly. The analysis runs on power, institutions and incentives; the prose must not. Write "who held power, and how they used it" rather than "power dynamics", and "how the government responded" rather than "institutional behaviour". If a phrase would be at home in a journal abstract, it is the wrong phrase — the reader came for what happened, not for the vocabulary of the discipline.
 
 REALITY & RELEVANCE CHECK (do this FIRST, before finding any parallels):
 - Assess the input's factual premise. If it states something FALSE or inverts a documented fact (e.g. claims a living person died, denies a well-documented event, or asserts a conspiracy), do NOT treat it as a real event or a neutral "counterfactual" — plainly state what is actually true and that the claim is false or unverifiable. If the input is not a current event, trend, or controversy, note that.
@@ -40,7 +57,7 @@ ${NO_QUOTE_RULE}`;
 
     // ── Stage 1: PICK — reality check + select the 2 strongest parallels (small, fast) ──
     const pickPrompt = withLanguage(`CURRENT EVENT:
-"${event.trim()}"${contextNote}
+"${event.trim()}"${contextNote}${motivationNote}
 
 SELECTION STEP ONLY — the full analysis happens in a later step. Perform the reality & relevance check, then identify the 2 strongest structural historical parallels (ranked strongest first). Do NOT analyze them yet.
 
@@ -118,7 +135,7 @@ Your response MUST contain ALL 3 keys: event_summary, premise_check, picks. Prov
 
     // ── Stage 2: two parallel expansion calls (disjoint keys, merged into original shape) ──
     const promptA = withLanguage(`CURRENT EVENT:
-"${event.trim()}"${contextNote}
+"${event.trim()}"${contextNote}${motivationNote}
 
 ${picksBlock}
 
@@ -147,7 +164,7 @@ Return ONLY valid JSON:
 Your response MUST contain ALL 2 keys: parallel, further_reading.`, userLanguage);
 
     const promptB = withLanguage(`CURRENT EVENT:
-"${event.trim()}"${contextNote}
+"${event.trim()}"${contextNote}${motivationNote}
 
 ${picksBlock}
 
