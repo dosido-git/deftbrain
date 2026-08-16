@@ -31,21 +31,36 @@ const FREE_TEXT = new Set([
 let bad = [];
 for (const file of fs.readdirSync(TOOLS).filter(f => f.endsWith('.js'))) {
   const src = fs.readFileSync(path.join(TOOLS, file), 'utf8');
-  const m = /const EXAMPLES\s*=\s*\[/.exec(src);
-  if (!m) continue;
-
-  let depth = 1, i = m.index + m[0].length;
-  while (depth && i < src.length) {
-    if (src[i] === '[') depth++;
-    else if (src[i] === ']') depth--;
-    i++;
+  // Two shapes to cover: a named `const EXAMPLES = [...]`, and an array passed
+  // straight into pickExample(). Only checking the named form let
+  // TheRunthrough ship audience: 'executive' when the option is 'executives'.
+  const blocks = [];
+  for (const re of [/const EXAMPLES\s*=\s*\[/g, /pickExample\([^,]+,\s*\[/g]) {
+    for (const m of src.matchAll(re)) {
+      let depth = 1, i = m.index + m[0].length;
+      while (depth && i < src.length) {
+        if (src[i] === '[') depth++;
+        else if (src[i] === ']') depth--;
+        i++;
+      }
+      blocks.push([m.index + m[0].length, i - 1]);
+    }
   }
-  const block = src.slice(m.index + m[0].length, i - 1);
-  const outside = src.slice(0, m.index) + src.slice(i);
+  if (!blocks.length) continue;
+
+  const block = blocks.map(([a, b]) => src.slice(a, b)).join('\n');
+  let outside = src, cut = 0;
+  for (const [a, b] of blocks.sort((x, y) => x[0] - y[0])) {
+    outside = outside.slice(0, a - cut) + outside.slice(b - cut);
+    cut += b - a;
+  }
 
   for (const [, field, value] of block.matchAll(/(\w+)\s*:\s*'([a-z][a-z0-9_-]{1,22})'/g)) {
     if (field.toLowerCase().endsWith('key') || field === 'id') continue;
     if (FREE_TEXT.has(field) || value === 'true' || value === 'false') continue;
+    // A locale key, not an option — these live in the catalogue, not in the
+    // tool file, so "appears nowhere else here" is expected and meaningless.
+    if (/(^|_)(ex\d*|example\d*)(_|$)/.test(value)) continue;
     if (!outside.includes(`'${value}'`) && !outside.includes(`"${value}"`)) {
       bad.push(`   ${file.replace('.js', '').padEnd(24)} ${field} = '${value}'`);
     }
