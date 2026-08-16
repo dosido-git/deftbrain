@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -220,17 +221,24 @@ const DoctorVisitPrep = ({ tool }) => {
 
   const loadExample = () => {
     setResults(null); setError('');
-    setChiefConcern(t('dvp_ex_chief'));
-    setSymptomDetails(t('dvp_ex_symptom'));
-    setDurationText(t('dvp_ex_duration'));
-    setSeverity(6);
-    setWhatMakesItBetterWorse(t('dvp_ex_better_worse'));
-    setCurrentMedications(t('dvp_ex_meds'));
-    setAllergies(t('dvp_ex_allergies'));
-    setRelevantHistory(t('dvp_ex_history'));
-    setAppointmentTypes(['follow-up', 'specialist']);
-    setHopedOutcomes(['explanation', 'treatment-plan']);
-    setSpecificWorry(t('dvp_ex_worry'));
+    // A clear physical story, and a vague long-running one that appointments
+    // tend to bounce off. The second is the harder visit to prepare for.
+    const ex = pickExample('DoctorVisitPrep', [
+      { n: '',  sev: 6, appt: ['follow-up', 'specialist'], out: ['explanation', 'treatment-plan'] },
+      { n: '2', sev: 4, appt: ['new-problem'],             out: ['testing', 'explanation'] },
+    ]);
+    const k = f => `dvp_ex${ex.n}_${f}`;
+    setChiefConcern(t(k('chief')));
+    setSymptomDetails(t(k('symptom')));
+    setDurationText(t(k('duration')));
+    setSeverity(ex.sev);
+    setWhatMakesItBetterWorse(t(k('better_worse')));
+    setCurrentMedications(t(k('meds')));
+    setAllergies(t(k('allergies')));
+    setRelevantHistory(t(k('history')));
+    setAppointmentTypes(ex.appt);
+    setHopedOutcomes(ex.out);
+    setSpecificWorry(t(k('worry')));
   };
 
   const loadSavedPrep = (p) => {
