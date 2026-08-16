@@ -3,6 +3,8 @@
 // Difficult Talk Coach, Spiral Stopper) stay as-is across languages.
 export const nerveCheck = {
   en: {
+    nck_ex2_situation: "Sister's wedding this weekend — my ex will be there",
+    nck_ex2_fears: "Everyone will be watching how I react, and I'll either look cold or look like I still care",
     nck_title: "Nerve Check",
     nck_tagline: "Real confidence for scary moments",
     // Example seed
@@ -279,6 +281,8 @@ export const nerveCheck = {
     nck_session: "Session",
   },
   es: {
+    nck_ex2_situation: "La boda de mi hermana este fin de semana — va a estar mi ex",
+    nck_ex2_fears: "Todos estarán pendientes de cómo reacciono, y voy a parecer o fría o alguien a quien todavía le importa",
     nck_title: "Nerve Check",
     nck_tagline: "Confianza real para los momentos que dan miedo",
     nck_ex_situation: "Entrevista de trabajo en una empresa tecnológica mañana por la mañana",
@@ -533,6 +537,8 @@ export const nerveCheck = {
     nck_session: "Sesión",
   },
   zh: {
+    nck_ex2_situation: "这周末我妹妹结婚，我的前任也会去",
+    nck_ex2_fears: "所有人都会看我什么反应——我要么显得冷漠，要么显得还没放下",
     nck_title: "Nerve Check",
     nck_tagline: "在紧张时刻给你真正的底气",
     nck_ex_situation: "明天上午在一家科技公司的求职面试",
@@ -787,6 +793,8 @@ export const nerveCheck = {
     nck_session: "会话",
   },
   hi: {
+    nck_ex2_situation: "इस वीकेंड बहन की शादी — मेरा एक्स भी आएगा",
+    nck_ex2_fears: "सब देख रहे होंगे कि मैं कैसे रिऐक्ट करती हूँ — या तो मैं ठंडी लगूँगी या ऐसी कि अब भी फ़र्क पड़ता है",
     nck_title: "Nerve Check",
     nck_tagline: "डरावने पलों के लिए असली आत्मविश्वास",
     nck_ex_situation: "कल सुबह एक टेक कंपनी में नौकरी का इंटरव्यू",
@@ -1041,6 +1049,8 @@ export const nerveCheck = {
     nck_session: "सत्र",
   },
   ar: {
+    nck_ex2_situation: "زفاف أختي نهاية هذا الأسبوع — وحبيبي السابق سيكون هناك",
+    nck_ex2_fears: "الجميع سيراقب ردة فعلي، وسأبدو إما باردة وإما وكأنني ما زلت أهتم",
     nck_title: "Nerve Check",
     nck_tagline: "ثقة حقيقية للحظات المخيفة",
     nck_ex_situation: "مقابلة عمل في شركة تقنية صباح الغد",
@@ -1295,6 +1305,8 @@ export const nerveCheck = {
     nck_session: "جلسة",
   },
   pt: {
+    nck_ex2_situation: "O casamento da minha irmã este fim de semana — o meu ex vai estar lá",
+    nck_ex2_fears: "Toda a gente vai estar atenta à minha reação, e ou pareço fria ou pareço alguém a quem ainda importa",
     nck_title: "Nerve Check",
     nck_tagline: "Confiança real para os momentos assustadores",
     nck_ex_situation: "Entrevista de emprego numa empresa de tecnologia amanhã de manhã",
@@ -1549,6 +1561,8 @@ export const nerveCheck = {
     nck_session: "Sessão",
   },
   fr: {
+    nck_ex2_situation: "Le mariage de ma sœur ce week-end — mon ex sera là",
+    nck_ex2_fears: "Tout le monde va guetter ma réaction, et je vais paraître soit froide, soit encore attachée",
     nck_title: "Nerve Check",
     nck_tagline: "Une vraie confiance pour les moments stressants",
     nck_ex_situation: "Entretien d'embauche dans une entreprise tech demain matin",
@@ -1803,6 +1817,8 @@ export const nerveCheck = {
     nck_session: "Session",
   },
   de: {
+    nck_ex2_situation: "Die Hochzeit meiner Schwester am Wochenende — mein Ex wird da sein",
+    nck_ex2_fears: "Alle werden schauen, wie ich reagiere, und ich wirke entweder kalt oder als würde es mir noch etwas bedeuten",
     nck_title: "Nerve Check",
     nck_tagline: "Echtes Selbstvertrauen für beängstigende Momente",
     nck_ex_situation: "Vorstellungsgespräch bei einem Tech-Unternehmen morgen früh",
@@ -2057,6 +2073,8 @@ export const nerveCheck = {
     nck_session: "Sitzung",
   },
   ja: {
+    nck_ex2_situation: "今週末は妹の結婚式。元恋人も来る",
+    nck_ex2_fears: "みんなが私の反応を見ている。冷たく見えるか、まだ引きずっているように見えるかのどちらかになりそう",
     nck_title: "Nerve Check",
     nck_tagline: "怖い場面のための、本物の自信",
     nck_ex_situation: "明日の朝、テック企業での採用面接",
@@ -2311,6 +2329,8 @@ export const nerveCheck = {
     nck_session: "セッション",
   },
   ko: {
+    nck_ex2_situation: "이번 주말 동생 결혼식 — 전 애인도 온다",
+    nck_ex2_fears: "다들 내 반응을 지켜볼 텐데, 차가워 보이거나 아직 마음이 남은 사람처럼 보이거나 둘 중 하나일 것 같다",
     nck_title: "Nerve Check",
     nck_tagline: "두려운 순간을 위한 진짜 자신감",
     nck_ex_situation: "내일 아침 테크 기업 면접",
@@ -2565,6 +2585,8 @@ export const nerveCheck = {
     nck_session: "세션",
   },
   ru: {
+    nck_ex2_situation: "В эти выходные свадьба сестры — там будет мой бывший",
+    nck_ex2_fears: "Все будут смотреть, как я отреагирую, и я покажусь либо холодной, либо всё ещё неравнодушной",
     nck_title: "Nerve Check",
     nck_tagline: "Настоящая уверенность для пугающих моментов",
     nck_ex_situation: "Собеседование в технологической компании завтра утром",
@@ -2819,6 +2841,8 @@ export const nerveCheck = {
     nck_session: "Сессия",
   },
   th: {
+    nck_ex2_situation: "งานแต่งน้องสาวสุดสัปดาห์นี้ — แฟนเก่าจะไปด้วย",
+    nck_ex2_fears: "ทุกคนจะคอยดูว่าฉันจะมีปฏิกิริยาอย่างไร ไม่ดูเย็นชาก็ดูเหมือนยังไม่ปล่อยวาง",
     nck_title: "Nerve Check",
     nck_tagline: "ความมั่นใจจริงสำหรับช่วงเวลาที่น่ากลัว",
     nck_ex_situation: "สัมภาษณ์งานที่บริษัทเทคโนโลยีพรุ่งนี้เช้า",
@@ -3073,6 +3097,8 @@ export const nerveCheck = {
     nck_session: "เซสชัน",
   },
   vi: {
+    nck_ex2_situation: "Cuối tuần này là đám cưới em gái tôi — người yêu cũ cũng sẽ đến",
+    nck_ex2_fears: "Mọi người sẽ để ý xem tôi phản ứng thế nào, và tôi sẽ hoặc trông lạnh lùng, hoặc trông như vẫn còn vương vấn",
     nck_title: "Nerve Check",
     nck_tagline: "Sự tự tin thực sự cho những khoảnh khắc đáng sợ",
     nck_ex_situation: "Phỏng vấn xin việc tại một công ty công nghệ sáng mai",
