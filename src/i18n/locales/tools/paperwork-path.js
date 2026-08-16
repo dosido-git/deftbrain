@@ -4,6 +4,8 @@
 // pp_example_location / pp_location_ph carry locale-plausible places per language.
 export const paperworkPath = {
   en: {
+    pp_example2_situation: "My mother died six weeks ago. I am the executor. There is a will, a house with a mortgage still on it, two bank accounts, a pension I know nothing about, and a car in her name. I have no idea what order any of this goes in.",
+    pp_example2_location: "Manchester, England, UK",
     pp_title: "Paperwork Path",
     pp_tagline: "The documents you need — and the order to handle them",
 
@@ -53,6 +55,8 @@ export const paperworkPath = {
   },
 
   es: {
+    pp_example2_situation: "Mi madre murió hace seis semanas. Soy el albacea. Hay testamento, una casa con hipoteca todavía, dos cuentas bancarias, una pensión de la que no sé nada y un coche a su nombre. No tengo ni idea de en qué orden va todo esto.",
+    pp_example2_location: "Mánchester, Inglaterra, Reino Unido",
     pp_title: "Paperwork Path",
     pp_tagline: "Los documentos que necesitas — y el orden para gestionarlos",
 
@@ -102,6 +106,8 @@ export const paperworkPath = {
   },
 
   zh: {
+    pp_example2_situation: "我母亲六周前去世了。我是遗嘱执行人。有遗嘱、一套还在还贷的房子、两个银行账户、一份我完全不了解的养老金，还有一辆登记在她名下的车。这些事该按什么顺序办，我完全没有头绪。",
+    pp_example2_location: "英国英格兰曼彻斯特",
     pp_title: "Paperwork Path",
     pp_tagline: "你需要的文件——以及处理它们的顺序",
 
@@ -151,6 +157,8 @@ export const paperworkPath = {
   },
 
   hi: {
+    pp_example2_situation: "मेरी माँ का छह हफ़्ते पहले देहांत हो गया। मैं निष्पादक हूँ। वसीयत है, एक घर जिस पर अब भी लोन है, दो बैंक खाते, एक पेंशन जिसके बारे में मुझे कुछ नहीं पता, और उनके नाम पर एक गाड़ी। किस क्रम में क्या करना है, कुछ समझ नहीं आ रहा।",
+    pp_example2_location: "मैनचेस्टर, इंग्लैंड, यूके",
     pp_title: "Paperwork Path",
     pp_tagline: "ज़रूरी दस्तावेज़ — और उन्हें निपटाने का सही क्रम",
 
@@ -200,6 +208,8 @@ export const paperworkPath = {
   },
 
   ar: {
+    pp_example2_situation: "توفيت والدتي قبل ستة أسابيع، وأنا المنفّذ للوصية. هناك وصية، وبيت ما زال عليه قرض، وحسابان بنكيان، ومعاش لا أعرف عنه شيئاً، وسيارة باسمها. لا أعرف بأي ترتيب أبدأ بأي من هذا.",
+    pp_example2_location: "مانشستر، إنجلترا، المملكة المتحدة",
     pp_title: "Paperwork Path",
     pp_tagline: "المستندات التي تحتاجها — وترتيب إنجازها",
 
@@ -249,6 +259,8 @@ export const paperworkPath = {
   },
 
   pt: {
+    pp_example2_situation: "A minha mãe morreu há seis semanas. Sou o cabeça de casal. Há testamento, uma casa ainda com crédito, duas contas bancárias, uma pensão de que nada sei e um carro em nome dela. Não faço ideia da ordem por que isto se faz.",
+    pp_example2_location: "Manchester, Inglaterra, Reino Unido",
     pp_title: "Paperwork Path",
     pp_tagline: "Os documentos de que você precisa — e a ordem para resolvê-los",
 
@@ -298,6 +310,8 @@ export const paperworkPath = {
   },
 
   fr: {
+    pp_example2_situation: "Ma mère est morte il y a six semaines. Je suis l'exécuteur testamentaire. Il y a un testament, une maison encore sous prêt, deux comptes bancaires, une retraite dont je ne sais rien, et une voiture à son nom. Je n'ai aucune idée de l'ordre dans lequel tout cela se fait.",
+    pp_example2_location: "Manchester, Angleterre, Royaume-Uni",
     pp_title: "Paperwork Path",
     pp_tagline: "Les documents qu'il vous faut — et l'ordre pour les traiter",
 
@@ -347,6 +361,8 @@ export const paperworkPath = {
   },
 
   de: {
+    pp_example2_situation: "Meine Mutter ist vor sechs Wochen gestorben. Ich bin Nachlassverwalter. Es gibt ein Testament, ein Haus mit laufendem Kredit, zwei Bankkonten, eine Rente, von der ich nichts weiß, und ein Auto auf ihren Namen. Ich habe keine Ahnung, in welcher Reihenfolge das alles läuft.",
+    pp_example2_location: "Manchester, England, Vereinigtes Königreich",
     pp_title: "Paperwork Path",
     pp_tagline: "Die Dokumente, die du brauchst — und die richtige Reihenfolge",
 
@@ -396,6 +412,8 @@ export const paperworkPath = {
   },
 
   ja: {
+    pp_example2_situation: "六週間前に母が亡くなりました。私が遺言執行者です。遺言書があり、住宅ローンの残る家、銀行口座が二つ、内容をまったく知らない年金、そして母名義の車があります。何をどの順番で進めればいいのか、まるで見当がつきません。",
+    pp_example2_location: "イギリス、イングランド、マンチェスター",
     pp_title: "Paperwork Path",
     pp_tagline: "必要な書類と、片づける順番",
 
@@ -445,6 +463,8 @@ export const paperworkPath = {
   },
 
   ko: {
+    pp_example2_situation: "6주 전에 어머니가 돌아가셨습니다. 제가 유언 집행자입니다. 유언장이 있고, 아직 대출이 남은 집, 은행 계좌 두 개, 제가 전혀 모르는 연금, 그리고 어머니 명의의 차가 있습니다. 무엇을 어떤 순서로 해야 할지 전혀 모르겠습니다.",
+    pp_example2_location: "영국 잉글랜드 맨체스터",
     pp_title: "Paperwork Path",
     pp_tagline: "필요한 서류와 처리 순서",
 
@@ -494,6 +514,8 @@ export const paperworkPath = {
   },
 
   ru: {
+    pp_example2_situation: "Мама умерла шесть недель назад. Я душеприказчик. Есть завещание, дом с непогашенной ипотекой, два банковских счёта, пенсия, о которой я ничего не знаю, и машина на её имя. Я совершенно не понимаю, в каком порядке всё это делается.",
+    pp_example2_location: "Манчестер, Англия, Великобритания",
     pp_title: "Paperwork Path",
     pp_tagline: "Нужные документы — и порядок, в котором их оформлять",
 
@@ -543,6 +565,8 @@ export const paperworkPath = {
   },
 
   th: {
+    pp_example2_situation: "แม่ผมเสียไปเมื่อหกสัปดาห์ก่อน ผมเป็นผู้จัดการมรดก มีพินัยกรรม บ้านที่ยังผ่อนไม่หมด บัญชีธนาคารสองบัญชี เงินบำนาญที่ผมไม่รู้อะไรเลย และรถที่อยู่ในชื่อแม่ ผมไม่รู้เลยว่าต้องทำอะไรก่อนหลัง",
+    pp_example2_location: "แมนเชสเตอร์ อังกฤษ สหราชอาณาจักร",
     pp_title: "Paperwork Path",
     pp_tagline: "เอกสารที่คุณต้องใช้ — และลำดับการจัดการ",
 
@@ -592,6 +616,8 @@ export const paperworkPath = {
   },
 
   vi: {
+    pp_example2_situation: "Mẹ tôi mất cách đây sáu tuần. Tôi là người thi hành di chúc. Có di chúc, một căn nhà vẫn còn nợ vay, hai tài khoản ngân hàng, một khoản lương hưu tôi hoàn toàn không biết gì, và một chiếc xe đứng tên mẹ. Tôi không biết phải làm theo thứ tự nào.",
+    pp_example2_location: "Manchester, Anh, Vương quốc Anh",
     pp_title: "Paperwork Path",
     pp_tagline: "Giấy tờ bạn cần — và thứ tự xử lý",
 

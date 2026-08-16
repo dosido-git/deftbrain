@@ -4,6 +4,9 @@
 // BATNA) stay as-is across languages.
 export const leverageLogic = {
   en: {
+    llog_ex2_situation: "Asking my employer to keep me remote. The company has announced four days in the office from January. I moved 90 minutes away two years ago, with my manager's written agreement that the role was remote-first.",
+    llog_ex2_leverage: "The written agreement, and that I am the only person who knows the billing integration. Against that: they are not short of applicants, two colleagues have already agreed to come in, and I cannot actually afford to leave.",
+    llog_ex2_desired: "Keep two days remote permanently, in writing. I would settle for a six-month trial with a review date rather than a flat no.",
     llog_tagline: "Win any negotiation with the right strategy",
     // Negotiation types
     llog_type_salary: "Salary / Raise",
@@ -201,6 +204,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 LEVERAGE LESSONS",
   },
   es: {
+    llog_ex2_situation: "Pedir a mi empresa que me deje seguir en remoto. Han anunciado cuatro días de oficina desde enero. Yo me mudé a 90 minutos hace dos años, con el acuerdo por escrito de mi jefe de que el puesto era remote-first.",
+    llog_ex2_leverage: "El acuerdo por escrito, y que soy la única persona que conoce la integración de facturación. En contra: no les faltan candidatos, dos compañeros ya han aceptado ir, y realmente no puedo permitirme dejarlo.",
+    llog_ex2_desired: "Mantener dos días en remoto de forma permanente, por escrito. Me conformaría con una prueba de seis meses con fecha de revisión antes que con un no rotundo.",
     llog_tagline: "Gana cualquier negociación con la estrategia correcta",
     llog_type_salary: "Salario / Aumento",
     llog_type_vendor: "Proveedor / Precio",
@@ -379,6 +385,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 LECCIONES DE VENTAJA",
   },
   zh: {
+    llog_ex2_situation: "想让公司让我继续远程办公。公司宣布从一月起每周到岗四天。两年前我搬到了一个半小时车程外的地方，当时我主管书面同意这个岗位以远程为主。",
+    llog_ex2_leverage: "那份书面协议，以及只有我懂计费系统的对接。不利的一面是：他们不缺应聘者，已经有两个同事答应回办公室，而我其实也辞不起。",
+    llog_ex2_desired: "永久保留每周两天远程，并写进文件。如果不行，我也接受先试行六个月、约定一个复核日期，总好过直接被拒。",
     llog_tagline: "用正确的策略赢得任何谈判",
     llog_type_salary: "薪资 / 加薪",
     llog_type_vendor: "供应商 / 价格",
@@ -557,6 +566,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 筹码心得",
   },
   hi: {
+    llog_ex2_situation: "अपने नियोक्ता से रिमोट बने रहने की गुज़ारिश। कंपनी ने जनवरी से हफ़्ते में चार दिन ऑफ़िस आना अनिवार्य कर दिया है। दो साल पहले मैं डेढ़ घंटे दूर शिफ़्ट हुआ था — मेरे मैनेजर ने लिखित में माना था कि यह भूमिका रिमोट-फ़र्स्ट है।",
+    llog_ex2_leverage: "वो लिखित सहमति, और यह कि बिलिंग इंटीग्रेशन सिर्फ़ मुझे आता है। इसके उलट: उनके पास उम्मीदवारों की कमी नहीं, दो सहकर्मी पहले ही आने को राज़ी हो गए हैं, और सच कहूँ तो मैं नौकरी छोड़ नहीं सकता।",
+    llog_ex2_desired: "हमेशा के लिए हफ़्ते में दो दिन रिमोट, वो भी लिखित में। सीधे 'ना' के बजाय छह महीने का ट्रायल और एक रिव्यू तारीख भी मंज़ूर है।",
     llog_tagline: "सही रणनीति के साथ कोई भी मोलभाव जीतें",
     llog_type_salary: "वेतन / बढ़ोतरी",
     llog_type_vendor: "विक्रेता / कीमत",
@@ -735,6 +747,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 ताकत के सबक",
   },
   ar: {
+    llog_ex2_situation: "أطلب من صاحب العمل إبقائي على العمل عن بُعد. أعلنت الشركة أربعة أيام حضور من يناير. انتقلت قبل عامين إلى مكان يبعد ساعة ونصف، بموافقة خطية من مديري بأن الوظيفة عن بُعد بالأساس.",
+    llog_ex2_leverage: "الاتفاق المكتوب، وأنني الوحيد الذي يعرف تكامل الفوترة. في المقابل: لا ينقصهم المتقدمون، وزميلان وافقا فعلاً على الحضور، وأنا في الحقيقة لا أستطيع تحمّل ترك العمل.",
+    llog_ex2_desired: "الإبقاء على يومين عن بُعد بشكل دائم وكتابةً. وأقبل بفترة تجريبية ستة أشهر مع موعد مراجعة بدلاً من رفض قاطع.",
     llog_tagline: "اربح أي مفاوضة بالاستراتيجية الصحيحة",
     llog_type_salary: "الراتب / الزيادة",
     llog_type_vendor: "المورّد / السعر",
@@ -913,6 +928,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 دروس في الورقة الرابحة",
   },
   pt: {
+    llog_ex2_situation: "Pedir à empresa que me mantenha em remoto. Anunciaram quatro dias de escritório a partir de janeiro. Mudei-me para 90 minutos de distância há dois anos, com acordo escrito do meu chefe de que a função era remote-first.",
+    llog_ex2_leverage: "O acordo escrito, e o facto de eu ser a única pessoa que conhece a integração de faturação. Contra: não lhes faltam candidatos, dois colegas já aceitaram ir, e eu não posso mesmo dar-me ao luxo de sair.",
+    llog_ex2_desired: "Manter dois dias em remoto em permanência, por escrito. Aceitaria um período experimental de seis meses com data de revisão em vez de um não seco.",
     llog_tagline: "Vença qualquer negociação com a estratégia certa",
     llog_type_salary: "Salário / Aumento",
     llog_type_vendor: "Fornecedor / Preço",
@@ -1091,6 +1109,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 LIÇÕES DE VANTAGEM",
   },
   fr: {
+    llog_ex2_situation: "Demander à mon employeur de me garder en télétravail. L'entreprise a annoncé quatre jours au bureau à partir de janvier. J'ai déménagé à 90 minutes il y a deux ans, avec l'accord écrit de mon manager que le poste était remote-first.",
+    llog_ex2_leverage: "L'accord écrit, et le fait que je suis le seul à connaître l'intégration de facturation. Contre : ils ne manquent pas de candidats, deux collègues ont déjà accepté de venir, et je ne peux pas vraiment me permettre de partir.",
+    llog_ex2_desired: "Garder deux jours en télétravail de façon permanente, par écrit. J'accepterais une période d'essai de six mois avec une date de révision plutôt qu'un non sec.",
     llog_tagline: "Gagnez n'importe quelle négociation avec la bonne stratégie",
     llog_type_salary: "Salaire / Augmentation",
     llog_type_vendor: "Fournisseur / Prix",
@@ -1269,6 +1290,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 LEÇONS SUR LES ATOUTS",
   },
   de: {
+    llog_ex2_situation: "Meinen Arbeitgeber bitten, mich remote zu lassen. Ab Januar sind vier Bürotage angekündigt. Ich bin vor zwei Jahren 90 Minuten weit weggezogen — mit der schriftlichen Zusage meiner Chefin, dass die Stelle remote-first ist.",
+    llog_ex2_leverage: "Die schriftliche Zusage, und dass ich als Einziger die Abrechnungsschnittstelle kenne. Dagegen: An Bewerbern fehlt es ihnen nicht, zwei Kolleginnen haben schon zugesagt, und ich kann es mir schlicht nicht leisten zu gehen.",
+    llog_ex2_desired: "Dauerhaft zwei Remote-Tage, schriftlich. Statt eines glatten Neins nähme ich auch eine sechsmonatige Probephase mit Überprüfungstermin.",
     llog_tagline: "Gewinne jede Verhandlung mit der richtigen Strategie",
     llog_type_salary: "Gehalt / Gehaltserhöhung",
     llog_type_vendor: "Lieferant / Preis",
@@ -1447,6 +1471,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 HEBEL-LEKTIONEN",
   },
   ja: {
+    llog_ex2_situation: "リモート勤務の継続を会社に求めたい。一月から週四日出社と発表されました。二年前、上司から「この職務はリモート前提」という書面の同意を得たうえで、片道一時間半の場所に引っ越しています。",
+    llog_ex2_leverage: "書面の同意があること、そして課金連携を分かっているのが私だけだということ。逆に不利なのは、応募者に困っていないこと、同僚二人がすでに出社に同意していること、そして私に辞める余裕が本当にないことです。",
+    llog_ex2_desired: "週二日のリモートを恒久的に、書面で。きっぱり断られるくらいなら、見直し日を決めた六か月の試行でも構いません。",
     llog_tagline: "正しい戦略であらゆる交渉に勝つ",
     llog_type_salary: "給与・昇給",
     llog_type_vendor: "取引先・価格",
@@ -1625,6 +1652,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 切り札の教訓",
   },
   ko: {
+    llog_ex2_situation: "회사에 계속 재택으로 일하게 해달라고 요청하려 합니다. 1월부터 주 4일 출근이 발표됐습니다. 2년 전에 편도 90분 거리로 이사했고, 그때 매니저에게서 이 자리는 재택 우선이라는 서면 동의를 받았습니다.",
+    llog_ex2_leverage: "서면 합의가 있다는 점, 그리고 결제 연동을 아는 사람이 저뿐이라는 점. 반대로 불리한 점: 지원자는 넘치고, 동료 두 명은 이미 출근하기로 했고, 저는 사실 그만둘 형편이 못 됩니다.",
+    llog_ex2_desired: "주 2일 재택을 영구적으로, 문서로. 단칼에 거절당하느니 검토 시점을 정한 6개월 시범 운영이라도 받아들이겠습니다.",
     llog_tagline: "올바른 전략으로 어떤 협상이든 이기세요",
     llog_type_salary: "급여 / 인상",
     llog_type_vendor: "공급업체 / 가격",
@@ -1803,6 +1833,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 레버리지 교훈",
   },
   ru: {
+    llog_ex2_situation: "Прошу работодателя оставить меня на удалёнке. С января объявили четыре дня в офисе. Два года назад я переехал за 90 минут пути — с письменного согласия руководителя, что роль удалённая по умолчанию.",
+    llog_ex2_leverage: "Письменная договорённость и то, что биллинговую интеграцию знаю только я. Против: в кандидатах у них недостатка нет, двое коллег уже согласились ходить в офис, а я на самом деле не могу позволить себе уйти.",
+    llog_ex2_desired: "Оставить два удалённых дня насовсем и зафиксировать письменно. Готов и на полугодовой пробный период с датой пересмотра — лучше, чем твёрдое «нет».",
     llog_tagline: "Выиграйте любые переговоры с правильной стратегией",
     llog_type_salary: "Зарплата / Повышение",
     llog_type_vendor: "Поставщик / Цена",
@@ -1981,6 +2014,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 УРОКИ ПО РЫЧАГАМ",
   },
   th: {
+    llog_ex2_situation: "ขอให้บริษัทให้ผมทำงานทางไกลต่อ บริษัทประกาศให้เข้าออฟฟิศสัปดาห์ละสี่วันตั้งแต่มกราคม ผมย้ายไปอยู่ห่างออกไปหนึ่งชั่วโมงครึ่งเมื่อสองปีก่อน โดยหัวหน้าตกลงเป็นลายลักษณ์อักษรว่าตำแหน่งนี้เน้นทำงานทางไกล",
+    llog_ex2_leverage: "ข้อตกลงเป็นลายลักษณ์อักษร และผมเป็นคนเดียวที่เข้าใจระบบเชื่อมต่อการเรียกเก็บเงิน ในทางกลับกัน บริษัทไม่ได้ขาดผู้สมัคร เพื่อนร่วมงานสองคนตกลงเข้าออฟฟิศแล้ว และผมก็ลาออกไม่ไหวจริง ๆ",
+    llog_ex2_desired: "ขอทำงานทางไกลสัปดาห์ละสองวันแบบถาวร และเป็นลายลักษณ์อักษร ถ้าไม่ได้ ผมยอมรับการทดลองหกเดือนพร้อมกำหนดวันทบทวน ดีกว่าถูกปฏิเสธไปเลย",
     llog_tagline: "ชนะการเจรจาทุกครั้งด้วยกลยุทธ์ที่ถูกต้อง",
     llog_type_salary: "เงินเดือน / ขึ้นเงินเดือน",
     llog_type_vendor: "ผู้ขาย / ราคา",
@@ -2159,6 +2195,9 @@ export const leverageLogic = {
     llog_leverage_lessons: "🃏 บทเรียนเรื่องไพ่เด็ด",
   },
   vi: {
+    llog_ex2_situation: "Đề nghị công ty cho tôi tiếp tục làm từ xa. Công ty thông báo lên văn phòng bốn ngày một tuần từ tháng Một. Hai năm trước tôi chuyển đến nơi cách 90 phút, có thỏa thuận bằng văn bản của quản lý rằng vị trí này ưu tiên làm từ xa.",
+    llog_ex2_leverage: "Thỏa thuận bằng văn bản, và tôi là người duy nhất nắm phần tích hợp thanh toán. Ngược lại: họ không thiếu ứng viên, hai đồng nghiệp đã đồng ý lên văn phòng, và thực tế tôi không đủ khả năng nghỉ việc.",
+    llog_ex2_desired: "Giữ hai ngày làm từ xa lâu dài, bằng văn bản. Tôi chấp nhận thử sáu tháng có ngày rà soát, còn hơn là bị từ chối thẳng.",
     llog_tagline: "Thắng mọi cuộc đàm phán với chiến lược đúng đắn",
     llog_type_salary: "Lương / Tăng lương",
     llog_type_vendor: "Nhà cung cấp / Giá",
