@@ -6,6 +6,7 @@
 // translator output demonstrates de-jargoning of a real-world clause.
 export const jargonAssassin = {
   "en": {
+    "jarg_example2_doc": "NOTICE OF OVERPAYMENT AND RECOVERY\n\nFollowing a review of your entitlement, it has been determined that an overpayment of benefit occurred in respect of the period 07/04/2025 to 22/12/2025 inclusive.\n\nThe overpayment arose because a change in your circumstances was not notified within the prescribed period. Regardless of the reason for the failure to notify, the sum is recoverable under the relevant regulations.\n\nYou are required to repay the sum shown overleaf. Recovery will commence by deduction from ongoing entitlement at the standard rate unless you contact this office within one calendar month of the date of this notice to agree an alternative repayment arrangement.\n\nIf you believe this decision is incorrect you may request a mandatory reconsideration in writing within one calendar month of the date of this notice, stating your grounds. A late request may be admitted where special circumstances are shown. Requesting a reconsideration does not suspend recovery.\n\nWhere the overpayment is determined to have arisen as a result of a failure to disclose, a civil penalty may additionally be imposed.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Confusing documents → plain language → what to do about it",
     "jarg_pretool_q": "Need a script to push back after you read it?",
@@ -188,6 +189,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "es": {
+    "jarg_example2_doc": "NOTIFICACIÓN DE COBRO INDEBIDO Y REINTEGRO\n\nTras la revisión de su derecho a la prestación, se ha determinado que se produjo un cobro indebido correspondiente al periodo del 07/04/2025 al 22/12/2025, ambos inclusive.\n\nEl cobro indebido se originó porque una variación de sus circunstancias no fue comunicada dentro del plazo establecido. Con independencia del motivo de la falta de comunicación, la cantidad es reintegrable conforme a la normativa aplicable.\n\nDeberá reintegrar el importe que figura al dorso. El reintegro se iniciará mediante deducción de la prestación en curso al tipo ordinario, salvo que contacte con esta oficina en el plazo de un mes natural desde la fecha de esta notificación para acordar otra forma de pago.\n\nSi considera que esta resolución es incorrecta, podrá solicitar por escrito su reconsideración obligatoria en el plazo de un mes natural desde la fecha de esta notificación, indicando los motivos. Podrá admitirse una solicitud extemporánea cuando se acrediten circunstancias especiales. La solicitud de reconsideración no suspende el reintegro.\n\nCuando se determine que el cobro indebido se produjo por falta de declaración, podrá imponerse además una sanción administrativa.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Documentos confusos → lenguaje claro → qué hacer al respecto",
     "jarg_pretool_q": "¿Necesitas un guion para responder después de leerlo?",
@@ -370,6 +372,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "zh": {
+    "jarg_example2_doc": "多领款项追回通知\n\n经对您的领取资格进行复核，认定在 2025 年 4 月 7 日至 2025 年 12 月 22 日期间（含首尾两日）发生了补助多领。\n\n该多领系因您的情况发生变化而未在规定期限内申报所致。无论未申报的原因为何，该款项均依相关规定予以追回。\n\n请您偿还背面所列金额。除非您在本通知发出之日起一个自然月内联系本办公室，另行约定还款方式，否则将按标准比例从您正在领取的款项中扣除以进行追回。\n\n如您认为本决定有误，可自本通知发出之日起一个自然月内以书面形式申请强制复议，并说明理由。有特殊情形的，逾期申请亦可受理。申请复议不停止追回程序。\n\n如认定多领系因未如实告知所致，还可能另处民事罚款。",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "看不懂的文件 → 大白话 → 该怎么应对",
     "jarg_pretool_q": "读完后需要一份据理力争的话术吗？",
@@ -552,6 +555,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "hi": {
+    "jarg_example2_doc": "अधिक भुगतान और वसूली की सूचना\n\nआपकी पात्रता की समीक्षा के बाद यह पाया गया है कि 07/04/2025 से 22/12/2025 तक (दोनों तिथियाँ सम्मिलित) की अवधि के संबंध में लाभ का अधिक भुगतान हुआ है।\n\nयह अधिक भुगतान इसलिए हुआ क्योंकि आपकी परिस्थितियों में परिवर्तन की सूचना निर्धारित अवधि के भीतर नहीं दी गई। सूचना न देने का कारण जो भी रहा हो, यह राशि संबंधित नियमों के अंतर्गत वसूली योग्य है।\n\nआपको पृष्ठ के पीछे दर्शाई गई राशि लौटानी होगी। जब तक आप इस सूचना की तिथि से एक कैलेंडर माह के भीतर इस कार्यालय से संपर्क करके भुगतान की कोई अन्य व्यवस्था तय नहीं करते, वसूली आपकी चालू पात्रता से मानक दर पर कटौती द्वारा आरंभ कर दी जाएगी।\n\nयदि आपको लगता है कि यह निर्णय ग़लत है, तो आप इस सूचना की तिथि से एक कैलेंडर माह के भीतर लिखित रूप में अनिवार्य पुनर्विचार का अनुरोध कर सकते हैं और अपने आधार बता सकते हैं। विशेष परिस्थितियाँ सिद्ध होने पर विलंबित अनुरोध भी स्वीकार किया जा सकता है। पुनर्विचार का अनुरोध वसूली को स्थगित नहीं करता।\n\nयदि यह पाया जाता है कि अधिक भुगतान जानकारी छिपाने के कारण हुआ, तो अतिरिक्त रूप से दीवानी जुर्माना भी लगाया जा सकता है।",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "उलझे दस्तावेज़ → सरल भाषा → आगे क्या करें",
     "jarg_pretool_q": "पढ़ने के बाद जवाब देने के लिए कोई स्क्रिप्ट चाहिए?",
@@ -734,6 +738,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ar": {
+    "jarg_example2_doc": "إشعار بصرف زائد واسترداد\n\nبعد مراجعة استحقاقك، تقرر أنه حدث صرف زائد للإعانة عن الفترة من 07/04/2025 إلى 22/12/2025 شاملةً الطرفين.\n\nنشأ الصرف الزائد لأن تغيراً في ظروفك لم يُبلَّغ عنه خلال المدة المقررة. وبصرف النظر عن سبب عدم الإبلاغ، فإن المبلغ قابل للاسترداد بموجب اللوائح ذات الصلة.\n\nيتعين عليك سداد المبلغ المبيّن على الظهر. وسيبدأ الاسترداد بالخصم من الاستحقاق الجاري بالنسبة المعتادة، ما لم تتصل بهذا المكتب خلال شهر تقويمي واحد من تاريخ هذا الإشعار للاتفاق على ترتيب سداد بديل.\n\nإذا كنت ترى أن هذا القرار غير صحيح، يجوز لك طلب إعادة نظر إلزامية كتابةً خلال شهر تقويمي واحد من تاريخ هذا الإشعار، مع بيان أسبابك. وقد يُقبل الطلب المتأخر إذا ثبتت ظروف استثنائية. وطلب إعادة النظر لا يوقف الاسترداد.\n\nوحيثما تبيّن أن الصرف الزائد نشأ نتيجة عدم الإفصاح، يجوز فرض غرامة مدنية إضافية.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "مستندات محيّرة ← لغة بسيطة ← ماذا تفعل حيالها",
     "jarg_pretool_q": "تحتاج نصاً للرد بعد أن تقرأه؟",
@@ -916,6 +921,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "pt": {
+    "jarg_example2_doc": "NOTIFICAÇÃO DE PAGAMENTO INDEVIDO E RECUPERAÇÃO\n\nNa sequência da revisão do seu direito à prestação, foi determinado que ocorreu um pagamento indevido relativo ao período de 07/04/2025 a 22/12/2025, inclusive.\n\nO pagamento indevido resultou de uma alteração das suas circunstâncias não comunicada dentro do prazo previsto. Independentemente do motivo da falta de comunicação, a quantia é recuperável ao abrigo da regulamentação aplicável.\n\nDeverá reembolsar o valor indicado no verso. A recuperação terá início por dedução na prestação em curso à taxa normal, salvo se contactar este serviço no prazo de um mês de calendário a contar da data desta notificação para acordar outra modalidade de pagamento.\n\nSe considerar que esta decisão está incorreta, pode requerer por escrito a reapreciação obrigatória no prazo de um mês de calendário a contar da data desta notificação, indicando os fundamentos. Um pedido apresentado fora de prazo pode ser admitido caso se demonstrem circunstâncias especiais. O pedido de reapreciação não suspende a recuperação.\n\nCaso se determine que o pagamento indevido resultou de falta de declaração, pode ainda ser aplicada uma coima.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Documentos confusos → linguagem simples → o que fazer a respeito",
     "jarg_pretool_q": "Precisa de um roteiro para rebater depois de ler?",
@@ -1098,6 +1104,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "fr": {
+    "jarg_example2_doc": "NOTIFICATION DE TROP-PERÇU ET DE RECOUVREMENT\n\nÀ la suite d'un réexamen de vos droits, il a été établi qu'un trop-perçu de prestation est intervenu pour la période du 07/04/2025 au 22/12/2025 inclus.\n\nCe trop-perçu résulte d'un changement de situation non déclaré dans le délai prescrit. Quelle que soit la raison de l'absence de déclaration, la somme est recouvrable au titre de la réglementation applicable.\n\nVous êtes tenu de rembourser la somme figurant au verso. Le recouvrement débutera par retenue sur les prestations en cours au taux ordinaire, sauf si vous contactez ce service dans un délai d'un mois civil à compter de la date du présent avis afin de convenir d'un autre échéancier.\n\nSi vous estimez que cette décision est erronée, vous pouvez demander par écrit un réexamen obligatoire dans un délai d'un mois civil à compter de la date du présent avis, en exposant vos motifs. Une demande tardive peut être admise en cas de circonstances particulières. La demande de réexamen ne suspend pas le recouvrement.\n\nLorsqu'il est établi que le trop-perçu résulte d'un défaut de déclaration, une pénalité civile peut en outre être infligée.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Documents confus → langage clair → quoi faire ensuite",
     "jarg_pretool_q": "Besoin d'un script pour répondre après lecture ?",
@@ -1280,6 +1287,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "de": {
+    "jarg_example2_doc": "BESCHEID ÜBER ÜBERZAHLUNG UND RÜCKFORDERUNG\n\nNach Überprüfung Ihres Anspruchs wurde festgestellt, dass für den Zeitraum vom 07.04.2025 bis einschließlich 22.12.2025 eine Überzahlung der Leistung eingetreten ist.\n\nDie Überzahlung ist entstanden, weil eine Änderung Ihrer Verhältnisse nicht innerhalb der vorgeschriebenen Frist mitgeteilt wurde. Unabhängig vom Grund der unterbliebenen Mitteilung ist der Betrag nach den einschlägigen Vorschriften zu erstatten.\n\nSie sind verpflichtet, den auf der Rückseite ausgewiesenen Betrag zu erstatten. Die Rückforderung erfolgt durch Aufrechnung mit der laufenden Leistung zum Regelsatz, sofern Sie sich nicht innerhalb eines Kalendermonats ab dem Datum dieses Bescheids mit dieser Stelle in Verbindung setzen, um eine abweichende Ratenzahlung zu vereinbaren.\n\nHalten Sie diese Entscheidung für unrichtig, können Sie innerhalb eines Kalendermonats ab dem Datum dieses Bescheids schriftlich eine verpflichtende Überprüfung unter Angabe Ihrer Gründe beantragen. Ein verspäteter Antrag kann bei Nachweis besonderer Umstände zugelassen werden. Der Antrag auf Überprüfung hemmt die Rückforderung nicht.\n\nWird festgestellt, dass die Überzahlung auf einer unterlassenen Mitteilung beruht, kann zusätzlich ein Bußgeld verhängt werden.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Verwirrende Dokumente → Klartext → was zu tun ist",
     "jarg_pretool_q": "Brauchst du ein Skript, um danach Widerspruch einzulegen?",
@@ -1462,6 +1470,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ja": {
+    "jarg_example2_doc": "過払い金の返還に関する通知\n\n受給資格の再確認の結果、2025年4月7日から2025年12月22日まで（両日を含む）の期間について、給付の過払いが生じていたことが認められました。\n\nこの過払いは、ご事情の変更が所定の期間内に届け出られなかったことにより生じたものです。届出がなされなかった理由のいかんにかかわらず、当該金額は関係規則に基づき返還の対象となります。\n\n裏面に記載の金額をご返還いただく必要があります。本通知の日付から一暦月以内に当窓口へご連絡のうえ別の返還方法についてお取り決めいただかない限り、現在の給付から標準の割合で控除するかたちで返還を開始いたします。\n\n本決定に誤りがあるとお考えの場合は、本通知の日付から一暦月以内に、理由を明示のうえ書面により必要的再審査を請求することができます。特別の事情が認められる場合には、期限後の請求も受理されることがあります。なお、再審査の請求により返還手続が停止することはありません。\n\n過払いが申告義務の不履行によって生じたと認められる場合には、加えて過料が科されることがあります。",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "わかりにくい書類 → 平易な言葉 → 何をすべきか",
     "jarg_pretool_q": "読んだあとに反論するための台本が必要ですか？",
@@ -1644,6 +1653,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ko": {
+    "jarg_example2_doc": "과오지급 및 환수 통지\n\n귀하의 수급 자격을 재검토한 결과, 2025년 4월 7일부터 2025년 12월 22일까지(양일 포함)의 기간에 대하여 급여의 과오지급이 발생한 것으로 확인되었습니다.\n\n이 과오지급은 귀하의 사정 변경이 정해진 기간 내에 신고되지 않아 발생하였습니다. 신고가 이루어지지 않은 사유와 관계없이, 해당 금액은 관계 법령에 따라 환수 대상입니다.\n\n뒷면에 표시된 금액을 반환하셔야 합니다. 본 통지일로부터 1역월 이내에 본 사무소로 연락하여 다른 상환 방법을 협의하지 않는 한, 현재 수급 중인 급여에서 표준 비율로 공제하는 방식으로 환수가 개시됩니다.\n\n이 결정이 잘못되었다고 판단하시는 경우, 본 통지일로부터 1역월 이내에 사유를 기재하여 서면으로 필수적 재심사를 청구하실 수 있습니다. 특별한 사정이 소명되는 경우 기한 후 청구도 받아들여질 수 있습니다. 재심사 청구는 환수를 정지시키지 않습니다.\n\n과오지급이 신고 불이행으로 인하여 발생한 것으로 확인되는 경우, 과태료가 추가로 부과될 수 있습니다.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "이해 안 되는 문서 → 쉬운 말 → 그다음 할 일",
     "jarg_pretool_q": "읽은 뒤 반박할 대본이 필요하신가요?",
@@ -1826,6 +1836,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ru": {
+    "jarg_example2_doc": "УВЕДОМЛЕНИЕ О ПЕРЕПЛАТЕ И ЕЁ ВЗЫСКАНИИ\n\nПо результатам проверки вашего права на выплату установлено, что за период с 07.04.2025 по 22.12.2025 включительно возникла переплата пособия.\n\nПереплата образовалась в связи с тем, что об изменении ваших обстоятельств не было сообщено в установленный срок. Независимо от причины несообщения, сумма подлежит возврату в соответствии с действующими правилами.\n\nВам надлежит вернуть сумму, указанную на обороте. Взыскание начнётся путём удержания из текущей выплаты по стандартной ставке, если вы не обратитесь в это отделение в течение одного календарного месяца с даты настоящего уведомления для согласования иного порядка погашения.\n\nЕсли вы считаете это решение неверным, вы вправе в течение одного календарного месяца с даты настоящего уведомления письменно потребовать обязательного пересмотра с указанием оснований. Просроченное обращение может быть принято при подтверждении особых обстоятельств. Требование о пересмотре не приостанавливает взыскание.\n\nЕсли будет установлено, что переплата возникла вследствие несообщения сведений, дополнительно может быть наложен штраф.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Запутанные документы → простой язык → что с этим делать",
     "jarg_pretool_q": "Нужен сценарий, чтобы возразить после прочтения?",
@@ -2008,6 +2019,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "th": {
+    "jarg_example2_doc": "หนังสือแจ้งการจ่ายเกินและการเรียกคืน\n\nจากการทบทวนสิทธิของท่าน พบว่ามีการจ่ายเงินสวัสดิการเกินสำหรับช่วงวันที่ 07/04/2025 ถึง 22/12/2025 รวมทั้งสองวัน\n\nการจ่ายเกินเกิดขึ้นเนื่องจากไม่ได้แจ้งการเปลี่ยนแปลงสถานการณ์ของท่านภายในระยะเวลาที่กำหนด ไม่ว่าเหตุแห่งการไม่แจ้งจะเป็นประการใด จำนวนเงินดังกล่าวสามารถเรียกคืนได้ตามระเบียบที่เกี่ยวข้อง\n\nท่านต้องชำระคืนจำนวนเงินที่ปรากฏด้านหลัง การเรียกคืนจะเริ่มด้วยการหักจากสิทธิที่ได้รับอยู่ในอัตรามาตรฐาน เว้นแต่ท่านจะติดต่อสำนักงานนี้ภายในหนึ่งเดือนปฏิทินนับแต่วันที่ในหนังสือฉบับนี้เพื่อตกลงวิธีการชำระคืนแบบอื่น\n\nหากท่านเห็นว่าคำวินิจฉัยนี้ไม่ถูกต้อง ท่านอาจยื่นคำขอให้ทบทวนโดยบังคับเป็นลายลักษณ์อักษรภายในหนึ่งเดือนปฏิทินนับแต่วันที่ในหนังสือฉบับนี้ พร้อมระบุเหตุผล คำขอที่ยื่นล่าช้าอาจได้รับการพิจารณาหากพิสูจน์ได้ว่ามีพฤติการณ์พิเศษ ทั้งนี้ การยื่นคำขอทบทวนไม่ทำให้การเรียกคืนหยุดลง\n\nหากปรากฏว่าการจ่ายเกินเกิดจากการไม่เปิดเผยข้อมูล อาจมีการกำหนดค่าปรับทางแพ่งเพิ่มเติมด้วย",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "เอกสารงงๆ → ภาษาเข้าใจง่าย → แล้วต้องทำอะไรต่อ",
     "jarg_pretool_q": "ต้องการสคริปต์ไว้โต้แย้งหลังอ่านเสร็จไหม?",
@@ -2190,6 +2202,7 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "vi": {
+    "jarg_example2_doc": "THÔNG BÁO CHI TRẢ VƯỢT MỨC VÀ THU HỒI\n\nSau khi rà soát quyền thụ hưởng của quý vị, cơ quan xác định đã xảy ra việc chi trả trợ cấp vượt mức đối với giai đoạn từ 07/04/2025 đến 22/12/2025, tính cả hai ngày.\n\nViệc chi trả vượt mức phát sinh do thay đổi về hoàn cảnh của quý vị không được thông báo trong thời hạn quy định. Bất kể lý do không thông báo là gì, khoản tiền này vẫn thuộc diện thu hồi theo các quy định liên quan.\n\nQuý vị có nghĩa vụ hoàn trả khoản tiền ghi ở mặt sau. Việc thu hồi sẽ bắt đầu bằng cách khấu trừ vào khoản trợ cấp đang hưởng theo tỷ lệ tiêu chuẩn, trừ khi quý vị liên hệ với văn phòng này trong vòng một tháng dương lịch kể từ ngày ghi trên thông báo để thỏa thuận phương thức hoàn trả khác.\n\nNếu cho rằng quyết định này không đúng, quý vị có thể yêu cầu xem xét lại bắt buộc bằng văn bản trong vòng một tháng dương lịch kể từ ngày ghi trên thông báo, nêu rõ căn cứ. Yêu cầu nộp muộn có thể được chấp nhận nếu chứng minh được hoàn cảnh đặc biệt. Việc yêu cầu xem xét lại không làm tạm dừng việc thu hồi.\n\nTrường hợp xác định việc chi trả vượt mức phát sinh do không khai báo, cơ quan có thể áp dụng thêm khoản phạt hành chính.",
     "jarg_title": "Jargon Assassin",
     "jarg_tagline": "Tài liệu rối rắm → ngôn ngữ dễ hiểu → nên làm gì tiếp theo",
     "jarg_pretool_q": "Cần kịch bản để phản hồi sau khi đọc xong?",
