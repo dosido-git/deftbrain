@@ -4,6 +4,7 @@
 // stay as-is across languages.
 export const sleepArchitect = {
   en: {
+    sa_ex2_freeform: "I fall asleep fine. I wake at about 3am almost every night, fully alert, and then lie there for an hour or two. Sometimes I get up. By 6 I am usually asleep again, which makes the alarm brutal. Started around the time work got bad, but that was eight months ago and it has not gone away.",
     sa_your_situation: "What you told us",
     sa_title: "SleepArchitect",
     sa_disclaimer: "General sleep-hygiene guidance, not medical advice. For chronic insomnia, loud snoring, or ongoing daytime sleepiness, see a doctor or sleep specialist.",
@@ -72,6 +73,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "QUICK WINS (start tonight)",
   },
   es: {
+    sa_ex2_freeform: "Me duermo sin problema. Me despierto sobre las 3 casi todas las noches, completamente espabilada, y me quedo ahí una hora o dos. A veces me levanto. Sobre las 6 suelo volver a dormirme, y por eso el despertador es una tortura. Empezó cuando el trabajo se puso mal, pero de eso hace ocho meses y sigue igual.",
     sa_your_situation: "Lo que nos contaste",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Orientación general de higiene del sueño, no consejo médico. Si tienes insomnio crónico, ronquidos fuertes o somnolencia diurna persistente, consulta a un médico o especialista del sueño.",
@@ -140,6 +142,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "VICTORIAS RÁPIDAS (empieza esta noche)",
   },
   zh: {
+    sa_ex2_freeform: "入睡没问题。几乎每天凌晨三点左右会醒，脑子非常清醒，然后就那样躺一两个小时。有时候干脆起床。到六点一般又睡着了，所以闹钟响的时候特别难受。大概是工作最糟的那阵子开始的，可那都八个月前了，一直没好。",
     sa_your_situation: "你告诉我们的情况",
     sa_title: "SleepArchitect",
     sa_disclaimer: "这是一般睡眠卫生建议，并非医疗意见。若有慢性失眠、严重打鼾或持续白天嗜睡，请咨询医生或睡眠专科医师。",
@@ -208,6 +211,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "速效行动（今晚就开始）",
   },
   hi: {
+    sa_ex2_freeform: "नींद आने में दिक्कत नहीं है। लगभग हर रात करीब तीन बजे आँख खुल जाती है, पूरी तरह जागा हुआ, और फिर एक-दो घंटे यूँ ही पड़ा रहता हूँ। कभी-कभी उठ जाता हूँ। छह बजे तक दोबारा नींद आ जाती है, जिससे अलार्म बहुत भारी लगता है। यह तब शुरू हुआ जब काम का दबाव बढ़ा था — पर उसे आठ महीने हो गए और यह गया नहीं।",
     sa_your_situation: "आपने हमें जो बताया",
     sa_title: "SleepArchitect",
     sa_disclaimer: "यह सामान्य नींद-स्वच्छता मार्गदर्शन है, चिकित्सीय सलाह नहीं। पुरानी अनिद्रा, तेज़ खर्राटों या लगातार दिन की नींद के लिए डॉक्टर या नींद विशेषज्ञ से मिलें।",
@@ -276,6 +280,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "जल्दी असर (आज रात से शुरू करें)",
   },
   ar: {
+    sa_ex2_freeform: "أنام دون مشكلة. أستيقظ حوالي الثالثة فجراً كل ليلة تقريباً، في كامل يقظتي، ثم أبقى مستلقياً ساعة أو ساعتين. أحياناً أنهض. وبحلول السادسة أكون قد نمت مجدداً، فيصير المنبّه قاسياً. بدأ الأمر حين ساءت أحوال العمل، لكن مضى على ذلك ثمانية أشهر ولم يزل.",
     sa_your_situation: "ما أخبرتنا به",
     sa_title: "SleepArchitect",
     sa_disclaimer: "إرشادات عامة لنظافة النوم، وليست نصيحة طبية. إذا كنت تعاني من أرق مزمن أو شخير عالٍ أو نعاس نهاري مستمر، فاستشر طبيبًا أو أخصائي نوم.",
@@ -344,6 +349,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "مكاسب سريعة (ابدأ الليلة)",
   },
   pt: {
+    sa_ex2_freeform: "Adormeço bem. Acordo por volta das 3 da manhã quase todas as noites, completamente desperto, e fico ali uma ou duas horas. Às vezes levanto-me. Pelas 6 costumo voltar a adormecer, o que torna o despertador brutal. Começou quando o trabalho piorou, mas isso foi há oito meses e não passou.",
     sa_your_situation: "O que você nos contou",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Orientação geral de higiene do sono, não é aconselhamento médico. Para insônia crônica, ronco alto ou sonolência diurna persistente, consulte um médico ou especialista do sono.",
@@ -412,6 +418,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "VITÓRIAS RÁPIDAS (comece hoje à noite)",
   },
   fr: {
+    sa_ex2_freeform: "Je m'endors sans problème. Je me réveille vers 3h presque toutes les nuits, parfaitement éveillé, et je reste là une heure ou deux. Parfois je me lève. Vers 6h je me rendors, ce qui rend le réveil brutal. Ça a commencé quand le travail est devenu difficile, mais c'était il y a huit mois et ça n'a pas cessé.",
     sa_your_situation: "Ce que vous nous avez dit",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Conseils généraux d'hygiène du sommeil, pas un avis médical. En cas d'insomnie chronique, de ronflements bruyants ou de somnolence diurne persistante, consultez un médecin ou un spécialiste du sommeil.",
@@ -480,6 +487,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "GAINS RAPIDES (à commencer ce soir)",
   },
   de: {
+    sa_ex2_freeform: "Einschlafen ist kein Problem. Ich wache fast jede Nacht gegen drei auf, hellwach, und liege dann ein bis zwei Stunden da. Manchmal stehe ich auf. Gegen sechs schlafe ich wieder ein, was den Wecker brutal macht. Es fing an, als es auf der Arbeit schlimm wurde — das ist acht Monate her und es hört nicht auf.",
     sa_your_situation: "Was du uns erzählt hast",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Allgemeine Hinweise zur Schlafhygiene, keine medizinische Beratung. Bei chronischer Schlaflosigkeit, lautem Schnarchen oder anhaltender Tagesmüdigkeit wende dich an eine Ärztin oder einen Schlafmediziner.",
@@ -548,6 +556,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "SCHNELLE ERFOLGE (heute Abend starten)",
   },
   ja: {
+    sa_ex2_freeform: "寝つきは悪くありません。ほぼ毎晩三時ごろに目が覚めて、頭が完全に冴えたまま一、二時間横になっています。起き出すこともあります。六時ごろにまた眠ってしまうので、目覚ましがとにかくつらい。仕事がしんどくなった頃に始まりましたが、それはもう八か月前で、いまだに続いています。",
     sa_your_situation: "あなたが教えてくれたこと",
     sa_title: "SleepArchitect",
     sa_disclaimer: "これは一般的な睡眠衛生のガイダンスであり、医学的助言ではありません。慢性的な不眠、大きないびき、日中の強い眠気が続く場合は、医師や睡眠専門医に相談してください。",
@@ -616,6 +625,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "すぐできる改善（今夜から始めよう）",
   },
   ko: {
+    sa_ex2_freeform: "잠드는 건 괜찮습니다. 거의 매일 새벽 3시쯤 깨는데, 정신이 완전히 말똥말똥한 채로 한두 시간을 누워 있습니다. 가끔은 그냥 일어납니다. 6시쯤 되면 다시 잠들어서 알람이 유난히 힘듭니다. 일이 힘들어진 무렵 시작됐는데, 그게 벌써 여덟 달 전이고 아직도 그대로입니다.",
     sa_your_situation: "알려주신 내용",
     sa_title: "SleepArchitect",
     sa_disclaimer: "일반적인 수면 위생 안내이며 의학적 조언이 아닙니다. 만성 불면, 심한 코골이, 지속적인 주간 졸림이 있다면 의사나 수면 전문의와 상담하세요.",
@@ -684,6 +694,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "빠른 효과 (오늘 밤부터 시작)",
   },
   ru: {
+    sa_ex2_freeform: "Засыпаю нормально. Просыпаюсь около трёх почти каждую ночь, совершенно бодрый, и лежу так час-полтора. Иногда встаю. К шести обычно снова засыпаю, и поэтому будильник — пытка. Началось, когда на работе стало тяжело, но это было восемь месяцев назад, а всё продолжается.",
     sa_your_situation: "Что вы нам рассказали",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Общие рекомендации по гигиене сна, а не медицинская консультация. При хронической бессоннице, громком храпе или постоянной дневной сонливости обратитесь к врачу или сомнологу.",
@@ -752,6 +763,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "БЫСТРЫЕ ПОБЕДЫ (начните сегодня вечером)",
   },
   th: {
+    sa_ex2_freeform: "หลับไม่ยากเลย แต่จะตื่นราวตีสามแทบทุกคืน ตาสว่างเต็มที่ แล้วนอนอยู่อย่างนั้นอีกหนึ่งถึงสองชั่วโมง บางทีก็ลุกขึ้นมาเลย พอถึงหกโมงมักหลับอีกรอบ ทำให้ตอนนาฬิกาปลุกดังนี่ทรมานมาก เริ่มตอนงานหนัก แต่นั่นก็แปดเดือนมาแล้วและยังไม่หาย",
     sa_your_situation: "สิ่งที่คุณบอกเรา",
     sa_title: "SleepArchitect",
     sa_disclaimer: "เป็นคำแนะนำด้านสุขอนามัยการนอนทั่วไป ไม่ใช่คำปรึกษาทางการแพทย์ หากมีอาการนอนไม่หลับเรื้อรัง กรนเสียงดัง หรือง่วงกลางวันต่อเนื่อง ควรพบแพทย์หรือผู้เชี่ยวชาญด้านการนอน",
@@ -820,6 +832,7 @@ export const sleepArchitect = {
     sa_copy_quickwins: "ผลลัพธ์เร็ว (เริ่มคืนนี้)",
   },
   vi: {
+    sa_ex2_freeform: "Tôi ngủ được bình thường. Gần như đêm nào cũng tỉnh giấc khoảng 3 giờ sáng, tỉnh táo hoàn toàn, rồi nằm đó một hai tiếng. Có hôm tôi dậy hẳn. Đến 6 giờ thì thường ngủ lại được, nên tiếng chuông báo thức rất khổ sở. Bắt đầu từ lúc công việc căng thẳng, mà chuyện đó đã tám tháng rồi và vẫn chưa hết.",
     sa_your_situation: "Những gì bạn đã chia sẻ",
     sa_title: "SleepArchitect",
     sa_disclaimer: "Đây là hướng dẫn vệ sinh giấc ngủ chung, không phải tư vấn y tế. Nếu mất ngủ mãn tính, ngáy to hoặc buồn ngủ ban ngày kéo dài, hãy gặp bác sĩ hoặc chuyên gia về giấc ngủ.",
