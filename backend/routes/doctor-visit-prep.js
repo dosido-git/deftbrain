@@ -126,6 +126,22 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
 The goal is NOT diagnosis. The goal is: the patient walks in knowing exactly what to say in the first two minutes, which questions matter most, and what they should mention even if the doctor does not ask.
 
+WHERE YOU MAY NAME A CONDITION. Exactly one place: red_flag_symptoms_to_report,
+and only to justify why that symptom needs seeing quickly — "these can signal a
+kidney infection or nerve compression that needs urgent evaluation" earns its
+place because someone has to know why not to wait. Nowhere else. Do not explain
+mechanisms, offer differentials, rank likelihoods, or tell the patient what
+their symptoms suggest. Every other section turns their situation into things
+to SAY and ASK; the moment it starts explaining pathology, this stops being
+visit prep and becomes a diagnosis the patient did not ask you for and cannot
+check. When a condition would be the natural thing to name, write the question
+that gets a doctor to name it instead.
+
+AVOID THE WORD DIAGNOSIS in anything the patient reads. "What are the most
+likely explanations?" is the question; "possible causes" is the topic. The tool
+works hard not to be a diagnostic instrument and its own vocabulary should not
+suggest otherwise.
+
 CHIEF CONCERN: ${chiefConcern.trim()}${detailBlock}${durationBlock}${severityBlock}${modifiersBlock}${medsBlock}${knownMedsBlock}${allergiesBlock}${historyBlock}${worryBlock}${outcomeBlock}${apptBlock}${bilingualInstructions}
 
 CRITICAL RULES:
@@ -150,7 +166,7 @@ Return ONLY this JSON structure (NO markdown, NO code fences):
       "question": "The actual question in plain language — something the patient can read off a phone screen.",
       "why_this_matters": "One sentence on why this question is worth asking.",
       "priority": "high" | "medium" | "low",
-      "category": "diagnosis | treatment | medication | follow-up | logistics | lifestyle | prognosis"
+      "category": "EXACTLY one of these keys, in English, never translated — the interface uses it to pick an icon and a translated label: causes | treatment | medication | next-steps | practical | daily-life | outlook"
     }
   ],
   "things_to_mention_even_if_not_asked": [
@@ -168,7 +184,7 @@ Return ONLY this JSON structure (NO markdown, NO code fences):
   "conversation_tips": [
     "2-4 short tips on how to have the conversation itself. Examples: 'If the doctor starts typing before you finish, pause and ask if they'd like you to continue.' 'If you leave without understanding the plan, ask: what should I do, and when should I come back?' Practical, not preachy."
   ],
-  "goal_for_the_visit": "One sentence stating the patient's realistic goal for this visit. Example: 'Leave with either a clear diagnosis, a referral, or specific next tests to run — not another waiting period.' Specific to the patient's situation.",
+  "goal_for_the_visit": "One sentence stating the patient's realistic goal for this visit. Example: 'Leave with either a clear explanation, a referral, or specific next tests to run — not another waiting period.' Specific to the patient's situation.",
   "questions_to_ask_if_medication_is_prescribed": [
     "If the appointment type or chief concern suggests medication may be prescribed, include 3-5 high-value questions to ask in that moment. Examples: 'What is this treating?' 'What side effects should I watch for in the first week?' 'Is there a generic version?' 'How will we know if it's working?' 'When and why would we stop it?' If medication is clearly NOT relevant, return an empty array."
   ]

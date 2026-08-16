@@ -42,14 +42,36 @@ const PRIORITY_COLOR = (p, d) => {
   return d ? 'text-cyan-400 bg-cyan-900/20' : 'text-cyan-700 bg-cyan-100';
 };
 
+// Keys are pinned English (the prompt says never to translate them); the
+// LABEL is looked up and translated. Rendering q.category raw showed the model's
+// own word, which in twelve languages was whatever withLanguage had turned it
+// into — and in English was "DIAGNOSIS", on a tool whose whole argument is that
+// it does not do that. "Possible causes" is the topic; the question underneath
+// it still asks the doctor for the explanation.
 const CATEGORY_ICON = {
-  diagnosis:  '🔍',
-  treatment:  '💊',
-  medication: '💊',
+  causes:      '🔍',
+  treatment:   '💊',
+  medication:  '💊',
+  'next-steps': '📅',
+  practical:   '📋',
+  'daily-life': '🌱',
+  outlook:     '🔭',
+  // pre-2026-08-16 saved preps
+  diagnosis:   '🔍',
   'follow-up': '📅',
-  logistics:  '📋',
-  lifestyle:  '🌱',
-  prognosis:  '🔮',
+  logistics:   '📋',
+  lifestyle:   '🌱',
+  prognosis:   '🔭',
+};
+
+const CATEGORY_LABEL = {
+  causes: 'dvp_cat_causes',           treatment: 'dvp_cat_treatment',
+  medication: 'dvp_cat_medication',   'next-steps': 'dvp_cat_next_steps',
+  practical: 'dvp_cat_practical',     'daily-life': 'dvp_cat_daily_life',
+  outlook: 'dvp_cat_outlook',
+  diagnosis: 'dvp_cat_causes',        'follow-up': 'dvp_cat_next_steps',
+  logistics: 'dvp_cat_practical',     lifestyle: 'dvp_cat_daily_life',
+  prognosis: 'dvp_cat_outlook',
 };
 
 // Bilingual text helper — splits "English ||| Translation"
@@ -618,6 +640,15 @@ const DoctorVisitPrep = ({ tool }) => {
       {/* ══════════ RESULTS ══════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="space-y-4">
+          {/* First thing on the page, because it changes how everything below
+              it should be read. It used to be the last thing on the page.
+              Framing, not a warning — so no ⚠️ and no amber. */}
+          <div className={`${c.card} border-2 ${isDark ? 'border-emerald-700' : 'border-emerald-300'} rounded-xl p-4`}>
+            <p className={`text-sm ${c.text}`}>
+              <strong>{t('dvp_remember_label')}</strong> {t('dvp_remember_body')}
+            </p>
+          </div>
+
           {/* Save / saved feedback */}
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
@@ -699,7 +730,7 @@ const DoctorVisitPrep = ({ tool }) => {
                       <p className={`text-xs ${c.textMuted} ms-7`}>{t('dvp_why')} {q.why_this_matters}</p>
                     )}
                     {q.category && (
-                      <p className={`text-[10px] ${c.textMuted} ms-7 mt-1 uppercase tracking-wide`}>{q.category}</p>
+                      <p className={`text-[10px] ${c.textMuted} ms-7 mt-1 uppercase tracking-wide`}>{CATEGORY_LABEL[q.category] ? t(CATEGORY_LABEL[q.category]) : q.category}</p>
                     )}
                   </div>
                 ))}
@@ -726,22 +757,6 @@ const DoctorVisitPrep = ({ tool }) => {
           )}
 
           {/* If medication is prescribed */}
-          {results?.questions_to_ask_if_medication_is_prescribed?.length > 0 && (
-            <Sec
-              icon="💊"
-              title={t('dvp_sec_med_qs')}
-              badge={`${results?.questions_to_ask_if_medication_is_prescribed?.length}`}
-              open={secs.medQs}
-              onToggle={() => tog('medQs')}
-              c={c}
-            >
-              <div className={`${c.cardAlt} border rounded-lg p-4`}>
-                {results?.questions_to_ask_if_medication_is_prescribed?.map((q, i) => (
-                  <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>❓ {q}</p>
-                ))}
-              </div>
-            </Sec>
-          )}
 
           {/* Pre-visit checklist */}
           {results?.pre_visit_checklist?.length > 0 && (
@@ -756,6 +771,24 @@ const DoctorVisitPrep = ({ tool }) => {
               <div className={`${c.cardAlt} border rounded-lg p-4`}>
                 {results?.pre_visit_checklist?.map((item, i) => (
                   <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>☐ {item}</p>
+                ))}
+              </div>
+            </Sec>
+          )}
+
+          {/* Conditional — only some visits end in a prescription. */}
+          {results?.questions_to_ask_if_medication_is_prescribed?.length > 0 && (
+            <Sec
+              icon="💊"
+              title={t('dvp_sec_med_qs')}
+              badge={`${results?.questions_to_ask_if_medication_is_prescribed?.length}`}
+              open={secs.medQs}
+              onToggle={() => tog('medQs')}
+              c={c}
+            >
+              <div className={`${c.cardAlt} border rounded-lg p-4`}>
+                {results?.questions_to_ask_if_medication_is_prescribed?.map((q, i) => (
+                  <p key={i} className={`text-sm ${c.textSecondary} mb-1`}>❓ {q}</p>
                 ))}
               </div>
             </Sec>
@@ -795,13 +828,6 @@ const DoctorVisitPrep = ({ tool }) => {
               </div>
             </Sec>
           )}
-
-          <div className={`${c.warning} border-s-4 rounded-e-lg p-4 flex items-start gap-2`}>
-            <span>⚠️</span>
-            <p className="text-xs">
-              <strong>{t('dvp_remember_label')}</strong> {t('dvp_remember_body')}
-            </p>
-          </div>
 
           {/* Post-result cross-ref (closes the loop with DVT) */}
           <p className={`text-xs ${c.textMuted} text-center`}>
