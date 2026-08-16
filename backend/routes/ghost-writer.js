@@ -17,6 +17,7 @@ router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       qualities,
       anecdotes,
       duration,
+      whyRecommending,
       formalityLevel,
       additionalContext,
       userLanguage,
@@ -46,6 +47,8 @@ LETTER TYPE: ${letterType || 'professional recommendation'}
 HOW LONG YOU'VE KNOWN THEM: ${duration || 'Not specified'}
 FORMALITY LEVEL: ${formalityLevel || 'professional'}
 
+WHY THE WRITER IS RECOMMENDING THEM: ${whyRecommending || 'Not stated'}
+
 QUALITIES TO HIGHLIGHT:
 ${qualitiesList}
 
@@ -55,6 +58,7 @@ ${anecdotesList}
 ADDITIONAL CONTEXT: ${additionalContext || 'None'}
 
 WRITING INSTRUCTIONS:
+0. A recommendation is an act of advocacy, not a summary of a CV. If the writer said why they are recommending this person, that conviction is the spine of the letter — let it shape which evidence you lead with and how the close lands. Never quote the writer's reason back at the reader verbatim, and never write a sentence like 'they are recommending them because...'. Show the belief through what the letter chooses to say.
 `;
 
     const perVersionInstructions = `2. For each version:

@@ -2675,12 +2675,12 @@ export const tools = [
   seoDescription: "Turn rough notes into a polished recommendation letter in seconds. Get 3 free versions — narrative, structured, and concise — tuned to formality and context.",
   seoTitle: "Recommendation Letter Generator",
   title: "Ghost Writer",
-  tagline: "Turn rough notes into polished recommendation letters in seconds",
+  tagline: "You know why they deserve it. This helps you say it.",
   tags: ['recommendation', 'letter', 'reference', 'job', 'linkedin', 'writing', 'grad school', 'scholarship'],
   icon: "✍️",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
-  description: "Input who you're recommending, your relationship, their qualities, and a few rough bullet points. Get 3 letter versions (narrative, structured, concise) calibrated to the formality level and context. Each version highlights placeholders to personalize, power phrases to keep, and refinement options to dial in the tone.",
+  description: "You already know why this person deserves your recommendation. The difficult part is turning years of experience, impressions, and memories into a letter that does them justice.",
   guide: {
     overview: "Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.",
     howToUse: [

@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "f4044f94e5f2ba8d73ec32f36109ad92824094cf",
+  "hash": "0f3e4f4648d01501d7c228fd781e89d2dad6f39c",
   "lastmod": "2026-08-16"
  },
  "static:about": {
@@ -72,8 +72,8 @@
   "lastmod": "2026-08-16"
  },
  "tool:GhostWriter": {
-  "hash": "9d2e93a11a8526ced893a7372db024bea3f819bb",
-  "lastmod": "2026-08-14"
+  "hash": "197165cd9695301e1af0ded3ad0f5e03468c2819",
+  "lastmod": "2026-08-16"
  },
  "tool:HistoryToday": {
   "hash": "f1b8c76c3e9653f7bc05f04c18ad34c64901783f",
