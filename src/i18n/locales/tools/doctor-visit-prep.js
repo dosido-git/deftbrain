@@ -3,6 +3,7 @@
 // stay as-is across languages. No currency is rendered by this tool.
 export const doctorVisitPrep = {
   en: {
+    dvp_cmd_enter: "Press ⌘↵ (Ctrl+Enter) to prepare",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Walk in prepared — so you don't waste the visit",
     dvp_start_over: "Start Over",
@@ -109,6 +110,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "GOAL FOR THIS VISIT",
   },
   es: {
+    dvp_cmd_enter: "Pulsa ⌘↵ (Ctrl+Intro) para preparar",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Llega preparado — para no desperdiciar la consulta",
     dvp_start_over: "Empezar de nuevo",
@@ -215,6 +217,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "OBJETIVO PARA ESTA CONSULTA",
   },
   zh: {
+    dvp_cmd_enter: "按 ⌘↵（Ctrl+Enter）开始准备",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "做好准备再就诊——别浪费这次看诊",
     dvp_start_over: "重新开始",
@@ -321,6 +324,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "本次就诊的目标",
   },
   hi: {
+    dvp_cmd_enter: "तैयारी के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "तैयार होकर जाएं — ताकि मुलाकात बेकार न जाए",
     dvp_start_over: "फिर से शुरू करें",
@@ -427,6 +431,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "इस मुलाकात के लिए लक्ष्य",
   },
   ar: {
+    dvp_cmd_enter: "اضغط ⌘↵ (Ctrl+Enter) للتحضير",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "ادخل وأنت مستعد — حتى لا تضيّع الزيارة",
     dvp_start_over: "ابدأ من جديد",
@@ -533,6 +538,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "هدف هذه الزيارة",
   },
   pt: {
+    dvp_cmd_enter: "Prima ⌘↵ (Ctrl+Enter) para preparar",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Chegue preparado — para não desperdiçar a consulta",
     dvp_start_over: "Recomeçar",
@@ -639,6 +645,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "OBJETIVO PARA ESTA CONSULTA",
   },
   fr: {
+    dvp_cmd_enter: "Appuyez sur ⌘↵ (Ctrl+Entrée) pour préparer",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Arrivez préparé — pour ne pas gâcher la consultation",
     dvp_start_over: "Recommencer",
@@ -745,6 +752,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "OBJECTIF POUR CETTE CONSULTATION",
   },
   de: {
+    dvp_cmd_enter: "Drücke ⌘↵ (Strg+Enter) zum Vorbereiten",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Gut vorbereitet hingehen — damit der Termin nicht vergeudet wird",
     dvp_start_over: "Neu anfangen",
@@ -851,6 +859,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "ZIEL FÜR DIESEN BESUCH",
   },
   ja: {
+    dvp_cmd_enter: "⌘↵（Ctrl+Enter）で準備",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "準備して臨もう — 診察を無駄にしないために",
     dvp_start_over: "最初からやり直す",
@@ -957,6 +966,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "今回の受診の目標",
   },
   ko: {
+    dvp_cmd_enter: "⌘↵ (Ctrl+Enter)를 눌러 준비하기",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "준비하고 가세요 — 진료를 헛되이 보내지 않도록",
     dvp_start_over: "다시 시작",
@@ -1063,6 +1073,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "이번 진료의 목표",
   },
   ru: {
+    dvp_cmd_enter: "Нажмите ⌘↵ (Ctrl+Enter), чтобы подготовиться",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Приходите подготовленным — чтобы не тратить визит впустую",
     dvp_start_over: "Начать заново",
@@ -1169,6 +1180,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "ЦЕЛЬ ЭТОГО ВИЗИТА",
   },
   th: {
+    dvp_cmd_enter: "กด ⌘↵ (Ctrl+Enter) เพื่อเตรียมตัว",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "เตรียมตัวให้พร้อมก่อนเข้าพบ — เพื่อไม่ให้เสียเวลานัด",
     dvp_start_over: "เริ่มใหม่",
@@ -1275,6 +1287,7 @@ export const doctorVisitPrep = {
     dvp_copy_goal: "เป้าหมายของการพบครั้งนี้",
   },
   vi: {
+    dvp_cmd_enter: "Nhấn ⌘↵ (Ctrl+Enter) để chuẩn bị",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Đến với sự chuẩn bị — để không lãng phí buổi khám",
     dvp_start_over: "Bắt đầu lại",

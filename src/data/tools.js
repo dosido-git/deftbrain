@@ -396,7 +396,7 @@ export const tools = [
   seoDescription: "Turn scattered symptoms and worries into a focused script for your doctor visit. Get a free opener, prioritized questions, and a pre-visit checklist.",
   seoTitle: "Doctor Visit Prep: Questions to Ask Checklist",
   title: "Doctor Visit Prep",
-  tagline: "Walk in prepared — so you don't waste the visit",
+  tagline: "Walk in prepared — because fifteen minutes goes by quickly.",
   tags: ['doctor', 'appointment', 'prep', 'questions', 'symptoms', 'health', 'medical', 'visit', 'preparation'],
   icon: "👨🏻",
   categories: ['The Grind'],

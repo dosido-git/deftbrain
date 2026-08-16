@@ -539,11 +539,18 @@ const DoctorVisitPrep = ({ tool }) => {
           <button
             onClick={handleGenerate}
             disabled={loading || !chiefConcern.trim()}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 min-h-[48px] rounded-lg flex items-center justify-center gap-2`}
+            title={t('dvp_cmd_enter')}
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 min-h-[48px] rounded-lg flex items-center justify-center gap-2`}
           >
             {loading
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '👨🏻'}</span> {t('dvp_preparing')}</>
               : <><span>{tool?.icon ?? '👨🏻'}</span> {t('dvp_prepare')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
           </button>
         </div>
 
