@@ -111,7 +111,7 @@ function ContractDecoder({ tool }) {
     setResults(null);
     setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setResults, EXAMPLE.context, EXAMPLE.contractText]);
+  }, [setResults]);
 
   const toggleFocus = useCallback((id) => {
     setFocusAreas(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);

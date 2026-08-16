@@ -4,6 +4,10 @@
 // Brag Sheet Builder, The Run-Through, DeftBrain) stay as-is across languages.
 export const hecklerPrep = {
   en: {
+    hp_ex2_topic: "Closing the branch library on Aldergate Road",
+    hp_ex2_audience: "A public consultation meeting — about 60 residents, three of whom organised the petition, plus a local reporter",
+    hp_ex2_proposal: "Close the Aldergate branch and consolidate services into the central library, with a fortnightly mobile van stopping on Aldergate Road.",
+    hp_ex2_objections: "That the mobile van is a fig leaf. That we already cut hours twice and promised we would not close it. That the children who use it after school cannot get to the central library. That the consultation is a formality and the decision is already made — which, mostly, it is.",
     hp_title: "Heckler Prep",
     hp_tagline: "Anticipate the hardest questions before they land",
     hp_coldopen_q: "Open strong first —",
@@ -53,6 +57,10 @@ export const hecklerPrep = {
     hp_copy_handle: "Handle:",
   },
   es: {
+    hp_ex2_topic: "Cierre de la biblioteca de Aldergate Road",
+    hp_ex2_audience: "Una reunión de consulta pública — unos 60 vecinos, tres de ellos organizaron la petición, más un periodista local",
+    hp_ex2_proposal: "Cerrar la sucursal de Aldergate y concentrar los servicios en la biblioteca central, con un bibliobús quincenal que pare en Aldergate Road.",
+    hp_ex2_objections: "Que el bibliobús es una excusa. Que ya recortamos horarios dos veces y prometimos no cerrarla. Que los niños que la usan al salir del colegio no pueden llegar a la central. Que la consulta es un trámite y la decisión ya está tomada — y en buena medida, lo está.",
     hp_title: "Heckler Prep",
     hp_tagline: "Anticipa las preguntas más difíciles antes de que lleguen",
     hp_coldopen_q: "Empieza con fuerza —",
@@ -102,6 +110,10 @@ export const hecklerPrep = {
     hp_copy_handle: "Cómo manejarla:",
   },
   zh: {
+    hp_ex2_topic: "关闭奥德门路分馆图书馆",
+    hp_ex2_audience: "一场公众咨询会——大约60位居民，其中三位是请愿的发起人，还有一名本地记者",
+    hp_ex2_proposal: "关闭奥德门分馆，将服务并入中央图书馆，并安排流动图书车每两周在奥德门路停靠一次。",
+    hp_ex2_objections: "他们会说流动图书车只是遮羞布；说我们已经削减过两次开放时间，还承诺过不会关闭；说放学后来这里的孩子去不了中央馆；说这场咨询只是走过场，决定早就定了——而这基本属实。",
     hp_title: "Heckler Prep",
     hp_tagline: "在最难的问题抛来之前先想好对策",
     hp_coldopen_q: "先开个好头 —",
@@ -151,6 +163,10 @@ export const hecklerPrep = {
     hp_copy_handle: "应对：",
   },
   hi: {
+    hp_ex2_topic: "एल्डरगेट रोड की शाखा लाइब्रेरी बंद करना",
+    hp_ex2_audience: "एक जन-परामर्श बैठक — करीब 60 निवासी, जिनमें तीन ने याचिका चलाई थी, और एक स्थानीय पत्रकार",
+    hp_ex2_proposal: "एल्डरगेट शाखा बंद करके सेवाएँ केंद्रीय लाइब्रेरी में मिला दी जाएँ, और हर पखवाड़े एक मोबाइल वैन एल्डरगेट रोड पर रुके।",
+    hp_ex2_objections: "कि मोबाइल वैन बस दिखावा है। कि हम पहले ही दो बार समय घटा चुके हैं और वादा किया था कि बंद नहीं करेंगे। कि स्कूल के बाद आने वाले बच्चे केंद्रीय लाइब्रेरी तक नहीं पहुँच सकते। कि यह परामर्श महज़ औपचारिकता है और फ़ैसला हो चुका है — और काफ़ी हद तक यह सच है।",
     hp_title: "Heckler Prep",
     hp_tagline: "सबसे कठिन सवाल आने से पहले उनका अंदाज़ा लगाएं",
     hp_coldopen_q: "पहले मज़बूत शुरुआत करें —",
@@ -200,6 +216,10 @@ export const hecklerPrep = {
     hp_copy_handle: "कैसे संभालें:",
   },
   ar: {
+    hp_ex2_topic: "إغلاق مكتبة فرع شارع ألدرغيت",
+    hp_ex2_audience: "جلسة استشارة عامة — نحو 60 من السكان، ثلاثة منهم نظّموا العريضة، إضافة إلى صحفي محلي",
+    hp_ex2_proposal: "إغلاق فرع ألدرغيت ودمج الخدمات في المكتبة المركزية، مع مركبة متنقلة تتوقف في شارع ألدرغيت كل أسبوعين.",
+    hp_ex2_objections: "أن المركبة المتنقلة ذريعة. وأننا خفّضنا ساعات العمل مرتين ووعدنا بعدم الإغلاق. وأن الأطفال الذين يرتادونها بعد المدرسة لا يستطيعون بلوغ المكتبة المركزية. وأن الاستشارة شكلية والقرار متخذ سلفاً — وهو كذلك في معظمه.",
     hp_title: "Heckler Prep",
     hp_tagline: "توقّع أصعب الأسئلة قبل أن تُطرح",
     hp_coldopen_q: "ابدأ بقوة أولاً —",
@@ -249,6 +269,10 @@ export const hecklerPrep = {
     hp_copy_handle: "كيفية التعامل:",
   },
   pt: {
+    hp_ex2_topic: "Encerramento da biblioteca de Aldergate Road",
+    hp_ex2_audience: "Uma reunião de consulta pública — cerca de 60 residentes, três dos quais organizaram a petição, mais um jornalista local",
+    hp_ex2_proposal: "Encerrar o polo de Aldergate e concentrar os serviços na biblioteca central, com uma carrinha itinerante a parar quinzenalmente na Aldergate Road.",
+    hp_ex2_objections: "Que a carrinha é um biombo. Que já cortámos horários duas vezes e prometemos não encerrar. Que as crianças que a usam depois da escola não conseguem chegar à central. Que a consulta é uma formalidade e a decisão já está tomada — e, em boa parte, está.",
     hp_title: "Heckler Prep",
     hp_tagline: "Antecipe as perguntas mais difíceis antes que elas cheguem",
     hp_coldopen_q: "Comece forte primeiro —",
@@ -298,6 +322,10 @@ export const hecklerPrep = {
     hp_copy_handle: "Como lidar:",
   },
   fr: {
+    hp_ex2_topic: "La fermeture de la bibliothèque d'Aldergate Road",
+    hp_ex2_audience: "Une réunion de consultation publique — une soixantaine de riverains, dont trois ont organisé la pétition, plus un journaliste local",
+    hp_ex2_proposal: "Fermer l'annexe d'Aldergate et regrouper les services à la bibliothèque centrale, avec un bibliobus s'arrêtant tous les quinze jours sur Aldergate Road.",
+    hp_ex2_objections: "Que le bibliobus est un cache-misère. Qu'on a déjà réduit les horaires deux fois en promettant de ne pas fermer. Que les enfants qui viennent après l'école ne peuvent pas aller jusqu'à la centrale. Que la consultation est une formalité et que la décision est déjà prise — et, pour l'essentiel, elle l'est.",
     hp_title: "Heckler Prep",
     hp_tagline: "Anticipez les questions les plus difficiles avant qu'elles n'arrivent",
     hp_coldopen_q: "Commencez fort d'abord —",
@@ -347,6 +375,10 @@ export const hecklerPrep = {
     hp_copy_handle: "Comment gérer :",
   },
   de: {
+    hp_ex2_topic: "Die Schließung der Stadtteilbibliothek Aldergate Road",
+    hp_ex2_audience: "Eine öffentliche Anhörung — rund 60 Anwohner, drei davon haben die Petition organisiert, dazu ein Lokaljournalist",
+    hp_ex2_proposal: "Die Zweigstelle Aldergate schließen und die Angebote in der Zentralbibliothek bündeln, mit einem Bücherbus, der alle zwei Wochen an der Aldergate Road hält.",
+    hp_ex2_objections: "Dass der Bücherbus ein Feigenblatt ist. Dass wir die Öffnungszeiten schon zweimal gekürzt und versprochen haben, nicht zu schließen. Dass die Kinder, die nach der Schule kommen, die Zentrale nicht erreichen. Dass die Anhörung eine Formalie ist und längst entschieden wurde — was weitgehend stimmt.",
     hp_title: "Heckler Prep",
     hp_tagline: "Antizipiere die schwierigsten Fragen, bevor sie kommen",
     hp_coldopen_q: "Starte zuerst stark —",
@@ -396,6 +428,10 @@ export const hecklerPrep = {
     hp_copy_handle: "So gehst du damit um:",
   },
   ja: {
+    hp_ex2_topic: "アルダーゲート通り分館図書館の閉館",
+    hp_ex2_audience: "住民説明会。約60名の住民で、うち三名は署名活動の発起人。地元紙の記者も一名",
+    hp_ex2_proposal: "アルダーゲート分館を閉じ、機能を中央図書館に集約する。代わりに移動図書館車が隔週でアルダーゲート通りに停車する。",
+    hp_ex2_objections: "移動図書館は体裁づくりにすぎない。開館時間はすでに二度削られ、閉館はしないと約束したはずだ。放課後に通う子どもたちは中央館まで行けない。この説明会は形だけで、結論はもう出ている——実際、ほぼそのとおりです。",
     hp_title: "Heckler Prep",
     hp_tagline: "最も難しい質問が飛んでくる前に先回りする",
     hp_coldopen_q: "まずは力強く始めましょう —",
@@ -445,6 +481,10 @@ export const hecklerPrep = {
     hp_copy_handle: "対処法：",
   },
   ko: {
+    hp_ex2_topic: "앨더게이트 로드 분관 도서관 폐쇄",
+    hp_ex2_audience: "주민 공청회 — 주민 약 60명, 그중 세 명은 청원을 조직한 사람들, 그리고 지역 기자 한 명",
+    hp_ex2_proposal: "앨더게이트 분관을 닫고 서비스를 중앙도서관으로 통합하되, 격주로 이동도서관 차량이 앨더게이트 로드에 정차한다.",
+    hp_ex2_objections: "이동도서관은 눈가림이라는 것. 이미 두 차례 운영 시간을 줄이면서 폐쇄는 없다고 약속했다는 것. 방과 후에 오는 아이들은 중앙도서관까지 갈 수 없다는 것. 이 공청회는 형식이고 결정은 이미 났다는 것 — 사실 대체로 그렇습니다.",
     hp_title: "Heckler Prep",
     hp_tagline: "가장 어려운 질문이 날아오기 전에 미리 대비하세요",
     hp_coldopen_q: "먼저 강하게 시작하세요 —",
@@ -494,6 +534,10 @@ export const hecklerPrep = {
     hp_copy_handle: "대처법:",
   },
   ru: {
+    hp_ex2_topic: "Закрытие районной библиотеки на Олдергейт-роуд",
+    hp_ex2_audience: "Общественные слушания — около 60 жителей, трое из них организовали петицию, плюс местный журналист",
+    hp_ex2_proposal: "Закрыть филиал на Олдергейт и объединить услуги в центральной библиотеке, а раз в две недели на Олдергейт-роуд будет останавливаться библиобус.",
+    hp_ex2_objections: "Что библиобус — это ширма. Что мы уже дважды сокращали часы и обещали не закрывать. Что дети, приходящие после школы, до центральной не доберутся. Что слушания — формальность, а решение уже принято. По большей части так и есть.",
     hp_title: "Heckler Prep",
     hp_tagline: "Предугадайте самые трудные вопросы до того, как их зададут",
     hp_coldopen_q: "Сначала начните сильно —",
@@ -543,6 +587,10 @@ export const hecklerPrep = {
     hp_copy_handle: "Как справиться:",
   },
   th: {
+    hp_ex2_topic: "การปิดห้องสมุดสาขาถนนอัลเดอร์เกต",
+    hp_ex2_audience: "การประชุมรับฟังความเห็นสาธารณะ — ผู้อยู่อาศัยราว 60 คน สามคนในนั้นเป็นผู้ริเริ่มคำร้อง และนักข่าวท้องถิ่นหนึ่งคน",
+    hp_ex2_proposal: "ปิดห้องสมุดสาขาอัลเดอร์เกตและรวมบริการไว้ที่ห้องสมุดกลาง โดยมีรถห้องสมุดเคลื่อนที่มาจอดที่ถนนอัลเดอร์เกตทุกสองสัปดาห์",
+    hp_ex2_objections: "ว่ารถห้องสมุดเคลื่อนที่เป็นแค่ข้ออ้าง ว่าเราลดเวลาเปิดมาแล้วสองครั้งและเคยสัญญาว่าจะไม่ปิด ว่าเด็ก ๆ ที่มาหลังเลิกเรียนไปห้องสมุดกลางไม่ได้ ว่าการรับฟังความเห็นเป็นเพียงพิธีกรรมและตัดสินใจไปแล้ว — ซึ่งส่วนใหญ่ก็จริง",
     hp_title: "Heckler Prep",
     hp_tagline: "คาดการณ์คำถามที่ยากที่สุดก่อนที่มันจะมาถึง",
     hp_coldopen_q: "เริ่มให้แข็งแกร่งก่อน —",
@@ -592,6 +640,10 @@ export const hecklerPrep = {
     hp_copy_handle: "วิธีรับมือ:",
   },
   vi: {
+    hp_ex2_topic: "Việc đóng cửa thư viện chi nhánh đường Aldergate",
+    hp_ex2_audience: "Một buổi tham vấn cộng đồng — khoảng 60 cư dân, ba người trong số đó đứng ra vận động kiến nghị, cùng một phóng viên địa phương",
+    hp_ex2_proposal: "Đóng chi nhánh Aldergate và gộp dịch vụ về thư viện trung tâm, kèm một xe thư viện lưu động dừng ở đường Aldergate hai tuần một lần.",
+    hp_ex2_objections: "Rằng xe lưu động chỉ là cái cớ. Rằng chúng tôi đã cắt giờ mở cửa hai lần và từng hứa sẽ không đóng. Rằng bọn trẻ đến sau giờ học không thể tới thư viện trung tâm. Rằng buổi tham vấn chỉ là thủ tục và quyết định đã có rồi — và phần lớn là đúng như vậy.",
     hp_title: "Heckler Prep",
     hp_tagline: "Lường trước những câu hỏi khó nhất trước khi chúng ập đến",
     hp_coldopen_q: "Mở màn mạnh mẽ trước —",
