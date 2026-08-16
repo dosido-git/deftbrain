@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 
 // ════════════════════════════════════════════════════════════
@@ -269,12 +270,23 @@ const SocialBatteryAdvisor = ({ tool }) => {
   }, [setResults]);
 
   const loadExample = useCallback(() => {
-    setInteractions([
-      { situation: 'Team meeting', category: 'work', performance: 6, energyBefore: 7, energyAfter: 4, duration: '1 hour', custom: false },
-      { situation: 'Lunch with coworkers', category: 'work', performance: 5, energyBefore: 5, energyAfter: 3, duration: '1 hour', custom: false },
-      { situation: 'Networking event', category: 'social', performance: 8, energyBefore: 6, energyAfter: 2, duration: '2 hours', custom: false },
-      { situation: 'Solo time (recharge)', category: 'creative', performance: 1, energyBefore: 3, energyAfter: 7, duration: '1.5 hours', custom: false },
-    ]);
+    // A work week where the obvious culprit is the networking event, and a
+    // weekend where nothing looks demanding and the battery still empties —
+    // which is the pattern people cannot explain to themselves.
+    setInteractions(pickExample('SocialBatteryAdvisor', [
+      [
+        { situation: 'Team meeting', category: 'work', performance: 6, energyBefore: 7, energyAfter: 4, duration: '1 hour', custom: false },
+        { situation: 'Lunch with coworkers', category: 'work', performance: 5, energyBefore: 5, energyAfter: 3, duration: '1 hour', custom: false },
+        { situation: 'Networking event', category: 'social', performance: 8, energyBefore: 6, energyAfter: 2, duration: '2 hours', custom: false },
+        { situation: 'Solo time (recharge)', category: 'creative', performance: 1, energyBefore: 3, energyAfter: 7, duration: '1.5 hours', custom: false },
+      ],
+      [
+        { situation: "Kids' football, standing with other parents", category: 'family', performance: 7, energyBefore: 8, energyAfter: 5, duration: '2 hours', custom: false },
+        { situation: 'Phone call with my mother', category: 'family', performance: 4, energyBefore: 5, energyAfter: 2, duration: '40 min', custom: false },
+        { situation: 'Supermarket', category: 'errands', performance: 2, energyBefore: 2, energyAfter: 1, duration: '45 min', custom: false },
+        { situation: 'Two friends round for dinner', category: 'social', performance: 6, energyBefore: 1, energyAfter: 2, duration: '3 hours', custom: false },
+      ],
+    ]));
     setError('');
   }, []);
 

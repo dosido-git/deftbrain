@@ -6,6 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { currencySymbol } from '../utils/formatLocale';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -509,13 +510,25 @@ const SubscriptionTamer = ({ tool }) => {
 
   // ── Try Example: load 5 sample subs the user can analyze right away ──
   const loadExample = useCallback(() => {
-    const sample = [
-      newSub({ name: 'Netflix',         cost: 15.49, cycle: 'monthly', usage: 'weekly',  category: 'streaming' }),
-      newSub({ name: 'Spotify',         cost: 11.99, cycle: 'monthly', usage: 'daily',   category: 'music' }),
-      newSub({ name: 'Hulu',            cost: 17.99, cycle: 'monthly', usage: 'rarely',  category: 'streaming' }),
-      newSub({ name: 'Adobe CC',        cost: 59.99, cycle: 'monthly', usage: 'monthly', category: 'productivity' }),
-      newSub({ name: 'Gym membership',  cost: 40.00, cycle: 'monthly', usage: 'forgot',  category: 'fitness' }),
-    ];
+    // Two shapes of the same problem: a visible monthly stack, and the annual
+    // renewals that never feel like money because they arrive once a year.
+    const sample = pickExample('SubscriptionTamer', [
+      [
+        newSub({ name: 'Netflix',         cost: 15.49, cycle: 'monthly', usage: 'weekly',  category: 'streaming' }),
+        newSub({ name: 'Spotify',         cost: 11.99, cycle: 'monthly', usage: 'daily',   category: 'music' }),
+        newSub({ name: 'Hulu',            cost: 17.99, cycle: 'monthly', usage: 'rarely',  category: 'streaming' }),
+        newSub({ name: 'Adobe CC',        cost: 59.99, cycle: 'monthly', usage: 'monthly', category: 'productivity' }),
+        newSub({ name: 'Gym membership',  cost: 40.00, cycle: 'monthly', usage: 'forgot',  category: 'fitness' }),
+      ],
+      [
+        newSub({ name: 'Domain renewals (3)', cost: 46.00,  cycle: 'yearly',  usage: 'forgot',  category: 'cloud' }),
+        newSub({ name: 'iCloud 2TB',          cost: 9.99,   cycle: 'monthly', usage: 'daily',   category: 'cloud' }),
+        newSub({ name: 'Amazon Prime',        cost: 139.00, cycle: 'yearly',  usage: 'monthly', category: 'other' }),
+        newSub({ name: 'Newspaper (intro rate ended)', cost: 26.00, cycle: 'monthly', usage: 'rarely', category: 'news' }),
+        newSub({ name: 'Password manager',    cost: 35.88,  cycle: 'yearly',  usage: 'daily',   category: 'productivity' }),
+        newSub({ name: 'Meditation app',      cost: 69.99,  cycle: 'yearly',  usage: 'forgot',  category: 'fitness' }),
+      ],
+    ]);
     persistSubs(sample);
     setInputMode('manual');
     setError('');
