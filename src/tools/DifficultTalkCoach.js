@@ -938,6 +938,7 @@ const DifficultTalkCoach = ({ tool }) => {
                       const levelConfig = {
                         gentle: { bg: isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-200', accent: isDark ? 'text-cyan-400' : 'text-cyan-600', emoji: '🌊' },
                         balanced: { bg: isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200', accent: isDark ? 'text-emerald-400' : 'text-emerald-600', emoji: '⚖️' },
+                        persistent: { bg: isDark ? 'bg-lime-900/20 border-lime-700' : 'bg-lime-50 border-lime-200', accent: isDark ? 'text-lime-400' : 'text-lime-700', emoji: '📍' },
                         firm: { bg: isDark ? 'bg-amber-900/20 border-amber-700' : 'bg-amber-50 border-amber-200', accent: isDark ? 'text-amber-400' : 'text-amber-600', emoji: '🪨' },
                       };
                       const lc = levelConfig[msg.level] || levelConfig.balanced;

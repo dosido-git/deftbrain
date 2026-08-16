@@ -57,7 +57,7 @@ router.post('/difficult-talk-coach', rateLimit(DEFAULT_LIMITS), async (req, res)
     }).join(', ');
 
     // The 2026-07 two-way split rescued this route from never returning, but the
-    // scripts half stayed the floor: 3 full conversation approaches, 3 firmness
+    // scripts half stayed the floor: 3 full conversation approaches, 4 firmness
     // messages and 5 pushback scripts out of one call at max_tokens 8000, still
     // 98s against the ~60s where Safari abandons the fetch. So the scripts half
     // is itself split, and the approaches are partitioned by strategic angle —
@@ -86,6 +86,19 @@ HOW CERTAIN YOU MAY SOUND. You know the visitor's side of a relationship you hav
 Never assert their inner state: "Your manager is probably feeling squeezed between liking you and knowing the budget conversation is above their head" claims to know that the manager likes them, feels squeezed, and lacks authority — three facts nobody supplied. Write "One possibility is that your manager is balancing competing priorities, including budget timing and your request."
 
 Never predict the visitor's emotions as fact either. "You will feel like you did something wrong" and "you will feel greedy for pushing further" are diagnoses of feelings that have not happened. Write "Many people feel…", "Some people stop here because…", "It is common to…". A person who does not feel the thing you predicted should not conclude they are reacting wrongly.
+
+EFFECT ON THE CONVERSATION, NOT EFFECT ON THEM. When you explain why something
+works, describe what it gives the two of them — never what it forces the other
+person to do. "It puts a specific ask back on the table — now they have to
+respond to something concrete instead of letting the moment pass" describes a
+trap being set. Write "It puts a specific ask back on the table, so there is
+something concrete for both of you to respond to." Same mechanism, nobody is
+being cornered.
+
+NO APHORISMS. "A follow-up meeting turns a feeling into a fact" is a good line
+and it is a seminar line. Neatness is the tell. Write "A follow-up meeting
+creates clarity. It gives both of you something concrete to return to." If a
+sentence would look at home on a slide, rewrite it plainly.
 
 AUTHENTIC OVER POLISHED. Scripts are what an ordinary nervous person could actually say out loud. "I'd rather know the real answer than a comfortable one — so just tell me what's true" is beautifully written and nobody says it. Prefer plainer, slightly clumsier lines that survive being spoken by someone whose heart is pounding. Contractions, short sentences, the occasional false start. Elegance that cannot be said aloud is useless.`;
 
@@ -179,11 +192,13 @@ ANALYSIS INSTRUCTIONS
 ══════════════════════════════════════════════════
 
 STEP 8 — FIRMNESS-LEVEL MESSAGES
-Generate 3 complete, copy-paste ready messages at different firmness levels. These are DIFFERENT from the conversation approaches (which are being written separately) — approaches are strategic frameworks, these are complete standalone messages the user can send verbatim.
-- Gentle: Warm, acknowledges their perspective, clear about the need. Best for first attempts.
-- Balanced (RECOMMENDED): Direct, respectful, no apologies. No softening.
-- Firm: Unambiguous. Includes consequences if boundary isn't respected. Non-negotiable.
-CRITICAL: Remove ALL apologetic qualifiers from each message — "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". Track what was removed in a "removes" array. Messages should be STATEMENTS not questions.
+Generate 4 complete, copy-paste ready messages at rising firmness. These are DIFFERENT from the conversation approaches (written separately) — approaches are frameworks, these are standalone messages the user can send verbatim. The steps between them must be even; a visitor should be able to pick the next one up without it feeling like a different relationship.
+- Gentle: Warm, acknowledges their perspective, clear about the need. Best for a first attempt.
+- Balanced (RECOMMENDED): Direct, respectful, no apologies, no cushioning.
+- Persistent: Balanced, plus it asks for one specific thing — an answer, a date, a commitment — and does not let the subject be changed. No consequence of any kind. This is the rung for a second or third attempt, and it is where most escalation should stop.
+- Very Firm: Unambiguous about what is needed and by when. If there is a genuine limit — something the visitor will actually do — name it plainly and specifically. NEVER gesture at an unnamed one: "I'll need to think seriously about what my options are" threatens without saying anything, which is vaguer AND more aggressive than the truth. If there is no real limit in this situation, this version simply does not soften and does not drop the subject. An ultimatum the visitor cannot or will not follow through on is worse than no message at all.
+LEVEL VALUES: the "level" field is EXACTLY one of gentle | balanced | persistent | firm, always in those English words, never translated — the interface switches on it to pick the card style and the recommended badge. The "label" beside it IS translated and is what the reader sees.
+CRITICAL: strip apologetic qualifiers from each message — "I'm sorry but", "If it's okay", "I hate to ask", "I don't want to be difficult", "Maybe", "Kind of". List what you took out in the "removes" array; the interface shows it under the heading "You don't need to say", so list bare phrases, not instructions. Messages should be STATEMENTS not questions.
 
 STEP 9 — PUSHBACK SCRIPTS BY REACTION TYPE
 Generate standalone scripts organized by how the other person might react: guilt_trip, anger, negotiation, silent_treatment, deflection. Each script is 1-2 sentences the user can say verbatim regardless of which approach they chose. These restate the boundary without re-explaining or defending.
@@ -198,22 +213,29 @@ OUTPUT FORMAT — Return ONLY valid JSON
       "level": "gentle",
       "label": "Gentle but Clear",
       "text": "The actual message they can copy-paste. Warm but unambiguous.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["List of apologetic phrases this version removes", "e.g. 'I'm sorry but'", "'If it's not too much trouble'"]
+      "what_this_does": "One sentence on what this gives the two of you — never what it forces them to do",
+      "removes": ["bare apologetic phrases this version leaves out, e.g. I'm sorry but / If it's not too much trouble — phrases only, no instructions"]
     },
     {
       "level": "balanced",
       "label": "Balanced Assertiveness",
       "text": "Direct, respectful, no apologies. This is the recommended default.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["Apologetic phrases removed from this version"]
+      "what_this_does": "One sentence on what this gives the two of you — never what it forces them to do",
+      "removes": ["Bare phrases only"]
+    },
+    {
+      "level": "persistent",
+      "label": "Clear and Persistent",
+      "text": "Balanced, plus one specific ask — an answer, a date, a commitment — and it does not let the subject drift. No consequence.",
+      "what_this_does": "One sentence on what this gives the two of you — never what it forces them to do",
+      "removes": ["Bare phrases only"]
     },
     {
       "level": "firm",
       "label": "Very Firm",
-      "text": "Unambiguous. Includes consequence if boundary isn't respected.",
-      "what_this_does": "One sentence explaining the approach",
-      "removes": ["All softening language removed"]
+      "text": "Unambiguous about what is needed and by when. Name a real limit plainly or name none at all — never hint at one.",
+      "what_this_does": "One sentence on what this gives the two of you — never what it forces them to do",
+      "removes": ["Bare phrases only"]
     }
   ],
 
@@ -384,7 +406,7 @@ Return ONLY the JSON object with EXACTLY the 8 keys shown above. No markdown, no
       }, { label: `DifficultTalkCoach-approach-${angle.key}` }))),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 2500,
+        max_tokens: 3400,
         system: withLanguage(systemBase, userLanguage),
         messages: [{ role: 'user', content: promptMessages }]
       }, { label: 'DifficultTalkCoach-messages' }),
