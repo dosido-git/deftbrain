@@ -53,6 +53,16 @@ function sampleConfidence(n){if(n>=15)return{level:'high',labelKey:'frd_conf_hig
 const CATEGORIES = ['Electronics','Home & Kitchen','Beauty','Fashion','Sports','Books','Health','Food','Toys','Automotive','Other'];
 const SOURCE_PRESETS = ['Amazon','Best Buy','Walmart','Target','Reddit','YouTube','Other'];
 
+// What the visitor is actually here to settle. Ids stay English — they are
+// sent to the model, which switches on them.
+const DECISIONS = [
+  { id: 'buy',      icon: '🛒', labelKey: 'frd_dec_buy' },
+  { id: 'skip',     icon: '🚫', labelKey: 'frd_dec_skip' },
+  { id: 'compare',  icon: '⚖️', labelKey: 'frd_dec_compare' },
+  { id: 'rating',   icon: '⭐', labelKey: 'frd_dec_rating' },
+  { id: 'conflict', icon: '🤔', labelKey: 'frd_dec_conflict' },
+];
+
 // ════════════════════════════════════════════════════════════
 // INLINE HIGHLIGHTING
 // ════════════════════════════════════════════════════════════
@@ -225,7 +235,9 @@ const FakeReviewDetective = ({ tool }) => {
   const srcLabel = (s) => s === 'Other' ? t('frd_src_other') : s;
 
   // Form
-  const [category, setCategory] = useState('Electronics');
+  // Inferred from the reviews (or from a URL import) rather than asked for.
+  const [category, setCategory] = useState('');
+  const [decision, setDecision] = useState('');
   const [productUrl, setProductUrl] = useState('');
   const [currentSource, setCurrentSource] = useState('');
   const [productName, setProductName] = useState('');
@@ -318,7 +330,7 @@ const FakeReviewDetective = ({ tool }) => {
     try {
       const sd = await callToolEndpoint('fake-review-detective', {
         action: 'score', reviews: aiRevs.map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, exclamationCount: r.exclamationCount, capsRatio: r.capsRatio, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor })),
-        stats: aggStats, category, truncated: trunc, totalReviewCount: reviews.length, userLocale, userCurrency, userRegion,
+        stats: aggStats, category: category || null, decision: decision || null, truncated: trunc, totalReviewCount: reviews.length, userLocale, userCurrency, userRegion,
       });
       scores = sd?.scores || []; setReviewScores(scores);
     } catch (err) { setError(t('frd_err_scoring') + (err.message || '')); setPhase('done'); return; }
@@ -330,7 +342,7 @@ const FakeReviewDetective = ({ tool }) => {
     try {
       const ad = await callToolEndpoint('fake-review-detective', {
         action: 'analyze', reviews: aiRevs.map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, daysAgo: r.daysAgo, wordCount: r.wordCount, hasSpecificDetails: r.hasSpecificDetails, hasGenericPraise: r.hasGenericPraise, mentionsCompetitor: r.mentionsCompetitor })),
-        scores, stats: aggStats, category, userLocale, userCurrency, userRegion,
+        scores, stats: aggStats, category: category || null, decision: decision || null, userLocale, userCurrency, userRegion,
       });
       setAnalysis(ad);
 
@@ -350,7 +362,7 @@ const FakeReviewDetective = ({ tool }) => {
       if (currentSource) setSourceAnalyses(prev => [{ ...snap, sourceName: currentSource, preview: (currentSource || reviewText || '').slice(0, 40) }, ...prev].slice(0, 6));
     } catch (err) { setError(t('frd_err_analysis') + (err.message || '')); }
     setPhase('done');
-  }, [reviewText, category, productUrl, currentSource, callToolEndpoint, setSavedAnalyses, setSourceAnalyses, userLocale, userCurrency, userRegion, t]);
+  }, [reviewText, category, decision, productUrl, currentSource, callToolEndpoint, setSavedAnalyses, setSourceAnalyses, userLocale, userCurrency, userRegion, t]);
 
   // ─── FINGERPRINT ───
   const runFingerprint = useCallback(async () => {
@@ -457,11 +469,19 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       </div>
 
-      {/* INTRO */}
+      {/* INTRO — what the visitor gets, not what the software does. The old
+          copy listed "scores each review, detects manipulation patterns,
+          fingerprints authors", which is a feature list for forensic software. */}
       <div className={`${c.highlight} border rounded-xl p-5 flex items-start gap-3`}>
         <span className="text-xl">🛡️</span>
         <div className="flex-1">
-          <p className={`text-sm ${c.textSecondary}`}>{t('frd_intro')}</p>
+          <p className={`text-sm font-bold ${c.text} mb-1.5`}>{t('frd_learn_title')}</p>
+          <ul className={`text-sm ${c.textSecondary} space-y-0.5`}>
+            <li>· {t('frd_learn_1')}</li>
+            <li>· {t('frd_learn_2')}</li>
+            <li>· {t('frd_learn_3')}</li>
+            <li>· {t('frd_learn_4')}</li>
+          </ul>
           <button onClick={() => setShowPasteHelper(!showPasteHelper)} className={`text-xs font-semibold ${c.textSecondary} mt-1 hover:underline`}>{showPasteHelper ? t('frd_hide_guide') : t('frd_show_guide')}</button>
         </div>
       </div>
@@ -481,6 +501,35 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       )}
 
+      {/* What are you deciding? — the question the visitor actually arrived
+          with. It takes the slot the category selector used to occupy; the
+          category is now inferred from the reviews rather than asked for. */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <p className={`text-sm font-semibold ${c.textSecondary} mb-0.5`}>🛒 {t('frd_decision_label')}</p>
+        <p className={`text-xs ${c.textMuteded} mb-2.5`}>{t('frd_decision_help')}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {DECISIONS.map(d => (
+            <button key={d.id} onClick={() => setDecision(decision === d.id ? '' : d.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                decision === d.id
+                  ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white')
+                  : `${c.btnSecondary} border-transparent`}`}>
+              {d.icon} {t(d.labelKey)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Where the reviews came from — out of the paste card, where it read as
+          a footnote to the textarea rather than a question of its own. */}
+      <div className={`${c.card} border rounded-xl p-5`}>
+        <p className={`text-sm font-semibold ${c.textSecondary} mb-2`}>📌 {t('frd_source_label2')}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {SOURCE_PRESETS.map(sp => <button key={sp} onClick={() => setCurrentSource(currentSource === sp ? '' : sp)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${currentSource === sp ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnSecondary} border-transparent`}`}>{srcLabel(sp)}</button>)}
+          {currentSource && !SOURCE_PRESETS.includes(currentSource) && <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white">{currentSource}</span>}
+        </div>
+      </div>
+
       {/* URL EXTRACTION */}
       <div className={`${c.card} border rounded-xl p-5`}>
         <div className="flex items-center gap-2 mb-3"><span>🌐</span><h3 className={`text-sm font-bold ${c.text}`}>{t('frd_import_title')}</h3><span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.pillGray} border`}>{t('frd_optional')}</span></div>
@@ -499,15 +548,6 @@ const FakeReviewDetective = ({ tool }) => {
           <div className="flex-1"><h2 className={`text-lg font-bold ${c.text}`}>{t('frd_paste_title')}</h2><p className={`text-xs ${c.textMuteded}`}>{t('frd_paste_sub')}</p></div>
         </div>
 
-        {/* FEATURE 1: Source tagger */}
-        <div className="mb-4">
-          <label className={`text-xs font-semibold ${c.textSecondary} block mb-1.5`}>{t('frd_source_label')}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {SOURCE_PRESETS.map(s => <button key={s} onClick={() => setCurrentSource(s)} className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors ${currentSource === s ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnSecondary} border-transparent`}`}>{srcLabel(s)}</button>)}
-            {currentSource && !SOURCE_PRESETS.includes(currentSource) && <span className={`px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white`}>{currentSource}</span>}
-          </div>
-        </div>
-
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-1.5">
@@ -517,14 +557,16 @@ const FakeReviewDetective = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded} mt-1`}>{t('frd_chars_note', { count: reviewText.length })}</p>
           </div>
 
-          <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-2`}>{t('frd_category')}</label>
-            <div className="flex flex-wrap gap-1.5">{CATEGORIES.map(cat => <button key={cat} onClick={() => setCategory(cat)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${category === cat ? (isDark ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-emerald-600 border-emerald-600 text-white') : `${c.btnSecondary} border-transparent`}`}>{catLabel(cat)}</button>)}</div>
-          </div>
 
           <div className="flex gap-3">
-            <button onClick={runAnalysis} disabled={!canAnalyze} className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
+            <button onClick={runAnalysis} disabled={!canAnalyze} title={t('frd_cmd_enter')} className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
               {isRunning ? <><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span><span className="text-sm">{scoreProgress || t('frd_processing')}</span></> : <><span>{tool?.icon ?? '🔍'}</span> {t('frd_detect')}</>}
+              {!isRunning && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
             </button>
           </div>
         </div>

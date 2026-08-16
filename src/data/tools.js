@@ -4525,7 +4525,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🔍",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Import reviews from a URL or paste them manually. Computes real statistics, then AI scores each review individually and detects manipulation patterns.",
+  description: "Five stars doesn't always mean five-star quality. Paste reviews or import them from a product page, and DeftBrain will help you separate genuine experiences from marketing disguised as customer feedback.",
   guide: {
     overview: "Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.",
     

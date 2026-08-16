@@ -43,13 +43,17 @@ router.post('/fake-review-detective', rateLimit(DEFAULT_LIMITS), async (req, res
       // ACTION: SCORE — per-review authenticity scoring
       // ════════════════════════════════════════════════════════
       case 'score': {
-        const { reviews, stats, category, truncated, totalReviewCount, userLanguage } = req.body;
+        const { reviews, stats, category, decision, truncated, totalReviewCount, userLanguage } = req.body;
 
         if (!reviews || !reviews.length) {
           return res.status(400).json({ error: 'No reviews provided' });
         }
 
-        const systemPrompt = `You are a fake review detection expert. You will receive a batch of product reviews with pre-computed statistics. Your job is to score EACH review individually for authenticity. ${NO_QUOTE_RULE}`;
+        const systemPrompt = `You are helping someone judge whether a set of reviews can be trusted enough to decide with. You will receive a batch of product reviews with pre-computed statistics, and you will rate each one.
+
+REVIEWS ARE RARELY FAKE OR REAL. They are exaggerated, incentivised, repetitive, promotional, low-information, or unbalanced — and most of those are written by people who genuinely bought the thing. Reach for that vocabulary before you reach for "fake". Reserve the strongest language for reviews that show real signs of fabrication: near-identical phrasing across accounts, bursts on the same date, or text that describes the product category rather than the product.
+
+WRITE FOR SOMEONE DECIDING, NOT INVESTIGATING. Nobody opens this to become a review analyst. If they have said what they are trying to decide, the flags and the summary should serve THAT question. A review that reads as promotional matters differently to someone comparing two products than to someone checking whether a rating is inflated. ${NO_QUOTE_RULE}`;
 
         const reviewList = reviews.map(r => {
           return `[Review #${r.index}]
@@ -58,7 +62,8 @@ Words: ${r.wordCount} | Exclamations: ${r.exclamationCount} | Caps ratio: ${r.ca
 Text: "${r.rawText}"`;
         }).join('\n\n');
 
-        const userPrompt = `PRODUCT CATEGORY: ${category}
+        const userPrompt = `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
+WHAT THE READER IS TRYING TO DECIDE: ${decision || 'not stated'}
 ${truncated ? `NOTE: Analyzing first 20 of ${totalReviewCount} reviews.\n` : ''}
 PRE-COMPUTED AGGREGATE STATS:
 - Total reviews: ${stats.totalReviews}
@@ -108,7 +113,7 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
       // ACTION: ANALYZE — cross-review pattern analysis + playbook
       // ════════════════════════════════════════════════════════
       case 'analyze': {
-        const { reviews, scores, stats, category, userLanguage } = req.body;
+        const { reviews, scores, stats, category, decision, userLanguage } = req.body;
 
         if (!reviews || !scores) {
           return res.status(400).json({ error: 'Reviews and scores are required' });
@@ -124,7 +129,8 @@ Score EVERY review. Verdicts must be: "likely_fake" (score 0-39), "uncertain" (4
           `#${r.index}: ${r.starRating || '?'}★ | ${r.isVerified ? 'Verified' : 'Unverified'} | ${r.daysAgo !== null ? r.daysAgo + 'd ago' : '?'} | ${r.wordCount}w | "${r.rawText.slice(0, 120)}${r.rawText.length > 120 ? '...' : ''}"`
         ).join('\n');
 
-        const userPrompt = `PRODUCT CATEGORY: ${category}
+        const userPrompt = `PRODUCT CATEGORY: ${category || 'not given — work it out from the reviews themselves'}
+WHAT THE READER IS TRYING TO DECIDE: ${decision || 'not stated'}
 
 PRE-COMPUTED STATS:
 - ${stats.totalReviews} reviews, avg rating ${stats.averageRating}/5

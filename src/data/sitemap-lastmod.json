@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "4ff9f7be06fc948d6b64b1b5500cdd5a570af221",
+  "hash": "209aa4f8692e6b512d1e1cf8c11de395a0320908",
   "lastmod": "2026-08-16"
  },
  "static:about": {
@@ -64,8 +64,8 @@
   "lastmod": "2026-08-16"
  },
  "tool:FakeReviewDetective": {
-  "hash": "c364e8f52635c961b942e426e3a9d5657cc5cc4a",
-  "lastmod": "2026-08-14"
+  "hash": "a338df5b44a030112500c038d30fdf79ce0e4f57",
+  "lastmod": "2026-08-16"
  },
  "tool:FinalWish": {
   "hash": "1e67f0ea2ee4666385a7132e20f5df1296dafb93",
