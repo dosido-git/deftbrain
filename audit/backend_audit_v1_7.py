@@ -525,8 +525,16 @@ def audit_file(filepath):
         # "CRITICAL: Return ONLY valid JSON." count parity — compare against
         # the number of API calls, not the route count. Non-API routes have
         # no prompts and therefore no place for this directive (v1.5 scope fix).
+        #
+        # v1.8: a handful of calls legitimately return formatted PLAIN TEXT
+        # rather than JSON — fake-review-detective's page-extraction pass is
+        # one. Telling those to return JSON would break them, so a prompt that
+        # declares RETURNS PLAIN TEXT, NOT JSON is excluded from the required
+        # count. The marker sits in the prompt where a reader sees it, not in a
+        # comment (comments are stripped before this check runs).
+        plain_text_calls = len(re.findall(r'RETURNS PLAIN TEXT, NOT JSON', no_comments))
         return_only_count = len(re.findall(r'Return ONLY[^\n]{0,40}JSON', no_comments))
-        if return_only_count < api_call_count:
+        if return_only_count < api_call_count - plain_text_calls:
             fails.append(
                 f'S7.6: {api_call_count} API call(s) but only {return_only_count} prompt(s) include '
                 f'"Return ONLY ... JSON" — model may wrap responses in markdown without this'

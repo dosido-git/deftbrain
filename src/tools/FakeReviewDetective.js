@@ -55,6 +55,10 @@ const SOURCE_PRESETS = ['Amazon','Best Buy','Walmart','Target','Reddit','YouTube
 
 // What the visitor is actually here to settle. Ids stay English — they are
 // sent to the model, which switches on them.
+// buy | skip | wait were being uppercased straight onto the screen, so the
+// verdict read "SKIP" — a ruling rather than a recommendation.
+const RECOMMENDATION_KEY = { buy: 'frd_rec_buy', skip: 'frd_rec_skip', wait: 'frd_rec_wait' };
+
 const DECISIONS = [
   { id: 'buy',      icon: '🛒', labelKey: 'frd_dec_buy' },
   { id: 'skip',     icon: '🚫', labelKey: 'frd_dec_skip' },
@@ -90,7 +94,7 @@ function StatCard({ label, value, color = 'neutral', c }) {
   return <div className={`${c.statCard} border rounded-lg p-3 text-center`}><p className={`text-[10px] font-bold ${c.textMuteded} uppercase`}>{label}</p><p className={`text-lg font-black mt-0.5 ${vc}`}>{value}</p></div>;
 }
 
-function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup, t }) {
+function ReviewCard({ review, expanded, onToggle, c, isDark, t }) {
   const score = review.authenticity_score ?? 50;
   const vt = review.verdict === 'likely_fake' ? t('frd_verdict_fake') : review.verdict === 'likely_genuine' ? t('frd_verdict_genuine') : t('frd_verdict_uncertain');
   const hl = useMemo(() => expanded ? highlightText(review.rawText, c, t) : null, [expanded, review.rawText, c, t]);
@@ -103,7 +107,6 @@ function ReviewCard({ review, expanded, onToggle, c, isDark, fpGroup, t }) {
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               {review.starRating && <span className="text-xs">{'⭐'.repeat(review.starRating)}{'☆'.repeat(5 - review.starRating)}</span>}
               <span className={`text-[10px] font-bold ${c.textMuteded}`}>{vt}</span>
-              {fpGroup && <span className={`${c.pillCyan} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>👥 {t('frd_group')} {fpGroup}</span>}
             </div>
             <p className={`text-xs ${c.textSecondary} ${expanded ? '' : 'line-clamp-2'}`}>{review.rawText.slice(0, expanded ? undefined : 200)}{!expanded && review.rawText.length > 200 ? '...' : ''}</p>
             <div className="flex flex-wrap gap-1 mt-2">
@@ -253,7 +256,6 @@ const FakeReviewDetective = ({ tool }) => {
   const [stats, setStats] = useState(null);
   const [reviewScores, setReviewScores] = useState(null);
   const [analysis, setAnalysis] = useState(null);
-  const [fingerprint, setFingerprint] = useState(null);
   const [synthesis, setSynthesis] = useState(null);
 
   // UI toggles
@@ -265,8 +267,6 @@ const FakeReviewDetective = ({ tool }) => {
   const [showPasteHelper, setShowPasteHelper] = useState(false);
   const [showPlaybook, setShowPlaybook] = useState(true);
   const [showTimeline, setShowTimeline] = useState(true);
-  const [showFingerprint, setShowFingerprint] = useState(true);
-  const [fingerprintLoading, setFingerprintLoading] = useState(false);
   const [synthesisLoading, setSynthesisLoading] = useState(false);
   const [reviewText, setReviewText] = usePersistentState('frd-review-text', '');
 
@@ -281,13 +281,6 @@ const FakeReviewDetective = ({ tool }) => {
 
   const toggleCard = useCallback((idx) => setExpandedCards(prev => ({ ...prev, [idx]: !prev[idx] })), []);
 
-  // Fingerprint group lookup
-  const fpGroupMap = useMemo(() => {
-    if (!fingerprint?.author_groups) return {};
-    const map = {};
-    fingerprint.author_groups.forEach(g => { g.review_indices?.forEach(i => { map[i] = g.group_id; }); });
-    return map;
-  }, [fingerprint]);
 
   // ─── URL EXTRACTION ───
   const extractFromUrl = useCallback(async () => {
@@ -315,7 +308,7 @@ const FakeReviewDetective = ({ tool }) => {
   // ─── MAIN ANALYSIS ───
   const runAnalysis = useCallback(async () => {
     if (!reviewText.trim() || reviewText.trim().length < 100) { setError(t('frd_err_min_chars')); return; }
-    setError(''); setPhase('parsing'); setReviewScores(null); setAnalysis(null); setFingerprint(null); setExpandedCards({}); setShowAllReviews(false);
+    setError(''); setPhase('parsing'); setReviewScores(null); setAnalysis(null); setExpandedCards({}); setShowAllReviews(false);
 
     const chunks = splitIntoReviews(reviewText);
     const reviews = chunks.map((ch, i) => parseReview(ch, i));
@@ -365,18 +358,6 @@ const FakeReviewDetective = ({ tool }) => {
   }, [reviewText, category, decision, productUrl, currentSource, callToolEndpoint, setSavedAnalyses, setSourceAnalyses, userLocale, userCurrency, userRegion, t]);
 
   // ─── FINGERPRINT ───
-  const runFingerprint = useCallback(async () => {
-    if (!parsedReviews.length || !reviewScores) return;
-    setFingerprintLoading(true); setError('');
-    try {
-      const data = await callToolEndpoint('fake-review-detective', {
-        action: 'fingerprint', reviews: parsedReviews.slice(0, 6).map(r => ({ index: r.index, rawText: r.rawText, starRating: r.starRating, isVerified: r.isVerified, wordCount: r.wordCount })),
-        scores: reviewScores, userLocale, userCurrency, userRegion,
-      });
-      setFingerprint(data);
-    } catch (err) { setError(t('frd_err_fingerprint') + (err.message || '')); }
-    setFingerprintLoading(false);
-  }, [parsedReviews, reviewScores, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // ─── SYNTHESIZE ───
   const runSynthesis = useCallback(async () => {
@@ -398,14 +379,14 @@ const FakeReviewDetective = ({ tool }) => {
   const handleReset = useCallback(() => {
     setReviewText(''); setProductUrl(''); setCategory('Electronics'); setCurrentSource(''); setProductName('');
     setPhase('input'); setParsedReviews([]); setStats(null); setReviewScores(null);
-    setAnalysis(null); setFingerprint(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
+    setAnalysis(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
   }, []);
 
   // ─── Try Alternative ───
   const handleTryAlternative = useCallback(() => {
     setReviewText(''); setProductUrl(''); setCurrentSource('');
     setPhase('input'); setParsedReviews([]); setStats(null); setReviewScores(null);
-    setAnalysis(null); setFingerprint(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
+    setAnalysis(null); setError(''); setExpandedCards({}); setShowAllReviews(false);
     // Keep category + sessionHistory so comparison works
   }, []);
 
@@ -648,6 +629,27 @@ const FakeReviewDetective = ({ tool }) => {
         </div>
       )}
 
+      {/* The 30-second read: trust score, what real customers said, what to
+          do. Both of these used to sit inside the pattern analysis, four
+          sections down, under the material about tactic names. */}
+      {analysis && (
+        <div className="space-y-4">
+          {analysis.genuine_consensus && <div className={`${c.success} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">✅</span><div className="flex-1">
+            <h4 className="text-sm font-bold mb-2">{t('frd_genuine_say')}</h4><p className="text-sm mb-3">{analysis.genuine_consensus.summary}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {analysis.genuine_consensus.real_pros?.length > 0 && <div><p className="text-xs font-bold mb-1">{t('frd_pros')}</p>{analysis.genuine_consensus.real_pros.map((p, i) => <p key={i} className="text-xs">✓ {p}</p>)}</div>}
+              {analysis.genuine_consensus.real_cons?.length > 0 && <div><p className="text-xs font-bold mb-1">{t('frd_cons')}</p>{analysis.genuine_consensus.real_cons.map((cn, i) => <p key={i} className="text-xs">✗ {cn}</p>)}</div>}
+            </div>
+            {analysis.genuine_consensus.real_rating && <p className={`text-xs font-bold mt-2 ${c.success}`}>{t('frd_genuine_rating')} {analysis.genuine_consensus.real_rating}/5 ★</p>}
+          </div></div>}
+
+          {analysis.purchase_recommendation && <div className={`${analysis.purchase_recommendation.verdict === 'buy' ? c.success : analysis.purchase_recommendation.verdict === 'skip' ? c.danger : c.warning} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.purchase_recommendation.verdict === 'buy' ? '✅' : analysis.purchase_recommendation.verdict === 'skip' ? '🚫' : '⏸️'}</span><div>
+            <h4 className="text-sm font-bold mb-1">{t('frd_rec_label')}: {t(RECOMMENDATION_KEY[analysis.purchase_recommendation.verdict] || 'frd_rec_wait')} {analysis.purchase_recommendation.confidence && <span className="text-[10px] opacity-70">({analysis.purchase_recommendation.confidence})</span>}</h4>
+            <p className="text-sm">{analysis.purchase_recommendation.reasoning}</p>
+          </div></div>}
+        </div>
+      )}
+
       {/* FEATURE 2: FORENSICS TIMELINE */}
       {reviewScores && parsedReviews.filter(r => r.daysAgo !== null).length >= 2 && (
         <div className={`${c.card} border rounded-xl p-5`}>
@@ -668,36 +670,8 @@ const FakeReviewDetective = ({ tool }) => {
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}><span>🛡️</span> {t('frd_scores_title')} ({reviewScores.length})</h3>
             <button onClick={() => setSortSuspicious(p => !p)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold ${c.btnSecondary}`}>↕️ {sortSuspicious ? t('frd_suspicious_first') : t('frd_original_order')}</button>
           </div>
-          <div className="space-y-3">{visible.map(r => <ReviewCard key={r.index} review={r} expanded={!!expandedCards[r.index]} onToggle={() => toggleCard(r.index)} c={c} isDark={isDark} fpGroup={fpGroupMap[r.index]} t={t} />)}</div>
+          <div className="space-y-3">{visible.map(r => <ReviewCard key={r.index} review={r} expanded={!!expandedCards[r.index]} onToggle={() => toggleCard(r.index)} c={c} isDark={isDark} t={t} />)}</div>
           {sorted.length > 5 && !showAllReviews && <button onClick={() => setShowAllReviews(true)} className={`w-full mt-3 py-3 rounded-lg text-sm font-semibold ${c.btnSecondary}`}>{t('frd_show_all', { count: sorted.length })}</button>}
-        </div>
-      )}
-
-      {/* FEATURE 3: FINGERPRINT */}
-      {reviewScores && parsedReviews.length >= 3 && (
-        <div className={`${c.card} border rounded-xl p-5`}>
-          <button onClick={() => setShowFingerprint(!showFingerprint)} className="flex items-center gap-2 w-full text-start">
-            <span>🔬</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_fingerprint_title')}</h3>
-            {!fingerprint && <button onClick={(e) => { e.stopPropagation(); runFingerprint(); }} disabled={fingerprintLoading} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg disabled:opacity-40`}>{fingerprintLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> : <><span className="me-1">{tool?.icon ?? '🔍'}</span>{t('frd_analyze')}</>}</button>}
-            <Caret open={showFingerprint} />
-          </button>
-          {showFingerprint && (fingerprint ? (
-            <div className="mt-3 space-y-3">
-              {fingerprint.overall_assessment && <p className={`text-sm ${c.textSecondary}`}>{fingerprint.overall_assessment}</p>}
-              {fingerprint.template_detected && fingerprint.template_structure && <div className={`${c.danger} border rounded-lg p-3`}><p className="text-xs font-bold mb-1">{t('frd_template_detected')}</p><p className="text-xs">{fingerprint.template_structure}</p></div>}
-              {fingerprint.author_groups?.map(g => (
-                <div key={g.group_id} className={`${c.pillCyan} border-2 rounded-lg p-4`}>
-                  <div className="flex items-center gap-2 mb-2"><span className="text-lg">👥</span><p className={`text-sm font-bold ${c.text}`}>{t('frd_fp_group_reviews', { id: g.group_id, indices: g.review_indices?.join(', #') })}</p>
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${g.confidence === 'high' ? c.danger : c.warning} border`}>{g.confidence}</span></div>
-                  <p className={`text-xs font-semibold ${c.text} mb-1 capitalize`}>{(g.pattern_type || '').replace(/_/g, ' ')}</p>
-                  <p className={`text-xs ${c.textSecondary} mb-2`}>{g.summary}</p>
-                  {g.shared_phrases?.length > 0 && <div className="flex flex-wrap gap-1 mb-2">{g.shared_phrases.map((p, i) => <span key={i} className={`${c.danger} border text-[9px] font-semibold px-1.5 py-0.5 rounded`}>"{p}"</span>)}</div>}
-                  {g.evidence?.map((e, i) => <p key={i} className={`text-xs ${c.textSecondary}`}>• {e}</p>)}
-                </div>
-              ))}
-              {fingerprint.singleton_reviews?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>{t('frd_singletons', { indices: fingerprint.singleton_reviews.join(', #') })}</p>}
-            </div>
-          ) : <p className={`text-xs ${c.textMuteded} mt-3`}>{t('frd_fingerprint_hint')}</p>)}
         </div>
       )}
 
@@ -715,21 +689,7 @@ const FakeReviewDetective = ({ tool }) => {
           )}
           {analysis.manipulation_detected?.type === 'none' && <div className={`${c.success} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">✅</span><div><h4 className="text-sm font-bold">{t('frd_no_manip')}</h4></div></div>}
 
-          {analysis.genuine_consensus && <div className={`${c.success} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">✅</span><div className="flex-1">
-            <h4 className="text-sm font-bold mb-2">{t('frd_genuine_say')}</h4><p className="text-sm mb-3">{analysis.genuine_consensus.summary}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {analysis.genuine_consensus.real_pros?.length > 0 && <div><p className="text-xs font-bold mb-1">{t('frd_pros')}</p>{analysis.genuine_consensus.real_pros.map((p, i) => <p key={i} className="text-xs">✓ {p}</p>)}</div>}
-              {analysis.genuine_consensus.real_cons?.length > 0 && <div><p className="text-xs font-bold mb-1">{t('frd_cons')}</p>{analysis.genuine_consensus.real_cons.map((cn, i) => <p key={i} className="text-xs">✗ {cn}</p>)}</div>}
-            </div>
-            {analysis.genuine_consensus.real_rating && <p className={`text-xs font-bold mt-2 ${c.success}`}>{t('frd_genuine_rating')} {analysis.genuine_consensus.real_rating}/5 ★</p>}
-          </div></div>}
-
           {analysis.sentiment_trajectory?.trend !== 'insufficient_data' && analysis.sentiment_trajectory && <div className={`${c.highlight} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.sentiment_trajectory.trend === 'improving' ? '📈' : analysis.sentiment_trajectory.trend === 'declining' ? '📉' : '➡️'}</span><div><h4 className="text-sm font-bold mb-1">{t('frd_trend')} {analysis.sentiment_trajectory.trend}</h4><p className="text-sm">{analysis.sentiment_trajectory.description}</p></div></div>}
-
-          {analysis.purchase_recommendation && <div className={`${analysis.purchase_recommendation.verdict === 'buy' ? c.success : analysis.purchase_recommendation.verdict === 'skip' ? c.danger : c.warning} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">{analysis.purchase_recommendation.verdict === 'buy' ? '✅' : analysis.purchase_recommendation.verdict === 'skip' ? '🚫' : '⏸️'}</span><div>
-            <h4 className="text-sm font-bold mb-1">{t('frd_verdict_label')} <span className="uppercase">{analysis.purchase_recommendation.verdict}</span> {analysis.purchase_recommendation.confidence && <span className="text-[10px] opacity-70">({analysis.purchase_recommendation.confidence})</span>}</h4>
-            <p className="text-sm">{analysis.purchase_recommendation.reasoning}</p>
-          </div></div>}
 
           {analysis.category_comparison && (analysis.category_comparison.unusual_patterns?.length > 0 || analysis.category_comparison.normal_patterns?.length > 0) && (
             <div className={`${c.card} border rounded-xl p-4 space-y-2`}>
@@ -760,7 +720,7 @@ const FakeReviewDetective = ({ tool }) => {
           {analysis.playbook?.tactics_detected?.length > 0 && (
             <div className={`${c.card} border rounded-xl p-5`}>
               <button onClick={() => setShowPlaybook(!showPlaybook)} className="flex items-center gap-2 w-full text-start">
-                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_playbook_title')}</h3><span className={`text-[10px] ${c.textMuteded}`}>{t('frd_playbook_sub')}</span><Caret open={showPlaybook} />
+                <span>🎓</span><h3 className={`text-sm font-bold ${c.text} flex-1`}>{t('frd_playbook_title2')}</h3><span className={`text-[10px] ${c.textMuteded}`}>{t('frd_playbook_sub')}</span><Caret open={showPlaybook} />
               </button>
               {showPlaybook && <div className="mt-3 space-y-3">
                 {analysis.playbook.tactics_detected.map((tac, i) => (

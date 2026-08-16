@@ -158,7 +158,7 @@ Return ONLY valid JSON:
   "quick_verdict": {
     "trust_score": 42,
     "label": "Approach with Caution",
-    "one_liner": "Concise 1-2 sentence summary"
+    "one_liner": "1-2 sentences on what these reviews are worth. Say what the rating appears to do, not what it certainly does: 'the rating probably overstates real-world performance' or 'the star rating looks less trustworthy than it first seems' — NOT 'the 4.2 average is almost certainly inflated'. You are reading a sample of text, not auditing an account ledger."
   },
   "manipulation_detected": {
     "type": "positive_campaign | negative_bombing | mixed | none",
@@ -183,7 +183,7 @@ Return ONLY valid JSON:
   "purchase_recommendation": {
     "verdict": "buy | skip | wait",
     "confidence": "high | medium | low",
-    "reasoning": "Based on genuine reviews only"
+    "reasoning": "Based on the credible reviews only, 1-2 sentences. This is a recommendation, not a ruling — the interface prints it as 'Recommendation: look for another option', so write it as guidance a friend would give."
   },
   "playbook": {
     "tactics_detected": [
@@ -195,11 +195,11 @@ Return ONLY valid JSON:
         "how_to_spot": "What to look for next time you see this in the wild"
       }
     ],
-    "overall_tip": "One actionable takeaway for the user"
+    "overall_tip": "One takeaway the reader can apply to a different product later. A question they can ask beats a label they have to memorise — the best version of this field so far was: could this review be copy-pasted onto any product in the category?"
   }
 }
 
-Limit playbook.tactics_detected to the 3-5 most relevant tactics. Keep every string field to 1-2 sentences — be terse, no padding.`;
+EXACTLY TWO tactics in playbook.tactics_detected — the two that show up most clearly in THESE reviews, not the two most interesting in general. Five patterns is a course, and nobody opened this to become a review analyst; two are portable enough to use on a different product six months from now. Prefer how_to_spot lines that survive being remembered — a question the reader can ask of any review beats a named category they have to recall. Keep every string field to 1-2 sentences — be terse, no padding.`;
 
         const parsed = await callClaudeWithRetry({
           model: MODELS.SMART,
@@ -216,59 +216,7 @@ Limit playbook.tactics_detected to the 3-5 most relevant tactics. Keep every str
       // ════════════════════════════════════════════════════════
       // ACTION: FINGERPRINT — detect same-author patterns
       // ════════════════════════════════════════════════════════
-      case 'fingerprint': {
-        const { reviews, scores, userLanguage } = req.body;
-
-        if (!reviews || reviews.length < 3) {
-          return res.status(400).json({ error: 'Need at least 3 reviews for fingerprinting' });
-        }
-
-        const systemPrompt = `You are a forensic linguistics expert specializing in authorship attribution. Your job is to analyze a set of product reviews and detect if any were likely written by the same person, the same organization, or from the same template. ${NO_QUOTE_RULE}`;
-
-        const reviewTexts = reviews.map(r => {
-          const sc = scores?.find(s => s.index === r.index);
-          return `[Review #${r.index}] Score: ${sc?.authenticity_score ?? '?'} | ${r.starRating || '?'}★ | ${r.isVerified ? 'Verified' : 'Unverified'} | ${r.wordCount}w
-"${r.rawText}"`;
-        }).join('\n\n');
-
-        const userPrompt = `REVIEWS TO FINGERPRINT:
-${reviewTexts}
-
-Return ONLY valid JSON:
-{
-  "author_groups": [
-    {
-      "group_id": 1,
-      "review_indices": [0, 2, 4],
-      "confidence": "high | medium | low",
-      "pattern_type": "same_author | same_template | same_organization",
-      "evidence": [
-        "Specific linguistic evidence 1",
-        "Specific linguistic evidence 2"
-      ],
-      "shared_phrases": ["exact phrase found in multiple reviews"],
-      "summary": "One sentence explaining the connection"
-    }
-  ],
-  "singleton_reviews": [1, 3, 5],
-  "overall_assessment": "One paragraph summary of authorship patterns found — 1-2 sentences",
-  "template_detected": true,
-  "template_structure": "Description of the template structure if found, or null"
-}`;
-
-        const parsed = await callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 2000,
-          system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-          messages: [{ role: 'user', content: userPrompt }],
-        }, { label: 'fake-review-detective-3' });
-        if (!('scores' in parsed) && !('quick_verdict' in parsed) && !('author_groups' in parsed) && !('unified_trust_score' in parsed)) {
-          return res.status(500).json({ error: 'Could not analyze reviews. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
       // ACTION: SYNTHESIZE — cross-platform analysis
       // ════════════════════════════════════════════════════════
       case 'synthesize': {
@@ -475,6 +423,8 @@ Verified Purchase | Posted 3 days ago
 ⭐⭐⭐
 (Translated from Spanish) [translated review body]
 Posted 2 months ago
+
+RETURNS PLAIN TEXT, NOT JSON. Output the review blocks and nothing else — no preamble, no count, no closing remark, no markdown fences.
 
 FORMAT RULES FOR EACH REVIEW BLOCK:
 - First line: star emojis only (⭐ repeated 1–5 times matching the rating)
