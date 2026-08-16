@@ -15,12 +15,17 @@ const LS_KEY = 'deftbrain_finalwish_draft';
 
 // label = English fallback used in generated HTML export artifacts; shortKey/labelKey
 // resolve through t() at render time for on-screen UI.
+// `previewKey` is what the welcome screen promises before you have committed to
+// anything. It hangs off the chapter it describes so the two cannot drift: add
+// a chapter and it shows up in the preview, unless it is scaffolding rather
+// than something you fill in — Review & Export has no previewKey because it is
+// the output, not a section of the package.
 const CHAPTERS = [
-  { id: 'accounts', label: 'Accounts', icon: '🔑', short: 'Accounts', shortKey: 'fws_chapter_accounts_short' },
-  { id: 'documents', label: 'Documents & Files', icon: '📄', short: 'Docs', shortKey: 'fws_chapter_documents_short' },
-  { id: 'financial', label: 'Financial', icon: '💰', short: 'Financial', shortKey: 'fws_chapter_financial_short' },
-  { id: 'messages', label: 'Messages', icon: '💌', short: 'Messages', shortKey: 'fws_chapter_messages_short' },
-  { id: 'wishes', label: 'Wishes', icon: '🏠', short: 'Wishes', shortKey: 'fws_chapter_wishes_short' },
+  { id: 'accounts', label: 'Accounts', icon: '🔑', short: 'Accounts', shortKey: 'fws_chapter_accounts_short', previewKey: 'fws_preview_accounts' },
+  { id: 'documents', label: 'Documents & Files', icon: '📄', short: 'Docs', shortKey: 'fws_chapter_documents_short', previewKey: 'fws_preview_documents' },
+  { id: 'financial', label: 'Financial', icon: '💰', short: 'Financial', shortKey: 'fws_chapter_financial_short', previewKey: 'fws_preview_financial' },
+  { id: 'messages', label: 'Messages', icon: '💌', short: 'Messages', shortKey: 'fws_chapter_messages_short', previewKey: 'fws_preview_messages' },
+  { id: 'wishes', label: 'Wishes', icon: '🏠', short: 'Wishes', shortKey: 'fws_chapter_wishes_short', previewKey: 'fws_preview_wishes' },
   { id: 'review', label: 'Review & Export', icon: '📋', short: 'Export', shortKey: 'fws_chapter_review_short' },
 ];
 
@@ -1262,6 +1267,25 @@ async function decrypt(){
       <div className="flex justify-center mb-4">
       </div>
 
+      {/* Before a trusted person is named the four paths below are inert, and a
+          bare row of greyed cards asks someone to commit to a subject like this
+          one on faith. Showing the actual chapters first answers the question
+          the grey was creating — what am I signing up for — so the wait reads
+          as a preview rather than a lock. */}
+      {!trustedPerson.trim() ? (
+        <div className={`mb-4 p-5 rounded-2xl border ${c.border} ${c.cardAlt}`}>
+          <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-3`}>{t('fws_preview_title')}</p>
+          <ul className={`space-y-2 text-sm ${c.text}`}>
+            {CHAPTERS.filter(ch => ch.previewKey).map(ch => (
+              <li key={ch.id} className="flex items-start gap-2.5">
+                <span aria-hidden="true">{ch.icon}</span><span>{t(ch.previewKey)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className={`text-xs ${c.textMuteded} mt-4`}>{t('fws_preview_cta')}</p>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
@@ -1284,10 +1308,6 @@ async function decrypt(){
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_emergency_desc')}</p>
         </button>
       </div>
-      {!trustedPerson.trim() ? (
-        <p className={`text-xs text-center mb-4 ${c.required}`}>☝️ {t('fws_unlock_hint')}</p>
-      ) : null}
-
       <div className={`mt-4 p-4 rounded-xl border ${c.border} ${c.card}`}>
         <div className="flex items-center justify-between">
           <div><p className={`text-sm font-semibold ${c.text}`}>{t('fws_annual_review_title')}</p><p className={`text-xs ${c.textMuteded}`}>{t('fws_annual_review_desc')}</p></div>

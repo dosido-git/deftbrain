@@ -4081,9 +4081,9 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "📜",
   categories: ['The Grind', 'Humans', 'Me'],
   headerColor: "#e0b8b8",
-  description: "Guided digital legacy planner that helps you organize accounts, documents, finances, and personal messages into a single printable document for your trusted person.",
+  description: "One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.",
   guide: {
-      overview: "FinalWish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
+      overview: "Final Wish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.",
       howToUse: [
         "Name your trusted person — their name is woven throughout the document to make it personal",
         "Walk through 5 chapters: Digital Accounts, Documents, Financial Snapshot, Personal Messages, and Practical Wishes",
@@ -4093,7 +4093,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       ],
       example: {
         scenario: "You want to make sure your partner could handle your digital life if something happened to you",
-        action: "Start FinalWish, name your partner, and describe your accounts naturally: 'Gmail, Chase checking, Netflix, Instagram...' The AI extracts and categorizes them, then asks follow-ups about crypto, cloud storage, subscriptions you might forget.",
+        action: "Start Final Wish, name your partner, and describe your accounts naturally: 'Gmail, Chase checking, Netflix, Instagram...' The AI extracts and categorizes them, then asks follow-ups about crypto, cloud storage, subscriptions you might forget.",
         result: "A polished, printable document with 15 categorized accounts, document locations, a financial map, a heartfelt letter to your partner drafted from your interview answers, and pet care instructions — all in one downloadable file."
       },
       tips: [
