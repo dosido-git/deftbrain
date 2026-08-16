@@ -5,6 +5,9 @@
 // (e.g. button labels / option labels that include an icon) is intentional — keep it inside the string.
 export const roomReader = {
   en: {
+    rr_example2_event_details: "Christmas Day at my brother's. Fourteen people, three generations, from about 11am until whenever.",
+    rr_example2_people: "My mother, who has not spoken to my aunt since a funeral in 2019 and will not say why. My brother, who is hosting and wants it to go well more than anyone. My cousin's new partner, who has met none of us. Two children under six.",
+    rr_example2_concerns: "I always end up being the one who smooths things over and I would like, once, not to be. But I also do not want it to go badly just to prove a point.",
     rr_tagline: "Read the room. Say the right thing.",
     rr_event_work_happy_hour: "Work Happy Hour",
     rr_event_dinner_party: "Dinner Party",
@@ -322,6 +325,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Starter: \"{{line}}\"",
   },
   es: {
+    rr_example2_event_details: "El día de Navidad en casa de mi hermano. Catorce personas, tres generaciones, desde las 11 hasta la hora que sea.",
+    rr_example2_people: "Mi madre, que no habla con mi tía desde un funeral en 2019 y no dice por qué. Mi hermano, que es el anfitrión y quiere que salga bien más que nadie. La nueva pareja de mi prima, que no conoce a nadie. Dos niños menores de seis años.",
+    rr_example2_concerns: "Siempre acabo siendo la que suaviza las cosas y por una vez me gustaría no serlo. Pero tampoco quiero que salga mal solo para demostrar algo.",
     rr_tagline: "Lee el ambiente. Di lo correcto.",
     rr_event_work_happy_hour: "Afterwork",
     rr_event_dinner_party: "Cena con invitados",
@@ -639,6 +645,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Iniciador: \"{{line}}\"",
   },
   zh: {
+    rr_example2_event_details: "圣诞节在我哥家。十四个人，三代同堂，从上午十一点开始，散场时间不定。",
+    rr_example2_people: "我妈，从 2019 年一场葬礼后就不跟我姨说话，也不肯说原因。我哥，他是东道主，比谁都希望这天顺利。表妹的新伴侣，我们谁都没见过。还有两个不到六岁的孩子。",
+    rr_example2_concerns: "每次都是我出来打圆场，我想有一次不要是我。但我也不想为了证明什么，就让这一天真的搞砸。",
     rr_tagline: "读懂气氛，说对话。",
     rr_event_work_happy_hour: "公司聚会",
     rr_event_dinner_party: "晚宴聚会",
@@ -956,6 +965,9 @@ export const roomReader = {
     rr_copy_energy_starter: "开场白：“{{line}}”",
   },
   hi: {
+    rr_example2_event_details: "क्रिसमस के दिन भाई के घर। चौदह लोग, तीन पीढ़ियाँ, सुबह ग्यारह बजे से जब तक चले।",
+    rr_example2_people: "मेरी माँ, जो 2019 की एक अंत्येष्टि के बाद से मौसी से बात नहीं करतीं और वजह नहीं बतातीं। मेरा भाई, जो मेज़बान है और सबसे ज़्यादा चाहता है कि सब ठीक रहे। मेरी कज़िन का नया साथी, जो हममें से किसी से नहीं मिला। छह साल से छोटे दो बच्चे।",
+    rr_example2_concerns: "हमेशा मैं ही मामला संभालने वाली बन जाती हूँ, और एक बार तो न बनूँ, यही चाहती हूँ। पर बात साबित करने के लिए दिन ख़राब हो जाए, ये भी नहीं चाहती।",
     rr_tagline: "माहौल को भांपें। सही बात कहें।",
     rr_event_work_happy_hour: "ऑफ़िस हैप्पी आवर",
     rr_event_dinner_party: "डिनर पार्टी",
@@ -1273,6 +1285,9 @@ export const roomReader = {
     rr_copy_energy_starter: "शुरुआती लाइन: \"{{line}}\"",
   },
   ar: {
+    rr_example2_event_details: "يوم عيد الميلاد في بيت أخي. أربعة عشر شخصاً من ثلاثة أجيال، من الحادية عشرة صباحاً حتى وقتٍ غير محدد.",
+    rr_example2_people: "أمي، التي لم تكلّم خالتي منذ جنازة عام 2019 ولا تقول السبب. أخي، وهو المضيف ويريد لليوم أن ينجح أكثر من أي أحد. شريك ابنة عمي الجديد، الذي لم يلتقِ أحداً منا. وطفلان دون السادسة.",
+    rr_example2_concerns: "أنتهي دائماً بأن أكون من يُهدّئ الأمور، وأودّ لمرة واحدة ألا أكون كذلك. لكنني أيضاً لا أريد أن يفشل اليوم لمجرد إثبات وجهة نظر.",
     rr_tagline: "اقرأ أجواء المكان. قل الكلام المناسب.",
     rr_event_work_happy_hour: "ساعة المرح في العمل",
     rr_event_dinner_party: "حفل عشاء",
@@ -1590,6 +1605,9 @@ export const roomReader = {
     rr_copy_energy_starter: "عبارة البدء: \"{{line}}\"",
   },
   pt: {
+    rr_example2_event_details: "Dia de Natal em casa do meu irmão. Catorze pessoas, três gerações, das 11h até à hora que for.",
+    rr_example2_people: "A minha mãe, que não fala com a minha tia desde um funeral em 2019 e não diz porquê. O meu irmão, que recebe e quer mais do que ninguém que corra bem. O novo companheiro da minha prima, que não conhece nenhum de nós. Duas crianças com menos de seis anos.",
+    rr_example2_concerns: "Acabo sempre por ser eu a acalmar as coisas e, por uma vez, gostava de não ser. Mas também não quero que corra mal só para provar alguma coisa.",
     rr_tagline: "Leia o ambiente. Diga a coisa certa.",
     rr_event_work_happy_hour: "Happy hour do trabalho",
     rr_event_dinner_party: "Jantar com convidados",
@@ -1907,6 +1925,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Iniciador: \"{{line}}\"",
   },
   fr: {
+    rr_example2_event_details: "Le jour de Noël chez mon frère. Quatorze personnes, trois générations, de 11h jusqu'à je ne sais quand.",
+    rr_example2_people: "Ma mère, qui ne parle plus à ma tante depuis un enterrement en 2019 et refuse de dire pourquoi. Mon frère, qui reçoit et veut plus que quiconque que ça se passe bien. Le nouveau compagnon de ma cousine, qui ne connaît personne. Deux enfants de moins de six ans.",
+    rr_example2_concerns: "C'est toujours moi qui finis par arrondir les angles et, pour une fois, j'aimerais que ce ne soit pas moi. Mais je ne veux pas non plus que ça se passe mal juste pour prouver quelque chose.",
     rr_tagline: "Décryptez l'ambiance. Dites ce qu'il faut.",
     rr_event_work_happy_hour: "Afterwork entre collègues",
     rr_event_dinner_party: "Dîner entre amis",
@@ -2224,6 +2245,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Amorce : « {{line}} »",
   },
   de: {
+    rr_example2_event_details: "Weihnachten bei meinem Bruder. Vierzehn Leute, drei Generationen, ab elf Uhr bis irgendwann.",
+    rr_example2_people: "Meine Mutter, die seit einer Beerdigung 2019 nicht mehr mit meiner Tante spricht und nicht sagt, warum. Mein Bruder, der Gastgeber ist und mehr als alle anderen will, dass es gutgeht. Der neue Partner meiner Cousine, der niemanden von uns kennt. Zwei Kinder unter sechs.",
+    rr_example2_concerns: "Am Ende bin immer ich diejenige, die alles glättet, und einmal möchte ich das nicht sein. Aber ich will auch nicht, dass es schiefgeht, nur um etwas zu beweisen.",
     rr_tagline: "Lies die Stimmung. Sag das Richtige.",
     rr_event_work_happy_hour: "Feierabendbier mit Kollegen",
     rr_event_dinner_party: "Dinnerparty",
@@ -2541,6 +2565,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Einstieg: „{{line}}\"",
   },
   ja: {
+    rr_example2_event_details: "クリスマス当日、兄の家で。三世代十四人、午前十一時から解散はいつになるかわからない。",
+    rr_example2_people: "母は、2019年の葬儀以来おばと口をきかず、理由も言いません。兄はホスト役で、誰よりもこの日がうまくいってほしいと思っています。いとこの新しいパートナーは、私たちの誰とも面識がありません。それと六歳未満の子どもが二人。",
+    rr_example2_concerns: "いつも場をおさめる役は私で、一度くらいそうでない日があってほしい。とはいえ、何かを証明するために当日を台無しにしたいわけでもありません。",
     rr_tagline: "空気を読んで、正しいことを言おう。",
     rr_event_work_happy_hour: "職場の飲み会",
     rr_event_dinner_party: "ディナーパーティー",
@@ -2858,6 +2885,9 @@ export const roomReader = {
     rr_copy_energy_starter: "切り出し方：「{{line}}」",
   },
   ko: {
+    rr_example2_event_details: "크리스마스 당일, 오빠 집에서. 세 세대 열네 명, 오전 11시부터 언제 끝날지 모릅니다.",
+    rr_example2_people: "어머니는 2019년 장례식 이후로 이모와 말을 섞지 않고, 이유는 말하지 않습니다. 오빠는 주최자라 누구보다 이 날이 잘 지나가길 바랍니다. 사촌의 새 파트너는 우리 중 아무도 만난 적이 없습니다. 여섯 살 미만 아이가 둘.",
+    rr_example2_concerns: "늘 제가 나서서 분위기를 수습하게 되는데, 한 번쯤은 아니고 싶습니다. 그렇다고 무언가를 증명하려고 그날을 망치고 싶지도 않습니다.",
     rr_tagline: "분위기를 읽으세요. 적절한 말을 하세요.",
     rr_event_work_happy_hour: "회사 회식",
     rr_event_dinner_party: "디너 파티",
@@ -3175,6 +3205,9 @@ export const roomReader = {
     rr_copy_energy_starter: "시작 멘트: \"{{line}}\"",
   },
   ru: {
+    rr_example2_event_details: "Рождество у брата. Четырнадцать человек, три поколения, с одиннадцати утра и до непонятно когда.",
+    rr_example2_people: "Мама, которая не разговаривает с тётей с похорон 2019 года и не объясняет почему. Брат — он принимает и хочет, чтобы всё прошло хорошо, сильнее всех. Новый партнёр двоюродной сестры, который никого из нас не знает. Двое детей младше шести.",
+    rr_example2_concerns: "В итоге сглаживаю всё всегда я, и хотелось бы хоть раз этого не делать. Но и портить день ради того, чтобы что-то доказать, я не хочу.",
     rr_tagline: "Чувствуй обстановку. Говори правильные слова.",
     rr_event_work_happy_hour: "Корпоративный фуршет",
     rr_event_dinner_party: "Званый ужин",
@@ -3492,6 +3525,9 @@ export const roomReader = {
     rr_copy_energy_starter: "Заход: \"{{line}}\"",
   },
   th: {
+    rr_example2_event_details: "วันคริสต์มาสที่บ้านพี่ชาย สิบสี่คน สามรุ่น เริ่มสิบเอ็ดโมงเช้าไปจนถึงไม่รู้กี่โมง",
+    rr_example2_people: "แม่ ที่ไม่พูดกับน้าตั้งแต่งานศพปี 2019 และไม่ยอมบอกเหตุผล พี่ชายซึ่งเป็นเจ้าภาพและอยากให้วันนี้ผ่านไปด้วยดีมากกว่าใคร แฟนใหม่ของลูกพี่ลูกน้องที่ยังไม่เคยเจอพวกเราเลย และเด็กอายุต่ำกว่าหกขวบสองคน",
+    rr_example2_concerns: "สุดท้ายก็เป็นฉันเสมอที่ต้องคอยประคองบรรยากาศ และสักครั้งฉันอยากไม่ต้องเป็นคนนั้น แต่ก็ไม่อยากให้วันนั้นพังแค่เพื่อพิสูจน์อะไรบางอย่าง",
     rr_tagline: "อ่านบรรยากาศในห้อง พูดให้ถูกจังหวะ",
     rr_event_work_happy_hour: "สังสรรค์หลังเลิกงาน",
     rr_event_dinner_party: "งานเลี้ยงอาหารค่ำ",
@@ -3809,6 +3845,9 @@ export const roomReader = {
     rr_copy_energy_starter: "ประโยคเปิด: \"{{line}}\"",
   },
   vi: {
+    rr_example2_event_details: "Ngày Giáng sinh ở nhà anh trai. Mười bốn người, ba thế hệ, từ 11 giờ sáng đến lúc nào không biết.",
+    rr_example2_people: "Mẹ tôi, người không nói chuyện với dì kể từ một đám tang năm 2019 và không chịu nói vì sao. Anh trai tôi, chủ nhà, mong buổi hôm đó suôn sẻ hơn bất kỳ ai. Bạn đời mới của em họ, chưa gặp ai trong nhà. Và hai đứa trẻ dưới sáu tuổi.",
+    rr_example2_concerns: "Cuối cùng lúc nào cũng là tôi đứng ra làm dịu mọi chuyện, và một lần thôi tôi muốn không phải là mình. Nhưng tôi cũng không muốn hôm đó hỏng bét chỉ để chứng minh điều gì.",
     rr_tagline: "Đọc vị bầu không khí. Nói đúng điều cần nói.",
     rr_event_work_happy_hour: "Tiệc sau giờ làm",
     rr_event_dinner_party: "Tiệc tối",
