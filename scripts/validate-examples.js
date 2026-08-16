@@ -21,7 +21,12 @@ const path = require('path');
 
 const TOOLS = path.join(__dirname, '..', 'src', 'tools');
 // Fields that hold free text rather than a choice from a list.
-const FREE_TEXT = new Set(['who', 'situation', 'context', 'topic', 'preview', 'name', 'notes']);
+const FREE_TEXT = new Set([
+  'who', 'situation', 'context', 'topic', 'preview', 'name', 'notes',
+  // Soft markers rather than option lists: `role` is only ever compared
+  // against 'primary', and `relationship` is a plain text input.
+  'role', 'relationship',
+]);
 
 let bad = [];
 for (const file of fs.readdirSync(TOOLS).filter(f => f.endsWith('.js'))) {
