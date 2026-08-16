@@ -5,6 +5,10 @@
 // Plaid, Brex, SXSW, Google, MIT, Substack, Twitter) stay as-is across languages.
 export const coldOpenCraft = {
   en: {
+    coc_ex2_who: "The woman who runs the community garden two streets over",
+    coc_ex2_why: "Ask whether there is a plot free, and whether newcomers who know nothing are welcome",
+    coc_ex2_know: "Her name is on the noticeboard. The garden has a waiting list, or had one in 2023 according to a laminated sign. Someone told me she is 'lovely but busy'. That is everything I know.",
+    coc_ex2_bg: "I have killed every plant I have ever owned. I can lift things, I am free most Saturday mornings, and I would rather be outside than not. That is the whole offer.",
     coc_title: "Cold Open Craft",
     coc_tagline: "First messages that actually get responses.",
     coc_xref_pre: "Need to frame your story first?",
@@ -72,6 +76,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 years backend at fintech startups (Plaid, Brex), currently tech-leading a 6-person team. Shipped a real-time risk system handling 50M events/day.",
   },
   es: {
+    coc_ex2_who: "La mujer que lleva el huerto comunitario a dos calles de aquí",
+    coc_ex2_why: "Preguntar si queda alguna parcela libre y si son bienvenidos los novatos que no saben nada",
+    coc_ex2_know: "Su nombre está en el tablón. El huerto tiene lista de espera, o la tenía en 2023 según un cartel plastificado. Alguien me dijo que es «encantadora pero está muy liada». Eso es todo lo que sé.",
+    coc_ex2_bg: "He matado todas las plantas que he tenido. Puedo cargar cosas, tengo libres casi todos los sábados por la mañana y prefiero estar fuera que dentro. Esa es toda mi oferta.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Primeros mensajes que de verdad reciben respuesta.",
     coc_xref_pre: "¿Necesitas enmarcar tu historia primero?",
@@ -139,6 +147,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 años de backend en startups fintech (Plaid, Brex), actualmente liderando técnicamente un equipo de 6 personas. Lancé un sistema de riesgo en tiempo real que maneja 50M de eventos/día.",
   },
   zh: {
+    coc_ex2_who: "隔两条街那个社区菜园的负责人",
+    coc_ex2_why: "想问问还有没有空的地块，以及完全不懂的新手是否欢迎",
+    coc_ex2_know: "公告栏上有她的名字。菜园有等候名单，或者说照那张塑封告示看，2023 年是有的。有人跟我说她「人很好但很忙」。我知道的就这些。",
+    coc_ex2_bg: "我养死过我拥有的每一株植物。我能搬东西，大多数周六上午有空，而且宁愿待在户外。我能提供的就这些。",
     coc_title: "Cold Open Craft",
     coc_tagline: "真正能收到回复的第一条消息。",
     coc_xref_pre: "需要先梳理你的故事？",
@@ -206,6 +218,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "在金融科技创业公司（Plaid、Brex）做了 8 年后端，目前技术带领一个 6 人团队。上线了一个每天处理 5000 万事件的实时风控系统。",
   },
   hi: {
+    coc_ex2_who: "दो गली आगे कम्युनिटी गार्डन चलाने वाली महिला",
+    coc_ex2_why: "पूछना है कि कोई प्लॉट खाली है क्या, और क्या कुछ न जानने वाले नए लोग वहाँ स्वागत योग्य हैं",
+    coc_ex2_know: "नोटिसबोर्ड पर उनका नाम है। बगीचे में वेटिंग लिस्ट है, या एक लैमिनेटेड बोर्ड के मुताबिक 2023 में थी। किसी ने बताया कि वो 'बहुत अच्छी हैं पर व्यस्त रहती हैं'। बस इतना ही पता है।",
+    coc_ex2_bg: "मेरे पास जो भी पौधा आया, मैंने मार दिया। मैं वज़न उठा सकता हूँ, ज़्यादातर शनिवार सुबह खाली रहता हूँ, और बाहर रहना ज़्यादा पसंद है। बस इतना ही दे सकता हूँ।",
     coc_title: "Cold Open Craft",
     coc_tagline: "पहले संदेश जो वाकई जवाब दिलाते हैं।",
     coc_xref_pre: "पहले अपनी कहानी को सही ढाँचा देना है?",
@@ -273,6 +289,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "फिनटेक स्टार्टअप्स (Plaid, Brex) में 8 साल बैकएंड, फिलहाल 6 लोगों की टीम का टेक-लीड। एक रियल-टाइम रिस्क सिस्टम लॉन्च किया जो रोज़ 5 करोड़ इवेंट संभालता है।",
   },
   ar: {
+    coc_ex2_who: "السيدة التي تدير حديقة الحي على بُعد شارعين",
+    coc_ex2_why: "أن أسأل إن كان هناك حوض شاغر، وإن كان المبتدئون الذين لا يعرفون شيئاً مرحباً بهم",
+    coc_ex2_know: "اسمها على لوحة الإعلانات. للحديقة قائمة انتظار، أو كانت لها في 2023 بحسب لافتة مغلّفة. أخبرني أحدهم أنها «لطيفة لكنها مشغولة». هذا كل ما أعرفه.",
+    coc_ex2_bg: "قتلت كل نبتة امتلكتها يوماً. أستطيع حمل الأشياء، ومعظم صباحات السبت متفرغ، وأفضّل أن أكون في الخارج. هذا كل ما أقدّمه.",
     coc_title: "Cold Open Craft",
     coc_tagline: "رسائل أولى تحصل فعلاً على ردود.",
     coc_xref_pre: "تحتاج إلى صياغة قصتك أولاً؟",
@@ -340,6 +360,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 سنوات في الواجهة الخلفية بشركات تقنية مالية ناشئة (Plaid، Brex)، أقود حالياً فريقاً تقنياً من 6 أشخاص. أطلقت نظام مخاطر فورياً يعالج 50 مليون حدث يومياً.",
   },
   pt: {
+    coc_ex2_who: "A senhora que gere a horta comunitária a duas ruas daqui",
+    coc_ex2_why: "Perguntar se há algum talhão livre e se são bem-vindos principiantes que não sabem nada",
+    coc_ex2_know: "O nome dela está no placard. A horta tem lista de espera, ou tinha em 2023 segundo um aviso plastificado. Alguém me disse que ela é «adorável mas ocupada». É tudo o que sei.",
+    coc_ex2_bg: "Matei todas as plantas que já tive. Consigo carregar coisas, estou livre quase todos os sábados de manhã e prefiro estar lá fora. É esta a oferta toda.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Primeiras mensagens que realmente recebem resposta.",
     coc_xref_pre: "Precisa enquadrar sua história primeiro?",
@@ -407,6 +431,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 anos de backend em startups de fintech (Plaid, Brex), atualmente liderando tecnicamente uma equipe de 6 pessoas. Lancei um sistema de risco em tempo real que processa 50M de eventos/dia.",
   },
   fr: {
+    coc_ex2_who: "La femme qui gère le jardin partagé deux rues plus loin",
+    coc_ex2_why: "Demander s'il reste une parcelle libre, et si les débutants qui n'y connaissent rien sont les bienvenus",
+    coc_ex2_know: "Son nom est sur le panneau d'affichage. Le jardin a une liste d'attente, ou en avait une en 2023 d'après une pancarte plastifiée. On m'a dit qu'elle est « adorable mais débordée ». C'est tout ce que je sais.",
+    coc_ex2_bg: "J'ai tué toutes les plantes que j'ai eues. Je peux porter des choses, je suis libre presque tous les samedis matin, et je préfère être dehors. C'est toute mon offre.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Des premiers messages qui obtiennent vraiment des réponses.",
     coc_xref_pre: "Besoin de cadrer votre histoire d'abord ?",
@@ -474,6 +502,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 ans de backend dans des startups fintech (Plaid, Brex), actuellement lead technique d'une équipe de 6 personnes. J'ai livré un système de risque en temps réel traitant 50M d'événements/jour.",
   },
   de: {
+    coc_ex2_who: "Die Frau, die den Gemeinschaftsgarten zwei Straßen weiter betreibt",
+    coc_ex2_why: "Fragen, ob eine Parzelle frei ist — und ob Neulinge, die nichts können, willkommen sind",
+    coc_ex2_know: "Ihr Name steht am Schwarzen Brett. Der Garten hat eine Warteliste, oder hatte 2023 eine, laut einem laminierten Schild. Jemand sagte, sie sei „nett, aber viel beschäftigt“. Mehr weiß ich nicht.",
+    coc_ex2_bg: "Ich habe jede Pflanze umgebracht, die ich je hatte. Ich kann tragen, samstagvormittags habe ich meist Zeit, und ich bin lieber draußen als drinnen. Mehr habe ich nicht zu bieten.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Erste Nachrichten, die wirklich Antworten bringen.",
     coc_xref_pre: "Musst du deine Geschichte erst zurechtlegen?",
@@ -541,6 +573,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 Jahre Backend bei Fintech-Startups (Plaid, Brex), aktuell Tech-Lead eines 6-köpfigen Teams. Habe ein Echtzeit-Risikosystem live geschaltet, das 50 Mio. Ereignisse/Tag verarbeitet.",
   },
   ja: {
+    coc_ex2_who: "二本先の通りでコミュニティ菜園を仕切っている女性",
+    coc_ex2_why: "空いている区画があるか、そして何も知らない初心者でも受け入れてもらえるかを尋ねたい",
+    coc_ex2_know: "掲示板に名前が出ています。菜園には順番待ちがある、というか、ラミネート加工された貼り紙によれば2023年にはありました。誰かに「感じはいいけれど忙しい人」と言われました。知っているのはそれだけです。",
+    coc_ex2_bg: "これまで育てた植物はすべて枯らしました。力仕事はできますし、土曜の午前はたいてい空いています。屋内より外にいたい。差し出せるのはそれだけです。",
     coc_title: "Cold Open Craft",
     coc_tagline: "本当に返信がもらえる最初のメッセージ。",
     coc_xref_pre: "まず自分のストーリーを整理したいですか？",
@@ -608,6 +644,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "フィンテックのスタートアップ（Plaid、Brex）でバックエンド8年、現在6人チームのテックリード。1日5000万イベントを処理するリアルタイムのリスクシステムをリリース。",
   },
   ko: {
+    coc_ex2_who: "두 블록 건너 공동체 텃밭을 운영하는 분",
+    coc_ex2_why: "빈 구획이 있는지, 그리고 아무것도 모르는 초보도 받아주는지 묻고 싶습니다",
+    coc_ex2_know: "게시판에 이름이 있습니다. 텃밭에 대기자 명단이 있다고, 정확히는 코팅된 안내문에 따르면 2023년에는 있었습니다. 누군가 '좋은 분인데 바쁘시다'고 했습니다. 제가 아는 건 그게 전부입니다.",
+    coc_ex2_bg: "지금까지 키운 식물은 전부 죽였습니다. 무거운 건 들 수 있고, 토요일 오전은 대체로 비어 있고, 실내보다 밖이 좋습니다. 제가 내놓을 수 있는 건 그게 전부입니다.",
     coc_title: "Cold Open Craft",
     coc_tagline: "정말로 답장을 받아내는 첫 메시지.",
     coc_xref_pre: "먼저 당신의 이야기를 정리해야 하나요?",
@@ -675,6 +715,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "핀테크 스타트업(Plaid, Brex)에서 백엔드 8년, 현재 6인 팀을 기술 리딩 중. 하루 5천만 이벤트를 처리하는 실시간 리스크 시스템을 출시했다.",
   },
   ru: {
+    coc_ex2_who: "Женщина, которая ведёт общественный сад через две улицы",
+    coc_ex2_why: "Спросить, есть ли свободная грядка и рады ли новичкам, которые ничего не умеют",
+    coc_ex2_know: "Её имя есть на доске объявлений. У сада есть лист ожидания — или был в 2023-м, судя по заламинированному объявлению. Кто-то сказал, что она «милая, но занятая». Это всё, что я знаю.",
+    coc_ex2_bg: "Я загубил все растения, которые у меня были. Могу таскать тяжёлое, почти каждую субботу утром свободен, и на улице мне лучше, чем дома. Вот и всё предложение.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Первые сообщения, на которые действительно отвечают.",
     coc_xref_pre: "Нужно сначала выстроить свою историю?",
@@ -742,6 +786,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "8 лет бэкенда в финтех-стартапах (Plaid, Brex), сейчас техлид команды из 6 человек. Запустил систему оценки рисков в реальном времени, обрабатывающую 50 млн событий в день.",
   },
   th: {
+    coc_ex2_who: "ผู้หญิงที่ดูแลสวนชุมชนห่างไปสองถนน",
+    coc_ex2_why: "อยากถามว่ายังมีแปลงว่างไหม และคนใหม่ที่ไม่รู้อะไรเลยจะได้รับการต้อนรับหรือเปล่า",
+    coc_ex2_know: "ชื่อเธออยู่บนบอร์ดประกาศ สวนมีรายชื่อรอคิว หรืออย่างน้อยก็เคยมีในปี 2023 ตามป้ายเคลือบพลาสติก มีคนบอกว่าเธอ 'ใจดีแต่ยุ่งมาก' ผมรู้แค่นี้",
+    coc_ex2_bg: "ต้นไม้ทุกต้นที่ผมเคยมี ผมทำตายหมด ผมยกของได้ ว่างเกือบทุกเช้าวันเสาร์ และชอบอยู่กลางแจ้งมากกว่า นั่นคือทั้งหมดที่ผมเสนอได้",
     coc_title: "Cold Open Craft",
     coc_tagline: "ข้อความแรกที่ได้รับการตอบกลับจริง ๆ",
     coc_xref_pre: "ต้องวางกรอบเรื่องราวของคุณก่อนไหม?",
@@ -809,6 +857,10 @@ export const coldOpenCraft = {
     coc_ex_bg: "ทำแบ็กเอนด์ในสตาร์ทอัพฟินเทค (Plaid, Brex) มา 8 ปี ปัจจุบันเป็นเทคลีดของทีม 6 คน เปิดตัวระบบประเมินความเสี่ยงแบบเรียลไทม์ที่จัดการ 50 ล้านเหตุการณ์ต่อวัน",
   },
   vi: {
+    coc_ex2_who: "Người phụ nữ trông coi vườn cộng đồng cách đây hai con phố",
+    coc_ex2_why: "Hỏi xem còn luống trống không, và người mới hoàn toàn không biết gì có được chào đón không",
+    coc_ex2_know: "Tên bà ấy có trên bảng tin. Vườn có danh sách chờ, hoặc từng có vào năm 2023 theo một tấm biển ép nhựa. Ai đó bảo bà ấy 'dễ mến nhưng bận'. Tôi chỉ biết có vậy.",
+    coc_ex2_bg: "Cây nào tôi trồng cũng chết. Tôi khuân vác được, hầu như sáng thứ Bảy nào cũng rảnh, và tôi thích ở ngoài trời hơn. Đó là tất cả những gì tôi có.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Những tin nhắn đầu tiên thực sự nhận được phản hồi.",
     coc_xref_pre: "Cần định hình câu chuyện của bạn trước?",
