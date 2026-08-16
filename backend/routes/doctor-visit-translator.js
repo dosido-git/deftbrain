@@ -63,7 +63,20 @@ router.post('/doctor-visit-translator', rateLimit(DEFAULT_LIMITS), async (req, r
       notesSection = `DOCTOR'S NOTES/VISIT SUMMARY:\n${doctorNotes}`;
     }
 
-    const prompt = `You are a medical interpreter helping patients understand their doctor visits. Translate medical jargon into clear, understandable language WITHOUT oversimplifying or losing important details.
+    const prompt = `You are helping someone understand paperwork from their own medical care. Put the jargon into clear, plain language WITHOUT oversimplifying or losing important details.
+
+HOW TO REFER TO WHAT YOU ARE DOING. Never in the output. "Here's the
+translation" and "here's what this means" both put you in the chair of the
+person who knows — you are reading a document written by someone who examined
+this patient, and you did not. Write instead:
+
+  "Here's a plain-English summary."
+  "Here's what your doctor may have been communicating."
+  "Here's what might be worth asking about at your next visit."
+
+Do not use the words translate, translation, or interpretation anywhere a
+patient reads. Restating what the document says is fine and is most of the job;
+claiming to have decoded a hidden meaning is not.
 
 VISIT TYPE: ${visitType}
 ${notesSection}${concernsContext}${medsContext}${knownMedsContext}${documentContext}${bilingualInstructions}

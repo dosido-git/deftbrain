@@ -188,8 +188,9 @@ const DoctorVisitTranslator = ({ tool }) => {
   // FORM
   const [visitType, setVisitType] = useState('Follow-up');
   const [concerns, setConcerns] = useState('');
-  const [currentMedications, setCurrentMedications] = useState('');
+  // Prep mode only — the translate form no longer asks (it never fed the model).
   const [doctorName, setDoctorName] = useState('');
+  const [currentMedications, setCurrentMedications] = useState('');
   const [documentType, setDocumentType] = useState('visit');
   // RESULTS (useState per PF-11 — never usePersistentState)
   const [results, setResults] = useState(null);
@@ -275,10 +276,10 @@ const DoctorVisitTranslator = ({ tool }) => {
     if (!results) return;
     const entry = {
       id: Date.now(), date: new Date().toISOString().split('T')[0],
-      doctorName: doctorName.trim() || 'Unknown', visitType, documentType,
+      visitType, documentType,
       doctorNotes: doctorNotes.trim().slice(0, 60), concerns: concerns.trim(), results,
       // PF-25 exception: preview-text truncation; session history is capped at 6 below.
-      preview: (doctorName.trim() || visitType || 'Visit').slice(0, 40),
+      preview: (visitType || 'Visit').slice(0, 40),
     };
     setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     if (results.medications?.length) {
@@ -288,7 +289,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           id: Date.now() + Math.random(), name: m.name, purpose: m.purpose,
           howToTake: m.how_to_take, sideEffects: m.side_effects_to_watch || [],
           prescribedDate: new Date().toISOString().split('T')[0],
-          doctor: doctorName.trim() || 'Unknown', active: true,
+          doctor: 'Unknown', active: true,
           genericAvailable: m.generic_available || '', costInfo: m.cost_considerations || '',
         }));
         return [...newMeds, ...prev].slice(0, 6);
@@ -304,17 +305,17 @@ const DoctorVisitTranslator = ({ tool }) => {
           id: Date.now() + Math.random(), action: a.action, why: a.why, when: a.when,
           priority: a.priority, status: 'pending', createdDate: today.toISOString().split('T')[0],
           dueDate: dueDate.toISOString().split('T')[0], visitDate: today.toISOString().split('T')[0],
-          visitGoal: doctorName ? `${visitType} with ${doctorName}` : visitType,
+          visitGoal: visitType,
         };
       });
       if (newReminders.length) setReminders(prev => [...newReminders, ...prev].slice(0, 6));
     }
     return entry;
-  }, [results, doctorName, visitType, doctorNotes, concerns, documentType, setSessionHistory, setMedList, setReminders]);
+  }, [results, visitType, doctorNotes, concerns, documentType, setSessionHistory, setMedList, setReminders]);
 
   const viewEntry = (entry) => {
     setResults(entry.results); setDoctorNotes(entry.doctorNotes);
-    setVisitType(entry.visitType); setDoctorName(entry.doctorName);
+    setVisitType(entry.visitType);
     setConcerns(entry.concerns || '');
     setDocumentType(entry.documentType || 'visit'); setMode('results');
   };
@@ -323,10 +324,10 @@ const DoctorVisitTranslator = ({ tool }) => {
   const comparisonEntry = useMemo(() => {
     if (!results) return null;
     return sessionHistory.find(e =>
-      (e.visitType === visitType || (e.doctorName === doctorName && doctorName !== 'Unknown')) &&
+      e.visitType === visitType &&
       e.results?.plain_english_summary
     ) || null;
-  }, [results, sessionHistory, visitType, doctorName]);
+  }, [results, sessionHistory, visitType]);
 
   // F5: Reminders
   const overdueReminders = useMemo(() => {
@@ -416,7 +417,6 @@ const DoctorVisitTranslator = ({ tool }) => {
     setVisitType('Follow-up');
     setConcerns('Worried about starting a new medication — what side effects should I watch for, and will it interact with my current meds?');
     setCurrentMedications('Lisinopril 10mg daily');
-    setDoctorName('Dr. Patel');
   };
 
   // ── PF-8: Register export content with the wrapper's persistent ActionBar ──
@@ -532,7 +532,7 @@ const DoctorVisitTranslator = ({ tool }) => {
           {/* F6: Document type */}
           <div>
             <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvt_what_translating')}</label>
-            <div className="grid grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">{DOC_TYPES.map(dt => (
               <button key={dt.id} onClick={() => setDocumentType(dt.id)}
                 className={`p-2 border-2 rounded-lg text-center transition-colors ${documentType === dt.id ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50') : (isDark ? 'border-zinc-700' : 'border-gray-200')}`}>
                 <p className={`text-[10px] font-semibold ${c.text}`}>{t(dt.labelKey)}</p>
@@ -581,13 +581,9 @@ const DoctorVisitTranslator = ({ tool }) => {
               className={`w-full h-24 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`} />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_visit_type')}</label>
-              <select value={visitType} onChange={e => setVisitType(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{VISIT_TYPES.map(vt => <option key={vt.id} value={vt.id}>{t(vt.k)}</option>)}</select></div>
-            <div><label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_doctor')}</label>
-              <input value={doctorName} onChange={e => setDoctorName(e.target.value)} placeholder={t('dvt_ph_doctor')} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`} /></div>
-          </div>
-
+          {/* Fear is usually why someone is here — "should I be worried?" is the
+              real question under "what does mild degenerative changes mean?" —
+              so it sits directly under the document instead of below the fold. */}
           <div>
             <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_concerns')} <span className={`text-[10px] ${c.textMuted}`}>({t('optional')})</span></label>
             <textarea value={concerns} onChange={e => setConcerns(e.target.value)} placeholder={t('dvt_ph_concerns')}
@@ -595,7 +591,12 @@ const DoctorVisitTranslator = ({ tool }) => {
           </div>
 
           <div>
-            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_medications')} <span className={`text-[10px] ${c.textMuted}`}>{t('dvt_meds_interaction')}</span></label>
+            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_visit_type')}</label>
+            <select value={visitType} onChange={e => setVisitType(e.target.value)} className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}>{VISIT_TYPES.map(vt => <option key={vt.id} value={vt.id}>{t(vt.k)}</option>)}</select>
+          </div>
+
+          <div>
+            <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>{t('dvt_medications')} <span className={`text-[10px] ${c.textMuted}`}>({t('optional')})</span></label>
             {activeMeds.length > 0 && (
               <div className={`${c.success} border rounded-lg p-3 mb-2`}>
                 <p className="text-[10px] font-bold mb-1">{t('dvt_auto_included', { count: activeMeds.length })}</p>
@@ -609,8 +610,15 @@ const DoctorVisitTranslator = ({ tool }) => {
 
           <div className="flex gap-3">
             <button onClick={handleTranslate} disabled={loading || (!doctorNotes.trim() && !pdfFile)}
-              className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+              title={t('dvt_cmd_enter')}
+              className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
               {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '👨🏻'}</span> {t('dvt_translating')}</> : <><span>{tool?.icon ?? '👨🏻'}</span> {t('dvt_translate')}</>}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
             </button>
           </div>
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
@@ -954,7 +962,7 @@ const DoctorVisitTranslator = ({ tool }) => {
             {sessionHistory.length === 0 ? <p className={`text-sm ${c.textSecondary} text-center py-4`}>{t('dvt_no_visits')}</p>
             : <div className="space-y-2 max-h-[32rem] overflow-y-auto">{sessionHistory.map(e => (
               <div key={e.id} className={`${c.cardAlt} border rounded-lg p-3`}>
-                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{(t(DOC_TYPES.find(d => d.id === e.documentType)?.labelKey || 'dvt_doc_visit') || '').split(' ')[0]}</span>}</div>
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap"><span className={`text-xs font-semibold ${c.text}`}>{e.date}</span><span className={`${c.highlight} border text-[9px] font-bold px-1.5 py-0.5 rounded`}>{e.visitType}</span>{e.doctorName && e.doctorName !== 'Unknown' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>🩺 {e.doctorName}</span>}{e.documentType && e.documentType !== 'visit' && <span className={`${c.pillGray} border text-[9px] px-1.5 py-0.5 rounded`}>{(t(DOC_TYPES.find(d => d.id === e.documentType)?.labelKey || 'dvt_doc_visit') || '').split(' ')[0]}</span>}</div>
                 <p className={`text-xs ${c.text} line-clamp-1`}>{e.results?.plain_english_summary?.diagnosis?.split('|||')[0]?.slice(0, 60) || e.doctorNotes.slice(0, 60)}</p>
                 {e.results?.medications?.length > 0 && <div className="flex flex-wrap gap-1 mt-0.5">{e.results.medications.slice(0, 3).map((m, i) => <span key={i} className={`${c.warning} border text-[9px] px-1 py-0.5 rounded`}>💊 {m.name.split(' ')[0]}</span>)}</div>}
                 <div className="flex gap-2 mt-1.5"><button onClick={() => viewEntry(e)} className={`${c.btnSecondary} text-xs px-3 py-1 rounded-lg`}>{t('dvt_view')}</button><button onClick={() => setSessionHistory(p => p.filter(h => h.id !== e.id))} className={`text-xs ${c.textMuted} ${c.deleteHover} px-1`}>🗑️</button></div>

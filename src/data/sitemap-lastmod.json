@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "1e07baf5993ef6f093b96ba58f558cb967980a28",
+  "hash": "4ff9f7be06fc948d6b64b1b5500cdd5a570af221",
   "lastmod": "2026-08-16"
  },
  "static:about": {
@@ -60,8 +60,8 @@
   "lastmod": "2026-08-16"
  },
  "tool:DoctorVisitTranslator": {
-  "hash": "e4aa9f22899e1f64c0a4b8319d6309a4c9baea5d",
-  "lastmod": "2026-08-07"
+  "hash": "64bbb240f8e44feba6f5f7a1aa930a25b34e11d6",
+  "lastmod": "2026-08-16"
  },
  "tool:FakeReviewDetective": {
   "hash": "c364e8f52635c961b942e426e3a9d5657cc5cc4a",
