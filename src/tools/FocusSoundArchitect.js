@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // WEB AUDIO SYNTHESIS ENGINE
@@ -739,7 +740,7 @@ const FocusSoundArchitect = ({ tool }) => {
   }, [masterVolume, isMuted]);
 
   const loadExample = () => {
-    const ex = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
+    const ex = pickExample('FocusSoundArchitect', EXAMPLES);
     setTask(ex.task);
     setEnvironments(ex.environments);
     setSoundPrefs(ex.soundPrefs);
