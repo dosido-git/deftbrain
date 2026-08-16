@@ -8,6 +8,7 @@
 // value is intentional — keep it inside the string.
 export const moneyDiplomat = {
   en: {
+    md_example2_situation: "I lent a close friend {{sym}}600 eighteen months ago for a deposit. They said they would pay it back within three months. It has never been mentioned since. We see each other most weeks and they have just booked a holiday.",
     md_tagline: "The right number for every money moment",
     md_err_failed: "Failed.",
     md_copy_verdict: "Verdict",
@@ -450,6 +451,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI-generated guidance — not financial or legal advice. Verify important figures independently.",
   },
   es: {
+    md_example2_situation: "Le presté {{sym}}600 a una amiga cercana hace año y medio para una fianza. Dijo que me lo devolvería en tres meses. No se ha vuelto a mencionar. Nos vemos casi todas las semanas y acaba de reservar unas vacaciones.",
     md_tagline: "El número justo para cada momento de dinero",
     md_err_failed: "Falló.",
     md_copy_verdict: "Veredicto",
@@ -892,6 +894,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Orientación generada por IA — no es asesoramiento financiero ni legal. Verifica las cifras importantes de forma independiente.",
   },
   zh: {
+    md_example2_situation: "一年半前我借给一位好朋友 {{sym}}600 交押金。她说三个月内还我。从那以后再没提过。我们几乎每周都见面，而她刚订了一趟旅行。",
     md_tagline: "每个金钱时刻都有合适的数字",
     md_err_failed: "失败。",
     md_copy_verdict: "结论",
@@ -1334,6 +1337,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI 生成的指导 — 并非财务或法律建议。请自行核实重要数字。",
   },
   hi: {
+    md_example2_situation: "डेढ़ साल पहले मैंने एक क़रीबी दोस्त को डिपॉज़िट के लिए {{sym}}600 उधार दिए थे। उसने कहा था तीन महीने में लौटा देगी। उसके बाद कभी ज़िक्र ही नहीं हुआ। हम लगभग हर हफ़्ते मिलते हैं और उसने अभी छुट्टी की बुकिंग की है।",
     md_tagline: "हर पैसे के पल के लिए सही रकम",
     md_err_failed: "विफल रहा।",
     md_copy_verdict: "फैसला",
@@ -1776,6 +1780,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI द्वारा बनाया गया मार्गदर्शन — यह वित्तीय या कानूनी सलाह नहीं है। महत्वपूर्ण आँकड़ों की स्वतंत्र रूप से पुष्टि करें।",
   },
   ar: {
+    md_example2_situation: "أقرضت صديقة مقربة {{sym}}600 قبل ثمانية عشر شهراً من أجل تأمين. قالت إنها ستعيدها خلال ثلاثة أشهر. لم يُذكر الأمر منذ ذلك الحين. نلتقي معظم الأسابيع، وقد حجزت للتو رحلة.",
     md_tagline: "الرقم الصحيح لكل لحظة مالية",
     md_err_failed: "فشل.",
     md_copy_verdict: "الحكم",
@@ -2218,6 +2223,7 @@ export const moneyDiplomat = {
     md_disclaimer: "إرشادات مولّدة بالذكاء الاصطناعي — ليست نصيحة مالية أو قانونية. تحقق من الأرقام المهمة بشكل مستقل.",
   },
   pt: {
+    md_example2_situation: "Emprestei {{sym}}600 a uma amiga próxima há ano e meio, para uma caução. Disse que devolvia em três meses. Nunca mais se falou nisso. Vemo-nos quase todas as semanas e ela acabou de marcar férias.",
     md_tagline: "O número certo para cada momento de dinheiro",
     md_err_failed: "Falhou.",
     md_copy_verdict: "Veredito",
@@ -2660,6 +2666,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Orientação gerada por IA — não é aconselhamento financeiro ou jurídico. Verifique os números importantes de forma independente.",
   },
   fr: {
+    md_example2_situation: "J'ai prêté {{sym}}600 à une amie proche il y a dix-huit mois pour une caution. Elle a dit qu'elle rembourserait sous trois mois. On n'en a jamais reparlé. On se voit presque chaque semaine et elle vient de réserver des vacances.",
     md_tagline: "Le bon montant pour chaque moment d'argent",
     md_err_failed: "Échec.",
     md_copy_verdict: "Verdict",
@@ -3102,6 +3109,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Conseils générés par IA — ne constituent pas un avis financier ou juridique. Vérifiez les chiffres importants de manière indépendante.",
   },
   de: {
+    md_example2_situation: "Ich habe einer engen Freundin vor achtzehn Monaten {{sym}}600 für eine Kaution geliehen. Sie sagte, sie zahle es in drei Monaten zurück. Seitdem wurde es nie erwähnt. Wir sehen uns fast jede Woche, und sie hat gerade einen Urlaub gebucht.",
     md_tagline: "Der richtige Betrag für jeden Geldmoment",
     md_err_failed: "Fehlgeschlagen.",
     md_copy_verdict: "Urteil",
@@ -3544,6 +3552,7 @@ export const moneyDiplomat = {
     md_disclaimer: "KI-generierte Hinweise — keine Finanz- oder Rechtsberatung. Wichtige Zahlen unabhängig überprüfen.",
   },
   ja: {
+    md_example2_situation: "一年半前、親しい友人に敷金のため {{sym}}600 を貸しました。三か月以内に返すと言っていました。それきり一度も話題に出ていません。ほぼ毎週会っていますが、彼女は先日旅行を予約しました。",
     md_tagline: "あらゆるお金の場面に、ぴったりの金額を",
     md_err_failed: "失敗しました。",
     md_copy_verdict: "結論",
@@ -3986,6 +3995,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI が生成したガイダンスです — 金融・法律上の助言ではありません。重要な数字はご自身で確認してください。",
   },
   ko: {
+    md_example2_situation: "1년 반 전에 친한 친구에게 보증금 명목으로 {{sym}}600을 빌려줬습니다. 석 달 안에 갚겠다고 했어요. 그 뒤로 한 번도 언급된 적이 없습니다. 거의 매주 만나는데, 그 친구는 방금 여행을 예약했습니다.",
     md_tagline: "모든 돈 상황에 딱 맞는 금액",
     md_err_failed: "실패했습니다.",
     md_copy_verdict: "결론",
@@ -4428,6 +4438,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI가 생성한 안내 — 재정적·법적 조언이 아닙니다. 중요한 수치는 별도로 직접 확인하세요.",
   },
   ru: {
+    md_example2_situation: "Полтора года назад я одолжила близкой подруге {{sym}}600 на залог. Она сказала, что вернёт за три месяца. С тех пор об этом ни слова. Мы видимся почти каждую неделю, а она только что забронировала отпуск.",
     md_tagline: "Правильная сумма для любого денежного момента",
     md_err_failed: "Не удалось.",
     md_copy_verdict: "Вердикт",
@@ -4870,6 +4881,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Рекомендации сгенерированы ИИ — это не финансовый или юридический совет. Проверяйте важные цифры самостоятельно.",
   },
   th: {
+    md_example2_situation: "ฉันให้เพื่อนสนิทยืม {{sym}}600 เมื่อปีครึ่งที่แล้วเพื่อวางมัดจำ เธอบอกว่าจะคืนภายในสามเดือน หลังจากนั้นไม่เคยพูดถึงอีกเลย เราเจอกันแทบทุกสัปดาห์ และเธอเพิ่งจองทริปเที่ยว",
     md_tagline: "ตัวเลขที่ใช่สำหรับทุกช่วงเวลาเรื่องเงิน",
     md_err_failed: "ล้มเหลว",
     md_copy_verdict: "คำตัดสิน",
@@ -5312,6 +5324,7 @@ export const moneyDiplomat = {
     md_disclaimer: "คำแนะนำที่สร้างโดย AI — ไม่ใช่คำแนะนำทางการเงินหรือกฎหมาย โปรดตรวจสอบตัวเลขสำคัญด้วยตนเอง",
   },
   vi: {
+    md_example2_situation: "Tôi cho một người bạn thân mượn {{sym}}600 cách đây mười tám tháng để đặt cọc. Bạn ấy nói ba tháng sẽ trả. Từ đó chưa ai nhắc lại. Chúng tôi gặp nhau gần như hằng tuần, và bạn ấy vừa đặt một chuyến du lịch.",
     md_tagline: "Con số phù hợp cho mọi tình huống tiền bạc",
     md_err_failed: "Thất bại.",
     md_copy_verdict: "Phán quyết",
