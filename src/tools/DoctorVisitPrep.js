@@ -23,6 +23,19 @@ const APPT_TYPES = [
 ];
 
 
+// What someone wants out of the visit. People bring expectations as well as
+// symptoms, and an unmet expectation is most of what "that was a waste of time"
+// means afterwards. Multi-select: wanting both an explanation and a test is
+// the normal case, not a contradiction.
+const HOPED_OUTCOMES = [
+  { id: 'reassurance',    labelKey: 'dvp_out_reassurance',  icon: '😮‍💨' },
+  { id: 'explanation',    labelKey: 'dvp_out_explanation',  icon: '💡' },
+  { id: 'testing',        labelKey: 'dvp_out_testing',      icon: '🧪' },
+  { id: 'pain-relief',    labelKey: 'dvp_out_pain_relief',  icon: '🩹' },
+  { id: 'treatment-plan', labelKey: 'dvp_out_treatment',    icon: '🗺️' },
+  { id: 'referral',       labelKey: 'dvp_out_referral',     icon: '➡️' },
+];
+
 const PRIORITY_COLOR = (p, d) => {
   if (p === 'high')   return d ? 'text-red-400 bg-red-900/20'   : 'text-red-700 bg-red-100';
   if (p === 'medium') return d ? 'text-amber-400 bg-amber-900/20' : 'text-amber-700 bg-amber-100';
@@ -106,7 +119,8 @@ const DoctorVisitPrep = ({ tool }) => {
   const [currentMedications, setCurrentMedications] = useState('');
   const [allergies, setAllergies] = useState('');
   const [relevantHistory, setRelevantHistory] = useState('');
-  const [appointmentType, setAppointmentType] = useState('new-problem');
+  const [appointmentTypes, setAppointmentTypes] = useState(['new-problem']);
+  const [hopedOutcomes, setHopedOutcomes] = useState([]);
   const [specificWorry, setSpecificWorry] = useState('');
   // RESULTS
   const [results, setResults] = usePersistentState('dvp-results', null);
@@ -149,7 +163,8 @@ const DoctorVisitPrep = ({ tool }) => {
         currentMedications: allMeds,
         allergies: allergies.trim() || null,
         relevantHistory: relevantHistory.trim() || null,
-        appointmentType,
+        appointmentTypes,
+        hopedOutcomes,
         specificWorry: specificWorry.trim() || null,
         knownMedications: activeMeds.length
           ? activeMeds.map(m => ({ name: m.name, purpose: m.purpose, prescribedDate: m.prescribedDate }))
@@ -177,8 +192,8 @@ const DoctorVisitPrep = ({ tool }) => {
   const handleReset = () => {
     setChiefConcern(''); setSymptomDetails(''); setDurationText('');
     setSeverity(5); setWhatMakesItBetterWorse(''); setCurrentMedications('');
-    setAllergies(''); setRelevantHistory(''); setAppointmentType('new-problem');
-    setSpecificWorry(''); setResults(null); setError('');
+    setAllergies(''); setRelevantHistory(''); setAppointmentTypes(['new-problem']);
+    setHopedOutcomes([]); setSpecificWorry(''); setResults(null); setError('');
   };
 
   const loadExample = () => {
@@ -191,7 +206,8 @@ const DoctorVisitPrep = ({ tool }) => {
     setCurrentMedications(t('dvp_ex_meds'));
     setAllergies(t('dvp_ex_allergies'));
     setRelevantHistory(t('dvp_ex_history'));
-    setAppointmentType('follow-up');
+    setAppointmentTypes(['follow-up', 'specialist']);
+    setHopedOutcomes(['explanation', 'treatment-plan']);
     setSpecificWorry(t('dvp_ex_worry'));
   };
 
@@ -204,7 +220,8 @@ const DoctorVisitPrep = ({ tool }) => {
     setCurrentMedications(p.currentMedications || '');
     setAllergies(p.allergies || '');
     setRelevantHistory(p.relevantHistory || '');
-    setAppointmentType(p.appointmentType || 'new-problem');
+    setAppointmentTypes(p.appointmentTypes || (p.appointmentType ? [p.appointmentType] : ['new-problem']));
+    setHopedOutcomes(p.hopedOutcomes || []);
     setSpecificWorry(p.specificWorry || '');
     setResults(p.results || null);
     setError('');
@@ -226,7 +243,8 @@ const DoctorVisitPrep = ({ tool }) => {
       currentMedications: currentMedications.trim(),
       allergies: allergies.trim(),
       relevantHistory: relevantHistory.trim(),
-      appointmentType,
+      appointmentTypes,
+      hopedOutcomes,
       specificWorry: specificWorry.trim(),
       results,
     };
@@ -235,7 +253,7 @@ const DoctorVisitPrep = ({ tool }) => {
   }, [
     results, chiefConcern, symptomDetails, durationText, severity,
     whatMakesItBetterWorse, currentMedications, allergies, relevantHistory,
-    appointmentType, specificWorry, setPrepHistory, t,
+    appointmentTypes, hopedOutcomes, specificWorry, setPrepHistory, t,
   ]);
 
   // ────────────────────────────────────────────────────────────
@@ -244,12 +262,12 @@ const DoctorVisitPrep = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const r = results;
-    const apptLabel = APPT_TYPES.find(a => a.id === appointmentType);
+    const apptLabels = appointmentTypes.map(id => APPT_TYPES.find(a => a.id === id)).filter(Boolean);
     const lines = [
       t('dvp_copy_header'),
       '═'.repeat(50),
       `${t('dvp_copy_date')} ${new Date().toISOString().split('T')[0]}`,
-      `${t('dvp_copy_appt_type')} ${apptLabel ? t(apptLabel.labelKey).replace(/^\S+\s/, '') : appointmentType}`,
+      `${t('dvp_copy_appt_type')} ${apptLabels.length ? apptLabels.map(a => t(a.labelKey).replace(/^\S+\s/, '')).join(', ') : '—'}`,
       chiefConcern ? `${t('dvp_copy_chief')} ${chiefConcern}` : '',
       '',
     ].filter(Boolean);
@@ -312,7 +330,7 @@ const DoctorVisitPrep = ({ tool }) => {
     }
 
     return lines.join('\n') + BRAND;
-  }, [results, appointmentType, chiefConcern, t]);
+  }, [results, appointmentTypes, chiefConcern, t]);
 
   // ── PF-8: Register export content with the wrapper's persistent ActionBar ──
   useRegisterActions(buildFullText(), tool?.title || 'Doctor Visit Prep');
@@ -349,7 +367,7 @@ const DoctorVisitPrep = ({ tool }) => {
     chiefConcern.trim() || symptomDetails.trim() || durationText.trim() ||
     whatMakesItBetterWorse.trim() || currentMedications.trim() ||
     allergies.trim() || relevantHistory.trim() || specificWorry.trim() ||
-    severity !== 5 || appointmentType !== 'new-problem' || results
+    severity !== 5 || appointmentTypes.join() !== 'new-problem' || hopedOutcomes.length > 0 || results
   );
 
   // ════════════════════════════════════════════════════════════
@@ -392,15 +410,18 @@ const DoctorVisitPrep = ({ tool }) => {
 
         {/* Appointment type + Try Example */}
         <div>
-          <label className={`block text-sm font-semibold ${c.textSecondary} mb-1.5`}>{t('dvp_appt_type')}</label>
+          <label className={`block text-sm font-semibold ${c.textSecondary} mb-0.5`}>{t('dvp_appt_type')}</label>
+          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('dvp_appt_type_hint')}</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
             {APPT_TYPES.map(at => (
               <button
                 key={at.id}
-                onClick={() => setAppointmentType(at.id)}
+                onClick={() => setAppointmentTypes(prev => prev.includes(at.id)
+                  ? prev.filter(x => x !== at.id)
+                  : [...prev, at.id])}
                 title={t(at.hintKey)}
                 className={`p-2 border-2 rounded-lg text-center transition-colors ${
-                  appointmentType === at.id
+                  appointmentTypes.includes(at.id)
                     ? (isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50')
                     : (isDark ? 'border-zinc-700' : 'border-gray-200')
                 }`}
@@ -422,19 +443,6 @@ const DoctorVisitPrep = ({ tool }) => {
             onChange={e => setChiefConcern(e.target.value)}
             placeholder={t('dvp_chief_concern_ph')}
             className={`w-full h-20 p-3 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm`}
-          />
-        </div>
-
-        {/* Symptom details + duration + severity */}
-        <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-            {t('dvp_symptom_details')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_symptom_details_hint')}</span>
-          </label>
-          <textarea
-            value={symptomDetails}
-            onChange={e => setSymptomDetails(e.target.value)}
-            placeholder={t('dvp_symptom_details_ph')}
-            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
           />
         </div>
 
@@ -464,6 +472,58 @@ const DoctorVisitPrep = ({ tool }) => {
               <span className={c.textMuted}>{t('dvp_severity_severe')}</span>
             </div>
           </div>
+        </div>
+
+        {/* Specific worry */}
+        <div>
+          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
+            {t('dvp_worry')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_worry_hint')}</span>
+          </label>
+          <textarea
+            value={specificWorry}
+            onChange={e => setSpecificWorry(e.target.value)}
+            placeholder={t('dvp_worry_ph')}
+            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
+          />
+        </div>
+
+        {/* What are you hoping for? — expectations, not symptoms. Sits next to
+            the worry because those two together are why someone booked. */}
+        <div>
+          <label className={`text-sm font-semibold ${c.textSecondary} block mb-0.5`}>
+            {t('dvp_hoped')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_hoped_hint')}</span>
+          </label>
+          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('dvp_hoped_help')}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {HOPED_OUTCOMES.map(h => (
+              <button
+                key={h.id}
+                onClick={() => setHopedOutcomes(prev => prev.includes(h.id)
+                  ? prev.filter(x => x !== h.id)
+                  : [...prev, h.id])}
+                className={`px-3 py-1.5 rounded-lg border-2 text-xs font-semibold transition-colors ${
+                  hopedOutcomes.includes(h.id)
+                    ? (isDark ? 'border-cyan-500 bg-cyan-900/20 text-cyan-200' : 'border-cyan-500 bg-cyan-50 text-cyan-800')
+                    : (isDark ? 'border-zinc-700 text-zinc-400' : 'border-gray-200 text-gray-600')
+                }`}
+              >
+                {h.icon} {t(h.labelKey)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Symptom details + duration + severity */}
+        <div>
+          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
+            {t('dvp_symptom_details')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_symptom_details_hint')}</span>
+          </label>
+          <textarea
+            value={symptomDetails}
+            onChange={e => setSymptomDetails(e.target.value)}
+            placeholder={t('dvp_symptom_details_ph')}
+            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
+          />
         </div>
 
         <div>
@@ -518,19 +578,6 @@ const DoctorVisitPrep = ({ tool }) => {
               className={`w-full p-2.5 border rounded-lg ${c.input} outline-none text-sm`}
             />
           </div>
-        </div>
-
-        {/* Specific worry */}
-        <div>
-          <label className={`text-sm font-semibold ${c.textSecondary} block mb-1.5`}>
-            {t('dvp_worry')} <span className={`text-[10px] font-normal ${c.textMuted}`}>{t('dvp_worry_hint')}</span>
-          </label>
-          <textarea
-            value={specificWorry}
-            onChange={e => setSpecificWorry(e.target.value)}
-            placeholder={t('dvp_worry_ph')}
-            className={`w-full h-16 p-3 border-2 rounded-lg ${c.input} outline-none resize-none text-sm`}
-          />
         </div>
 
         {/* Language */}
@@ -784,7 +831,7 @@ const DoctorVisitPrep = ({ tool }) => {
                   <span className={`text-[10px] ${c.textMuted}`}>{p.date}</span>
                 </div>
                 <p className={`text-[10px] ${c.textMuted} mb-2`}>
-                  {(() => { const at = APPT_TYPES.find(a => a.id === p.appointmentType); return at ? t(at.labelKey) : p.appointmentType; })()}
+                  {(() => { const ids = p.appointmentTypes || (p.appointmentType ? [p.appointmentType] : []); const ls = ids.map(id => APPT_TYPES.find(a => a.id === id)).filter(Boolean); return ls.length ? ls.map(a => t(a.labelKey)).join(', ') : (ids[0] || ''); })()}
                 </p>
                 <div className="flex gap-2">
                   <button

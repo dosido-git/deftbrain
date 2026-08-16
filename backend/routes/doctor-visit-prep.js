@@ -30,6 +30,18 @@ const APPT_CONTEXT = {
   'urgent-care':       '\n\nAPPOINTMENT TYPE: Urgent / acute care\nFocus especially on: onset, severity, red-flag symptoms, why they decided to come in now.',
 };
 
+// What someone wants OUT of the visit, which is not the same as what is wrong
+// with them. People bring expectations as well as symptoms, and an unmet
+// expectation is most of what "the appointment was useless" means.
+const OUTCOME_CONTEXT = {
+  reassurance:    'reassurance that this is not something dangerous',
+  testing:        'a test or scan ordered',
+  referral:       'a referral to a specialist',
+  'pain-relief':  'relief from the pain or discomfort itself',
+  explanation:    'an explanation of what is actually going on',
+  'treatment-plan': 'a concrete treatment plan with next steps',
+};
+
 const LANG_NAME = {
   es: 'Spanish', zh: 'Mandarin Chinese', vi: 'Vietnamese',
   tl: 'Tagalog', ko: 'Korean', fr: 'French', ar: 'Arabic',
@@ -48,6 +60,8 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
       allergies,
       relevantHistory,
       appointmentType,
+      appointmentTypes,
+      hopedOutcomes,
       specificWorry,
       knownMedications,
       language,
@@ -89,7 +103,17 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     const worryBlock = specificWorry?.trim()
       ? `\n\nWHAT THE PATIENT IS MOST WORRIED ABOUT: ${specificWorry.trim()}\n(Make sure the output addresses this worry head-on — either with a direct question to ask or with reassurance about how to raise it.)`
       : '';
-    const apptBlock = APPT_CONTEXT[appointmentType] || '';
+    // Several of these overlap in real life — a second opinion from a
+    // specialist about a new problem is one appointment, not three — so the
+    // form lets someone pick more than one and every context is passed through.
+    const apptList = Array.isArray(appointmentTypes) && appointmentTypes.length
+      ? appointmentTypes
+      : (appointmentType ? [appointmentType] : []);
+    const apptBlock = apptList.map(a => APPT_CONTEXT[a]).filter(Boolean).join('');
+
+    const outcomeBlock = Array.isArray(hopedOutcomes) && hopedOutcomes.length
+      ? `\n\nWHAT THE PATIENT IS HOPING TO GET OUT OF THIS VISIT: ${hopedOutcomes.map(h => OUTCOME_CONTEXT[h] || h).join('; ')}\n(This is what they will judge the appointment by. Make sure at least one question is aimed squarely at getting it, and if what they want is unlikely to happen in one visit, say so plainly and give them the question that moves toward it.)`
+      : '';
 
     // Bilingual side-by-side instructions for specific fields.
     // `language` is the user's *bilingual output* preference (separate from `userLanguage`,
@@ -102,7 +126,7 @@ router.post('/doctor-visit-prep', rateLimit(DEFAULT_LIMITS), async (req, res) =>
 
 The goal is NOT diagnosis. The goal is: the patient walks in knowing exactly what to say in the first two minutes, which questions matter most, and what they should mention even if the doctor does not ask.
 
-CHIEF CONCERN: ${chiefConcern.trim()}${detailBlock}${durationBlock}${severityBlock}${modifiersBlock}${medsBlock}${knownMedsBlock}${allergiesBlock}${historyBlock}${worryBlock}${apptBlock}${bilingualInstructions}
+CHIEF CONCERN: ${chiefConcern.trim()}${detailBlock}${durationBlock}${severityBlock}${modifiersBlock}${medsBlock}${knownMedsBlock}${allergiesBlock}${historyBlock}${worryBlock}${outcomeBlock}${apptBlock}${bilingualInstructions}
 
 CRITICAL RULES:
 1. DO NOT diagnose. DO NOT recommend specific treatments or medications.
