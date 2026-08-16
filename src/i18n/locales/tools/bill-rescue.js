@@ -4,6 +4,7 @@
 // MoneyDiplomat, CrisisPrioritizer) stay as-is across languages.
 export const billRescue = {
   "en": {
+    "br_example2_details": "Electricity bill came in at nearly four times normal for a month we were away for two weeks. The meter reading on the bill says 'estimated'. I called and was told to submit a reading, which I did, and the next bill still used the estimate.",
     "br_your_situation": "What you told us",
     "br_title": "Bill Rescue",
     "br_tagline": "A bill isn't a verdict. It's a puzzle to solve.",
@@ -340,6 +341,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Clear all call logs?"
   },
   "es": {
+    "br_example2_details": "La factura de la luz llegó casi cuatro veces más alta de lo normal, y ese mes estuvimos fuera dos semanas. La lectura del contador aparece como «estimada». Llamé y me dijeron que enviara una lectura real; lo hice, y la siguiente factura seguía usando la estimación.",
     "br_your_situation": "Lo que nos contaste",
     "br_title": "Bill Rescue",
     "br_tagline": "Una factura no es una sentencia. Es un rompecabezas por resolver.",
@@ -676,6 +678,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "¿Borrar todos los registros de llamadas?"
   },
   "zh": {
+    "br_example2_details": "这个月的电费账单差不多是平常的四倍，而我们那个月还外出了两周。账单上的读数写着「估算」。我打电话去问，对方让我自己报一次读数，我照做了，可下一张账单用的还是估算值。",
     "br_your_situation": "你告诉我们的情况",
     "br_title": "Bill Rescue",
     "br_tagline": "账单不是判决书，而是一道待解的谜题。",
@@ -1012,6 +1015,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "清除所有通话记录？"
   },
   "hi": {
+    "br_example2_details": "बिजली का बिल सामान्य से करीब चार गुना आया, जबकि उस महीने हम दो हफ़्ते बाहर थे। बिल पर मीटर रीडिंग 'अनुमानित' लिखी है। मैंने फ़ोन किया तो कहा गया कि रीडिंग भेज दीजिए — भेज दी, फिर भी अगला बिल उसी अनुमान पर बना।",
     "br_your_situation": "आपने हमें जो बताया",
     "br_title": "Bill Rescue",
     "br_tagline": "बिल कोई फ़ैसला नहीं है। यह सुलझाने की पहेली है।",
@@ -1348,6 +1352,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "सभी कॉल लॉग साफ़ करें?"
   },
   "ar": {
+    "br_example2_details": "جاءت فاتورة الكهرباء بنحو أربعة أضعاف المعتاد، وفي ذلك الشهر كنا مسافرين أسبوعين. قراءة العداد مكتوب بجانبها «تقديرية». اتصلت فطُلب مني إرسال قراءة فعلية، وأرسلتها، ومع ذلك جاءت الفاتورة التالية بالتقدير نفسه.",
     "br_your_situation": "ما أخبرتنا به",
     "br_title": "Bill Rescue",
     "br_tagline": "الفاتورة ليست حكمًا، بل أحجية تُحَل.",
@@ -1684,6 +1689,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "مسح كل سجلات المكالمات؟"
   },
   "pt": {
+    "br_example2_details": "A fatura da luz veio quase quatro vezes acima do normal, num mês em que estivemos fora duas semanas. A leitura do contador está marcada como «estimada». Liguei, disseram-me para enviar uma leitura real, enviei, e a fatura seguinte continuou a usar a estimativa.",
     "br_your_situation": "O que você nos contou",
     "br_title": "Bill Rescue",
     "br_tagline": "Uma conta não é uma sentença. É um quebra-cabeça para resolver.",
@@ -2020,6 +2026,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Limpar todos os registros de chamadas?"
   },
   "fr": {
+    "br_example2_details": "La facture d'électricité est arrivée à presque quatre fois la normale, pour un mois où nous étions absents deux semaines. Le relevé indiqué est « estimé ». J'ai appelé, on m'a dit d'envoyer un relevé réel, je l'ai fait, et la facture suivante utilisait toujours l'estimation.",
     "br_your_situation": "Ce que vous nous avez dit",
     "br_title": "Bill Rescue",
     "br_tagline": "Une facture n'est pas un verdict. C'est une énigme à résoudre.",
@@ -2356,6 +2363,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Effacer tous les journaux d'appels ?"
   },
   "de": {
+    "br_example2_details": "Die Stromrechnung war fast viermal so hoch wie sonst — in einem Monat, in dem wir zwei Wochen weg waren. Der Zählerstand ist als „geschätzt“ ausgewiesen. Ich habe angerufen, sollte einen echten Stand melden, habe das getan, und die nächste Rechnung rechnete wieder mit der Schätzung.",
     "br_your_situation": "Was du uns erzählt hast",
     "br_title": "Bill Rescue",
     "br_tagline": "Eine Rechnung ist kein Urteil. Sie ist ein Rätsel, das sich lösen lässt.",
@@ -2692,6 +2700,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Alle Anrufprotokolle löschen?"
   },
   "ja": {
+    "br_example2_details": "電気代が普段の四倍近くきました。その月は二週間も家を空けていたのに。請求書の検針値には「推定」と書かれています。電話したら実際の数値を送るように言われ、送りました。それでも次の請求書はまた推定のままでした。",
     "br_your_situation": "あなたが教えてくれたこと",
     "br_title": "Bill Rescue",
     "br_tagline": "請求書は判決ではありません。解けるパズルです。",
@@ -3028,6 +3037,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "すべての通話記録を消去しますか？"
   },
   "ko": {
+    "br_example2_details": "전기 요금이 평소의 네 배 가까이 나왔습니다. 그 달은 2주나 집을 비웠는데요. 고지서의 검침값에는 '추정'이라고 적혀 있습니다. 전화했더니 실제 검침값을 보내라고 해서 보냈는데, 다음 고지서도 여전히 추정치로 계산돼 있었습니다.",
     "br_your_situation": "알려주신 내용",
     "br_title": "Bill Rescue",
     "br_tagline": "청구서는 판결이 아닙니다. 풀 수 있는 퍼즐입니다.",
@@ -3364,6 +3374,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "모든 통화 기록을 지우시겠습니까?"
   },
   "ru": {
+    "br_example2_details": "Счёт за электричество пришёл почти вчетверо больше обычного — за месяц, две недели которого нас не было дома. Показание в счёте помечено как «расчётное». Я позвонил, мне сказали прислать реальное показание, я прислал, и следующий счёт снова был по расчётному.",
     "br_your_situation": "Что вы нам рассказали",
     "br_title": "Bill Rescue",
     "br_tagline": "Счёт — не приговор. Это головоломка, которую можно решить.",
@@ -3700,6 +3711,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "Очистить все журналы звонков?"
   },
   "th": {
+    "br_example2_details": "ค่าไฟเดือนนี้มาเกือบสี่เท่าของปกติ ทั้งที่เดือนนั้นเราไม่อยู่บ้านสองสัปดาห์ ในบิลระบุว่าเลขมิเตอร์เป็น 'ค่าประมาณ' ผมโทรไปถาม เขาให้ส่งเลขจริงไป ผมก็ส่งแล้ว แต่บิลรอบถัดมาก็ยังใช้ค่าประมาณเดิม",
     "br_your_situation": "สิ่งที่คุณบอกเรา",
     "br_title": "Bill Rescue",
     "br_tagline": "บิลไม่ใช่คำพิพากษา แต่เป็นปริศนาที่แก้ได้",
@@ -4036,6 +4048,7 @@ export const billRescue = {
     "br_confirm_clear_logs": "ล้างบันทึกการโทรทั้งหมดหรือไม่?"
   },
   "vi": {
+    "br_example2_details": "Hóa đơn điện lên gần gấp bốn lần bình thường, trong khi tháng đó chúng tôi đi vắng hai tuần. Chỉ số công tơ trên hóa đơn ghi là 'ước tính'. Tôi gọi lên thì được bảo gửi chỉ số thật, tôi đã gửi, nhưng hóa đơn kế tiếp vẫn dùng con số ước tính.",
     "br_your_situation": "Những gì bạn đã chia sẻ",
     "br_title": "Bill Rescue",
     "br_tagline": "Hóa đơn không phải bản án. Nó là một câu đố có lời giải.",

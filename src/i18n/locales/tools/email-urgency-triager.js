@@ -45,6 +45,7 @@ Subject: Weekly Tips
 
 export const emailUrgencyTriager = {
   en: {
+    eut_example2_emails: "From: no-reply@hr-portal.company.com\nSubject: ACTION REQUIRED: Annual compliance training (3 modules)\n\nYour completion deadline is 30 September. This is the second reminder.\n\n---\n\nFrom: dad\nSubject: (no subject)\n\nCall me when you get a chance. Nothing wrong.\n\n---\n\nFrom: bookings@thecarpentry.co\nSubject: Your quote — following up\n\nJust checking whether you'd like us to hold the October slot. We can only keep it open another week or so.\n\n---\n\nFrom: marcus@oldteam.com\nSubject: coffee?\n\nHey stranger. In town the week of the 14th, would be lovely to catch up if you're around.\n\n---\n\nFrom: billing@cloudhost.io\nSubject: Payment method expiring\n\nThe card on file ends 09/26. Services will pause if it is not updated before renewal.",
     eut_tagline: "AI triage with composer, sender learning, health tracking, and smart rules",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -223,6 +224,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Clear response tracking ({{count}} entries)",
   },
   es: {
+    eut_example2_emails: "De: no-reply@portal-rrhh.empresa.com\nAsunto: ACCIÓN REQUERIDA: formación anual de cumplimiento (3 módulos)\n\nLa fecha límite es el 30 de septiembre. Este es el segundo recordatorio.\n\n---\n\nDe: papá\nAsunto: (sin asunto)\n\nLlámame cuando puedas. No pasa nada malo.\n\n---\n\nDe: reservas@lacarpinteria.co\nAsunto: Tu presupuesto — seguimiento\n\nSolo quería saber si quieres que reservemos la fecha de octubre. Únicamente podemos mantenerla una semana más.\n\n---\n\nDe: marcus@antiguoequipo.com\nAsunto: ¿un café?\n\nHola, desconocido. Estaré en la ciudad la semana del 14; estaría genial vernos si andas por aquí.\n\n---\n\nDe: facturacion@cloudhost.io\nAsunto: Tu método de pago caduca\n\nLa tarjeta registrada termina en 09/26. El servicio se pausará si no se actualiza antes de la renovación.",
     eut_tagline: "Triage con IA: redactor, aprendizaje de remitentes, seguimiento de salud y reglas inteligentes",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -386,6 +388,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Borrar seguimiento de respuestas ({{count}} entradas)",
   },
   zh: {
+    eut_example2_emails: "发件人：no-reply@hr-portal.company.com\n主题：需要处理：年度合规培训（3 个模块）\n\n完成截止日期为 9 月 30 日。这是第二次提醒。\n\n---\n\n发件人：爸\n主题：（无主题）\n\n有空给我回个电话。没什么事。\n\n---\n\n发件人：bookings@thecarpentry.co\n主题：关于您的报价——跟进一下\n\n想问一下是否需要我们为您保留十月的档期。我们最多再留一周左右。\n\n---\n\n发件人：marcus@oldteam.com\n主题：喝杯咖啡？\n\n好久不见。14 号那周我会在城里，你要是在，很想聚聚。\n\n---\n\n发件人：billing@cloudhost.io\n主题：付款方式即将过期\n\n账户绑定的卡将于 09/26 到期。若在续费前未更新，服务将暂停。",
     eut_tagline: "AI 分类：撰写助手、发件人学习、健康追踪和智能规则",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -549,6 +552,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ 清除回复追踪（{{count}} 条记录）",
   },
   hi: {
+    eut_example2_emails: "प्रेषक: no-reply@hr-portal.company.com\nविषय: कार्रवाई ज़रूरी: सालाना कम्प्लायंस ट्रेनिंग (3 मॉड्यूल)\n\nपूरा करने की अंतिम तारीख 30 सितंबर है। यह दूसरा रिमाइंडर है।\n\n---\n\nप्रेषक: पापा\nविषय: (कोई विषय नहीं)\n\nजब फ़ुर्सत हो तो फ़ोन कर लेना। कुछ गड़बड़ नहीं है।\n\n---\n\nप्रेषक: bookings@thecarpentry.co\nविषय: आपका कोटेशन — फ़ॉलो-अप\n\nबस यह पूछना था कि क्या हम अक्टूबर की तारीख आपके लिए रोक रखें। हम इसे बस एक हफ़्ता और खुला रख सकते हैं।\n\n---\n\nप्रेषक: marcus@oldteam.com\nविषय: कॉफ़ी?\n\nअरे अजनबी! 14 वाले हफ़्ते शहर में हूँ, तुम हो तो मिलना अच्छा लगेगा।\n\n---\n\nप्रेषक: billing@cloudhost.io\nविषय: भुगतान का तरीका समाप्त हो रहा है\n\nखाते में दर्ज कार्ड 09/26 को खत्म हो रहा है। रिन्यूअल से पहले अपडेट न हुआ तो सेवा रुक जाएगी।",
     eut_tagline: "AI ट्रायेज: कंपोज़र, प्रेषक सीखना, हेल्थ ट्रैकिंग और स्मार्ट नियम",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -712,6 +716,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ जवाब ट्रैकिंग साफ़ करें ({{count}} प्रविष्टियाँ)",
   },
   ar: {
+    eut_example2_emails: "من: no-reply@hr-portal.company.com\nالموضوع: مطلوب إجراء: التدريب السنوي على الامتثال (3 وحدات)\n\nالموعد النهائي للإنجاز هو 30 سبتمبر. هذا هو التذكير الثاني.\n\n---\n\nمن: أبي\nالموضوع: (بدون موضوع)\n\nاتصل بي حين تتفرغ. لا يوجد شيء سيئ.\n\n---\n\nمن: bookings@thecarpentry.co\nالموضوع: عرض السعر — متابعة\n\nأردنا فقط معرفة ما إذا كنت ترغب في أن نحجز لك موعد أكتوبر. يمكننا إبقاؤه متاحاً لأسبوع آخر تقريباً.\n\n---\n\nمن: marcus@oldteam.com\nالموضوع: قهوة؟\n\nأهلاً يا غريب. سأكون في المدينة في أسبوع الرابع عشر، وسيسعدني لقاؤك إن كنت موجوداً.\n\n---\n\nمن: billing@cloudhost.io\nالموضوع: انتهاء صلاحية وسيلة الدفع\n\nالبطاقة المسجلة تنتهي في 09/26. ستتوقف الخدمة إن لم يتم التحديث قبل التجديد.",
     eut_tagline: "فرز بالذكاء الاصطناعي: محرّر، تعلّم المرسلين، تتبّع الصحة، وقواعد ذكية",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -875,6 +880,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ مسح تتبّع الردود ({{count}} إدخالات)",
   },
   pt: {
+    eut_example2_emails: "De: no-reply@portal-rh.empresa.com\nAssunto: AÇÃO NECESSÁRIA: formação anual de conformidade (3 módulos)\n\nO prazo de conclusão é 30 de setembro. Este é o segundo lembrete.\n\n---\n\nDe: pai\nAssunto: (sem assunto)\n\nLiga-me quando puderes. Não se passa nada.\n\n---\n\nDe: marcacoes@acarpintaria.co\nAssunto: O seu orçamento — seguimento\n\nSó queríamos saber se pretende que reservemos a data de outubro. Só a conseguimos manter mais uma semana.\n\n---\n\nDe: marcus@equipaantiga.com\nAssunto: café?\n\nOlá, desaparecido. Estou na cidade na semana do dia 14; seria bom encontrarmo-nos se estiveres por cá.\n\n---\n\nDe: faturacao@cloudhost.io\nAssunto: Método de pagamento a expirar\n\nO cartão registado termina em 09/26. O serviço será suspenso se não for atualizado antes da renovação.",
     eut_tagline: "Triagem com IA: redator, aprendizado de remetentes, monitoramento de saúde e regras inteligentes",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1038,6 +1044,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Limpar acompanhamento de respostas ({{count}} entradas)",
   },
   fr: {
+    eut_example2_emails: "De : no-reply@portail-rh.entreprise.com\nObjet : ACTION REQUISE : formation annuelle conformité (3 modules)\n\nLa date limite est le 30 septembre. Ceci est le deuxième rappel.\n\n---\n\nDe : papa\nObjet : (sans objet)\n\nAppelle-moi quand tu peux. Rien de grave.\n\n---\n\nDe : reservations@lamenuiserie.co\nObjet : Votre devis — relance\n\nNous voulions simplement savoir si vous souhaitez que nous bloquions le créneau d'octobre. Nous ne pouvons le garder qu'une semaine de plus.\n\n---\n\nDe : marcus@ancienneequipe.com\nObjet : un café ?\n\nSalut l'inconnu. Je suis en ville la semaine du 14, ce serait chouette de se voir si tu es là.\n\n---\n\nDe : facturation@cloudhost.io\nObjet : Moyen de paiement bientôt expiré\n\nLa carte enregistrée expire le 09/26. Le service sera suspendu si elle n'est pas mise à jour avant le renouvellement.",
     eut_tagline: "Tri par IA : rédacteur, apprentissage des expéditeurs, suivi de santé et règles intelligentes",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1201,6 +1208,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Effacer le suivi des réponses ({{count}} entrées)",
   },
   de: {
+    eut_example2_emails: "Von: no-reply@hr-portal.firma.com\nBetreff: HANDLUNG ERFORDERLICH: jährliche Compliance-Schulung (3 Module)\n\nAbschlussfrist ist der 30. September. Dies ist die zweite Erinnerung.\n\n---\n\nVon: Papa\nBetreff: (kein Betreff)\n\nRuf an, wenn du Zeit hast. Es ist nichts passiert.\n\n---\n\nVon: buchung@dietischlerei.co\nBetreff: Ihr Angebot — Nachfrage\n\nWir wollten nur wissen, ob wir Ihnen den Oktobertermin reservieren sollen. Wir können ihn noch etwa eine Woche freihalten.\n\n---\n\nVon: marcus@altesteam.com\nBetreff: Kaffee?\n\nHallo Fremder. Ich bin in der Woche ab dem 14. in der Stadt, wäre schön, dich zu sehen, falls du da bist.\n\n---\n\nVon: billing@cloudhost.io\nBetreff: Zahlungsmittel läuft ab\n\nDie hinterlegte Karte endet 09/26. Der Dienst pausiert, wenn sie vor der Verlängerung nicht aktualisiert wird.",
     eut_tagline: "KI-Triage mit Verfasser, Absender-Lernen, Health-Tracking und Smart-Regeln",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1364,6 +1372,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Antwort-Tracking löschen ({{count}} Einträge)",
   },
   ja: {
+    eut_example2_emails: "差出人: no-reply@hr-portal.company.com\n件名: 要対応: 年次コンプライアンス研修（3モジュール）\n\n完了期限は9月30日です。これは2回目のリマインドです。\n\n---\n\n差出人: 父\n件名: （件名なし）\n\n手が空いたら電話ください。悪い話ではありません。\n\n---\n\n差出人: bookings@thecarpentry.co\n件名: お見積もりの件 — 確認\n\n10月の枠をお取りしておきましょうか。あと一週間ほどは押さえておけます。\n\n---\n\n差出人: marcus@oldteam.com\n件名: コーヒーでも？\n\nごぶさた。14日の週にそちらに行きます。いれば会えたら嬉しい。\n\n---\n\n差出人: billing@cloudhost.io\n件名: お支払い方法の有効期限\n\n登録カードの期限は09/26です。更新前に変更がない場合、サービスは一時停止します。",
     eut_tagline: "AI トリアージ：作成支援、送信者学習、健全性トラッキング、スマートルール",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1527,6 +1536,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ 返信トラッキングを消去（{{count}} 件）",
   },
   ko: {
+    eut_example2_emails: "보낸사람: no-reply@hr-portal.company.com\n제목: 조치 필요: 연례 컴플라이언스 교육 (3개 모듈)\n\n완료 기한은 9월 30일입니다. 두 번째 안내입니다.\n\n---\n\n보낸사람: 아빠\n제목: (제목 없음)\n\n시간 될 때 전화 한 통 줘. 별일 아니야.\n\n---\n\n보낸사람: bookings@thecarpentry.co\n제목: 견적 관련 — 확인차 연락드립니다\n\n10월 일정을 잡아드릴까요? 앞으로 일주일 정도만 비워둘 수 있습니다.\n\n---\n\n보낸사람: marcus@oldteam.com\n제목: 커피 한잔?\n\n오랜만이야. 14일 주에 그쪽에 가는데, 있으면 얼굴 보면 좋겠다.\n\n---\n\n보낸사람: billing@cloudhost.io\n제목: 결제 수단 만료 예정\n\n등록된 카드가 09/26에 만료됩니다. 갱신 전에 변경하지 않으면 서비스가 중지됩니다.",
     eut_tagline: "AI 분류: 작성기, 발신자 학습, 건강 추적, 스마트 규칙",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1690,6 +1700,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ 응답 추적 지우기 ({{count}}개 항목)",
   },
   ru: {
+    eut_example2_emails: "От: no-reply@hr-portal.company.com\nТема: ТРЕБУЕТСЯ ДЕЙСТВИЕ: ежегодное обучение по комплаенсу (3 модуля)\n\nСрок завершения — 30 сентября. Это второе напоминание.\n\n---\n\nОт: папа\nТема: (без темы)\n\nПерезвони, когда сможешь. Ничего не случилось.\n\n---\n\nОт: bookings@thecarpentry.co\nТема: Ваша смета — уточнение\n\nХотели узнать, бронировать ли за вами октябрьское окно. Держать сможем ещё около недели.\n\n---\n\nОт: marcus@oldteam.com\nТема: кофе?\n\nПривет, пропащий. Буду в городе на неделе с 14-го, было бы здорово увидеться.\n\n---\n\nОт: billing@cloudhost.io\nТема: Истекает срок действия карты\n\nПривязанная карта действует до 09/26. Без обновления до продления сервис будет приостановлен.",
     eut_tagline: "ИИ-сортировка: составитель, обучение по отправителям, отслеживание здоровья и умные правила",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -1853,6 +1864,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ Очистить отслеживание ответов ({{count}} записей)",
   },
   th: {
+    eut_example2_emails: "จาก: no-reply@hr-portal.company.com\nเรื่อง: ต้องดำเนินการ: อบรมคอมไพลแอนซ์ประจำปี (3 โมดูล)\n\nกำหนดส่งคือ 30 กันยายน นี่คือการแจ้งเตือนครั้งที่สอง\n\n---\n\nจาก: พ่อ\nเรื่อง: (ไม่มีหัวข้อ)\n\nว่างเมื่อไหร่โทรกลับหน่อย ไม่มีอะไรเสียหาย\n\n---\n\nจาก: bookings@thecarpentry.co\nเรื่อง: ใบเสนอราคาของคุณ — ติดตามผล\n\nอยากทราบว่าจะให้เรากันคิวเดือนตุลาคมไว้ไหม เรากันไว้ได้อีกราวหนึ่งสัปดาห์\n\n---\n\nจาก: marcus@oldteam.com\nเรื่อง: กาแฟไหม\n\nไม่เจอกันนานเลย สัปดาห์ที่ 14 ผมจะเข้าเมือง ถ้าว่างอยากเจอกันนะ\n\n---\n\nจาก: billing@cloudhost.io\nเรื่อง: วิธีชำระเงินกำลังหมดอายุ\n\nบัตรที่ผูกไว้หมดอายุ 09/26 หากไม่อัปเดตก่อนต่ออายุ บริการจะถูกระงับ",
     eut_tagline: "การจัดลำดับด้วย AI: ตัวช่วยเขียน เรียนรู้ผู้ส่ง ติดตามสุขภาพ และกฎอัจฉริยะ",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
@@ -2016,6 +2028,7 @@ export const emailUrgencyTriager = {
     eut_clear_responses: "🗑️ ล้างการติดตามการตอบกลับ ({{count}} รายการ)",
   },
   vi: {
+    eut_example2_emails: "Từ: no-reply@hr-portal.company.com\nTiêu đề: CẦN XỬ LÝ: đào tạo tuân thủ thường niên (3 học phần)\n\nHạn hoàn thành là 30/9. Đây là lần nhắc thứ hai.\n\n---\n\nTừ: bố\nTiêu đề: (không có tiêu đề)\n\nKhi nào rảnh gọi cho bố. Không có chuyện gì đâu.\n\n---\n\nTừ: bookings@thecarpentry.co\nTiêu đề: Báo giá của bạn — theo dõi\n\nChúng tôi muốn hỏi có cần giữ lịch tháng 10 cho bạn không. Chúng tôi chỉ giữ thêm được khoảng một tuần.\n\n---\n\nTừ: marcus@oldteam.com\nTiêu đề: cà phê nhé?\n\nLâu quá không gặp. Tuần 14 tớ có mặt ở đó, nếu cậu rảnh thì gặp nhau nhé.\n\n---\n\nTừ: billing@cloudhost.io\nTiêu đề: Phương thức thanh toán sắp hết hạn\n\nThẻ đang lưu hết hạn 09/26. Dịch vụ sẽ tạm dừng nếu không cập nhật trước kỳ gia hạn.",
     eut_tagline: "Phân loại bằng AI: trình soạn thảo, học người gửi, theo dõi sức khỏe và quy tắc thông minh",
     eut_example_emails: EXAMPLE_EMAILS,
     eut_paste_placeholder: PASTE_PLACEHOLDER,
