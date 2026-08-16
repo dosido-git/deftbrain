@@ -360,6 +360,8 @@ const GhostWriter = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Additional input sections
   // ══════════════════════════════════════════
+  const canSubmit = !!recipientName.trim() && !!yourRelationship.trim();
+
   const renderInputSections = () => (
     <>
       {/* Letter type — which also sets the tone */}
@@ -437,15 +439,24 @@ const GhostWriter = ({ tool }) => {
           className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
 
-      {/* Submit */}
+      {/* Submit — PF-31. The ⌘↵ handler is up in the keydown effect; the chip
+          appears only while the shortcut would actually fire, since the handler
+          guards on canSubmitRef and this button greys out rather than fading. */}
       <button onClick={generate}
-        disabled={loading || !recipientName.trim() || !yourRelationship.trim()}
-        className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${
-          loading || !recipientName.trim() || !yourRelationship.trim() ? c.btnDisabled : c.btnPrimary
+        disabled={loading || !canSubmit}
+        title={t('ghw_cmd_enter')}
+        className={`relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${
+          loading || !canSubmit ? c.btnDisabled : c.btnPrimary
         }`}>
         {loading
           ? <><span className="animate-spin inline-block">{tool?.icon ?? '✍️'}</span> {t('ghw_btn_writing')}</>
           : <><span>{tool?.icon ?? '✍️'}</span> {t('ghw_btn_generate')}</>}
+        {!loading && canSubmit && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
       </button>
 
     </>

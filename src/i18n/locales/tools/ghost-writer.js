@@ -4,6 +4,7 @@
 // LinkedIn, deftbrain.com) stay as-is across languages.
 export const ghostWriter = {
   en: {
+    ghw_cmd_enter: "Press ⌘↵ (Ctrl+Enter) to generate",
     ghw_lbl_pronouns: "Their pronouns",
     ghw_pn_she: "she/her",
     ghw_pn_he: "he/him",
@@ -97,6 +98,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   es: {
+    ghw_cmd_enter: "Pulsa ⌘↵ (Ctrl+Intro) para generar",
     ghw_lbl_pronouns: "Sus pronombres",
     ghw_pn_she: "ella",
     ghw_pn_he: "él",
@@ -190,6 +192,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   zh: {
+    ghw_cmd_enter: "按 ⌘↵（Ctrl+Enter）生成",
     ghw_lbl_pronouns: "TA 的人称",
     ghw_pn_she: "她",
     ghw_pn_he: "他",
@@ -283,6 +286,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   hi: {
+    ghw_cmd_enter: "बनाने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     ghw_lbl_pronouns: "उनके सर्वनाम",
     ghw_pn_she: "वह (स्त्रीलिंग)",
     ghw_pn_he: "वह (पुल्लिंग)",
@@ -376,6 +380,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ar: {
+    ghw_cmd_enter: "اضغط ⌘↵ (Ctrl+Enter) للإنشاء",
     ghw_lbl_pronouns: "الضمير المستخدم",
     ghw_pn_she: "هي",
     ghw_pn_he: "هو",
@@ -469,6 +474,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   pt: {
+    ghw_cmd_enter: "Pressione ⌘↵ (Ctrl+Enter) para gerar",
     ghw_lbl_pronouns: "Pronomes da pessoa",
     ghw_pn_she: "ela",
     ghw_pn_he: "ele",
@@ -562,6 +568,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   fr: {
+    ghw_cmd_enter: "Appuyez sur ⌘↵ (Ctrl+Entrée) pour générer",
     ghw_lbl_pronouns: "Ses pronoms",
     ghw_pn_she: "elle",
     ghw_pn_he: "il",
@@ -655,6 +662,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   de: {
+    ghw_cmd_enter: "Mit ⌘↵ (Strg+Enter) erstellen",
     ghw_lbl_pronouns: "Ihre Pronomen",
     ghw_pn_she: "sie/ihr",
     ghw_pn_he: "er/ihm",
@@ -748,6 +756,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ja: {
+    ghw_cmd_enter: "⌘↵（Ctrl+Enter）で作成",
     ghw_lbl_pronouns: "その人の人称",
     ghw_pn_she: "彼女",
     ghw_pn_he: "彼",
@@ -841,6 +850,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ko: {
+    ghw_cmd_enter: "⌘↵ (Ctrl+Enter)를 누르면 생성됩니다",
     ghw_lbl_pronouns: "그 사람의 인칭",
     ghw_pn_she: "그녀",
     ghw_pn_he: "그",
@@ -934,6 +944,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ru: {
+    ghw_cmd_enter: "Нажмите ⌘↵ (Ctrl+Enter), чтобы создать",
     ghw_lbl_pronouns: "Их местоимения",
     ghw_pn_she: "она",
     ghw_pn_he: "он",
@@ -1027,6 +1038,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   th: {
+    ghw_cmd_enter: "กด ⌘↵ (Ctrl+Enter) เพื่อสร้าง",
     ghw_lbl_pronouns: "คำสรรพนามของเขา",
     ghw_pn_she: "เธอ",
     ghw_pn_he: "เขา",
@@ -1120,6 +1132,7 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   vi: {
+    ghw_cmd_enter: "Nhấn ⌘↵ (Ctrl+Enter) để tạo",
     ghw_lbl_pronouns: "Đại từ của họ",
     ghw_pn_she: "cô ấy",
     ghw_pn_he: "anh ấy",
