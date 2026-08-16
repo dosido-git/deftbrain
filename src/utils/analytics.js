@@ -199,6 +199,32 @@ function trackSecondTool(path) {
   } catch (_) { /* private mode — the pair is simply not reported */ }
 }
 
+// ── Variant depth: when a tool offers several takes on one result, which ones
+// do people actually open? A tool can hand back three letters or five angles
+// and have no idea whether anyone looks past the first — the question is not
+// answerable from tool_run, which fires once per generation regardless.
+//
+// The first variant is auto-selected rather than chosen, so it is reported
+// separately: `auto` is what the tool picked, `click` is a deliberate move to
+// another one. Comparing the two is the whole point — if `click` never
+// happens, the extra variants are costing generation time nobody spends.
+//
+// Deduped per result set, so re-reading a tab does not inflate the count.
+const seenVariants = new Set();
+export function trackVariant(tool, variant, how = 'click') {
+  if (!tool || !variant) return;
+  const key = `${tool}:${variant}:${how}`;
+  if (seenVariants.has(key)) return;
+  seenVariants.add(key);
+  track('variant_view', { tool: String(tool).slice(0, 40), variant: String(variant).slice(0, 40), how });
+}
+
+// Call when a fresh result set replaces the last one, so the next run's
+// variants are counted again rather than suppressed as already-seen.
+export function resetVariants() {
+  seenVariants.clear();
+}
+
 // ── Human-session signal: fire `interact` ONCE per session on the first real
 // user gesture (click/tap/keypress/scroll). Page-loaders that never interact —
 // headless bots with browser UAs, prefetches, link-preview renderers — never

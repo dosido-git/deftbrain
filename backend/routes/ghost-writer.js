@@ -102,7 +102,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "label": "Narrative — Personal & Memorable",
       "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 350,
-      "best_for": "When this version works best",
+      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     },
@@ -111,7 +111,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "label": "Concise — Quick & Powerful",
       "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 200,
-      "best_for": "When this version works best",
+      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     }
@@ -142,7 +142,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
       "label": "Structured — Comprehensive & Formal",
       "letter": "The FULL letter text — a complete, multi-paragraph recommendation letter of roughly the word_count shown below (NOT a summary, NOT 2-3 sentences)",
       "word_count": 450,
-      "best_for": "When this version works best",
+      "best_for": "Who this version is for — AT MOST 6 words, no trailing period. Best for competitive roles / Best for formal applications / Best when the reader is busy",
       "strengths": ["what this version does well"],
       "customize_prompts": ["specific things the writer should personalize"]
     }
@@ -160,7 +160,7 @@ OUTPUT FORMAT — Return ONLY valid JSON:
   ],
 
   "power_phrases": [
-    "Strong phrases from the letters that carry particular weight in recommendations"
+    "Lines lifted verbatim from the letters above that carry real weight. They must sound like the writer said them, not like they were composed: no rhetorical turns, no setup-then-reversal, no 'X is accurate; it is also an underrepresentation'. If a phrase would draw attention to its own construction, it is the wrong phrase — pick the plain sentence that does the work instead."
   ]
 }
 

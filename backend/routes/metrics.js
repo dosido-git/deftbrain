@@ -720,6 +720,30 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
         return `<tr><td>${escH(from)}</td><td>${total}</td><td>${seen ? pct(total, seen) : '—'}</td><td>${list}</td></tr>`;
       }).join('');
 
+    // Variant depth. `auto` counts result sets (the tool opens on one variant
+    // by itself), so it is the denominator: of the people who got a result,
+    // how many opened a different take on it. A tool whose alternates are
+    // never clicked is spending generation time on output nobody reads.
+    const variantBy = {};
+    for (const e of events) {
+      if (e.event !== 'variant_view' || !e.props || !e.props.tool || !e.props.variant) continue;
+      const tool = String(e.props.tool).slice(0, 40);
+      const row = variantBy[tool] = variantBy[tool] || { auto: 0, clicks: {} };
+      if (e.props.how === 'auto') row.auto += 1;
+      else {
+        const v = String(e.props.variant).slice(0, 40);
+        row.clicks[v] = (row.clicks[v] || 0) + 1;
+      }
+    }
+    const variantRows = Object.entries(variantBy)
+      .sort((a, b) => b[1].auto - a[1].auto)
+      .map(([tool, row]) => {
+        const total = Object.values(row.clicks).reduce((a, b) => a + b, 0);
+        const list = Object.entries(row.clicks).sort((a, b) => b[1] - a[1])
+          .map(([v, n]) => `${escH(v)} <b>${n}</b>`).join(' · ') || '<span style="color:#888">none</span>';
+        return `<tr><td>${escH(tool)}</td><td>${row.auto}</td><td>${total}</td><td>${row.auto ? pct(total, row.auto) : '\u2014'}</td><td>${list}</td></tr>`;
+      }).join('');
+
     const interactAll = events.filter(e => e.event === 'interact');
     const interactLocated = interactAll.filter(e => e.location);
     for (const e of interactLocated) locInteract[e.location] = (locInteract[e.location] || 0) + 1;
@@ -789,6 +813,9 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <h2>Second tool visited</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Of the people whose first tool of the session was X, which tool did they open next. One pair per session, counted on the first hop only — this answers what a tool leads to, not the whole path. Sessions that never opened a second tool are not counted, so "moved on" is the share that did.</p>
     <table><tr><th>first tool</th><th>moved on</th><th>of views</th><th>went to</th></tr>${nextRows || '<tr><td colspan="4" style="color:#888">No data yet \u2014 pairing went live 2026-08-15, so anything before that reports nothing. This is MISSING DATA, not zero crossover.</td></tr>'}</table>
+    <h2>Variants explored</h2>
+    <p style="font-size:11px;color:#888;margin:0 0 6px">When a tool returns several takes on one result, how often does anyone open a second one. "results" counts result sets (the tool auto-selects the first take); "switched" counts deliberate moves to another. A low rate means the alternates cost generation time nobody spends.</p>
+    <table><tr><th>tool</th><th>results</th><th>switched</th><th>rate</th><th>which ones</th></tr>${variantRows || '<tr><td colspan="5" style="color:#888">No data yet \u2014 variant tracking went live 2026-08-16, so anything before that reports nothing. This is MISSING DATA, not zero exploration.</td></tr>'}</table>
     <h2>Sources (sessions · runs attributed)</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Referring hostname, or an explicit <code>?ref=name</code> / <code>?utm_source=name</code> on the link (survives referrers stripped by Slack/email/in-app browsers). "direct" = no referrer and no param — typed/bookmarked, or a stripped source.</p>
     <table>${srcRows || '<tr><td style="color:#888">No data yet.</td></tr>'}</table>
