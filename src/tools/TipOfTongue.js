@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { pickExample } from '../utils/exampleRotation';
 
 // ════════════════════════════════════════════════════════════
 // BRAND
@@ -179,7 +180,7 @@ const TipOfTongue = ({ tool }) => {
   }, []);
 
   const loadExample = useCallback(() => {
-    const ex = EXAMPLES[0];
+    const ex = pickExample('TipOfTongue', EXAMPLES);
     setCategory(ex.category); setDescription(t(ex.descKey));
     setNotThis(ex.notKey ? t(ex.notKey) : ''); setWhenWhere(ex.whenKey ? t(ex.whenKey) : '');
     setResults(null); setError('');
