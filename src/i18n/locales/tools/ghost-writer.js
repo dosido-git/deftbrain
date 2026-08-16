@@ -4,6 +4,10 @@
 // LinkedIn, deftbrain.com) stay as-is across languages.
 export const ghostWriter = {
   en: {
+    ghw_lbl_pronouns: "Their pronouns",
+    ghw_pn_she: "she/her",
+    ghw_pn_he: "he/him",
+    ghw_pn_they: "they/them",
     ghw_lbl_remember: "🎯 What's the one thing you hope the reader remembers?",
     ghw_hint_remember: "Strong letters make one clear claim and then prove it. This is yours.",
     ghw_ph_remember: "e.g. 'They make everyone around them better' or 'They solve problems nobody else notices'",
@@ -93,6 +97,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   es: {
+    ghw_lbl_pronouns: "Sus pronombres",
+    ghw_pn_she: "ella",
+    ghw_pn_he: "él",
+    ghw_pn_they: "elle/elu",
     ghw_lbl_remember: "🎯 ¿Qué es lo único que esperas que el lector recuerde?",
     ghw_hint_remember: "Las cartas fuertes hacen una sola afirmación clara y la demuestran. Esta es la tuya.",
     ghw_ph_remember: "p. ej. 'Hace mejores a todos los que la rodean' o 'Resuelve problemas que nadie más nota'",
@@ -182,6 +190,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   zh: {
+    ghw_lbl_pronouns: "TA 的人称",
+    ghw_pn_she: "她",
+    ghw_pn_he: "他",
+    ghw_pn_they: "TA",
     ghw_lbl_remember: "🎯 你最希望读信的人记住哪一点？",
     ghw_hint_remember: "好的推荐信只提出一个明确的判断，然后加以佐证。这就是你的判断。",
     ghw_ph_remember: "例如：他们让身边的每个人都变得更好；或：他们解决别人都没注意到的问题",
@@ -271,6 +283,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   hi: {
+    ghw_lbl_pronouns: "उनके सर्वनाम",
+    ghw_pn_she: "वह (स्त्रीलिंग)",
+    ghw_pn_he: "वह (पुल्लिंग)",
+    ghw_pn_they: "वे",
     ghw_lbl_remember: "🎯 आप चाहते हैं कि पढ़ने वाला एक बात ज़रूर याद रखे — वह क्या है?",
     ghw_hint_remember: "अच्छी चिट्ठी एक साफ़ बात कहती है और फिर उसे साबित करती है। यह आपकी वह बात है।",
     ghw_ph_remember: "जैसे 'वे अपने आसपास के हर व्यक्ति को बेहतर बना देते हैं' या 'वे उन समस्याओं को हल करते हैं जो किसी और को दिखतीं ही नहीं'",
@@ -360,6 +376,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ar: {
+    ghw_lbl_pronouns: "الضمير المستخدم",
+    ghw_pn_she: "هي",
+    ghw_pn_he: "هو",
+    ghw_pn_they: "هم",
     ghw_lbl_remember: "🎯 ما الشيء الوحيد الذي تتمنى أن يتذكره القارئ؟",
     ghw_hint_remember: "الرسائل القوية تطرح فكرة واحدة واضحة ثم تُثبتها. هذه فكرتك.",
     ghw_ph_remember: "مثال: يجعلون كل من حولهم أفضل — أو: يحلّون مشكلات لا ينتبه إليها أحد",
@@ -449,6 +469,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   pt: {
+    ghw_lbl_pronouns: "Pronomes da pessoa",
+    ghw_pn_she: "ela",
+    ghw_pn_he: "ele",
+    ghw_pn_they: "elu",
     ghw_lbl_remember: "🎯 Qual é a única coisa que você espera que o leitor lembre?",
     ghw_hint_remember: "Cartas fortes fazem uma única afirmação clara e a comprovam. Esta é a sua.",
     ghw_ph_remember: "ex.: 'Deixa todo mundo à sua volta melhor' ou 'Resolve problemas que ninguém mais percebe'",
@@ -538,6 +562,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   fr: {
+    ghw_lbl_pronouns: "Ses pronoms",
+    ghw_pn_she: "elle",
+    ghw_pn_he: "il",
+    ghw_pn_they: "iel",
     ghw_lbl_remember: "🎯 Quelle est la seule chose que vous voulez que le lecteur retienne ?",
     ghw_hint_remember: "Une bonne lettre avance une seule idée claire, puis la démontre. Voici la vôtre.",
     ghw_ph_remember: "ex. : 'Cette personne rend meilleurs tous ceux qui l'entourent' ou 'Elle règle des problèmes que personne ne voit'",
@@ -627,6 +655,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   de: {
+    ghw_lbl_pronouns: "Ihre Pronomen",
+    ghw_pn_she: "sie/ihr",
+    ghw_pn_he: "er/ihm",
+    ghw_pn_they: "they/them",
     ghw_lbl_remember: "🎯 Was soll dem Lesenden vor allem in Erinnerung bleiben?",
     ghw_hint_remember: "Starke Schreiben stellen eine klare Behauptung auf und belegen sie. Das ist deine.",
     ghw_ph_remember: "z. B. „Alle um sie herum werden besser“ oder „Sie löst Probleme, die sonst niemandem auffallen“",
@@ -716,6 +748,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ja: {
+    ghw_lbl_pronouns: "その人の人称",
+    ghw_pn_she: "彼女",
+    ghw_pn_he: "彼",
+    ghw_pn_they: "その人",
     ghw_lbl_remember: "🎯 読む人にいちばん覚えていてほしいことは？",
     ghw_hint_remember: "強い推薦状は、はっきりした主張をひとつ立てて、それを裏づけます。それがこの一文です。",
     ghw_ph_remember: "例：「まわりの人みんなを良くする人です」「誰も気づかない問題を解決してくれます」",
@@ -805,6 +841,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ko: {
+    ghw_lbl_pronouns: "그 사람의 인칭",
+    ghw_pn_she: "그녀",
+    ghw_pn_he: "그",
+    ghw_pn_they: "그분",
     ghw_lbl_remember: "🎯 읽는 사람이 딱 하나 기억한다면, 무엇이었으면 하나요?",
     ghw_hint_remember: "좋은 추천서는 분명한 주장 하나를 세우고 그것을 증명합니다. 그 주장이 여기 들어갑니다.",
     ghw_ph_remember: "예: '주변 사람들을 더 나아지게 만듭니다' 또는 '아무도 못 보는 문제를 찾아 해결합니다'",
@@ -894,6 +934,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   ru: {
+    ghw_lbl_pronouns: "Их местоимения",
+    ghw_pn_she: "она",
+    ghw_pn_he: "он",
+    ghw_pn_they: "они",
     ghw_lbl_remember: "🎯 Что читателю стоит запомнить в первую очередь?",
     ghw_hint_remember: "Сильные письма выдвигают одно ясное утверждение и доказывают его. Вот ваше.",
     ghw_ph_remember: "например: «Рядом с ними все становятся лучше» или «Они решают проблемы, которых больше никто не замечает»",
@@ -983,6 +1027,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   th: {
+    ghw_lbl_pronouns: "คำสรรพนามของเขา",
+    ghw_pn_she: "เธอ",
+    ghw_pn_he: "เขา",
+    ghw_pn_they: "เขา (ไม่ระบุเพศ)",
     ghw_lbl_remember: "🎯 สิ่งเดียวที่คุณอยากให้ผู้อ่านจดจำคืออะไร",
     ghw_hint_remember: "จดหมายที่ดีเสนอข้อสรุปชัดเจนเพียงข้อเดียวแล้วพิสูจน์มัน นี่คือข้อของคุณ",
     ghw_ph_remember: "เช่น 'เขาทำให้ทุกคนรอบตัวดีขึ้น' หรือ 'เขาแก้ปัญหาที่ไม่มีใครสังเกตเห็น'",
@@ -1072,6 +1120,10 @@ export const ghostWriter = {
     ghw_default_title: "Ghost Writer",
   },
   vi: {
+    ghw_lbl_pronouns: "Đại từ của họ",
+    ghw_pn_she: "cô ấy",
+    ghw_pn_he: "anh ấy",
+    ghw_pn_they: "họ",
     ghw_lbl_remember: "🎯 Điều duy nhất bạn mong người đọc nhớ là gì?",
     ghw_hint_remember: "Một lá thư mạnh đưa ra một khẳng định rõ ràng rồi chứng minh nó. Đây là khẳng định của bạn.",
     ghw_ph_remember: "ví dụ: 'Họ khiến mọi người xung quanh trở nên tốt hơn' hoặc 'Họ giải quyết những vấn đề không ai để ý'",

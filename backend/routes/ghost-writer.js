@@ -11,6 +11,7 @@ router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
       recipientName,
+      pronouns,
       yourRelationship,
       whatTheyreApplyingFor,
       letterType,
@@ -42,6 +43,7 @@ router.post('/ghost-writer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const sharedContext = `You are a professional writer who specializes in compelling recommendation letters. Your job is to take rough bullet points and turn them into polished, persuasive letters that sound like the RECOMMENDER wrote them thoughtfully — not like AI generated them.
 
 PERSON BEING RECOMMENDED: ${recipientName}
+THEIR PRONOUNS: ${pronouns || 'not stated — use they/them throughout'}
 YOUR RELATIONSHIP: ${yourRelationship} (e.g., "their manager for 2 years", "college professor", "coworker")
 WHAT THEY'RE APPLYING FOR: ${whatTheyreApplyingFor || 'Not specified'}
 LETTER TYPE: ${letterType || 'professional recommendation'}
@@ -75,6 +77,7 @@ WRITING INSTRUCTIONS:
 3. FLAG any placeholders where the writer needs to fill in specific details they'd know but you don't.`;
 
     const sharedRules = `- The letters must sound like a HUMAN wrote them, not AI. Vary sentence length. Include natural transitions. Avoid clichés like "I wholeheartedly recommend" or "I cannot recommend them highly enough."
+- Use the pronouns given above for the person being recommended, consistently, everywhere they appear. Do not switch part-way, and do not dodge by repeating the name where a pronoun belongs. If none were given, they/them is correct — use it without remark.
 - Use the writer's perspective ("In my X years of managing teams..." or "As their professor for...").
 - Placeholders should be in [BRACKETS] and clearly labeled.
 - If no anecdotes were provided, create plausible-sounding scenarios marked with [CUSTOMIZE: replace with a real example] so the writer knows to swap them.

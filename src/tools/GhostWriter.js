@@ -29,6 +29,14 @@ const LETTER_TYPES = [
   { value: 'other',      labelKey: 'ghw_lt_other',       formality: 'professional' },
 ];
 
+// Blank is a real answer: with nothing selected the letter uses they/them,
+// which is the right default when the writer has not said.
+const PRONOUN_OPTIONS = [
+  { value: 'she/her',   labelKey: 'ghw_pn_she' },
+  { value: 'he/him',    labelKey: 'ghw_pn_he' },
+  { value: 'they/them', labelKey: 'ghw_pn_they' },
+];
+
 const FORMALITY_OPTIONS = [
   { value: 'casual',       labelKey: 'ghw_fm_casual' },
   { value: 'professional', labelKey: 'ghw_fm_professional' },
@@ -72,6 +80,7 @@ const VERSION_ICONS = { narrative: '📖', structured: '📋', concise: '⚡' };
 const EXAMPLES = [
   {
     recipientName: 'Jordan Kim',
+    pronouns: 'she/her',
     yourRelationship: 'Direct report for 3 years, now moving to a senior role elsewhere',
     whatFor: 'Senior Product Manager position at a fintech startup',
     letterType: 'job',
@@ -79,8 +88,8 @@ const EXAMPLES = [
     qualities: ['Leadership', 'Communication', 'Initiative', 'Technical skills'],
     anecdotes: ['Led rebrand of onboarding flow that cut drop-off by 34%', 'Managed 4 engineers without formal authority during a hiring freeze'],
     duration: '3 years',
-    whyRecommending: "They grew into the job faster than anyone I've managed, and their resume undersells them badly.",
-    oneThingRemembered: 'They make the people around them better without ever making it about themselves.',
+    whyRecommending: "She grew into the job faster than anyone I've managed, and her resume undersells her badly.",
+    oneThingRemembered: 'She makes the people around her better without ever making it about herself.',
     additionalContext: 'Known for staying calm in crises and never missing a deadline',
   },
 ];
@@ -144,6 +153,7 @@ const GhostWriter = ({ tool }) => {
   // ─── State (all useState before usePersistentState — PF-11/PF-14) ───
   const [showHistory, setShowHistory] = useState(false);
   const [recipientName, setRecipientName] = useState('');
+  const [pronouns, setPronouns] = useState('');
   const [yourRelationship, setYourRelationship] = useState('');
   const [whatFor, setWhatFor] = useState('');
   const [letterType, setLetterType] = useState('job');
@@ -175,6 +185,7 @@ const GhostWriter = ({ tool }) => {
   const loadExample = () => {
     const ex = pickExample('GhostWriter', EXAMPLES);
     setRecipientName(ex.recipientName);
+    setPronouns(ex.pronouns);
     setYourRelationship(ex.yourRelationship);
     setWhatFor(ex.whatFor);
     setLetterType(ex.letterType);
@@ -222,6 +233,7 @@ const GhostWriter = ({ tool }) => {
       const ltDef = LETTER_TYPES.find(lt => lt.value === letterType);
       const data = await callToolEndpoint('ghost-writer', {
         recipientName: recipientName.trim(),
+        pronouns: pronouns || null,
         yourRelationship: yourRelationship.trim(),
         whatTheyreApplyingFor: whatFor.trim() || null,
         letterType: ltDef ? t(ltDef.labelKey) : letterType,
@@ -239,7 +251,7 @@ const GhostWriter = ({ tool }) => {
       trackVariant('GhostWriter', 'narrative', 'auto');
       saveToHistory(data);
     } catch (err) { setError(err.message || t('ghw_err_generate')); }
-  }, [recipientName, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, oneThingRemembered, formalityLevel, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [recipientName, pronouns, yourRelationship, whatFor, letterType, qualities, anecdotes, duration, whyRecommending, oneThingRemembered, formalityLevel, additionalContext, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
   handleSubmitRef.current = generate;
 
   const handleRefine = useCallback(async (version) => {
@@ -266,7 +278,7 @@ const GhostWriter = ({ tool }) => {
   }, []);
 
   const handleReset = useCallback(() => {
-    setRecipientName(''); setYourRelationship(''); setWhatFor('');
+    setRecipientName(''); setPronouns(''); setYourRelationship(''); setWhatFor('');
     setQualities([]); setAnecdotes(['']); setDuration('');
     setWhyRecommending(''); setOneThingRemembered(''); setAdditionalContext(''); setResults(null); setError('');
     setRefinedVersions({}); setRefiningVersion(null); setPreviousResults(null);
@@ -655,6 +667,17 @@ const GhostWriter = ({ tool }) => {
                 <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)}
                   placeholder={t('ghw_ph_recipient')}
                   className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+                {/* A letter runs on pronouns — a page of them. Not asking meant
+                    every letter came back in they/them, correct but not what
+                    most writers would have written, and the fix was a
+                    find-and-replace on the finished thing. Sits with the name
+                    because it belongs to it. Blank stays they/them. */}
+                <div role="group" aria-label={t('ghw_lbl_pronouns')} className="flex flex-wrap gap-1.5 mt-2">
+                  {PRONOUN_OPTIONS.map(p => (
+                    <Pill key={p.value} active={pronouns === p.value}
+                      onClick={() => setPronouns(pronouns === p.value ? '' : p.value)}>{t(p.labelKey)}</Pill>
+                  ))}
+                </div>
               </div>
               <div>
                 <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
