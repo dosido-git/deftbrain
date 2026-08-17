@@ -4,8 +4,12 @@ One composition, two themes: Side A is the site in light mode, Side B is the
 same card in the app's real dark palette (zinc + orange). Flipping the card
 is the theme toggle. Both sides carry everything — neither is the "back".
 
-- Tagline: the dictionary-entry masthead — deft (adj.) — skillful, nimble,
-  clever.
+- Masthead: the dictionary entry — deft (adj.) — skillful, nimble, clever.
+- Tagline: "Practical guidance for everyday life. / No signup. No prompting."
+  Replaced "Personal AI problem solvers" — the charter's first principle is that
+  people have problems, not prompts, and a card that led with the machine was
+  arguing against it. The second line survived the rewrite almost intact; it was
+  always the better half.
 - Email: hello@deftbrain.com — matches the site's public address everywhere
   (About, footer, newsletter); an obvious address beats a clever one at a
   glance.
@@ -13,8 +17,10 @@ is the theme toggle. Both sides carry everything — neither is the "back".
 
 ## Files
 - `card-press.pdf` — 2 pages (Side A light, Side B dark), each
-  3.75 × 2.25 in = 3.5 × 2 in trim + 0.125 in bleed on all edges. Type stays
-  ≥ 0.1875 in inside trim. Fonts embedded (Playfair Display 700, DM Sans
+  3.75 × 2.25 in = 3.5 × 2 in trim + 0.125 in bleed on all edges. Type sits
+  0.155 in inside trim at the closest point (the tagline's left edge and
+  baseline) — comfortably past the 0.125 in most shops ask for, though not the
+  0.1875 in this note used to claim. Measured, not assumed. Fonts embedded (Playfair Display 700, DM Sans
   400/500/700). RGB — let the print shop convert to CMYK.
 - `card-press.html` — the source; regenerate the PDF with:
   `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
