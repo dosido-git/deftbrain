@@ -691,10 +691,16 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
           </div>
 
-          {/* Start button */} <button onClick={handleStart} disabled={loading || !task.trim()} className={`w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
+          {/* Start button */} <button title={t('cmd_enter')} onClick={handleStart} disabled={loading || !task.trim()} className={`relative w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
             {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> {t('vbd_setting_up')}</span>
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> {t('vbd_start_session', { mode: modeLabel })}</span>
-            )} </button>
+            )} {!loading && (
+                                 <kbd aria-hidden="true"
+                                   className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                                   ⌘↵
+                                 </kbd>
+                               )}
+                               </button>
 
           {error && (<div className={`${c.danger} border rounded-xl p-4`}>
               <p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p>

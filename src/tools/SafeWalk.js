@@ -1228,12 +1228,18 @@ const SafeWalk = ({ tool }) => {
             rows={2} className={`w-full px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none resize-none`} />
         </div>
 
-        <button onClick={submitAssessment} disabled={loading || !canSubmit}
-        className={`flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
+        <button title={t('cmd_enter')} onClick={submitAssessment} disabled={loading || !canSubmit}
+        className={`relative flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
           ${canSubmit ? c.btnPrimary : c.btnDis}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> {t('sw_assessing')}</>
           : <><span>{tool?.icon ?? '🚶'}</span> {t('sw_assess')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
 
         <p className={`text-xs ${c.textMuted} text-center pt-1`}>

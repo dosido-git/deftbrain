@@ -737,9 +737,15 @@ const GentlePushGenerator = ({ tool }) => {
           </div>
 
           {/* Generate button */}
-          <button onClick={handleGenerate} disabled={loading || !growthArea.trim()}
-            className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 transition-all shadow-lg`}>
+          <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || !growthArea.trim()}
+            className={`relative w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 transition-all shadow-lg`}>
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_generating')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span> {t('gpg_generate_3')}</span>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {/* Pre-result cross-ref */}

@@ -215,11 +215,17 @@ const TruthBomb = ({ tool }) => {
 
           {error && <div className={`p-3 rounded-xl border text-sm ${c.danger}`}><span className="me-1">⚠️</span>{error}</div>}
 
-          <button onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
-          className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+          <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !theUnsaidThing.trim()}
+          className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2 ${c.btnPrimary}`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '💣'}</span> {t('tb_processing')}</>
             : <><span>{tool?.icon ?? '💣'}</span> {t('tb_submit')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('tb_disclaimer')}</p>
           <p className={`text-xs text-center ${c.textMuted} mt-1`}>

@@ -538,9 +538,15 @@ const EmailUrgencyTriager = ({ tool }) => {
                 onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && emailContent.trim()) handleAnalyze(); }}
                 className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
             </div>
-            <button onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+            <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '📬'}</span>{t('eut_analyze_urgency')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
             {error && <div className={`${c.warning} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 

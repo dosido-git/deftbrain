@@ -434,11 +434,17 @@ const FanTheory = ({ tool }) => {
             <textarea id="ft-my-theory" ref={gradeTextareaRef} value={myTheory} onChange={e => setMyTheory(e.target.value)}
               placeholder={t('ft_theory_ph')}
               rows={4} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
-            <button onClick={runGrade} disabled={!myTheory.trim() || loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 min-h-[44px]`}>
+            <button title={t('cmd_enter')} onClick={runGrade} disabled={!myTheory.trim() || loading}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 min-h-[44px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_grading')}</>
                 : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_grade_theory')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
 

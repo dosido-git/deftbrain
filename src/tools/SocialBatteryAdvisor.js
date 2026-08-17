@@ -939,16 +939,22 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
 
         <div className="flex gap-2">
-          <button
+          <button title={t('cmd_enter')}
             onClick={runAudit}
             disabled={!interactions.some(i => i.situation.trim()) || loading}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
           >
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {t('sea_auditing')}</>
               : editingEntryId
                 ? <><span>✏️</span> {t('sea_update_reaudit')}</>
                 : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {t('sea_run_audit')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
       </div>

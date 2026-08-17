@@ -3,6 +3,7 @@
 // localization scripts (eval). Tool-specific keys live in ./tools/<tool>.js.
 export const base = {
   "en": {
+    "cmd_enter": "Press ⌘↵ (Ctrl+Enter) to submit",
     "describe_situation": "Describe your situation...",
     "describe_problem": "Describe your problem...",
     "whats_going_on": "What's going on?",
@@ -50,6 +51,7 @@ export const base = {
     "try_again": "Try again"
   },
   "es": {
+    "cmd_enter": "Pulsa ⌘↵ (Ctrl+Intro) para enviar",
     "describe_situation": "Describe tu situación...",
     "describe_problem": "Describe tu problema...",
     "whats_going_on": "¿Qué está pasando?",
@@ -97,6 +99,7 @@ export const base = {
     "try_again": "Intentar de nuevo"
   },
   "zh": {
+    "cmd_enter": "按 ⌘↵（Ctrl+Enter）提交",
     "describe_situation": "描述您的情况...",
     "describe_problem": "描述您的问题...",
     "whats_going_on": "您遇到了什么情况？",
@@ -144,6 +147,7 @@ export const base = {
     "try_again": "重试"
   },
   "hi": {
+    "cmd_enter": "भेजने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
     "describe_situation": "अपनी स्थिति बताएं...",
     "describe_problem": "अपनी समस्या बताएं...",
     "whats_going_on": "क्या हो रहा है?",
@@ -191,6 +195,7 @@ export const base = {
     "try_again": "फिर से प्रयास करें"
   },
   "ar": {
+    "cmd_enter": "اضغط ⌘↵ (Ctrl+Enter) للإرسال",
     "describe_situation": "صف وضعك...",
     "describe_problem": "صف مشكلتك...",
     "whats_going_on": "ما الذي يحدث؟",
@@ -238,6 +243,7 @@ export const base = {
     "try_again": "حاول مرة أخرى"
   },
   "pt": {
+    "cmd_enter": "Pressione ⌘↵ (Ctrl+Enter) para enviar",
     "describe_situation": "Descreva sua situação...",
     "describe_problem": "Descreva seu problema...",
     "whats_going_on": "O que está acontecendo?",
@@ -285,6 +291,7 @@ export const base = {
     "try_again": "Tentar novamente"
   },
   "fr": {
+    "cmd_enter": "Appuyez sur ⌘↵ (Ctrl+Entrée) pour envoyer",
     "describe_situation": "Décrivez votre situation...",
     "describe_problem": "Décrivez votre problème...",
     "whats_going_on": "Qu'est-ce qui se passe ?",
@@ -332,6 +339,7 @@ export const base = {
     "try_again": "Réessayer"
   },
   "de": {
+    "cmd_enter": "Mit ⌘↵ (Strg+Enter) absenden",
     "describe_situation": "Beschreiben Sie Ihre Situation...",
     "describe_problem": "Beschreiben Sie Ihr Problem...",
     "whats_going_on": "Was ist los?",
@@ -379,6 +387,7 @@ export const base = {
     "try_again": "Erneut versuchen"
   },
   "ja": {
+    "cmd_enter": "⌘↵（Ctrl+Enter）で送信",
     "describe_situation": "状況を説明してください...",
     "describe_problem": "問題を説明してください...",
     "whats_going_on": "何が起きていますか？",
@@ -426,6 +435,7 @@ export const base = {
     "try_again": "もう一度試す"
   },
   "ko": {
+    "cmd_enter": "⌘↵ (Ctrl+Enter)를 누르면 전송됩니다",
     "describe_situation": "상황을 설명해 주세요...",
     "describe_problem": "문제를 설명해 주세요...",
     "whats_going_on": "무슨 일이 있으신가요?",
@@ -473,6 +483,7 @@ export const base = {
     "try_again": "다시 시도"
   },
   "ru": {
+    "cmd_enter": "Нажмите ⌘↵ (Ctrl+Enter), чтобы отправить",
     "describe_situation": "Опишите вашу ситуацию...",
     "describe_problem": "Опишите вашу проблему...",
     "whats_going_on": "Что происходит?",
@@ -520,6 +531,7 @@ export const base = {
     "try_again": "Попробовать снова"
   },
   "th": {
+    "cmd_enter": "กด ⌘↵ (Ctrl+Enter) เพื่อส่ง",
     "describe_situation": "อธิบายสถานการณ์ของคุณ...",
     "describe_problem": "อธิบายปัญหาของคุณ...",
     "whats_going_on": "เกิดอะไรขึ้น?",
@@ -567,6 +579,7 @@ export const base = {
     "try_again": "ลองใหม่"
   },
   "vi": {
+    "cmd_enter": "Nhấn ⌘↵ (Ctrl+Enter) để gửi",
     "describe_situation": "Mô tả tình huống của bạn...",
     "describe_problem": "Mô tả vấn đề của bạn...",
     "whats_going_on": "Chuyện gì đang xảy ra?",

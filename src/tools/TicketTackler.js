@@ -321,12 +321,18 @@ const TicketTackler = ({ tool }) => {
             {t('tt_xref_pre')} <a href="/BillRescue" className={linkStyle}>💸 {t('tt_billrescue')}</a>
           </p>
 
-          <button onClick={handleSubmit}
+          <button title={t('cmd_enter')} onClick={handleSubmit}
             disabled={loading || !city.trim() || (!ticketText.trim() && !ticketImage && !whatHappened.trim())}
-            className={`w-full py-3 ${c.btnPrimary} rounded-xl font-semibold disabled:opacity-40`}>
+            className={`relative w-full py-3 ${c.btnPrimary} rounded-xl font-semibold disabled:opacity-40`}>
             {loading && phase === 'main'
               ? <span><span className="inline-block animate-spin me-2">{tool?.icon ?? '🎫'}</span>{t('tt_building')}</span>
               : t('tt_submit')}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {error ? <div className={`${c.danger} border rounded-lg px-3 py-2 text-sm`}>{t('tt_error')}</div> : null}

@@ -300,14 +300,20 @@ const ColdOpenCraft = ({ tool }) => {
           )}
 
           {/* Submit */}
-          <button
+          <button title={t('cmd_enter')}
           onClick={generate}
           disabled={loading || !who.trim() || !why.trim()}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] transition-colors`}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] transition-colors`}
           >
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('coc_crafting')}</>
             : <><span>{tool?.icon ?? '📬'}</span> {t('coc_craft')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
       </div>

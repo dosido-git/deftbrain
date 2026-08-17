@@ -1239,9 +1239,15 @@ const MoneyDiplomat = ({ tool }) => {
               )}
 
               <div className="flex items-center gap-2 pt-2">
-                <button onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
+                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`relative ${c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center gap-2`}>
                 {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
                 {t('md_get_advice')}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
                 {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline`}>{t('md_back')}</button>}
               </div>

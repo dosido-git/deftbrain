@@ -1260,11 +1260,17 @@ const SixDegreesOfMe = ({ tool }) => {
 
             {/* Action buttons */}
             <div className="flex gap-2 flex-wrap">
-              <button onClick={handleFindChain}
+              <button title={t('cmd_enter')} onClick={handleFindChain}
                 disabled={!thingA.trim() || !thingB.trim() || loading}
-                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+                className={`relative flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_tracing')}</span>
                   : challengeMode ? t('sdm_challenge_chain') : t('sdm_find_the_chain')}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
               <button onClick={handleSurprise}
                 disabled={loading || profileItemCount < 3}

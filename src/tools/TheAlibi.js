@@ -237,9 +237,15 @@ const TheAlibi = ({ tool }) => {
       </div>
 
 
-      <button onClick={frame} disabled={loading || !situation.trim()}
+      <button title={t('cmd_enter')} onClick={frame} disabled={loading || !situation.trim()}
         className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !situation.trim() ? c.btnDis : c.btnPrimary)}>
-        {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> {t('ta_framing')}</> : <><span className="me-1">{tool?.icon ?? '🎭'}</span> {t('ta_frame')}</>}
+        {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '🎭'}</span> {t('ta_framing')}</> : <><span className="me-1">{tool?.icon ?? '🎭'}</span> {t('ta_frame')}</>}
+      {!loading && (
+        <kbd aria-hidden="true"
+          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+          ⌘↵
+        </kbd>
+      )}
       </button>
     </div>
   );

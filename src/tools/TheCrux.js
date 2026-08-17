@@ -442,14 +442,20 @@ const TheCrux = ({ tool }) => {
       </div>
 
       <div className="flex gap-2">
-        <button onClick={submit} disabled={loading || !canSubmit}
-          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={submit} disabled={loading || !canSubmit}
+          className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all min-h-[48px]`}>
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> {t('rec_processing')}</>
             : mode === 'distill'     ? <><span>{tool?.icon ?? '🧠'}</span> {t('rec_submit_distill')}</>
             : mode === 'study_guide' ? <><span>{tool?.icon ?? '🧠'}</span> {t('rec_submit_study')}</>
             : mode === 'test_prep'   ? <><span>{tool?.icon ?? '🧠'}</span> {t('rec_submit_test')}</>
             : <><span>{tool?.icon ?? '🧠'}</span> {t('rec_submit_connect')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
       <p className={`text-xs text-center ${c.textMuted}`}>

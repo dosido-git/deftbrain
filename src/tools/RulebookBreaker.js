@@ -262,11 +262,17 @@ const RulebookBreaker = ({ tool }) => {
             </div>
           )}
 
-          <button onClick={handleSubmit} disabled={loading || !system.trim() || !problem.trim()}
-            className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
+          <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !system.trim() || !problem.trim()}
+            className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏴‍☠️'}</span> {t('rb_finding')}</>
               : <><span>{tool?.icon ?? '🏴‍☠️'}</span> {t('rb_find_leverage')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           <p className={`text-xs text-center ${c.textMuted}`}>{t('rb_disclaimer')}</p>

@@ -1422,10 +1422,10 @@ const GratitudeDebtClearer = ({ tool }) => {
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleGenerate}
               disabled={loading}
-              className={`flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40 ${
+              className={`relative flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40 ${
                 loading ? c.btnDisabled + ' cursor-not-allowed' : c.btnPrimary
               }`}
               aria-label={t('gdc_gen_aria')}
@@ -1438,6 +1438,12 @@ const GratitudeDebtClearer = ({ tool }) => {
               ) : (
                 <><span className="me-1">{tool?.icon ?? '💝'}</span>{t('gdc_generate_messages')}</>
               )}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
 

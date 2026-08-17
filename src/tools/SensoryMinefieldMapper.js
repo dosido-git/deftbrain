@@ -1059,9 +1059,15 @@ const SensoryMinefieldMapper = ({ tool }) => {
                 </button>
               )}
 
-              <button onClick={planRoute} disabled={routeLoading} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={planRoute} disabled={routeLoading} className={`relative w-full py-3.5 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                 {routeLoading ? <span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> : <span className="me-2">🗺️</span>}
                 {routeLoading ? t('smm_planning') : t('smm_plan_route_btn')}
+              {!routeLoading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
             </div>
 

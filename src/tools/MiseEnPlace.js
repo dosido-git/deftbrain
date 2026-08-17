@@ -433,14 +433,20 @@ const MiseEnPlace = ({ tool }) => {
         </div>
       </div>
 
-        <button onClick={plan}
+        <button title={t('cmd_enter')} onClick={plan}
       disabled={loading || (!ingredients.trim() && !imageBase64)}
-      className={`w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+      className={`relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
         loading || (!ingredients.trim() && !imageBase64) ? `${c.btnSecondary} opacity-50` : c.btnPrimary
       } disabled:opacity-40`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('mep_building')}</>
         : <><span>🍳</span> {t('mep_build_btn')}</>}
-      </button>
+      {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
     </div>
   );
 

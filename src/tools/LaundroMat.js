@@ -1217,10 +1217,16 @@ const LaundroMat = ({ tool }) => {
             {t('lmt_xref_advisor_prefix')}<a href="/PEP" className={linkStyle}>{t('lmt_xref_pep')}</a>{t('lmt_xref_advisor_suffix')}
           </p>
 
-          <button onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
-            className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
+          <button title={t('cmd_enter')} onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
+            className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
 

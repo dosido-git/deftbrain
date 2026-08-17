@@ -806,10 +806,16 @@ const WaitingModeLiberator = ({ tool }) => {
             )} </div>
 
           {/* ── SUBMIT ── */} <div className="flex gap-2">
-          <button onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+          <button title={t('cmd_enter')} onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`relative w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
             {loading
               ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_calculating')}</span>
-              : <span>{tool?.icon ?? '⏳'} {t('wml_liberate')}</span>} </button>
+              : <span>{tool?.icon ?? '⏳'} {t('wml_liberate')}</span>} {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
         </div>
 
           {!hasAnyTime && (<p className={`text-center text-xs ${c.textMuted}`}>{t('wml_add_one')}</p>

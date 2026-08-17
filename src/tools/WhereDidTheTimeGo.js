@@ -241,8 +241,8 @@ const WhereDidTheTimeGo = ({ tool }) => {
                 rows={2} maxLength={400} className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} resize-none outline-none transition-colors`} />
             </div>
 
-            {/* Submit */} <button
-              onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+            {/* Submit */} <button title={t('cmd_enter')}
+              onClick={handleSubmit} disabled={loading || !dayDescription.trim()} className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
                 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`} >
               {loading ? (<>
                   <span className="inline-block animate-spin">{tool?.icon ?? ICON_FALLBACK}</span>
@@ -251,7 +251,13 @@ const WhereDidTheTimeGo = ({ tool }) => {
               ) : (<>
                   <span>{tool?.icon ?? ICON_FALLBACK}</span> {t('wdttg_submit')}
                 </>
-              )} </button>
+              )} {!loading && (
+                             <kbd aria-hidden="true"
+                               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                               ⌘↵
+                             </kbd>
+                           )}
+                           </button>
 
             <p className={`text-xs ${c.textMuted}`}>{t('wdttg_xref_pre')} <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('wdttg_xref_task')}</a> {t('wdttg_xref_post')}</p>
           </div>

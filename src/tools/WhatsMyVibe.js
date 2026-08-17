@@ -205,11 +205,17 @@ const WhatsMyVibe = ({ tool }) => {
             {samples.length > 0 ? `${wordCount} ${t('wmv_words')} — ${wordQuality}` : t('wmv_hint_empty')} </p>
         </div>
 
-        <button
-          onClick={runVibe} disabled={!samples.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} >
+        <button title={t('cmd_enter')}
+          onClick={runVibe} disabled={!samples.trim() || loading} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`} >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '✨'}</span> {t('wmv_reading')}</>
-            : <><span>{tool?.icon ?? '✨'}</span> {t('wmv_check')}</>} </button>
+            : <><span>{tool?.icon ?? '✨'}</span> {t('wmv_check')}</>} {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
         <p className={`text-xs ${c.textMuted}`}>{t('wmv_xref_q')} <a href="/TruthBomb" className={linkStyle}>💣 {t('wmv_truthbomb')}</a> {t('wmv_xref_tail')}</p>
       </div>
 

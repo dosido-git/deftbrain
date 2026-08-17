@@ -1141,10 +1141,10 @@ const RentersDepositSaver = ({ tool }) => {
             >
               {t('back')}
             </button>
-            <button
+            <button title={t('cmd_enter')}
             onClick={generateReport}
             disabled={streamLoading || !step2Valid}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[48px]`}
+            className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[48px]`}
             >
             {streamLoading ? (
               <>
@@ -1153,6 +1153,12 @@ const RentersDepositSaver = ({ tool }) => {
               </>
             ) : (
               <><span>{tool?.icon ?? '🏦'}</span> {t('rds_generate_report')}</>
+            )}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
             )}
             </button>
           </div>

@@ -566,12 +566,18 @@ const PlantRescue = ({ tool }) => {
             </>
           )}
 
-          <button onClick={handleAnalyze}
+          <button title={t('cmd_enter')} onClick={handleAnalyze}
           disabled={loading || uploading || (mode === 'identify' ? !imageBase64 : (!imageBase64 && !plantDescription.trim() && selectedSymptoms.length === 0))}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🪴'}</span> {t('pr_analyzing')}</>
             : <><span>{tool?.icon ?? '🪴'}</span> {mode === 'rescue' ? t('pr_btn_diagnose') : mode === 'identify' ? t('pr_btn_identify') : t('pr_btn_care')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           <p className={`text-xs text-center ${c.textMuted}`}>

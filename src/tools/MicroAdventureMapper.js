@@ -537,12 +537,18 @@ const MicroAdventureMapper = ({ tool }) => {
       </div>
 
       {/* Generate Button */}
-      <button onClick={generate}
+      <button title={t('cmd_enter')} onClick={generate}
         disabled={loading || location.trim().length < 2}
-        className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
+        className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗺️'}</span> {t('mam_planning')}</>
           : <><span className="me-1">{tool?.icon ?? '🗺️'}</span> {t('mam_map_btn')}</>}
+      {!loading && (
+        <kbd aria-hidden="true"
+          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+          ⌘↵
+        </kbd>
+      )}
       </button>
 
       {/* Pre-result cross-ref */}

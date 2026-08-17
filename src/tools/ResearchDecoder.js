@@ -305,10 +305,16 @@ const ResearchDecoder = ({ tool }) => {
             <textarea value={paperText} onChange={e => setPaperText(e.target.value)} placeholder={t('rd_abstract_ph')} rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
           <div className="flex flex-wrap gap-2">{FIELDS.map(f => <button key={f.id} onClick={() => setField(f.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${field === f.id ? c.pillActive : `${c.pillInactive} ${c.border}`}`}><span className="me-1">{f.icon}</span> {f.label}</button>)}</div>
-          <button onClick={handleDigest} disabled={!paperText.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={handleDigest} disabled={!paperText.trim() || loading} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_working')}</>
             : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_paper')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           <p className={`text-xs ${c.textMuted}`}>{t('rd_xref_decide_help')} <a href="/DecisionCoach" className={linkStyle}>🎯 {t('rd_decision_coach')}</a> {t('rd_decision_coach_help')}</p>
         </div>

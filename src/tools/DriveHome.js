@@ -974,12 +974,18 @@ const DriveHome = ({ tool }) => {
 
         {/* Submit */}
         <div>
-          <button onClick={submitAssessment} disabled={loading || !canSubmit}
-          className={`w-full ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={submitAssessment} disabled={loading || !canSubmit}
+          className={`relative w-full ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> {t('dh_assessing')}</>
             : <><span>{tool?.icon ?? '🚗'}</span> {t('dh_assess')}</>}
-        </button>
+        {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
         </div>
 
         {/* Pre-result cross-ref */}

@@ -665,9 +665,9 @@ const PlainTalk = ({ tool }) => {
             )}
 
             {/* Analyze button */}
-            <button onClick={handleAnalyze}
+            <button title={t('cmd_enter')} onClick={handleAnalyze}
               disabled={loading || (!pdfBase64 && (!inputText.trim() || inputText.trim().length < 30))}
-              className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
+              className={`relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
                 (pdfBase64 || inputText.trim().length >= 30)
                   ? `${c.btnPrimary} shadow-cyan-200 dark:shadow-cyan-900/40`
                   : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
@@ -675,6 +675,12 @@ const PlainTalk = ({ tool }) => {
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔍'}</span> {t('plt_analyzing')}</>
                 : <><span className="me-1">{tool?.icon ?? '🔍'}</span> {t('plt_analyze')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
 
             {/* Pre-result cross-ref */}

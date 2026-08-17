@@ -586,7 +586,13 @@ const SpiralStopper = ({ tool }) => {
 
           <input value={whatHelped} onChange={e => setWhatHelped(e.target.value)} placeholder={t('sps_what_helped_ph')} className={`w-full p-2.5 border rounded-lg text-sm ${c.input}`} />
 
-          <button onClick={handleDebrief} disabled={loading} className={`w-full py-3 rounded-xl font-semibold text-sm ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span></> : <>📝 {t('sps_reflect')}</>}</button>
+          <button title={t('cmd_enter')} onClick={handleDebrief} disabled={loading} className={`relative w-full py-3 rounded-xl font-semibold text-sm ${loading ? c.btnLoading : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🌀'}</span></> : <>📝 {t('sps_reflect')}</>}{!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
 
           {debriefResult && <div className="space-y-3">
             <div className={`${c.success} border rounded-xl p-4`}><p className="text-sm">{debriefResult.reflection}</p></div>

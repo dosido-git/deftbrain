@@ -732,9 +732,15 @@ const SubscriptionTamer = ({ tool }) => {
 
         {/* Analyze + Example buttons */}
         <div className="flex flex-wrap gap-3 mt-5">
-          <button onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
+            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧹'}</span> {t('ss_analyze_btn')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
       </div>

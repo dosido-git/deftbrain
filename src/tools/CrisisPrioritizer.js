@@ -1069,8 +1069,14 @@ const CrisisPrioritizer = ({ tool }) => {
           </div>}
 
           {/* Submit */}
-          <button onClick={handlePrioritize} disabled={loading || filledTasks.length === 0} className={`w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading || filledTasks.length === 0 ? `${c.btnSecondary} cursor-not-allowed` : c.btnPrimary}`}>
+          <button title={t('cmd_enter')} onClick={handlePrioritize} disabled={loading || filledTasks.length === 0} className={`relative w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading || filledTasks.length === 0 ? `${c.btnSecondary} cursor-not-allowed` : c.btnPrimary}`}>
             {loading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> {t('cp_submit_analyzing')}</> : <>{timeframe === 'right_now' ? t('cp_submit_now') : timeframe === 'this_week' ? t('cp_submit_week') : t('cp_submit_weeks')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           <p className={`text-xs text-center ${c.textMuted}`}>{t('cp_submit_hint')}</p>
         </>}

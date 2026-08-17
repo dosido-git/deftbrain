@@ -587,10 +587,10 @@ const DreamPatternSpotter = ({ tool }) => {
 
             {/* Action Button */}
             <div className="flex gap-2">
-          <button
+          <button title={t('cmd_enter')}
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>
@@ -603,7 +603,13 @@ const DreamPatternSpotter = ({ tool }) => {
                   {t('dps_analyze_patterns')}
                 </>
               )}
-            </button>
+            {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
           <button
             onClick={loadExample}
             className={`px-4 py-3 rounded-lg text-xs font-bold ${c.btnSecondary}`}

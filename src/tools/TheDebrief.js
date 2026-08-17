@@ -419,13 +419,19 @@ const TheDebrief = ({ tool }) => {
         )}
       </div>
 
-        <button onClick={submit} disabled={loading || !canSubmit}
+        <button title={t('cmd_enter')} onClick={submit} disabled={loading || !canSubmit}
       className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
-      {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('td_processing')}</>
+      {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('td_processing')}</>
         : mode === 'distill' ? <><span className="me-1">{tool?.icon ?? '📋'}</span> {t('td_extract')}</>
         : mode === 'followup' ? <><span>📨</span> {t('td_draft_followups')}</>
         : <><span>🔄</span> {t('td_analyze_series')}</>}
-      </button>
+      {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
     </div>
   );
 

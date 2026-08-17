@@ -413,9 +413,15 @@ const TipOfTongue = ({ tool }) => {
               placeholder={t('tot_refine_ph')}
               className={'w-full h-16 p-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm mb-3'} />
             <div className="flex gap-2">
-              <button onClick={refine} disabled={loading}
+              <button title={t('cmd_enter')} onClick={refine} disabled={loading}
                 className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ' + (loading ? c.btnDis : c.btnPrimary)}>
-                {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
+                {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
               <button onClick={() => { setRefineMode(false); setMatchFeedback({}); }}
                 className={'px-4 py-3 rounded-xl text-xs font-bold ' + c.btnSecondary}>{t('tot_cancel')}</button>

@@ -398,7 +398,13 @@ const JargonAssassin = ({ tool }) => {
         <textarea value={docText} onChange={e => { setDocText(e.target.value); if (e.target.value) { setFileBase64(null); setFileMediaType(null); setFileName(''); } }} placeholder={fileBase64 ? t('jarg_ph_file') : t('jarg_ph_paste')} rows={fileBase64 ? 3 : 8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
         <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>{docText.length > 40000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ {t('jarg_may_truncate')}</span>}</div>
         <div className="flex gap-2">
-          <button onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}</button>
+          <button title={t('cmd_enter')} onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`relative flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}{!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
         </div>
         {loading && slowNotice && <div className={`${c.highlight} border rounded-xl p-3 text-center`}><p className="text-sm font-medium">🕐 {t('jarg_slow_notice')}</p></div>}
       </div>}

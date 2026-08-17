@@ -227,11 +227,17 @@ const VelvetHammer = ({ tool }) => {
           </div>
         </div>
 
-        <button
-          onClick={handleTransform} disabled={loading || !draft.trim()} className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${c.btnPrimary}`}>
+        <button title={t('cmd_enter')}
+          onClick={handleTransform} disabled={loading || !draft.trim()} className={`relative w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 ${c.btnPrimary}`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔨'}</span> {t('vh_transforming')}</>
-            : <><span>{tool?.icon ?? '🔨'}</span> {t('vh_transform')}</>} </button>
+            : <><span>{tool?.icon ?? '🔨'}</span> {t('vh_transform')}</>} {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
 
 
 

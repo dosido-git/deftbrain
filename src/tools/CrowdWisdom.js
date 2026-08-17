@@ -241,14 +241,20 @@ const CrowdWisdom = ({ tool }) => {
         )}
 
         <div>
-          <button
+          <button title={t('cmd_enter')}
             onClick={handleSubmit}
             disabled={loading || !question.trim()}
-            className={`w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}
+            className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 ${c.btnPrimary}`}
           >
             {loading
               ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '👥'}</span>{t('cw_gathering')}</>
               : <><span className="me-1">{tool?.icon ?? '👥'}</span>{t('cw_ask')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
         <p className={`text-xs text-center ${c.textMuted}`}>{t('cw_submit_hint')}</p>
