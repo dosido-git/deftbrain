@@ -170,7 +170,7 @@ const PlotTwist = ({ tool }) => {
       { d: 'ptw_ex_decision',  a: 'ptw_ex_opt1',  b: 'ptw_ex_opt2',
         values: ['Career growth', 'Financial security', 'Family / relationships'], stuck: 'fear_of_regret' },
       { d: 'ptw_ex2_decision', a: 'ptw_ex2_opt1', b: 'ptw_ex2_opt2',
-        values: ['Family / relationships', 'Health', 'Peace of mind'], stuck: 'people_pleasing' },
+        values: ['Family / relationships', 'Health / wellbeing', 'Stability'], stuck: 'people_pleasing' },
     ]);
     setDecision(t(ex.d));
     setOptions([t(ex.a), t(ex.b)]);

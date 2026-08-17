@@ -34,13 +34,18 @@ for (const file of fs.readdirSync(TOOLS).filter(f => f.endsWith('.js'))) {
   // Two shapes to cover: a named `const EXAMPLES = [...]`, and an array passed
   // straight into pickExample(). Only checking the named form let
   // TheRunthrough ship audience: 'executive' when the option is 'executives'.
+  // A third shape: `const EXAMPLES = { generate: {...}, blend: {...} }`, keyed
+  // by whichever mode the visitor picks. Only two tools use it — Bookmark and
+  // NameStorm — and neither was ever scanned, which is how NameStorm shipped
+  // vibeChips naming two options that do not exist.
   const blocks = [];
-  for (const re of [/const EXAMPLES\s*=\s*\[/g, /pickExample\([^,]+,\s*\[/g]) {
+  for (const re of [/const EXAMPLES\s*=\s*([[{])/g, /pickExample\([^,]+,\s*(\[)/g]) {
     for (const m of src.matchAll(re)) {
+      const open = m[1], close = open === '[' ? ']' : '}';
       let depth = 1, i = m.index + m[0].length;
       while (depth && i < src.length) {
-        if (src[i] === '[') depth++;
-        else if (src[i] === ']') depth--;
+        if (src[i] === open) depth++;
+        else if (src[i] === close) depth--;
         i++;
       }
       blocks.push([m.index + m[0].length, i - 1]);
@@ -64,6 +69,37 @@ for (const file of fs.readdirSync(TOOLS).filter(f => f.endsWith('.js'))) {
       if (!outside.includes(`'${key}'`) && !outside.includes(`"${key}"`) && !new RegExp(`\\b${key}\\s*:`).test(outside)) {
         bad.push(`   ${file.replace('.js', '').padEnd(24)} { ${key}: true } — not an option`);
       }
+    }
+  }
+
+  // Arrays of option values — `vibeChips: ['Modern', 'Bold', 'Memorable']` —
+  // select by exact match, so a value not on the list highlights nothing.
+  //
+  // Two things make this delicate. Arrays of OBJECTS are structured data, not
+  // option lists, and a naive [^\]]* regex reads their inner properties as
+  // elements (WaitingModeLiberator's events: [{ dayOffset: 3, type: '...' }]
+  // produced garbage findings). And free-text arrays — seedWords, anecdotes —
+  // look identical to option arrays. So: skip anything containing an object,
+  // and only report a MIXED array, where some entries resolve to real options
+  // and some do not. All-miss means free text; all-hit means it is correct.
+  for (const m3 of block.matchAll(/(\w+)\s*:\s*\[/g)) {
+    const field = m3[1];
+    let depth = 1, i = m3.index + m3[0].length;
+    while (depth && i < block.length) {
+      if (block[i] === '[') depth++;
+      else if (block[i] === ']') depth--;
+      i++;
+    }
+    const inner = block.slice(m3.index + m3[0].length, i - 1);
+    if (FREE_TEXT.has(field) || /[{[]/.test(inner)) continue;
+    const vals = [...inner.matchAll(/'([^']{2,28})'/g)].map(v => v[1])
+      .filter(v => !/[.!?,]|\s{2}/.test(v));          // drop prose; option values are short labels
+    if (vals.length < 2) continue;
+    const known = v => outside.includes(`'${v}'`) || outside.includes(`"${v}"`);
+    const missing = vals.filter(v => !known(v));
+    if (!missing.length || missing.length === vals.length) continue;
+    for (const v of missing) {
+      bad.push(`   ${file.replace('.js', '').padEnd(24)} ${field}: '${v}' — not an option (its siblings are)`);
     }
   }
 
