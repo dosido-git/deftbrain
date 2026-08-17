@@ -2632,7 +2632,7 @@ export const tools = [
       "Set your time available, skill level, and dietary needs",
       "Choose your meal type and available equipment",
       "Get meal recommendations ranked by how well they use your ingredients",
-      "Follow the minute-by-minute battle plan with parallel tasks and timing alerts"
+      "Follow the timeline minute by minute, with what to do while things cook and a nudge at the moments that matter"
     ],
     example: {
       scenario: "You have chicken thighs, rice, bell peppers, garlic, soy sauce, and some wilting spinach. You want dinner in 45 minutes and you're an intermediate cook.",

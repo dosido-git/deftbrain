@@ -476,7 +476,7 @@ const MiseEnPlace = ({ tool }) => {
   );
 
   // ══════════════════════════════════════════
-  // RENDER: Battle Plan Timeline
+  // RENDER: the cook-along timeline
   // ══════════════════════════════════════════
   const renderBattlePlan = () => {
     const bp = results?.battle_plan;
@@ -612,7 +612,7 @@ const MiseEnPlace = ({ tool }) => {
           </Section>
         )}
 
-        {/* THE BATTLE PLAN */}
+        {/* The cook-along timeline — the main event */}
         {renderBattlePlan()}
 
         {/* Shopping list */}
