@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "b391365165b2f7ee1f2de6d042676e917052d33b",
+  "hash": "d5744e1945c1fb06e933a5740aa435bf92052a67",
   "lastmod": "2026-08-17"
  },
  "static:about": {
@@ -88,8 +88,8 @@
   "lastmod": "2026-08-17"
  },
  "tool:MarkupDetective": {
-  "hash": "7a0f4ce70d7a5852656a17b58deb754b06040fa2",
-  "lastmod": "2026-08-07"
+  "hash": "4d09d2d73a0310bb0de1f466357b5ae06aa0406f",
+  "lastmod": "2026-08-17"
  },
  "tool:Mend": {
   "hash": "106264611476782ff5bb13457908d17d330e2b6a",

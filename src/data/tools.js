@@ -644,7 +644,7 @@ export const tools = [
   icon: "🏷️",
   categories: ['Loot', 'Diversions'],
   headerColor: "#c0d8b8",
-  description: "Ever wonder why a $5 coffee costs $5 or hospital aspirin is $25? Describe any product or service and MarkupDetective breaks down the actual cost structure — raw materials, labor, overhead, margin, and the psychological pricing tactics at play. See the markup multiplier, industry secrets, the fair price, and how to pay less.",
+  description: "Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.",
   guide: {
     overview: "MarkupDetective is pricing forensics for everyday life. Pick any product or service, and it shows you exactly where your money goes — what percentage is raw materials vs. labor vs. brand premium vs. pure profit. Includes the psychological pricing tactics being used on you, industry secrets about how things are really priced, and specific ways to get the same thing for less.",
     howToUse: [
@@ -661,7 +661,7 @@ export const tools = [
     },
     tips: [
       "Adding the specific price and context gets more precise breakdowns",
-      "The 'industry secrets' section reveals things companies don't want you to know",
+      "The pricing-practice section explains how the industry actually sets its prices",
       "Fair price comparison shows what insiders actually pay",
       "Save money tips are specific to each item, not generic advice"
     ]
