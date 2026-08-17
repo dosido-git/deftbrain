@@ -88,10 +88,12 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
   ],
   "recommended_support": [
     {
+      "badge": "EXACTLY one of these words and nothing else: best_fit | fastest | lowest_cost. Not every option needs one — use null where none applies. best_fit is a clinical judgement about what suits the situation; fastest and lowest_cost are about ACCESS and belong on things like an employer assistance programme or a sliding-scale service, which are not clinical recommendations at all.",
       "type_name": <professional or support type — e.g. "Licensed therapist (CBT-focused)", "Psychiatrist", "GP / Primary care doctor", "Peer support group", "Crisis line">,
       "why": <1-2 sentence explanation of why this fits their specific situation — cite what they shared>,
       "what_to_expect": <brief description of what working with this type of support is actually like>,
-      "how_to_find": <practical guidance on how to find this type of support — specific to their country if provided>,
+      "how_to_find": <ONE concrete place to start and what to do when they get there — a single named directory, service or phone number, specific to their country. One. Naming six is how someone who is already struggling ends up doing nothing.>,
+      "other_options": <a single short string naming at most 2 alternatives, or null if the one above is enough. A string, not a list — "Alma or Headway, both of which take insurance". Names and a handful of words each; anything longer turns this back into a menu.>,
       "cost_note": <brief note on typical cost range or insurance — country-specific if possible, null if unknown>
     }
   ],
@@ -109,6 +111,7 @@ Guidelines:
 - Never suggest anything that requires diagnosis to access (e.g. don't say "take medication") — stay in navigation/access territory
 - what_to_say: these are actual words they can use — "Hi, I'm looking for support with anxiety that's been affecting my sleep and work" is better than "ask about their approach"
 - immediate_steps: think about what someone can do TODAY, not eventually — searching a directory, calling a GP, downloading an app, calling a warmline
+- Never characterise what they described as a pattern, presentation or picture — no "a classic picture of", "this presentation", "textbook". You are reading a few sentences from a stranger, not recognising a condition. Say who tends to find a given approach useful instead: "many people dealing with persistent worry and broken sleep find CBT and ACT helpful" carries the same information without telling them what they have.
 - Tone: warm, practical, not clinical. This person is probably nervous about reaching out.
 - CRITICAL JSON RULE: never place a double-quote (") character inside any string value — it breaks the JSON. If you need to quote an example phrase (e.g. in what_to_say), write it without surrounding quotation marks.
 - Return ONLY the JSON object`;

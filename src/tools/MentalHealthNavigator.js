@@ -368,7 +368,11 @@ function MentalHealthNavigator({ tool }) {
               <div key={i} className={`${c.card} border-s-4 ${i === 0 ? 'border-s-cyan-500' : `border-s-zinc-400`} border ${c.border} rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`font-bold text-sm ${c.text}`}>{s.type_name}</span>
-                  {i === 0 && <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.infoBox} border`}>{t('mhn_best_fit')}</span>}
+                  {(() => {
+                    const KIND = { best_fit: 'mhn_best_fit', fastest: 'mhn_badge_fastest', lowest_cost: 'mhn_badge_cheapest' };
+                    const key = KIND[s.badge] || (s.badge === undefined && i === 0 ? 'mhn_best_fit' : null);
+                    return key ? <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.infoBox} border`}>{t(key)}</span> : null;
+                  })()}
                 </div>
                 <p className={`text-sm ${c.textSecondary}`}>{s.why}</p>
                 {s.what_to_expect && (
@@ -376,6 +380,9 @@ function MentalHealthNavigator({ tool }) {
                 )}
                 {s.how_to_find && (
                   <p className={`text-xs ${c.infoBox} border rounded-lg px-3 py-2`}><span className="font-semibold">{t('mhn_how_to_find')}</span>{s.how_to_find}</p>
+                )}
+                {s.other_options && (
+                  <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('mhn_other_options')}</span>{Array.isArray(s.other_options) ? s.other_options.join(' · ') : s.other_options}</p>
                 )}
                 {s.cost_note && (
                   <p className={`text-xs ${c.textMuted}`}><span className="font-semibold">{t('mhn_cost')}</span>{s.cost_note}</p>

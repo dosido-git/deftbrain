@@ -4,6 +4,9 @@
 // stay as-is across languages.
 export const mentalHealthNavigator = {
   en: {
+    mhn_badge_fastest: "Fastest to access",
+    mhn_badge_cheapest: "Lowest cost",
+    mhn_other_options: "Other options: ",
     mhn_next_title: "While you're arranging that",
     mhn_front_door: "If you're not sure what kind of help you need, this is a good place to start.",
     mhn_your_situation: "What you told us",
@@ -77,6 +80,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Navigation completed",
   },
   es: {
+    mhn_badge_fastest: "La vía más rápida",
+    mhn_badge_cheapest: "El más económico",
+    mhn_other_options: "Otras opciones: ",
     mhn_next_title: "Mientras lo organizas",
     mhn_front_door: "Si no sabes qué tipo de ayuda necesitas, este es un buen sitio para empezar.",
     mhn_your_situation: "Lo que nos contaste",
@@ -150,6 +156,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Navegación completada",
   },
   zh: {
+    mhn_badge_fastest: "最快能用上",
+    mhn_badge_cheapest: "花费最少",
+    mhn_other_options: "其他选择：",
     mhn_next_title: "在你安排这些的同时",
     mhn_front_door: "如果你还不确定自己需要哪种帮助，从这里开始就好。",
     mhn_your_situation: "你告诉我们的情况",
@@ -223,6 +232,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "导航完成",
   },
   hi: {
+    mhn_badge_fastest: "सबसे जल्दी मिलने वाला",
+    mhn_badge_cheapest: "सबसे कम ख़र्च",
+    mhn_other_options: "अन्य विकल्प: ",
     mhn_next_title: "जब तक आप यह इंतज़ाम करें",
     mhn_front_door: "अगर आपको पता नहीं कि किस तरह की मदद चाहिए, तो शुरुआत यहीं से करना ठीक है।",
     mhn_your_situation: "आपने हमें जो बताया",
@@ -296,6 +308,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "नेविगेशन पूरा हुआ",
   },
   ar: {
+    mhn_badge_fastest: "الأسرع وصولًا",
+    mhn_badge_cheapest: "الأقل تكلفة",
+    mhn_other_options: "خيارات أخرى: ",
     mhn_next_title: "بينما ترتّب ذلك",
     mhn_front_door: "إن لم تكن تعرف نوع المساعدة التي تحتاجها، فهذا مكان جيد للبدء.",
     mhn_your_situation: "ما أخبرتنا به",
@@ -369,6 +384,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "اكتمل التوجيه",
   },
   pt: {
+    mhn_badge_fastest: "O mais rápido de acessar",
+    mhn_badge_cheapest: "O de menor custo",
+    mhn_other_options: "Outras opções: ",
     mhn_next_title: "Enquanto você organiza isso",
     mhn_front_door: "Se você não sabe de que tipo de ajuda precisa, este é um bom lugar para começar.",
     mhn_your_situation: "O que você nos contou",
@@ -442,6 +460,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Navegação concluída",
   },
   fr: {
+    mhn_badge_fastest: "Le plus rapide à obtenir",
+    mhn_badge_cheapest: "Le moins coûteux",
+    mhn_other_options: "Autres options : ",
     mhn_next_title: "En attendant de mettre cela en place",
     mhn_front_door: "Si vous ne savez pas de quelle aide vous avez besoin, c'est un bon point de départ.",
     mhn_your_situation: "Ce que vous nous avez dit",
@@ -515,6 +536,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Navigation terminée",
   },
   de: {
+    mhn_badge_fastest: "Am schnellsten verfügbar",
+    mhn_badge_cheapest: "Am günstigsten",
+    mhn_other_options: "Weitere Möglichkeiten: ",
     mhn_next_title: "Bis das steht",
     mhn_front_door: "Wenn du nicht weißt, welche Hilfe du brauchst, ist das hier ein guter Anfang.",
     mhn_your_situation: "Was du uns erzählt hast",
@@ -588,6 +612,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Navigation abgeschlossen",
   },
   ja: {
+    mhn_badge_fastest: "いちばん早く使える",
+    mhn_badge_cheapest: "費用がいちばん低い",
+    mhn_other_options: "ほかの選択肢：",
     mhn_next_title: "その手配を進めるあいだに",
     mhn_front_door: "どんな助けが必要か分からないときは、ここから始めて大丈夫です。",
     mhn_your_situation: "あなたが教えてくれたこと",
@@ -661,6 +688,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "ナビゲーション完了",
   },
   ko: {
+    mhn_badge_fastest: "가장 빨리 닿을 수 있음",
+    mhn_badge_cheapest: "비용이 가장 적음",
+    mhn_other_options: "다른 선택지: ",
     mhn_next_title: "그 준비를 하시는 동안",
     mhn_front_door: "어떤 도움이 필요한지 모르겠다면, 여기서 시작하셔도 좋습니다.",
     mhn_your_situation: "알려주신 내용",
@@ -734,6 +764,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "안내 완료",
   },
   ru: {
+    mhn_badge_fastest: "Быстрее всего получить",
+    mhn_badge_cheapest: "Дешевле всего",
+    mhn_other_options: "Другие варианты: ",
     mhn_next_title: "Пока вы это организуете",
     mhn_front_door: "Если вы не знаете, какая помощь нужна, начать отсюда — нормально.",
     mhn_your_situation: "Что вы нам рассказали",
@@ -807,6 +840,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "Навигация завершена",
   },
   th: {
+    mhn_badge_fastest: "เข้าถึงได้เร็วที่สุด",
+    mhn_badge_cheapest: "ค่าใช้จ่ายต่ำสุด",
+    mhn_other_options: "ตัวเลือกอื่น: ",
     mhn_next_title: "ระหว่างที่คุณจัดการเรื่องนั้น",
     mhn_front_door: "ถ้ายังไม่แน่ใจว่าต้องการความช่วยเหลือแบบไหน เริ่มที่นี่ก็ได้",
     mhn_your_situation: "สิ่งที่คุณบอกเรา",
@@ -880,6 +916,9 @@ export const mentalHealthNavigator = {
     mhn_nav_completed: "นำทางเสร็จสิ้น",
   },
   vi: {
+    mhn_badge_fastest: "Nhanh tiếp cận nhất",
+    mhn_badge_cheapest: "Chi phí thấp nhất",
+    mhn_other_options: "Lựa chọn khác: ",
     mhn_next_title: "Trong lúc bạn thu xếp việc đó",
     mhn_front_door: "Nếu bạn chưa rõ mình cần loại giúp đỡ nào, bắt đầu từ đây là ổn.",
     mhn_your_situation: "Những gì bạn đã chia sẻ",
