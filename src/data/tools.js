@@ -4869,7 +4869,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🏡",
   categories: ['The Grind', 'Loot'],
   headerColor: "#c0d8b8",
-  description: "Analyze rental agreements and identify predatory clauses, illegal provisions, unusual fees, and missing tenant protections. Upload your lease (PDF or text), get color-coded red/yellow/green flags with plain language explanations, negotiation scripts, and comparison to local housing laws. Flags concerning clauses, explains your rights, provides negotiation strategies, and connects you to tenant resources. Built for first-time renters and tenant protection.",
+  description: "Leases are full of language most renters never question until something goes wrong. Upload your lease, and DeftBrain will flag unusual clauses, explain them in plain English, and help you spot problems before they become expensive surprises.",
   guide: {
     overview: "Lease Trap Detector analyzes rental agreements to protect tenants from predatory practices. Upload your lease or paste the text, specify your location (for local law comparison), and get comprehensive analysis: RED flags for serious concerns (illegal clauses, landlord overreach, exploitative fees), YELLOW flags for questionable provisions (vague language, missing details), GREEN flags for good tenant protections. Each flag includes the actual clause text, plain-language explanation of the problem, legal status (illegal/unenforceable/exploitative), your rights under local law, and specific negotiation strategies. Also identifies missing protections, unusual fees, and provides negotiation scripts plus local tenant rights resources.",
     

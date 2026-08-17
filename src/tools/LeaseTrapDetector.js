@@ -27,6 +27,18 @@ const EXAMPLES = [
 },
 ];;
 
+// Kept in step with the 30mb PDF body tier in backend/server.js: base64 turns
+// 20MB of file into ~26.7MB of request.
+const MAX_UPLOAD_MB = 20;
+
+const SITUATIONS = [
+  { value: 'not_signed', icon: '✍️', labelKey: 'ltd_sit_not_signed' },
+  { value: 'signed',     icon: '📄', labelKey: 'ltd_sit_signed' },
+  { value: 'renewing',   icon: '🔁', labelKey: 'ltd_sit_renewing' },
+  { value: 'comparing',  icon: '⚖️', labelKey: 'ltd_sit_comparing' },
+  { value: 'pressured',  icon: '📅', labelKey: 'ltd_sit_pressured' },
+];
+
 const LeaseTrapDetector = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -35,8 +47,11 @@ const LeaseTrapDetector = ({ tool }) => {
     { value: 'residential', label: t('ltd_lt_residential'), icon: '🏢' },
     { value: 'house', label: t('ltd_lt_house'), icon: '🏠' },
     { value: 'room', label: t('ltd_lt_room'), icon: '🛏️' },
-    { value: 'commercial', label: t('ltd_lt_commercial'), icon: '🏬' },
     { value: 'sublease', label: t('ltd_lt_sublease'), icon: '🔄' },
+    // Commercial leases answer to different law and different norms — almost a
+    // separate product. Last, and visually separated, so nobody lands on it by
+    // drifting one square to the right.
+    { value: 'commercial', label: t('ltd_lt_commercial'), icon: '🏬', separated: true },
   ];
   const fileInputRef = useRef(null);
   const c = {
@@ -80,6 +95,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const [location, setLocation] = useState('');
   const [leaseType, setLeaseType] = useState('');
   const [concerns, setConcerns] = useState('');
+  const [situation, setSituation] = useState('');
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [followupQ, setFollowupQ] = useState('');
@@ -130,7 +146,7 @@ const LeaseTrapDetector = ({ tool }) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.type !== 'application/pdf') { setError(t('ltd_err_pdf_only')); return; }
-    if (file.size > 10 * 1024 * 1024) { setError(t('ltd_err_too_large')); return; }
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) { setError(t('ltd_err_too_large', { mb: MAX_UPLOAD_MB })); return; }
     setError('');
     const reader = new FileReader();
     reader.onerror = () => setError(t('ltd_err_read_fail'));
@@ -154,6 +170,7 @@ const LeaseTrapDetector = ({ tool }) => {
         leaseText: inputMethod === 'text' ? leaseText.trim() : null,
         pdfBase64: inputMethod === 'file' ? fileBase64 : null,
         location: location.trim(), leaseType, concerns: concerns.trim(),
+        situation: situation || null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
@@ -291,7 +308,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const handleReset = () => {
     // Analyze mode
-    setLeaseText(''); setUploadedFile(null); setFileBase64(null); setLocation(''); setLeaseType(''); setConcerns('');
+    setLeaseText(''); setUploadedFile(null); setFileBase64(null); setLocation(''); setLeaseType(''); setConcerns(''); setSituation('');
     setResults(null); setExpandedSections({}); setFollowupHistory([]); setFollowupA(null); setFollowupQ('');
     setDraftEmail(null); setComparison(null); setShowCompare(false); setAmendment(null); setShowAmendment(false);
     setAmendmentClauses([]); setChecklist(null); setChecklistType(null); setCheckedItems({});
@@ -443,11 +460,30 @@ const LeaseTrapDetector = ({ tool }) => {
               </div>
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_leasetype_label')} <span className={c.required}>*</span></label>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {LEASE_TYPES.map(lt => (
-                    <button key={lt.value} onClick={() => setLeaseType(lt.value)} className={`p-2.5 rounded-xl border text-center transition-all ${leaseType === lt.value ? (isDark ? 'border-orange-500 bg-orange-900/20 text-orange-300' : 'border-orange-500 bg-orange-50 text-orange-700') : (isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-200 hover:border-zinc-300 text-gray-700')}`}>
-                      <span className="text-lg block">{lt.icon}</span>
-                      <span className="text-[10px] font-bold block mt-0.5">{lt.label}</span>
+                {[false, true].map(sep => (
+                  <div key={String(sep)}>
+                    {sep && <div className={`my-2 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`} />}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {LEASE_TYPES.filter(lt => !!lt.separated === sep).map(lt => (
+                        <button key={lt.value} onClick={() => setLeaseType(lt.value)} className={`p-2.5 rounded-xl border text-center transition-all ${leaseType === lt.value ? (isDark ? 'border-orange-500 bg-orange-900/20 text-orange-300' : 'border-orange-500 bg-orange-50 text-orange-700') : (isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-200 hover:border-zinc-300 text-gray-700')}`}>
+                          <span className="text-lg block">{lt.icon}</span>
+                          <span className="text-[10px] font-bold block mt-0.5">{lt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Whether they have signed changes what the advice can be: leverage
+                  before, damage control after. Optional — an unanswered form
+                  behaves exactly as it did. */}
+              <div>
+                <p className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_situation_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>{t('ltd_optional')}</span></p>
+                <div role="group" aria-label={t('ltd_situation_label')} className="flex flex-wrap gap-1.5">
+                  {SITUATIONS.map(sit => (
+                    <button key={sit.value} onClick={() => setSituation(situation === sit.value ? '' : sit.value)}
+                      className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${situation === sit.value ? (isDark ? 'border-orange-500 bg-orange-900/20 text-orange-300' : 'border-orange-500 bg-orange-50 text-orange-700') : (isDark ? 'border-zinc-600 hover:border-zinc-500 text-zinc-300' : 'border-zinc-200 hover:border-zinc-300 text-gray-700')}`}>
+                      <span className="me-1">{sit.icon}</span>{t(sit.labelKey)}
                     </button>
                   ))}
                 </div>

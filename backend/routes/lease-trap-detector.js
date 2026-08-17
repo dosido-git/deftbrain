@@ -47,7 +47,7 @@ Return ONLY valid JSON:
 
 router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { leaseText, pdfBase64, location, leaseType, concerns, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+    const { leaseText, pdfBase64, location, leaseType, concerns, situation, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!location || !location.trim()) {
       return res.status(400).json({ error: 'Location is required' });
@@ -60,6 +60,19 @@ router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) 
     }
 
     const contentBlocks = [];
+
+    // What the reader can still do about a clause depends entirely on where
+    // they are in the process. Steers the advice, never the reading of the lease.
+    const SITUATION_STEER = {
+      not_signed: 'They have NOT signed yet. Everything is still negotiable, so where a clause is unusual say what to ask for instead and how to raise it. Do not write as though the terms are settled.',
+      signed: 'They have already signed. Negotiation advice is not useful now — focus on what each clause actually obliges them to do, what protections still exist regardless of what the lease says, what to document from here, and what to raise if it becomes a problem.',
+      renewing: 'They are renewing. A renewal is the one moment a sitting tenant has leverage, and a track record to point to — say which terms are worth reopening now and what makes a reasonable ask.',
+      comparing: 'They are comparing places and have not committed. Be concrete about which terms here are better or worse than ordinary, so this lease can be weighed against another.',
+      pressured: 'They are being told to sign today. Say plainly which items genuinely need reading before signing and which can wait, and name the pressure for what it is without telling them what to decide — deadline pressure is common and is not by itself evidence of bad faith.',
+    };
+    const situationNote = situation && SITUATION_STEER[situation]
+      ? `\n\nTHE READER'S SITUATION: ${SITUATION_STEER[situation]}`
+      : '';
 
     if (pdfBase64) {
       const commaIndex = pdfBase64.indexOf(',');
@@ -87,13 +100,18 @@ router.post('/lease-trap-detector', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
 LEASE TYPE: ${leaseType}
 LOCATION: ${location}
-${concerns ? `TENANT CONCERNS: ${concerns}` : ''}
+${concerns ? `TENANT CONCERNS: ${concerns}` : ''}${situationNote}
 
 ${leaseText ? `LEASE TEXT:\n${leaseText}` : 'The lease document was provided as a PDF above. Analyze its full contents.'}
 
 ═══════════════════════════════════════════
 ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
+
+TONE — READ THIS BEFORE ANYTHING ELSE:
+Most leases are not traps. Some are boilerplate the landlord has never read either, many are simply confusing, and a few are genuinely one-sided. Say which of those this one is, and let the finding be "mostly standard" when that is the truth — a lease with nothing alarming in it is a real and useful result, not a failed analysis.
+Describe clauses, never motives. "This clause lets the landlord keep the deposit for ordinary wear" is the finding; "the landlord is trying to keep your deposit" is a claim about a person you have never met and cannot support. Write about what the document says and what it would mean for the reader, not about what anyone intended by it.
+The reader has to live with this landlord, often for years, and may have to raise these points face to face. Language that makes them feel cheated makes that conversation worse and rarely makes the point better. Never suggest the reader is being deceived, exploited, or taken advantage of. Calm and specific beats alarmed every time.
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
 - Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags 1-2 (even in a trap-heavy lease, name at least one genuinely standard/fair clause if any exists), unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
@@ -710,6 +728,11 @@ LEASE-SPECIFIC DETAILS:
 ${contextLines.join('\n')}
 
 Create a comprehensive, jurisdiction-specific checklist that protects this tenant's deposit and rights. Every item should be actionable and specific to their lease and location.
+
+TONE — READ THIS BEFORE ANYTHING ELSE:
+Most leases are not traps. Some are boilerplate the landlord has never read either, many are simply confusing, and a few are genuinely one-sided. Say which of those this one is, and let the finding be "mostly standard" when that is the truth — a lease with nothing alarming in it is a real and useful result, not a failed analysis.
+Describe clauses, never motives. "This clause lets the landlord keep the deposit for ordinary wear" is the finding; "the landlord is trying to keep your deposit" is a claim about a person you have never met and cannot support. Write about what the document says and what it would mean for the reader, not about what anyone intended by it.
+The reader has to live with this landlord, often for years, and may have to raise these points face to face. Language that makes them feel cheated makes that conversation worse and rarely makes the point better. Never suggest the reader is being deceived, exploited, or taken advantage of. Calm and specific beats alarmed every time.
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): at most 5 sections, at most 5 items per section. Keep every string field to one tight sentence. A focused, fully-closed checklist beats a longer truncated one.
 

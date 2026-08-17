@@ -83,17 +83,27 @@ app.use(cors(
 // The large parser is mounted first and scoped to those paths; express.json
 // skips re-parsing (req._body) so the global parser is a no-op for them.
 const LARGE_BODY_PREFIXES = [
-  '/api/bike-medic', '/api/bill-rescue', '/api/buy-wise', '/api/caption-magic',
-  '/api/doctor-visit-translator', '/api/jargon-assassin', '/api/laundro-mat',
-  '/api/lease-trap-detector', '/api/mise-en-place', '/api/pet-weirdness-decoder',
-  '/api/plant-rescue', '/api/plaintalk', '/api/quote-check', '/api/recipe-chaos-solver',
-  '/api/the-final-word',
+  '/api/bike-medic', '/api/buy-wise', '/api/caption-magic', '/api/laundro-mat',
+  '/api/mise-en-place', '/api/pet-weirdness-decoder', '/api/plant-rescue',
+  '/api/recipe-chaos-solver', '/api/the-final-word',
 ];
+// PDF routes need their own tier. A file is sent as a data URL, and base64
+// inflates it by a third — so the 12mb tier below actually capped uploads at
+// about 8.5MB of PDF, while all six of these tools advertised 10MB. Anything
+// in between 413'd with nothing in the UI to explain it. 30mb carries a 20MB
+// PDF (~26.7MB encoded) and still lands under the Anthropic API's own 32MB
+// request ceiling once the prompt is added.
+const PDF_BODY_PREFIXES = [
+  '/api/bill-rescue', '/api/doctor-visit-translator', '/api/jargon-assassin',
+  '/api/lease-trap-detector', '/api/plaintalk', '/api/quote-check',
+];
+const matches = (path, prefixes) => prefixes.some(p => path === p || path.startsWith(p + '/'));
 const largeJson = express.json({ limit: '12mb' });
+const pdfJson = express.json({ limit: '30mb' });
 app.use((req, res, next) => {
-  if (req.method === 'POST' && LARGE_BODY_PREFIXES.some(p => req.path === p || req.path.startsWith(p + '/'))) {
-    return largeJson(req, res, next);
-  }
+  if (req.method !== 'POST') return next();
+  if (matches(req.path, PDF_BODY_PREFIXES)) return pdfJson(req, res, next);
+  if (matches(req.path, LARGE_BODY_PREFIXES)) return largeJson(req, res, next);
   next();
 });
 app.use(express.json({ limit: '2mb' }));
