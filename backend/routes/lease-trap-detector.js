@@ -108,12 +108,18 @@ ${leaseText ? `LEASE TEXT:\n${leaseText}` : 'The lease document was provided as 
 ANALYSIS REQUIREMENTS
 ═══════════════════════════════════════════
 
+JURISDICTION — READ THIS FIRST:
+Tenant law is state law, and the wrong state's rules are worse than no rules: a deposit cap, a notice period or a late-fee limit from the wrong place reads as authoritative and gets acted on. Work out which jurisdiction the LEASE points to — the property address, a governing-law clause, statutes it cites — and compare it with the stated location above.
+If they agree, or the lease names none, analyse under the stated location.
+If they DISAGREE, set jurisdiction_check.mismatch to true and analyse under the STATED location ONLY. Do not cite the other one anywhere, not even to note the difference. A reader cannot tell which sentence came from which state, so a blended report is not half right — it is unusable.
+
 TONE — READ THIS BEFORE ANYTHING ELSE:
 Most leases are not traps. Some are boilerplate the landlord has never read either, many are simply confusing, and a few are genuinely one-sided. Say which of those this one is, and let the finding be "mostly standard" when that is the truth — a lease with nothing alarming in it is a real and useful result, not a failed analysis.
 Describe clauses, never motives. "This clause lets the landlord keep the deposit for ordinary wear" is the finding; "the landlord is trying to keep your deposit" is a claim about a person you have never met and cannot support. Write about what the document says and what it would mean for the reader, not about what anyone intended by it.
 The reader has to live with this landlord, often for years, and may have to raise these points face to face. Language that makes them feel cheated makes that conversation worse and rarely makes the point better. Never suggest the reader is being deceived, exploited, or taken advantage of. Calm and specific beats alarmed every time.
 
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
+- top_fixes: EXACTLY 3, ordered most consequential first. These are the three things a reader would act on if they did nothing else, so prefer changes that are concrete, negotiable and worth real money over ones that are merely unusual.
 - Report only the MOST IMPORTANT items in each array, never an exhaustive list. Hard caps: red_flags ≤ 4, yellow_flags ≤ 3, green_flags 1-2 (even in a trap-heavy lease, name at least one genuinely standard/fair clause if any exists), unenforceable_clauses ≤ 3, missing_protections ≤ 4, unusual_fees ≤ 3, resources ≤ 3, monthly_fees_beyond_rent ≤ 4, financial_red_flags ≤ 3, issues_found ≤ 3, key_points ≤ 3, stand_firm_on ≤ 3, if_they_say_scripts ≤ 2, questions_to_ask ≤ 2 per flag.
 - Keep EVERY string field to a single sentence (negotiation_script and opening_email: at most 2-3 short sentences). Never restate the same concern across fields or arrays. A focused, fully-closed response beats a long truncated one.
 
@@ -166,6 +172,14 @@ RESOURCES FOR ${location}:
     // calls give each group its own budget, so the same total output no longer
     // has to fit one ceiling, and the wall-clock is the slowest quarter.
     const schemaRisk = `{
+  "jurisdiction_check": {
+    "lease_jurisdiction": "The name of the state/province the LEASE ITSELF points to, taken from the property address, a governing-law clause, or statutes it cites. The NAME ONLY and nothing else — 'California', never 'California (the property address is 1450 Fillmore Street...)'. This string is printed inside a button label, so any explanation added here breaks it. Use null if the lease names no jurisdiction; put your reasoning nowhere.",
+    "stated_jurisdiction": "${location}",
+    "mismatch": true/false
+  },
+  "top_fixes": [
+    { "fix": "One thing to change before signing, written as an instruction the reader could hand to the landlord — 'Reduce the security deposit from $4,200 to $2,800', not 'the deposit is too high'. Include the numbers where there are numbers.", "why": "What it costs them if it stays — one sentence" }
+  ],
   "overall_assessment": {
     "risk_level": "high | medium | low",
     "major_concerns_count": number,
