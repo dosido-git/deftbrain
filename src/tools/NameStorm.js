@@ -1012,7 +1012,7 @@ const NameStorm = ({ tool }) => {
             </div>
           </div>
         </div>
-        <div className="px-5 pb-5 pt-4">
+        <div className="px-5 pb-5 pt-4 flex gap-2">
           <button onClick={() => { setMode('generate'); setCategory(''); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
             <span>⚡</span> {t('ns_tab_generate')}
