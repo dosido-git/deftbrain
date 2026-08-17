@@ -20,6 +20,7 @@ router.post('/mise-en-place', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       mealType,
       preferences,
       userLanguage,
+      chosenMeal
     } = req.body;
 
     if (!ingredients && !imageBase64) {
@@ -144,6 +145,9 @@ Return ONLY valid JSON:
 IMPORTANT RULES:
 - Keep every field concise — a phrase or single short sentence as the schema implies; no meta-notes or length annotations.
 - critical_timing: at most 2 or 3 steps in a whole plan. Marking half of them means none of them stand out, and a beginner reading that everything is urgent will not relax at any point in the meal.
+${chosenMeal ? `
+THE READER HAS ALREADY CHOSEN: they want to cook "${chosenMeal}". Set selected_meal to that dish and build the plan around it. Do not re-rank the options, do not talk them out of it, and do not explain why something else would have been faster — they saw the alternatives and picked this. Keep listing the others under meals so they can change their mind again.
+` : ''}
 - The battle_plan is the most important section. Make it detailed, practical, and sequenced like a real chef would think.
 - phases should have 6-12 entries depending on complexity (at most 12). Include EVERY meaningful step but keep each phase to one sentence.
 - critical_timing = true for any step where timing matters (don't overcook, must add at right moment, etc.)

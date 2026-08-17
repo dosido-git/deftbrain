@@ -4,6 +4,7 @@
 // Plot Twist, Ghost Writer, DeftBrain) stay as-is across languages.
 export const miseEnPlace = {
   en: {
+    mep_plan_this_instead: "→ Plan this one instead",
     mep_optional: "(optional)",
     mep_title: "Mise en Place",
     mep_tagline: "Turn what's in your kitchen into a meal — with a minute-by-minute battle plan",
@@ -119,6 +120,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "QUICK SHOP:",
   },
   es: {
+    mep_plan_this_instead: "→ Planifica esta en su lugar",
     mep_optional: "(opcional)",
     mep_title: "Mise en Place",
     mep_tagline: "Convierte lo que tienes en la cocina en una comida — con un plan de batalla minuto a minuto",
@@ -221,6 +223,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COMPRA RÁPIDA:",
   },
   zh: {
+    mep_plan_this_instead: "→ 改用这道做计划",
     mep_optional: "（可选）",
     mep_title: "Mise en Place",
     mep_tagline: "把厨房里现有的食材变成一顿饭——还附上分秒必争的作战计划",
@@ -323,6 +326,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "快速采购：",
   },
   hi: {
+    mep_plan_this_instead: "→ इसी का प्लान बनाइए",
     mep_optional: "(वैकल्पिक)",
     mep_title: "Mise en Place",
     mep_tagline: "अपने किचन में जो है उसे एक भोजन में बदलें — मिनट-दर-मिनट युद्ध-योजना के साथ",
@@ -425,6 +429,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "त्वरित खरीदारी:",
   },
   ar: {
+    mep_plan_this_instead: "→ خطّط لهذا الطبق بدلًا منه",
     mep_optional: "(اختياري)",
     mep_title: "Mise en Place",
     mep_tagline: "حوّل ما لديك في المطبخ إلى وجبة — مع خطة عمل دقيقة بدقيقة",
@@ -527,6 +532,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "تسوّق سريع:",
   },
   pt: {
+    mep_plan_this_instead: "→ Planeje este em vez disso",
     mep_optional: "(opcional)",
     mep_title: "Mise en Place",
     mep_tagline: "Transforme o que há na sua cozinha em uma refeição — com um plano de batalha minuto a minuto",
@@ -629,6 +635,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COMPRA RÁPIDA:",
   },
   fr: {
+    mep_plan_this_instead: "→ Planifier celui-ci à la place",
     mep_optional: "(facultatif)",
     mep_title: "Mise en Place",
     mep_tagline: "Transformez ce qu'il y a dans votre cuisine en un repas — avec un plan de bataille minute par minute",
@@ -731,6 +738,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COURSES RAPIDES :",
   },
   de: {
+    mep_plan_this_instead: "→ Stattdessen dieses planen",
     mep_optional: "(optional)",
     mep_title: "Mise en Place",
     mep_tagline: "Mach aus dem, was in deiner Küche ist, eine Mahlzeit — mit einem minutengenauen Schlachtplan",
@@ -833,6 +841,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "SCHNELL EINKAUFEN:",
   },
   ja: {
+    mep_plan_this_instead: "→ こちらの段取りにする",
     mep_optional: "（任意）",
     mep_title: "Mise en Place",
     mep_tagline: "キッチンにあるものを一食に変える — 分刻みの作戦プラン付き",
@@ -935,6 +944,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "クイック買い物：",
   },
   ko: {
+    mep_plan_this_instead: "→ 이걸로 계획 세우기",
     mep_optional: "(선택)",
     mep_title: "Mise en Place",
     mep_tagline: "주방에 있는 재료를 한 끼로 — 분 단위 작전 계획과 함께",
@@ -1037,6 +1047,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "빠른 장보기:",
   },
   ru: {
+    mep_plan_this_instead: "→ Составить план для этого",
     mep_optional: "(необязательно)",
     mep_title: "Mise en Place",
     mep_tagline: "Превратите то, что есть на кухне, в блюдо — с поминутным боевым планом",
@@ -1139,6 +1150,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "БЫСТРАЯ ЗАКУПКА:",
   },
   th: {
+    mep_plan_this_instead: "→ วางแผนจานนี้แทน",
     mep_optional: "(ไม่บังคับ)",
     mep_title: "Mise en Place",
     mep_tagline: "เปลี่ยนของที่มีในครัวให้เป็นมื้ออาหาร — พร้อมแผนการรบแบบนาทีต่อนาที",
@@ -1241,6 +1253,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "ซื้อด่วน:",
   },
   vi: {
+    mep_plan_this_instead: "→ Lên kế hoạch cho món này",
     mep_optional: "(không bắt buộc)",
     mep_title: "Mise en Place",
     mep_tagline: "Biến những gì có trong bếp thành một bữa ăn — kèm kế hoạch tác chiến từng phút",

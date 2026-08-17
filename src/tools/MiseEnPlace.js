@@ -168,6 +168,12 @@ const MiseEnPlace = ({ tool }) => {
 
   // Results
   const [results, setResults] = usePersistentState('miseenplace-results', null);
+  const [chosenMeal, setChosenMeal] = useState('');
+  const sameDish = (a, b) => {
+    const norm = v => String(v || '').toLowerCase().split('(')[0].replace(/[^a-z0-9 ]/g, '').trim();
+    const [x, y] = [norm(a), norm(b)];
+    return !!x && !!y && (x === y || x.startsWith(y) || y.startsWith(x));
+  };
   const [error, setError] = useState('');
   const [showMeals, setShowMeals] = useState(true);
   const [showShopping, setShowShopping] = useState(false);
@@ -224,12 +230,21 @@ const MiseEnPlace = ({ tool }) => {
         servings, dietary, timeAvailable: `${timeAvailable} minutes`,
         skillLevel, equipment, mealType,
         preferences: preferences.trim() || null,
+        chosenMeal: chosenMeal || null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
       saveToHistory(data);
     } catch (err) { setError(err.message || t('mep_err_plan')); }
-  }, [ingredients, imageBase64, servings, dietary, timeAvailable, skillLevel, equipment, mealType, preferences, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [ingredients, imageBase64, servings, dietary, timeAvailable, skillLevel, equipment, mealType, preferences, chosenMeal, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+
+  // Choosing the other option re-runs the plan for it. The alternatives were
+  // always listed; only the first one ever got a plan, which made the second
+  // a suggestion nobody could act on.
+  useEffect(() => {
+    if (!chosenMeal) return;
+    plan();
+  }, [chosenMeal]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     const ex = pickExample('MiseEnPlace', EXAMPLES);
@@ -576,6 +591,14 @@ const MiseEnPlace = ({ tool }) => {
                   </div>
                   <p className={`text-xs ${c.textSecondary} mb-2`}>{meal.description}</p>
                   <p className={`text-xs ${c.textMuted} italic`}>💡 {meal.why_this_works}</p>
+                  {/* Two dishes were offered and only one got a plan, which
+                      made the second an option nobody could take. */}
+                  {!sameDish(meal.name, results.selected_meal?.name) && (
+                    <button onClick={() => setChosenMeal(meal.name)} disabled={loading}
+                      className={`mt-2 text-xs font-bold ${linkStyle} disabled:opacity-40`}>
+                      {t('mep_plan_this_instead')}
+                    </button>
+                  )}
                   {meal.flavor_tags?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {meal.flavor_tags.map((tag, i) => (
