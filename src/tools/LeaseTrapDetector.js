@@ -906,12 +906,18 @@ const LeaseTrapDetector = ({ tool }) => {
               return (
                 <div className={`${c.card} border-2 rounded-2xl p-5 ${isDark ? 'border-orange-700/50' : 'border-orange-300'}`}>
                   <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textSecondary}`}>{t('ltd_financial_exposure')}</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                  {/* Rows, not a four-across grid. Three of these four values
+                      are sentences rather than figures — worst_case_penalties
+                      runs to a clause — and a narrow centred column squeezed
+                      them into four or five wrapped lines under a label that
+                      was smaller than the number. A row gives the label its own
+                      width and lets the value run. */}
+                  <div className={`rounded-xl ${c.cardAlt} border divide-y ${c.border} mb-3`}>
                     {[{ label: t('ltd_fin_monthly_rent'), value: fs.monthly_rent, icon: '🏠' }, { label: t('ltd_fin_move_in'), value: fs.total_move_in_cost, icon: '📦' }, { label: t('ltd_fin_annual_extras'), value: fs.annual_extra_costs, icon: '📊' }, { label: t('ltd_fin_worst_case'), value: fs.worst_case_penalties, icon: '⚠️' }].map((item, i) => item.value ? (
-                      <div key={i} className={`p-3 rounded-xl ${c.cardAlt} border text-center`}>
-                        <span className="text-lg block">{item.icon}</span>
-                        <p className={`text-sm font-black ${c.text}`}>{item.value}</p>
-                        <p className={`text-[10px] ${c.textMuted}`}>{item.label}</p>
+                      <div key={i} className="flex items-baseline gap-3 px-3.5 py-2.5">
+                        <span className="flex-shrink-0" aria-hidden="true">{item.icon}</span>
+                        <span className={`flex-shrink-0 text-xs font-bold ${c.textMuted} w-28 sm:w-36`}>{item.label}</span>
+                        <span className={`text-sm font-bold ${c.text}`}>{item.value}</span>
                       </div>
                     ) : null)}
                   </div>

@@ -4845,7 +4845,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     when: "Before you sign a lease.",
     give: "The lease as a PDF or text, plus your city and state.",
     get: "Predatory clauses flagged, compared against local tenant law, with what's unenforceable where you live.",
-    edge: "It checks against your jurisdiction, so a clause that's routine in one state and illegal in another is labeled correctly.",
+    edge: "It checks against your own jurisdiction, so a clause that is routine in one place and unlawful in another is read the right way round.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -4893,7 +4893,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     },
     
     tips: [
-      "LOCATION IS CRITICAL - tenant laws vary dramatically by state and city. 'San Francisco, CA' gets different analysis than 'Dallas, TX'.",
+      "LOCATION IS CRITICAL - renting law varies sharply between regions and even between neighbouring cities, so name the city and the region or country it is in.",
       "UPLOAD FULL LEASE - don't just paste concerning clauses, the tool needs full context to spot patterns and missing protections.",
       "READ ALL FLAGS - even green flags are important (they show what protections you DO have).",
       "DON'T IGNORE YELLOW FLAGS - 'questionable' clauses often hide problems. Ask landlord for clarification on every yellow flag.",
