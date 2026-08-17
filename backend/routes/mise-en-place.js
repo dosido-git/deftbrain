@@ -112,7 +112,7 @@ Return ONLY valid JSON:
         "action": "what to do",
         "details": "specific instructions",
         "parallel_task": "what else to do during this time, or null",
-        "critical_timing": false
+        "critical_timing": "When a step genuinely cannot be left, say what to do and what goes wrong if they walk away — 'Stay at the pan: garlic goes from golden to bitter in about thirty seconds'. Someone who has not cooked much cannot tell a step that needs watching from one that does not, and 'critical' alone does not teach them. Use null for every step that can be left alone, which is most of them."
       }
     ],
     "checkpoints": [
@@ -138,11 +138,12 @@ Return ONLY valid JSON:
     "instructions": "brief instructions for the transformation"
   },
 
-  "scaling_notes": "How to easily scale this up or down"
+  "scaling_notes": "How to cook this for more or fewer people, in the voice of someone stood next to them rather than a conversion table. Lead with the thing that catches people out — usually that one ingredient or piece of equipment does not scale the way the others do — then the arithmetic, briefly. Address them directly, and say what stays the same as well as what changes; knowing what NOT to adjust is half of it. Two or three sentences, and write it fresh for THIS dish."
 }
 
 IMPORTANT RULES:
 - Keep every field concise — a phrase or single short sentence as the schema implies; no meta-notes or length annotations.
+- critical_timing: at most 2 or 3 steps in a whole plan. Marking half of them means none of them stand out, and a beginner reading that everything is urgent will not relax at any point in the meal.
 - The battle_plan is the most important section. Make it detailed, practical, and sequenced like a real chef would think.
 - phases should have 6-12 entries depending on complexity (at most 12). Include EVERY meaningful step but keep each phase to one sentence.
 - critical_timing = true for any step where timing matters (don't overcook, must add at right moment, etc.)

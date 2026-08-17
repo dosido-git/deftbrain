@@ -491,7 +491,11 @@ const MiseEnPlace = ({ tool }) => {
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className={`text-xs font-mono font-bold ${c.textMuted}`}>{phase.time_mark}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${c.badge}`}>{phase.duration}</span>
-                    {phase.critical_timing && <span className={`text-xs font-bold ${c.criticalText}`}>⏰ {t('mep_timing_critical')}</span>}
+                    {phase.critical_timing && (
+                      <span className={`text-xs font-bold ${c.criticalText}`}>
+                        ⏰ {typeof phase.critical_timing === 'string' ? phase.critical_timing : t('mep_timing_critical')}
+                      </span>
+                    )}
                   </div>
                   <p className={`text-sm font-semibold ${c.text} mb-1`}>{phase.action}</p>
                   {phase.details && <p className={`text-xs ${c.textSecondary}`}>{phase.details}</p>}
