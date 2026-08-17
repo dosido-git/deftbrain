@@ -4,6 +4,8 @@
 // Complaint Escalation Writer) stay as-is across languages.
 export const leaseTrapDetector = {
   en: {
+    ltd_missing_carried: "Using {{name}} — the document you already gave us. Paste different text below to examine another contract instead.",
+    ltd_missing_carried_doc: "your lease",
     ltd_jur_title: "Before we continue…",
     ltd_jur_body: "Your lease points to {{lease}}, but you told us {{stated}}.",
     ltd_jur_why: "Renter protections are set state by state — deposit caps, notice periods and late-fee limits all differ. We would rather ask than hand you the wrong state's rules.",
@@ -242,6 +244,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   es: {
+    ltd_missing_carried: "Usamos {{name}}, el documento que ya nos diste. Pega otro texto abajo si quieres revisar un contrato distinto.",
+    ltd_missing_carried_doc: "tu contrato",
     ltd_jur_title: "Antes de continuar…",
     ltd_jur_body: "Tu contrato apunta a {{lease}}, pero nos indicaste {{stated}}.",
     ltd_jur_why: "Las protecciones del inquilino se fijan estado por estado: topes de depósito, plazos de aviso y límites de recargos cambian. Preferimos preguntar antes que darte las reglas del estado equivocado.",
@@ -480,6 +484,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   zh: {
+    ltd_missing_carried: "正在使用你已提供的 {{name}}。若想查看别的合同，在下方粘贴另一份文本即可。",
+    ltd_missing_carried_doc: "你的租约",
     ltd_jur_title: "在继续之前……",
     ltd_jur_body: "你的租约指向 {{lease}}，但你填写的是 {{stated}}。",
     ltd_jur_why: "租客权益由各州分别规定：押金上限、通知期限、滞纳金限制都不一样。与其给你错的规则，不如先问一句。",
@@ -718,6 +724,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   hi: {
+    ltd_missing_carried: "{{name}} का उपयोग किया जा रहा है — वही दस्तावेज़ जो आपने पहले दिया था। कोई और अनुबंध देखना हो तो नीचे दूसरा टेक्स्ट पेस्ट करें।",
+    ltd_missing_carried_doc: "आपका लीज़",
     ltd_jur_title: "आगे बढ़ने से पहले…",
     ltd_jur_body: "आपका लीज़ {{lease}} की ओर इशारा करता है, पर आपने {{stated}} बताया था।",
     ltd_jur_why: "किरायेदार के अधिकार हर राज्य में अलग होते हैं — जमा की सीमा, नोटिस की अवधि, लेट फ़ीस सब बदल जाते हैं। ग़लत राज्य के नियम देने से बेहतर है पूछ लेना।",
@@ -956,6 +964,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ar: {
+    ltd_missing_carried: "نستخدم {{name}}، وهو المستند الذي قدّمته من قبل. الصق نصًا آخر بالأسفل لفحص عقد مختلف.",
+    ltd_missing_carried_doc: "عقد إيجارك",
     ltd_jur_title: "قبل أن نكمل…",
     ltd_jur_body: "يشير عقدك إلى {{lease}}، لكنك ذكرت {{stated}}.",
     ltd_jur_why: "حقوق المستأجر تُحدَّد على مستوى الولاية: سقف التأمين ومُهَل الإشعار وحدود غرامات التأخير تختلف. أن نسأل أفضل من أن نعطيك قواعد ولاية أخرى.",
@@ -1194,6 +1204,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   pt: {
+    ltd_missing_carried: "Usando {{name}} — o documento que você já enviou. Cole outro texto abaixo para examinar um contrato diferente.",
+    ltd_missing_carried_doc: "seu contrato",
     ltd_jur_title: "Antes de continuar…",
     ltd_jur_body: "Seu contrato aponta para {{lease}}, mas você informou {{stated}}.",
     ltd_jur_why: "As proteções do inquilino são definidas estado a estado: teto do depósito, prazos de aviso e limites de multa mudam. Preferimos perguntar a te dar as regras do estado errado.",
@@ -1432,6 +1444,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   fr: {
+    ltd_missing_carried: "Nous utilisons {{name}}, le document que vous nous avez déjà fourni. Collez un autre texte ci-dessous pour examiner un contrat différent.",
+    ltd_missing_carried_doc: "votre bail",
     ltd_jur_title: "Avant de continuer…",
     ltd_jur_body: "Votre bail renvoie à {{lease}}, mais vous avez indiqué {{stated}}.",
     ltd_jur_why: "Les protections du locataire sont fixées État par État : plafonds de dépôt, préavis et pénalités de retard diffèrent. Mieux vaut demander que vous donner les règles du mauvais État.",
@@ -1670,6 +1684,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   de: {
+    ltd_missing_carried: "Wir verwenden {{name}} — das Dokument, das du uns schon gegeben hast. Füge unten einen anderen Text ein, um einen anderen Vertrag zu prüfen.",
+    ltd_missing_carried_doc: "deinen Mietvertrag",
     ltd_jur_title: "Bevor wir weitermachen…",
     ltd_jur_body: "Dein Mietvertrag verweist auf {{lease}}, angegeben hast du aber {{stated}}.",
     ltd_jur_why: "Mieterschutz ist Sache des Bundesstaats: Kautionsgrenzen, Fristen und Verzugsgebühren unterscheiden sich. Lieber fragen wir nach, als dir die Regeln des falschen Staats zu geben.",
@@ -1908,6 +1924,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ja: {
+    ltd_missing_carried: "すでにいただいた{{name}}を使います。別の契約を見る場合は、下に別のテキストを貼り付けてください。",
+    ltd_missing_carried_doc: "あなたの契約書",
     ltd_jur_title: "続ける前に",
     ltd_jur_body: "契約書は{{lease}}を指していますが、入力されたのは{{stated}}です。",
     ltd_jur_why: "借り手の保護は州ごとに決まります。敷金の上限も通知期間も延滞金の制限も違います。誤った州の規則をお渡しするより、お尋ねします。",
@@ -2146,6 +2164,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ko: {
+    ltd_missing_carried: "이미 주신 {{name}}을(를) 사용합니다. 다른 계약서를 보시려면 아래에 다른 텍스트를 붙여넣으세요.",
+    ltd_missing_carried_doc: "당신의 계약서",
     ltd_jur_title: "계속하기 전에…",
     ltd_jur_body: "계약서는 {{lease}}를 가리키는데, 입력하신 곳은 {{stated}}입니다.",
     ltd_jur_why: "세입자 보호는 주마다 다릅니다. 보증금 상한, 통지 기간, 연체료 한도가 모두 다릅니다. 엉뚱한 주의 규정을 드리느니 여쭙겠습니다.",
@@ -2384,6 +2404,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   ru: {
+    ltd_missing_carried: "Используем {{name}} — документ, который вы уже дали. Чтобы проверить другой договор, вставьте иной текст ниже.",
+    ltd_missing_carried_doc: "ваш договор",
     ltd_jur_title: "Прежде чем продолжить…",
     ltd_jur_body: "Договор указывает на {{lease}}, а вы указали {{stated}}.",
     ltd_jur_why: "Права арендатора устанавливаются штатом: лимиты залога, сроки уведомления и потолки пеней различаются. Лучше спросить, чем дать правила чужого штата.",
@@ -2622,6 +2644,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   th: {
+    ltd_missing_carried: "กำลังใช้ {{name}} ซึ่งเป็นเอกสารที่คุณให้ไว้แล้ว หากต้องการดูสัญญาอื่น ให้วางข้อความอื่นด้านล่าง",
+    ltd_missing_carried_doc: "สัญญาเช่าของคุณ",
     ltd_jur_title: "ก่อนไปต่อ…",
     ltd_jur_body: "สัญญาของคุณชี้ไปที่ {{lease}} แต่คุณระบุว่า {{stated}}",
     ltd_jur_why: "การคุ้มครองผู้เช่าต่างกันไปในแต่ละรัฐ ทั้งเพดานเงินมัดจำ ระยะเวลาแจ้งล่วงหน้า และเพดานค่าปรับ เราขอถามดีกว่าให้กฎของรัฐที่ผิด",
@@ -2860,6 +2884,8 @@ export const leaseTrapDetector = {
     ltd_kb: "KB",
   },
   vi: {
+    ltd_missing_carried: "Đang dùng {{name}} — tài liệu bạn đã cung cấp. Dán văn bản khác bên dưới nếu muốn xem một hợp đồng khác.",
+    ltd_missing_carried_doc: "hợp đồng của bạn",
     ltd_jur_title: "Trước khi tiếp tục…",
     ltd_jur_body: "Hợp đồng của bạn chỉ tới {{lease}}, nhưng bạn ghi là {{stated}}.",
     ltd_jur_why: "Quyền của người thuê do từng bang quy định: trần tiền cọc, thời hạn báo trước, mức phạt trễ đều khác nhau. Chúng tôi hỏi còn hơn đưa bạn luật của bang khác.",

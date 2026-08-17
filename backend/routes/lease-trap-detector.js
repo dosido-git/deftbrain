@@ -923,8 +923,24 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`, userLanguage);
 // ════════════════════════════════════════════════════════════
 router.post('/lease-trap-detector/missing', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { contractText, contractType, yourRole, concerns, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-    if (!contractText?.trim()) return res.status(400).json({ error: 'Paste the contract text to analyze.' });
+    const { contractText, pdfBase64, contractType, yourRole, concerns, location, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+    if (!contractText?.trim() && !pdfBase64) {
+      return res.status(400).json({ error: 'Paste the contract text or upload the document to analyze.' });
+    }
+
+    const missingBlocks = [];
+    if (pdfBase64) {
+      const commaIndex = pdfBase64.indexOf(',');
+      const rawBase64 = commaIndex !== -1 ? pdfBase64.substring(commaIndex + 1) : pdfBase64;
+      missingBlocks.push({
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: rawBase64 },
+      });
+      missingBlocks.push({
+        type: 'text',
+        text: 'The document above is the contract to examine. Read all of it before answering.',
+      });
+    }
 
     const systemPrompt = `You are a contract protection expert — specifically focused on what SHOULD be in agreements but usually isn't. Most contract review focuses on bad clauses. You focus on absent protections — the things tenants, employees, clients, and buyers don't know to ask for because they don't know they're supposed to be there.`;
 
@@ -935,8 +951,8 @@ YOUR ROLE: ${yourRole || 'The party signing / agreeing'}
 ${location?.trim() ? `LOCATION: ${location.trim()} (relevant for jurisdiction-specific protections)` : ''}
 ${concerns?.trim() ? `SPECIFIC CONCERNS: ${concerns.trim()}` : ''}
 
-CONTRACT TEXT:
-${contractText.trim().slice(0, 8000)}
+${pdfBase64 && !contractText?.trim() ? 'The contract was provided as a PDF above. Work from its full contents.' : 'CONTRACT TEXT:'}
+${contractText?.trim().slice(0, 8000) || ''}
 
 Identify what's absent — protections that should be here but aren't.
 
@@ -977,7 +993,9 @@ ${NO_QUOTE_RULE}`;
         model: MODELS.SMART,
         max_tokens: 4500,
         system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-        messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
+        messages: [{ role: 'user', content: missingBlocks.length
+          ? [...missingBlocks, { type: 'text', text: withLanguage(userPrompt, userLanguage) }]
+          : withLanguage(userPrompt, userLanguage) }],
       }, { label: 'lease-trap-detector-missing' });
     } catch (err) {
       return handleAiError(res, err, 'This contract is too long to analyze in one pass. Try pasting the sections you care about most.');

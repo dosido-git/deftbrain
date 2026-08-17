@@ -358,11 +358,12 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const handleFindMissing = async () => {
     trackVariant('LeaseTrapDetector', 'missing-scan');
-    if (!missingContractText.trim()) { setError(t('ltd_err_paste_contract')); return; }
+    if (!missingContractText.trim() && !fileBase64) { setError(t('ltd_err_paste_contract')); return; }
     setError(''); setMissingResults(null); setMissingLoading(true);
     try {
       const data = await callToolEndpoint('lease-trap-detector/missing', {
-        contractText: missingContractText.trim(),
+        contractText: missingContractText.trim() || undefined,
+        pdfBase64: (!missingContractText.trim() && fileBase64) || undefined,
         contractType: missingContractType.trim() || leaseType || undefined,
         yourRole: missingRole.trim() || undefined,
         concerns: missingConcerns.trim() || undefined,
@@ -384,6 +385,18 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const isRoommateOrSublease = leaseType === 'room' || leaseType === 'sublease';
 
+  // ── The lease you already gave carries into the second scan ──
+  // The two modes kept separate copies of the document, so reaching the deeper
+  // gap scan meant pasting the same lease a second time — and a PDF could not
+  // be carried at all. Anything already provided is inherited; the field stays
+  // editable, so a different contract can still be examined here.
+  const carriedFromAnalyze = ltdMode === 'missing' && !!fileBase64 && !missingContractText.trim();
+  useEffect(() => {
+    if (ltdMode !== 'missing') return;
+    if (!missingContractText.trim() && leaseText.trim()) setMissingContractText(leaseText.trim());
+    if (!missingContractType.trim() && leaseType) setMissingContractType(leaseType);
+  }, [ltdMode]);  // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Pressing a mode tab brings its panel into view ──
   // Keyed on a nonce, not ltdMode: pressing the tab you are already on is a
   // legitimate "take me back" gesture and changes no state, so an effect keyed
@@ -399,7 +412,7 @@ const LeaseTrapDetector = ({ tool }) => {
   useEffect(() => {
     submitRef.current = () => {
       if (ltdMode === 'analyze' && !results && (leaseText.trim() || fileBase64) && location.trim() && !loading) analyzeLease();
-      else if (ltdMode === 'missing' && missingContractText.trim() && !missingLoading) handleFindMissing();
+      else if (ltdMode === 'missing' && (missingContractText.trim() || fileBase64) && !missingLoading) handleFindMissing();
       else if (followupQ.trim() && !followupLoading) askFollowup();
     };
   });
@@ -582,6 +595,11 @@ const LeaseTrapDetector = ({ tool }) => {
                 <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🏦 {t('ltd_missing_intro')}</p>
               </div>
               <div className="space-y-4">
+                {carriedFromAnalyze && (
+                  <div className={`p-3 rounded-xl text-xs ${isDark ? 'bg-emerald-900/20 border border-emerald-800/40 text-emerald-300' : 'bg-emerald-50 border border-emerald-200 text-emerald-800'}`}>
+                    📎 {t('ltd_missing_carried', { name: uploadedFile?.name || t('ltd_missing_carried_doc') })}
+                  </div>
+                )}
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuted}`}>{t('ltd_missing_paste_label')} <span className={c.required}>*</span></label>
                   <textarea value={missingContractText} onChange={e => setMissingContractText(e.target.value)}
@@ -615,7 +633,7 @@ const LeaseTrapDetector = ({ tool }) => {
                     className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                 </div>
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
-                <button title={t('cmd_enter')} onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
+                <button title={t('cmd_enter')} onClick={handleFindMissing} disabled={missingLoading || (!missingContractText.trim() && !fileBase64)}
                   className={`relative w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
                   {missingLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
                 {!missingLoading && (
