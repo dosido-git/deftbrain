@@ -54,6 +54,11 @@ const LeaseTrapDetector = ({ tool }) => {
     { value: 'commercial', label: t('ltd_lt_commercial'), icon: '🏬', separated: true },
   ];
   const fileInputRef = useRef(null);
+  // Switching modes swaps a form that starts ~650px below the tabs. Without
+  // this the tab lights up and nothing else visibly moves, which reads as a
+  // dead button — the reported symptom was clicking it and seeing nothing.
+  const modeFormRef = useRef(null);
+  const didMountRef = useRef(false);
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
@@ -348,7 +353,14 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const isRoommateOrSublease = leaseType === 'room' || leaseType === 'sublease';
 
+  // ── Switching modes moves the form into view ──
+  useEffect(() => {
+    if (!didMountRef.current) { didMountRef.current = true; return; }
+    modeFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [ltdMode]);
+
   // ── Cmd/Ctrl+Enter keyboard shortcut ──
+
   const submitRef = useRef(null);
   useEffect(() => {
     submitRef.current = () => {
@@ -403,6 +415,8 @@ const LeaseTrapDetector = ({ tool }) => {
           </button>
         </div>
       </div>
+
+      <div ref={modeFormRef} />
 
       {ltdMode === 'analyze' && !results && !missingResults && (
         <div className="space-y-5">
