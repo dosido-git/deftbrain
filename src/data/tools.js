@@ -3531,7 +3531,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "⚡",
   categories: ['Pursuits', 'What If?'],
   headerColor: "#ccdfc4",
-  description: "AI-powered name generation with linguistic problem flagging, live domain and social handle availability checks, and 'More Like This' variations. Generates names across 15 style categories — from Clever Wordplay to Mythic to Mashup — each with pronunciation guides, Name DNA explaining why it works, and flags for unintended meanings in other languages, phonetic issues, and brand conflicts.",
+  description: "Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.",
   guide: {
       overview: "Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm generates 25-35 names across the style categories most relevant to what you're naming, then gives you tools to evaluate them: pronunciation guides, Name DNA explaining the linguistic psychology behind each name, problem flags for issues in other languages or phonetic traps, AI-curated Top 5 picks, a Say It Out Loud test, live domain and social handle availability checks, and a 'More Like This' button that generates 8-10 variations of any name you almost love.",
       howToUse: [
