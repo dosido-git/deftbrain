@@ -57,8 +57,8 @@ const LeaseTrapDetector = ({ tool }) => {
   // Switching modes swaps a form that starts ~650px below the tabs. Without
   // this the tab lights up and nothing else visibly moves, which reads as a
   // dead button — the reported symptom was clicking it and seeing nothing.
-  const modeFormRef = useRef(null);
-  const didMountRef = useRef(false);
+  const analyzeFormRef = useRef(null);
+  const missingFormRef = useRef(null);
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
@@ -101,6 +101,7 @@ const LeaseTrapDetector = ({ tool }) => {
   const [leaseType, setLeaseType] = useState('');
   const [concerns, setConcerns] = useState('');
   const [situation, setSituation] = useState('');
+  const [modeNonce, setModeNonce] = useState(0);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [followupQ, setFollowupQ] = useState('');
@@ -353,11 +354,15 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const isRoommateOrSublease = leaseType === 'room' || leaseType === 'sublease';
 
-  // ── Switching modes moves the form into view ──
+  // ── Pressing a mode tab brings its form into view ──
+  // Keyed on a nonce rather than ltdMode: pressing the tab you are already on
+  // is a legitimate "take me to the form" gesture, and it changes no state, so
+  // an effect keyed on the mode would never fire for it.
   useEffect(() => {
-    if (!didMountRef.current) { didMountRef.current = true; return; }
-    modeFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [ltdMode]);
+    if (modeNonce === 0) return;
+    const el = ltdMode === 'missing' ? missingFormRef.current : analyzeFormRef.current;
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [modeNonce, ltdMode]);
 
   // ── Cmd/Ctrl+Enter keyboard shortcut ──
 
@@ -405,21 +410,19 @@ const LeaseTrapDetector = ({ tool }) => {
         </div>
         {/* Mode tabs — always visible so users can switch modes from any state */}
         <div className="flex gap-2 pt-3">
-          <button onClick={() => setLtdMode('analyze')}
+          <button onClick={() => { setLtdMode('analyze'); setModeNonce(n => n + 1); }}
             className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'analyze' ? c.btnPrimary : c.btnSecondary}`}>
             {t('ltd_mode_find')}
           </button>
-          <button onClick={() => setLtdMode('missing')}
+          <button onClick={() => { setLtdMode('missing'); setModeNonce(n => n + 1); }}
             className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${ltdMode === 'missing' ? c.btnPrimary : c.btnSecondary}`}>
             {t('ltd_mode_missing')}
           </button>
         </div>
       </div>
 
-      <div ref={modeFormRef} />
-
       {ltdMode === 'analyze' && !results && !missingResults && (
-        <div className="space-y-5">
+        <div ref={analyzeFormRef} className="space-y-5">
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('ltd_provide_q')}</p>
             <div className="grid grid-cols-2 gap-3">
@@ -544,7 +547,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
         {/* ════════ FINE POINT FINDER ════════ */}
         {ltdMode === 'missing' && !missingResults && !results && (
-          <div className="space-y-4">
+          <div ref={missingFormRef} className="space-y-4">
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className={`p-3 rounded-xl mb-4 ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
                 <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🏦 {t('ltd_missing_intro')}</p>
