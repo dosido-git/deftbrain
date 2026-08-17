@@ -636,7 +636,7 @@ export const tools = [
     give: "The product or service, and the price you saw.",
     get: "Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.",
   },
-  seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the fair price, and how to pay less.",
+  seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the typical price elsewhere, and how to pay less.",
   seoTitle: "Price Breakdown: Why Does It Cost That Much?",
   title: "Markup Detective",
   tagline: "Why does this cost that? Follow the money.",
@@ -652,7 +652,7 @@ export const tools = [
       "Optionally add the specific price you saw and where",
       "Or tap a popular mystery to jump in",
       "Review the cost breakdown with visual bars showing where money goes",
-      "Check the fair price comparison and money-saving tips"
+      "Check what it typically costs elsewhere, and the money-saving tips"
     ],
     example: {
       scenario: "You just paid $15 for a cocktail at a nice bar.",
@@ -662,7 +662,7 @@ export const tools = [
     tips: [
       "Adding the specific price and context gets more precise breakdowns",
       "The pricing-practice section explains how the industry actually sets its prices",
-      "Fair price comparison shows what insiders actually pay",
+      "The comparison shows what the same thing usually costs away from this particular venue or channel",
       "Save money tips are specific to each item, not generic advice"
     ]
   }

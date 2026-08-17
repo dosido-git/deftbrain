@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "d5744e1945c1fb06e933a5740aa435bf92052a67",
+  "hash": "99b009f9c37e77db5034c91eec56cbdd9a54503b",
   "lastmod": "2026-08-17"
  },
  "static:about": {
@@ -88,7 +88,7 @@
   "lastmod": "2026-08-17"
  },
  "tool:MarkupDetective": {
-  "hash": "4d09d2d73a0310bb0de1f466357b5ae06aa0406f",
+  "hash": "8ce5260ebf8b450af6cd7ef8f74bfaa37fdd91b1",
   "lastmod": "2026-08-17"
  },
  "tool:Mend": {

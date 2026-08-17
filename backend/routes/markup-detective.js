@@ -40,8 +40,8 @@ Return ONLY valid JSON with this exact structure:
 {
   "product_identified": "What you understood the product/service to be",
   "price_paid": "The price mentioned or a representative retail price, formatted in the user's local currency (e.g. a coffee ~6 units)",
-  "true_cost": "What this actually costs to produce/provide, in the user's local currency",
-  "fair_price": "What a fair, non-exploitative price would be, in the user's local currency",
+  "true_cost": "Roughly what it costs to make or provide one of these — an outside estimate, so give a round number rather than a suspiciously exact one. In the user's local currency.",
+  "fair_price": "What this same item typically costs somewhere ordinary — the usual retail or online price away from this particular venue, channel or moment. A COMPARISON, not a verdict on what the reader ought to pay: report what the thing goes for elsewhere and let them decide whether being here was worth the difference. In the user's local currency.",
   "markup_multiplier": 7.1,
   "one_line_verdict": "One punchy sentence summing up the pricing situation",
   "cost_breakdown": [
@@ -69,7 +69,7 @@ Rules:
 - cost_breakdown items must sum to 100% and add up to the price_paid
 - markup_multiplier should be price_paid divided by true_cost (rounded to 1 decimal)
 - Include 4-6 cost_breakdown items
-- Include 3-5 psychological_tactics. This is the part people remember and repeat, so give it real attention: convenience, scarcity, prestige, brand signalling, anchoring, emotional and situational pricing. Materials and labour explain where the money went; these explain why the number worked on someone. Name what is being done rather than accusing anyone of doing it.
+- Include 3-5 psychological_tactics. This is the part people remember and repeat, so give it real attention: convenience, scarcity, prestige, brand signalling, anchoring, emotional and situational pricing. Materials and labour explain where the money went; these explain why the number worked on someone. Describe the mechanism, not a wrongdoing. People pay premiums willingly all the time — for the seat, the timing, the occasion — and a technique that works is not by itself a trick. Explain why the price lands, and leave whether it was worth it to the reader.
 - Include 2-3 industry_secrets  
 - Include 3-5 how_to_pay_less tips
 - Be specific with amounts (in the user's local currency), not ranges
