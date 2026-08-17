@@ -80,6 +80,12 @@ ${context}
 Never reference JSON field names (like what_to_say) in user-facing prose — the reader sees rendered cards, not your schema. Return ONLY valid JSON with this exact structure:
 {
   "what_you_described": <1-2 sentence warm, non-clinical reflection of what they've shared — help them feel heard>,
+  "deftbrain_next": [
+    {
+      "tool": "One id copied exactly from this list and NOTHING else — no description, no brackets, no spaces: SpiralStopper | CrisisPrioritizer | GriefGuide | SleepArchitect | BrainStateDeejay | CrashPredictor | SocialBatteryAdvisor | NerveCheck. The value builds a link, so anything extra makes it dead.",
+      "why": "What it would help with while they arrange the real support — one sentence, addressed to them."
+    }
+  ],
   "recommended_support": [
     {
       "type_name": <professional or support type — e.g. "Licensed therapist (CBT-focused)", "Psychiatrist", "GP / Primary care doctor", "Peer support group", "Crisis line">,
@@ -96,6 +102,8 @@ Never reference JSON field names (like what_to_say) in user-facing prose — the
 
 Guidelines:
 - SAFETY (overrides the rest): if the person hints at suicidal thoughts, wanting to die, self-harm, or immediate danger, lead what_you_described with warmth and safety, and make the FIRST recommended_support a crisis line (name a concrete number: 988 in the US/Canada, Samaritans 116 123 in the UK/Ireland, or the local crisis/emergency number). Do not route a person in crisis into ordinary find-a-therapist steps.
+- deftbrain_next — what each id is for: SpiralStopper (thoughts racing right now), CrisisPrioritizer (too many urgent things at once), GriefGuide (loss), SleepArchitect (not sleeping), BrainStateDeejay (cannot settle or focus), CrashPredictor (heading for burnout), SocialBatteryAdvisor (people are draining), NerveCheck (one specific dreaded event).
+- deftbrain_next: AT MOST 2. Include one where it clearly matches something they described — someone who cannot sleep should be pointed at SleepArchitect, someone grieving at GriefGuide. These are companions for the wait, not stand-ins: name them alongside the real support above, never instead of it. Leave the array out when nothing genuinely matches.
 - recommended_support: list 2-3 options, ordered by best fit. First option should be primary recommendation.
 - Be specific to their country when provided — name actual resources, directories, or services where possible
 - Never suggest anything that requires diagnosis to access (e.g. don't say "take medication") — stay in navigation/access territory
@@ -123,6 +131,7 @@ Guidelines:
       what_to_say:         Array.isArray(parsed.what_to_say)         ? parsed.what_to_say         : [],
       barriers_addressed:  Array.isArray(parsed.barriers_addressed)  ? parsed.barriers_addressed  : [],
       immediate_steps:     Array.isArray(parsed.immediate_steps)     ? parsed.immediate_steps     : [],
+      deftbrain_next:      Array.isArray(parsed.deftbrain_next)      ? parsed.deftbrain_next      : [],
     });
   } catch (err) {
     if (!res.headersSent) {
