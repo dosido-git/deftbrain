@@ -47,6 +47,10 @@ YOUR PRINCIPLES:
 - Be specific. Names, dates, numbers. Not "in ancient Rome" but "during the Crisis of the Third Century, specifically 235-284 CE."
 - Avoid the 5 most overused analogies (fall of Rome, Weimar Germany, 1930s appeasement, dot-com bubble, Titanic) UNLESS they are genuinely the best structural match. Reach deeper.
 - Present multiple parallels. The truth is usually a composite.
+- THE ONE-READ TEST, and it outranks every other instruction here: could a curious, intelligent adult explain this to a friend after reading it once? If not, it is written wrong. Two different failures, two different fixes:
+  (a) COINED ABSTRACTIONS — "preference falsification collapse", "teleological reading", "internal legitimacy", "external power consensus". These are labels for ideas. Never use the label; write the idea. Not "preference falsification collapse" but "everyone kept saying they believed in it long after they had stopped, and nobody knew anyone else had stopped either".
+  (b) REAL HISTORICAL TERMS — liberum veto, corvee, enclosure, Bretton Woods. These name actual things and cannot be renamed, so gloss them the first time, in the same sentence: "the liberum veto, a rule that let any single member of the Polish parliament kill any law outright".
+  A reader who has to slow down has been failed. You are not writing for historians.
 - Think structurally, write plainly. The analysis runs on power, institutions and incentives; the prose must not. Write "who held power, and how they used it" rather than "power dynamics", and "how the government responded" rather than "institutional behaviour". If a phrase would be at home in a journal abstract, it is the wrong phrase — the reader came for what happened, not for the vocabulary of the discipline.
 
 REALITY & RELEVANCE CHECK (do this FIRST, before finding any parallels):
@@ -172,6 +176,8 @@ ${taskBlock(2)}
 
 Then synthesize: considering BOTH chosen parallels together, what do they collectively suggest?
 
+Then write the BIG IDEA — the single thing a reader should leave with, written before they have read any of the evidence and understandable without it. Name what the two parallels share, in one plain sentence, then state the lesson it carries. No jargon whatsoever in this block; it is the part most people will read and the only part some will. If a phrase in it needs the report below to make sense, it is the wrong phrase.
+
 OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits well within the token budget):
 - Per parallel: at most 2 structural_similarities, at most 2 where_it_breaks_down, at most 2 key_figures.
 - Respect every field's stated length (one sentence means one sentence). Be concise and never pad — a focused, fully-closed JSON response is far more useful than a longer one that gets truncated.
@@ -179,14 +185,18 @@ OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that fits 
 Return ONLY valid JSON:
 {
   "parallel": ${PARALLEL_SCHEMA},
+  "big_idea": {
+    "one_line": "What both historical situations have in common, in words a friend would use — one sentence, no jargon, no names or dates needed to follow it",
+    "lesson": "What that pattern teaches, stated as something true about people or institutions rather than a forecast about this event — 2 sentences"
+  },
   "synthesis": {
-    "collective_pattern": "What do these parallels collectively suggest about how this is likely to unfold? — one sentence",
-    "consensus_prediction": "If history rhymes, the most likely trajectory is... — one sentence",
-    "wildcard": "The thing that could make this time genuinely different — one sentence",
-    "confidence_note": "Honest assessment of how strong these parallels actually are — one sentence"
+    "collective_pattern": "What the two cases have in common about how situations like this move — a statement about the pattern, not a forecast about this event — one sentence",
+    "consensus_prediction": "What the historical pattern would suggest happens next IF it holds. Say it as a conditional about the pattern, never as a claim about the future: 'where this went before was...', not 'this will...'. No dates, no numbers, no odds. — one sentence",
+    "wildcard": "The condition under which these parallels stop applying — what would have to be true about today for the historical pattern to be the wrong guide. This is a test that could fail the comparison, NOT a speculation about what might happen next, and NOT a second prediction wearing a hedge. — one sentence",
+    "confidence_note": "Honest assessment of how strong these parallels actually are, naming what they are reliable about and what they are not — one sentence"
   }
 }
-Your response MUST contain ALL 2 keys: parallel, synthesis.`, userLanguage);
+Your response MUST contain ALL 3 keys: parallel, big_idea, synthesis.`, userLanguage);
 
     const [a, b] = await Promise.all([
       callClaudeWithRetry({
@@ -208,6 +218,7 @@ Your response MUST contain ALL 2 keys: parallel, synthesis.`, userLanguage);
       event_summary: pick.event_summary,
       premise_check: pick.premise_check,
       parallels: [a.parallel, b.parallel].filter(Boolean),
+      big_idea: b.big_idea,
       synthesis: b.synthesis,
       further_reading: a.further_reading,
     };

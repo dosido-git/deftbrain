@@ -147,6 +147,10 @@ const HistoryToday = ({ tool }) => {
     if (results.premise_check && results.premise_check.status !== 'sound' && results.premise_check.assessment) {
       lines.push(t('ht_copy_premise', { text: results.premise_check.assessment }), '');
     }
+    if (results.big_idea?.one_line) {
+      lines.push(t('ht_copy_big_idea'), results.big_idea.one_line, '');
+      if (results.big_idea.lesson) lines.push(t('ht_copy_lesson', { text: results.big_idea.lesson }), '');
+    }
     results.parallels?.forEach((p, i) => {
       lines.push(t('ht_copy_parallel', { num: i + 1, title: p.title, period: p.period }));
       lines.push(t('ht_copy_match', { score: p.structural_match_score }), '', p.what_happened, '');
@@ -159,9 +163,9 @@ const HistoryToday = ({ tool }) => {
     });
     if (results.synthesis) {
       lines.push(t('ht_copy_synthesis'), results.synthesis.collective_pattern, '',
-        t('ht_copy_prediction', { text: results.synthesis.consensus_prediction }),
-        t('ht_copy_wildcard', { text: results.synthesis.wildcard }),
-        results.synthesis.confidence_note, '');
+        t('ht_copy_prediction', { text: results.synthesis.consensus_prediction }), '',
+        t('ht_copy_might_be_wrong'), results.synthesis.confidence_note,
+        t('ht_copy_wildcard', { text: results.synthesis.wildcard }), '');
     }
     if (counterData) {
       lines.push(t('ht_copy_counter', { title: counterData.title }), counterData.what_happened_differently, '',
@@ -342,6 +346,22 @@ const HistoryToday = ({ tool }) => {
 
           {error && <div className={`p-4 rounded-xl flex items-start gap-3 ${c.danger} border`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
 
+          {/* ─── THE BIG IDEA ─── the lesson before the evidence for it. Some
+              readers will read only this, which is the point: everything below
+              is the case, and this is the finding. */}
+          {results.big_idea?.one_line && (
+            <div className={`${c.highlight} border rounded-xl shadow-sm p-6 space-y-3`}>
+              <h3 className={`font-bold flex items-center gap-2`}><span className="text-lg">🧠</span> {t('ht_big_idea')}</h3>
+              <p className="text-base leading-relaxed font-semibold">{results.big_idea.one_line}</p>
+              {results.big_idea.lesson && (
+                <div>
+                  <p className={`text-[10px] font-bold uppercase tracking-wide opacity-70 mb-1`}>{t('ht_the_lesson')}</p>
+                  <p className="text-sm leading-relaxed">{results.big_idea.lesson}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Parallels */}
           {results.parallels?.map((p, idx) => (
             <div key={idx} className={`${c.card} ${c.border} rounded-xl shadow-sm overflow-hidden`}>
@@ -393,49 +413,65 @@ const HistoryToday = ({ tool }) => {
                   </div>
                 )}
 
-                {/* Contemporary understanding */}
-                {p.contemporary_understanding && (
-                  <div className={`${isDark ? 'bg-amber-900/15 border-amber-800' : 'bg-amber-50/80 border-amber-200'} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('ht_how_they_saw_it')}</p>
-                    <p className={`text-xs ${c.text}`}>{p.contemporary_understanding}</p>
-                  </div>
-                )}
-
-                {/* What happened next */}
-                {p.what_happened_next && (
-                  <div className={`${c.highlight} border rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold mb-1`}>{t('ht_what_happened_next')}</p>
-                    <p className="text-xs">{p.what_happened_next}</p>
-                  </div>
-                )}
-
-                {/* WHERE IT BREAKS DOWN — the star of the show */}
-                {p.where_it_breaks_down?.length > 0 && (
-                  <div className={`${c.danger} border-2 rounded-lg p-4`}>
-                    <p className={`text-[10px] font-black uppercase mb-2`}>{t('ht_breaks_down')}</p>
-                    <div className="space-y-1.5">
-                      {p.where_it_breaks_down.map((b, bi) => (
-                        <p key={bi} className="text-xs">✕ {b}</p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Key figures */}
-                {p.key_figures?.length > 0 && (
+                {/* ─── The long tail, folded. Four good sections that are
+                    nobody's reason for opening the tool; the Big Idea above
+                    carries the finding, so these are available rather than
+                    unavoidable. ─── */}
+                {(p.contemporary_understanding || p.what_happened_next || p.where_it_breaks_down?.length > 0 || p.key_figures?.length > 0) && (
                   <div>
-                    <button onClick={() => toggleSection(`fig-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
-                      <span>👤</span> {t('ht_key_figures')} <Caret open={expandedSections[`fig-${idx}`]} />
+                    <button onClick={() => toggleSection(`full-${idx}`)}
+                      className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary}`}>
+                      <span>📜</span> {t('ht_full_account')} <Caret open={expandedSections[`full-${idx}`]} />
                     </button>
-                    {expandedSections[`fig-${idx}`] && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {p.key_figures.map((kf, fi) => (
-                          <div key={fi} className={`text-[10px] px-2.5 py-1 rounded-lg ${c.cardAlt} border ${c.border}`}>
-                            <span className={c.textSecondary}>{kf.historical}</span>
-                            <span className={c.textMuteded}> ↔ </span>
-                            <span className={c.text}>{kf.modern_parallel}</span>
-                          </div>
+                    {expandedSections[`full-${idx}`] && (
+                      <div className="space-y-4 mt-3">
+                  {/* Contemporary understanding */}
+                  {p.contemporary_understanding && (
+                    <div className={`${isDark ? 'bg-amber-900/15 border-amber-800' : 'bg-amber-50/80 border-amber-200'} border rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold ${isDark ? 'text-amber-400' : 'text-amber-700'} mb-1`}>{t('ht_how_they_saw_it')}</p>
+                      <p className={`text-xs ${c.text}`}>{p.contemporary_understanding}</p>
+                    </div>
+                  )}
+
+                  {/* What happened next */}
+                  {p.what_happened_next && (
+                    <div className={`${c.highlight} border rounded-lg p-3`}>
+                      <p className={`text-[10px] font-bold mb-1`}>{t('ht_what_happened_next')}</p>
+                      <p className="text-xs">{p.what_happened_next}</p>
+                    </div>
+                  )}
+
+                  {/* WHERE IT BREAKS DOWN — the star of the show */}
+                  {p.where_it_breaks_down?.length > 0 && (
+                    <div className={`${c.danger} border-2 rounded-lg p-4`}>
+                      <p className={`text-[10px] font-black uppercase mb-2`}>{t('ht_breaks_down')}</p>
+                      <div className="space-y-1.5">
+                        {p.where_it_breaks_down.map((b, bi) => (
+                          <p key={bi} className="text-xs">✕ {b}</p>
                         ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Key figures */}
+                  {p.key_figures?.length > 0 && (
+                    <div>
+                      <button onClick={() => toggleSection(`fig-${idx}`)} className={`flex items-center gap-1.5 text-xs font-bold ${c.textMuteded}`}>
+                        <span>👤</span> {t('ht_key_figures')} <Caret open={expandedSections[`fig-${idx}`]} />
+                      </button>
+                      {expandedSections[`fig-${idx}`] && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {p.key_figures.map((kf, fi) => (
+                            <div key={fi} className={`text-[10px] px-2.5 py-1 rounded-lg ${c.cardAlt} border ${c.border}`}>
+                              <span className={c.textSecondary}>{kf.historical}</span>
+                              <span className={c.textMuteded}> ↔ </span>
+                              <span className={c.text}>{kf.modern_parallel}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                       </div>
                     )}
                   </div>
@@ -648,7 +684,7 @@ const HistoryToday = ({ tool }) => {
           {/* ─── SYNTHESIS ─── */}
           {results.synthesis && (
             <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-6 space-y-4`}>
-              <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🔮</span> {t('ht_synthesis')}</h3>
+              <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">🧭</span> {t('ht_synthesis')}</h3>
               {results.synthesis.collective_pattern && (
                 <p className={`text-sm ${c.text} leading-relaxed`}>{results.synthesis.collective_pattern}</p>
               )}
@@ -658,17 +694,24 @@ const HistoryToday = ({ tool }) => {
                   <p className={`text-sm font-semibold ${c.text}`}>{results.synthesis.consensus_prediction}</p>
                 </div>
               )}
-              {results.synthesis.wildcard && (
-                <div className={`${c.warning} border rounded-lg p-3 flex items-start gap-2`}>
-                  <span className="flex-shrink-0">🃏</span>
-                  <div>
-                    <p className={`text-[10px] font-bold mb-0.5`}>{t('ht_wildcard')}</p>
-                    <p className="text-xs">{results.synthesis.wildcard}</p>
-                  </div>
-                </div>
-              )}
+            </div>
+          )}
+
+          {/* ─── WHY THIS COMPARISON MIGHT BE WRONG ─── its own section, not a
+              footnote under the prediction. The wildcard belongs here rather
+              than beside the forecast: it is the condition that would falsify
+              the comparison, not a second forecast wearing a hedge. */}
+          {(results.synthesis?.confidence_note || results.synthesis?.wildcard) && (
+            <div className={`${c.card} ${c.border} rounded-xl shadow-sm p-6 space-y-3`}>
+              <h3 className={`font-bold ${c.text} flex items-center gap-2`}><span className="text-lg">⚖️</span> {t('ht_might_be_wrong')}</h3>
               {results.synthesis.confidence_note && (
-                <p className={`text-xs ${c.textMuteded} italic`}>⚖️ {results.synthesis.confidence_note}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{results.synthesis.confidence_note}</p>
+              )}
+              {results.synthesis.wildcard && (
+                <div className={`${c.warning} border rounded-lg p-3`}>
+                  <p className={`text-[10px] font-bold mb-0.5`}>{t('ht_wildcard')}</p>
+                  <p className="text-xs">{results.synthesis.wildcard}</p>
+                </div>
               )}
             </div>
           )}
