@@ -160,6 +160,7 @@ const MiseEnPlace = ({ tool }) => {
   const [timeAvailable, setTimeAvailable] = useState('60');
   const [skillLevel, setSkillLevel] = useState('intermediate');
   const [equipment, setEquipment] = useState([]);
+  const [showEquipment, setShowEquipment] = useState(false);
   const [mealType, setMealType] = useState('dinner');
   const [preferences, setPreferences] = useState('');
   const [compressing, setCompressing] = useState(false);
@@ -411,12 +412,21 @@ const MiseEnPlace = ({ tool }) => {
         </div>
 
         <div>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>🔧 {t('mep_equipment')}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {EQUIPMENT_OPTIONS.map(opt => (
-              <Pill key={opt.value} active={equipment.includes(opt.value)} onClick={() => toggleEquipment(opt.value)}>{t(opt.key)}</Pill>
-            ))}
-          </div>
+          <button onClick={() => setShowEquipment(v => !v)}
+            className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary} uppercase tracking-wide`}>
+            🔧 {t('mep_equipment')} <span className="font-normal normal-case opacity-70">{t('mep_optional')}</span>
+            <Caret open={showEquipment} />
+          </button>
+          {equipment.length > 0 && !showEquipment && (
+            <p className={`text-xs mt-1 ${c.textMuted}`}>{equipment.join(' · ')}</p>
+          )}
+          {showEquipment && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {EQUIPMENT_OPTIONS.map(opt => (
+                <Pill key={opt.value} active={equipment.includes(opt.value)} onClick={() => toggleEquipment(opt.value)}>{t(opt.key)}</Pill>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -733,8 +743,7 @@ const MiseEnPlace = ({ tool }) => {
       <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
         <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mep_related')}</p>
         <div className="flex flex-wrap gap-3">
-          <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 {t('mep_plottwist')}</a>
-          <a href="/GhostWriter" className={`text-xs ${linkStyle}`}>✍️ {t('mep_ghostwriter')}</a>
+          <a href="/RecipeChaosSolver" className={`text-xs ${linkStyle}`}>🍳 {t('mep_recipechaos')}</a>
         </div>
       </div>
 

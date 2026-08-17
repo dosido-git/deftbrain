@@ -4,6 +4,7 @@
 // Plot Twist, Ghost Writer, DeftBrain) stay as-is across languages.
 export const miseEnPlace = {
   en: {
+    mep_optional: "(optional)",
     mep_title: "Mise en Place",
     mep_tagline: "Turn what's in your kitchen into a meal — with a minute-by-minute battle plan",
     // Dietary options
@@ -110,8 +111,6 @@ export const miseEnPlace = {
     // Disclaimer + related
     mep_disclaimer: "AI-generated meal plans — always use your own judgement about food safety and dietary needs.",
     mep_related: "Related tools",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     // Copy export
     mep_copy_header: "Mise en Place — Battle Plan",
     mep_copy_making: "Making:",
@@ -120,6 +119,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "QUICK SHOP:",
   },
   es: {
+    mep_optional: "(opcional)",
     mep_title: "Mise en Place",
     mep_tagline: "Convierte lo que tienes en la cocina en una comida — con un plan de batalla minuto a minuto",
     mep_diet_vegetarian: "Vegetariano",
@@ -214,8 +214,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "descompone primero las recetas complejas en microtareas ordenadas.",
     mep_disclaimer: "Planes de comida generados por IA — usa siempre tu propio criterio sobre la seguridad alimentaria y las necesidades dietéticas.",
     mep_related: "Herramientas relacionadas",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Plan de batalla",
     mep_copy_making: "Cocinando:",
     mep_copy_timeline: "CRONOGRAMA:",
@@ -223,6 +221,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COMPRA RÁPIDA:",
   },
   zh: {
+    mep_optional: "（可选）",
     mep_title: "Mise en Place",
     mep_tagline: "把厨房里现有的食材变成一顿饭——还附上分秒必争的作战计划",
     mep_diet_vegetarian: "素食",
@@ -317,8 +316,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "先把复杂的食谱拆成有序的小任务。",
     mep_disclaimer: "AI 生成的餐食计划——请始终根据自己的判断处理食品安全和饮食需求。",
     mep_related: "相关工具",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — 作战计划",
     mep_copy_making: "制作：",
     mep_copy_timeline: "时间线：",
@@ -326,6 +323,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "快速采购：",
   },
   hi: {
+    mep_optional: "(वैकल्पिक)",
     mep_title: "Mise en Place",
     mep_tagline: "अपने किचन में जो है उसे एक भोजन में बदलें — मिनट-दर-मिनट युद्ध-योजना के साथ",
     mep_diet_vegetarian: "शाकाहारी",
@@ -420,8 +418,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "जटिल रेसिपी को पहले क्रमबद्ध माइक्रो-टास्क में बाँट देता है।",
     mep_disclaimer: "AI द्वारा बनाई गई भोजन योजनाएँ — खाद्य सुरक्षा और आहार संबंधी ज़रूरतों के बारे में हमेशा अपने विवेक का उपयोग करें।",
     mep_related: "संबंधित टूल",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — युद्ध-योजना",
     mep_copy_making: "बना रहे हैं:",
     mep_copy_timeline: "टाइमलाइन:",
@@ -429,6 +425,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "त्वरित खरीदारी:",
   },
   ar: {
+    mep_optional: "(اختياري)",
     mep_title: "Mise en Place",
     mep_tagline: "حوّل ما لديك في المطبخ إلى وجبة — مع خطة عمل دقيقة بدقيقة",
     mep_diet_vegetarian: "نباتي",
@@ -523,8 +520,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "يقسّم الوصفات المعقّدة أولاً إلى مهام صغيرة مرتّبة.",
     mep_disclaimer: "خطط وجبات من إنشاء الذكاء الاصطناعي — استخدم دائماً حكمك الخاص بشأن سلامة الغذاء والاحتياجات الغذائية.",
     mep_related: "أدوات ذات صلة",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — خطة العمل",
     mep_copy_making: "نطبخ:",
     mep_copy_timeline: "الجدول الزمني:",
@@ -532,6 +527,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "تسوّق سريع:",
   },
   pt: {
+    mep_optional: "(opcional)",
     mep_title: "Mise en Place",
     mep_tagline: "Transforme o que há na sua cozinha em uma refeição — com um plano de batalha minuto a minuto",
     mep_diet_vegetarian: "Vegetariano",
@@ -626,8 +622,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "decompõe primeiro receitas complexas em microtarefas ordenadas.",
     mep_disclaimer: "Planos de refeição gerados por IA — use sempre seu próprio julgamento sobre segurança alimentar e necessidades dietéticas.",
     mep_related: "Ferramentas relacionadas",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Plano de batalha",
     mep_copy_making: "Preparando:",
     mep_copy_timeline: "CRONOGRAMA:",
@@ -635,6 +629,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COMPRA RÁPIDA:",
   },
   fr: {
+    mep_optional: "(facultatif)",
     mep_title: "Mise en Place",
     mep_tagline: "Transformez ce qu'il y a dans votre cuisine en un repas — avec un plan de bataille minute par minute",
     mep_diet_vegetarian: "Végétarien",
@@ -729,8 +724,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "décompose d'abord les recettes complexes en micro-tâches ordonnées.",
     mep_disclaimer: "Plans de repas générés par IA — utilisez toujours votre propre jugement concernant la sécurité alimentaire et les besoins alimentaires.",
     mep_related: "Outils associés",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Plan de bataille",
     mep_copy_making: "On prépare :",
     mep_copy_timeline: "CHRONOLOGIE :",
@@ -738,6 +731,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "COURSES RAPIDES :",
   },
   de: {
+    mep_optional: "(optional)",
     mep_title: "Mise en Place",
     mep_tagline: "Mach aus dem, was in deiner Küche ist, eine Mahlzeit — mit einem minutengenauen Schlachtplan",
     mep_diet_vegetarian: "Vegetarisch",
@@ -832,8 +826,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "zerlegt komplexe Rezepte erst in geordnete Mikro-Aufgaben.",
     mep_disclaimer: "KI-generierte Essenspläne — verlasse dich bei Lebensmittelsicherheit und Ernährungsbedürfnissen immer auf dein eigenes Urteil.",
     mep_related: "Verwandte Tools",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Schlachtplan",
     mep_copy_making: "Wir machen:",
     mep_copy_timeline: "ZEITPLAN:",
@@ -841,6 +833,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "SCHNELL EINKAUFEN:",
   },
   ja: {
+    mep_optional: "（任意）",
     mep_title: "Mise en Place",
     mep_tagline: "キッチンにあるものを一食に変える — 分刻みの作戦プラン付き",
     mep_diet_vegetarian: "ベジタリアン",
@@ -935,8 +928,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "が複雑なレシピをまず順序立てたマイクロタスクに分解します。",
     mep_disclaimer: "AI が生成した献立です — 食品安全と食事制限については必ずご自身で判断してください。",
     mep_related: "関連ツール",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — 作戦プラン",
     mep_copy_making: "作るもの：",
     mep_copy_timeline: "タイムライン：",
@@ -944,6 +935,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "クイック買い物：",
   },
   ko: {
+    mep_optional: "(선택)",
     mep_title: "Mise en Place",
     mep_tagline: "주방에 있는 재료를 한 끼로 — 분 단위 작전 계획과 함께",
     mep_diet_vegetarian: "채식",
@@ -1038,8 +1030,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "가 복잡한 레시피를 먼저 순서대로 된 마이크로 작업으로 나눠줍니다.",
     mep_disclaimer: "AI가 생성한 식단 — 식품 안전과 식이 요구사항은 항상 본인의 판단을 따르세요.",
     mep_related: "관련 도구",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — 작전 계획",
     mep_copy_making: "만드는 것:",
     mep_copy_timeline: "타임라인:",
@@ -1047,6 +1037,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "빠른 장보기:",
   },
   ru: {
+    mep_optional: "(необязательно)",
     mep_title: "Mise en Place",
     mep_tagline: "Превратите то, что есть на кухне, в блюдо — с поминутным боевым планом",
     mep_diet_vegetarian: "Вегетарианское",
@@ -1141,8 +1132,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "сначала разбивает сложные рецепты на упорядоченные микрозадачи.",
     mep_disclaimer: "Планы питания сгенерированы ИИ — всегда полагайтесь на собственное суждение о безопасности пищи и пищевых потребностях.",
     mep_related: "Связанные инструменты",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Боевой план",
     mep_copy_making: "Готовим:",
     mep_copy_timeline: "ХРОНОЛОГИЯ:",
@@ -1150,6 +1139,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "БЫСТРАЯ ЗАКУПКА:",
   },
   th: {
+    mep_optional: "(ไม่บังคับ)",
     mep_title: "Mise en Place",
     mep_tagline: "เปลี่ยนของที่มีในครัวให้เป็นมื้ออาหาร — พร้อมแผนการรบแบบนาทีต่อนาที",
     mep_diet_vegetarian: "มังสวิรัติ",
@@ -1244,8 +1234,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "แยกสูตรที่ซับซ้อนออกเป็นงานย่อยที่เรียงลำดับก่อน",
     mep_disclaimer: "แผนมื้ออาหารที่สร้างโดย AI — ใช้วิจารณญาณของคุณเองเสมอเรื่องความปลอดภัยของอาหารและความต้องการด้านอาหาร",
     mep_related: "เครื่องมือที่เกี่ยวข้อง",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — แผนการรบ",
     mep_copy_making: "กำลังทำ:",
     mep_copy_timeline: "ไทม์ไลน์:",
@@ -1253,6 +1241,7 @@ export const miseEnPlace = {
     mep_copy_quickshop: "ซื้อด่วน:",
   },
   vi: {
+    mep_optional: "(không bắt buộc)",
     mep_title: "Mise en Place",
     mep_tagline: "Biến những gì có trong bếp thành một bữa ăn — kèm kế hoạch tác chiến từng phút",
     mep_diet_vegetarian: "Ăn chay",
@@ -1347,8 +1336,6 @@ export const miseEnPlace = {
     mep_pre_xref_tail: "chia công thức phức tạp thành các vi nhiệm vụ có thứ tự trước.",
     mep_disclaimer: "Kế hoạch bữa ăn do AI tạo ra — hãy luôn tự đánh giá về an toàn thực phẩm và nhu cầu ăn uống.",
     mep_related: "Công cụ liên quan",
-    mep_plottwist: "Plot Twist",
-    mep_ghostwriter: "Ghost Writer",
     mep_copy_header: "Mise en Place — Kế hoạch tác chiến",
     mep_copy_making: "Đang làm:",
     mep_copy_timeline: "DÒNG THỜI GIAN:",

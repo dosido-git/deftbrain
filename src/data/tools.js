@@ -2619,12 +2619,12 @@ export const tools = [
   seoDescription: "List your ingredients or snap a photo of your fridge and get a minute-by-minute cooking plan with timing alerts and leftover ideas. Free, no signup.",
   seoTitle: "Recipe Generator from Your Ingredients",
   title: "Mise en Place",
-  tagline: "Turn whatever's in your kitchen into a meal — with a battle plan",
+  tagline: "The hard part isn't the cooking. It's deciding.",
   tags: ['cooking', 'food', 'recipe', 'kitchen', 'ingredients', 'dinner', 'meal prep', 'fridge', 'dietary', 'substitute', 'swap'],
   icon: "🍳",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
-  description: "List your ingredients or snap a photo of your fridge. AI builds a minute-by-minute cooking battle plan with parallel task sequencing, critical timing alerts, technique tips calibrated to your skill level, a quick shopping list, and a leftovers transformation strategy for tomorrow.",
+  description: "Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.",
   guide: {
     overview: "Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.",
     howToUse: [
