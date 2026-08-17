@@ -357,11 +357,17 @@ const MagicMouth = ({ tool }) => {
                 className={`w-full px-4 py-3 rounded-xl text-sm ${c.input} ${c.border} border ${c.text} outline-none transition-colors`} />
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm flex items-start gap-2 ${c.danger}`}><span>⚠️</span>{error}</div>}
-            <button onClick={handlePhoneTree} disabled={loading || !phoneCompany.trim() || !phoneIssue.trim()}
-              className={`w-full py-3 rounded-xl font-semibold disabled:opacity-40 ${c.btnPrimary}`}>
+            <button title={t('cmd_enter')} onClick={handlePhoneTree} disabled={loading || !phoneCompany.trim() || !phoneIssue.trim()}
+              className={`relative w-full py-3 rounded-xl font-semibold disabled:opacity-40 ${c.btnPrimary}`}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_getting_script')}</>
               : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_get_script')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
         )}
@@ -558,15 +564,21 @@ const MagicMouth = ({ tool }) => {
 
 
 
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleSubmit}
               disabled={loading || !whatYouWant.trim()}
-              className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+              className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
                 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
             >
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_finding_angle')}</>
                 : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_angle')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
         )}
@@ -783,12 +795,18 @@ const MagicMouth = ({ tool }) => {
               </div>
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm flex items-start gap-2 ${c.danger}`}><span>⚠️</span>{error}</div>}
-            <button onClick={handleNuclear} disabled={loading || !nuclearCompany.trim() || !nuclearProblem.trim()}
-              className={`w-full py-3 rounded-xl font-semibold disabled:opacity-40 text-white transition-all`}
+            <button title={t('cmd_enter')} onClick={handleNuclear} disabled={loading || !nuclearCompany.trim() || !nuclearProblem.trim()}
+              className={`relative w-full py-3 rounded-xl font-semibold disabled:opacity-40 text-white transition-all`}
               style={{ background: isDark ? 'linear-gradient(135deg, #8a3028, #b54a3f)' : 'linear-gradient(135deg, #b54a3f, #8a3028)' }}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_mapping')}</>
               : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('mm_find_nuclear')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
             <p className={`text-xs text-center ${c.textMuteded}`}>{t('mm_legal_only')}</p>
           </div>

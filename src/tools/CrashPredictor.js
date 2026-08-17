@@ -750,8 +750,14 @@ const CrashPredictor = ({ tool }) => {
                     })}</div>
                   </div>
                 ))}
-                <button onClick={handleSaveEntry} className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-lg`}>
+                <button title={t('cmd_enter')} onClick={handleSaveEntry} className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-lg`}>
                   {saveSuccess?`✅ ${t('cpr_saved')}`:`💾 ${t('cpr_save')}`}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
                 {saveSuccess && <p className={`text-center text-sm ${c.textMuteded} mt-2`}>✅ {t('cpr_logged')} <button onClick={()=>setQuickMode(false)} className="underline">{t('cpr_add_details')}</button></p>}
               </div>
@@ -813,7 +819,13 @@ const CrashPredictor = ({ tool }) => {
                   <div><label className={`block text-sm font-medium ${c.textSecondary} mb-2`}>📝 {t('cpr_notes')}</label><textarea value={currentEntry.notes} onChange={e=>updateEntry('notes',e.target.value)} placeholder={t('cpr_notes_ph')} rows={2} className={`${c.input} border rounded-lg px-3 py-2 text-base w-full`}/></div>
 
                   <div className="flex gap-3">
-                  <button onClick={handleSaveEntry} className={`w-full ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?`✅ ${t('cpr_saved')}`:editingLogIndex!==null?`💾 ${t('cpr_update')}`:`💾 ${t('cpr_save')}`}</button>
+                  <button title={t('cmd_enter')} onClick={handleSaveEntry} className={`relative w-full ${c.btnPrimary} py-3 rounded-lg font-semibold`}>{saveSuccess?`✅ ${t('cpr_saved')}`:editingLogIndex!==null?`💾 ${t('cpr_update')}`:`💾 ${t('cpr_save')}`}{!loading && (
+                    <kbd aria-hidden="true"
+                      className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                      ⌘↵
+                    </kbd>
+                  )}
+                  </button>
                   {editingLogIndex!==null&&<button onClick={()=>{setEditingLogIndex(null);setCurrentEntry(blankEntry());}} className={`${c.btnSecondary} py-3 px-4 rounded-lg`}>{t('cpr_cancel')}</button>}
                   {logs.length>=3&&<button onClick={handleAnalyze} disabled={loading} className={`${c.btnSecondary} py-3 px-4 rounded-lg disabled:opacity-40`}>{loading?<span className="animate-spin inline-block">{tool?.icon ?? '⚠️'}</span>:<span>{tool?.icon ?? '⚠️'}</span>}</button>}
                   </div>

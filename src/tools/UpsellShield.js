@@ -240,9 +240,15 @@ const UpsellShield = ({ tool }) => {
         </p>
 
         <div className="flex gap-3">
-          <button onClick={() => generate()} disabled={loading || !situation.trim()}
-            className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
+          <button title={t('cmd_enter')} onClick={() => generate()} disabled={loading || !situation.trim()}
+            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] shadow-lg`}>
             {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🛡️'}</span> {t('us_arming')}</> : <><span>{tool?.icon ?? '🛡️'}</span> {t('us_prepare')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
 

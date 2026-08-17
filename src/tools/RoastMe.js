@@ -246,11 +246,17 @@ const RoastMe = ({ tool }) => {
         </div>
 
         {/* Submit */}
-        <button onClick={runRoast} disabled={!content.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runRoast} disabled={!content.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🔥'}</span> {t('rm_writing')}</>
             : <><span>{tool?.icon ?? '🔥'}</span> {t('rm_roast_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
 
         {/* Pre-result cross-ref */}
@@ -326,9 +332,15 @@ const RoastMe = ({ tool }) => {
           </div>
 
           {/* Actions */}
-          <button onClick={runRoast} disabled={loading}
-            className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
+          <button title={t('cmd_enter')} onClick={runRoast} disabled={loading}
+            className={`relative w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
             🔥 {t('rm_roast_again')}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {/* Post-result cross-refs */}

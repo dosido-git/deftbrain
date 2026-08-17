@@ -1771,8 +1771,14 @@ const BikeMedic = ({ tool }) => {
                 return (
                   <button onClick={() => saveBike(tempProfile)} disabled={saveDisabled}
                     title={saveDisabled ? t('bmd_garage_select_type_title') : ''}
-                    className={`flex-1 py-3 rounded-xl font-bold text-sm transition-opacity ${saveDisabled ? `${c.btnSecondary} opacity-50 cursor-not-allowed` : c.btnPrimary}`}>
+                    className={`relative flex-1 py-3 rounded-xl font-bold text-sm transition-opacity ${saveDisabled ? `${c.btnSecondary} opacity-50 cursor-not-allowed` : c.btnPrimary}`}>
                     {editingBikeId ? t('bmd_garage_update_bike') : t('bmd_garage_add_bike')}
+                  {!loading && (
+                    <kbd aria-hidden="true"
+                      className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                      ⌘↵
+                    </kbd>
+                  )}
                   </button>
                 );
               })()}
@@ -1849,7 +1855,13 @@ const BikeMedic = ({ tool }) => {
                   })}
                 </div>
               </div>
-              <button onClick={runSeasonalWizard} className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>{t('bmd_generate_season_checklist', { season: seasonLabel(selectedSeason) })}</button>
+              <button title={t('cmd_enter')} onClick={runSeasonalWizard} className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary}`}>{t('bmd_generate_season_checklist', { season: seasonLabel(selectedSeason) })}{!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
+              </button>
             </>
           )}
           {loading && renderLoadingState()}
@@ -2071,7 +2083,13 @@ const BikeMedic = ({ tool }) => {
               </select>
               <button onClick={logRide} disabled={!rideDistance || parseFloat(rideDistance) <= 0}
                 title={t('bmd_hub_log_title')}
-                className={`px-4 py-2 rounded-lg font-bold text-sm ${!rideDistance || parseFloat(rideDistance) <= 0 ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>{t('bmd_hub_log')}</button>
+                className={`relative px-4 py-2 rounded-lg font-bold text-sm ${!rideDistance || parseFloat(rideDistance) <= 0 ? `${c.btnSecondary} opacity-50` : c.btnPrimary}`}>{t('bmd_hub_log')}{!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
+              </button>
             </div>
             {bikeRides.length > 0 && (
               <div className={`mt-3 max-h-24 overflow-y-auto text-xs ${c.textMuteded} space-y-1`}>
@@ -2158,9 +2176,15 @@ const BikeMedic = ({ tool }) => {
           <textarea value={customSituation} onChange={e => setCustomSituation(e.target.value)}
             placeholder={t('bmd_custom_ph')}
             className={`w-full h-28 p-3 border-2 rounded-xl text-sm outline-none resize-none ${c.input}`} />
-          <button onClick={runCustomCheck} disabled={loading || !customSituation.trim()}
-            className={`mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${loading || !customSituation.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
+          <button title={t('cmd_enter')} onClick={runCustomCheck} disabled={loading || !customSituation.trim()}
+            className={`relative mt-3 w-full py-3 rounded-xl font-bold text-sm transition-colors ${loading || !customSituation.trim() ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
             {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> {t('bmd_generating')}</span> : t('bmd_generate_checklist')}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           {aiError && !loading && <div className={`mt-3 p-3 ${c.danger} border rounded-xl text-sm`}>{aiError}</div>}
         </div>

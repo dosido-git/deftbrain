@@ -952,9 +952,15 @@ const ReadTheRoom = ({ tool }) => {
                 <ConvoLine label={t('rr_quick_then_you')} emoji="🗣️" text={quickResults.you_follow} accent onSave={(line) => saveLine(line, effectiveQuickScenario)} {...sp} />
                 {quickResults.if_nothing && <div className={`${c.warning} border rounded-lg p-3`}><p className="text-xs">🛡️ {quickResults.if_nothing}</p></div>}
                 {quickResults.body_tip && <p className={`text-xs ${c.textSecondary}`}>🧍 {quickResults.body_tip}</p>}
-                <button onClick={() => handleQuickRead(true)} disabled={loading}
-                  className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px] disabled:opacity-40`}>
+                <button title={t('cmd_enter')} onClick={() => handleQuickRead(true)} disabled={loading}
+                  className={`relative w-full py-2 rounded-lg text-xs font-bold ${c.btnSecondary} border ${c.border} flex items-center justify-center gap-2 min-h-[36px] disabled:opacity-40`}>
                   {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : (quickExclude.length ? t('rr_quick_different_tried', { tried: quickExclude.length }) : t('rr_quick_different'))}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
               </div>
               <div className={`${c.infoBox} border rounded-xl p-4`}>
@@ -989,9 +995,15 @@ const ReadTheRoom = ({ tool }) => {
                 {[['minor','rr_howbad_minor'],['bad','rr_howbad_bad'],['terrible','rr_howbad_terrible'],['catastrophic','rr_howbad_catastrophic']].map(([v,l]) => <option key={v} value={v}>{t(l)}</option>)}
               </select>
             </div>
-            <button onClick={handleRecovery} disabled={loading}
-              className="w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]">
+            <button title={t('cmd_enter')} onClick={handleRecovery} disabled={loading}
+              className="relative w-full py-3 rounded-xl font-bold text-sm bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px]">
               {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '🎭'}</span> : t('rr_recovery_btn')}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
           {recoveryResults && (() => {

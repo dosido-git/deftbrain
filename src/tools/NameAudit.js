@@ -1143,13 +1143,19 @@ const NameAudit = ({ tool }) => {
           </div>
 
           {/* Submit */}
-          <button onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
+          <button title={t('cmd_enter')} onClick={mode === 'analyze' ? handleAnalyze : handleCompare}
           disabled={loading || compareLoading || (mode === 'analyze' ? (!name.trim() || !context) : (compareNames.filter(n => n.trim()).length < 2 || !context))}
-          className={`flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
+          className={`relative flex-1 py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${
             (loading || compareLoading) ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary
           } disabled:opacity-40`}>
           {(loading || compareLoading) ? (<><span className="animate-spin inline-block">{tool?.icon ?? '🔍'}</span> {mode === 'analyze' ? t('nau_analyzing') : t('nau_comparing')}</>)
             : (<><span className="me-1">{tool?.icon ?? '🔍'}</span>{mode === 'analyze' ? t('nau_btn_analyze') : t('nau_btn_compare')}</>)}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {/* Audit History */}

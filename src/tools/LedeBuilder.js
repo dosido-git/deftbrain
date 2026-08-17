@@ -243,14 +243,20 @@ Write the lede.`;
         </div>
 
         {/* Submit */}
-        <button
+        <button title="Press ⌘↵ (Ctrl+Enter) to submit"
           onClick={handleSubmit}
           disabled={!canSubmit || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '✍️'}</span> Drafting...</>
             : <><span className="me-1">{tool?.icon ?? '✍️'}</span> Draft lede</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
 
         {/* Pre-result cross-ref */}
@@ -300,12 +306,18 @@ Write the lede.`;
             </div>
 
             {/* Actions */}
-            <button
+            <button title="Press ⌘↵ (Ctrl+Enter) to submit"
               onClick={handleSubmit}
               disabled={loading}
-              className={`w-full ${c.btnSecondary} disabled:opacity-40 font-medium py-2 rounded-lg text-sm`}
+              className={`relative w-full ${c.btnSecondary} disabled:opacity-40 font-medium py-2 rounded-lg text-sm`}
             >
               Redraft
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
 
             {/* Post-result cross-ref */}

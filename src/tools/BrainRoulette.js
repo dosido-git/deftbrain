@@ -1233,9 +1233,15 @@ const BrainRoulette = ({ tool }) => {
               <div className={`text-center py-4 px-6 border-2 rounded-xl ${c.warning}`}><p className={`font-bold`}>{t('br_daily_limit_title', { n: DAILY_SPIN_LIMIT })}</p><p className={`text-sm mt-1 ${c.textMuted}`}>{t('br_daily_limit_subtitle')}</p></div>
             ) : !customTopic.trim() && (
               <div className="flex gap-3">
-                <button onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
-                  className={`w-full disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+                <button title={t('cmd_enter')} onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
+                  className={`relative w-full disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
                   {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('br_spinning')}</> : cooldownTick > 0 ? <>{t('br_wait_sec', { sec: cooldownTick })}</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> {t('br_spin')}</>}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
                 <button onClick={() => handleSpin(true)} disabled={!canSpin}
                   className={`px-4 disabled:opacity-40 font-semibold py-3 rounded-lg flex items-center gap-2 ${c.btnSecondary}`} title={t('br_surprise_title')}>

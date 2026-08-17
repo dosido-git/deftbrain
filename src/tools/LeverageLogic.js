@@ -385,9 +385,15 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button onClick={analyze} disabled={loading} className={`w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={analyze} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
               {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
               {loading ? t('llog_building') : t('llog_build_strategy')}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
               {situation.trim() && (
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('llog_not_ready')}</button>
@@ -730,9 +736,15 @@ const LeverageLogic = ({ tool }) => {
               <p className={`text-xs ${c.textSecondary} mb-4`}>{t('llog_counter_intro')}</p>
               <label htmlFor="ll-they-just-said" className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>{t('llog_counter_q')} <span className={c.required}>*</span></label>
               <textarea id="ll-they-just-said" value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={t('llog_ph_counter')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
-              <button onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                 {counterLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {counterLoading ? t('llog_thinking') : t('llog_what_say')}
+              {!counterLoading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
             </div>
             {counterResults && (
@@ -791,9 +803,15 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_sim_q')}</label>
                 <textarea value={simOpening} onChange={e => setSimOpening(e.target.value)} placeholder={t('llog_ph_sim')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchSimulation} disabled={simLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchSimulation} disabled={simLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                 {simLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {simLoading ? t('llog_simulating') : t('llog_run_sim')}
+              {!simLoading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
             </div>
             {simResults && (
@@ -864,9 +882,15 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button onClick={fetchEmailDraft} disabled={emailLoading} className={`w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchEmailDraft} disabled={emailLoading} className={`relative w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>
                 {emailLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {emailLoading ? t('llog_drafting') : t('llog_draft_email_btn')}
+              {!emailLoading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
             </div>
             {emailResults && (
@@ -933,9 +957,15 @@ const LeverageLogic = ({ tool }) => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_prep_unsure')}</label>
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
-                <button onClick={fetchPrepCheck} disabled={prepLoading} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                   {prepLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                   {prepLoading ? t('llog_assessing') : t('llog_check_readiness')}
+                {!prepLoading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
               </div>
             )}
@@ -1002,9 +1032,15 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_final_outcome_q')} <span className={c.required}>*</span></label>
                 <textarea value={finalOutcome} onChange={e => setFinalOutcome(e.target.value)} placeholder={t('llog_ph_outcome')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
                 {debriefLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {debriefLoading ? t('llog_analyzing') : t('llog_run_debrief')}
+              {!debriefLoading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
               </button>
             </div>
             {debriefResults && (

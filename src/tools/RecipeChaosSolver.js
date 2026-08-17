@@ -1257,8 +1257,8 @@ const RecipeChaosSolver = ({ tool }) => {
         </button>
 
         {/* Submit */}
-        <button onClick={runRescue} disabled={loading || compressingRecipe || compressingPantry}
-          className={`w-full ${
+        <button title={t('cmd_enter')} onClick={runRescue} disabled={loading || compressingRecipe || compressingPantry}
+          className={`relative w-full ${
             problemCategory === 'timing_issue' && problemDescription.toLowerCase().includes('burn')
               ? c.btnEmergency : c.btnPrimary
           } disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -1266,6 +1266,12 @@ const RecipeChaosSolver = ({ tool }) => {
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {pantryImageBase64 ? t('rcs_scanning_solving') : t('rcs_finding_solution')}</>
             : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_rescue_dish')}</>
           }
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
 
         {/* Try Example */}
@@ -1660,9 +1666,15 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runSwap} disabled={!swapIngredient.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runSwap} disabled={!swapIngredient.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_looking_swaps')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_find_substitutes')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
           {t('rcs_xref_got_ingredients').split('{{link}}').map((part, i, arr) => (
@@ -1838,9 +1850,15 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         )}
 
-        <button onClick={runScale} disabled={!scaleRecipe.trim() || !scaleTarget || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runScale} disabled={!scaleRecipe.trim() || !scaleTarget || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_scaling')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_scale_recipe_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
           {t('rcs_xref_need_plan').split('{{link}}').map((part, i, arr) => (
@@ -1979,10 +1997,16 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runMultiSwap}
+        <button title={t('cmd_enter')} onClick={runMultiSwap}
           disabled={multiSwapIngredients.filter(i => i.trim()).length < 2 || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_analyzing_interactions')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_find_combined')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
           {t('rcs_xref_ready_cook').split('{{link}}').map((part, i, arr) => (
@@ -2144,9 +2168,15 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runPreflight} disabled={!pfRecipe.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runPreflight} disabled={!pfRecipe.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_pf_checking')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_pf_run')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
           {t('rcs_xref_ready_cook_prep').split('{{link}}').map((part, i, arr) => (
@@ -2330,9 +2360,15 @@ const RecipeChaosSolver = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runFlavorFix} disabled={!ffDish.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runFlavorFix} disabled={!ffDish.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_ff_diagnosing')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_ff_fix_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         <p className={`text-xs text-center ${c.textMuteded} pt-1`}>
           {t('rcs_xref_need_plan').split('{{link}}').map((part, i, arr) => (

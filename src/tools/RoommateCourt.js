@@ -646,12 +646,18 @@ const RoommateCourt = ({ tool }) => {
         {renderPillRow(LIVING_OPTIONS, livingSituation, setLivingSituation)}
       </div>
 
-        <button onClick={submitDispute} disabled={loading || !dispute.trim()}
-      className={`w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
+        <button title={t('cmd_enter')} onClick={submitDispute} disabled={loading || !dispute.trim()}
+      className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
       {loading
         ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {t('rc_deliberating')}</>
         : <><span>🔨</span> {t('rc_hear_case')}</>}
-      </button>
+      {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
       <p className={`text-xs text-center mt-3 ${c.textMuted}`}>
         {t('rc_write_first')}{' '}
         <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('rc_velvet_hammer')}</a> {t('rc_drafts_it')}
@@ -910,11 +916,17 @@ const RoommateCourt = ({ tool }) => {
 
         {/* Assign button */}
         {roommates.length >= 2 && choreList.length >= 1 && !assignResult && !isShuffling && (
-          <button onClick={assignChores} disabled={loading}
-            className={`w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
+          <button title={t('cmd_enter')} onClick={assignChores} disabled={loading}
+            className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {t('rc_spinning')}</>
               : <><span>🎰</span> {t('rc_spin_wheel')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         )}
 

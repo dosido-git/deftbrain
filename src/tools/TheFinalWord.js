@@ -1015,8 +1015,14 @@ const TheFinalWord = ({ tool }) => {
                   <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleSubmit()} placeholder={t('tfw_q_ph')} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                   <VoiceButton />
                 </div>
-                <button onClick={handleSubmit} disabled={loading || !question.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                   {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? t('tfw_q_deliberating') : t('tfw_q_submit')}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
               </div>
             )}
@@ -1087,8 +1093,14 @@ const TheFinalWord = ({ tool }) => {
                       <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_context_label')}</label>
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
-                    <button onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                    <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
                       {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}
+                    {!loading && (
+                      <kbd aria-hidden="true"
+                        className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                        ⌘↵
+                      </kbd>
+                    )}
                     </button>
                   </>
                 )}

@@ -572,13 +572,19 @@ const CaptionMagic = ({ tool }) => {
         </div>
       )}
 
-        <button onClick={generate}
+        <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || (!imageBase64 && !imageDescription.trim())}
-      className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
+      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
         ${loading || (!imageBase64 && !imageDescription.trim()) ? c.stateDisabled : c.btnPrimary} disabled:opacity-40`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> {t('cm_crafting')}</>
         : <><span>{tool?.icon ?? '📸'}</span> {t('cm_generate')}</>}
-      </button>
+      {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
 
     </div>
   );

@@ -674,9 +674,15 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <div>
-          <button onClick={runAnalyze} disabled={!meetingText.trim() || loading}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={runAnalyze} disabled={!meetingText.trim() || loading}
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_an_btn')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
       </div>
@@ -817,9 +823,15 @@ const MeetingBSDetector = ({ tool }) => {
 
         <button onClick={addCalMeeting} className={`text-xs font-bold ${c.textSecondary} mb-4 min-h-[32px]`}>{t('mbd_cal_add')}</button>
 
-        <button onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 
@@ -914,9 +926,15 @@ const MeetingBSDetector = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runLive} disabled={!liveWhat.trim() || loading}
-          className={`w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runLive} disabled={!liveWhat.trim() || loading}
+          className={`relative w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 
@@ -1035,9 +1053,15 @@ const MeetingBSDetector = ({ tool }) => {
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
-        <button onClick={runRecurring} disabled={!recName.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runRecurring} disabled={!recName.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 
@@ -1154,9 +1178,15 @@ const MeetingBSDetector = ({ tool }) => {
           </div>
         </div>
 
-        <button onClick={runMessages} disabled={!msgMeeting.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runMessages} disabled={!msgMeeting.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 
@@ -1240,9 +1270,15 @@ const MeetingBSDetector = ({ tool }) => {
             className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
-        <button onClick={runAgenda} disabled={!agTopic.trim() || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runAgenda} disabled={!agTopic.trim() || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 
@@ -1623,9 +1659,15 @@ const MeetingBSDetector = ({ tool }) => {
                 className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} />
             </div>
 
-            <button onClick={runReport} disabled={loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            <button title={t('cmd_enter')} onClick={runReport} disabled={loading}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </>
         )}
@@ -1802,9 +1844,15 @@ const MeetingBSDetector = ({ tool }) => {
           </button>
         )}
 
-        <button onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
-          className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
+          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
       </div>
 

@@ -322,14 +322,20 @@ const ComebackCooker = ({ tool }) => {
             </div>
           )}
 
-          <button
+          <button title={t('cmd_enter')}
           onClick={handleSubmit}
           disabled={loading || !situation.trim()}
-          className={`w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
+          className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
           >
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('cc_cooking')}</>
             : <><span>{tool?.icon ?? '🍳'}</span> {t('cc_cook')}</>}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
         </div>
       </div>

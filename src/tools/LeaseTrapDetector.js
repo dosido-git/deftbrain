@@ -500,8 +500,14 @@ const LeaseTrapDetector = ({ tool }) => {
               {t('ltd_xref_deposit_post')}
             </p>
 
-            <button onClick={analyzeLease} disabled={loading} className={`w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
+            <button title={t('cmd_enter')} onClick={analyzeLease} disabled={loading} className={`relative w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
             {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
             <p className={`text-xs text-center ${c.textMuted}`}>⏱️ {t('ltd_time_notice')}</p>
 
@@ -563,9 +569,15 @@ const LeaseTrapDetector = ({ tool }) => {
                     className={`w-full p-2 border rounded-xl text-base ${c.input}`} />
                 </div>
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
-                <button onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
-                  className={`w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
+                <button title={t('cmd_enter')} onClick={handleFindMissing} disabled={missingLoading || !missingContractText.trim()}
+                  className={`relative w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
                   {missingLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
+                {!missingLoading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
                 </button>
                 <p className={`text-center text-xs ${c.textMuted}`}>{t('ltd_disclaimer_attorney')}</p>
               </div>

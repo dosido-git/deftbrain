@@ -243,10 +243,16 @@ const WrongAnswersOnly = ({ tool }) => {
 
         <p className={`text-xs ${c.textMuted} mb-2`}>{t('wao_chaos_q')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}</p>
 
-        <button onClick={runWrong} disabled={!question.trim() || loading} className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🙃'}</span> {t('wao_making')}</>
-            : <><span>{tool?.icon ?? '🙃'}</span> {t('wao_run')}</>} </button>
+            : <><span>{tool?.icon ?? '🙃'}</span> {t('wao_run')}</>} {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
+        </button>
         <p className={`text-xs text-center ${c.textMuted}`}>{t('wao_disclaimer')}</p>
       </div>
 
@@ -303,9 +309,15 @@ const WrongAnswersOnly = ({ tool }) => {
               <p className={`text-[10px] font-bold uppercase mb-1`}>✅ {t('wao_actually')}</p>
               <p className="text-xs">{results.real_answer_hint}</p>
             </div>
-          )} {/* Again */} <button onClick={runWrong} disabled={loading || !question.trim()} className={`w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
+          )} {/* Again */} <button title={t('cmd_enter')} onClick={runWrong} disabled={loading || !question.trim()} className={`relative w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
             {tool?.icon ?? '🙃'} {t('wao_different')}
-          </button>
+          {!loading && (
+                             <kbd aria-hidden="true"
+                               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                               ⌘↵
+                             </kbd>
+                           )}
+                           </button>
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>

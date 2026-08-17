@@ -963,10 +963,16 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button onClick={saveRelationship}
+                  <button title={t('cmd_enter')} onClick={saveRelationship}
                     disabled={!form.name || !form.relationshipType || !form.frequency || !form.lastContact}
-                    className={`flex-1 py-3 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2`}>
+                    className={`relative flex-1 py-3 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2`}>
                     <span className="me-1">{tool?.icon ?? '💔'}</span>{form.id ? t('ffa_btn_update') : t('ffa_add_person')}
+                  {(
+                    <kbd aria-hidden="true"
+                      className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                      ⌘↵
+                    </kbd>
+                  )}
                   </button>
                   <button onClick={() => { resetForm(); setView('dashboard'); }} className={`py-3 px-6 rounded-xl font-bold ${c.btnSecondary}`}>{t('ffa_btn_cancel')}</button>
                   {form.id && <button onClick={() => { deletePerson(form.id); resetForm(); setView('dashboard'); }} className="py-3 px-4 rounded-xl text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">{t('ffa_btn_delete')}</button>}

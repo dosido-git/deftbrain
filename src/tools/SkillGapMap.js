@@ -489,10 +489,16 @@ const SkillGapMap = ({ tool }) => {
             ))}
           </p>
 
-          <button onClick={mode === 'map' ? handleAnalyze : handleExplore}
+          <button title={t('cmd_enter')} onClick={mode === 'map' ? handleAnalyze : handleExplore}
             disabled={loading || !currentRole.trim() || (mode === 'map' && !targetRole.trim())}
-            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
+            className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
             {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? t('sgm_exploring') : t('sgm_mapping')}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> {t('sgm_explore_paths')}</>) : (<><span className="text-lg">🗺️</span> {t('sgm_map_gaps')}</>)}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
 
           {!currentRole.trim() && !targetRole.trim() && !loading && (

@@ -707,13 +707,19 @@ const BrainStateDeejay = ({ tool }) => {
         </p>
       </div>
 
-      <button onClick={generate}
+      <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || !currentState || !desiredState}
-      className={`disabled:opacity-40 flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
+      className={`relative disabled:opacity-40 flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
       {loading ? (
         <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
       ) : (
         <><span>{tool?.icon ?? '🎧'}</span> {t('bsd_generate')}</>
+      )}
+      {!loading && (
+        <kbd aria-hidden="true"
+          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+          ⌘↵
+        </kbd>
       )}
       </button>
       <p className={`text-center text-xs ${c.textMuted}`}>
@@ -1070,10 +1076,16 @@ const BrainStateDeejay = ({ tool }) => {
           )}
 
           {/* New Playlist / Share Settings (#6) */}
-          <button onClick={generate}
+          <button title={t('cmd_enter')} onClick={generate}
             disabled={loading || !currentState || !desiredState}
-            className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ${c.btnPrimary}`}>
+            className={`relative w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ${c.btnPrimary}`}>
             {t('bsd_new_playlist')}
+          {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
           </button>
           <button onClick={copyShareUrl}
             className={`flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border ${shareCopied ? c.success : c.btnSecondary}`}>

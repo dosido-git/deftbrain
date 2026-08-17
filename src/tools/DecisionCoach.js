@@ -544,10 +544,17 @@ const DecisionCoach = ({ tool }) => {
       </>)}
 
       {/* Go button + Try example */}
-      <button onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
+      <button title={t('cmd_enter')} onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
       disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
-      className={`flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
+      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : decideMode === 'proscons' ? <><span>⚖️</span> {t('dc_btn_compare')}</> : decideMode === 'devils' ? <><span>🎭</span> {t('dc_btn_checkgut')}</> : decideMode === 'chain' ? <><span>🔗</span> {t('dc_btn_solvechain')}</> : <><span>🎯</span> {t('dc_btn_decide')}</>}
+      
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
       </button>
 
       {/* Template save + prefs */}

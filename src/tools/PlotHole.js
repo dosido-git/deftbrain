@@ -266,12 +266,18 @@ const PlotHole = ({ tool }) => {
                 rows={2} className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>
 
-          <button onClick={runAnalysis} disabled={!title.trim() || loading}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={runAnalysis} disabled={!title.trim() || loading}
+            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🕳️'}</span> {t('plh_analyzing')}</>
               : <><span>{tool?.icon ?? '🕳️'}</span> {t('plh_find_holes')}</>}
-            </button>
+            {!loading && (
+            <kbd aria-hidden="true"
+              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+              ⌘↵
+            </kbd>
+          )}
+          </button>
 
             <p className={`text-xs text-center ${c.textMuted}`}>
               {t('plh_xref_find')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('plh_plottwist')}</a> {t('plh_xref_find_tail')}
@@ -378,11 +384,17 @@ const PlotHole = ({ tool }) => {
                 rows={3} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             </div>
 
-            <button onClick={runDefend} disabled={!defendHole.trim() || loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            <button title={t('cmd_enter')} onClick={runDefend} disabled={!defendHole.trim() || loading}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🕳️'}</span> {t('plh_building')}</>
                 : <><span>{tool?.icon ?? '🕳️'}</span> {t('plh_defend_it')}</>}
+            {!loading && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </div>
 

@@ -932,16 +932,22 @@ const BuyWise = ({ tool }) => {
 
       {/* Submit */}
       <div className="flex gap-3">
-        <button
+        <button title={t('cmd_enter')}
           onClick={analyze}
           disabled={!canAnalyze}
-          className={`flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
+          className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 disabled:cursor-not-allowed font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}
         >
           {loading ? (
             <><span className="animate-spin inline-block">{tool?.icon ?? '💲'}</span> {t('bw_researching')}</>
           ) : (
             <><span>{tool?.icon ?? '💲'}</span> {t('bw_research_btn')}</>
           )}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
         </button>
         {!!results && (
           <button onClick={() => setView('results')} className={`${c.btnSecondary} px-4 py-3 rounded-lg font-bold text-sm min-h-[48px]`}>
