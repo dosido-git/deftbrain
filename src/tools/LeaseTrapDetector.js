@@ -57,8 +57,10 @@ const LeaseTrapDetector = ({ tool }) => {
   // Switching modes swaps a form that starts ~650px below the tabs. Without
   // this the tab lights up and nothing else visibly moves, which reads as a
   // dead button — the reported symptom was clicking it and seeing nothing.
-  const analyzeFormRef = useRef(null);
-  const missingFormRef = useRef(null);
+  // The tabs live in the header card. Switching panels scrolls there rather
+  // than to the panel itself, so the tabs stay on screen and the reader can see
+  // which one they just chose sitting above the content it produced.
+  const headerRef = useRef(null);
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-orange-50/50 border-orange-100',
@@ -354,15 +356,14 @@ const LeaseTrapDetector = ({ tool }) => {
 
   const isRoommateOrSublease = leaseType === 'room' || leaseType === 'sublease';
 
-  // ── Pressing a mode tab brings its form into view ──
-  // Keyed on a nonce rather than ltdMode: pressing the tab you are already on
-  // is a legitimate "take me to the form" gesture, and it changes no state, so
-  // an effect keyed on the mode would never fire for it.
+  // ── Pressing a mode tab brings its panel into view ──
+  // Keyed on a nonce, not ltdMode: pressing the tab you are already on is a
+  // legitimate "take me back" gesture and changes no state, so an effect keyed
+  // on the mode would never fire for it.
   useEffect(() => {
     if (modeNonce === 0) return;
-    const el = ltdMode === 'missing' ? missingFormRef.current : analyzeFormRef.current;
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [modeNonce, ltdMode]);
+    headerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [modeNonce]);
 
   // ── Cmd/Ctrl+Enter keyboard shortcut ──
 
@@ -392,7 +393,7 @@ const LeaseTrapDetector = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
 
       {/* ── Unified header card: title + tagline + reset + mode tabs ── */}
-      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+      <div ref={headerRef} className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
         <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
@@ -421,8 +422,8 @@ const LeaseTrapDetector = ({ tool }) => {
         </div>
       </div>
 
-      {ltdMode === 'analyze' && !results && !missingResults && (
-        <div ref={analyzeFormRef} className="space-y-5">
+      {ltdMode === 'analyze' && !results && (
+        <div className="space-y-5">
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
             <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('ltd_provide_q')}</p>
             <div className="grid grid-cols-2 gap-3">
@@ -546,8 +547,8 @@ const LeaseTrapDetector = ({ tool }) => {
         )}
 
         {/* ════════ FINE POINT FINDER ════════ */}
-        {ltdMode === 'missing' && !missingResults && !results && (
-          <div ref={missingFormRef} className="space-y-4">
+        {ltdMode === 'missing' && !missingResults && (
+          <div className="space-y-4">
             <div className={`${c.card} border rounded-2xl p-5`}>
               <div className={`p-3 rounded-xl mb-4 ${isDark ? 'bg-amber-900/20 border border-amber-800/40' : 'bg-amber-50 border border-amber-200'}`}>
                 <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>🏦 {t('ltd_missing_intro')}</p>
@@ -602,7 +603,7 @@ const LeaseTrapDetector = ({ tool }) => {
           </div>
         )}
 
-        {missingResults && (
+        {ltdMode === 'missing' && missingResults && (
           <div className="space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <button onClick={() => { setMissingResults(null); setMissingContractText(''); setError(''); }}
@@ -694,7 +695,7 @@ const LeaseTrapDetector = ({ tool }) => {
           </div>
         )}
 
-        {results && (
+        {ltdMode === 'analyze' && results && (
           <div className="space-y-5">
             {/* ── "Also noticed" ────────────────────────────────────────────
                 The model reads the whole lease anyway. Until now everything it
@@ -1316,7 +1317,7 @@ const LeaseTrapDetector = ({ tool }) => {
 
           </div>
         )}
-        {results && (
+        {ltdMode === 'analyze' && results && (
           <p className={`text-xs ${c.textMuted} text-center pt-2`}>
             {t('ltd_xref_complaint_pre')} <a href="/ComplaintEscalationWriter" className={linkStyle}>{t('ltd_xref_complaint_link')}</a> {t('ltd_xref_complaint_post')}
           </p>
