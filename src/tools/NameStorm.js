@@ -159,19 +159,30 @@ const NameStorm = ({ tool }) => {
   const [stormHistory, setStormHistory] = usePersistentState('namestorm-history', []);
 
   // ─── Options ───
-  const categories = [
-    { value: 'Business', icon: '🏢', label: t('ns_cat_business') },
-    { value: 'Product', icon: '📦', label: t('ns_cat_product') },
-    { value: 'Band / Music Project', icon: '🎸', label: t('ns_cat_band') },
-    { value: 'Pet', icon: '🐾', label: t('ns_cat_pet') },
-    { value: 'Baby', icon: '👶', label: t('ns_cat_baby') },
-    { value: 'Character (D&D/Fiction)', icon: '⚔️', label: t('ns_cat_character') },
-    { value: 'Creative Project', icon: '🎨', label: t('ns_cat_creative') },
-    { value: 'Event', icon: '🎪', label: t('ns_cat_event') },
-    { value: 'Domain Name', icon: '🌐', label: t('ns_cat_domain') },
-    { value: 'WiFi Network', icon: '📶', label: t('ns_cat_wifi') },
-    { value: 'Social Media Handle', icon: '📱', label: t('ns_cat_social') },
-    { value: 'Other', icon: '✨', label: t('ns_cat_other') },
+  // Twelve is the right number — the oddballs are the personality — but twelve
+  // in one wrap is a scan. Three named groups and a spare give the eye
+  // somewhere to land without dropping anything.
+  const categoryGroups = [
+    { key: 'ns_catgrp_building', items: [
+      { value: 'Business', icon: '🏢', label: t('ns_cat_business') },
+      { value: 'Product', icon: '📦', label: t('ns_cat_product') },
+      { value: 'Creative Project', icon: '🎨', label: t('ns_cat_creative') },
+      { value: 'Event', icon: '🎪', label: t('ns_cat_event') },
+    ] },
+    { key: 'ns_catgrp_personal', items: [
+      { value: 'Baby', icon: '👶', label: t('ns_cat_baby') },
+      { value: 'Pet', icon: '🐾', label: t('ns_cat_pet') },
+      { value: 'Character (D&D/Fiction)', icon: '⚔️', label: t('ns_cat_character') },
+      { value: 'Band / Music Project', icon: '🎸', label: t('ns_cat_band') },
+    ] },
+    { key: 'ns_catgrp_online', items: [
+      { value: 'Domain Name', icon: '🌐', label: t('ns_cat_domain') },
+      { value: 'Social Media Handle', icon: '📱', label: t('ns_cat_social') },
+      { value: 'WiFi Network', icon: '📶', label: t('ns_cat_wifi') },
+    ] },
+    { key: null, items: [
+      { value: 'Other', icon: '✨', label: t('ns_cat_other') },
+    ] },
   ];
 
   const vibeOptions = [
@@ -1012,7 +1023,10 @@ const NameStorm = ({ tool }) => {
             </div>
           </div>
         </div>
-        <div className="px-5 pb-5 pt-4 flex gap-2">
+        <div className="px-5 pb-2 pt-4">
+          <p className={`text-xs font-semibold ${c.textMuted}`}>{t('ns_how_explore')}</p>
+        </div>
+        <div className="px-5 pb-5 flex gap-2">
           <button onClick={() => { setMode('generate'); setCategory(''); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'generate')}`}>
             <span>⚡</span> {t('ns_tab_generate')}
@@ -1095,12 +1109,19 @@ const NameStorm = ({ tool }) => {
           {!isBlendMode && (
             <div className={`${c.card} rounded-xl shadow-sm p-6`}>
               <label className={`block font-semibold ${c.text} mb-3`}>{t('ns_what_needs_name')} <span className={c.required}>*</span></label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map(cat => (
-                  <button key={cat.value} onClick={() => setCategory(cat.value)}
-                    className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chipStyle(category === cat.value)}`}>
-                    {cat.icon} {cat.label}
-                  </button>
+              <div className="space-y-3">
+                {categoryGroups.map(group => (
+                  <div key={group.key || 'other'}>
+                    {group.key && <p className={`text-[11px] font-semibold ${c.textMuted} mb-1.5`}>{t(group.key)}</p>}
+                    <div className="flex flex-wrap gap-2">
+                      {group.items.map(cat => (
+                        <button key={cat.value} onClick={() => setCategory(cat.value)}
+                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${chipStyle(category === cat.value)}`}>
+                          {cat.icon} {cat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -1316,9 +1337,6 @@ const NameStorm = ({ tool }) => {
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
                 : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
-            </button>
-            <button onClick={loadExample} className={`${c.btnSecondary} px-4 py-3 rounded-lg text-xs font-bold`}>
-              {t('try_example')}
             </button>
           </div>
 
