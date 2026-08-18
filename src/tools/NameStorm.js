@@ -1060,7 +1060,7 @@ const NameStorm = ({ tool }) => {
           </button>
           <button onClick={() => { setMode('blend'); setCategory(''); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'blend')}`}>
-            <span>✨</span> {t('ns_tab_blend')} <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isDark ? 'bg-amber-900/50 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-700 border border-amber-300'}`}>{t('ns_pro')}</span>
+            <span>✨</span> {t('ns_tab_blend')}
           </button>
           <button onClick={() => { setMode('quick'); setCategory(''); setResults(null); }}
             className={`flex-1 py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${tabStyle(mode === 'quick')}`}>
