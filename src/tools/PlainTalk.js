@@ -28,14 +28,23 @@ const TEXT_TYPES = [
 
 // The questions people actually arrive with. Selecting none is fine — the
 // report then leads with whatever changed most.
-const COMPARE_QUESTIONS = [
-  { id: 'important', labelKey: 'plt_cmpq_important' },
-  { id: 'price',     labelKey: 'plt_cmpq_price' },
-  { id: 'obligations', labelKey: 'plt_cmpq_obligations' },
-  { id: 'deadlines', labelKey: 'plt_cmpq_deadlines' },
-  { id: 'coverage',  labelKey: 'plt_cmpq_coverage' },
-  { id: 'medical',   labelKey: 'plt_cmpq_medical' },
+const COMPARE_QUESTION_GROUPS = [
+  { key: null, emoji: '', items: [
+    { id: 'important', labelKey: 'plt_cmpq_important' },
+  ] },
+  { key: 'plt_cmpgrp_contract', emoji: '⚖️', items: [
+    { id: 'obligations', labelKey: 'plt_cmpq_obligations' },
+    { id: 'deadlines',   labelKey: 'plt_cmpq_deadlines' },
+    { id: 'price',       labelKey: 'plt_cmpq_price' },
+  ] },
+  { key: 'plt_cmpgrp_medical', emoji: '🏥', items: [
+    { id: 'medical', labelKey: 'plt_cmpq_medical' },
+  ] },
+  { key: 'plt_cmpgrp_financial', emoji: '💰', items: [
+    { id: 'coverage', labelKey: 'plt_cmpq_coverage' },
+  ] },
 ];
+const COMPARE_QUESTIONS = COMPARE_QUESTION_GROUPS.flatMap(g => g.items);
 
 const TABS = [
   { id: 'overview', labelKey: 'plt_tab_overview', emoji: '📊' },
@@ -134,8 +143,6 @@ const PlainTalk = ({ tool }) => {
   const [compareFileB, setCompareFileB] = useState('');
   const [compareTextA, setCompareTextA] = useState('');
   const [compareTextB, setCompareTextB] = useState('');
-  const [compareLabelA, setCompareLabelA] = useState(() => t('plt_original'));
-  const [compareLabelB, setCompareLabelB] = useState(() => t('plt_translated'));
   const [compareResult, setCompareResult] = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
   const [sectionFilter, setSectionFilter] = useState('all'); // all|high|flagged
@@ -327,8 +334,8 @@ const PlainTalk = ({ tool }) => {
         pdfA: comparePdfA,
         pdfB: comparePdfB,
         questions: asked,
-        labelA: compareLabelA,
-        labelB: compareLabelB,
+        labelA: t('plt_doc_a'),
+        labelB: t('plt_doc_b'),
         textType,
         userLocale, userCurrency, userRegion,
       });
@@ -424,6 +431,37 @@ const PlainTalk = ({ tool }) => {
   const wordCount = useMemo(() => inputText.trim().split(/\s+/).filter(Boolean).length, [inputText]);
 
   const buildFullText = useCallback(() => {
+    // The comparison is its own report — and the questions at the end are the
+    // part someone carries into the conversation, so Copy and Print have to
+    // reach them. This used to return '' for the compare view entirely.
+    if (compareResult) {
+      const bl = compareResult.bottom_line || {};
+      const out = [
+        `🔀 ${t('plt_whatchanged')}`,
+        '',
+        `🎯 ${t('plt_bottom_line')}: ${bl.should_you_care === 'no' ? t('plt_care_no') : t('plt_care_yes')}`,
+        bl.explanation || '',
+        '',
+      ];
+      if (compareResult.key_changes?.length) {
+        out.push(`═══ ${t('plt_shouldnt_miss', { count: compareResult.key_changes.length })} ═══`);
+        compareResult.key_changes.forEach(k => {
+          out.push(`• ${k.topic}`, `  ${t('plt_before')}: ${k.before}`, `  ${t('plt_after')}: ${k.after}`,
+                   `  ${t('plt_why_matters')}: ${k.why_it_matters || ''}`, '');
+        });
+      }
+      if (compareResult.minor_changes?.length) {
+        out.push(`═══ ${t('plt_probably_fine')} ═══`, ...compareResult.minor_changes.map(m => `• ${m}`), '');
+      }
+      if (compareResult.unchanged_important?.length) {
+        out.push(`═══ ${t('plt_unchanged')} ═══`, ...compareResult.unchanged_important.map(u => `• ${u}`), '');
+      }
+      if (compareResult.questions_to_ask?.length) {
+        out.push(`═══ ${t('plt_questions_to_ask')} ═══`, ...compareResult.questions_to_ask.map(q => `• ${q}`), '');
+      }
+      out.push(BRAND);
+      return out.join('\n');
+    }
     // Copy/Print only make sense for a real analysis — not the compare-only view.
     if (!result || result._compareOnly || !result.detected_type) return '';
     const lines = [
@@ -465,7 +503,7 @@ const PlainTalk = ({ tool }) => {
     }
     lines.push(BRAND);
     return lines.join('\n');
-  }, [result, annotations, annotationCount, t]);
+  }, [result, compareResult, annotations, annotationCount, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Plain Talk');
 
@@ -792,7 +830,9 @@ const PlainTalk = ({ tool }) => {
             {/* Reading Level Bar */}
             <ReadingLevelBar level={result?.reading_level} />
 
-            {/* Tab bar */}
+            {/* Tab bar — hidden in compare mode, where it renders exactly one
+                tab and repeats what the mode selector above already says. */}
+            {!compareView && (
             <div className="flex gap-1 overflow-x-auto pb-1">
               {TABS.filter(tab => !compareView || tab.id === 'compare').map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
@@ -803,6 +843,7 @@ const PlainTalk = ({ tool }) => {
                 </button>
               ))}
             </div>
+            )}
 
             {/* Selection hint */}
             {(activeTab === 'xray' || activeTab === 'sidebyside') && (
@@ -1278,26 +1319,24 @@ const PlainTalk = ({ tool }) => {
                 {!compareResult ? (
                   <>
                     <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-4`}>
-                      <div>
-                        <h4 className={`text-sm font-bold ${c.text} mb-1`}>🔀 {t('plt_compare_two')}</h4>
-                        <p className={`text-xs ${c.textMuteded}`}>{t('plt_compare_intro')}</p>
-                      </div>
+                      {/* No heading here: the selected tile above already says
+                          this is the comparison, and the old "Compare Two
+                          Documents" label was the machine's name for it. */}
+                      <p className={`text-xs ${c.textMuteded}`}>{t('plt_compare_intro')}</p>
+                      <p className={`text-sm font-semibold ${c.textSecondary}`}>{t('plt_compare_philosophy')}</p>
 
                       {[
-                        { side: 'A', labelKey: 'plt_doc_a', phKey: 'plt_compare_a_ph', nameKey: 'plt_label_a',
-                          text: compareTextA, setText: setCompareTextA, label: compareLabelA, setLabel: setCompareLabelA,
+                        { side: 'A', labelKey: 'plt_doc_a', phKey: 'plt_compare_a_ph',
+                          text: compareTextA, setText: setCompareTextA,
                           pdf: comparePdfA, setPdf: setComparePdfA, file: compareFileA, setFile: setCompareFileA },
-                        { side: 'B', labelKey: 'plt_doc_b', phKey: 'plt_compare_b_ph', nameKey: 'plt_label_b',
-                          text: compareTextB, setText: setCompareTextB, label: compareLabelB, setLabel: setCompareLabelB,
+                        { side: 'B', labelKey: 'plt_doc_b', phKey: 'plt_compare_b_ph',
+                          text: compareTextB, setText: setCompareTextB,
                           pdf: comparePdfB, setPdf: setComparePdfB, file: compareFileB, setFile: setCompareFileB },
                       ].map(d => (
                         <div key={d.side}>
                           <label className={`block text-sm font-bold ${c.text} mb-1.5`}>
                             📄 {t(d.labelKey)} <span className={c.required}>*</span>
                           </label>
-                          <input type="text" value={d.label} onChange={e => d.setLabel(e.target.value)}
-                            className={`px-2 py-1 mb-2 text-xs border rounded-lg font-bold ${c.input}`}
-                            placeholder={t(d.nameKey)} />
                           {d.pdf ? (
                             <div className={`flex items-center gap-2 p-3 rounded-xl border ${c.border}`}>
                               <span aria-hidden="true">📄</span>
@@ -1335,20 +1374,29 @@ const PlainTalk = ({ tool }) => {
                         <label className={`block text-sm font-bold ${c.text} mb-1`}>
                           🎯 {t('plt_cmp_q_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
                         </label>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {COMPARE_QUESTIONS.map(q => {
-                            const on = compareQuestions.includes(q.id);
-                            return (
-                              <button key={q.id} type="button" aria-pressed={on}
-                                onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                                  on ? (isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700')
-                                     : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
-                                }`}>
-                                {on ? '☑' : '☐'} {t(q.labelKey)}
-                              </button>
-                            );
-                          })}
+                        <div className="space-y-2.5 mt-2">
+                          {COMPARE_QUESTION_GROUPS.map((g, gi) => (
+                            <div key={gi}>
+                              {g.key && (
+                                <p className={`text-[11px] font-bold ${c.textMuteded} mb-1`}>{g.emoji} {t(g.key)}</p>
+                              )}
+                              <div className="flex flex-wrap gap-1.5">
+                                {g.items.map(q => {
+                                  const on = compareQuestions.includes(q.id);
+                                  return (
+                                    <button key={q.id} type="button" aria-pressed={on}
+                                      onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
+                                      className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                                        on ? (isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700')
+                                           : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
+                                      }`}>
+                                      {on ? '☑' : '☐'} {t(q.labelKey)}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                         <input type="text" value={compareOther} onChange={e => setCompareOther(e.target.value)}
                           placeholder={t('plt_cmp_q_other_ph')}
@@ -1443,6 +1491,23 @@ const PlainTalk = ({ tool }) => {
                           {compareResult.unchanged_important.map((u, i) => (
                             <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
                               <span className="mt-1 flex-shrink-0">•</span>{u}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Knowing what changed is half of it. The other half is
+                        being able to say something about it to the person on the
+                        other side of the document. */}
+                    {compareResult.questions_to_ask?.length > 0 && (
+                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                        <h4 className={`text-sm font-bold ${c.text} mb-1`}>💬 {t('plt_questions_to_ask')}</h4>
+                        <p className={`text-xs ${c.textMuteded} mb-3`}>{t('plt_questions_to_ask_help')}</p>
+                        <ul className="space-y-2">
+                          {compareResult.questions_to_ask.map((q, i) => (
+                            <li key={i} className={`text-sm leading-relaxed flex items-start gap-2 ${c.text}`}>
+                              <span className="mt-1 flex-shrink-0" aria-hidden="true">›</span>{q}
                             </li>
                           ))}
                         </ul>

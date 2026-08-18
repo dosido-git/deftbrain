@@ -452,7 +452,8 @@ Return ONLY valid JSON:
     }
   ],
   "minor_changes": ["Short phrases naming the changes that do not matter — formatting, reordered paragraphs, rewording with the same meaning"],
-  "unchanged_important": ["Important things that did NOT change — worth saying, because a reader scanning for damage will assume the worst"]
+  "unchanged_important": ["Important things that did NOT change — worth saying, because a reader scanning for damage will assume the worst"],
+  "questions_to_ask": ["The questions this comparison leaves the reader needing to put to the other side — the landlord, the insurer, the doctor, the employer. Specific to what actually changed here: Why was the notice period shortened? Can the late fee be waived if payment clears the same week? Never generic advice."]
 }
 
 CRITICAL:
@@ -461,6 +462,7 @@ CRITICAL:
 - Include quiet rewordings that change meaning while looking cosmetic. Those belong in key_changes, not minor_changes — they are the most valuable thing on the page.
 - "before" and "after" are the VALUES that changed, not whole sentences: "60 days" / "30 days", "$500" / "$1,000", "no late fee" / "5% monthly penalty". The full sentences go in before_full and after_full.
 - For something added in B, "before" is "not mentioned". For something removed from A, "after" is "removed".
+- questions_to_ask: 3 to 5, each a question the reader could say out loud in the conversation this document leads to. Tie each one to a specific change above. Knowing what to ask is the difference between reading a document and being ready to talk about it.
 - minor_changes are short phrases, not sentences. At most 6. If there is no cosmetic noise, return an empty array — never a line saying none was found. The section disappears on its own; an entry announcing its own absence is clutter.
 - Recompute any sum, total, or percentage you state from its parts before writing it — stated numbers must reconcile with each other.
 - Never place a double-quote (") character inside any JSON string value (paraphrase the verbatim excerpts rather than wrapping them in quote marks).`, userLanguage);
