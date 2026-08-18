@@ -5,6 +5,14 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, CREATIVE_LIMITS } = require('../lib/rateLimiter');
 
+// The output kept drifting into brand-consultant voice — "telegraph healthy
+// family meals", "word-of-mouth clarity", "category crystal clear". Accurate,
+// but not how a person talks, and the Charter is explicit that a DeftBrain
+// answer sounds like a knowledgeable friend rather than an agency deck. The
+// worst version of this describes a name by its construction instead of by
+// what the reader gets out of it, so that case is called out by example.
+const PLAIN_LANGUAGE_RULE = 'PLAIN LANGUAGE. Say each sentence the way you would say it out loud to the person, not the way it would read in a pitch deck. A list of banned words is not enough — the giveaway is naming the technique instead of the payoff. Rewrite in that direction: "two-syllable coined word" becomes "short and made up, so nobody else owns it"; "telegraphs healthy family meals" becomes "people will guess it is about family dinners before you explain"; "strong phonetic clarity and word-of-mouth potential" becomes "easy to say, and easy for someone to repeat correctly"; "premium-approachable balance with category legibility" becomes "feels a bit upmarket without being fussy, and it is obvious what you do". Do not write: telegraphs, signals, conveys, evokes, resonance, viability, legibility, brand equity, ownable, positioning, differentiator, white space, dual-layer, imagery, or any phrase ending in -forward. Test every sentence: if it would sound strange said aloud in someone kitchen, rewrite it.';
+
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted names or phrases must be written plainly or with single quotes, or it breaks the JSON.';
 
 // Apply creative-tier rate limit to all NameStorm routes (separate bucket from global)
@@ -177,7 +185,7 @@ Return ONLY this JSON (no markdown):
   ],
   "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
   "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations"
+  "naming_notes": "What is worth knowing, in plain words — name the surprising thing you noticed, not the method that produced it"
 }
 
 RULES:
@@ -386,7 +394,7 @@ ${CATEGORY_LIST_TEXT}
 For each listed category generate exactly 4 name options. For EVERY name:
 1. THE NAME itself
 2. PRONUNCIATION — phonetic guide if not obvious (null if obvious)
-3. WHY IT WORKS — the Name DNA: the specific sounds, syllable patterns, and associations that create the intended feeling.${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
+3. WHY IT WORKS — in plain words, what makes this name land: the sounds, the length, what it brings to mind.${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
 4. PROBLEM FLAGS — check EVERY name against ALL of these: unintended meanings in other major languages (${isNonEnglish ? 'English, ' : ''}Spanish, French, German, Mandarin, Japanese, Arabic, Hindi at minimum); phonetic issues; similarity to existing well-known brands (name the brand); trademark conflict zones; the radio test (hard to spell from hearing); awkward abbreviations. If NO problems found, "problems" is [] and "clean" is true.
 5. ${category === 'Business' || category === 'Product' ? 'Note the likely domain situation — is [name].com almost certainly taken? Creative TLD alternatives?' : 'Where relevant, note the likely domain situation.'}
 
@@ -399,7 +407,7 @@ Return ONLY valid JSON:
         {
           "name": "The Name",
           "pronunciation": "Phonetic guide or null if obvious",
-          "why_it_works": "One or two sentences on the name's DNA: what makes it work",
+          "why_it_works": "One or two sentences on what makes it work, said the way you would say it to a friend",
           "problems": [
             {"type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue", "detail": "Specific description", "severity": "warning | caution | info"}
           ],
@@ -417,25 +425,46 @@ CRITICAL RULES:
 3. CALIBRATE TO CATEGORY: business = memorable/professional/domain-friendly; pet = fun to say; baby = ages well; character = evocative.
 4. RESPECT CONSTRAINTS strictly.
 5. "problems" MUST always be an array — [] when clean, never null or a string.
-6. BE CONCISE: every field a phrase or single sentence — no meta-notes.
-7. Return ONLY the JSON. No markdown, no preamble.
-8. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+6. "type" and "severity" are internal keys, not prose: write their values in English exactly as listed above, never translated. Only "detail" is written for the reader.
+7. BE CONCISE: every field a phrase or single sentence — no meta-notes.
+8. ${PLAIN_LANGUAGE_RULE}
+9. Return ONLY the JSON. No markdown, no preamble.
+10. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
     // Generation is the long pole of the three stages (pick → generate →
     // curate, and curate cannot start until every name exists). Two calls split
     // 3/rest at 5000/3500 left the run at 61s, past the ~60s where Safari
-    // abandons the fetch. Three even chunks at 3000 each cut the pole by a
-    // third; the category partition still guarantees no name is generated twice.
-    const chunkCount = Math.min(3, cats.length);
-    const chunkSize = Math.ceil(cats.length / chunkCount);
-    const chunks = [];
-    for (let i = 0; i < cats.length; i += chunkSize) chunks.push(cats.slice(i, i + chunkSize));
+    // abandons the fetch. Three even chunks at 3000 each brought it to ~55s —
+    // still only seconds of headroom, so a single 529 retry inside any stage
+    // pushed the whole request back over 60s and the dropped connection
+    // surfaced to the user as a 502. One category per call makes the pole one
+    // category's output instead of two, which buys back enough room that a
+    // retry no longer blows the budget. The partition still guarantees no name
+    // is generated twice, and one-per-chunk keeps the pick stage's order.
+    const chunks = cats.map(c => [c]);
 
-    const gens = await Promise.all(chunks.map((chunk, i) => callClaudeWithRetry({
+    // allSettled, not all. Splitting one category per call cut the wall clock,
+    // but it also means five independent chances for a transient API error, and
+    // Promise.all turns any one of them into a 500 for the whole request — which
+    // is how a ~13% intermittent failure appeared in the German golden case.
+    // Four categories of names beats an error page, so a straggler is dropped
+    // and logged; only a total wipeout is worth failing on.
+    const settled = await Promise.allSettled(chunks.map((chunk, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 3000,
+      // 4 names for a single category — ~700 tokens in English, but German and
+      // Thai run far longer, and one truncated call throws and 500s the entire
+      // request. A ceiling only costs when it is hit.
+      max_tokens: 3200,
       messages: [{ role: 'user', content: genPrompt(chunk) }],
     }, { label: `NameStorm-gen${i + 1}` })));
+
+    const genFailed = settled.filter(r => r.status === 'rejected');
+    if (genFailed.length) {
+      console.warn(`[NameStorm] ${genFailed.length}/${chunks.length} generation call(s) failed, continuing with the rest:`,
+        genFailed.map(f => f.reason?.message).join(' | '));
+    }
+    const gens = settled.filter(r => r.status === 'fulfilled').map(r => r.value);
+    if (!gens.length) throw new Error(`all ${chunks.length} generation calls failed: ${genFailed[0]?.reason?.message}`);
 
     // Chunks are contiguous slices, so concatenating keeps the category order
     // the pick stage chose.
@@ -446,9 +475,22 @@ CRITICAL RULES:
       (cat.names || []).map(n => `- ${n.name} [${cat.category}] — ${n.why_it_works || ''}${Array.isArray(n.problems) && n.problems.length ? ` (flags: ${n.problems.map(pb => pb.type).join(', ')})` : ' (clean)'}`)
     ).join('\n');
 
-    const curated = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 1500,
+    // Stage 3 was the single biggest cost in the whole request — a SMART call
+    // that sat at 24-29s producing ~500 tokens, purely because it re-derived
+    // the spoken-aloud problem list from scratch. That detection now comes off
+    // the generation stage below, which is SMART and already checked every
+    // name against the radio test. What is left here is ranking and summary
+    // over an already-analysed list, which FAST does in 7-9s at the same
+    // quality — measured side by side, not assumed.
+    // Losing this one call after five successful generations would throw away
+    // every name to save nothing. The picks are a ranking over names we already
+    // hold, so a failure degrades to the cleanest-first ordering instead of a
+    // 500 — the reader loses the written rationale, not the work.
+    let curated = {};
+    try {
+      curated = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 2200,
       messages: [{ role: 'user', content: withLanguage(`You are an elite naming strategist. Brief:
 
 ${briefBlock}
@@ -458,24 +500,53 @@ ${compactList}
 
 Curate them. Return ONLY valid JSON:
 {
-  "brief_summary": "1-sentence summary of the naming direction taken based on the brief",
+  "brief_summary": "1 plain sentence on the direction these names take — no pitch-deck words",
   "top_picks": [
-    {"name": "The Name", "from_category": "Which category", "why_top_pick": "Specific reasoning — one sentence", "rank": 1}
+    {"name": "The Name", "from_category": "Which category", "why_top_pick": "Why this one, in plain words — one sentence", "rank": 1}
   ],
-  "say_it_out_loud": [
-    {"name": "The Name", "issue": "What goes wrong when spoken aloud"}
-  ],
-  "naming_notes": "Additional strategic observations about this naming space — one or two sentences"
+  "naming_notes": "What is worth knowing before choosing — one or two sentences, plainly put"
 }
 
-RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe-match, absence of problems${category === 'Business' || category === 'Product' ? ', brandability and domain potential' : ''}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''} say_it_out_loud lists only names with genuine spoken-aloud issues (may be empty). Use ONLY names from the candidate list, spelled exactly. Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'NameStorm-curate' });
+RULES: exactly 5 top_picks ranked 1-5, chosen for memorability, uniqueness, vibe-match, absence of problems${category === 'Business' || category === 'Product' ? ', brandability and domain potential' : ''}.${isNonEnglish ? ` Prioritize names that feel native to ${primaryLanguage} speakers.` : ''} Use ONLY names from the candidate list, spelled exactly. ${PLAIN_LANGUAGE_RULE} Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+      }, { label: 'NameStorm-curate' });
+    } catch (e) {
+      console.warn('[NameStorm] curation failed, falling back to score order:', e.message);
+      const ranked = namesByCategory
+        .flatMap(cat => (cat.names || []).map(n => ({ n, cat: cat.category })))
+        .sort((a, b) => ((a.n.problems?.length || 0) - (b.n.problems?.length || 0)) || (String(a.n.name).length - String(b.n.name).length))
+        .slice(0, 5);
+      curated = {
+        top_picks: ranked.map((r, i) => ({
+          name: r.n.name, from_category: r.cat, why_top_pick: r.n.why_it_works || '', rank: i + 1,
+        })),
+      };
+    }
+
+    // "Say it out loud" is a filter over work the generation stage already did
+    // rather than a second model pass: it problem-checks every name for the
+    // radio test and phonetic conflicts, so re-asking a model to find the same
+    // issues cost a full round trip AND let the two disagree — a name could be
+    // flagged on its card and absent from this list. Reading the flags instead
+    // keeps them consistent by construction. Depends on the pinned English
+    // enums above; without that pin these values arrive translated and the
+    // section silently empties in all 12 non-English languages.
+    const SPOKEN_TYPES = new Set(['phonetic_issue', 'spelling_difficulty']);
+    const SEVERITY_RANK = { warning: 0, caution: 1, info: 2 };
+    const sayItOutLoud = namesByCategory
+      .flatMap(cat => (cat.names || []).map(n => ({
+        name: n.name,
+        flag: (Array.isArray(n.problems) ? n.problems : []).find(pb => SPOKEN_TYPES.has(pb.type)),
+      })))
+      .filter(x => x.name && x.flag?.detail)
+      .sort((a, b) => (SEVERITY_RANK[a.flag.severity] ?? 3) - (SEVERITY_RANK[b.flag.severity] ?? 3))
+      .slice(0, 6)
+      .map(x => ({ name: x.name, issue: x.flag.detail }));
 
     const parsed = normalizeProblems({
       brief_summary: curated.brief_summary || '',
       names_by_category: namesByCategory,
       top_picks: Array.isArray(curated.top_picks) ? curated.top_picks : [],
-      say_it_out_loud: Array.isArray(curated.say_it_out_loud) ? curated.say_it_out_loud : [],
+      say_it_out_loud: sayItOutLoud,
       naming_notes: curated.naming_notes || '',
     });
 
@@ -623,14 +694,44 @@ router.post('/namestorm/blend', rateLimit(CREATIVE_LIMITS, 'namestorm:'), async 
       ? `\nCOMPETITORS TO AVOID: ${competitors}\nBlended names must sound, look, and feel clearly distinct from these competitors.`
       : '';
 
-    const prompt = `You are an expert linguistic blender and portmanteau creator. Your job is to take seed words, expand them into clouds of related words, then systematically blend them into original, brandable names that could NOT have been found by simply combining two whole words.
+    // This was one 8,500-token call doing everything: expand the seeds, blend 18
+    // names across 6 strategies, rank the top 5, write the notes. Back-to-back
+    // runs measured 112s and 237s — a browser abandons the fetch long before
+    // that, so blend mode was effectively down for anyone who actually used it.
+    // Same three-stage shape as the main generate route: a cheap expansion, a
+    // parallel blend over disjoint strategies, then a small curation. The
+    // strategies are data now rather than prose, because the partition needs to
+    // hand each call a different slice of them.
+    const STRATEGIES = [
+      { label: 'Words that naturally merge',
+        def: `Overlap Blends — one word's end overlaps with another's start. "brunch" = breakfast+lunch (the 'r' bridges both). The overlap must be a real shared sound, not just letters glued together.` },
+      { label: 'Pieces of both words',
+        def: `Truncation Pairs — shorten two words and join at the cut point. "Microsoft" = microcomputer+software. Both words must lose something. This is the workhorse strategy for brandable portmanteaus.` },
+      { label: 'Names that flow when spoken',
+        def: `Sound Bridges — two words share a phoneme that becomes the hinge. "intellisense" bridges through the shared 'l' sound. The bridge must be audible, not just visual.` },
+      { label: 'Hidden meanings',
+        def: `Nested Words — a short word hides INSIDE a longer blend. "calmunity" hides "calm" inside "community." The hidden word should be discoverable, not accidental. This produces the cleverest names.` },
+      { label: 'Three ideas in one',
+        def: `Multi-Source Blends — use fragments from 3+ seed word clouds in a single name. Most blends only use 2. e.g., from seeds {spark, craft, neural, beacon}: "sparcnel" (spark + craft + neural). These are denser with meaning and more unique.` },
+      { label: 'Names invented for their sound',
+        def: `Phonetic-First — start from a TARGET SOUND, then find source fragments that produce it. Work backwards: decide what a smart, on-vibe 5-7 letter word would SOUND like, then reverse-engineer which seed/expanded fragments produce that sound. Sound first, etymology second — the result should feel like a discovered word, not a constructed one.` },
+    ];
 
-SEED WORDS: ${seedWords.join(', ')}
+    const briefHeader = `SEED WORDS: ${seedWords.join(', ')}
 VIBE: ${vibeText}
 CONSTRAINTS: ${constraints || 'None'}
-INDUSTRY: ${industryContext || 'Not specified'}${blendCompetitorBlock}${langDirective}${tldDirective}
+INDUSTRY: ${industryContext || 'Not specified'}${blendCompetitorBlock}${langDirective}`;
 
-STEP 1: EXPAND EACH SEED
+    // ─── Stage 1: expand each seed into a word cloud ───
+    // Mechanical recall, not judgement, so it runs on the fast model. Every
+    // blend downstream draws from this, which is also why it cannot be folded
+    // into the parallel calls — they would each invent a different cloud.
+    let seedExpansion = [];
+    try {
+      const expanded = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 2200,
+        messages: [{ role: 'user', content: withLanguage(`${briefHeader}
 
 For each seed word, generate 8-12 synonyms, related words, and conceptually adjacent words. Think broadly:
 - Direct synonyms and near-synonyms
@@ -639,60 +740,57 @@ For each seed word, generate 8-12 synonyms, related words, and conceptually adja
 - Words from the same semantic field
 - Abstract associations and metaphors${isNonEnglish ? `\n- ${primaryLanguage} equivalents and near-equivalents` : ''}
 
-STEP 2: BLEND ACROSS ALL WORDS
+Return ONLY valid JSON: {"seed_expansion": [{"original": "clever", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}]} ${NO_QUOTE_RULE}`, userLanguage) }],
+      }, { label: 'NameStorm/Blend-expand' });
+      seedExpansion = Array.isArray(expanded.seed_expansion) ? expanded.seed_expansion : [];
+    } catch (e) {
+      console.warn('[NameStorm/Blend] seed expansion failed, blending from raw seeds:', e.message);
+    }
 
-Using the expanded word clouds (not just the original seeds), create blended names. Use ALL 6 of these strategies:
+    const cloudText = seedExpansion.length
+      ? seedExpansion.map(sd => `${sd.original}: ${(Array.isArray(sd.expanded) ? sd.expanded : []).join(', ')}`).join('\n')
+      : seedWords.join(', ');
 
-PAIR BLENDING (combine 2 source words):
-1. Overlap Blends — one word's end overlaps with another's start. "brunch" = breakfast+lunch (the 'r' bridges both). The overlap must be a real shared sound, not just letters glued together.
-2. Truncation Pairs — shorten two words and join at the cut point. "Microsoft" = microcomputer+software. Both words must lose something. This is the workhorse strategy for brandable portmanteaus.
-3. Sound Bridges — two words share a phoneme that becomes the hinge. "intellisense" bridges through the shared 'l' sound. The bridge must be audible, not just visual.
+    // ─── Stage 2: blend, two strategies per call ───
+    const blendPrompt = (group) => withLanguage(`You are an expert linguistic blender and portmanteau creator. You take word clouds and blend them into original, brandable names that could NOT have been found by simply combining two whole words.
 
-ADVANCED BLENDING:
-4. Nested Words — a short word hides INSIDE a longer blend. "calmunity" hides "calm" inside "community." The hidden word should be discoverable, not accidental. This produces the cleverest names.
-5. Multi-Source Blends — use fragments from 3+ seed word clouds in a single name. The user gave you multiple seeds — most blends only use 2. Combine fragments from 3 or 4 clouds into one word. e.g., from seeds {spark, craft, neural, beacon}: "sparcnel" (spark + craft + neural). These are denser with meaning and more unique.
-6. Phonetic-First — start from a TARGET SOUND, then find source fragments that produce it. Work backwards: decide what a smart, [insert vibe] 5-7 letter word would SOUND like, then reverse-engineer which seed/expanded fragments produce that sound. This is how professional naming agencies work — sound first, etymology second. The result should feel like a real word that happens to contain your seed meanings.
+${briefHeader}${tldDirective}
 
-Generate 3 names per strategy (18 total). BREVITY IS CRITICAL: keep every string field to ONE tight sentence — blend_components and why_it_works especially. The response must be complete JSON that closes; never pad. For EVERY name:
+EXPANDED WORD CLOUDS — blend from these, not just the raw seeds:
+${cloudText}
+
+Use EXACTLY these ${group.length} strategies, 3 names each (${group.length * 3} total):
+${group.map((st, i) => `${i + 1}. ${st.def}\n   Output this group with "category" set to EXACTLY: ${st.label}`).join('\n')}
+
+BREVITY IS CRITICAL: keep every string field to ONE tight sentence. The response must be complete JSON that closes; never pad. For EVERY name:
 
 - name: The blended name${pairWithDomains ? ' as a full domain with TLD (e.g., "clevkit.app")' : ''}
-- blend_components: Show the FULL recipe — which expanded words were used, what was cut, where the join happens. e.g., "keen (from smart) + nexus (from cortex) → kee + nex → keenex... too close to Kleenex, try: keen + cortex → ke + ortex → kortex... but that's just cortex. Final: keen + texture → keen + tex → keentex, truncate → kentex"
+- blend_components: the recipe — which expanded words were used, what was cut, where the join happens. e.g., "keen + texture → keen + tex → kentex"
 - pronunciation: Phonetic guide
-- why_it_works: What makes this blend effective — sound quality, meaning ghosting (how much of each source word's MEANING survives even though the letters changed), mouth feel, memorability${pairWithDomains ? ', and how the TLD completes it' : ''}
+- why_it_works: What makes this blend effective — how it sounds, how much of each source word's meaning survives, how memorable it is${pairWithDomains ? ', and how the TLD completes it' : ''}
 - problems: Array of {type, detail, severity}. THOROUGHLY check for:
-   - language_conflict: Does this blend accidentally mean something in Spanish, French, German, Mandarin, Japanese, Arabic, Hindi, Portuguese, Italian, Korean? Check EVERY blend. Portmanteaus are especially accident-prone because they create novel letter combinations.
-   - brand_similarity: Is this too close to an existing brand? "Cortiq" → Cortex? "Smartex" → Smartsheet? Be specific — name the brand.
-   - phonetic_issue: Awkward mouth feel, sounds like a different word when spoken fast, hard to say on the phone
-   - spelling_difficulty: Would someone hearing this name be able to type it correctly? Unusual letter combinations are a red flag.
-   - If a blend is genuinely clean across all checks, say so — but at least 40% of blends should have SOME flag. If you're finding zero problems, you're not checking hard enough.
-   MUST be an array ([] if truly clean, but be honest).
+   - language_conflict: Does this blend accidentally mean something in Spanish, French, German, Mandarin, Japanese, Arabic, Hindi, Portuguese, Italian, Korean? Check EVERY blend — portmanteaus are accident-prone because they create novel letter combinations.
+   - brand_similarity: Too close to an existing brand? Be specific — name the brand.
+   - phonetic_issue: Awkward mouth feel, sounds like a different word spoken fast, hard to say on the phone
+   - spelling_difficulty: Could someone hearing this name type it correctly? Unusual letter combinations are a red flag.
+   - At least 40% of blends should carry SOME flag. Zero problems means you are not checking hard enough.
 - clean: true ONLY if no problems found after thorough checking${pairWithDomains ? `
 - tld_rationale: Why this TLD for this blend
 - email_appearance: "hello@blend.tld"` : ''}
 - domain_note: Brief note on domain availability landscape
 
-AFTER all strategies, provide:
-
-TOP 5 PICKS — Best blends across all strategies. The best portmanteaus have: (1) both source meanings still ghosting through, (2) natural pronunciation, (3) under 8 characters, (4) no problems, (5) doesn't look like two words glued together.
-
-SAY IT OUT LOUD — Flag blends that look clever on paper but are awkward to say. Portmanteaus fail the verbal test more often than regular words.
-
-Return ONLY this JSON:
+Return ONLY valid JSON:
 {
-  "brief_summary": "1-sentence summary of the blending direction",
-  "seed_expansion": [
-    {"original": "clever", "expanded": ["deft", "savvy", "sharp", "keen", "astute", "nimble", "adroit", "bright", "swift", "shrewd"]}
-  ],
   "names_by_category": [
     {
-      "category": "Overlap Blends",
+      "category": "${group[0].label}",
       "names": [
         {
           "name": "${pairWithDomains ? 'clevkit.app' : 'Clevkit'}",
           "blend_components": "clever + toolkit → clev + kit (overlap at 'k')",
           "pronunciation": "KLEV-kit",
           "why_it_works": "...",
-          "problems": [],
+          "problems": [{"type": "phonetic_issue", "detail": "Specific description", "severity": "warning | caution | info"}],
           "clean": true,${pairWithDomains ? `
           "tld_rationale": "...",
           "email_appearance": "hello@clevkit.app",` : ''}
@@ -700,29 +798,98 @@ Return ONLY this JSON:
         }
       ]
     }
-  ],
-  "top_picks": [{"name": "...", "from_category": "...", "why_top_pick": "...", "rank": 1}],
-  "say_it_out_loud": [{"name": "...", "issue": "..."}],
-  "naming_notes": "Strategic observations"
+  ]
 }
 
 RULES:
-1. USE THE EXPANDED WORD CLOUDS, not just the original seeds. The best blends come from synonyms the user didn't think of.
-2. NO COMPOUND WORDS: If both source words survive fully intact (e.g., "flowkey", "brighthub", "deftpath"), it is NOT a blend — it's two words glued together. REJECT these. At least one source word must be truncated, overlapped, or transformed. "Spotify" is a blend. "Flowkey" is not. This is the single most important rule. DO NOT INCLUDE COMPOUND WORDS EVEN WITH A FLAG — if you catch yourself generating one, throw it away and generate a real blend as a replacement. Self-awareness without action is worthless.
-3. SHOW YOUR WORK in blend_components. Show which expanded words you used, what you cut, where the join happens. If the recipe is just "word1 + word2", you haven't blended — you've concatenated.
-4. problems must ALWAYS be an array ([] if clean). But be THOROUGH — portmanteaus create novel letter sequences that often have unintended meanings in other languages. Check every blend against Spanish, French, German, Mandarin, Japanese, Arabic, Hindi, Portuguese, Italian, Korean. Flag brand similarities by name. At least 40% of names should have at least one flag.
+1. USE THE EXPANDED WORD CLOUDS, not just the original seeds. The best blends come from synonyms the user did not think of.
+2. NO COMPOUND WORDS: If both source words survive fully intact (e.g., "flowkey", "brighthub", "deftpath"), it is NOT a blend — it is two words glued together. REJECT these. At least one source word must be truncated, overlapped, or transformed. "Spotify" is a blend. "Flowkey" is not. This is the single most important rule. DO NOT INCLUDE COMPOUND WORDS EVEN WITH A FLAG — if you catch yourself generating one, throw it away and generate a real blend instead.
+3. SHOW YOUR WORK in blend_components. If the recipe is just "word1 + word2", you have concatenated, not blended.
+4. problems must ALWAYS be an array ([] if clean).
 5. Favor blends under 8 characters (not counting TLD). Short is dramatically better.
-6. USE ALL 6 STRATEGIES with 3 names each (18 total). The advanced strategies (Nested Words, Multi-Source, Phonetic-First) produce the most original results — invest extra creative effort there.
-7. PHONETIC-FIRST IS SOUND-FIRST: For strategy 6, do NOT start with source words and modify them. Start by imagining what the perfect name SOUNDS like for this vibe, then find the source fragments inside that sound. The result should feel like a discovered word, not a constructed one.
-8. BE CONCISE: keep blend_components, why_it_works, and every string field to a phrase or single sentence — no length annotations.
-9. Return ONLY valid JSON.
-10. ${NO_QUOTE_RULE}`;
+6. CATEGORY LABELS: "category" MUST be exactly the label given above. Never output the technique name — not "Overlap Blends", "Truncation Pairs", "Sound Bridges", "Nested Words", "Multi-Source Blends" or "Phonetic-First" — anywhere in the response.
+7. "type" and "severity" are internal keys, not prose: write their values in English exactly as listed, never translated. Only "detail" is written for the reader.
+8. BE CONCISE: every string field a phrase or single sentence — no length annotations.
+9. ${PLAIN_LANGUAGE_RULE}
+10. Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    const parsed = await callClaudeWithRetry({
+    // One strategy per call. Two-per-call landed at ~50s, which clears the
+    // browser's patience but leaves nothing for a retry; one-per-call makes the
+    // pole three names instead of six.
+    const groups = STRATEGIES.map(st => [st]);
+    // allSettled for the same reason as the generate route: six parallel calls
+    // are six chances for a transient failure, and one straggler must not cost
+    // the reader all eighteen names.
+    const blendSettled = await Promise.allSettled(groups.map((group, i) => callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 8500,
-      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'NameStorm/Blend' });
+      // 3 names with their recipes. Localized output runs much longer, and a
+      // truncated call throws rather than retrying — see the generate route.
+      max_tokens: 2800,
+      messages: [{ role: 'user', content: blendPrompt(group) }],
+    }, { label: `NameStorm/Blend-gen${i + 1}` })));
+
+    const blendFailed = blendSettled.filter(r => r.status === 'rejected');
+    if (blendFailed.length) {
+      console.warn(`[NameStorm/Blend] ${blendFailed.length}/${groups.length} blend call(s) failed, continuing with the rest:`,
+        blendFailed.map(f => f.reason?.message).join(' | '));
+    }
+    const gens = blendSettled.filter(r => r.status === 'fulfilled').map(r => r.value);
+    if (!gens.length) throw new Error(`all ${groups.length} blend calls failed: ${blendFailed[0]?.reason?.message}`);
+
+    const namesByCategory = gens.flatMap(g => (Array.isArray(g.names_by_category) ? g.names_by_category : []));
+
+    // ─── Stage 3: curate across everything ───
+    const compactList = namesByCategory.flatMap(cat =>
+      (cat.names || []).map(n => `- ${n.name} [${cat.category}] — ${n.why_it_works || ''}${Array.isArray(n.problems) && n.problems.length ? ` (flags: ${n.problems.map(pb => pb.type).join(', ')})` : ' (clean)'}`)
+    ).join('\n');
+
+    const curated = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: withLanguage(`You are an expert namer. The brief:
+
+${briefHeader}
+
+The seed words were expanded into these clouds, and the names below were blended from them:
+${cloudText}
+
+CANDIDATE BLENDS (already problem-checked):
+${compactList}
+
+Return ONLY valid JSON:
+{
+  "brief_summary": "1 plain sentence on where these names came from — no pitch-deck words",
+  "top_picks": [{"name": "The Name", "from_category": "Which group", "why_top_pick": "Why this one, in plain words — one sentence", "rank": 1}],
+  "naming_notes": "What is worth knowing, in plain words — two or three sentences"
+}
+
+RULES: exactly 5 top_picks ranked 1-5. The best portmanteaus have both source meanings still showing through, natural pronunciation, under 8 characters, no problems, and do not look like two words glued together. Use ONLY names from the candidate list, spelled exactly.
+naming_notes: name the surprising thing you noticed — which words the good names actually came from — not the method that produced them. "The phonetic-first strategy consistently outperformed for premium-vibe briefs" is exactly the voice to avoid.
+${PLAIN_LANGUAGE_RULE} Return ONLY the JSON. ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'NameStorm/Blend-curate' });
+
+    // Spoken-aloud trouble is read off the flags the blend stage already set,
+    // rather than asked for a second time — see the main generate route.
+    const SPOKEN_TYPES = new Set(['phonetic_issue', 'spelling_difficulty']);
+    const SEVERITY_RANK = { warning: 0, caution: 1, info: 2 };
+    const sayItOutLoud = namesByCategory
+      .flatMap(cat => (cat.names || []).map(n => ({
+        name: n.name,
+        flag: (Array.isArray(n.problems) ? n.problems : []).find(pb => SPOKEN_TYPES.has(pb.type)),
+      })))
+      .filter(x => x.name && x.flag?.detail)
+      .sort((a, b) => (SEVERITY_RANK[a.flag.severity] ?? 3) - (SEVERITY_RANK[b.flag.severity] ?? 3))
+      .slice(0, 6)
+      .map(x => ({ name: x.name, issue: x.flag.detail }));
+
+    const parsed = {
+      brief_summary: curated.brief_summary || '',
+      seed_expansion: seedExpansion,
+      names_by_category: namesByCategory,
+      top_picks: Array.isArray(curated.top_picks) ? curated.top_picks : [],
+      say_it_out_loud: sayItOutLoud,
+      naming_notes: curated.naming_notes || '',
+    };
 
     // Normalize problems arrays
     parsed.names_by_category?.forEach(cat => {
@@ -917,6 +1084,9 @@ Your philosophy:
 - Consider: wordplay, portmanteaus, obscure references, unexpected juxtapositions, phonetic appeal, cultural resonance
 - Flag any names that have accidental meanings, awkward acronyms, or pronunciation problems
 - For informal naming (pets, WiFi, group chats, boats) — fun and personality beat brandability
+- People pick a direction before they pick a name — they are choosing which version of themselves the thing announces. Make each direction a world worth belonging to, and make its label say which world.
+
+${PLAIN_LANGUAGE_RULE}
 
 ${NO_QUOTE_RULE}`;
 
@@ -933,11 +1103,10 @@ Return ONLY valid JSON:
 {
   "directions": [
     {
-      "direction": "Short label for this creative angle (e.g., 'Wordplay', 'Pop culture riff', 'Descriptive twist', 'Unexpected reference')",
+      "direction": "2-4 WORDS MAXIMUM, title case — this is a heading, not a sentence. The world these names come from, named the way someone would recognize it: 'Trail Culture', 'Photo and Memory', 'Unexpected References', 'Garage Nights'. Name the identity, never the technique — 'Wordplay' and 'Portmanteau' describe how you built it, which is not what anyone is choosing between.",
       "names": [
         {
           "name": "The name",
-          "score": 75,
           "note": "One sentence — why this one works, what the reference is, or why it fits",
           "flag": "Any issue to know about (awkward acronym, unintended meaning, hard to pronounce) — null if none"
         }

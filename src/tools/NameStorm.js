@@ -108,6 +108,9 @@ const NameStorm = ({ tool }) => {
 
   // ─── Compare / History View State ───
   const [showCompare, setShowCompare] = useState(false);
+  const [showAllNames, setShowAllNames] = useState(false);
+  const [showSeedExpansion, setShowSeedExpansion] = useState(false);
+  const [showConstruction, setShowConstruction] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
   // ─── Competitor-Aware Generation ───
@@ -434,6 +437,9 @@ const NameStorm = ({ tool }) => {
     }
   }, [mode]);
 
+  const totalNameCount = (results?.names_by_category || [])
+    .reduce((n, cat) => n + (cat.names?.length || 0), 0);
+
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [
@@ -490,7 +496,7 @@ const NameStorm = ({ tool }) => {
     quickResults.directions?.forEach(dir => {
       lines.push(`═══ ${dir.direction?.toUpperCase() || t('ns_copy_direction')} ═══`);
       dir.names?.forEach(n => {
-        lines.push(`${n.name}${n.score ? ` (${n.score})` : ''}`);
+        lines.push(n.name);
         if (n.note) lines.push(`  ${n.note}`);
         if (n.flag) lines.push(`  ⚠️ ${n.flag}`);
         lines.push('');
@@ -574,9 +580,28 @@ const NameStorm = ({ tool }) => {
     return Math.max(1, Math.min(100, Math.round(score)));
   };
 
-  const scoreColor = (score) => {
-    if (score >= 80) return isDark ? 'text-green-400 bg-green-900/30 border-green-700' : 'text-green-700 bg-green-50 border-green-300';
-    if (score >= 60) return isDark ? 'text-amber-400 bg-amber-900/30 border-amber-700' : 'text-amber-700 bg-amber-50 border-amber-300';
+  // ─── Name Verdict ───
+  // The card used to print the raw score: "58", "67", "49". Out of what,
+  // weighted how? Nobody can act on that, and the tool's job is confidence,
+  // not arithmetic. The number still exists because sorting needs a total
+  // order — but what the reader sees is the sentence it always stood for.
+  const verdictFor = (nameObj) => {
+    const problems = Array.isArray(nameObj.problems) ? nameObj.problems : [];
+    // Trademark trouble outranks the score. A name can be short, clean-sounding
+    // and score well on every other axis and still be one you must not use, so
+    // that verdict is never averaged away into "worth exploring".
+    if (problems.some(p => p.type === 'trademark_risk' && p.severity === 'warning')) {
+      return { key: 'ns_verdict_trademark', tone: 'low' };
+    }
+    const score = computeScore(nameObj);
+    if (score >= 80) return { key: 'ns_verdict_strong', tone: 'high' };
+    if (score >= 60) return { key: 'ns_verdict_explore', tone: 'mid' };
+    return { key: 'ns_verdict_problems', tone: 'low' };
+  };
+
+  const verdictStyle = (tone) => {
+    if (tone === 'high') return isDark ? 'text-green-400 bg-green-900/30 border-green-700' : 'text-green-700 bg-green-50 border-green-300';
+    if (tone === 'mid') return isDark ? 'text-amber-400 bg-amber-900/30 border-amber-700' : 'text-amber-700 bg-amber-50 border-amber-300';
     return isDark ? 'text-red-400 bg-red-900/30 border-red-700' : 'text-red-600 bg-red-50 border-red-300';
   };
 
@@ -659,7 +684,7 @@ const NameStorm = ({ tool }) => {
     const moreData = moreLikeResults[nameObj.name];
     const isChecking = checkingName === nameObj.name;
     const isLoadingMore = moreLikeLoading === nameObj.name;
-    const score = computeScore(nameObj);
+    const verdict = verdictFor(nameObj);
     const refineData = refineResults[nameObj.name];
     const storyData = storyResults[nameObj.name];
     const isRefineOpen = refineOpen === nameObj.name;
@@ -684,9 +709,9 @@ const NameStorm = ({ tool }) => {
                 <span className="text-sm">🔊</span>
               </button>
               {nameObj.clean && <span className="flex-shrink-0">✅</span>}
-              {/* Score badge */}
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${scoreColor(score)}`} title={t('ns_quality_score', { score })}>
-                {score}
+              {/* Verdict */}
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${verdictStyle(verdict.tone)}`} title={t('ns_verdict_basis')}>
+                {t(verdict.key)}
               </span>
             </div>
           </div>
@@ -698,8 +723,10 @@ const NameStorm = ({ tool }) => {
           </div>
         </div>
 
-        {/* Blend components */}
-        {nameObj.blend_components && (
+        {/* Blend components — the "br-EW overlaps r-ITE at the shared 'r' hinge"
+            recipe. Fascinating to a naming enthusiast, noise to someone deciding
+            whether they like the name. Off unless asked for. */}
+        {showConstruction && nameObj.blend_components && (
           <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} mt-1.5 font-medium`}>
             {nameObj.blend_components}
           </p>
@@ -1332,11 +1359,17 @@ const NameStorm = ({ tool }) => {
 
           {/* Submit */}
           <div className="flex gap-2">
-            <button onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
                 : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
             </button>
           </div>
 
@@ -1389,29 +1422,6 @@ const NameStorm = ({ tool }) => {
               </div>
             </div>
 
-            {/* Filter / Sort Row */}
-            <div className={`flex items-center gap-2 pt-2 border-t ${c.border} flex-wrap`}>
-              <span className={`text-xs font-semibold ${c.textMuted}`}>{t('ns_filters')}</span>
-              <button onClick={() => setFilterCleanOnly(!filterCleanOnly)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(filterCleanOnly)}`}>
-                <span>✅</span> {t('ns_clean_only')}
-              </button>
-              <button onClick={() => { setSortByScore(!sortByScore); if (!sortByScore) setSortByProblems(false); }}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByScore)}`}>
-                <span>🏆</span> {t('ns_best_score')}
-              </button>
-              <button onClick={() => { setSortByProblems(!sortByProblems); if (!sortByProblems) setSortByScore(false); }}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByProblems)}`}>
-                <span>⚠️</span> {t('ns_fewest_issues')}
-              </button>
-              <button onClick={() => setHideDismissed(!hideDismissed)}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(hideDismissed)}`}>
-                <span>👎</span> {hideDismissed ? `${t('ns_hide_dismissed')}${dismissed.length ? ` (${dismissed.length})` : ''}` : t('ns_show_dismissed', { count: dismissed.length })}
-              </button>
-              {dismissed.length > 0 && (
-                <button onClick={() => setDismissed([])} className={`text-xs ${c.textMuted} hover:underline`}>{t('ns_clear_dismissed')}</button>
-              )}
-            </div>
           </div>
 
           {/* Brief Summary */}
@@ -1422,10 +1432,17 @@ const NameStorm = ({ tool }) => {
           {/* Seed Expansion (blend mode) */}
           {results.seed_expansion && !showFavoritesOnly && !showCompare && (
             <div className={`${c.card} rounded-xl shadow-sm p-5`}>
-              <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
-                <span>✨</span> {t('ns_seed_expansion')}
-              </h3>
-              <p className={`text-xs ${c.textMuted} mb-3`}>{t('ns_seed_expansion_help')}</p>
+              {/* Not information anyone needs — information curious people enjoy.
+                  Those are different things, and only one of them earns the space
+                  above a decision. */}
+              <button onClick={() => setShowSeedExpansion(!showSeedExpansion)} aria-expanded={showSeedExpansion}
+                className={`w-full flex items-center gap-2 font-bold ${c.text} text-start`}>
+                <span>✨</span>
+                <span>{t('ns_seed_expansion')}</span>
+                <Caret open={showSeedExpansion} className="ms-auto" />
+              </button>
+              {showSeedExpansion && (<>
+              <p className={`text-xs ${c.textMuted} mt-3 mb-3`}>{t('ns_seed_expansion_help')}</p>
               <div className="space-y-2">
                 {results.seed_expansion.map((seed, idx) => (
                   <div key={idx} className={`flex items-start gap-2 p-2 rounded-lg ${c.cardAlt}`}>
@@ -1435,6 +1452,7 @@ const NameStorm = ({ tool }) => {
                   </div>
                 ))}
               </div>
+              </>)}
             </div>
           )}
 
@@ -1456,6 +1474,9 @@ const NameStorm = ({ tool }) => {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`font-bold ${c.text}`}>{pick.name}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full border ${chipStyle(false)}`}>{pick.from_category}</span>
+                          {pick.rank === 1 && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full border font-semibold ${verdictStyle('high')}`}>{t('ns_verdict_best_fit')}</span>
+                          )}
                           <button onClick={() => toggleFavorite(pick.name)} className="ms-auto">
                             <span className="text-lg">{favorites.includes(pick.name) ? '⭐' : '☆'}</span>
                           </button>
@@ -1525,8 +1546,8 @@ const NameStorm = ({ tool }) => {
                         {/* Rationale */}
                         <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{obj.why_it_works}</p>
 
-                        {/* Blend components */}
-                        {obj.blend_components && (
+                        {/* Blend components — see NameCard: enthusiast detail, opt-in */}
+                        {showConstruction && obj.blend_components && (
                           <p className={`text-xs ${isDark ? 'text-cyan-300' : 'text-cyan-600'} font-medium`}>{obj.blend_components}</p>
                         )}
 
@@ -1598,11 +1619,52 @@ const NameStorm = ({ tool }) => {
           )}
 
           {/* Names By Category */}
+
           {!showFavoritesOnly && !showCompare && results.names_by_category?.length > 0 && (
             <div className={`${c.card} rounded-xl shadow-sm p-6`}>
-              <h3 className={`font-bold ${c.text} mb-4 flex items-center gap-2`}>
-                <span>#️⃣</span> {isBlendMode ? t('ns_blends_by_strategy') : isDomainMode ? t('ns_domains_by_style') : t('ns_names_by_style')}
-              </h3>
+              {/* The whole catalogue sits behind one control. Five picks above
+                  are the answer; this is the evidence, for the reader who wants
+                  to go looking. Collapsed by default — the goal is confidence,
+                  not abundance. */}
+              <button onClick={() => setShowAllNames(!showAllNames)} aria-expanded={showAllNames}
+                className={`w-full flex items-center gap-2 font-bold ${c.text} text-start`}>
+                <span>#️⃣</span>
+                <span>{isBlendMode ? t('ns_blends_by_strategy') : isDomainMode ? t('ns_domains_by_style') : t('ns_names_by_style')}</span>
+                <span className={`text-sm font-medium ${c.textMuted}`}>({totalNameCount})</span>
+                <Caret open={showAllNames} className="ms-auto" />
+              </button>
+
+              {showAllNames && (<div className="mt-4">
+              {/* These only ever acted on the list below, so they live with it.
+                  Above the fold they were controls for names you could not see. */}
+              <div className={`flex items-center gap-2 mb-4 pb-3 border-b ${c.border} flex-wrap`}>
+                <span className={`text-xs font-semibold ${c.textMuted}`}>{t('ns_filters')}</span>
+                <button onClick={() => setFilterCleanOnly(!filterCleanOnly)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(filterCleanOnly)}`}>
+                  <span>✅</span> {t('ns_clean_only')}
+                </button>
+                <button onClick={() => { setSortByScore(!sortByScore); if (!sortByScore) setSortByProblems(false); }}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByScore)}`}>
+                  <span>🏆</span> {t('ns_best_score')}
+                </button>
+                <button onClick={() => { setSortByProblems(!sortByProblems); if (!sortByProblems) setSortByScore(false); }}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByProblems)}`}>
+                  <span>⚠️</span> {t('ns_fewest_issues')}
+                </button>
+                <button onClick={() => setHideDismissed(!hideDismissed)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(hideDismissed)}`}>
+                  <span>👎</span> {hideDismissed ? `${t('ns_hide_dismissed')}${dismissed.length ? ` (${dismissed.length})` : ''}` : t('ns_show_dismissed', { count: dismissed.length })}
+                </button>
+                {isBlendMode && (
+                  <button onClick={() => setShowConstruction(!showConstruction)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(showConstruction)}`}>
+                    <span>🔧</span> {t('ns_show_construction')}
+                  </button>
+                )}
+                {dismissed.length > 0 && (
+                  <button onClick={() => setDismissed([])} className={`text-xs ${c.textMuted} hover:underline`}>{t('ns_clear_dismissed')}</button>
+                )}
+              </div>
 
               {/* Category Tabs */}
               <div className="flex gap-1.5 mb-5 overflow-x-auto pb-1">
@@ -1630,6 +1692,7 @@ const NameStorm = ({ tool }) => {
                   <p className={`text-sm ${c.textMuted} text-center py-4`}>{t('ns_all_filtered')}</p>
                 );
               })()}
+              </div>)}
             </div>
           )}
 
@@ -1671,15 +1734,12 @@ const NameStorm = ({ tool }) => {
 
           {quickResults.directions?.map((dir, di) => (
             <div key={di} className={`${c.card} rounded-xl shadow-sm p-6`}>
-              <h3 className={`text-sm font-bold uppercase tracking-wider mb-4 ${c.textMuted}`}>{dir.direction}</h3>
+              <h3 className={`text-lg font-bold mb-4 ${c.text}`}>{dir.direction}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {dir.names?.map((nameObj, ni) => (
                   <div key={ni} className={`p-4 rounded-xl border transition-all ${c.cardInner || (isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-zinc-50 border-zinc-200')}`}>
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <span className={`text-base font-bold ${c.text}`}>{nameObj.name}</span>
-                      {nameObj.score && (
-                        <span className={`flex-shrink-0 text-xs font-bold px-2 py-0.5 rounded-full ${nameObj.score >= 80 ? (isDark ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-700') : nameObj.score >= 60 ? (isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700') : (isDark ? 'bg-zinc-600 text-zinc-300' : 'bg-zinc-200 text-zinc-600')}`}>{nameObj.score}</span>
-                      )}
                     </div>
                     {nameObj.note && <p className={`text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{nameObj.note}</p>}
                     {nameObj.flag && <p className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-600'}`}>⚠️ {nameObj.flag}</p>}
