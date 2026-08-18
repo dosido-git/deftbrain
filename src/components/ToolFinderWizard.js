@@ -36,7 +36,7 @@ const CLR = {
 // EXAMPLE SCENARIOS — click to populate the textarea
 // Texts pull from i18n keys so non-English users see translated pills.
 // ════════════════════════════════════════════════════════════
-const SCENARIOS = [
+export const SCENARIOS = [
   { emoji: '😬', key: 'scenario_apologize' },
   { emoji: '🤔', key: 'scenario_decide' },
   { emoji: '⚡', key: 'scenario_overwhelmed' },

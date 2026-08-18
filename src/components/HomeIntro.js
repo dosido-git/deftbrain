@@ -34,6 +34,8 @@ import { Link, useNavigate } from 'react-router-dom';
 // same label NotFound and ToolRenderer use, and the one verify-build pins
 // the static HTML to. This page was the last surface printing a raw count.
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
+import { useTranslation } from '../i18n/useTranslation';
+import { SCENARIOS } from './ToolFinderWizard';
 
 // ── Density ────────────────────────────────────────────────────────────────
 // The mockup was drawn on a fixed 1024px artboard. Rendered 1:1 in a real
@@ -214,6 +216,7 @@ const SectionTitle = ({ children, style }) => (
 );
 
 const HomeIntro = ({ categories = [], onBrowse }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [ask, setAsk] = useState('');
 
@@ -369,6 +372,25 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
               }}>
               &rarr;
             </button>
+          </div>
+
+          {/* People do not arrive knowing they want a category. They arrive
+              recognising a sentence. These fill the box above rather than
+              opening anything of their own — one front door, with the shapes
+              a visitor might already be standing in. */}
+          <div className="flex flex-wrap" style={{ gap: d(6), marginTop: d(10) }}>
+            {SCENARIOS.slice(0, 6).map(sc => (
+              <button key={sc.key} type="button" onClick={() => setAsk(t(sc.key))}
+                className="transition-colors hover:bg-white"
+                style={{
+                  background: CLR.sand50, border: `1px solid ${CLR.sand200}`,
+                  borderRadius: 999, padding: `${d(6)}px ${d(11)}px`,
+                  fontSize: b(12.5), color: CLR.warm700, cursor: 'pointer',
+                  textAlign: 'start', minHeight: 32,
+                }}>
+                {sc.emoji} {t(sc.key)}
+              </button>
+            ))}
           </div>
         </form>
 
@@ -541,8 +563,8 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
             marginTop: d(14), display: 'grid', gap: d(10),
             gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(104px, 11vw, 150px), 1fr))',
           }}>
-            {categories.map(c => (
-              <button key={c.name} onClick={() => c.onSelect && c.onSelect(c.name)}
+            {categories.map(cat => (
+              <button key={cat.name} onClick={() => cat.onSelect && cat.onSelect(cat.name)}
                 className="transition-colors hover:bg-white"
                 style={{
                   background: '#fff', border: `1px solid ${CLR.sand200}`, borderRadius: d(14),
@@ -554,13 +576,22 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
                   border: `1px solid ${CLR.sand200}`, display: 'flex', flexShrink: 0,
                   alignItems: 'center', justifyContent: 'center',
                   fontSize: 24, lineHeight: 1,
-                }}>{c.emoji}</span>
+                }}>{cat.emoji}</span>
                 <span style={{
                   fontSize: 12, fontWeight: 700, color: CLR.navy700,
                   lineHeight: 1.25, textAlign: 'center',
-                }}>{c.name}</span>
-                <span style={{ fontSize: 11, color: CLR.warm500, lineHeight: 1 }}>
-                  {c.count} {UNIT.many}
+                }}>{cat.name}</span>
+                {/* Loot, Veer and Go Deep! are good names that tell a first-time
+                    visitor nothing. The subtitle that explains them already
+                    existed — as a title attribute, which a phone never shows. */}
+                {cat.sub && (
+                  <span style={{
+                    fontSize: 10, color: CLR.warm500, lineHeight: 1.3,
+                    textAlign: 'center', display: 'block',
+                  }}>{cat.sub}</span>
+                )}
+                <span style={{ fontSize: 11, color: CLR.warm400, lineHeight: 1 }}>
+                  {cat.count} {UNIT.many}
                 </span>
               </button>
             ))}
