@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "845133bf02f91306c0243a727790b3bd75d2f04a",
-  "lastmod": "2026-08-17"
+  "hash": "3f635558ab53a7d347ad795ad41c046b44d82e71",
+  "lastmod": "2026-08-18"
  },
  "static:about": {
   "hash": "fd6635f5d7af8b1c3e6be0a5139c3bcda14fe500",
@@ -108,8 +108,8 @@
   "lastmod": "2026-08-17"
  },
  "tool:PlainTalk": {
-  "hash": "86834cd1d148518327076127a4cad911e025a865",
-  "lastmod": "2026-08-14"
+  "hash": "c7a94baf00dcf20664b6ce1303bc2ee7a1ddc4f4",
+  "lastmod": "2026-08-18"
  },
  "tool:ProcedureProbe": {
   "hash": "7a2b302d3a77bdef7cb1837beb09563788c131c2",

@@ -267,6 +267,10 @@ const PlainTalk = ({ tool }) => {
 
   const loadExample = () => {
     const ex = pickExample('PlainTalk', SAMPLE_TEXTS);
+    applySample(ex);
+  };
+
+  const applySample = (ex) => {
     setInputText(t(ex.textKey));
     setTextType(ex.type);
     setError('');
@@ -549,6 +553,7 @@ const PlainTalk = ({ tool }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${c.btnSecondary}`}>
                   📎 {t('plt_upload_file')}
                 </label>
+                <span className={`text-[11px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
                 {fileName && (
                   <span className={`text-xs flex items-center gap-1.5 ${c.textMuteded}`}>
                     {pdfBase64 && <span aria-hidden="true">📄</span>}{fileName}
@@ -593,7 +598,7 @@ const PlainTalk = ({ tool }) => {
               </label>
               <div className="flex flex-wrap gap-2">
                 {SAMPLE_TEXTS.map((s, i) => (
-                  <button key={i} onClick={() => setInputText(t(s.textKey))}
+                  <button key={i} onClick={() => applySample(s)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                       isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20'
                         : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
@@ -606,6 +611,24 @@ const PlainTalk = ({ tool }) => {
 
             {/* Options */}
             <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-5`}>
+              {/* The reason someone opened this tool at all, so it leads. */}
+              <div>
+                <label className={`block text-base font-bold ${c.text} mb-1`}>
+                  🎯 {t('plt_focus_label')}
+                </label>
+                <p className={`text-xs ${c.textMuteded} mb-2`}>
+                  {t('plt_focus_help')}
+                </p>
+                <input
+                  type="text"
+                  value={focusQuestion}
+                  onChange={e => setFocusQuestion(e.target.value)}
+                  placeholder={t('plt_focus_ph')}
+                  className={`w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 transition-colors ${c.input}`}
+                  onKeyDown={e => { if (e.key === 'Enter' && inputText.trim()) handleAnalyze(); }}
+                />
+              </div>
+
               {/* Text type */}
               <div>
                 <label className={`block text-sm font-bold ${c.text} mb-2`}>
@@ -623,24 +646,6 @@ const PlainTalk = ({ tool }) => {
                     </button>
                   ))}
                 </div>
-              </div>
-
-              {/* Focus question */}
-              <div>
-                <label className={`block text-sm font-bold ${c.text} mb-1`}>
-                  🎯 {t('plt_focus_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
-                </label>
-                <p className={`text-xs ${c.textMuteded} mb-2`}>
-                  {t('plt_focus_help')}
-                </p>
-                <input
-                  type="text"
-                  value={focusQuestion}
-                  onChange={e => setFocusQuestion(e.target.value)}
-                  placeholder={t('plt_focus_ph')}
-                  className={`w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 transition-colors ${c.input}`}
-                  onKeyDown={e => { if (e.key === 'Enter' && inputText.trim()) handleAnalyze(); }}
-                />
               </div>
             </div>
 
@@ -683,10 +688,18 @@ const PlainTalk = ({ tool }) => {
             )}
             </button>
 
-            {/* Pre-result cross-ref */}
-            <p className={`text-xs text-center ${c.textMuted}`}>
-              {t('plt_also_try')} <a href="/JargonAssassin" className={linkStyle}>🗡️ {t('plt_xref_jargonassassin')}</a> · <a href="/DoctorVisitTranslator" className={linkStyle}>🏥 {t('plt_xref_doctorvisit')}</a>
-            </p>
+            {/* Pre-result cross-ref. Three tools sit on the same problem and
+                differ only by scope, so the useful thing is not a list of names
+                but the line between them — stated as the reader's situation,
+                which is the part they actually know. */}
+            <div className={`${c.card} border ${c.border} rounded-2xl p-4`}>
+              <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('plt_which_tool')}</p>
+              <ul className={`space-y-1.5 text-xs ${c.textSecondary}`}>
+                <li>{t('plt_which_whole')} → <span className="font-bold">{tool?.title ?? 'Plain Talk'}</span> <span className={c.textMuteded}>{t('plt_which_here')}</span></li>
+                <li>{t('plt_which_para')} → <a href="/JargonAssassin" className={linkStyle}>🗡️ {t('plt_xref_jargonassassin')}</a></li>
+                <li>{t('plt_which_medical')} → <a href="/DoctorVisitTranslator" className={linkStyle}>🏥 {t('plt_xref_doctorvisit')}</a></li>
+              </ul>
+            </div>
 
             {/* Loading skeleton */}
             {loading && (
