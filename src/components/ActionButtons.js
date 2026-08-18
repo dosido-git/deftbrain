@@ -190,6 +190,7 @@ export const PrintBtn = ({ label }) => {
         '@media print {',
         '  [data-print-hide] { display: none !important; }',
         '  [data-print-show-flex] { display: flex !important; }',
+        '  [data-print-show] { display: block !important; }',
         '  [data-print-grid] { display: block !important; }',
         '  [data-print-main] { grid-column: 1 / -1 !important; max-width: 100% !important; }',
         '  html, body { background: white !important; background-color: white !important; }',

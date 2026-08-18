@@ -767,26 +767,23 @@ const NameStorm = ({ tool }) => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 mt-3 flex-wrap">
+        <div data-print-hide className="flex items-center gap-2 mt-3 flex-wrap">
           {showDomainFeatures && (
             <button onClick={() => handleCheckAvailability(nameObj.name)} disabled={isChecking || !!avail}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${avail ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
               {isChecking ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">🌐</span>}
               {avail ? t('ns_checked') : isChecking ? t('ns_checking') : isDomainMode ? t('ns_check_domain') : t('ns_check_availability')}
-              {!avail && !isChecking && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>{t('ns_pro')}</span>}
             </button>
           )}
           <button onClick={() => handleMoreLike(nameObj, categoryName)} disabled={isLoadingMore || !!moreData}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${moreData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary} disabled:opacity-40`}>
             {isLoadingMore ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">✨</span>}
             {moreData ? t('ns_see_below') : isLoadingMore ? t('ns_generating') : t('ns_more_like_this')}
-            {!moreData && !isLoadingMore && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>{t('ns_pro')}</span>}
           </button>
           {/* Refine button */}
           <button onClick={() => { setRefineOpen(isRefineOpen ? null : nameObj.name); setRefineInput(''); }}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${isRefineOpen ? chipStyle(true) : c.btnSecondary}`}>
             <span className="text-xs">🎯</span> {refineData ? t('ns_refine_again') : t('ns_refine')}
-            {!refineData && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>{t('ns_pro')}</span>}
           </button>
           {/* Visual Preview toggle */}
           <button onClick={() => setPreviewOpen(isPreviewOpen ? null : nameObj.name)}
@@ -799,7 +796,6 @@ const NameStorm = ({ tool }) => {
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${storyData ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-100 text-gray-400') : c.btnSecondary}`}>
               {isStorying ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚡'}</span> : <span className="text-xs">📖</span>}
               {storyData ? t('ns_story_below') : isStorying ? t('ns_writing') : t('ns_brand_story')}
-              {!storyData && !isStorying && <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${isDark ? 'bg-amber-900/50 text-amber-300' : 'bg-amber-100 text-amber-700'}`}>{t('ns_pro')}</span>}
             </button>
           )}
           {!compact && (
@@ -1441,7 +1437,10 @@ const NameStorm = ({ tool }) => {
                 <span>{t('ns_seed_expansion')}</span>
                 <Caret open={showSeedExpansion} className="ms-auto" />
               </button>
-              {showSeedExpansion && (<>
+              {/* Collapsed is a screen state, not an editorial one: a printed
+                  naming report should carry the whole record, so this is hidden
+                  with a class rather than dropped from the DOM. */}
+              <div data-print-show className={showSeedExpansion ? '' : 'hidden'}>
               <p className={`text-xs ${c.textMuted} mt-3 mb-3`}>{t('ns_seed_expansion_help')}</p>
               <div className="space-y-2">
                 {results.seed_expansion.map((seed, idx) => (
@@ -1452,7 +1451,7 @@ const NameStorm = ({ tool }) => {
                   </div>
                 ))}
               </div>
-              </>)}
+              </div>
             </div>
           )}
 
@@ -1634,10 +1633,12 @@ const NameStorm = ({ tool }) => {
                 <Caret open={showAllNames} className="ms-auto" />
               </button>
 
-              {showAllNames && (<div className="mt-4">
+              {/* Same as the seed list above — printing without expanding
+                  should still produce the full catalogue, not just the picks. */}
+              <div data-print-show className={showAllNames ? 'mt-4' : 'hidden'}>
               {/* These only ever acted on the list below, so they live with it.
                   Above the fold they were controls for names you could not see. */}
-              <div className={`flex items-center gap-2 mb-4 pb-3 border-b ${c.border} flex-wrap`}>
+              <div data-print-hide className={`flex items-center gap-2 mb-4 pb-3 border-b ${c.border} flex-wrap`}>
                 <span className={`text-xs font-semibold ${c.textMuted}`}>{t('ns_filters')}</span>
                 <button onClick={() => setFilterCleanOnly(!filterCleanOnly)}
                   className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(filterCleanOnly)}`}>
@@ -1692,7 +1693,7 @@ const NameStorm = ({ tool }) => {
                   <p className={`text-sm ${c.textMuted} text-center py-4`}>{t('ns_all_filtered')}</p>
                 );
               })()}
-              </div>)}
+              </div>
             </div>
           )}
 
