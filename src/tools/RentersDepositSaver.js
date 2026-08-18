@@ -723,6 +723,32 @@ const RentersDepositSaver = ({ tool }) => {
       {step === 2 && (
         <div className="space-y-4">
 
+          {/* The tips were genuinely good and arrived after the first room was
+              already inspected — by which point the wide shots they ask for
+              were no longer possible without going back. The habit is taught
+              first, in one sentence; the full list stays a click away. */}
+          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
+            <div className="flex items-start gap-3">
+              <span className={`flex-shrink-0 mt-0.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📷</span>
+              <div className="flex-1">
+                <h4 className={`text-sm font-bold ${c.text} mb-1`}>{t('rds_before_you_start')}</h4>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{t('rds_before_you_start_body')}</p>
+                <button onClick={() => setShowPhotoTips(v => !v)} aria-expanded={showPhotoTips}
+                  className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                  {t('rds_photo_tips')} <Caret open={showPhotoTips} />
+                </button>
+                {showPhotoTips && (
+                  <div className={`text-xs ${c.textSecondary} space-y-1 mt-2`}>
+                    <p>{t('rds_photo_tip1')}</p>
+                    <p>{t('rds_photo_tip2')}</p>
+                    <p>{t('rds_photo_tip3')}</p>
+                    <p>{t('rds_photo_tip4')}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* ── Room selector bar ── */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4`}>
             <div className="flex items-center justify-between mb-3">
@@ -937,32 +963,6 @@ const RentersDepositSaver = ({ tool }) => {
               </div>
             </div>
           )}
-
-          {/* The tips were genuinely good and arrived after the first room was
-              already inspected — by which point the wide shots they ask for
-              were no longer possible without going back. The habit is taught
-              first, in one sentence; the full list stays a click away. */}
-          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
-            <div className="flex items-start gap-3">
-              <span className={`flex-shrink-0 mt-0.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📷</span>
-              <div className="flex-1">
-                <h4 className={`text-sm font-bold ${c.text} mb-1`}>{t('rds_before_you_start')}</h4>
-                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{t('rds_before_you_start_body')}</p>
-                <button onClick={() => setShowPhotoTips(v => !v)} aria-expanded={showPhotoTips}
-                  className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
-                  {t('rds_photo_tips')} <Caret open={showPhotoTips} />
-                </button>
-                {showPhotoTips && (
-                  <div className={`text-xs ${c.textSecondary} space-y-1 mt-2`}>
-                    <p>{t('rds_photo_tip1')}</p>
-                    <p>{t('rds_photo_tip2')}</p>
-                    <p>{t('rds_photo_tip3')}</p>
-                    <p>{t('rds_photo_tip4')}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
 
           {/* Cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
