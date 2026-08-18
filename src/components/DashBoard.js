@@ -450,6 +450,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
         {!isSearching && (
           <div className="mt-4">
             <HomeIntro
+              allTools={allTools}
               onBrowse={() => catalogRef.current &&
                 catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })}
               categories={CATEGORY_META

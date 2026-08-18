@@ -35,7 +35,24 @@ import { Link, useNavigate } from 'react-router-dom';
 // the static HTML to. This page was the last surface printing a raw count.
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useTranslation } from '../i18n/useTranslation';
-import { SCENARIOS } from './ToolFinderWizard';
+// Eleven shapes a visitor might already be standing in, each answered with a
+// short, hand-picked set rather than a search. Recognition, then a door — not
+// a taxonomy to translate their problem into first. Two of these lists are the
+// ones Bruce specified; the rest follow the same rule, four tools at most, the
+// obvious first move at the front.
+const SITUATIONS = [
+  { key: 'sit_paperwork',   tools: ['PlainTalk', 'LeaseTrapDetector', 'ContractDecoder', 'JargonAssassin'] },
+  { key: 'sit_medical',     tools: ['ProcedureProbe', 'DoctorVisitTranslator', 'DoctorVisitPrep', 'BillRescue'] },
+  { key: 'sit_saywhat',     tools: ['DifficultTalkCoach', 'ConflictCoach', 'ComplaintEscalationWriter', 'ToastWriter', 'VelvetHammer', 'GhostWriter', 'MagicMouth'] },
+  { key: 'sit_overwhelmed', tools: ['SpiralStopper', 'CrisisPrioritizer', 'BrainDumpBuddy', 'TaskAvalancheBreaker'] },
+  { key: 'sit_overcharged', tools: ['MarkupDetective', 'QuoteCheck', 'BillRescue', 'SubscriptionTamer'] },
+  { key: 'sit_decision',    tools: ['DecisionCoach', 'TheCrux', 'PreMortem'] },
+  { key: 'sit_misled',      tools: ['ScamRadar', 'FakeReviewDetective', 'MeetingBSDetector', 'LeaseTrapDetector'] },
+  { key: 'sit_organized',   tools: ['BatchFlow', 'TaskAvalancheBreaker', 'BrainDumpBuddy', 'ChaosPilot'] },
+  { key: 'sit_planning',    tools: ['PartyArchitect', 'MicroAdventureMapper', 'LayoverMaximizer', 'PreMortem'] },
+  { key: 'sit_learn',       tools: ['AnalogyEngine', 'ResearchDecoder', 'SkillGapMap', 'TheCrux'] },
+  { key: 'sit_curious',     tools: ['BrainRoulette', 'FanTheory', 'PetWeirdnessDecoder'] },
+];
 
 // ── Density ────────────────────────────────────────────────────────────────
 // The mockup was drawn on a fixed 1024px artboard. Rendered 1:1 in a real
@@ -215,8 +232,9 @@ const SectionTitle = ({ children, style }) => (
   }}>{children}</h3>
 );
 
-const HomeIntro = ({ categories = [], onBrowse }) => {
+const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
   const { t } = useTranslation();
+  const [situation, setSituation] = useState(null);
   const navigate = useNavigate();
   const [ask, setAsk] = useState('');
 
@@ -345,7 +363,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
         </p>
 
         <form onSubmit={askSubmit} style={{ marginTop: d(10), maxWidth: MEASURE }}>
-          <label htmlFor="db-ask" className="sr-only">What do you need help with?</label>
+          <label htmlFor="db-ask" className="sr-only">{t('sit_type_anything')}</label>
           <div className="flex items-stretch" style={{
             background: '#fff', border: `1.5px solid ${CLR.sand300}`,
             borderRadius: d(14), overflow: 'hidden',
@@ -355,7 +373,7 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
             }}>🔍</span>
             <input
               id="db-ask" type="text" value={ask} onChange={(e) => setAsk(e.target.value)}
-              placeholder="What do you need help with?"
+              placeholder={t('sit_type_anything')}
               autoComplete="off"
               style={{
                 flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
@@ -375,23 +393,52 @@ const HomeIntro = ({ categories = [], onBrowse }) => {
           </div>
 
           {/* People do not arrive knowing they want a category. They arrive
-              recognising a sentence. These fill the box above rather than
-              opening anything of their own — one front door, with the shapes
-              a visitor might already be standing in. */}
+              recognising a sentence — so each of these answers with the two to
+              four tools that actually fit, rather than handing the problem
+              back as a search. */}
           <div className="flex flex-wrap" style={{ gap: d(6), marginTop: d(10) }}>
-            {SCENARIOS.slice(0, 6).map(sc => (
-              <button key={sc.key} type="button" onClick={() => setAsk(t(sc.key))}
-                className="transition-colors hover:bg-white"
-                style={{
-                  background: CLR.sand50, border: `1px solid ${CLR.sand200}`,
-                  borderRadius: 999, padding: `${d(6)}px ${d(11)}px`,
-                  fontSize: b(12.5), color: CLR.warm700, cursor: 'pointer',
-                  textAlign: 'start', minHeight: 32,
-                }}>
-                {sc.emoji} {t(sc.key)}
-              </button>
-            ))}
+            {SITUATIONS.map(sit => {
+              const on = situation === sit.key;
+              return (
+                <button key={sit.key} type="button" aria-pressed={on}
+                  onClick={() => setSituation(on ? null : sit.key)}
+                  className="transition-colors"
+                  style={{
+                    background: on ? CLR.navy600 : CLR.sand50,
+                    border: `1px solid ${on ? CLR.navy600 : CLR.sand200}`,
+                    color: on ? '#fff' : CLR.warm700,
+                    borderRadius: 999, padding: `${d(6)}px ${d(11)}px`,
+                    fontSize: b(12.5), cursor: 'pointer', textAlign: 'start', minHeight: 32,
+                  }}>
+                  {t(sit.key)}
+                </button>
+              );
+            })}
           </div>
+
+          {situation && (
+            <div style={{
+              marginTop: d(10), background: '#fff', border: `1px solid ${CLR.sand200}`,
+              borderRadius: d(14), padding: `${d(12)}px ${d(14)}px`,
+            }}>
+              {(SITUATIONS.find(x => x.key === situation)?.tools || [])
+                .map(id => allTools.find(tl => tl.id === id))
+                .filter(Boolean)
+                .map(tl => (
+                  <Link key={tl.id} to={`/${tl.id}`} className="hover:underline"
+                    style={{ display: 'block', paddingBlock: d(6), textDecoration: 'none' }}>
+                    <span style={{ fontSize: b(14), fontWeight: 700, color: CLR.navy600 }}>
+                      {tl.icon} {tl.title}
+                    </span>
+                    {tl.tagline && (
+                      <span style={{ display: 'block', fontSize: b(12), color: CLR.warm500, lineHeight: 1.35 }}>
+                        {tl.tagline}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+            </div>
+          )}
         </form>
 
           </div>
