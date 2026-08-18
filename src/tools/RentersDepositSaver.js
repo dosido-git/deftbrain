@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
+import Caret from '../components/Caret';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
@@ -138,13 +139,53 @@ const buildDefaultRooms = () =>
     checkpoints: t.checkpoints.map(cp => ({ label: cp, condition: '', notes: '' })),
   }));
 
+// Fair / Poor / Damaged is condition-report vocabulary. A renter standing in
+// an empty apartment cannot reliably tell Poor from Damaged, and being made to
+// choose invents a distinction they will later have to defend. Two states a
+// person can actually see — wear, damage — plus permission to say they do not
+// know, which is worth more than a forced guess.
 const CONDITION_OPTIONS = [
-  { value: 'good',    label: 'Good',    dot: 'bg-emerald-500', light: 'bg-emerald-50 border-emerald-200 text-emerald-700',  dark: 'bg-emerald-900/30 border-emerald-700 text-emerald-300' },
-  { value: 'fair',    label: 'Fair',    dot: 'bg-amber-500',   light: 'bg-amber-50 border-amber-200 text-amber-700',        dark: 'bg-amber-900/30 border-amber-700 text-amber-300' },
-  { value: 'poor',    label: 'Poor',    dot: 'bg-amber-500',  light: 'bg-amber-50 border-amber-200 text-amber-700',      dark: 'bg-amber-900/30 border-amber-700 text-amber-300' },
-  { value: 'damaged', label: 'Damaged', dot: 'bg-red-500',     light: 'bg-red-50 border-red-200 text-red-700',              dark: 'bg-red-900/30 border-red-700 text-red-300' },
-  { value: 'na',      label: 'N/A',     dot: 'bg-zinc-400',    light: 'bg-zinc-50 border-zinc-200 text-zinc-500',        dark: 'bg-zinc-700 border-zinc-600 text-zinc-400' },
+  { value: 'good',   dot: 'bg-emerald-500', light: 'bg-emerald-50 border-emerald-200 text-emerald-700',  dark: 'bg-emerald-900/30 border-emerald-700 text-emerald-300' },
+  { value: 'wear',   dot: 'bg-amber-500',   light: 'bg-amber-50 border-amber-200 text-amber-700',        dark: 'bg-amber-900/30 border-amber-700 text-amber-300' },
+  { value: 'damage', dot: 'bg-red-500',     light: 'bg-red-50 border-red-200 text-red-700',              dark: 'bg-red-900/30 border-red-700 text-red-300' },
+  { value: 'unsure', dot: 'bg-sky-500',     light: 'bg-sky-50 border-sky-200 text-sky-700',              dark: 'bg-sky-900/30 border-sky-700 text-sky-300' },
+  { value: 'na',     dot: 'bg-zinc-400',    light: 'bg-zinc-50 border-zinc-200 text-zinc-500',           dark: 'bg-zinc-700/50 border-zinc-600 text-zinc-400' },
 ];
+
+// A walkthrough saved under the old vocabulary is still in localStorage, so
+// old values are read as their nearest new one rather than rendering as an
+// unselected row the renter has to redo.
+const LEGACY_CONDITIONS = { fair: 'wear', poor: 'wear', damaged: 'damage' };
+const readCondition = (v) => LEGACY_CONDITIONS[v] || v;
+
+// Anything the report needs to speak about: seen, and not fine.
+const NEEDS_DOCUMENTING = new Set(['wear', 'damage', 'unsure']);
+
+// A renter who typed "123 Main Street, Chicago, IL 60601" has already said
+// which state's deposit law applies. Asking again in a dropdown is the
+// implementation showing through, so the address is read for a state and the
+// selector is prefilled — still editable, because an address can be
+// ambiguous and the renter is the one who knows.
+const US_ABBR = {
+  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado',
+  CT:'Connecticut', DE:'Delaware', DC:'District of Columbia', FL:'Florida', GA:'Georgia',
+  HI:'Hawaii', ID:'Idaho', IL:'Illinois', IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky',
+  LA:'Louisiana', ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota',
+  MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada', NH:'New Hampshire',
+  NJ:'New Jersey', NM:'New Mexico', NY:'New York', NC:'North Carolina', ND:'North Dakota',
+  OH:'Ohio', OK:'Oklahoma', OR:'Oregon', PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina',
+  SD:'South Dakota', TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia',
+  WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming',
+};
+const stateFromAddress = (addr) => {
+  if (!addr) return '';
+  // Full name wins over an abbreviation: "Washington Street, Portland, OR" must
+  // not resolve to Washington.
+  const named = US_STATES.find(st => new RegExp(`(^|[,\\s])${st}([,\\s]|$)`, 'i').test(addr));
+  if (named) return named;
+  const m = addr.match(/[,\s]([A-Za-z]{2})\s*\d{5}(-\d{4})?\s*$/) || addr.match(/,\s*([A-Za-z]{2})\s*$/);
+  return m ? (US_ABBR[m[1].toUpperCase()] || '') : '';
+};
 
 const TODAY = new Date().toISOString().split('T')[0];
 
@@ -192,11 +233,11 @@ const RentersDepositSaver = ({ tool }) => {
     return name;
   };
   const CONDITION_LABELS = {
-    good:    t('rds_cond_good'),
-    fair:    t('rds_cond_fair'),
-    poor:    t('rds_cond_poor'),
-    damaged: t('rds_cond_damaged'),
-    na:      t('rds_cond_na'),
+    good:   t('rds_cond_good'),
+    wear:   t('rds_cond_wear'),
+    damage: t('rds_cond_damage'),
+    unsure: t('rds_cond_unsure'),
+    na:     t('rds_cond_na'),
   };
 
   const c = {
@@ -224,7 +265,8 @@ const RentersDepositSaver = ({ tool }) => {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── Ephemeral state ──
-  const [step, setStep]               = useState(1); // 1=walkthrough, 2=details, 3=results
+  const [step, setStep]               = useState(1); // 1=property details, 2=walkthrough, 3=results
+  const [showPhotoTips, setShowPhotoTips] = useState(false);
   const [activeRoom, setActiveRoom]    = useState(() => {
     const first = buildDefaultRooms().findIndex(r => r.included);
     return first >= 0 ? first : 0;
@@ -263,6 +305,14 @@ const RentersDepositSaver = ({ tool }) => {
   const hasDropdownRegions = countryObj.regions && countryObj.regions.length > 0;
   const regionRequired = country === 'US' || country === 'CA' || country === 'AU';
 
+  // Fill from the address, never overwrite: a renter who picked a state by
+  // hand has overruled the parser on purpose.
+  useEffect(() => {
+    if (country !== 'US' || region) return;
+    const guess = stateFromAddress(address);
+    if (guess) setRegion(guess);
+  }, [address, country, region, setRegion]);
+
   const locationString = (() => {
     if (country === 'OTHER') return region.trim();
     const parts = [];
@@ -283,6 +333,11 @@ const RentersDepositSaver = ({ tool }) => {
   );
 
   const step2Valid = address.trim() && moveInDate && locationValid;
+
+  // Anything the report will have to speak about — what the walkthrough
+  // actually produced, rather than how many taps it took.
+  const flaggedCount = rooms.reduce((n, r) =>
+    n + (r.checkpoints || []).filter(cp => NEEDS_DOCUMENTING.has(readCondition(cp.condition))).length, 0);
 
   // ═══════════════════════════════════════
   // HANDLERS
@@ -631,8 +686,8 @@ const RentersDepositSaver = ({ tool }) => {
       {/* ── Step indicator ── */}
       <div className="flex items-center justify-center gap-2 mb-6 print:hidden">
         {[
-          { num: 1, label: t('rds_step_walkthrough') },
-          { num: 2, label: t('rds_step_details') },
+          { num: 1, label: t('rds_step_details') },
+          { num: 2, label: t('rds_step_walkthrough') },
           { num: 3, label: t('rds_step_report') },
         ].map(({ num, label }) => (
           <React.Fragment key={num}>
@@ -663,127 +718,10 @@ const RentersDepositSaver = ({ tool }) => {
       </div>
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* STEP 1: WALKTHROUGH (the urgent part)              */}
+      {/* STEP 2: WALKTHROUGH — after we know which apartment       */}
       {/* ═══════════════════════════════════════════════════ */}
-      {step === 1 && (
+      {step === 2 && (
         <div className="space-y-4">
-
-          {/* ── Location bar + Rights lookup ── */}
-          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
-              <h3 className={`text-sm font-bold ${c.text}`}>{t('rds_your_location')}</h3>
-              <span className={`text-xs ${c.textMuteded}`}>{t('rds_for_law')}</span>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 mb-3">
-              {/* Country */}
-              <select
-                value={country}
-                onChange={e => { setCountry(e.target.value); setRegion(''); setRightsResult(null); setShowRights(false); }}
-                className={`sm:w-48 p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
-              >
-                {COUNTRIES.map(co => (
-                  <option key={co.code} value={co.code}>{co.label}</option>
-                ))}
-              </select>
-
-              {/* Region: dropdown for US/CA/UK/AU, freetext for others */}
-              <div className="flex-1">
-                {hasDropdownRegions ? (
-                  <select
-                    value={region}
-                    onChange={e => { setRegion(e.target.value); setRightsResult(null); setShowRights(false); }}
-                    className={`w-full p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
-                  >
-                    <option value="">{t('rds_select_region', { label: countryObj.regionLabel })}</option>
-                    {countryObj.regions.map(r => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    value={region}
-                    onChange={e => { setRegion(e.target.value); setRightsResult(null); setShowRights(false); }}
-                    placeholder={countryObj.regionLabel}
-                    className={`w-full p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
-                  />
-                )}
-              </div>
-
-              {/* Rights lookup button */}
-              <button
-                onClick={lookupRights}
-                disabled={!locationValid || rightsLoading}
-                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
-                  !locationValid
-                    ? isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                    : 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                } disabled:opacity-40`}
-              >
-                {rightsLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '🏦'}</span> : null}
-                {rightsLoading ? t('rds_looking_up') : t('rds_look_up_rights')}
-              </button>
-            </div>
-
-            {/* Quick rights result */}
-            {showRights && (
-              <div className={`mt-3 rounded-xl border p-4 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
-                {rightsLoading && (
-                  <div className={`flex items-center gap-2 ${c.textMuteded} text-sm`}>
-                    
-                    {t('rds_looking_up_loc', { loc: locationString })}
-                  </div>
-                )}
-                {rightsError && (
-                  <div className="flex items-start gap-2">
-                    
-                    <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>{rightsError}</p>
-                  </div>
-                )}
-                {rightsResult && (
-                  <>
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>
-                        <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
-                        {t('rds_deposit_rights_loc', { loc: locationString })}
-                      </h4>
-                      <div className="flex gap-1.5">
-                        <button
-                          onClick={() => setShowRights(false)}
-                          className={`p-1 rounded-lg transition-colors ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-400'}`}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                    <div className={`text-xs leading-relaxed max-h-80 overflow-y-auto ${isDark ? 'text-zinc-300' : 'text-gray-700'}`}>
-                      {rightsResult.rights_summary && (
-                        <p className="mb-2">{rightsResult.rights_summary}</p>
-                      )}
-                      {Array.isArray(rightsResult.key_rights) && rightsResult.key_rights.length > 0 && (
-                        <ul className="space-y-1 list-none">
-                          {rightsResult.key_rights.map((kr, i) => (
-                            <li key={i} className="flex items-start gap-1.5">
-                              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'} shrink-0`}>•</span>
-                              <span>{kr}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {rightsResult.caution && (
-                        <p className={`mt-2 italic ${c.textMuteded}`}>{rightsResult.caution}</p>
-                      )}
-                    </div>
-                    <div className={`mt-3 p-2 rounded-lg text-xs ${isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
-                      {t('rds_legal_info')}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* ── Room selector bar ── */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4`}>
@@ -912,9 +850,9 @@ const RentersDepositSaver = ({ tool }) => {
                   <div
                     key={cpIdx}
                     className={`rounded-xl border p-3 transition-colors ${
-                      cp.condition === 'damaged'
+                      readCondition(cp.condition) === 'damage'
                         ? isDark ? 'border-red-800 bg-red-900/20' : 'border-red-200 bg-red-50/50'
-                        : cp.condition === 'poor'
+                        : readCondition(cp.condition) === 'wear'
                         ? isDark ? 'border-amber-800 bg-amber-900/20' : 'border-amber-200 bg-amber-50/50'
                         : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-white'
                     }`}
@@ -943,33 +881,43 @@ const RentersDepositSaver = ({ tool }) => {
                           key={opt.value}
                           onClick={() => updateCheckpoint(activeRoom, cpIdx, 'condition', opt.value)}
                           className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
-                            cp.condition === opt.value
+                            readCondition(cp.condition) === opt.value
                               ? `${isDark ? opt.dark : opt.light} ring-1 ring-offset-1 ${isDark ? 'ring-offset-zinc-800' : 'ring-offset-white'} ring-current`
                               : isDark ? 'border-zinc-600 text-zinc-400 hover:text-zinc-200'
                                 : 'border-zinc-200 text-zinc-400 hover:text-gray-600'
                           }`}
                         >
-                          <span className={`w-1.5 h-1.5 rounded-full ${cp.condition === opt.value ? opt.dot : isDark ? 'bg-zinc-600' : 'bg-zinc-300'}`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${readCondition(cp.condition) === opt.value ? opt.dot : isDark ? 'bg-zinc-600' : 'bg-zinc-300'}`} />
                           {CONDITION_LABELS[opt.value]}
                         </button>
                       ))}
                     </div>
 
-                    {/* Notes */}
-                    {(cp.condition === 'poor' || cp.condition === 'damaged' || cp.condition === 'fair' || cp.notes) && (
-                      <textarea
-                        value={cp.notes}
-                        onChange={e => updateCheckpoint(activeRoom, cpIdx, 'notes', e.target.value)}
-                        placeholder={
-                          cp.condition === 'damaged'
-                            ? t('rds_notes_damaged')
-                            : cp.condition === 'poor'
-                            ? t('rds_notes_poor')
-                            : t('rds_notes_optional')
-                        }
-                        rows={2}
-                        className={`w-full p-2.5 border rounded-lg text-xs outline-none focus:ring-2 resize-none transition-colors ${c.input}`}
-                      />
+                    {/* The moment the tool stops being a checklist. Marking
+                        something is the point at which a renter has seen the
+                        problem and is most able to describe it — so the prompt
+                        arrives then, rather than leaving them to remember later
+                        that a photo would have been a good idea. */}
+                    {(NEEDS_DOCUMENTING.has(readCondition(cp.condition)) || cp.notes) && (
+                      <div className={`rounded-lg border p-2.5 ${isDark ? 'border-zinc-600 bg-zinc-900/40' : 'border-zinc-200 bg-slate-50'}`}>
+                        <p className={`text-xs font-bold ${c.text} mb-1.5`}>📝 {t('rds_document_this')}</p>
+                        <textarea
+                          value={cp.notes}
+                          onChange={e => updateCheckpoint(activeRoom, cpIdx, 'notes', e.target.value)}
+                          placeholder={
+                            readCondition(cp.condition) === 'damage'
+                              ? t('rds_notes_damaged')
+                              : readCondition(cp.condition) === 'unsure'
+                              ? t('rds_notes_unsure')
+                              : t('rds_notes_poor')
+                          }
+                          rows={2}
+                          className={`w-full p-2.5 border rounded-lg text-xs outline-none focus:ring-2 resize-none transition-colors ${c.input}`}
+                        />
+                        <p className={`text-[11px] mt-1.5 ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>
+                          📷 {t('rds_shoot_now')}
+                        </p>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -990,18 +938,28 @@ const RentersDepositSaver = ({ tool }) => {
             </div>
           )}
 
-          {/* Photo tips card */}
+          {/* The tips were genuinely good and arrived after the first room was
+              already inspected — by which point the wide shots they ask for
+              were no longer possible without going back. The habit is taught
+              first, in one sentence; the full list stays a click away. */}
           <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
             <div className="flex items-start gap-3">
               <span className={`flex-shrink-0 mt-0.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>📷</span>
-              <div>
-                <h4 className={`text-sm font-bold ${c.text} mb-1.5`}>{t('rds_photo_tips')}</h4>
-                <div className={`text-xs ${c.textSecondary} space-y-1`}>
-                  <p>{t('rds_photo_tip1')}</p>
-                  <p>{t('rds_photo_tip2')}</p>
-                  <p>{t('rds_photo_tip3')}</p>
-                  <p>{t('rds_photo_tip4')}</p>
-                </div>
+              <div className="flex-1">
+                <h4 className={`text-sm font-bold ${c.text} mb-1`}>{t('rds_before_you_start')}</h4>
+                <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{t('rds_before_you_start_body')}</p>
+                <button onClick={() => setShowPhotoTips(v => !v)} aria-expanded={showPhotoTips}
+                  className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+                  {t('rds_photo_tips')} <Caret open={showPhotoTips} />
+                </button>
+                {showPhotoTips && (
+                  <div className={`text-xs ${c.textSecondary} space-y-1 mt-2`}>
+                    <p>{t('rds_photo_tip1')}</p>
+                    <p>{t('rds_photo_tip2')}</p>
+                    <p>{t('rds_photo_tip3')}</p>
+                    <p>{t('rds_photo_tip4')}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1011,22 +969,54 @@ const RentersDepositSaver = ({ tool }) => {
             {t('rds_xref_walkthrough')} <a href="/LeaseTrapDetector" className={linkStyle}>🏠 {t('rds_lease_trap')}</a> {t('rds_xref_walkthrough_after')}
           </p>
 
+          {/* "Next: Property Details" told the reader where the form was
+              going, not what they had just done. Counting what they found
+              turns forty taps into a result, and says why there is a step
+              after this one. */}
+          <div className={`rounded-2xl border p-4 ${isDark ? 'border-cyan-800 bg-cyan-900/20' : 'border-cyan-200 bg-cyan-50'}`}>
+            <p className={`text-sm font-bold ${c.text}`}>{t('rds_walkthrough_done')}</p>
+            <p className={`text-sm mt-1 ${c.textSecondary}`}>
+              {flaggedCount > 0
+                ? t(flaggedCount === 1 ? 'rds_walkthrough_found_one' : 'rds_walkthrough_found', { count: flaggedCount })
+                : t('rds_walkthrough_found_none')}
+            </p>
+          </div>
+
           {/* Navigation */}
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-between">
             <button
-              onClick={() => setStep(2)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} transition-colors min-h-[44px]`}
+              onClick={() => setStep(1)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isDark ? 'text-zinc-300 hover:bg-zinc-700' : 'text-gray-600 hover:bg-zinc-100'
+              }`}
             >
-              {t('rds_next_details')}
+              {t('back')}
+            </button>
+            <button title={t('cmd_enter')}
+              onClick={generateReport}
+              disabled={streamLoading || !step2Valid}
+              className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[44px]`}
+            >
+              {streamLoading ? (
+                <><span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span> {t('rds_generating')}</>
+              ) : (
+                <><span>{tool?.icon ?? '🏦'}</span> {t('rds_generate_report')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
+              )}
             </button>
           </div>
         </div>
       )}
 
       {/* ═══════════════════════════════════════════════════ */}
-      {/* STEP 2: PROPERTY DETAILS                           */}
+      {/* STEP 1: PROPERTY DETAILS — establish the apartment first  */}
       {/* ═══════════════════════════════════════════════════ */}
-      {step === 2 && (
+      {step === 1 && (
         <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-6 sm:p-8`}>
           <div className="flex items-center gap-2 mb-6">
             <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>🏠</span>
@@ -1075,22 +1065,123 @@ const RentersDepositSaver = ({ tool }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Location display (set in step 1) */}
-              <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                  {t('rds_location')} <span className={c.required}>*</span>
-                </label>
-                <div className={`flex items-center gap-2 p-3 border rounded-lg ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
-                  <span className={`text-sm ${locationValid ? c.text : isDark ? 'text-red-400' : 'text-red-600'}`}>
-                    {locationValid ? locationString : t('rds_set_location_step1')}
-                  </span>
-                  {!locationValid && (
-                    <button onClick={() => setStep(1)} className="text-xs font-bold text-cyan-600 hover:underline ms-auto">{t('rds_edit')}</button>
-                  )}
-                </div>
+                      {/* ── Location bar + Rights lookup ── */}
+          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
+            <div className="flex items-center gap-2 mb-3">
+              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
+              <h3 className={`text-sm font-bold ${c.text}`}>{t('rds_your_location')}</h3>
+              <span className={`text-xs ${c.textMuteded}`}>{t('rds_for_law')}</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-3">
+              {/* Country */}
+              <select
+                value={country}
+                onChange={e => { setCountry(e.target.value); setRegion(''); setRightsResult(null); setShowRights(false); }}
+                className={`sm:w-48 p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
+              >
+                {COUNTRIES.map(co => (
+                  <option key={co.code} value={co.code}>{co.label}</option>
+                ))}
+              </select>
+
+              {/* Region: dropdown for US/CA/UK/AU, freetext for others */}
+              <div className="flex-1">
+                {hasDropdownRegions ? (
+                  <select
+                    value={region}
+                    onChange={e => { setRegion(e.target.value); setRightsResult(null); setShowRights(false); }}
+                    className={`w-full p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
+                  >
+                    <option value="">{t('rds_select_region', { label: countryObj.regionLabel })}</option>
+                    {countryObj.regions.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={region}
+                    onChange={e => { setRegion(e.target.value); setRightsResult(null); setShowRights(false); }}
+                    placeholder={countryObj.regionLabel}
+                    className={`w-full p-2.5 border rounded-lg text-base outline-none focus:ring-2 transition-colors ${c.input}`}
+                  />
+                )}
               </div>
 
+              {/* Rights lookup button */}
+              <button
+                onClick={lookupRights}
+                disabled={!locationValid || rightsLoading}
+                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
+                  !locationValid
+                    ? isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                    : 'bg-cyan-600 hover:bg-cyan-700 text-white'
+                } disabled:opacity-40`}
+              >
+                {rightsLoading ? <span className='inline-block animate-spin'>{tool?.icon ?? '🏦'}</span> : null}
+                {rightsLoading ? t('rds_looking_up') : t('rds_look_up_rights')}
+              </button>
+            </div>
+
+            {/* Quick rights result */}
+            {showRights && (
+              <div className={`mt-3 rounded-xl border p-4 ${isDark ? 'bg-zinc-900 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
+                {rightsLoading && (
+                  <div className={`flex items-center gap-2 ${c.textMuteded} text-sm`}>
+                    
+                    {t('rds_looking_up_loc', { loc: locationString })}
+                  </div>
+                )}
+                {rightsError && (
+                  <div className="flex items-start gap-2">
+                    
+                    <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>{rightsError}</p>
+                  </div>
+                )}
+                {rightsResult && (
+                  <>
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className={`text-sm font-bold ${c.text} flex items-center gap-1.5`}>
+                        <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>⚖️</span>
+                        {t('rds_deposit_rights_loc', { loc: locationString })}
+                      </h4>
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => setShowRights(false)}
+                          className={`p-1 rounded-lg transition-colors ${isDark ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-zinc-200 text-zinc-400'}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                    <div className={`text-xs leading-relaxed max-h-80 overflow-y-auto ${isDark ? 'text-zinc-300' : 'text-gray-700'}`}>
+                      {rightsResult.rights_summary && (
+                        <p className="mb-2">{rightsResult.rights_summary}</p>
+                      )}
+                      {Array.isArray(rightsResult.key_rights) && rightsResult.key_rights.length > 0 && (
+                        <ul className="space-y-1 list-none">
+                          {rightsResult.key_rights.map((kr, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-600'} shrink-0`}>•</span>
+                              <span>{kr}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {rightsResult.caution && (
+                        <p className={`mt-2 italic ${c.textMuteded}`}>{rightsResult.caution}</p>
+                      )}
+                    </div>
+                    <div className={`mt-3 p-2 rounded-lg text-xs ${isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
+                      {t('rds_legal_info')}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Deposit amount */}
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_deposit_amount')}</label>
@@ -1132,34 +1223,13 @@ const RentersDepositSaver = ({ tool }) => {
           </div>
 
           {/* Navigation */}
-          <div className="mt-8 flex items-center justify-between">
+          <div className="mt-8 flex items-center justify-end">
             <button
-              onClick={() => setStep(1)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                isDark ? 'text-zinc-300 hover:bg-zinc-700' : 'text-gray-600 hover:bg-zinc-100'
-              }`}
+              onClick={() => setStep(2)}
+              disabled={!step2Valid}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[44px]`}
             >
-              {t('back')}
-            </button>
-            <button title={t('cmd_enter')}
-            onClick={generateReport}
-            disabled={streamLoading || !step2Valid}
-            className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[48px]`}
-            >
-            {streamLoading ? (
-              <>
-                <span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span>
-                {t('rds_generating')}
-              </>
-            ) : (
-              <><span>{tool?.icon ?? '🏦'}</span> {t('rds_generate_report')}</>
-            )}
-            {!loading && (
-              <kbd aria-hidden="true"
-                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                ⌘↵
-              </kbd>
-            )}
+              {t('rds_next_walkthrough')}
             </button>
           </div>
 

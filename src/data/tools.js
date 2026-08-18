@@ -6181,7 +6181,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🏦",
   categories: ['The Grind', 'Loot'],
   headerColor: "#ccdfc4",
-  description: "Walk through your apartment room by room on move-in day. Generates a formal condition report, landlord cover letter, photo shot list, and your state-specific deposit rights.",
+  description: "Don't get charged later for damage that was already there. Walk through your apartment once. We'll help you document its condition, take the right photos, and create a record you can send your landlord.",
   guide: {
     overview: "Renter's Deposit Saver is your move-in documentation coach. It walks you through every room with a detailed checklist so you can note the condition of walls, floors, appliances, and fixtures before you unpack. Then it generates a formal condition report, a professional cover letter to send your landlord, a prioritized photo shot list, and a breakdown of your state's security deposit laws. When move-out day comes, you'll have irrefutable proof of what was already there.",
 
