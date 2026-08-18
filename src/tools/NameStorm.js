@@ -496,7 +496,7 @@ const NameStorm = ({ tool }) => {
     quickResults.directions?.forEach(dir => {
       lines.push(`═══ ${dir.direction?.toUpperCase() || t('ns_copy_direction')} ═══`);
       dir.names?.forEach(n => {
-        lines.push(n.name);
+        lines.push(n.vibe ? `${n.name} — ${n.vibe}` : n.name);
         if (n.note) lines.push(`  ${n.note}`);
         if (n.flag) lines.push(`  ⚠️ ${n.flag}`);
         lines.push('');
@@ -1724,14 +1724,6 @@ const NameStorm = ({ tool }) => {
       {/* ═══════════════ QUICK RESULTS ═══════════════ */}
       {quickResults && (
         <div className="space-y-5">
-          {quickResults.top_pick && (
-            <div className="flex items-center justify-end">
-              <div className={`text-sm px-4 py-2 rounded-xl font-medium ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
-                ⭐ {t('ns_quick_top_pick')} <strong>{quickResults.top_pick.split(' — ')[0]}</strong>
-              </div>
-            </div>
-          )}
-
           {quickResults.directions?.map((dir, di) => (
             <div key={di} className={`${c.card} rounded-xl shadow-sm p-6`}>
               <h3 className={`text-lg font-bold mb-4 ${c.text}`}>{dir.direction}</h3>
@@ -1741,6 +1733,7 @@ const NameStorm = ({ tool }) => {
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <span className={`text-base font-bold ${c.text}`}>{nameObj.name}</span>
                     </div>
+                    {nameObj.vibe && <p className={`text-xs font-semibold mb-1 ${c.textSecondary}`}>{nameObj.vibe}</p>}
                     {nameObj.note && <p className={`text-xs mb-2 ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{nameObj.note}</p>}
                     {nameObj.flag && <p className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-red-900/30 text-red-300' : 'bg-red-50 text-red-600'}`}>⚠️ {nameObj.flag}</p>}
                     <div className="mt-2 flex gap-2">
