@@ -398,7 +398,7 @@ export const tools = [
   title: "Doctor Visit Prep",
   tagline: "Walk in prepared — because fifteen minutes goes by quickly.",
   tags: ['doctor', 'appointment', 'prep', 'questions', 'symptoms', 'health', 'medical', 'visit', 'preparation'],
-  icon: "👨🏻",
+  icon: "📝",
   categories: ['The Grind'],
   headerColor: "#ccdfc4",
   description: "Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.",

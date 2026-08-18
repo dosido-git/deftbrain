@@ -411,7 +411,7 @@ const DoctorVisitPrep = ({ tool }) => {
           <div className="flex-1">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '👨🏻'}</span>{tool?.tagline ?? t('dvp_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '📝'}</span>{tool?.tagline ?? t('dvp_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap" title={t('dvp_try_example_title')}>✨ {t('try_example')}</button>
           </div>
@@ -620,8 +620,8 @@ const DoctorVisitPrep = ({ tool }) => {
             className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 min-h-[48px] rounded-lg flex items-center justify-center gap-2`}
           >
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '👨🏻'}</span> {t('dvp_preparing')}</>
-              : <><span>{tool?.icon ?? '👨🏻'}</span> {t('dvp_prepare')}</>}
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '📝'}</span> {t('dvp_preparing')}</>
+              : <><span>{tool?.icon ?? '📝'}</span> {t('dvp_prepare')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
