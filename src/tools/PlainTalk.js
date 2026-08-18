@@ -26,6 +26,17 @@ const TEXT_TYPES = [
   { id: 'scientific', labelKey: 'plt_type_scientific', emoji: '🔬' },
 ];
 
+// The questions people actually arrive with. Selecting none is fine — the
+// report then leads with whatever changed most.
+const COMPARE_QUESTIONS = [
+  { id: 'important', labelKey: 'plt_cmpq_important' },
+  { id: 'price',     labelKey: 'plt_cmpq_price' },
+  { id: 'obligations', labelKey: 'plt_cmpq_obligations' },
+  { id: 'deadlines', labelKey: 'plt_cmpq_deadlines' },
+  { id: 'coverage',  labelKey: 'plt_cmpq_coverage' },
+  { id: 'medical',   labelKey: 'plt_cmpq_medical' },
+];
+
 const TABS = [
   { id: 'overview', labelKey: 'plt_tab_overview', emoji: '📊' },
   { id: 'translation', labelKey: 'plt_tab_translation', emoji: '💬' },
@@ -33,20 +44,6 @@ const TABS = [
   { id: 'sidebyside', labelKey: 'plt_tab_sidebyside', emoji: '↔️' },
   { id: 'compare', labelKey: 'plt_tab_compare', emoji: '🔀' },
 ];
-
-const SEVERITY_COLORS = {
-  critical: { light: 'bg-red-50 border-red-200', dark: 'bg-red-900/20 border-red-800/40', dot: 'bg-red-500', badge: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' },
-  significant: { light: 'bg-amber-50 border-amber-200', dark: 'bg-amber-900/20 border-amber-800/40', dot: 'bg-amber-500', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
-  minor: { light: 'bg-sky-50 border-sky-200', dark: 'bg-sky-900/20 border-sky-800/40', dot: 'bg-sky-400', badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300' },
-  cosmetic: { light: 'bg-zinc-50 border-zinc-200', dark: 'bg-zinc-700/30 border-zinc-600', dot: 'bg-zinc-400', badge: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-600 dark:text-zinc-300' },
-};
-
-const CHANGE_CATEGORY_LABELS = {
-  added: { emoji: '➕', labelKey: 'plt_cat_added', colorKey: 'changeAdded' },
-  removed: { emoji: '➖', labelKey: 'plt_cat_removed', colorKey: 'changeRemoved' },
-  modified: { emoji: '✏️', labelKey: 'plt_cat_modified', colorKey: 'changeModified' },
-  reworded: { emoji: '🔄', labelKey: 'plt_cat_reworded', colorKey: 'changeReworded' },
-};
 
 const IMPORTANCE_COLORS = {
   high: { light: 'bg-red-50 border-red-200', dark: 'bg-red-900/20 border-red-800/40', dot: 'bg-red-500', label: 'text-red-700 dark:text-red-300' },
@@ -104,10 +101,6 @@ const PlainTalk = ({ tool }) => {
     highlight:     isDark ? 'bg-amber-900/30 text-amber-200' : 'bg-amber-100 text-amber-900',
     tabActive:     isDark ? 'border-cyan-500 text-cyan-300 bg-zinc-700/30' : 'border-cyan-600 text-cyan-700 bg-cyan-50',
     tabInactive:   isDark ? 'border-transparent text-zinc-400 hover:text-zinc-200' : 'border-transparent text-gray-500 hover:text-gray-700',
-    changeAdded:    isDark ? 'text-emerald-400' : 'text-emerald-600',
-    changeRemoved:  isDark ? 'text-red-400' : 'text-red-600',
-    changeModified: isDark ? 'text-amber-400' : 'text-amber-600',
-    changeReworded: isDark ? 'text-cyan-400' : 'text-cyan-600',
   };
   c.label = c.labelText;
   c.textMuteded = c.textMuted;
@@ -132,6 +125,13 @@ const PlainTalk = ({ tool }) => {
   const [followUpAnswers, setFollowUpAnswers] = useState([]);
   const [followUpLoading, setFollowUpLoading] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
+  const [showRawEdits, setShowRawEdits] = useState(false);
+  const [compareQuestions, setCompareQuestions] = useState([]);
+  const [compareOther, setCompareOther] = useState('');
+  const [comparePdfA, setComparePdfA] = useState(null);
+  const [comparePdfB, setComparePdfB] = useState(null);
+  const [compareFileA, setCompareFileA] = useState('');
+  const [compareFileB, setCompareFileB] = useState('');
   const [compareTextA, setCompareTextA] = useState('');
   const [compareTextB, setCompareTextB] = useState('');
   const [compareLabelA, setCompareLabelA] = useState(() => t('plt_original'));
@@ -139,7 +139,6 @@ const PlainTalk = ({ tool }) => {
   const [compareResult, setCompareResult] = useState(null);
   const [compareLoading, setCompareLoading] = useState(false);
   const [sectionFilter, setSectionFilter] = useState('all'); // all|high|flagged
-  const [changeFilter, setChangeFilter] = useState('all'); // all|critical|significant|minor
   const [editingNote, setEditingNote] = useState(null); // section id
   const [noteText, setNoteText] = useState('');
   const [reviewedSections, setReviewedSections] = useState({});
@@ -260,7 +259,9 @@ const PlainTalk = ({ tool }) => {
     setActiveTab('overview'); setExpandedSections({});
     setFollowUpAnswers([]); setFollowUpQuestion('');
     setShowGlossary(false); setCompareTextA(''); setCompareTextB('');
-    setCompareResult(null); setSectionFilter('all'); setChangeFilter('all');
+    setCompareResult(null); setSectionFilter('all');
+    setCompareQuestions([]); setCompareOther('');
+    setComparePdfA(null); setComparePdfB(null); setCompareFileA(''); setCompareFileB('');
     setEditingNote(null); setNoteText(''); setReviewedSections({});
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -291,15 +292,41 @@ const PlainTalk = ({ tool }) => {
   // COMPARE MODE
   // ═══════════════════════════════════════
 
-  const handleCompare = async () => {
-    if (!compareTextA.trim() || !compareTextB.trim()) {
-      setError(t('plt_err_compare_both')); return;
+  // Same shape as the single-document upload: a PDF goes to the model as a
+  // document block, never scraped in the browser.
+  const handleCompareUpload = async (e, side) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setError('');
+    if (file.type === 'application/pdf') {
+      if (file.size > 10 * 1024 * 1024) { setError(t('plt_err_too_large')); return; }
+      const reader = new FileReader();
+      reader.onerror = () => setError(t('plt_err_read'));
+      reader.onload = (ev) => { side.setPdf(ev.target.result); side.setFile(file.name); side.setText(''); };
+      reader.readAsDataURL(file);
+      return;
     }
+    try {
+      side.setPdf(null); side.setFile(file.name); side.setText(await file.text());
+    } catch { setError(t('plt_err_read')); }
+  };
+
+  const compareReady = (compareTextA.trim() || comparePdfA) && (compareTextB.trim() || comparePdfB);
+
+  const handleCompare = async () => {
+    if (!compareReady) { setError(t('plt_err_compare_both')); return; }
     setCompareLoading(true); setError(''); setCompareResult(null);
     try {
+      const asked = [
+        ...COMPARE_QUESTIONS.filter(q => compareQuestions.includes(q.id)).map(q => t(q.labelKey)),
+        ...(compareOther.trim() ? [compareOther.trim()] : []),
+      ];
       const data = await callToolEndpoint('plaintalk/compare', {
         textA: compareTextA.trim(),
         textB: compareTextB.trim(),
+        pdfA: comparePdfA,
+        pdfB: comparePdfB,
+        questions: asked,
         labelA: compareLabelA,
         labelB: compareLabelB,
         textType,
@@ -551,6 +578,35 @@ const PlainTalk = ({ tool }) => {
           </div>
         </div>
 
+        {/* The question behind the question. Someone arrives either holding one
+            document they cannot follow, or two versions and a suspicion. Those
+            are different jobs, and the form should ask which before it asks
+            for anything else. */}
+        {!result && !compareResult && (
+          <div className="px-5 pt-4">
+            <p className={`text-sm font-bold ${c.text} mb-2`}>{t('plt_mode_q')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { id: 'explain', emoji: '📄', labelKey: 'plt_mode_explain', subKey: 'plt_mode_explain_sub' },
+                { id: 'changed', emoji: '🔀', labelKey: 'plt_mode_changed', subKey: 'plt_mode_changed_sub' },
+              ].map(m => {
+                const on = (m.id === 'changed') === compareOnly;
+                return (
+                  <button key={m.id} onClick={() => { setCompareOnly(m.id === 'changed'); if (m.id === 'changed') setActiveTab('compare'); }}
+                    aria-pressed={on}
+                    className={`text-start px-4 py-3 rounded-xl border transition-all ${
+                      on ? (isDark ? 'border-cyan-500 bg-cyan-900/30' : 'border-cyan-400 bg-cyan-50')
+                         : (isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-zinc-200 hover:border-zinc-300')
+                    }`}>
+                    <span className={`block text-sm font-bold ${c.text}`}>{m.emoji} {t(m.labelKey)}</span>
+                    <span className={`block text-xs mt-0.5 ${c.textMuteded}`}>{t(m.subKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Input mode: textarea below divider */}
         {!result && !compareOnly && (
           <div className="px-5 pb-5 pt-3 space-y-3">
@@ -612,6 +668,24 @@ const PlainTalk = ({ tool }) => {
 
             {/* Options */}
             <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-5`}>
+              {/* Text type */}
+              <div>
+                <label className={`block text-sm font-bold ${c.text} mb-2`}>
+                  🏷️ {t('plt_type_q')}
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {TEXT_TYPES.map(tt => (
+                    <button key={tt.id} onClick={() => setTextType(tt.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                        textType === tt.id
+                          ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
+                          : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
+                      }`}>
+                      <span>{tt.emoji}</span> {t(tt.labelKey)}
+                    </button>
+                  ))}
+                </div>
+
               {/* The reason someone opened this tool at all, so it leads. */}
               <div>
                 <label className={`block text-base font-bold ${c.text} mb-1`}>
@@ -630,23 +704,6 @@ const PlainTalk = ({ tool }) => {
                 />
               </div>
 
-              {/* Text type */}
-              <div>
-                <label className={`block text-sm font-bold ${c.text} mb-2`}>
-                  🏷️ {t('plt_type_q')}
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {TEXT_TYPES.map(tt => (
-                    <button key={tt.id} onClick={() => setTextType(tt.id)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                        textType === tt.id
-                          ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                          : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
-                      }`}>
-                      <span>{tt.emoji}</span> {t(tt.labelKey)}
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
 
@@ -718,14 +775,6 @@ const PlainTalk = ({ tool }) => {
                 </div>
               </div>
             )}
-
-            {/* Compare entry — session-only flag, kept OUT of the persisted result */}
-            <button onClick={() => { setCompareOnly(true); setActiveTab('compare'); }}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold border-2 border-dashed transition-all ${
-                isDark ? 'border-zinc-600 text-zinc-400 hover:border-cyan-500 hover:text-cyan-300' : 'border-zinc-300 text-zinc-500 hover:border-cyan-400 hover:text-cyan-600'
-              }`}>
-              🔀 {t('plt_or_compare')}
-            </button>
 
             {error && (
               <div className={`p-4 rounded-xl flex items-start gap-3 border ${c.danger}`}>
@@ -1228,54 +1277,88 @@ const PlainTalk = ({ tool }) => {
               <div className="space-y-4">
                 {!compareResult ? (
                   <>
-                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-                      <h4 className={`text-sm font-bold ${c.text} mb-1`}>🔀 {t('plt_compare_two')}</h4>
-                      <p className={`text-xs ${c.textMuteded} mb-4`}>
-                        {t('plt_compare_intro')}
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className={`block text-xs font-bold ${c.labelText} mb-1.5`}>
-                            {t('plt_doc_a')} <span className={c.required}>*</span>
+                    <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-4`}>
+                      <div>
+                        <h4 className={`text-sm font-bold ${c.text} mb-1`}>🔀 {t('plt_compare_two')}</h4>
+                        <p className={`text-xs ${c.textMuteded}`}>{t('plt_compare_intro')}</p>
+                      </div>
+
+                      {[
+                        { side: 'A', labelKey: 'plt_doc_a', phKey: 'plt_compare_a_ph', nameKey: 'plt_label_a',
+                          text: compareTextA, setText: setCompareTextA, label: compareLabelA, setLabel: setCompareLabelA,
+                          pdf: comparePdfA, setPdf: setComparePdfA, file: compareFileA, setFile: setCompareFileA },
+                        { side: 'B', labelKey: 'plt_doc_b', phKey: 'plt_compare_b_ph', nameKey: 'plt_label_b',
+                          text: compareTextB, setText: setCompareTextB, label: compareLabelB, setLabel: setCompareLabelB,
+                          pdf: comparePdfB, setPdf: setComparePdfB, file: compareFileB, setFile: setCompareFileB },
+                      ].map(d => (
+                        <div key={d.side}>
+                          <label className={`block text-sm font-bold ${c.text} mb-1.5`}>
+                            📄 {t(d.labelKey)} <span className={c.required}>*</span>
                           </label>
-                          <div className="flex items-center gap-2 mb-2">
-                            <input type="text" value={compareLabelA} onChange={e => setCompareLabelA(e.target.value)}
-                              className={`px-2 py-1 text-xs border rounded-lg font-bold ${c.input}`}
-                              placeholder={t('plt_label_a')} />
-                          </div>
-                          <textarea value={compareTextA}
-                            onChange={e => setCompareTextA(e.target.value)}
-                            placeholder={t('plt_compare_a_ph')}
-                            rows={8}
-                            className={`w-full p-3 border rounded-xl text-xs leading-relaxed resize-y outline-none focus:ring-2 ${c.input}`} />
-                          {inputText && !compareTextA && (
-                            <button onClick={() => setCompareTextA(inputText)}
-                              className={`mt-1 text-[10px] font-bold ${c.accentTxt}`}>
-                              ← {t('plt_use_as_a')}
-                            </button>
+                          <input type="text" value={d.label} onChange={e => d.setLabel(e.target.value)}
+                            className={`px-2 py-1 mb-2 text-xs border rounded-lg font-bold ${c.input}`}
+                            placeholder={t(d.nameKey)} />
+                          {d.pdf ? (
+                            <div className={`flex items-center gap-2 p-3 rounded-xl border ${c.border}`}>
+                              <span aria-hidden="true">📄</span>
+                              <span className={`text-xs ${c.textSecondary}`}>{d.file}</span>
+                              <button type="button" onClick={() => { d.setPdf(null); d.setFile(''); }}
+                                aria-label={t('plt_remove_file')}
+                                className={`ms-auto px-1.5 rounded ${c.btnSecondary}`}>✕</button>
+                            </div>
+                          ) : (
+                            <textarea value={d.text} onChange={e => d.setText(e.target.value)}
+                              placeholder={t(d.phKey)} rows={6}
+                              className={`w-full p-3 border rounded-xl text-xs leading-relaxed resize-y outline-none focus:ring-2 transition-colors ${c.input}`} />
                           )}
-                        </div>
-                        <div>
-                          <label className={`block text-xs font-bold ${c.labelText} mb-1.5`}>
-                            {t('plt_doc_b')} <span className={c.required}>*</span>
-                          </label>
-                          <div className="flex items-center gap-2 mb-2">
-                            <input type="text" value={compareLabelB} onChange={e => setCompareLabelB(e.target.value)}
-                              className={`px-2 py-1 text-xs border rounded-lg font-bold ${c.input}`}
-                              placeholder={t('plt_label_b')} />
+                          <div className="flex items-center gap-3 mt-1.5">
+                            <input type="file" accept=".txt,.pdf,.md,.html,.rtf" id={`pt-cmp-${d.side}`} className="hidden"
+                              onChange={e => handleCompareUpload(e, d)} />
+                            <label htmlFor={`pt-cmp-${d.side}`}
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${c.btnSecondary}`}>
+                              📎 {t('plt_upload_file')}
+                            </label>
+                            <span className={`text-[11px] ${c.textMuteded}`}>{t('plt_file_types')}</span>
+                            {d.side === 'A' && inputText && !compareTextA && !comparePdfA && (
+                              <button onClick={() => setCompareTextA(inputText)}
+                                className={`text-[11px] font-bold ${c.accentTxt}`}>← {t('plt_use_as_a')}</button>
+                            )}
                           </div>
-                          <textarea value={compareTextB}
-                            onChange={e => setCompareTextB(e.target.value)}
-                            placeholder={t('plt_compare_b_ph')}
-                            rows={8}
-                            className={`w-full p-3 border rounded-xl text-xs leading-relaxed resize-y outline-none focus:ring-2 ${c.input}`} />
                         </div>
+                      ))}
+
+                      {/* Optional, but it is what turns a diff into an answer:
+                          knowing which question to answer first lets the report
+                          say "no, the price did not change" instead of leaving
+                          the reader to work it out from a list. */}
+                      <div>
+                        <label className={`block text-sm font-bold ${c.text} mb-1`}>
+                          🎯 {t('plt_cmp_q_label')} <span className={`font-normal ${c.textMuteded}`}>({t('optional')})</span>
+                        </label>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {COMPARE_QUESTIONS.map(q => {
+                            const on = compareQuestions.includes(q.id);
+                            return (
+                              <button key={q.id} type="button" aria-pressed={on}
+                                onClick={() => setCompareQuestions(prev => on ? prev.filter(x => x !== q.id) : [...prev, q.id])}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                                  on ? (isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700')
+                                     : (isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300')
+                                }`}>
+                                {on ? '☑' : '☐'} {t(q.labelKey)}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <input type="text" value={compareOther} onChange={e => setCompareOther(e.target.value)}
+                          placeholder={t('plt_cmp_q_other_ph')}
+                          className={`w-full mt-2 p-2.5 border rounded-xl text-sm outline-none focus:ring-2 transition-colors ${c.input}`} />
                       </div>
                     </div>
                     <button onClick={handleCompare}
-                      disabled={compareLoading || !compareTextA.trim() || !compareTextB.trim()}
+                      disabled={compareLoading || !compareReady}
                       className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all disabled:opacity-40 ${
-                        compareTextA.trim() && compareTextB.trim()
+                        compareReady
                           ? `${c.btnPrimary} shadow-cyan-200 dark:shadow-cyan-900/40`
                           : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                       }`}>
@@ -1284,114 +1367,75 @@ const PlainTalk = ({ tool }) => {
                   </>
                 ) : (
                   <>
-                    {/* Compare results */}
-                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className={`text-sm font-bold ${c.text}`}>🔀 {t('plt_compare_results')}</h4>
-                        <button onClick={() => setCompareResult(null)}
-                          className={`text-xs font-bold ${c.accentTxt}`}>← {t('plt_new_comparison')}</button>
-                      </div>
-                      <p className={`text-sm leading-relaxed ${c.text} mb-3`}>{compareResult.summary}</p>
-
-                      {/* Direction badge */}
-                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold ${
-                        compareResult.change_direction === 'more_favorable' ? c.success
-                          : compareResult.change_direction === 'less_favorable' ? c.danger
-                          : c.highlight
-                      }`}>
-                        {compareResult.change_direction === 'more_favorable' ? `✅ ${t('plt_more_favorable')}`
-                          : compareResult.change_direction === 'less_favorable' ? `⚠️ ${t('plt_less_favorable')}`
-                          : compareResult.change_direction === 'neutral' ? `↔️ ${t('plt_neutral_changes')}`
-                          : `🔀 ${t('plt_mixed_changes')}`}
-                      </div>
-                      {compareResult.change_direction_for_whom && (
-                        <p className={`text-xs ${c.textSecondary} mt-2`}>{compareResult.change_direction_for_whom}</p>
-                      )}
+                    {/* A diff answers "what is different". Nobody asks that.
+                        They ask "did anything change that affects me, and should
+                        I care" — so the answer leads, the consequential changes
+                        follow with their before/after, the noise gets one line,
+                        and the raw edits sit collapsed at the bottom where a
+                        person can check the wording if they want to. */}
+                    <div className="flex items-center justify-between">
+                      <h4 className={`text-sm font-bold ${c.text}`}>🔀 {t('plt_whatchanged')}</h4>
+                      <button onClick={() => setCompareResult(null)}
+                        className={`text-xs font-bold ${c.accentTxt}`}>← {t('plt_new_comparison')}</button>
                     </div>
 
-                    {/* Changes list */}
-                    <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className={`text-sm font-bold ${c.text}`}>📋 {t('plt_changes', { count: (compareResult.changes || []).length })}</h4>
-                        <div className="flex gap-1.5">
-                          {[
-                            { id: 'all', label: t('plt_filter_all', { count: (compareResult.changes || []).length }) },
-                            { id: 'critical', label: t('plt_filter_critical') },
-                            { id: 'significant', label: t('plt_filter_significant') },
-                          ].map(f => (
-                            <button key={f.id} onClick={() => setChangeFilter(f.id)}
-                              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all ${
-                                changeFilter === f.id
-                                  ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                                  : isDark ? 'border-zinc-600 text-zinc-400' : 'border-zinc-200 text-zinc-500'
-                              }`}>
-                              {f.label}
-                            </button>
+                    {/* Bottom line — first, not last */}
+                    {compareResult.bottom_line && (
+                      <div className={`p-5 rounded-2xl border ${
+                        compareResult.bottom_line.should_you_care === 'no' ? c.success : c.warning
+                      }`}>
+                        <p className="text-xs font-bold uppercase tracking-wider mb-1">🎯 {t('plt_bottom_line')}</p>
+                        <p className="text-lg font-black mb-1">
+                          {compareResult.bottom_line.should_you_care === 'no' ? t('plt_care_no') : t('plt_care_yes')}
+                        </p>
+                        <p className="text-sm leading-relaxed">{compareResult.bottom_line.explanation}</p>
+                      </div>
+                    )}
+
+                    {/* What you shouldn't miss */}
+                    {compareResult.key_changes?.length > 0 && (
+                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                        <h4 className={`text-sm font-bold ${c.text} mb-3`}>
+                          🚨 {t('plt_shouldnt_miss', { count: compareResult.key_changes.length })}
+                        </h4>
+                        <div className="space-y-3">
+                          {compareResult.key_changes.map((k, i) => (
+                            <div key={k.id || i} className={`rounded-xl border p-4 ${c.border}`}>
+                              <p className={`text-sm font-bold ${c.text} mb-2`}>{k.topic}</p>
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <span className={`text-xs px-2 py-1 rounded-lg ${isDark ? 'bg-red-900/20 text-red-300' : 'bg-red-50 text-red-700'}`}>
+                                  <span className="font-bold">{t('plt_before')}:</span> {k.before}
+                                </span>
+                                <span className={c.textMuteded} aria-hidden="true">→</span>
+                                <span className={`text-xs px-2 py-1 rounded-lg ${isDark ? 'bg-emerald-900/20 text-emerald-300' : 'bg-emerald-50 text-emerald-700'}`}>
+                                  <span className="font-bold">{t('plt_after')}:</span> {k.after}
+                                </span>
+                              </div>
+                              {k.why_it_matters && (
+                                <>
+                                  <p className={`text-[11px] font-bold ${c.textMuteded}`}>{t('plt_why_matters')}</p>
+                                  <p className={`text-sm leading-relaxed ${c.text}`}>{k.why_it_matters}</p>
+                                </>
+                              )}
+                            </div>
                           ))}
                         </div>
                       </div>
-                      <div className="space-y-3">
-                        {(compareResult.changes || [])
-                          .filter(ch => changeFilter === 'all' || ch.severity === changeFilter)
-                          .map(change => {
-                            const cat = CHANGE_CATEGORY_LABELS[change.category] || CHANGE_CATEGORY_LABELS.modified;
-                            const sev = SEVERITY_COLORS[change.severity] || SEVERITY_COLORS.minor;
-                            const catColor = change.category === 'added'    ? c.changeAdded
-                                           : change.category === 'removed'  ? c.changeRemoved
-                                           : change.category === 'modified' ? c.changeModified
-                                           : change.category === 'reworded' ? c.changeReworded
-                                           :                                  c.text;
-                            return (
-                              <div key={change.id} className={`rounded-xl border overflow-hidden ${isDark ? sev.dark : sev.light}`}>
-                                <div className="p-3">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className={`text-xs font-bold ${catColor}`}>{cat.emoji} {t(cat.labelKey)}</span>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDark ? sev.badge.replace('dark:', '') : sev.badge}`}>
-                                      {change.severity}
-                                    </span>
-                                    <span className={`text-xs font-bold ${c.text}`}>{change.topic}</span>
-                                  </div>
-                                  <p className={`text-sm leading-relaxed ${c.text} mb-2`}>{change.plain_explanation}</p>
-                                  {change.text_a && (
-                                    <div className={`p-2 rounded-lg mb-1.5 ${isDark ? 'bg-red-900/10' : 'bg-red-50/50'}`}>
-                                      <p className={`text-[10px] font-bold ${isDark ? 'text-red-400' : 'text-red-600'} mb-0.5`}>{compareLabelA}:</p>
-                                      <p className={`text-xs ${c.textSecondary}`}>{change.text_a}</p>
-                                    </div>
-                                  )}
-                                  {change.text_b && (
-                                    <div className={`p-2 rounded-lg mb-1.5 ${isDark ? 'bg-emerald-900/10' : 'bg-emerald-50/50'}`}>
-                                      <p className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'} mb-0.5`}>{compareLabelB}:</p>
-                                      <p className={`text-xs ${c.textSecondary}`}>{change.text_b}</p>
-                                    </div>
-                                  )}
-                                  {change.who_benefits && (
-                                    <p className={`text-xs ${c.textMuteded} mt-1`}>👤 {change.who_benefits}</p>
-                                  )}
-                                  {change.risk_note && (
-                                    <p className={`text-xs mt-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>⚠️ {change.risk_note}</p>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                        })}
-                      </div>
-                    </div>
+                    )}
 
-                    {/* Hidden changes */}
-                    {compareResult.hidden_changes?.length > 0 && (
-                      <div className={`p-4 rounded-2xl border ${c.danger}`}>
-                        <h4 className="text-sm font-bold mb-2">🕵️ {t('plt_hidden_changes')}</h4>
-                        <ul className="space-y-1.5">
-                          {compareResult.hidden_changes.map((h, i) => (
-                            <li key={i} className="text-sm leading-relaxed flex items-start gap-2">
-                              <span className="mt-1 flex-shrink-0">•</span>{h}
-                            </li>
+                    {/* Noise, named once */}
+                    {compareResult.minor_changes?.length > 0 && (
+                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                        <h4 className={`text-sm font-bold ${c.text} mb-2`}>🟡 {t('plt_probably_fine')}</h4>
+                        <ul className={`space-y-1 text-sm ${c.textSecondary}`}>
+                          {compareResult.minor_changes.map((m, i) => (
+                            <li key={i} className="flex items-start gap-2"><span className="mt-1">•</span>{m}</li>
                           ))}
                         </ul>
                       </div>
                     )}
 
-                    {/* Unchanged important */}
+                    {/* Unchanged — a reader scanning for damage assumes the worst */}
                     {compareResult.unchanged_important?.length > 0 && (
                       <div className={`p-4 rounded-2xl border ${c.success}`}>
                         <h4 className="text-sm font-bold mb-2">✅ {t('plt_unchanged')}</h4>
@@ -1405,11 +1449,35 @@ const PlainTalk = ({ tool }) => {
                       </div>
                     )}
 
-                    {/* Recommendation */}
-                    {compareResult.recommendation && (
-                      <div className={`p-4 rounded-2xl border ${c.warningBox}`}>
-                        <h4 className={`text-sm font-bold ${c.accentTxt} mb-1`}>💡 {t('plt_recommendation')}</h4>
-                        <p className={`text-sm leading-relaxed ${c.text}`}>{compareResult.recommendation}</p>
+                    {/* The raw edits, always secondary */}
+                    {compareResult.key_changes?.some(k => k.before_full || k.after_full) && (
+                      <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
+                        <button onClick={() => setShowRawEdits(v => !v)} aria-expanded={showRawEdits}
+                          className={`w-full flex items-center gap-2 text-sm font-bold ${c.text} text-start`}>
+                          <span>🔬</span><span>{t('plt_actual_edits')}</span>
+                          <Caret open={showRawEdits} className="ms-auto" />
+                        </button>
+                        {showRawEdits && (
+                          <div className="mt-4 space-y-4">
+                            {compareResult.key_changes.filter(k => k.before_full || k.after_full).map((k, i) => (
+                              <div key={k.id || i}>
+                                <p className={`text-xs font-bold ${c.text} mb-1.5`}>{k.topic}</p>
+                                {k.before_full && (
+                                  <div className={`p-2.5 rounded-lg mb-1 ${isDark ? 'bg-red-900/10' : 'bg-red-50/60'}`}>
+                                    <p className={`text-[10px] font-bold mb-0.5 ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('plt_before')}</p>
+                                    <p className={`text-xs ${c.textSecondary}`}>{k.before_full}</p>
+                                  </div>
+                                )}
+                                {k.after_full && (
+                                  <div className={`p-2.5 rounded-lg ${isDark ? 'bg-emerald-900/10' : 'bg-emerald-50/60'}`}>
+                                    <p className={`text-[10px] font-bold mb-0.5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('plt_after')}</p>
+                                    <p className={`text-xs ${c.textSecondary}`}>{k.after_full}</p>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </>

@@ -375,77 +375,111 @@ Never place a double-quote (") character inside any JSON string value (paraphras
 
 router.post('/plaintalk/compare', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { textA, textB, labelA, labelB, textType, userLanguage } = req.body;
+    const { textA, textB, pdfA, pdfB, labelA, labelB, textType, questions, userLanguage } = req.body;
 
-    if (!textA?.trim() || !textB?.trim()) {
-      return res.status(400).json({ error: 'Both texts are required for comparison' });
+    if ((!textA?.trim() && !pdfA) || (!textB?.trim() && !pdfB)) {
+      return res.status(400).json({ error: 'Both documents are required for comparison' });
     }
 
-    const trimA = textA.trim().slice(0, 10000);
-    const trimB = textB.trim().slice(0, 10000);
+    const trimA = (textA || '').trim().slice(0, 10000);
+    const trimB = (textB || '').trim().slice(0, 10000);
+
+    // Two versions of a real document are usually two PDFs, so each side can
+    // arrive as a document block. They are labelled inline because the model
+    // otherwise has no way to tell which attachment is the original.
+    const strip = (d) => { const i = d.indexOf(','); return i !== -1 ? d.slice(i + 1) : d; };
+    const docBlock = (data, label) => ([
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: strip(data) } },
+      { type: 'text', text: `The document above is ${label}.` },
+    ]);
+    const compareBlocks = [
+      ...(pdfA ? docBlock(pdfA, `DOCUMENT A, the ${labelA || 'original'}`) : []),
+      ...(pdfB ? docBlock(pdfB, `DOCUMENT B, the ${labelB || 'revised'} version`) : []),
+    ];
     const typeHint = textType && textType !== 'auto' ? `\nDOCUMENT TYPE: ${textType}` : '';
 
-    const prompt = withLanguage(`You are PlainTalk, a document comparison expert. Compare two versions of a document and identify every meaningful change.
+    // What a person actually wants from two versions of a document is not a
+    // diff. It is "did they change anything that affects me, and should I
+    // care" — so the output leads with the answer, and the raw edits are the
+    // last thing rather than the first.
+    const FOCUS_BY_TYPE = {
+      legal:        'obligations, liability, penalties, deadlines, exit clauses, payment terms',
+      financial:    'rates, fees, premiums, coverage, payment schedules',
+      medical:      'new findings, changed measurements, new recommendations, new medications, follow-up instructions',
+      bureaucratic: 'eligibility, deadlines, documentation requirements',
+    };
+    const focus = FOCUS_BY_TYPE[textType];
+    const focusBlock = focus
+      ? `\nWHAT MATTERS IN THIS KIND OF DOCUMENT: ${focus}. Weight those areas above everything else — a change there is worth reporting even when it is small, and a change elsewhere usually is not.`
+      : '';
 
-DOCUMENT A ("${labelA || 'Original'}"):
+    const asked = Array.isArray(questions) ? questions.filter(q => typeof q === 'string' && q.trim()).slice(0, 8) : [];
+    const questionBlock = asked.length
+      ? `\nTHE READER ASKED SPECIFICALLY: ${asked.join('; ')}. Answer these first and say so plainly if the answer is no — "nothing about the price changed" is a useful answer, not a missing one.`
+      : '';
+
+    const prompt = withLanguage(`You are PlainTalk. Two versions of a document are below. The reader is not asking for a diff — they are asking whether anything changed that affects them, and whether they should care.
+
+${pdfA ? `DOCUMENT A ("${labelA || 'Original'}") is the first attachment above.` : `DOCUMENT A ("${labelA || 'Original'}"):
 ---
 ${trimA}
----
+---`}
 
-DOCUMENT B ("${labelB || 'Revised'}"):
+${pdfB ? `DOCUMENT B ("${labelB || 'Revised'}") is the ${pdfA ? 'second' : 'first'} attachment above.` : `DOCUMENT B ("${labelB || 'Revised'}"):
 ---
 ${trimB}
----
-${typeHint}
+---`}
+${typeHint}${focusBlock}${questionBlock}
 
-Analyze the differences between these two texts. Focus on SUBSTANTIVE changes — things that change meaning, obligations, rights, risks, or outcomes. Note formatting/wording changes only if they subtly alter meaning.
+Separate what matters from what does not. Reordered paragraphs, formatting, and rewording that means the same thing are noise — say so in one line and move on. A changed number, deadline, obligation, or right is the whole point.
 
 Return ONLY valid JSON:
 
 {
-  "summary": "2-3 sentence overview of what changed between the two versions and the overall direction of the changes (e.g., 'The revised version is significantly more restrictive for the tenant')",
-  "change_direction": "more_favorable|less_favorable|neutral|mixed",
-  "change_direction_for_whom": "Who benefits from the changes overall and who loses",
-  "changes": [
+  "bottom_line": {
+    "should_you_care": "yes | no",
+    "explanation": "The direct answer first, then why — 2 to 4 short sentences. Name the single most important change and what the reader should do about it. If nothing consequential changed, say that plainly and stop."
+  },
+  "key_changes": [
     {
       "id": "chg_1",
-      "category": "added|removed|modified|reworded",
-      "severity": "critical|significant|minor|cosmetic",
-      "topic": "Short label for what this change is about (e.g., 'Termination clause', 'Payment terms')",
-      "text_a": "The relevant text from Document A (or null if added in B)",
-      "text_b": "The relevant text from Document B (or null if removed from A)",
-      "plain_explanation": "What this change means in plain English",
-      "who_benefits": "Who does this change favor — the reader, the other party, both, or neither",
-      "risk_note": "Any risk or concern this change creates for the reader (or null)"
+      "topic": "Short label for what changed, e.g. Cancellation period",
+      "before": "The old value, as short as it can honestly be — 60 days",
+      "after": "The new value, same brevity — 30 days",
+      "why_it_matters": "One or two sentences on the consequence for the reader, e.g. You now have half as much time to terminate the agreement.",
+      "before_full": "The verbatim sentence from Document A this came from",
+      "after_full": "The verbatim sentence from Document B this came from"
     }
   ],
-  "unchanged_important": ["Important clauses/sections that remained the same — worth noting for reassurance"],
-  "hidden_changes": ["Changes that appear cosmetic but actually affect meaning — the quiet rewording trick"],
-  "recommendation": "What the reader should do about these changes — accept, negotiate, flag for review, etc."
+  "minor_changes": ["Short phrases naming the changes that do not matter — formatting, reordered paragraphs, rewording with the same meaning"],
+  "unchanged_important": ["Important things that did NOT change — worth saying, because a reader scanning for damage will assume the worst"]
 }
 
 CRITICAL:
-- List ALL substantive changes, not just the first few
-- "category" must be one of: added, removed, modified, reworded
-- "severity" must be one of: critical, significant, minor, cosmetic
-- "text_a" and "text_b" should be the actual relevant text from each document (verbatim excerpts)
-- For "added" changes, text_a is null. For "removed" changes, text_b is null.
-- "hidden_changes" is the most valuable section — find anything that was subtly reworded to change meaning
-- Be specific about who benefits from each change
-- The recommendation should be actionable
-- LIMITS: at most 8 changes (the most consequential — merge duplicate entries about the same clause into one). Keep every field concise (plain_explanation may be 1-2 sentences).
+- "should_you_care" must be exactly the English word yes or no, never translated and never a sentence — the interface switches on it.
+- key_changes holds ONLY changes with a real consequence. At most 6, most consequential first. If there are none, return an empty array and say so in bottom_line.
+- Include quiet rewordings that change meaning while looking cosmetic. Those belong in key_changes, not minor_changes — they are the most valuable thing on the page.
+- "before" and "after" are the VALUES that changed, not whole sentences: "60 days" / "30 days", "$500" / "$1,000", "no late fee" / "5% monthly penalty". The full sentences go in before_full and after_full.
+- For something added in B, "before" is "not mentioned". For something removed from A, "after" is "removed".
+- minor_changes are short phrases, not sentences. At most 6. If there is no cosmetic noise, return an empty array — never a line saying none was found. The section disappears on its own; an entry announcing its own absence is clutter.
 - Recompute any sum, total, or percentage you state from its parts before writing it — stated numbers must reconcile with each other.
-- Never place a double-quote (") character inside any JSON string value (paraphrase the verbatim excerpts rather than wrapping them in quote marks) — a literal " breaks the JSON.`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+- Never place a double-quote (") character inside any JSON string value (paraphrase the verbatim excerpts rather than wrapping them in quote marks).`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       // 4000 truncated every DE/AR compare call (15 changes × verbatim
       // text_a/text_b excerpts) — 2026-07-23 audit.
       max_tokens: 6000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{
+        role: 'user',
+        content: compareBlocks.length ? [...compareBlocks, { type: 'text', text: prompt }] : prompt,
+      }],
     }, { label: 'plain-talk-3' });
-    if (!parsed.summary) {
-      return res.status(500).json({ error: 'Could not simplify this. Please try again.' });
+    // Guard on the always-present field. bottom_line carries the answer; a
+    // response without it has nothing to show, whereas key_changes is
+    // legitimately empty when nothing consequential changed.
+    if (!parsed.bottom_line) {
+      return res.status(500).json({ error: 'Could not compare these. Please try again.' });
     }
     res.json(parsed);
 
