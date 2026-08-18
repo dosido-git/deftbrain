@@ -422,22 +422,29 @@ const ProcedureProbe = ({ tool }) => {
           {r.cost_picture && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3 flex items-center gap-2`}><span>💰</span> {t('pp_cost_title')}</h3>
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pp_cost_typical')}</p>
-                  <p className={`text-sm font-bold ${c.text}`}>{r.cost_picture.typical_range}</p>
+              <dl className="space-y-3 mb-4">
+                <div>
+                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_typical')}</dt>
+                  <dd className={`text-sm font-bold ${c.text}`}>{r.cost_picture.typical_range}</dd>
                 </div>
-                <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pp_cost_insurance')}</p>
-                  <p className={`text-xs font-medium ${c.textSecondary}`}>{r.cost_picture.insurance_typically}</p>
+                <div>
+                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_insurance')}</dt>
+                  <dd className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.cost_picture.insurance_typically}</dd>
                 </div>
-                <div className={`${c.cardAlt} rounded-lg p-3 text-center`}>
-                  <p className={`text-[10px] font-bold ${c.textMuted} mb-1`}>{t('pp_cost_oop')}</p>
-                  <p className={`text-sm font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r.cost_picture.out_of_pocket_estimate}</p>
+                <div>
+                  <dt className={`text-[11px] font-bold ${c.textMuted} mb-0.5`}>{t('pp_cost_oop')}</dt>
+                  <dd className={`text-sm font-bold leading-relaxed ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>{r.cost_picture.out_of_pocket_estimate}</dd>
                 </div>
-              </div>
+              </dl>
+              {/* The one line in the report a reader can act on today, so it
+                  stops being a footnote under the numbers. */}
               {r.cost_picture.money_saving_tip && (
-                <p className={`text-xs ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>💡 {r.cost_picture.money_saving_tip}</p>
+                <div className={`rounded-xl border p-3.5 flex items-start gap-2.5 ${
+                  isDark ? 'border-emerald-700 bg-emerald-900/20 text-emerald-200'
+                         : 'border-emerald-300 bg-emerald-50 text-emerald-900'}`}>
+                  <span aria-hidden="true" className="flex-shrink-0">💡</span>
+                  <p className="text-sm font-semibold leading-relaxed">{r.cost_picture.money_saving_tip}</p>
+                </div>
               )}
             </div>
           )}
@@ -506,12 +513,31 @@ const ProcedureProbe = ({ tool }) => {
             <p className="text-xs leading-relaxed">{t('pp_disclaimer')}</p>
           </div>
 
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold ${c.textMuted} uppercase tracking-wider mb-3`}>🔗 {t('pp_related')}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href="/DoctorVisitTranslator"       className={`text-xs ${linkStyle}`}>🩺 {t('pp_doctorvisit')}</a>
-              <a href="/ComplaintEscalationWriter"   className={`text-xs ${linkStyle}`}>📝 {t('pp_complaint')}</a>
-            </div>
+          {/* Same route as the form, at the other end of it: having read the
+              briefing, the next step is one of these, and which one depends on
+              where the reader now is. */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-4`}>
+            <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
+            <ol className="space-y-2">
+              <li>
+                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
+                <a href="/DoctorVisitPrep" className={`text-sm ${linkStyle}`}>📝 {t('pp_kit_prep_tool')}</a>
+              </li>
+              <li>
+                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
+                <span className={`text-sm font-bold ${c.text}`}>
+                  🔬 {t('pp_kit_probe_tool')} <span className={`font-normal ${c.textMuted}`}>{t('pp_kit_here')}</span>
+                </span>
+              </li>
+              <li>
+                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
+                <a href="/DoctorVisitTranslator" className={`text-sm ${linkStyle}`}>👩‍⚕️ {t('pp_kit_translate_tool')}</a>
+              </li>
+              <li>
+                <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
+                <a href="/BillRescue" className={`text-sm ${linkStyle}`}>🧾 {t('pp_kit_bill_tool')}</a>
+              </li>
+            </ol>
           </div>
         </div>
       )}
