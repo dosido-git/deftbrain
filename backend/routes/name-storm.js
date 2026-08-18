@@ -396,7 +396,7 @@ For each listed category generate exactly 4 name options. For EVERY name:
 2. PRONUNCIATION — phonetic guide if not obvious (null if obvious)
 3. WHY IT WORKS — in plain words, what makes this name land: the sounds, the length, what it brings to mind.${isNonEnglish ? ` Explain the meaning and cultural resonance in ${primaryLanguage}.` : ''}
 4. PROBLEM FLAGS — check EVERY name against ALL of these: unintended meanings in other major languages (${isNonEnglish ? 'English, ' : ''}Spanish, French, German, Mandarin, Japanese, Arabic, Hindi at minimum); phonetic issues; similarity to existing well-known brands (name the brand); trademark conflict zones; the radio test (hard to spell from hearing); awkward abbreviations. If NO problems found, "problems" is [] and "clean" is true.
-5. ${category === 'Business' || category === 'Product' ? 'Note the likely domain situation — is [name].com almost certainly taken? Creative TLD alternatives?' : 'Where relevant, note the likely domain situation.'}
+5. ${category === 'Business' || category === 'Product' ? 'Say in under 10 words whether the .com is likely already taken. Do NOT suggest alternative domains, prefixes or other TLDs — no "try getname.com or name.co". Availability informs the decision; it is not the decision.' : 'Where relevant, note in under 10 words whether the obvious domain is likely taken. Never suggest alternatives.'}
 
 Return ONLY valid JSON:
 {
@@ -412,7 +412,7 @@ Return ONLY valid JSON:
             {"type": "language_conflict | phonetic_issue | brand_similarity | trademark_risk | spelling_difficulty | abbreviation_issue", "detail": "Specific description", "severity": "warning | caution | info"}
           ],
           "clean": true,
-          "domain_note": "Brief note on domain situation, or null"
+          "domain_note": "Under 10 words on whether the .com is likely taken — never a suggested alternative domain, or null"
         }
       ]
     }

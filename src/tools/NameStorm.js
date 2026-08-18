@@ -229,7 +229,10 @@ const NameStorm = ({ tool }) => {
     if (filterCleanOnly) filtered = filtered.filter(n => n.clean);
     if (hideDismissed) filtered = filtered.filter(n => !dismissed.includes(n.name));
     if (sortByScore) {
-      filtered.sort((a, b) => computeScore(b) - computeScore(a));
+      const spoken = (n) => (Array.isArray(n.problems) ? n.problems : [])
+        .filter(p => p.type === 'phonetic_issue' || p.type === 'spelling_difficulty').length;
+      filtered.sort((a, b) => (spoken(a) - spoken(b))
+        || (String(a.name).length - String(b.name).length));
     } else if (sortByProblems) {
       filtered.sort((a, b) => (a.problems?.length || 0) - (b.problems?.length || 0));
     }
@@ -1646,7 +1649,7 @@ const NameStorm = ({ tool }) => {
                 </button>
                 <button onClick={() => { setSortByScore(!sortByScore); if (!sortByScore) setSortByProblems(false); }}
                   className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByScore)}`}>
-                  <span>🏆</span> {t('ns_best_score')}
+                  <span>🗣️</span> {t('ns_best_score')}
                 </button>
                 <button onClick={() => { setSortByProblems(!sortByProblems); if (!sortByProblems) setSortByScore(false); }}
                   className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all ${chipStyle(sortByProblems)}`}>
