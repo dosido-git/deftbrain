@@ -1286,7 +1286,7 @@ export const tools = [
   icon: "🔬",
   categories: ['The Grind', 'Loot'],
   headerColor: "#ccdfc4",
-  description: "A doctor or dentist just recommended a procedure. Before you schedule, get the briefing: is this standard for your situation? What questions should you ask? What does it typically cost, and what does insurance cover? What are the red flags? What's recovery really like? Empowers you to be an informed patient — not medical advice, but medical literacy.",
+  description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
   guide: {
     overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
     howToUse: [

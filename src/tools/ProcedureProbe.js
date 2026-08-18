@@ -52,18 +52,6 @@ const ProcedureProbe = ({ tool }) => {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── Localized option lists & example seed ──
-  const PROVIDER_TYPES = [
-    { value: 'dentist',            label: t('pp_pt_dentist'),            emoji: '🦷' },
-    { value: 'doctor',             label: t('pp_pt_doctor'),             emoji: '🩺' },
-    { value: 'surgeon',            label: t('pp_pt_surgeon'),            emoji: '🏥' },
-    { value: 'dermatologist',      label: t('pp_pt_dermatologist'),      emoji: '🧴' },
-    { value: 'orthodontist',       label: t('pp_pt_orthodontist'),       emoji: '😁' },
-    { value: 'chiropractor',       label: t('pp_pt_chiropractor'),       emoji: '🦴' },
-    { value: 'physical_therapist', label: t('pp_pt_physical_therapist'), emoji: '💪' },
-    { value: 'eye_doctor',         label: t('pp_pt_eye_doctor'),         emoji: '👁️' },
-    { value: 'other',              label: t('pp_pt_other'),              emoji: '⚕️' },
-  ];
-
   const SCHEDULE_STATES = [
     { value: 'scheduled',      labelKey: 'pp_sc_scheduled',      emoji: '📆' },
     { value: 'not_scheduled',  labelKey: 'pp_sc_not_scheduled',  emoji: '🤔' },
@@ -79,7 +67,6 @@ const ProcedureProbe = ({ tool }) => {
 
   // ── State ──
   const [quote, setQuote]           = useState('');
-  const [provider, setProvider]     = useState('');
   const [insurance, setInsurance]   = useState('');
   const [concerns, setConcerns]     = useState('');
   const [urgency, setUrgency]       = useState('');
@@ -111,7 +98,6 @@ const ProcedureProbe = ({ tool }) => {
       const data = await callToolEndpoint('procedure-probe', {
         procedure: procedure.trim(),
         quote:     quote.trim() || null,
-        provider:  provider || null,
         insurance: insurance.trim() || null,
         concerns:  concerns.trim() || null,
         urgency:   urgency || null,
@@ -129,7 +115,7 @@ const ProcedureProbe = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('pp_error'));
     }
-  }, [procedure, quote, provider, insurance, concerns, urgency, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [procedure, quote, insurance, concerns, urgency, scheduled, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('ProcedureProbe', [
@@ -139,15 +125,14 @@ const ProcedureProbe = ({ tool }) => {
     const k = f => `pp_ex${ex.n}_${f}`;
     setProcedure(t(k('procedure')));
     setQuote(t(k('quote'), { sym }));
-    setProvider(t(k('provider')));
     setInsurance(t(k('insurance'), { sym }));
     setConcerns(t(k('concerns')));
     setUrgency(ex.urgency);
     setResults(null);
-  }, [setProcedure, setQuote, setProvider, setInsurance, setConcerns, setUrgency, setResults, t, sym]);
+  }, [setProcedure, setQuote, setInsurance, setConcerns, setUrgency, setResults, t, sym]);
 
   const handleReset = useCallback(() => {
-    setProcedure(''); setQuote(''); setProvider('');
+    setProcedure(''); setQuote(''); 
     setInsurance(''); setConcerns(''); setUrgency(''); setScheduled('');
     setResults(null); setError('');
   }, [setProcedure, setResults]);
@@ -251,25 +236,11 @@ const ProcedureProbe = ({ tool }) => {
           <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
             {t('pp_q_concerns')}
           </label>
+          <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('pp_q_concerns_why')}</p>
           <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') generate(); }}
             placeholder={t('pp_ph_concerns')}
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
-        </div>
-
-        {/* Urgency */}
-        <div>
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
-          <div className="flex gap-2">
-            {URGENCY_LEVELS.map(u => (
-              <button key={u.value}
-                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
-                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
-                {u.emoji} {u.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Where they are in it. "My dentist mentioned a root canal" and "my
@@ -284,6 +255,21 @@ const ProcedureProbe = ({ tool }) => {
                 className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
                   ${scheduled === o.value ? c.pillActive : c.pillInactive}`}>
                 {o.emoji} {t(o.labelKey)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Urgency */}
+        <div>
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
+          <div className="flex gap-2">
+            {URGENCY_LEVELS.map(u => (
+              <button key={u.value}
+                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
+                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
+                {u.emoji} {u.label}
               </button>
             ))}
           </div>
@@ -311,21 +297,6 @@ const ProcedureProbe = ({ tool }) => {
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
-        {/* Provider type */}
-        <div>
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_provider')}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {PROVIDER_TYPES.map(p => (
-              <button key={p.value}
-                onClick={() => setProvider(provider === p.value ? '' : p.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px]
-                  ${provider === p.value ? c.pillActive : c.pillInactive}`}>
-                {p.emoji} {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Submit */}
         <button title={t('cmd_enter')} onClick={generate} disabled={loading || !procedure.trim()}
         className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
@@ -340,12 +311,33 @@ const ProcedureProbe = ({ tool }) => {
         )}
         </button>
 
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted}`}>
-          {t('pp_xref_bill_q')}{' '}
-          <a href="/BillRescue" className={`text-xs ${linkStyle}`}>🧾 {t('pp_billrescue')}</a>
-          {' '}{t('pp_xref_bill_helps')}
-        </p>
+        {/* The four tools map onto one sequence a patient actually walks:
+            before the appointment, the recommendation, the words they were
+            told, the bill that arrives later. Naming the moment each one
+            belongs to is more useful than naming the tools. */}
+        <div className={`${c.cardAlt || ''} border ${c.border} rounded-2xl p-4`}>
+          <p className={`text-xs font-bold ${c.text} mb-2.5`}>🧰 {t('pp_toolkit')}</p>
+          <ol className="space-y-2">
+            <li>
+              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_prep')}</span>
+              <a href="/DoctorVisitPrep" className={`text-sm ${linkStyle}`}>📝 {t('pp_kit_prep_tool')}</a>
+            </li>
+            <li>
+              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_probe')}</span>
+              <span className={`text-sm font-bold ${c.text}`}>
+                🔬 {t('pp_kit_probe_tool')} <span className={`font-normal ${c.textMuted}`}>{t('pp_kit_here')}</span>
+              </span>
+            </li>
+            <li>
+              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_translate')}</span>
+              <a href="/DoctorVisitTranslator" className={`text-sm ${linkStyle}`}>👩‍⚕️ {t('pp_kit_translate_tool')}</a>
+            </li>
+            <li>
+              <span className={`block text-[11px] ${c.textMuted}`}>{t('pp_kit_bill')}</span>
+              <a href="/BillRescue" className={`text-sm ${linkStyle}`}>🧾 {t('pp_kit_bill_tool')}</a>
+            </li>
+          </ol>
+        </div>
       </div>
 
       {/* ── Error ── */}
