@@ -64,6 +64,12 @@ const ProcedureProbe = ({ tool }) => {
     { value: 'other',              label: t('pp_pt_other'),              emoji: '⚕️' },
   ];
 
+  const SCHEDULE_STATES = [
+    { value: 'scheduled',      labelKey: 'pp_sc_scheduled',      emoji: '📆' },
+    { value: 'not_scheduled',  labelKey: 'pp_sc_not_scheduled',  emoji: '🤔' },
+    { value: 'second_opinion', labelKey: 'pp_sc_second_opinion', emoji: '🔍' },
+  ];
+
   const URGENCY_LEVELS = [
     { value: 'emergency', label: t('pp_ur_emergency'), emoji: '🚨' },
     { value: 'soon',      label: t('pp_ur_soon'),      emoji: '🕐' },
@@ -77,6 +83,7 @@ const ProcedureProbe = ({ tool }) => {
   const [insurance, setInsurance]   = useState('');
   const [concerns, setConcerns]     = useState('');
   const [urgency, setUrgency]       = useState('');
+  const [scheduled, setScheduled]   = useState('');
   const [error, setError]           = useState('');
   const [expandedSections, setExpandedSections] = useState({ questions: true });
 
@@ -108,6 +115,7 @@ const ProcedureProbe = ({ tool }) => {
         insurance: insurance.trim() || null,
         concerns:  concerns.trim() || null,
         urgency:   urgency || null,
+        scheduled: scheduled || null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
@@ -140,7 +148,7 @@ const ProcedureProbe = ({ tool }) => {
 
   const handleReset = useCallback(() => {
     setProcedure(''); setQuote(''); setProvider('');
-    setInsurance(''); setConcerns(''); setUrgency('');
+    setInsurance(''); setConcerns(''); setUrgency(''); setScheduled('');
     setResults(null); setError('');
   }, [setProcedure, setResults]);
 
@@ -238,16 +246,44 @@ const ProcedureProbe = ({ tool }) => {
           />
         </div>
 
-        {/* Provider type */}
+        {/* Concerns */}
         <div>
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_provider')}</label>
-          <div className="flex flex-wrap gap-1.5">
-            {PROVIDER_TYPES.map(p => (
-              <button key={p.value}
-                onClick={() => setProvider(provider === p.value ? '' : p.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px]
-                  ${provider === p.value ? c.pillActive : c.pillInactive}`}>
-                {p.emoji} {p.label}
+          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+            {t('pp_q_concerns')}
+          </label>
+          <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
+            placeholder={t('pp_ph_concerns')}
+            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
+        </div>
+
+        {/* Urgency */}
+        <div>
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
+          <div className="flex gap-2">
+            {URGENCY_LEVELS.map(u => (
+              <button key={u.value}
+                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
+                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
+                {u.emoji} {u.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Where they are in it. "My dentist mentioned a root canal" and "my
+            surgery is Tuesday" are the same procedure and completely different
+            situations — one is deciding, one is preparing, one is stuck. */}
+        <div>
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_scheduled')}</label>
+          <div className="flex flex-wrap gap-2">
+            {SCHEDULE_STATES.map(o => (
+              <button key={o.value}
+                onClick={() => setScheduled(scheduled === o.value ? '' : o.value)}
+                className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
+                  ${scheduled === o.value ? c.pillActive : c.pillInactive}`}>
+                {o.emoji} {t(o.labelKey)}
               </button>
             ))}
           </div>
@@ -275,30 +311,19 @@ const ProcedureProbe = ({ tool }) => {
             className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
-        {/* Urgency */}
+        {/* Provider type */}
         <div>
-          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_urgency')}</label>
-          <div className="flex gap-2">
-            {URGENCY_LEVELS.map(u => (
-              <button key={u.value}
-                onClick={() => setUrgency(urgency === u.value ? '' : u.value)}
-                className={`flex-1 py-2 rounded-xl text-[11px] font-bold border transition-colors min-h-[36px]
-                  ${urgency === u.value ? c.pillActive : c.pillInactive}`}>
-                {u.emoji} {u.label}
+          <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('pp_q_provider')}</label>
+          <div className="flex flex-wrap gap-1.5">
+            {PROVIDER_TYPES.map(p => (
+              <button key={p.value}
+                onClick={() => setProvider(provider === p.value ? '' : p.value)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors min-h-[32px]
+                  ${provider === p.value ? c.pillActive : c.pillInactive}`}>
+                {p.emoji} {p.label}
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Concerns */}
-        <div>
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
-            {t('pp_q_concerns')} <span className={`font-normal ${c.textMuted}`}>({t('optional')})</span>
-          </label>
-          <input type="text" value={concerns} onChange={e => setConcerns(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') generate(); }}
-            placeholder={t('pp_ph_concerns')}
-            className={`w-full px-4 py-3 border rounded-xl text-sm ${c.input} outline-none focus:ring-2`} />
         </div>
 
         {/* Submit */}

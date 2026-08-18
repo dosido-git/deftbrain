@@ -9,7 +9,7 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 router.post('/procedure-probe', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { procedure, quote, provider, insurance, concerns, urgency, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+    const { procedure, quote, provider, insurance, concerns, urgency, scheduled, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!procedure?.trim()) {
       return res.status(400).json({ error: 'Tell us what procedure or treatment was recommended.' });
@@ -25,6 +25,10 @@ ${provider ? `PROVIDER TYPE: ${provider}` : 'PROVIDER TYPE: NOT PROVIDED'}
 ${insurance ? `INSURANCE SITUATION: ${insurance}` : 'INSURANCE SITUATION: NOT PROVIDED'}
 ${concerns ? `MY CONCERNS: ${concerns}` : ''}
 ${urgency ? `URGENCY LEVEL: ${urgency}` : ''}
+${scheduled === 'scheduled' ? 'ALREADY SCHEDULED: yes — this is happening, so lead with how to prepare and what to ask before the day, not with whether to do it at all.'
+  : scheduled === 'not_scheduled' ? 'ALREADY SCHEDULED: no — still deciding, so weigh whether and when, not just how.'
+  : scheduled === 'second_opinion' ? 'ALREADY SCHEDULED: seeking a second opinion — say what a second opinion is worth here, what to bring to it, and what a good one would actually settle.'
+  : ''}
 
 Help me be an informed patient. COST ARITHMETIC: out_of_pocket_estimate must NET OUT any stated remaining insurance benefit from covered items before quoting a number — never state an unused benefit and then quote a full-price out-of-pocket in the same breath; show the subtraction inline.
 

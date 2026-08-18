@@ -56,14 +56,25 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           box-shadow: none !important;
           border-radius: 0 !important;
         }
-        /* Firefox: prevent page break between header and tool card */
-        [data-print-main] > header { break-after: avoid !important; page-break-after: avoid !important; }
+        /* This used to read [data-print-main] > header, aimed at Firefox
+           breaking between the title and the tool card. It matched nothing —
+           on every tool page the header element is a SIBLING of
+           [data-print-main],
+           and carries data-print-hide, so it is not even on the paper. What
+           prints above the card is the [data-print-show-flex] block below.
+           A dead selector fixed nothing, which is why the break came back. */
         /* A tall card that cannot be fragmented does not shrink — the engine
            moves it whole to the next page and overflows from there, leaving
            the rest of the current page empty. WebKit does this readily, and
            it is why an Apology Calibrator printout opened with two-thirds of
-           page one blank. Nothing here sets break-inside: avoid, so this only
-           overrides what the engine decides on its own. */
+           page one blank; Firefox does it to Procedure Probe, whose form is
+           one 875px card. The old rule reached the card's descendants but not
+           the card itself, so the outermost — and only unfragmentable —
+           element was the one element it missed. Nothing here sets
+           break-inside: avoid, so this only overrides what the engine decides
+           on its own. */
+        [data-print-main],
+        [data-print-section],
         [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }
         /* Interactive controls mean nothing on paper. */
         [data-print-section] button:disabled { display: none !important; }
