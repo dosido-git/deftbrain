@@ -516,7 +516,7 @@ const PlainTalk = ({ tool }) => {
       {/* ── Persistent header ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm overflow-hidden`}>
         <div className="px-5 pt-2.5">
-          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-3">
+          <div className="pb-3 border-b border-zinc-500 flex items-start justify-between gap-y-2 gap-x-3 flex-wrap">
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
@@ -525,9 +525,23 @@ const PlainTalk = ({ tool }) => {
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(result || compareOnly || inputText.trim()) && (
-              <button onClick={handleReset} className={`flex-shrink-0 ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
+              <button onClick={handleReset} className={`flex-shrink-0 order-last sm:order-none ${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-medium`}>
                 ↺ {t('start_over')}
               </button>
+            )}
+
+            {!result && !compareOnly && (
+              <div className="w-full flex flex-wrap gap-2">
+                {SAMPLE_TEXTS.map((sx, i) => (
+                  <button key={i} onClick={() => applySample(sx)} disabled={loading}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all disabled:opacity-40 ${
+                      isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20'
+                        : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
+                    }`}>
+                    {sx.emoji} {t(sx.labelKey)}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -590,24 +604,6 @@ const PlainTalk = ({ tool }) => {
         {/* ─── INPUT PHASE ─── */}
         {!result && !compareOnly && (
           <>
-
-            {/* Sample texts */}
-            <div className={`${c.card} border rounded-2xl shadow-sm p-5`}>
-              <label className={`block text-xs font-bold ${c.textMuteded} mb-2`}>
-                ✨ {t('try_example')}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {SAMPLE_TEXTS.map((s, i) => (
-                  <button key={i} onClick={() => applySample(s)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                      isDark ? 'border-zinc-600 text-zinc-300 hover:border-cyan-500 hover:bg-cyan-900/20'
-                        : 'border-zinc-200 text-zinc-600 hover:border-cyan-400 hover:bg-cyan-50'
-                    }`}>
-                    {s.emoji} {t(s.labelKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Options */}
             <div className={`${c.card} border rounded-2xl shadow-sm p-5 space-y-5`}>
