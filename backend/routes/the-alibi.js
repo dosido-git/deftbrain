@@ -13,7 +13,7 @@ router.post('/the-alibi', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       situation,       // The real story — what actually happened
       audience,        // Who they need to tell: 'interviewer', 'landlord', 'date', 'in-laws', 'lender', 'coworker', 'friend', 'custom'
       customAudience,  // If audience is 'custom'
-      tone,            // 'professional', 'casual', 'warm', 'confident'
+      tone,            // 'professional', 'conversational', 'warm', 'direct'
       concerns,        // What they're worried about: "they'll think I'm flaky", "it looks like I was fired"
       context,         // Extra context: "applying for senior role", "first date", "mortgage application"
       userLanguage,

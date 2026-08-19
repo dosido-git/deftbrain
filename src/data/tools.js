@@ -2360,13 +2360,13 @@ export const tools = [
   icon: "🎭",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
-  description: "Tell the real story — messy, complicated, unflattering — and get 2-3 strategically framed versions tailored to your audience, each with an exact script, follow-up prep, trap warnings, and a nuclear option if it goes sideways. Truthful framing, not fiction.",
+  description: "Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.",
   guide: {
     overview: "The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
     howToUse: [
       "Write out the real story — be as honest and detailed as possible (this stays between you and the tool)",
       "Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience",
-      "Pick your preferred tone: professional, casual, warm, or confident",
+      "Pick your preferred tone: professional, conversational, warm, or direct",
       "Add what you're worried they'll think and any extra context about the situation",
       "Review 2-3 strategically different versions, each with scripts, risks, and best-use scenarios"
     ],

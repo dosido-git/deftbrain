@@ -33,9 +33,9 @@ const TheAlibi = ({ tool }) => {
 
   const TONES = [
     { value: 'professional', label: '💼 ' + t('ta_tone_professional') },
-    { value: 'casual', label: '😊 ' + t('ta_tone_casual') },
+    { value: 'conversational', label: '💬 ' + t('ta_tone_conversational') },
     { value: 'warm', label: '🤗 ' + t('ta_tone_warm') },
-    { value: 'confident', label: '💪 ' + t('ta_tone_confident') },
+    { value: 'direct', label: '➡️ ' + t('ta_tone_direct') },
   ];
 
   const EXAMPLES = [
@@ -430,12 +430,12 @@ const TheAlibi = ({ tool }) => {
           </div>
         </div>
       </div>
+      {!results && renderInput()}
       {!results && (
-        <p className={'text-xs ' + c.textMuted + ' mb-3'}>
+        <p className={'text-xs ' + c.textMuted + ' mt-3'}>
           {t('ta_xref_intro')} <a href="/ReadTheRoom" className={linkStyle}>🎭 {t('ta_xref_roomreader')}</a> {t('ta_xref_roomreader_after')}
         </p>
       )}
-      {!results && renderInput()}
       {renderResults()}
       {error && (
         <div className={'mt-4 p-4 border rounded-xl flex items-start gap-3 ' + c.danger}>
