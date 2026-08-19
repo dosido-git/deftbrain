@@ -11,6 +11,39 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // v2: challenge, what-if, story, tag-nodes, chain-between
 // ════════════════════════════════════════════════════════════
 
+// The tool reads as a psychological explanation of who someone is, because it
+// was written to. "The chain should feel like a revelation" produced sentences
+// like "You internalized that caring for something well meant doing it
+// yourself" — a claim about the inside of a stranger's head, stated as fact,
+// from two words they typed in a box.
+//
+// A banned-word list does not move a voice; worked rewrites do. The model needs
+// to see the same sentence in both registers.
+const TENTATIVE_RULE = `
+VOICE — this is a story, not a diagnosis. The chain is ONE possible reading of
+two things, offered for the person to try on and discard. You are inviting
+reflection, never delivering a finding. Never state what happened inside
+someone's head as fact.
+
+Write every psychological claim as a possibility. Same idea, less authority:
+  NO:  You internalized that caring for something well meant doing it yourself.
+  YES: You may have learned that caring for something well meant doing it yourself.
+  NO:  You developed an unspoken, almost unconscious standard.
+  YES: It is possible an unspoken standard formed somewhere around here.
+  NO:  You have never separated the care from the control.
+  YES: Perhaps the care and the control never quite came apart.
+  NO:  This standard became your cage.
+  YES: Over time, that standard may have become limiting.
+
+Facts they gave you stay factual — soften the reading, not the biography.
+"You studied philosophy" is a fact. "Philosophy taught you to distrust
+certainty" is an interpretation and takes the tentative voice.
+
+The insight is a possibility too, not a verdict. It may still be beautiful:
+  NO:  Care became control masquerading as love.
+  YES: Perhaps caring and control became intertwined.
+Keep the poetry. Drop the certainty.`;
+
 const buildProfileContext = (profile) => {
   if (!profile || Object.keys(profile).length === 0) return 'No profile provided.';
   const s = [];
@@ -41,14 +74,15 @@ THING B: "${thingB.trim()}"
 PROFILE:
 ${profileCtx}
 
-Find a chain of 4-6 degrees connecting A to B through this person's life. Each step: SPECIFIC to them, SURPRISING, CAUSAL, CONCRETE. The chain should feel like a revelation.
+Find a chain of 4-6 degrees connecting A to B through this person's life. Each step: SPECIFIC to them, SURPRISING, PLAUSIBLE, CONCRETE. The chain should feel like a story worth trying on.
 
-Provide a DEEP INSIGHT after — specific, thought-provoking, about their life pattern.
+Offer ONE possible insight after — specific, thought-provoking, about a pattern this story might point to.
+${TENTATIVE_RULE}
 
 Respond ONLY with valid JSON:
 {
   "chain": [{"step":1,"from":"Start (2-5 words)","to":"Next (2-5 words)","connection":"How from→to (1-2 sentences)","emoji":"🔗"}],
-  "insight": {"title":"Punchy (4-8 words)","body":"2-4 sentences naming the pattern.","through_line":"5-10 word through-line"},
+  "insight": {"title":"Punchy (4-8 words), phrased as a possibility not a verdict","body":"2-4 sentences offering the pattern this might point to, in the tentative voice above.","through_line":"5-10 word through-line"},
 }
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
@@ -67,6 +101,7 @@ router.post('/six-degrees/flip', rateLimit(DEFAULT_LIMITS), async (req, res) => 
     const origSummary = (originalChain || []).map(s => `${s.from}→${s.to}: ${s.connection}`).join('\n');
 
     const prompt = `Find a completely DIFFERENT chain from "${thingB}" back to "${thingA}". Different connections, different intermediate steps.
+${TENTATIVE_RULE}
 
 ORIGINAL (don't repeat): ${origSummary}
 PROFILE: ${buildProfileContext(profile)}
@@ -157,7 +192,8 @@ PROFILE: ${buildProfileContext(profile)}
 
 CONSTRAINT: ${constraintInstr}
 
-Find the chain respecting the constraint. If the constraint makes it impossible, explain why in the insight (this itself is revealing).
+Find the chain respecting the constraint. If the constraint makes it impossible, explain why in the insight (this itself is worth noticing).
+${TENTATIVE_RULE}
 
 Respond ONLY with valid JSON:
 {
@@ -166,6 +202,9 @@ Respond ONLY with valid JSON:
   "constraint_note": "Brief note on how the constraint shaped the path",
   "difficulty": "easy" | "medium" | "hard" | "impossible",
 }
+
+All four keys are REQUIRED — chain, insight, constraint_note and difficulty.
+Never omit constraint_note or difficulty.
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
@@ -195,6 +234,7 @@ The user removed step ${removedStep.step}: "${removedStep.from} → ${removedSte
 PROFILE: ${buildProfileContext(profile)}
 
 What happens if this connection never existed? Find an ALTERNATE chain from "${thingA}" to "${thingB}" that routes around the removed link. Use completely different intermediate steps.
+${TENTATIVE_RULE}
 
 Also assess: was this link LOAD-BEARING (hard to route around, fundamentally changed the path) or REDUNDANT (easy to bypass, destination was inevitable)?
 
@@ -229,7 +269,7 @@ router.post('/six-degrees/story', rateLimit(DEFAULT_LIMITS), async (req, res) =>
     const allNodes = new Set();
     (chainHistory || []).forEach(h => h.chain?.forEach(s => { allNodes.add(s.from); allNodes.add(s.to); }));
 
-    const prompt = `You are a brilliant life narrator. Based on ALL the chains this person has explored, synthesize "The Story of You" — a 3-4 paragraph narrative about the hidden architecture of their life.
+    const prompt = `You are a thoughtful narrator. Based on ALL the chains this person has explored, offer "The Story of You" — a 3-4 paragraph narrative sketching ONE possible architecture behind their life. It is a reading they are free to reject, not a portrait of who they are.
 
 PROFILE: ${buildProfileContext(profile)}
 
@@ -241,9 +281,10 @@ ALL UNIQUE NODES THAT APPEARED: ${[...allNodes].join(', ')}
 Your narrative should:
 1. IDENTIFY the 2-3 recurring through-lines across ALL their chains (not just one)
 2. NAME which nodes are HUBS (appear in many chains) vs ISLANDS (rarely connected)
-3. REVEAL a meta-pattern they probably can't see — what's the organizing principle of their life?
+3. OFFER a meta-pattern the chains might point to — a possible organizing idea, put forward for them to weigh, not announced as the truth about their life
 4. Be genuinely moving and specific — not generic self-help platitudes
-5. End with one prediction: "Based on your pattern, the next big connection in your life will probably be..."
+5. End with an open question rather than a prediction: name where the pattern seems to be heading, then ask them whether that reads true
+${TENTATIVE_RULE}
 
 Respond ONLY with valid JSON:
 {
@@ -252,7 +293,7 @@ Respond ONLY with valid JSON:
   "hub_nodes": ["Node that appears everywhere", "Another hub"],
   "island_nodes": ["Node that's surprisingly isolated"],
   "through_lines": ["Through-line 1", "Through-line 2"],
-  "prediction": "One sentence prediction about their next connection",
+  "prediction": "One sentence naming where the pattern might be heading, ending in a question to them",
 }
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
@@ -311,6 +352,7 @@ ${nameB || 'PERSON B'}'s PROFILE:
 ${buildProfileContext(profileB)}
 
 MODE: ${modeInstr}
+${TENTATIVE_RULE}
 
 ${mode === 'shared' ? `
 Show two chains:

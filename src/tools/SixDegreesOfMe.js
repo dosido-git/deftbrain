@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Caret from '../components/Caret';
+import { TAG_COLORS, tagColor } from '../data/tagColors';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -39,13 +40,6 @@ const CHALLENGES = [
   { id: 'no_places',      labelKey: 'sdm_ch_no_places_label',     emoji: '🚫', descKey: 'sdm_ch_no_places_desc' },
   { id: 'emotions_only',  labelKey: 'sdm_ch_emotions_only_label', emoji: '💗', descKey: 'sdm_ch_emotions_only_desc' },
 ];
-
-// SVG color palette — values used inline at stroke= / fill= / style.color sites in the graph view
-const TAG_COLORS = {
-  career: '#8b5cf6', education: '#3b82f6', relationship: '#ec4899', place: '#10b981',
-  hobby: '#f59e0b', emotion: '#ef4444', skill: '#06b6d4', event: '#84cc16',
-  identity: '#a855f7', health: '#14b8a6', belief: '#f97316',
-};
 
 const LINCHPIN_LABELS = {
   load_bearing: { labelKey: 'sdm_lp_load_bearing_label', emoji: '🔩', colorKey: 'danger', descKey: 'sdm_lp_load_bearing_desc' },
@@ -611,6 +605,7 @@ const SixDegreesOfMe = ({ tool }) => {
           <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
             {label || (isFlip ? t('sdm_chain_reverse_path') : t('sdm_chain_the_chain'))}
           </p>
+          <p className={`text-[11px] leading-relaxed mt-2 ${c.textMuted}`}>{t('sdm_not_a_biography')}</p>
           {chainData.constraint_note && (
             <p className={`text-[10px] mt-1 ${c.accentTxt}`}>🎯 {chainData.constraint_note}</p>
           )}
@@ -651,7 +646,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 <g key={`node-${i}`} style={{ opacity: 1, transition: 'opacity 0.5s' }}>
                   <rect x={midX - 90} y={y - 2} width={180} height={26} rx={13}
                     fill={isFirst ? (isDark ? '#92400e' : '#fef3c7') : isLast ? (isDark ? '#065f46' : '#d1fae5') : (isDark ? '#4c1d95' : '#ede9fe')}
-                    stroke={tag ? (TAG_COLORS[tag] || '#7c3aed') : isFirst ? (isDark ? '#d97706' : '#f59e0b') : isLast ? (isDark ? '#10b981' : '#34d399') : (isDark ? '#7c3aed' : '#8b5cf6')}
+                    stroke={tag ? (tagColor(tag, isDark) || '#7c3aed') : isFirst ? (isDark ? '#d97706' : '#f59e0b') : isLast ? (isDark ? '#10b981' : '#34d399') : (isDark ? '#7c3aed' : '#8b5cf6')}
                     strokeWidth="1.5" />
                   <text x={midX} y={y + 15} textAnchor="middle"
                     fill={isDark ? '#fafafa' : '#1e293b'} fontSize="11" fontWeight="700">
@@ -683,11 +678,16 @@ const SixDegreesOfMe = ({ tool }) => {
               <div key={i} className="flex items-start gap-3" style={{ transition: 'opacity 0.4s' }}>
                 <div className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm border ${
                   i === 0 ? c.chainNodeA : i === steps.length - 1 ? c.chainNodeB : c.chainNode
-                }`} style={tag ? { borderColor: TAG_COLORS[tag.tag] || undefined } : undefined}>{step.emoji}</div>
+                }`} style={tag ? { borderColor: tagColor(tag.tag, isDark) || undefined } : undefined}>{step.emoji}</div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-bold ${c.text}`}>
                     <span className={c.accentTxt}>{step.from}</span>
-                    {tag && <span className="text-[9px] ms-1 opacity-60" style={{ color: TAG_COLORS[tag.tag] }}>({tag.tag})</span>}
+                    {tag && (
+                      <span className="text-[10px] font-bold uppercase tracking-wide ms-1.5 px-1.5 py-0.5 rounded align-middle"
+                        style={{ color: tagColor(tag.tag, isDark), backgroundColor: `${tagColor(tag.tag, isDark)}26`, border: `1px solid ${tagColor(tag.tag, isDark)}66` }}>
+                        {t(`sdm_tag_${tag.tag}`)}
+                      </span>
+                    )}
                     {' → '}
                     <span className={c.accentTxt}>{step.to}</span>
                   </p>
@@ -795,10 +795,10 @@ const SixDegreesOfMe = ({ tool }) => {
         <div className="px-5 py-2 flex flex-wrap gap-2">
           {Object.entries(TAG_COLORS).filter(([tag]) =>
             graphData.nodes.some(n => n.tag === tag)
-          ).map(([tag, color]) => (
+          ).map(([tag]) => (
             <span key={tag} className="flex items-center gap-1 text-[10px]">
-              <span className="w-2 h-2 rounded-full" style={{ background: color }} />
-              <span className={c.textMuted}>{tag}</span>
+              <span className="w-2 h-2 rounded-full" style={{ background: tagColor(tag, isDark) }} />
+              <span className={c.textMuted}>{t(`sdm_tag_${tag}`)}</span>
             </span>
           ))}
         </div>
@@ -828,7 +828,7 @@ const SixDegreesOfMe = ({ tool }) => {
               const dimmed = hoveredNode && !isHovered && !graphData.edges.some(
                 e => (e.from === hoveredNode && e.to === node.id) || (e.to === hoveredNode && e.from === node.id)
               );
-              const color = node.tag ? (TAG_COLORS[node.tag] || webNodeColor) : webNodeColor;
+              const color = node.tag ? (tagColor(node.tag, isDark) || webNodeColor) : webNodeColor;
               return (
                 <g key={node.id}
                   onMouseEnter={() => setHoveredNode(node.id)}
@@ -863,7 +863,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <div className="flex flex-wrap gap-1">
                 {graphData.nodes.sort((a, b) => b.count - a.count).slice(0, 5).map(n => (
                   <span key={n.id} className={`text-xs px-2 py-0.5 rounded-full ${c.pillInactive}`}
-                    style={n.tag ? { borderInlineStart: `3px solid ${TAG_COLORS[n.tag]}` } : undefined}>
+                    style={n.tag ? { borderInlineStart: `3px solid ${tagColor(n.tag, isDark)}` } : undefined}>
                     {n.id} ({n.count})
                   </span>
                 ))}
@@ -1403,6 +1403,12 @@ const SixDegreesOfMe = ({ tool }) => {
 
           {/* What-If result */}
           {whatIfResult && renderWhatIfResult()}
+
+          {/* Disclaimer */}
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mb-4 flex items-start gap-3`}>
+            <span className="flex-shrink-0 mt-0.5">🧭</span>
+            <p className="text-xs leading-relaxed">{t('sdm_disclaimer')}</p>
+          </div>
 
           {/* Cross-refs */}
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
