@@ -20,6 +20,7 @@ const RoastMe = ({ tool }) => {
 
   // ── Localized constants (depend on t) ──
   const CONTENT_TYPES = [
+    { value: 'auto',     label: t('rm_ct_auto'),     icon: '✨' },
     { value: 'resume',   label: t('rm_ct_resume'),   icon: '📄' },
     { value: 'dating',   label: t('rm_ct_dating'),   icon: '💘' },
     { value: 'linkedin', label: t('rm_ct_linkedin'), icon: '💼' },
@@ -83,7 +84,7 @@ const RoastMe = ({ tool }) => {
 
   // ── State ──
   const [content, setContent] = useState('');
-  const [contentType, setContentType] = useState('other');
+  const [contentType, setContentType] = useState('auto');
   const [heatLevel, setHeatLevel] = useState('medium');
   const [error, setError] = useState('');
 
@@ -199,6 +200,15 @@ const RoastMe = ({ tool }) => {
 
         {/* Content type */}
         <div>
+          <div className={`mb-4 rounded-xl border ${c.border} ${c.cardAlt || ''} p-3`}>
+            <p className={`text-[11px] font-bold ${c.textMuted} uppercase mb-1.5`}>{t('rm_every_roast')}</p>
+            <ul className={`text-xs ${c.textSecondary} space-y-0.5`}>
+              <li>🔥 {t('rm_inc_jokes')}</li>
+              <li>❤️ {t('rm_inc_nice')}</li>
+              <li>📸 {t('rm_inc_share')}</li>
+            </ul>
+          </div>
+
           <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('rm_what_is_this')}</label>
           <div className="flex flex-wrap gap-1.5">
             {CONTENT_TYPES.map(ct => (

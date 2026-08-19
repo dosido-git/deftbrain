@@ -33,6 +33,7 @@ router.post('/roast-me', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       linkedin: 'This is a LinkedIn bio/post. Target: corporate jargon, humblebrags, "thought leadership" that\'s just common sense, "I\'m humbled to announce" energy.',
       email: 'This is an email or message. Target: passive-aggression they think is hidden, unnecessary formality, the subtext they don\'t realize they\'re broadcasting.',
       social: 'This is a social media post/bio. Target: the curated persona vs. reality, hashtag abuse, the specific brand of delusion on display.',
+      auto: 'Work out what this is first — resume, dating profile, LinkedIn bio, email, social post, something else — then target what that kind of writing is specifically prone to. Say what you concluded in content_type_detected.',
       other: 'Analyze what this is and find what\'s roastable. Look for contradictions, pretension, clichés, and the gap between intention and reality.'
     };
 
@@ -42,8 +43,8 @@ router.post('/roast-me', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 ${content.trim().slice(0, 3000)}
 """
 
-CONTENT TYPE: ${contentType || 'unknown'}
-${typeHints[contentType] || typeHints.other}
+CONTENT TYPE: ${contentType && contentType !== 'auto' ? contentType : 'not specified — work it out'}
+${typeHints[contentType] || typeHints.auto}
 
 HEAT LEVEL: ${heatMap[heatLevel] || heatMap.medium}
 
@@ -63,6 +64,8 @@ Return ONLY valid JSON:
   "one_nice_thing": "One genuinely nice observation — makes the roast funnier by contrast",
   "share_line": "The single most quotable line — the one they'll screenshot"
 }
+
+RECOGNITION, NOT DEMOLITION. The laugh you are after is "oh no, I actually wrote that" — not "wow, that was harsh". Aim at the phrase, the cliché, the buzzword, the humblebrag: things the writer chose and stopped noticing. Never at the person, their appearance, their worth, their job prospects, or anything they cannot edit. A line they would screenshot beats a line that stings, and if you have to choose between clever and recognisable, choose recognisable.
 
 Generate 5-8 roast lines (gentle=5, medium=6, scorched=8, at most 8). Every line must reference SPECIFIC content — zero generic insults.`;
 
