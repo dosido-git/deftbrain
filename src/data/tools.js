@@ -2252,12 +2252,12 @@ export const tools = [
   seoDescription: "Paste any meeting transcript and instantly get the decisions, action items with owners and deadlines, and ready-to-send follow-ups — without digging through notes.",
   seoTitle: "Meeting Notes: Action Items & Decisions",
   title: "The Debrief",
-  tagline: "Paste a meeting transcript — get decisions, actions, and follow-ups",
+  tagline: "The meeting ended. Now figure out what actually happened.",
   tags: ['meeting', 'transcript', 'notes', 'minutes', 'action items', 'decisions', 'follow up', 'standup', 'recap'],
   icon: "📋",
   categories: ['The Office', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "Paste any meeting transcript and get decisions, action items with owners and deadlines, follow-up drafts, and cross-meeting pattern analysis — without digging through the notes yourself.",
+  description: "What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.",
   guide: {
     overview: "The Debrief is The Crux's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of talks and long reads. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.",
     howToUse: [

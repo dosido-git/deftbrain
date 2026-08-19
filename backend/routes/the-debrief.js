@@ -9,12 +9,23 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 const PERSONALITY = `Meeting analyst and decision tracker. Extract what actually happened: decisions made, actions owned, questions unresolved. Cut to what matters — who owns what by when, what was decided, and what carries forward.`
 
+// The visitor's own question, when they have one. It goes in as a priority
+// rather than a filter: "did the launch date get settled" should be answered
+// first and prominently, not instead of everything else.
+const focusNote = (focus) => focus?.trim()
+  ? `\n\nTHE READER ASKED SPECIFICALLY: "${focus.trim().substring(0, 400)}"
+Answer this first, in the same voice as everything else — no label, no heading,
+no prefix announcing that it is the answer. If the material does not settle it,
+say so plainly; an honest "this never got decided" is the answer they need.
+Everything else still gets extracted as normal.`
+  : '';
+
 // ════════════════════════════════════════════════════════════
 // POST /the-debrief — Distill: transcript → key decisions & actions
 // ════════════════════════════════════════════════════════════
 router.post('/the-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { transcript, meetingType, attendees, context, userLanguage } = req.body;
+    const { transcript, meetingType, attendees, context, focus, userLanguage } = req.body;
 
     if (!transcript?.trim()) {
       return res.status(400).json({ error: 'Paste your meeting transcript or notes' });
@@ -26,20 +37,23 @@ router.post('/the-debrief', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       : meetingType === 'one_on_one' ? 'This is a 1:1 — focus on feedback, concerns, and agreed next steps.'
       : meetingType === 'client' ? 'This is a client meeting — focus on commitments made, expectations set, and follow-ups.'
       : meetingType === 'brainstorm' ? 'This is a brainstorm — focus on ideas generated, which got energy, and what was decided to pursue.'
-      : 'General meeting — extract all decisions, actions, and open questions.';
+      : meetingType === 'general' ? 'General meeting — extract all decisions, actions, and open questions.'
+      : 'Work out from the transcript itself what kind of meeting this is — a standup, a planning session, a retro, a 1:1, a client call, a brainstorm, or something else — and read it accordingly. Name what you concluded in meeting_type_detected, in the reader\'s language.';
 
     const systemPrompt = `${PERSONALITY}
 
 DISTILL MODE: Extract actionable output. ${typeNote} Every action needs an owner and deadline — flag unassigned. Decisions as facts: 'We decided X', not 'it was discussed'. Filter all filler ruthlessly.`;
 
     const userPrompt = `MEETING TRANSCRIPT:
-${meetingType ? `Meeting type: ${meetingType}` : ''}
+${meetingType && meetingType !== 'auto' ? `Meeting type: ${meetingType}` : ''}
 ${attendees ? `Attendees: ${attendees}` : ''}
 ${context ? `Context: ${context}` : ''}
 
 ${transcript.substring(0, 30000)}
 
-Extract the meeting output. Return ONLY valid JSON:
+Extract the meeting output.${focusNote(focus)}
+
+Return ONLY valid JSON:
 
 {
   "meeting_summary": "One sentence: what this meeting was about and its primary outcome",
@@ -119,7 +133,7 @@ LIMITS (keep the response compact so it never gets cut off): decisions AT MOST 8
 // ════════════════════════════════════════════════════════════
 router.post('/the-debrief/followup', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { transcript, meetingType, attendees, recipientRole, tone, userLanguage } = req.body;
+    const { transcript, meetingType, attendees, recipientRole, tone, focus, userLanguage } = req.body;
 
     if (!transcript?.trim()) {
       return res.status(400).json({ error: 'Paste your meeting transcript or notes' });
@@ -134,14 +148,16 @@ router.post('/the-debrief/followup', rateLimit(DEFAULT_LIMITS), async (req, res)
 FOLLOW-UP MODE: Draft follow-up messages. ${toneNote} Concise, action-oriented, reference specific decisions and deadlines. Never vague.`;
 
     const userPrompt = `MEETING TRANSCRIPT:
-${meetingType ? `Meeting type: ${meetingType}` : ''}
+${meetingType && meetingType !== 'auto' ? `Meeting type: ${meetingType}` : ''}
 ${attendees ? `Attendees: ${attendees}` : ''}
 ${recipientRole ? `Follow-up recipient: ${recipientRole}` : ''}
 Tone: ${tone || 'professional'}
 
 ${transcript.substring(0, 25000)}
 
-Draft follow-up messages. Return ONLY valid JSON:
+Draft follow-up messages.${focusNote(focus)}
+
+Return ONLY valid JSON:
 
 {
   "group_email": {
@@ -197,7 +213,7 @@ LIMITS: individual_nudges AT MOST 8, calendar_invites AT MOST 6. Never place a d
 // ════════════════════════════════════════════════════════════
 router.post('/the-debrief/series', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { meetings, context, userLanguage } = req.body;
+    const { meetings, context, focus, userLanguage } = req.body;
 
     if (!meetings?.length || meetings.length < 2) {
       return res.status(400).json({ error: 'Paste at least 2 meeting transcripts to compare' });
@@ -210,7 +226,40 @@ router.post('/the-debrief/series', rateLimit(DEFAULT_LIMITS), async (req, res) =
 
     const systemPrompt = `${PERSONALITY}
 
-SERIES MODE: Find patterns across meetings. Focus on: uncompleted actions, recurring unresolved topics, talking vs silent dynamics, productivity trends, commitments that slipped.`;
+SERIES MODE: notice what nobody in the room has said out loud.
+
+Anyone can summarise a meeting. The only reason to read several at once is to
+catch what is invisible from inside any one of them: the decision that keeps
+getting reopened, the owner whose name has been on the same item for a month,
+the concern that has surfaced in three straight client calls without ever being
+answered. That is the job. Summary is a by-product.
+
+Every observation must COUNT and NAME. The shape is: a specific thing, a real
+number, and what has not happened.
+
+  NO:  The launch date is a recurring topic.
+  YES: This is the third meeting in which the launch date was discussed but not decided.
+  NO:  Some action items lack deadlines.
+  YES: Mike has owned the pricing rewrite for four weeks without a deadline.
+  NO:  Pricing concerns come up in client calls.
+  YES: The same pricing concern has surfaced in three consecutive client calls.
+  NO:  This decision has been revisited.
+  YES: You have revisited the vendor decision four times without resolving it.
+
+Count from the transcripts. If a name, a number of meetings, or a stretch of
+time is in the material, it goes in the sentence — a finding without a number
+is a summary wearing a finding's clothes. Never invent a count to make a
+sentence land; if something appears twice, say twice.
+
+Count MEETINGS, not calendar time. "Three meetings running" is something you
+can verify from what is in front of you; "six weeks" is arithmetic on dates
+that may be partial or absent, and getting it wrong discredits the whole read.
+Only give a span in days or weeks when every meeting involved carries a date
+and the subtraction is certain.
+
+Say nothing about who talked more or who was quiet unless the transcripts make
+it unmistakable — inferring dominance from a written record is how this mode
+would start making things up about people.`;
 
     const meetingList = validMeetings.map((m, i) =>
       `--- MEETING ${i + 1}${m.title ? `: ${m.title}` : ''}${m.date ? ` (${m.date})` : ''} ---\n${m.transcript.substring(0, 16000)}`
@@ -221,10 +270,16 @@ ${context ? `Context: ${context}` : ''}
 
 ${meetingList}
 
-Analyze the series. Return ONLY valid JSON:
+Analyze the series.${focusNote(focus)}
+
+Return ONLY valid JSON:
 
 {
   "series_summary": "What these meetings are about and the overall trajectory — getting better, stuck, or drifting? — 1-2 sentences",
+
+  "observations": [
+    "One sentence, counted and named, in the shape shown above. The thing you would say out loud if you had sat through all of these. Most important first."
+  ],
 
   "recurring_topics": [
     {
@@ -265,7 +320,7 @@ Analyze the series. Return ONLY valid JSON:
   ]
 }
 
-LIMITS (keep the response compact so it never gets cut off): recurring_topics AT MOST 6, accountability_gaps AT MOST 6, decisions_revisited AT MOST 6, next_meeting_agenda AT MOST 6. Keep each field to one sentence. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
+LIMITS (keep the response compact so it never gets cut off): observations 3-6, recurring_topics AT MOST 6, accountability_gaps AT MOST 6, decisions_revisited AT MOST 6, next_meeting_agenda AT MOST 6. Every observation is a plain string, never an object. Keep each field to one sentence. Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,

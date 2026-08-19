@@ -19,6 +19,7 @@ const MODES = [
 ];
 
 const MEETING_TYPES = [
+  { value: 'auto',       labelKey: 'td_mt_auto' },
   { value: 'general',    labelKey: 'td_mt_general' },
   { value: 'standup',    labelKey: 'td_mt_standup' },
   { value: 'planning',   labelKey: 'td_mt_planning' },
@@ -95,9 +96,10 @@ const TheDebrief = ({ tool }) => {
 
   // Shared input
   const [transcript, setTranscript] = useState('');
-  const [meetingType, setMeetingType] = useState('general');
+  const [meetingType, setMeetingType] = useState('auto');
   const [attendees, setAttendees] = useState('');
   const [context, setContext] = useState('');
+  const [focus, setFocus] = useState('');
 
   // Follow-up options
   const [tone, setTone] = useState('professional');
@@ -167,13 +169,14 @@ const TheDebrief = ({ tool }) => {
         if (!transcript.trim()) { setError(t('td_err_paste')); return; }
         data = await callToolEndpoint('the-debrief', {
           transcript: transcript.trim(), meetingType, attendees: attendees.trim() || null,
-          context: context.trim() || null,
+          context: context.trim() || null, focus: focus.trim() || null,
           userLocale, userCurrency, userRegion,
         });
       } else if (mode === 'followup') {
         if (!transcript.trim()) { setError(t('td_err_paste')); return; }
         data = await callToolEndpoint('the-debrief/followup', {
           transcript: transcript.trim(), meetingType, attendees: attendees.trim() || null, tone,
+          focus: focus.trim() || null,
           userLocale, userCurrency, userRegion,
         });
       } else if (mode === 'series') {
@@ -181,7 +184,7 @@ const TheDebrief = ({ tool }) => {
         if (valid.length < 2) { setError(t('td_err_two_meetings')); return; }
         data = await callToolEndpoint('the-debrief/series', {
           meetings: valid.map(m => ({ title: m.title.trim() || null, date: m.date.trim() || null, transcript: m.transcript.trim() })),
-          context: context.trim() || null,
+          context: context.trim() || null, focus: focus.trim() || null,
           userLocale, userCurrency, userRegion,
         });
       }
@@ -194,13 +197,13 @@ const TheDebrief = ({ tool }) => {
       };
       setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('td_err_failed')); }
-  }, [mode, transcript, meetingType, attendees, context, tone, meetings, callToolEndpoint, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
+  }, [mode, transcript, meetingType, attendees, context, focus, tone, meetings, callToolEndpoint, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     setMode('distill');
     const ex = pickExample('TheDebrief', [{ n: '' }, { n: '2' }]);
     const k = f => `td_ex${ex.n}_${f}`;
-    setMeetingType('general');
+    setMeetingType('auto');
     setAttendees(t(k('attendees')));
     setContext(t(k('context')));
     setTone('professional');
@@ -209,7 +212,7 @@ const TheDebrief = ({ tool }) => {
   }, [setMode, setMeetingType, setAttendees, setContext, setTone, setTranscript, setResults, t]);
 
   const handleReset = useCallback(() => {
-    setTranscript(''); setAttendees(''); setContext('');
+    setTranscript(''); setAttendees(''); setContext(''); setFocus('');
     setResults(null); setError(''); setExpandedSections({});
     setMeetings([{ title: '', date: '', transcript: '' }, { title: '', date: '', transcript: '' }]);
   }, []);
@@ -252,6 +255,11 @@ const TheDebrief = ({ tool }) => {
   const buildSeriesCopy = useCallback(() => {
     if (!results) return '';
     const lines = [t('td_copy_debrief'), '', results?.series_summary || '', ''];
+    if (results?.observations?.length) {
+      lines.push('👀 ' + t('td_series_observations'));
+      results.observations.forEach(o => lines.push(`• ${typeof o === 'string' ? o : o?.observation}`));
+      lines.push('');
+    }
     if (results?.recurring_topics?.length) {
       lines.push('🔁');
       results.recurring_topics.forEach(r => lines.push(`• ${r.topic}${r.frequency ? ` (${r.frequency})` : ''}`));
@@ -315,7 +323,7 @@ const TheDebrief = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{tool?.tagline ?? t('td_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
@@ -344,9 +352,6 @@ const TheDebrief = ({ tool }) => {
 
       {mode !== 'series' ? (
         <div>
-          <p className={'text-xs ' + c.textMuted + ' mb-3'}>
-            {t('td_xref_runthrough_q')} <a href="/TheRunthrough" className={linkStyle}>🎙️ {t('td_xref_runthrough')}</a> {t('td_xref_runthrough_tail')}
-          </p>
           <label className={'text-base font-bold ' + c.text + ' mb-1 block'}>{t('td_paste_label')}</label>
           <p className={'text-xs ' + c.textMuted + ' mb-3'}>{t('td_paste_hint')}</p>
           <textarea value={transcript} onChange={e => setTranscript(e.target.value)}
@@ -407,6 +412,13 @@ const TheDebrief = ({ tool }) => {
               placeholder={t('td_context_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
           </div>
+        </div>
+
+        <div>
+          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('td_focus_label')}</label>
+          <input type="text" value={focus} onChange={e => setFocus(e.target.value)}
+            placeholder={t('td_focus_ph')}
+            className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
         </div>
 
         {mode === 'followup' && (
@@ -654,6 +666,20 @@ const TheDebrief = ({ tool }) => {
           </div>
         )}
 
+        {results?.observations?.length > 0 && (
+          <div className={'p-5 rounded-2xl border-2 ' + c.card}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-3'}>👀 {t('td_series_observations')}</p>
+            <ul className="space-y-2">
+              {results.observations.map((o, i) => (
+                <li key={i} className={'text-sm leading-relaxed ' + c.text + ' flex gap-2'}>
+                  <span className={c.textMuted} aria-hidden="true">•</span>
+                  <span>{typeof o === 'string' ? o : o?.observation}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Productivity Trend */}
         {results?.productivity_trend && (
           <div className={'p-4 rounded-xl border ' + (results?.productivity_trend?.direction === 'improving' ? c.successBox : results?.productivity_trend?.direction === 'declining' ? c.warningBox : c.infoBox)}>
@@ -783,7 +809,7 @@ const TheDebrief = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{tool?.tagline ?? t('td_tagline')}
+                  <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
                 </p>
               </div>
             </div>
@@ -806,6 +832,9 @@ const TheDebrief = ({ tool }) => {
           <div className={'p-4 rounded-2xl border ' + c.card}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('td_related')}</p>
             <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
+              {mode !== 'series' && (
+                <p>{t('td_xref_runthrough_q')} <a href="/TheRunthrough" className={linkStyle}>🎙️ {t('td_xref_runthrough')}</a> {t('td_xref_runthrough_tail')}</p>
+              )}
               <p>{t('td_xref_velvet_q')} <a href="/VelvetHammer" className={linkStyle}>{t('td_xref_velvet')}</a> {t('td_xref_velvet_tail')}</p>
               <p>{t('td_xref_ghost_q')} <a href="/GhostWriter" className={linkStyle}>{t('td_xref_ghost')}</a> {t('td_xref_ghost_tail')}</p>
             </div>

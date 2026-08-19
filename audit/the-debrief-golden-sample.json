@@ -134,6 +134,12 @@
       },
       "output": {
         "series_summary": "Die Meetings drehen sich um die Q3-Launch-Planung, die jedoch von Woche zu Woche weiter nach hinten verschoben wird – das Team ist feststeckend und wiederholt dieselben Muster ohne erkennbaren Fortschritt.",
+        "observations": [
+          "Das zweite Meeting ist eine wortwörtliche Wiederholung des ersten: Ben nennt denselben Stand (API 80%, Auth-Problem), Clara dieselbe Bedingung, Anna dieselbe Entscheidung – kein einziges Ergebnis aus Meeting 1 wurde umgesetzt.",
+          "Die Marketing-Zuständigkeit ist in beiden Meetings offen geblieben – sie wurde zweimal aufgeworfen und zweimal unbeantwortet gelassen, ohne dass ein Eigentümer benannt wurde.",
+          "Claras QA-Aufgabe wurde in Meeting 1 mit Deadline Donnerstag vergeben, in Meeting 2 aber weder nachverfolgt noch als erledigt bestätigt – ihr Status ist unbekannt.",
+          "David hat in beiden Meetings gegen den Launch-Termin 15.07. votiert, ohne dass sein Einwand inhaltlich behandelt oder dokumentiert wurde – ein ungelöster Dissens, der die Entscheidung fragil macht."
+        ],
         "recurring_topics": [
           {
             "topic": "Backend-API-Authentifizierungsproblem",
@@ -216,14 +222,7 @@
             "pattern": "Identisches Versprechen wie in Woche 1 – hohes Risiko, dass es erneut nicht eingehalten wird."
           }
         ],
-        "decisions_revisited": [
-          {
-            "decision": "Launch-Datum auf den 15. Juli festgelegt",
-            "original_meeting": "Planung 1 (01.07)",
-            "revisited_meeting": "Planung 2 (08.07)",
-            "why": "Schlechte Ausführung – Bens API-Problem wurde nicht gelöst, weshalb das Datum erneut verschoben werden musste."
-          }
-        ],
+        "decisions_revisited": [],
         "productivity_trend": {
           "direction": "declining",
           "evidence": "Beide Meetings haben nahezu identischen Inhalt: gleicher API-Status, gleiche Bedingungen von Clara, gleiche offene Marketing-Frage, gleiche Dissens-Dynamik mit David – es gibt null messbaren Fortschritt.",
