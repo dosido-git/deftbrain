@@ -339,7 +339,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             {detectedTool && (
               <div style={{marginTop:'8px'}}>
                 <div style={{fontSize:'22px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
-                <div style={{fontSize:'13px',color:'#4b5563',marginTop:'4px',lineHeight:'1.5'}}>{detectedTool.description}</div>
+                <div style={{fontSize:'13px',color:'#4b5563',marginTop:'4px',lineHeight:'1.5',whiteSpace:'pre-line'}}>{detectedTool.description}</div>
               </div>
             )}
           </div>
@@ -353,7 +353,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
             <h1 className={`text-5xl font-light ${colors.text} tracking-tight`}>
               {detectedTool?.title || 'Tool'}
             </h1>
-            <p className={`${colors.textSecondary} max-w-2xl leading-relaxed`}>
+            <p className={`${colors.textSecondary} max-w-2xl leading-relaxed whitespace-pre-line`}>
               {detectedTool?.description || 'Strategic intelligence tool'}
             </p>
             {/* ── Localized "Any language works" signal — only renders for non-English browsers ── */}

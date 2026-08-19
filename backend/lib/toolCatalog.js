@@ -18,7 +18,9 @@ const path = require('path');
 function extractField(line, field) {
   const re = new RegExp(`^\\s*${field}:\\s*(['"])((?:(?!\\1)[^\\\\]|\\\\.)*)\\1`);
   const m = line.match(re);
-  return m ? m[2] : null;
+  // Read as text, not JS: a \n written in the source arrives here as two
+  // characters. These strings go straight into a prompt, so flatten it.
+  return m ? m[2].replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim() : null;
 }
 
 // ════════════════════════════════════════════════════════════

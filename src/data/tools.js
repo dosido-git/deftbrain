@@ -3975,7 +3975,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🔗",
   categories: ['Diversions', 'Me'],
   headerColor: "#d4dde8",
-  description: "Find the hidden connections between any two seemingly unrelated parts of your life. Your college major and your career, your childhood hobby and your friend group, your biggest fear and your favorite food. The chain is always there -- you just can't see it yet.",
+  description: "Find the hidden connections between seemingly unrelated parts of your life.\nYour favorite movie and your career. Your childhood hobby and your closest friendship.\n\nThe chain is always there. You just can't see it yet.",
   guide: {
     overview: "Everything in your life is connected by threads you've never noticed. This tool traces the chain between any two things -- your philosophy degree and your coding career, your fear of flying and your love of sushi. Build a profile once, then play endlessly.",
 
