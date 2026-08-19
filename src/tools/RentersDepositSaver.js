@@ -58,35 +58,32 @@ const AU_STATES = [
   'South Australia','Tasmania','Victoria','Western Australia',
 ];
 
+// Alphabetical by name. At nine entries the old grouping was harmless; at
+// twenty-three, a list nobody can predict is a list nobody can scan. Other
+// country stays at the bottom — it is the escape hatch, not an O.
 const COUNTRIES = [
-  { code: 'US', label: 'United States', regionLabel: 'State', regions: US_STATES },
-  { code: 'CA', label: 'Canada', regionLabel: 'Province', regions: CA_PROVINCES },
-  { code: 'UK', label: 'United Kingdom', regionLabel: 'Region (optional)', regions: ['England','Scotland','Wales','Northern Ireland'] },
   { code: 'AU', label: 'Australia', regionLabel: 'State / Territory', regions: AU_STATES },
-  { code: 'IE', label: 'Ireland', regionLabel: 'County (optional)', regions: null },
-  { code: 'NZ', label: 'New Zealand', regionLabel: 'Region (optional)', regions: null },
-  { code: 'DE', label: 'Germany', regionLabel: 'State (optional)', regions: null },
-  { code: 'NL', label: 'Netherlands', regionLabel: 'Province (optional)', regions: null },
-  { code: 'FR', label: 'France', regionLabel: 'Region (optional)', regions: null },
-  // The interface speaks 13 languages; the deposit-law lookup offered nine
-  // countries, none of which matched ten of those languages. Someone reading
-  // this in Japanese or Portuguese had to file themselves under "Other".
-  // Language is not jurisdiction — one language spans many countries — so this
-  // covers the places those languages are actually rented in, and OTHER still
-  // catches everywhere else.
-  { code: 'ES', label: 'Spain', regionLabel: 'Region (optional)', regions: null },
-  { code: 'MX', label: 'Mexico', regionLabel: 'State (optional)', regions: null },
   { code: 'BR', label: 'Brazil', regionLabel: 'State (optional)', regions: null },
-  { code: 'PT', label: 'Portugal', regionLabel: 'District (optional)', regions: null },
-  { code: 'IN', label: 'India', regionLabel: 'State (optional)', regions: null },
+  { code: 'CA', label: 'Canada', regionLabel: 'Province', regions: CA_PROVINCES },
   { code: 'CN', label: 'China', regionLabel: 'Province / City (optional)', regions: null },
-  { code: 'JP', label: 'Japan', regionLabel: 'Prefecture (optional)', regions: null },
-  { code: 'KR', label: 'South Korea', regionLabel: 'Province / City (optional)', regions: null },
-  { code: 'RU', label: 'Russia', regionLabel: 'Region (optional)', regions: null },
-  { code: 'TH', label: 'Thailand', regionLabel: 'Province (optional)', regions: null },
-  { code: 'VN', label: 'Vietnam', regionLabel: 'Province / City (optional)', regions: null },
-  { code: 'AE', label: 'United Arab Emirates', regionLabel: 'Emirate (optional)', regions: null },
   { code: 'EG', label: 'Egypt', regionLabel: 'Governorate (optional)', regions: null },
+  { code: 'FR', label: 'France', regionLabel: 'Region (optional)', regions: null },
+  { code: 'DE', label: 'Germany', regionLabel: 'State (optional)', regions: null },
+  { code: 'IN', label: 'India', regionLabel: 'State (optional)', regions: null },
+  { code: 'IE', label: 'Ireland', regionLabel: 'County (optional)', regions: null },
+  { code: 'JP', label: 'Japan', regionLabel: 'Prefecture (optional)', regions: null },
+  { code: 'MX', label: 'Mexico', regionLabel: 'State (optional)', regions: null },
+  { code: 'NL', label: 'Netherlands', regionLabel: 'Province (optional)', regions: null },
+  { code: 'NZ', label: 'New Zealand', regionLabel: 'Region (optional)', regions: null },
+  { code: 'PT', label: 'Portugal', regionLabel: 'District (optional)', regions: null },
+  { code: 'RU', label: 'Russia', regionLabel: 'Region (optional)', regions: null },
+  { code: 'KR', label: 'South Korea', regionLabel: 'Province / City (optional)', regions: null },
+  { code: 'ES', label: 'Spain', regionLabel: 'Region (optional)', regions: null },
+  { code: 'TH', label: 'Thailand', regionLabel: 'Province (optional)', regions: null },
+  { code: 'AE', label: 'United Arab Emirates', regionLabel: 'Emirate (optional)', regions: null },
+  { code: 'UK', label: 'United Kingdom', regionLabel: 'Region (optional)', regions: ['England','Scotland','Wales','Northern Ireland'] },
+  { code: 'US', label: 'United States', regionLabel: 'State', regions: US_STATES },
+  { code: 'VN', label: 'Vietnam', regionLabel: 'Province / City (optional)', regions: null },
   { code: 'OTHER', label: 'Other country', regionLabel: 'Country & Region', regions: null },
 ];
 
@@ -1049,22 +1046,21 @@ const RentersDepositSaver = ({ tool }) => {
           </div>
 
           <div className="space-y-5">
-            {/* Address */}
-            <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                {t('rds_property_address')} <span className={c.required}>*</span>
-              </label>
-              <input
-                type="text"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
-                placeholder={t('rds_address_ph')}
-                className={`w-full p-3 border rounded-lg outline-none focus:ring-2 transition-colors ${c.input}`}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Unit */}
+            {/* Street + unit: one address, one row. The jurisdiction the
+                street implies follows immediately below. */}
+            <div className="grid grid-cols-1 sm:grid-cols-[2fr,1fr] gap-4">
+              <div>
+                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
+                  {t('rds_property_address')} <span className={c.required}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                  placeholder={t('rds_address_ph')}
+                  className={`w-full p-3 border rounded-lg outline-none focus:ring-2 transition-colors ${c.input}`}
+                />
+              </div>
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_unit_apt')}</label>
                 <input
@@ -1072,19 +1068,6 @@ const RentersDepositSaver = ({ tool }) => {
                   value={unit}
                   onChange={e => setUnit(e.target.value)}
                   placeholder={t('rds_unit_ph')}
-                  className={`w-full p-3 border rounded-lg outline-none focus:ring-2 transition-colors ${c.input}`}
-                />
-              </div>
-
-              {/* Move-in date (defaults to today) */}
-              <div>
-                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
-                  {t('rds_move_in_date')} <span className={c.required}>*</span>
-                </label>
-                <input
-                  type="date"
-                  value={moveInDate}
-                  onChange={e => setMoveInDate(e.target.value)}
                   className={`w-full p-3 border rounded-lg outline-none focus:ring-2 transition-colors ${c.input}`}
                 />
               </div>
@@ -1207,6 +1190,19 @@ const RentersDepositSaver = ({ tool }) => {
             )}
           </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Move-in date (defaults to today) */}
+              <div>
+                <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>
+                  {t('rds_move_in_date')} <span className={c.required}>*</span>
+                </label>
+                <input
+                  type="date"
+                  value={moveInDate}
+                  onChange={e => setMoveInDate(e.target.value)}
+                  className={`w-full p-3 border rounded-lg outline-none focus:ring-2 transition-colors ${c.input}`}
+                />
+              </div>
+
               {/* Deposit amount */}
               <div>
                 <label className={`block text-sm font-semibold ${c.text} mb-1.5`}>{t('rds_deposit_amount')}</label>
