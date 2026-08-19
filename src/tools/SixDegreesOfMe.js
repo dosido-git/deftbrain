@@ -652,7 +652,7 @@ const SixDegreesOfMe = ({ tool }) => {
                 </g>
               ) : null;
             })}
-            {/* Final node (Thing B) */}
+            {/* Final node — the second thing they typed */}
             {(!animatingChain || visibleSteps > steps.length - 1) && steps.length > 0 && (
               <g>
                 <rect x={midX - 90} y={28 + steps.length * stepH - 2} width={180} height={26} rx={13}
@@ -1213,12 +1213,12 @@ const SixDegreesOfMe = ({ tool }) => {
             {renderProfileBuilder(profile, setProfile, t('sdm_profile_default_title'), editingCategory, setEditingCategory, categoryInput, setCategoryInput, 'A')}
           </div>
 
-          {/* Thing A / Thing B */}
+          {/* The two ends of the chain */}
           <div className={`mb-5 p-5 rounded-2xl border ${c.card}`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
-                  <span className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center text-[10px] font-bold text-amber-600">A</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" aria-hidden="true" />
                   {t('sdm_thing_a')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingA} onChange={e => setThingA(e.target.value)}
@@ -1228,7 +1228,7 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
               <div>
                 <label className={`text-sm font-bold ${c.text} mb-1.5 block flex items-center gap-2`}>
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-bold text-emerald-600">B</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" aria-hidden="true" />
                   {t('sdm_thing_b')} <span className={c.required}>*</span>
                 </label>
                 <input type="text" value={thingB} onChange={e => setThingB(e.target.value)}
@@ -1236,6 +1236,16 @@ const SixDegreesOfMe = ({ tool }) => {
                   onKeyDown={e => { if (e.key === 'Enter' && thingA.trim() && thingB.trim()) handleFindChain(); }}
                   className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
               </div>
+            </div>
+
+            <div className={`mb-4 rounded-xl p-3 ${c.infoBox}`}>
+              <p className={`text-[11px] font-bold ${c.text} mb-1.5`}>{t('sdm_might_discover')}</p>
+              <ul className={`text-[11px] ${c.textSecondary} space-y-0.5`}>
+                <li>• {t('sdm_discover_1')}</li>
+                <li>• {t('sdm_discover_2')}</li>
+                <li>• {t('sdm_discover_3')}</li>
+                <li>• {t('sdm_discover_4')}</li>
+              </ul>
             </div>
 
             {/* The gallery. This tool's difficulty is not knowing what to
