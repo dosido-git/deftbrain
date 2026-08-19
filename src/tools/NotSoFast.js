@@ -17,7 +17,7 @@ const WIN_LIKELIHOOD_CONFIG = {
   very_low:  { icon: '🔴' },
 };
 
-const HiddenPaths = ({ tool }) => {
+const NotSoFast = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -122,7 +122,7 @@ const HiddenPaths = ({ tool }) => {
   }, [system, problem, whatTried, goal, officialAnswer, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('HiddenPaths', SYSTEM_EXAMPLES);
+    const ex = pickExample('NotSoFast', SYSTEM_EXAMPLES);
     setSystem(ex.system); setProblem(ex.problem); setResults(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults, setSystem, setProblem]);
@@ -556,5 +556,5 @@ const HiddenPaths = ({ tool }) => {
   );
 };
 
-HiddenPaths.displayName = 'HiddenPaths';
-export default HiddenPaths;
+NotSoFast.displayName = 'NotSoFast';
+export default NotSoFast;

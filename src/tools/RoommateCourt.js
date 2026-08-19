@@ -1018,7 +1018,7 @@ const RoommateCourt = ({ tool }) => {
           <div className="flex flex-wrap gap-3">
             <a href="/VelvetHammer"       className={`text-xs ${linkStyle}`}>🔨 {t('rc_velvet_hammer')}</a>
             <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('rc_difficult_talk')}</a>
-            <a href="/HiddenPaths"    className={`text-xs ${linkStyle}`}>🚪 {t('rc_rulebook_breaker')}</a>
+            <a href="/NotSoFast"    className={`text-xs ${linkStyle}`}>🚪 {t('rc_rulebook_breaker')}</a>
           </div>
         </div>
       )}

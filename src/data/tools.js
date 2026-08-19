@@ -977,7 +977,7 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "HiddenPaths",
+  id: "NotSoFast",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -990,7 +990,7 @@ export const tools = [
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
     { q: "How do I get an exception to a company policy?",
-      a: "Ask the person with discretion, in the channel where discretion lives, with a reason that gives them cover to say yes. Front-line staff often can't bend rules; supervisors, retention teams, and written-escalation routes often can. Rulebook Breaker maps the legitimate exception paths for your specific situation — who to ask, in what order, and with what wording." },
+      a: "Ask the person with discretion, in the channel where discretion lives, with a reason that gives them cover to say yes. Front-line staff often can't bend rules; supervisors, retention teams, and written-escalation routes often can. Not So Fast! maps the legitimate exception paths for your specific situation — who to ask, in what order, and with what wording." },
     { q: "Is any of this bending the rules?",
       a: "The tool only deals in legitimate paths: published exceptions, discretionary waivers, escalation routes, and rights you already have but weren't told about. That's not gaming the system — it's using the system as designed but not advertised. Anything that depends on misleading someone stays out — it is the fastest way to lose a case you would otherwise win." },
     { q: "How do I get fees waived?",
@@ -1002,7 +1002,7 @@ export const tools = [
   ],
   seoDescription: "Told no by an insurer, agency, HOA or provider? Find the appeal routes, documented exceptions, regulators and decision-makers that the first answer never mentions. Free, no signup.",
   seoTitle: "Appeals, Exceptions & Escalation Paths",
-  title: "Hidden Paths",
+  title: "Not So Fast!",
   tagline: "The overlooked options, key conversations, and escalation paths nobody ever explains",
   tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'exception', 'escalation', 'appeal'],
   icon: "🚪",
@@ -1010,7 +1010,7 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.",
   guide: {
-      overview: "Every formal system has informal architecture. Hidden Paths maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
+      overview: "Every formal system has informal architecture. Not So Fast! maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
       howToUse: [
         "Name the system — Comcast, health insurance, HOA, landlord, university, IRS, airline",
         "Describe the specific problem and the outcome you want",

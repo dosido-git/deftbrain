@@ -106,6 +106,8 @@ keys render as their own names until the dev server restarts.
 - **`audit/audit_v2-3-2.py` is name-keyed.** Deleting `handleReset`, `loadExample`, or an *active* `sessionHistory` triggers regressions. To remove such members, **array-elide** rather than delete the named symbol.
 - **Python file-I/O truncation.** `io.open(path, 'w').write(fn(s))` empties the file if `fn` raises mid-transform. Always compute the result fully **before** opening the file for write.
 - **Orphaned state.** Deleting a handler without also deleting the state variables it consumed creates a second wave of lint warnings. Remove the consumed state in the same pass.
+- **Changing a tool's icon leaves fallbacks behind.** Tool files render the icon as `{tool?.icon ?? '🔬'}` — often 3–6 times each, plus once in the copy-to-clipboard header. Editing `icon:` in `src/data/tools.js` changes nothing about those literals, and they take over the moment `tool` is undefined, so the old emoji silently returns. Nothing checks that the fallback matches the catalog. Hit three times in one session (DoctorVisitTranslator, DoctorVisitPrep, and the pirate flag in what is now Not So Fast!). After changing any `icon:`, grep the tool file for the old emoji and replace every hit.
+- **A crashed audit looks like a clean audit.** `audit_v2-3-2.py` reports findings by appending to a list; if it raises before finishing, it exits with no findings and `diff-audit.py` prints "no regressions". A `NameError` in a rule I added read as a pass. When editing the audit script, prove the rule still fires — run the same file under a name that should fail, not just one that should pass.
 
 ## Working style
 

@@ -964,7 +964,7 @@ const MagicMouth = ({ tool }) => {
               <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>{t('mm_related')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: 'HiddenPaths', icon: '🚪', label: t('mm_ref_rulebookbreaker') },
+                  { id: 'NotSoFast', icon: '🚪', label: t('mm_ref_rulebookbreaker') },
                   { id: 'LeaseTrapDetector', icon: '🔍', label: t('mm_ref_leasetrapdetector') },
                   { id: 'TruthBomb', icon: '💣', label: t('mm_ref_truthbomb') },
                 ].map(ref => (

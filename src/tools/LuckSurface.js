@@ -331,7 +331,7 @@ const LuckSurface = ({ tool }) => {
                 {[
                   { id: 'GravityWell', icon: '🌀', label: t('lks_xref_gravitywell') },
                   { id: 'ChaosPilot', icon: '🎰', label: t('lks_xref_chaospilot') },
-                  { id: 'HiddenPaths', icon: '🚪', label: t('lks_xref_rulebookbreaker') },
+                  { id: 'NotSoFast', icon: '🚪', label: t('lks_xref_rulebookbreaker') },
                 ].map(r => (
                   <a key={r.id} href={`/${r.id}`}
                     className={`text-xs ${linkStyle}`}>

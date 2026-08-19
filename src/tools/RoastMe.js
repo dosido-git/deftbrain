@@ -352,7 +352,7 @@ const RoastMe = ({ tool }) => {
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {t('rm_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/VelvetHammer"    className={`text-xs ${linkStyle}`}>🔨 {t('rm_velvet_hammer')}</a>
-              <a href="/HiddenPaths" className={`text-xs ${linkStyle}`}>🚪 {t('rm_rulebook_breaker')}</a>
+              <a href="/NotSoFast" className={`text-xs ${linkStyle}`}>🚪 {t('rm_rulebook_breaker')}</a>
             </div>
           </div>
         </div>

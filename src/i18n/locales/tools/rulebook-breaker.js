@@ -1,10 +1,11 @@
-// RulebookBreaker — rb_* keys for all 13 languages. Self-contained data.
+// Not So Fast! (rb_* keys, file name kept — the endpoint and key prefix are
+// pre-lock identifiers; renaming them post-lock is what the notes warn against) for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
-// Brand/tool names (Rulebook Breaker, Velvet Hammer, Magic Mouth,
+// Brand/tool names (Not So Fast!, Velvet Hammer, Magic Mouth,
 // Lease Trap Detector, Comcast, Nike) stay as-is across languages.
 export const rulebookBreaker = {
   en: {
-    rb_title: "Hidden Paths",
+    rb_title: "Not So Fast!",
     rb_tagline: "The overlooked options, key conversations, and escalation paths nobody ever explains",
     rb_system_label: "The system",
     rb_system_ph: "e.g. Comcast, health insurance, HOA, university, IRS, landlord, airline…",
@@ -81,7 +82,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "Security deposit not returned after 60 days. Landlord stopped responding to messages.",
   },
   es: {
-    rb_title: "Rutas ocultas",
+    rb_title: "¡No tan rápido!",
     rb_tagline: "Las opciones pasadas por alto, las conversaciones clave y las vías de escalado que nadie te explica",
     rb_system_label: "El sistema",
     rb_system_ph: "p. ej. Comcast, seguro médico, comunidad de vecinos, universidad, hacienda, casero, aerolínea…",
@@ -158,7 +159,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "No me devolvieron la fianza después de 60 días. El casero dejó de responder los mensajes.",
   },
   zh: {
-    rb_title: "隐藏路径",
+    rb_title: "先别急！",
     rb_tagline: "那些没人会告诉你的被忽略的选项、关键对话和升级途径",
     rb_system_label: "对方系统",
     rb_system_ph: "例如 Comcast、医疗保险、业委会、大学、税务局、房东、航空公司……",
@@ -235,7 +236,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "押金过了 60 天还没退。房东不再回复消息了。",
   },
   hi: {
-    rb_title: "छिपे रास्ते",
+    rb_title: "इतनी जल्दी नहीं!",
     rb_tagline: "वे अनदेखे विकल्प, अहम बातचीत और आगे बढ़ने के रास्ते जो कोई नहीं बताता",
     rb_system_label: "वह सिस्टम",
     rb_system_ph: "जैसे Comcast, स्वास्थ्य बीमा, हाउसिंग सोसाइटी, यूनिवर्सिटी, टैक्स विभाग, मकान मालिक, एयरलाइन…",
@@ -312,7 +313,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "60 दिन बाद भी सिक्योरिटी डिपॉज़िट वापस नहीं हुआ। मकान मालिक ने संदेशों का जवाब देना बंद कर दिया।",
   },
   ar: {
-    rb_title: "مسارات خفية",
+    rb_title: "مهلاً!",
     rb_tagline: "الخيارات المُغفَلة والمحادثات المهمة ومسارات التصعيد التي لا يشرحها أحد",
     rb_system_label: "الجهة",
     rb_system_ph: "مثل Comcast، التأمين الصحي، اتحاد الملاك، الجامعة، مصلحة الضرائب، المالك، شركة الطيران…",
@@ -389,7 +390,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "لم يُرَد التأمين بعد 60 يوماً. توقّف المالك عن الرد على الرسائل.",
   },
   pt: {
-    rb_title: "Caminhos ocultos",
+    rb_title: "Calma aí!",
     rb_tagline: "As opções ignoradas, as conversas decisivas e as vias de escalonamento que ninguém explica",
     rb_system_label: "O sistema",
     rb_system_ph: "ex.: Comcast, plano de saúde, condomínio, universidade, Receita, locador, companhia aérea…",
@@ -466,7 +467,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "O depósito de segurança não foi devolvido após 60 dias. O locador parou de responder às mensagens.",
   },
   fr: {
-    rb_title: "Chemins cachés",
+    rb_title: "Pas si vite !",
     rb_tagline: "Les options négligées, les conversations décisives et les voies de recours que personne n'explique",
     rb_system_label: "Le système",
     rb_system_ph: "ex. Comcast, assurance santé, syndic de copropriété, université, fisc, propriétaire, compagnie aérienne…",
@@ -543,7 +544,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "Le dépôt de garantie n'a pas été restitué au bout de 60 jours. Le propriétaire ne répond plus aux messages.",
   },
   de: {
-    rb_title: "Verborgene Wege",
+    rb_title: "Nicht so schnell!",
     rb_tagline: "Die übersehenen Optionen, die entscheidenden Gespräche und die Eskalationswege, die niemand erklärt",
     rb_system_label: "Das System",
     rb_system_ph: "z. B. Comcast, Krankenversicherung, Eigentümergemeinschaft, Uni, Finanzamt, Vermieter, Fluggesellschaft…",
@@ -620,7 +621,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "Kaution nach 60 Tagen nicht zurückerstattet. Der Vermieter reagiert nicht mehr auf Nachrichten.",
   },
   ja: {
-    rb_title: "隠れた道筋",
+    rb_title: "まだ決まっていません",
     rb_tagline: "誰も説明してくれない、見落とされた選択肢・要となる会話・上位への道筋",
     rb_system_label: "相手の組織",
     rb_system_ph: "例：Comcast、健康保険、管理組合、大学、税務署、家主、航空会社…",
@@ -697,7 +698,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "60日経っても敷金が返金されません。家主はメッセージに返信しなくなりました。",
   },
   ko: {
-    rb_title: "숨은 경로",
+    rb_title: "아직 이릅니다",
     rb_tagline: "아무도 설명해 주지 않는 놓친 선택지, 중요한 대화, 상위 경로",
     rb_system_label: "상대 기관",
     rb_system_ph: "예: Comcast, 건강보험, 입주자대표회의, 대학, 세무서, 집주인, 항공사…",
@@ -774,7 +775,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "60일이 지나도 보증금을 돌려받지 못했습니다. 집주인이 메시지에 답하지 않습니다.",
   },
   ru: {
-    rb_title: "Скрытые пути",
+    rb_title: "Не так быстро!",
     rb_tagline: "Упущенные варианты, важные разговоры и пути эскалации, которые никто не объясняет",
     rb_system_label: "Система",
     rb_system_ph: "напр. Comcast, медстраховка, ТСЖ, университет, налоговая, арендодатель, авиакомпания…",
@@ -851,7 +852,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "Залог не вернули спустя 60 дней. Арендодатель перестал отвечать на сообщения.",
   },
   th: {
-    rb_title: "เส้นทางที่ซ่อนอยู่",
+    rb_title: "ช้าก่อน!",
     rb_tagline: "ตัวเลือกที่มองข้าม บทสนทนาสำคัญ และช่องทางส่งต่อที่ไม่มีใครอธิบาย",
     rb_system_label: "ระบบ/หน่วยงาน",
     rb_system_ph: "เช่น Comcast, ประกันสุขภาพ, นิติบุคคล, มหาวิทยาลัย, กรมสรรพากร, เจ้าของบ้าน, สายการบิน…",
@@ -928,7 +929,7 @@ export const rulebookBreaker = {
     rb_ex5_problem: "เงินมัดจำไม่ได้คืนหลังผ่านไป 60 วัน เจ้าของบ้านเลิกตอบข้อความ",
   },
   vi: {
-    rb_title: "Lối đi khuất",
+    rb_title: "Khoan đã!",
     rb_tagline: "Những lựa chọn bị bỏ sót, các cuộc trò chuyện then chốt và đường chuyển cấp không ai giải thích",
     rb_system_label: "Bên đối tác",
     rb_system_ph: "ví dụ Comcast, bảo hiểm y tế, ban quản lý chung cư, trường đại học, cơ quan thuế, chủ nhà, hãng bay…",
