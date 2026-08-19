@@ -1314,7 +1314,7 @@ const SixDegreesOfMe = ({ tool }) => {
             <div className="flex gap-2 flex-wrap">
               <button title={t('cmd_enter')} onClick={handleFindChain}
                 disabled={!thingA.trim() || !thingB.trim() || loading}
-                className={`relative flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
+                className={`relative flex-1 sm:flex-none px-6 sm:pe-16 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {loading && !result ? <span><span className="inline-block animate-spin">{tool?.icon ?? '🔗'}</span> {t('sdm_tracing')}</span>
                   : challengeMode ? t('sdm_challenge_chain') : t('sdm_find_the_chain')}
               {!loading && (
