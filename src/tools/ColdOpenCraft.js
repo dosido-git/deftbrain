@@ -192,7 +192,7 @@ const ColdOpenCraft = ({ tool }) => {
         {/* Pre-result cross-ref */}
         <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
           {t('coc_xref_pre')}{' '}
-          <a href="/TheAlibi" className={linkStyle}>{t('coc_thealibi')}</a> {t('coc_xref_post')}
+          <a href="/TheWholeStory" className={linkStyle}>{t('coc_thewholestory')}</a> {t('coc_xref_post')}
         </p>
 
         <div className="space-y-4">

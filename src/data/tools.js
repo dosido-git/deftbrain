@@ -2329,7 +2329,7 @@ export const tools = [
 
 {
   modified: "",
-  id: "TheAlibi",
+  id: "TheWholeStory",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -2342,7 +2342,7 @@ export const tools = [
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
     { q: "How do I explain a gap in my resume?",
-      a: "Briefly, honestly, and framed around what the time gave you — then pivot to what you're bringing now. Interviewers care less about the gap than about how you talk about it; discomfort reads as concealment. The Alibi builds your specific gap story: the one-line resume version, the interview answer, and the follow-up responses." },
+      a: "Briefly, honestly, and framed around what the time gave you — then pivot to what you're bringing now. Interviewers care less about the gap than about how you talk about it; discomfort reads as concealment. The Whole Story builds your specific gap story: the one-line resume version, the interview answer, and the follow-up responses." },
     { q: "Is it lying to reframe a resume gap?",
       a: "No — reframing is choosing which true things to emphasize, and every polished candidate does it. Caring for a parent, recovering health, a failed business, or simply needing out are all legitimate; the tool never invents facts, it words the real ones so they read as intentional rather than apologetic." },
     { q: "What do I say in an interview about being unemployed?",
@@ -2354,15 +2354,15 @@ export const tools = [
   ],
   seoDescription: "Explain a resume gap, a firing, or any messy story honestly but strategically. Get 2-3 framed versions tailored to your audience, each with a script and warnings.",
   seoTitle: "Explain a Resume Gap - Interview Story Framer",
-  title: "The Alibi",
+  title: "The Whole Story",
   tagline: "Frame your real story for any audience — honest but strategic",
   tags: ['resume gap', 'career pivot', 'fired', 'explain', 'story', 'interview', 'framing', 'narrative'],
-  icon: "🎭",
+  icon: "📖",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
   description: "Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.",
   guide: {
-    overview: "The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
+    overview: "The Whole Story takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.",
     howToUse: [
       "Write out the real story — be as honest and detailed as possible (this stays between you and the tool)",
       "Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience",

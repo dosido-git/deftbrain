@@ -104,7 +104,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/WhichLife.js',
   'src/tools/PreMortem.js',
   'src/tools/HobbyMatch.js',
-  'src/tools/TheAlibi.js',
+  'src/tools/TheWholeStory.js',
   'src/tools/UpsellShield.js',
   'src/tools/PlotHole.js',
   'src/tools/AnalogyEngine.js',

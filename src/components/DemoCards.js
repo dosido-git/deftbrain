@@ -428,8 +428,8 @@ const EXAMPLE_BUCKETS = {
         'Stop texting \u2014 switch to email for a paper trail. Subject: \u201cOutstanding work \u2014 [project], final notice before dispute.\u201d State the agreed scope, what\u2019s incomplete, the date they stopped responding, and a 7-day deadline. Close with: \u201cIf I don\u2019t hear from you by [date], I\u2019ll pursue resolution through [small claims / licensing board / card dispute].\u201d That last line is what makes contractors call back.',
     },
     {
-      id: 'TheAlibi',
-      title: 'The Alibi',
+      id: 'TheWholeStory',
+      title: 'The Whole Story',
       icon: '🎭',
       tagline: 'Frame your career story so it lands every time',
       input:
