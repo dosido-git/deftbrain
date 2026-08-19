@@ -68,6 +68,25 @@ const COUNTRIES = [
   { code: 'DE', label: 'Germany', regionLabel: 'State (optional)', regions: null },
   { code: 'NL', label: 'Netherlands', regionLabel: 'Province (optional)', regions: null },
   { code: 'FR', label: 'France', regionLabel: 'Region (optional)', regions: null },
+  // The interface speaks 13 languages; the deposit-law lookup offered nine
+  // countries, none of which matched ten of those languages. Someone reading
+  // this in Japanese or Portuguese had to file themselves under "Other".
+  // Language is not jurisdiction — one language spans many countries — so this
+  // covers the places those languages are actually rented in, and OTHER still
+  // catches everywhere else.
+  { code: 'ES', label: 'Spain', regionLabel: 'Region (optional)', regions: null },
+  { code: 'MX', label: 'Mexico', regionLabel: 'State (optional)', regions: null },
+  { code: 'BR', label: 'Brazil', regionLabel: 'State (optional)', regions: null },
+  { code: 'PT', label: 'Portugal', regionLabel: 'District (optional)', regions: null },
+  { code: 'IN', label: 'India', regionLabel: 'State (optional)', regions: null },
+  { code: 'CN', label: 'China', regionLabel: 'Province / City (optional)', regions: null },
+  { code: 'JP', label: 'Japan', regionLabel: 'Prefecture (optional)', regions: null },
+  { code: 'KR', label: 'South Korea', regionLabel: 'Province / City (optional)', regions: null },
+  { code: 'RU', label: 'Russia', regionLabel: 'Region (optional)', regions: null },
+  { code: 'TH', label: 'Thailand', regionLabel: 'Province (optional)', regions: null },
+  { code: 'VN', label: 'Vietnam', regionLabel: 'Province / City (optional)', regions: null },
+  { code: 'AE', label: 'United Arab Emirates', regionLabel: 'Emirate (optional)', regions: null },
+  { code: 'EG', label: 'Egypt', regionLabel: 'Governorate (optional)', regions: null },
   { code: 'OTHER', label: 'Other country', regionLabel: 'Country & Region', regions: null },
 ];
 
@@ -723,6 +742,12 @@ const RentersDepositSaver = ({ tool }) => {
       {step === 2 && (
         <div className="space-y-4">
 
+          {/* The shape of the next few minutes, before the advice about how to
+              do it. "Before you start" answers how; this answers what. */}
+          <div className={`${c.card} border ${c.border} rounded-2xl shadow-sm p-4 sm:p-5`}>
+            <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{t('rds_walk_intro')}</p>
+          </div>
+
           {/* The tips were genuinely good and arrived after the first room was
               already inspected — by which point the wide shots they ask for
               were no longer possible without going back. The habit is taught
@@ -1223,7 +1248,14 @@ const RentersDepositSaver = ({ tool }) => {
           </div>
 
           {/* Navigation */}
-          <div className="mt-8 flex items-center justify-end">
+          {/* Someone about to press this is agreeing to get up and walk
+              around. Saying how long it takes and that they will need their
+              phone is the difference between starting now and starting never. */}
+          <div className={`mt-8 rounded-xl border p-4 ${isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-200 bg-slate-50'}`}>
+            <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{t('rds_walk_expect')}</p>
+          </div>
+
+          <div className="mt-4 flex items-center justify-end">
             <button
               onClick={() => setStep(2)}
               disabled={!step2Valid}
