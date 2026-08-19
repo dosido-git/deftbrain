@@ -789,12 +789,27 @@ for name, fpath in tools:
         fails.append(f'S2.1: keyboard handler at line {line_n} guards on INPUT/TEXTAREA — use SELECT-only guard so ⌘/Ctrl+Enter works while typing')
         break
 
+    # S1.5 exemption — tools that deliberately keep no session history.
+    #
+    # CONVENTIONS already carves this out for emergency tools ("recording crisis
+    # sessions is inappropriate") but never gave the script a way to express it,
+    # so the rule was unconditional and the exemption lived in people's heads.
+    # This is that list, explicit and opt-in: adding a tool here is a decision
+    # someone has to make and defend in review, not a check that quietly passes.
+    #
+    # RentersDepositSaver, 2026-08-18: the history was a list of the addresses
+    # someone had inspected. Low value to them, and a record of where a person
+    # has lived is not something to keep by default.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver'}
+    _tool_name = os.path.splitext(os.path.basename(fpath))[0]
+    _skip_history = _tool_name in _NO_HISTORY_TOOLS
+
     # S1.5: history in usePersistentState (accept *History, *Log, *log as equivalents)
-    if not re.search(r'usePersistentState[^\n]*(?:[Hh]istor|[Ll]og|[Aa]dventure|[Jj]ournal)|(?:[Hh]istor|[A-Za-z]+[Ll]og|[Aa]dventure|[Jj]ournal)[^\n]*usePersistentState|loadHistory\(\)|saveHistory\(', content):
+    if not _skip_history and not re.search(r'usePersistentState[^\n]*(?:[Hh]istor|[Ll]og|[Aa]dventure|[Jj]ournal)|(?:[Hh]istor|[A-Za-z]+[Ll]og|[Aa]dventure|[Jj]ournal)[^\n]*usePersistentState|loadHistory\(\)|saveHistory\(', content):
         fails.append('S1.5: history not in usePersistentState')
 
     # S1.5: history preview field
-    if not re.search(r'\bpreview\s*:', content):
+    if not _skip_history and not re.search(r'\bpreview\s*:', content):
         fails.append('S1.5: history entry missing preview field')
 
     # S1.5: history rendered (broad match for common history array patterns)
@@ -803,7 +818,7 @@ for name, fpath in tools:
     # accept `journal.map`, so a tool whose history feature is named journal
     # failed a rule it satisfies. DateNight is one — it renders journal.map in
     # its History panel. Widening here only makes the two halves of S1.5 agree.
-    if not re.search(r'(?:history|History|[A-Za-z]+Log|[A-Za-z]+log|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?|[Jj]ournal)\.(map|length)', content):
+    if not _skip_history and not re.search(r'(?:history|History|[A-Za-z]+Log|[A-Za-z]+log|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?|[Jj]ournal)\.(map|length)', content):
         fails.append('S1.5: history not rendered in JSX')
 
     # S1.5: history cap — look for ].slice(0, N) pattern (array cap, not string slices inside)

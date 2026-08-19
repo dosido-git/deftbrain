@@ -1426,6 +1426,14 @@ Tools designed for high-stress, urgent, or panic-mode UX may break specific UI-s
 
 **Bar for adding a new tool to the category:** ≥50 emergency-language signals (panic, crisis, fakeCall, emergency, distress, anxiety, spiral) in the file. Tools that are anxiety-*prevention* rather than crisis-*response* — e.g. NerveCheck (8 signals), BillRescue (5 signals) — do not qualify and follow the standard convention.
 
+**S1.5 history exemption (implemented 2026-08-18).** `audit_v2-3-2.py` now
+carries `_NO_HISTORY_TOOLS`, an explicit set of tools that keep no session
+history. The three S1.5 history checks skip those and only those. It is opt-in
+by name so that dropping history stays a decision someone makes and defends,
+not a check that quietly stops applying. First entry: **RentersDepositSaver** —
+its history was a list of the addresses a person had inspected, which is little
+use to them and not a record worth keeping by default.
+
 **Audit-script todo:** Read `tools.js` for an `emergencyTool: true` flag and exempt the listed rules. Until then, the listed violations are tracked as known FPs in `audit-backlog.md`.
 
 **Reference case:** SafeWalk uses emerald `btnPrimary` (semantic = "go / safe" for emergency-prevention assessment), split `dangerBg`/`dangerText` (red text on neutral bg in some contexts), fullscreen panic background, and a custom print template for emergency contact cards. All four trigger audit flags; all four are intentional.
