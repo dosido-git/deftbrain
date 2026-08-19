@@ -294,6 +294,10 @@ const HiddenPaths = ({ tool }) => {
             {t('rb_xref_pre')}{' '}
             <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('rb_velvethammer')}</a> {t('rb_xref_pre_suffix')}
           </p>
+          <p className={`text-xs text-center mt-1 ${c.textMuted}`}>
+            {t('rb_when_procedure')}{' '}
+            <a href="/ProcedureProbe" className={`text-xs ${linkStyle}`}>🔬 {t('rb_procedureprobe')}</a>
+          </p>
         </div>
       )}
 
@@ -325,6 +329,32 @@ const HiddenPaths = ({ tool }) => {
       {/* ── Results ── */}
       {results && (
         <div className="space-y-4" ref={resultsRef}>
+
+          {/* Why this happened — first, because someone who has just been
+              refused is reading it as a verdict on them. Ordinary reasons,
+              stated plainly, turn "they are attacking me" back into "this is
+              a process", and a person who believes that makes better
+              decisions about what to do next. */}
+          {results?.why_this_happened && (
+            <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
+              <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>💡 {t('rb_why_happened')}</p>
+              {results.why_this_happened.summary && (
+                <p className={`text-sm mb-3 ${c.textSecondary}`}>{results.why_this_happened.summary}</p>
+              )}
+              {Array.isArray(results.why_this_happened.common_reasons) && results.why_this_happened.common_reasons.length > 0 && (
+                <>
+                  <p className={`text-xs font-semibold mb-1.5 ${c.textMuted}`}>{t('rb_common_reasons')}</p>
+                  <ul className="space-y-1">
+                    {results.why_this_happened.common_reasons.map((r, i) => (
+                      <li key={i} className={`text-sm flex items-start gap-2 ${c.textSecondary}`}>
+                        <span className="mt-1 flex-shrink-0">•</span>{r}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
 
           {/* System analysis */}
           {results?.system_analysis && (
@@ -492,9 +522,18 @@ const HiddenPaths = ({ tool }) => {
           <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {t('rb_related')}</p>
             <div className="flex flex-wrap gap-2">
-              <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('rb_velvethammer')}</a>
-              <a href="/MagicMouth" className={`text-xs ${linkStyle}`}>🎤 {t('rb_magicmouth')}</a>
-              <a href="/LeaseTrapDetector" className={`text-xs ${linkStyle}`}>🔍 {t('rb_leasetrap')}</a>
+              {/* Each labelled by the moment you would need it. Four bare
+                  links in a row is a list; four with their moment attached is
+                  a route through the same problem. */}
+              <p className={`text-[11px] ${c.textMuted}`}>{t('rb_when_bill')}</p>
+              <a href="/BillRescue" className={`text-xs ${linkStyle} block mb-2`}>🧾 {t('rb_billrescue')}</a>
+
+              <p className={`text-[11px] ${c.textMuted}`}>{t('rb_when_write')}</p>
+              <a href="/ComplaintEscalationWriter" className={`text-xs ${linkStyle} block mb-2`}>📝 {t('rb_complaint')}</a>
+
+              <p className={`text-[11px] ${c.textMuted}`}>{t('rb_when_call')}</p>
+              <a href="/MagicMouth" className={`text-xs ${linkStyle} block`}>🎤 {t('rb_magicmouth')}</a>
+
             </div>
           </div>
 

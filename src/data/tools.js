@@ -991,8 +991,8 @@ export const tools = [
   faq: [
     { q: "How do I get an exception to a company policy?",
       a: "Ask the person with discretion, in the channel where discretion lives, with a reason that gives them cover to say yes. Front-line staff often can't bend rules; supervisors, retention teams, and written-escalation routes often can. Rulebook Breaker maps the legitimate exception paths for your specific situation — who to ask, in what order, and with what wording." },
-    { q: "Is finding loopholes legal and ethical?",
-      a: "The tool only deals in legitimate paths: published exceptions, discretionary waivers, escalation routes, and rights you already have but weren't told about. That's not gaming the system — it's using the system as designed but not advertised. Anything deceptive or against terms isn't a loophole, it's a liability, and it stays out of the playbook." },
+    { q: "Is any of this bending the rules?",
+      a: "The tool only deals in legitimate paths: published exceptions, discretionary waivers, escalation routes, and rights you already have but weren't told about. That's not gaming the system — it's using the system as designed but not advertised. Anything that depends on misleading someone stays out — it is the fastest way to lose a case you would otherwise win." },
     { q: "How do I get fees waived?",
       a: "Most waivable fees (late fees, service charges, change fees) have an internal forgiveness policy — usually one courtesy waiver per year that agents grant if asked directly and politely: 'I've been a customer for X years, can you waive this as a one-time courtesy?' The tool tells you which fee types typically carry discretion and scripts the ask." },
     { q: "What do I do when a company says a rule can't be changed?",
@@ -1003,12 +1003,12 @@ export const tools = [
   seoDescription: "Told no by an insurer, agency, HOA or provider? Find the appeal routes, documented exceptions, regulators and decision-makers that the first answer never mentions. Free, no signup.",
   seoTitle: "Appeals, Exceptions & Escalation Paths",
   title: "Hidden Paths",
-  tagline: "The escalation paths, overlooked options, and decision-makers most people never discover.",
-  tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'loophole', 'fight back', 'appeal'],
+  tagline: "The overlooked options, key conversations, and escalation paths nobody ever explains",
+  tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'exception', 'escalation', 'appeal'],
   icon: "🚪",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
-  description: "Bureaucratic systems often have appeal processes, exceptions, regulators, and escalation paths that aren't obvious from the first answer you receive. We'll help you identify the next steps, the right questions to ask, and the paths most people never discover.",
+  description: "We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.",
   guide: {
       overview: "Every formal system has informal architecture. Hidden Paths maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
       howToUse: [

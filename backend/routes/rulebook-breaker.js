@@ -27,14 +27,22 @@ ${whatTried?.trim() ? `WHAT THEY'VE ALREADY TRIED: ${whatTried.trim()}` : ''}
 ${goal?.trim() ? `WHAT THEY WANT TO ACHIEVE: ${goal.trim()}` : ''}
 ${officialAnswer?.trim() ? `THE OFFICIAL ANSWER THEY WERE GIVEN: ${officialAnswer.trim()}\nThis is the decision every path has to answer. Say which process reviews a decision like this one, who is authorised to revisit it, and what would have to be true for it to change.` : ''}
 
+NEVER ATTRIBUTE INTENT. Say what a process does, not what it is designed to do to someone. "Initial denials are often handled through standardised review; the first answer is not always the final answer" is right. "The first two nos are designed to make you quit" is not — it states a motive you cannot know, and it tells a worried person they are being played. Bureaucratic outcomes are far more often structural than deliberate, and a reader who believes they are under attack makes worse decisions than one who understands the process.
+
+NO LEGAL SABRE-RATTLING. Regulators, ombudsmen and formal complaints are real, legitimate steps and belong here — described as what they are and what they achieve. Do not coach anyone to brandish legal language for effect. "Bad faith liability is existential for insurers" and "a credible legal threat changes the cost calculus" are the voice of a combat strategist, not a guide. Say instead which body reviews this kind of decision, what it can require, and what a complaint to it actually involves.
+
 Map how this system really decides. Find the paths that exist but were not offered. Name the words that get a request routed to someone who can act on it.
 
 NAMED ORGS: laws, agencies, and org names change — use current names only if certain (note: Kaiser Health News is now KFF Health News) and describe processes generically when unsure rather than citing a specific filing route incorrectly.
 
 Return ONLY valid JSON:
 {
+  "why_this_happened": {
+    "summary": "One calm sentence: this is a process, not a judgement about them. Never speculate about motive.",
+    "common_reasons": ["3-5 ordinary, documented reasons a decision like theirs usually comes back this way — missing documentation, a coding mismatch, criteria not evidenced, an administrative error, a coverage exclusion. Reasons, not accusations."]
+  },
   "system_analysis": {
-    "how_it_actually_works": "How this system actually functions informally vs. what they claim — the real decision architecture",
+    "how_it_actually_works": "How decisions of this kind actually get made — which stages are automated or checklist-driven, where a human with discretion first enters, and what each stage is for. Describe the machinery, never its motives.",
     "where_the_power_is": "Who actually has discretion to make exceptions in this system — not the front line",
     "their_pressure_points": "What this organisation actually responds to — regulatory obligations, documented policy, reputational duty of care. What makes a request get taken seriously, not what makes them afraid."
   },
