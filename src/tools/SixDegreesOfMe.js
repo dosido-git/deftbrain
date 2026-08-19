@@ -325,6 +325,13 @@ const SixDegreesOfMe = ({ tool }) => {
     } catch { setError(t('sdm_err_flip')); }
   };
 
+  const openProfile = () => {
+    setShowProfile(true);
+    if (!profileRef.current) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    profileRef.current.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  };
+
   const handleSurprise = async () => {
     if (loading || profileItemCount < 3) return;
     setError(''); setSurprisePairs(null);
@@ -442,6 +449,7 @@ const SixDegreesOfMe = ({ tool }) => {
   }, [result, flipResult, betweenResult, betweenNameA, betweenNameB, storyResult, t]);
 
   const resultsRef = useRef(null);
+  const profileRef = useRef(null);
   const betweenResultRef = useRef(null);
 
   // Register ActionBar content
@@ -1209,7 +1217,7 @@ const SixDegreesOfMe = ({ tool }) => {
       {activeTab === 'chain' && (
         <>
           {/* Profile Builder */}
-          <div className="mb-5">
+          <div className="mb-5 scroll-mt-24" ref={profileRef}>
             {renderProfileBuilder(profile, setProfile, t('sdm_profile_default_title'), editingCategory, setEditingCategory, categoryInput, setCategoryInput, 'A')}
           </div>
 
@@ -1316,12 +1324,13 @@ const SixDegreesOfMe = ({ tool }) => {
                 </kbd>
               )}
               </button>
-              <button onClick={handleSurprise}
-                disabled={loading || profileItemCount < 3}
-                className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}
-                title={profileItemCount < 3 ? t('sdm_surprise_disabled') : t('sdm_surprise_enabled')}>
-                {t('sdm_surprise_me')}
-              </button>
+              {profileItemCount >= 3 && (
+                <button onClick={handleSurprise} disabled={loading}
+                  className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}
+                  title={t('sdm_surprise_enabled')}>
+                  {t('sdm_surprise_me')}
+                </button>
+              )}
               {result && (
                 <button onClick={handleFlip} disabled={loading}
                   className={`px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.btnSecondary}`}>{t('sdm_flip_it')}</button>
@@ -1329,10 +1338,14 @@ const SixDegreesOfMe = ({ tool }) => {
             </div>
 
             {!thingA.trim() && !thingB.trim() && !result && (
-              <p className={`text-xs ${c.textMuted} mt-3`}>
-                {t('sdm_hint_two_things')}
-                {profileItemCount < 3 && <span className={c.accentTxt}>{t('sdm_hint_add_profile')}</span>}
-              </p>
+              <p className={`text-xs ${c.textMuted} mt-3`}>{t('sdm_hint_two_things')}</p>
+            )}
+
+            {profileItemCount < 3 && (
+              <button onClick={openProfile}
+                className={`mt-3 text-start text-xs ${c.accentTxt} hover:underline`}>
+                {t('sdm_surprise_locked')}
+              </button>
             )}
           </div>
 

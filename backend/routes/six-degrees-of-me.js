@@ -95,8 +95,12 @@ ALREADY TRIED: ${(usedPairs || []).join('; ') || 'none'}
 
 Each pair from DIFFERENT domains. Include one wild card. Use specific profile details.
 
+thingA and thingB are typed straight into a text box, so each is a bare noun
+phrase of 2-5 words: no dash, no colon, no explanation appended. The reason
+belongs in "tease" and nowhere else.
+
 Respond ONLY with valid JSON:
-{"pairs":[{"thingA":"...","thingB":"...","tease": "Why interesting"}]}
+{"pairs":[{"thingA":"2-5 words, no explanation","thingB":"2-5 words, no explanation","tease": "Why interesting, 1 sentence"}]}
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
