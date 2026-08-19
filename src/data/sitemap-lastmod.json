@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "e23cc06d06bb4890fda9e0feabdf49422ccf1d96",
+  "hash": "76554c042f45ba5e4e6a37ecd2c4b794861c31e2",
   "lastmod": "2026-08-19"
  },
  "static:about": {
@@ -120,7 +120,7 @@
   "lastmod": "2026-08-18"
  },
  "tool:RoastMe": {
-  "hash": "62da9e87005a203407dec6bbf2815ec68883f06f",
+  "hash": "4362b12dd598b5abcf1af93e356cfde0a14c6bc1",
   "lastmod": "2026-08-19"
  },
  "tool:RulebookBreaker": {

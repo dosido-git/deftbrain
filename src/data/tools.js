@@ -2043,7 +2043,7 @@ export const tools = [
   icon: "🔥",
   categories: ['Diversions'],
   headerColor: "#ccdfc4",
-  description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched Earth. Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.",
+  description: "Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.",
   guide: {
     overview: "RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.",
     howToUse: [
@@ -2059,7 +2059,7 @@ export const tools = [
       result: "Roast lines target 'passionate thought leader' (everyone who calls themselves a thought leader has never had an original thought), 'synergy enthusiast' (this is the saddest hobby since stamp collecting), and 'making the world better one meeting at a time' (meetings have never made anything better)."
     },
     tips: [
-      "Scorched Earth is funniest on content that takes itself too seriously",
+      "Scorched is funniest on content that takes itself too seriously",
       "Try roasting the same content at different heat levels",
       "Hit 'Roast Again' to get completely different lines on the same content"
     ]
