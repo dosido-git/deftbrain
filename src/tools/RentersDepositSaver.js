@@ -219,12 +219,19 @@ const US_ABBR = {
 };
 const stateFromAddress = (addr) => {
   if (!addr) return '';
-  // Full name wins over an abbreviation: "Washington Street, Portland, OR" must
-  // not resolve to Washington.
-  const named = US_STATES.find(st => new RegExp(`(^|[,\\s])${st}([,\\s]|$)`, 'i').test(addr));
-  if (named) return named;
-  const m = addr.match(/[,\s]([A-Za-z]{2})\s*\d{5}(-\d{4})?\s*$/) || addr.match(/,\s*([A-Za-z]{2})\s*$/);
-  return m ? (US_ABBR[m[1].toUpperCase()] || '') : '';
+  // Order matters, and the first version had it backwards. It matched full
+  // state names anywhere in the string before falling back to the code, on the
+  // theory that a name is more specific — but American streets are named after
+  // states. "900 N Michigan Ave, Chicago, IL 60611" resolved to Michigan.
+  //
+  // The state lives at the END of an address, so only the last two
+  // comma-separated parts are considered, and the postal code wins outright.
+  const parts = addr.split(',').map(x => x.trim()).filter(Boolean);
+  const tail = parts.slice(-2).join(', ');
+  const abbr = tail.match(/\b([A-Za-z]{2})\s+\d{5}(?:-\d{4})?\s*$/) || tail.match(/\b([A-Za-z]{2})\s*$/);
+  if (abbr && US_ABBR[abbr[1].toUpperCase()]) return US_ABBR[abbr[1].toUpperCase()];
+  const named = US_STATES.find(st => new RegExp(`(^|[,\\s])${st}([,\\s]|$)`, 'i').test(tail));
+  return named || '';
 };
 
 const TODAY = new Date().toISOString().split('T')[0];
@@ -329,7 +336,12 @@ const RentersDepositSaver = ({ tool }) => {
   const canSubmitRef = useRef(false);
 
   // ── Persisted state (survives tab close) ──
-  const [country, setCountry]           = usePersistentState('rds-country', 'US');
+  // Defaults to France so the country matches the example address above it —
+  // 12 Rue Sainte-Catherine, Bordeaux — instead of an example from one country
+  // sitting over a selector reading another. France needs no region, so this
+  // does not add a required field; a US renter changes one dropdown and the
+  // address parser fills their state from the street they type.
+  const [country, setCountry]           = usePersistentState('rds-country', 'FR');
   const [region, setRegion]             = usePersistentState('rds-region', '');
   const [rooms, setRooms]               = usePersistentState('rds-rooms', buildDefaultRooms());
   const [address, setAddress]           = usePersistentState('rds-address', '');
