@@ -129,13 +129,13 @@ const HiddenPaths = ({ tool }) => {
 
   const handleReset = useCallback(() => {
     setResults(null); setError('');
-    setSystem(''); setProblem(''); setWhatTried(''); setGoal('');
-  }, [setResults, setError, setSystem, setProblem, setWhatTried, setGoal]);
+    setSystem(''); setProblem(''); setWhatTried(''); setGoal(''); setOfficialAnswer('');
+  }, [setResults, setError, setSystem, setProblem, setWhatTried, setGoal, setOfficialAnswer]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    let out = `🏴‍☠️ ${t('rb_copy_header')}\n\n${t('rb_copy_system')} ${system}\n${t('rb_copy_problem')} ${problem}\n\n`;
+    let out = `🚪 ${t('rb_copy_header')}\n\n${t('rb_copy_system')} ${system}\n${t('rb_copy_problem')} ${problem}\n\n`;
     out += `${t('rb_copy_ladder')}\n`;
     results?.the_ladder?.forEach(r => {
       out += `${t('rb_copy_step')} ${r.rung}: ${r.title}\n${r.action}\n`;
@@ -205,12 +205,12 @@ const HiddenPaths = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.tagline ?? t('rb_tagline')}
+                  <span className="me-2 text-lg">{tool?.icon ?? '🚪'}</span>{tool?.tagline ?? t('rb_tagline')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(results || goal.trim() || problem.trim() || system.trim() || whatTried.trim()) ? (
+              {(results || goal.trim() || problem.trim() || system.trim() || whatTried.trim() || officialAnswer.trim()) ? (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   ↺ {t('start_over')}
                 </button>
@@ -277,8 +277,8 @@ const HiddenPaths = ({ tool }) => {
           <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !system.trim() || !problem.trim()}
             className={`relative w-full py-3 rounded-xl font-bold disabled:opacity-40 flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏴‍☠️'}</span> {t('rb_finding')}</>
-              : <><span>{tool?.icon ?? '🏴‍☠️'}</span> {t('rb_find_leverage')}</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚪'}</span> {t('rb_finding')}</>
+              : <><span>{tool?.icon ?? '🚪'}</span> {t('rb_find_leverage')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -304,7 +304,7 @@ const HiddenPaths = ({ tool }) => {
       {/* ── Loading state ── */}
       {loading && (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-8 flex flex-col items-center gap-3`}>
-          <span className="text-4xl animate-spin inline-block">{tool?.icon ?? '🏴‍☠️'}</span>
+          <span className="text-4xl animate-spin inline-block">{tool?.icon ?? '🚪'}</span>
           <p className={`text-sm font-semibold ${c.textSecondary}`}>{t('rb_finding')}</p>
           <p className={`text-xs ${c.textMuted}`}>{t('rb_loading_sub')}</p>
         </div>
@@ -318,7 +318,7 @@ const HiddenPaths = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🏴‍☠️'}</span>{tool?.tagline ?? t('rb_tagline')}
+                  <span className="me-2 text-lg">{tool?.icon ?? '🚪'}</span>{tool?.tagline ?? t('rb_tagline')}
                 </p>
               </div>
             </div>
