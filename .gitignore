@@ -68,3 +68,11 @@ src/i18n/locales/generated/
 # also only ever built by hand — `npm run build:og` is not in prebuild/build/
 # postbuild — so no deploy depends on these being present.
 og-emoji-cache/
+
+# Working notes and tool-rewrite critiques. Bruce's drafts, plus the .pages,
+# .pdf and .png exports that come with them — input to the work, not part of
+# the app. `docs/*.pdf` above only ever caught the top level; these live in
+# subdirectories.
+docs/tool rewrites/
+docs/*.txt
+docs/*.webloc
