@@ -27,7 +27,7 @@
  *
  * Light mode only, like the rest of the dashboard (see DashBoard.js CLR).
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // "120+", not "125". The decade floor is computed from the catalog, so the
 // copy stays true as tools land or merge and never needs revisiting — the
@@ -235,6 +235,21 @@ const SectionTitle = ({ children, style }) => (
 const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
   const { t } = useTranslation();
   const [situation, setSituation] = useState(null);
+  const answerRef = useRef(null);
+
+  // On a phone the situations wrap to five or six rows, so the panel they
+  // reveal opens below the fold — the pill changes colour and nothing else
+  // appears to happen. Measured at 375x812 from the top of the page: the first
+  // link landed at y=839 against an 812 viewport, off-screen for every one of
+  // the eleven. block:'nearest' scrolls the least amount that makes it visible,
+  // so a desktop reader who can already see it gets no movement at all.
+  useEffect(() => {
+    if (!situation || !answerRef.current) return;
+    const r = answerRef.current.getBoundingClientRect();
+    if (r.top >= 0 && r.bottom <= window.innerHeight) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    answerRef.current.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
+  }, [situation]);
   const navigate = useNavigate();
   const [ask, setAsk] = useState('');
 
@@ -265,13 +280,24 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
            breakpoint can never match on paper. Type stays at screen size —
            matching the screen's 1152px layout exactly would mean scaling the
            whole page to about 62%, which puts body copy near 8pt. */
+        /* Desktop only: below lg these rows stack, and a flex-basis on the
+           main axis of a column is a height. */
+        @media (min-width: 1024px) {
+          .db-hi-why-copy       { flex: 1 1 480px; }
+          .db-hi-why-img        { flex: 0 1 400px; }
+          .db-hi-curious-copy   { flex: 1 1 330px; }
+          .db-hi-curious-tiles  { flex: 1 1 340px; }
+        }
+
         @media print {
           .db-hi-why      { flex-direction: row !important; align-items: center !important; }
           .db-hi-why > div { flex: 1 1 auto !important; min-width: 0; }
+          .db-hi-curious-copy  { flex: 1 1 330px !important; }
+          .db-hi-curious-tiles { flex: 1 1 340px !important; }
           /* 38%, not the 44% that first looked right: the three-step row
              below cannot shrink past its content, so a wider image left the
              third step running underneath it. Wrapping is the safety net. */
-          .db-hi-why > img { flex: 0 0 38% !important; max-width: 38% !important; }
+          .db-hi-why > img { flex: 0 0 38% !important; max-width: 38% !important; height: auto !important; }
           .db-hi-steps     { flex-wrap: wrap !important; }
           .db-hi-cards    { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
           .db-hi-curious  { flex-direction: row !important; align-items: center !important; }
@@ -417,7 +443,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
           </div>
 
           {situation && (
-            <div style={{
+            <div ref={answerRef} style={{
               marginTop: d(10), background: '#fff', border: `1px solid ${CLR.sand200}`,
               borderRadius: d(14), padding: `${d(12)}px ${d(14)}px`,
             }}>
@@ -524,7 +550,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
           the whole of "Why DeftBrain?" and the three steps. */}
       <section data-db-section="why" style={{ marginBottom: SECTION }}>
         <div className="db-hi-why flex flex-col lg:flex-row lg:items-center gap-8">
-          <div style={{ flex: '1 1 480px', minWidth: 0 }}>
+          <div className="db-hi-why-copy" style={{ minWidth: 0 }}>
             <SectionTitle>Why DeftBrain?</SectionTitle>
             <p style={{ marginTop: d(10), fontSize: b(15), fontWeight: 600, color: CLR.warm800 }}>
               Better questions lead to better decisions.
@@ -585,9 +611,8 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
             width={1200} height={800}
             loading="lazy" decoding="async"
             alt="A signpost beside a winding path at sunrise, pointing to Clarity, Confidence and Next Steps."
-            style={{
-              flex: '0 1 400px', width: '100%', maxWidth: 400, height: 'auto', display: 'block',
-            }}
+            className="db-hi-why-img"
+            style={{ width: '100%', maxWidth: 400, height: 'auto', display: 'block' }}
           />
         </div>
       </section>
@@ -750,7 +775,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
               display: 'block', mixBlendMode: 'multiply',
             }}
           />
-          <div style={{ flex: '1 1 330px', minWidth: 0 }}>
+          <div className="db-hi-curious-copy" style={{ minWidth: 0 }}>
             <SectionTitle style={{ fontSize: d(19), lineHeight: 1.4 }}>
               Not every visit begins with a problem.<br />Sometimes it begins with curiosity.
             </SectionTitle>
@@ -762,7 +787,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
               block, and auto-fit kept resolving to three and orphaning
               "More" on a row of its own. */}
           <div className="db-hi-curious-tiles" style={{
-            flex: '1 1 340px', display: 'grid', gap: d(9),
+            display: 'grid', gap: d(9),
             gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           }}>
             {CURIOUS.map(c => (
