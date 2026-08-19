@@ -216,7 +216,7 @@ const TOOL_IDS = [
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
 'RecipeChaosSolver','RechargeRadar','RentersDepositSaver','ResearchDecoder','RoastMe','ReadTheRoom','RoommateCourt',
- 'RulebookBreaker','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
+ 'HiddenPaths','SafeWalk','ScamRadar','PronounceItRight','SensoryMinefieldMapper','SignalVsNoise',
   'SixDegreesOfMe','SkillGapMap','SleepArchitect','SocialBatteryAdvisor','SpiralStopper','SubSweep','SubscriptionTamer',
   'SubscriptionGuiltTrip','TaskAvalancheBreaker','TheAlibi','TheDebrief',
   'TheFinalWord','TheGap','TheRunthrough','TimeWarp','TipOfTongue','ToastWriter',
@@ -265,6 +265,7 @@ const LEGACY_REDIRECTS = {
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
   '/ApologyCalibrator':          '/Mend',
+  '/RulebookBreaker':            '/HiddenPaths',
   '/ArgueBetter':                '/ArgueSmarter',
   '/argue-better':               '/ArgueSmarter',
   '/BillGuiltEraser':            '/BillRescue',
@@ -336,6 +337,7 @@ const LEGACY_REDIRECTS = {
   // the old id in TOOL_IDS would send /apologycalibrator to
   // /ApologyCalibrator and only then to /Mend.
   '/apologycalibrator':          '/Mend',
+  '/rulebookbreaker':            '/HiddenPaths',
   '/apology-calibrator':         '/Mend',
   '/say-it-right':               '/PronounceItRight',
   '/where-did-it-go':            '/WhereDidTheTimeGo',

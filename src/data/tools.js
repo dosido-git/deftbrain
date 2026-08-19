@@ -977,7 +977,7 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "RulebookBreaker",
+  id: "HiddenPaths",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -1000,17 +1000,17 @@ export const tools = [
     { q: "When should I NOT try to work around a rule?",
       a: "When the rule is safety-related, when the workaround requires misrepresenting facts, or when the relationship is worth more than the win. Part of the tool's output is win-likelihood — and sometimes the honest answer is that this rule holds, and your effort is better spent on an alternative." },
   ],
-  seoDescription: "When they say 'nothing we can do,' find the loopholes, magic phrases, and escalation ladder that actually work. Maps any bureaucracy — insurance, HOA. Free.",
-  seoTitle: "Bureaucracy Loophole & Escalation Finder",
-  title: "Rulebook Breaker",
-  tagline: "The loopholes, magic words, and escalation ladder nobody tells you about",
+  seoDescription: "Told no by an insurer, agency, HOA or provider? Find the appeal routes, documented exceptions, regulators and decision-makers that the first answer never mentions. Free, no signup.",
+  seoTitle: "Appeals, Exceptions & Escalation Paths",
+  title: "Hidden Paths",
+  tagline: "The escalation paths, overlooked options, and decision-makers most people never discover.",
   tags: ['complaint', 'escalate', 'insurance', 'landlord', 'hoa', 'customer service', 'dispute', 'refund', 'bureaucracy', 'rights', 'loophole', 'fight back', 'appeal'],
-  icon: "🏴‍☠️",
+  icon: "🚪",
   categories: ['The Grind', 'Loot'],
   headerColor: "#d4dde8",
-  description: "Maps the undocumented paths through any bureaucratic system — the loopholes nobody advertises, the escalation ladder that actually works, the magic phrases that trigger different handling, and the regulatory bodies that have real teeth. For when the official answer is 'nothing we can do' and you know that's wrong.",
+  description: "Bureaucratic systems often have appeal processes, exceptions, regulators, and escalation paths that aren't obvious from the first answer you receive. We'll help you identify the next steps, the right questions to ask, and the paths most people never discover.",
   guide: {
-      overview: "Every formal system has informal architecture. RulebookBreaker maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
+      overview: "Every formal system has informal architecture. Hidden Paths maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.",
       howToUse: [
         "Name the system — Comcast, health insurance, HOA, landlord, university, IRS, airline",
         "Describe the specific problem and the outcome you want",

@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "76554c042f45ba5e4e6a37ecd2c4b794861c31e2",
+  "hash": "8535edf19bc1207d6a8aa12ed6afd125ddafe85b",
   "lastmod": "2026-08-19"
  },
  "static:about": {
@@ -162,5 +162,9 @@
  "tool:WrongAnswersOnly": {
   "hash": "696a3a612e84dcfe42ac4a8c76998be7fdd53700",
   "lastmod": "2026-08-14"
+ },
+ "tool:HiddenPaths": {
+  "hash": "21b902c0ea15ac3576faed8798c0020dbdda4ba1",
+  "lastmod": "2026-08-19"
  }
 }

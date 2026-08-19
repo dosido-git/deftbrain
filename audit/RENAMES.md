@@ -8,6 +8,7 @@ Rows point at the **current final name** (chains are collapsed — e.g. SubSweep
 
 | Old name | New name | Notes |
 |---|---|---|
+| RulebookBreaker | Hidden Paths | Renamed 2026-08-19. "Rulebook Breaker" promised beating the system; the tool's actual job is explaining a system that was never built to explain itself. The voice moved with the name — loopholes and leverage became documented exceptions and the people authorised to decide. |
 | ApologyCalibrator | Mend | Renamed 2026-08-13. "Calibrator" was the only word on the page that sounded like software — everything around it reads "This needs a real conversation", "Today's only job". 301. Backend endpoint stays `/api/apology-calibrator` (locked tool; renaming it would invalidate the golden sample). |
 | ArgueBetter | ArgueSmarter | Renamed 2026-08-14. "Argue Better" pulled the experience toward competition; the tool's job is better thinking, not better arguing. Display name, id, component file and 301 all moved. **Backend route stays `argue-better.js` / `/api/argue-better-*` and i18n stays `dm_`** — same as Mend, which kept `apology-calibrator.js`. |
 | ArgumentSimulator | ArgueSmarter | Folded into Debate Me (thinking-cluster consolidation, 2026-07-06); Debate Me then renamed Argue Better 2026-07-10. 301. |

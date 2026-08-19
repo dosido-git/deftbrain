@@ -17,7 +17,7 @@ const WIN_LIKELIHOOD_CONFIG = {
   very_low:  { icon: '🔴' },
 };
 
-const RulebookBreaker = ({ tool }) => {
+const HiddenPaths = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -84,6 +84,7 @@ const RulebookBreaker = ({ tool }) => {
   const [problem, setProblem] = useState('');
   const [whatTried, setWhatTried] = useState('');
   const [goal, setGoal] = useState('');
+  const [officialAnswer, setOfficialAnswer] = useState('');
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState({ loopholes: true, phrases: true, regulatory: false, nuclear: false });
 
@@ -104,6 +105,7 @@ const RulebookBreaker = ({ tool }) => {
     setError(''); setResults(null);
     try {
       const data = await callToolEndpoint('rulebook-breaker', {
+        officialAnswer: officialAnswer.trim() || null,
         system: system.trim(),
         problem: problem.trim(),
         whatTried: whatTried.trim() || undefined,
@@ -117,10 +119,10 @@ const RulebookBreaker = ({ tool }) => {
         ...prev,
       ].slice(0, 6));
     } catch (e) { setError(e.message || t('rb_error')); }
-  }, [system, problem, whatTried, goal, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [system, problem, whatTried, goal, officialAnswer, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('RulebookBreaker', SYSTEM_EXAMPLES);
+    const ex = pickExample('HiddenPaths', SYSTEM_EXAMPLES);
     setSystem(ex.system); setProblem(ex.problem); setResults(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults, setSystem, setProblem]);
@@ -232,6 +234,16 @@ const RulebookBreaker = ({ tool }) => {
             <textarea value={problem} onChange={e => setProblem(e.target.value)}
               placeholder={t('rb_problem_ph')}
               rows={3} maxLength={600}
+              className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
+          </div>
+
+          <div>
+            <label className={`block text-sm font-semibold mb-1.5 ${c.labelText}`}>
+              {t('rb_official_label')} <span className={`font-normal ${c.textMuted}`}>{t('rb_optional')}</span>
+            </label>
+            <textarea value={officialAnswer} onChange={e => setOfficialAnswer(e.target.value)}
+              placeholder={t('rb_official_ph')}
+              rows={2} maxLength={300}
               className={`w-full px-4 py-3 rounded-xl border text-sm resize-none ${c.input}`} />
           </div>
 
@@ -505,5 +517,5 @@ const RulebookBreaker = ({ tool }) => {
   );
 };
 
-RulebookBreaker.displayName = 'RulebookBreaker';
-export default RulebookBreaker;
+HiddenPaths.displayName = 'HiddenPaths';
+export default HiddenPaths;

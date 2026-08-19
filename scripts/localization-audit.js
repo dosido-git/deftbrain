@@ -110,7 +110,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/AnalogyEngine.js',
   'src/tools/ColdOpenCraft.js',
   'src/tools/PartyArchitect.js',
-  'src/tools/RulebookBreaker.js',
+  'src/tools/HiddenPaths.js',
   'src/tools/ComebackCooker.js',
   'src/tools/FanTheory.js',
   'src/tools/Giftology.js',
