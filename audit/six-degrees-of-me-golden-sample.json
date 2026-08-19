@@ -326,8 +326,7 @@
             "node": "Angst vor Ablehnung",
             "tag": "emotion"
           }
-        ],
-        "merge_notes": "Keine Knoten beziehen sich auf das gleiche Konzept. Alle fünf Knoten sind semantisch distinkt und sollten nicht zusammengeführt werden."
+        ]
       }
     },
     {

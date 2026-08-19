@@ -267,7 +267,7 @@ router.post('/six-degrees/tag-nodes', rateLimit(DEFAULT_LIMITS), async (req, res
     const { nodes, userLanguage } = req.body;
     const lang = withLanguage('', userLanguage);
 
-    const prompt = `Categorize these life-concept nodes into semantic tags. Also identify nodes that refer to the SAME concept (should be merged).
+    const prompt = `Categorize these life-concept nodes into semantic tags.
 
 NODES: ${(nodes || []).join(', ')}
 

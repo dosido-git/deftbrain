@@ -23,6 +23,14 @@ const PROFILE_CATEGORIES = [
 ];
 
 // id is the backend constraint enum; labelKey/descKey are localized display strings.
+const PAIRS = [
+  { aKey: 'sdm_pair1_a', bKey: 'sdm_pair1_b' },
+  { aKey: 'sdm_pair2_a', bKey: 'sdm_pair2_b' },
+  { aKey: 'sdm_pair3_a', bKey: 'sdm_pair3_b' },
+  { aKey: 'sdm_pair4_a', bKey: 'sdm_pair4_b' },
+  { aKey: 'sdm_pair5_a', bKey: 'sdm_pair5_b' },
+];
+
 const CHALLENGES = [
   { id: 'short',          labelKey: 'sdm_ch_short_label',         emoji: '⚡', descKey: 'sdm_ch_short_desc' },
   { id: 'long',           labelKey: 'sdm_ch_long_label',          emoji: '🌀', descKey: 'sdm_ch_long_desc' },
@@ -195,6 +203,7 @@ const SixDegreesOfMe = ({ tool }) => {
 
   // ── Session: v2 Challenge ──
   const [challengeMode, setChallengeMode] = useState(null);
+  const [showChallenge, setShowChallenge] = useState(false);
 
   // ── Session: v2 Between Us ──
   const [betweenNameA, setBetweenNameA] = useState('');
@@ -1145,11 +1154,11 @@ const SixDegreesOfMe = ({ tool }) => {
   // TABS
   // ══════════════════════════════════════════
   const TABS = [
-    { id: 'chain', label: t('sdm_tab_chain') },
-    { id: 'web',   label: graphData ? t('sdm_tab_web_count', { n: graphData.nodes.length }) : t('sdm_tab_web') },
-    { id: 'story', label: t('sdm_tab_story') },
-    { id: 'between', label: t('sdm_tab_between') },
-    { id: 'history', label: chainHistory.length ? t('sdm_tab_history_count', { n: chainHistory.length }) : t('sdm_tab_history') },
+    { id: 'chain', label: t('sdm_tab_chain'), sub: t('sdm_tab_chain_sub') },
+    { id: 'web',   label: graphData ? t('sdm_tab_web_count', { n: graphData.nodes.length }) : t('sdm_tab_web'), sub: t('sdm_tab_web_sub') },
+    { id: 'story', label: t('sdm_tab_story'), sub: t('sdm_tab_story_sub') },
+    { id: 'between', label: t('sdm_tab_between'), sub: t('sdm_tab_between_sub') },
+    { id: 'history', sub: t('sdm_tab_history_sub'), label: chainHistory.length ? t('sdm_tab_history_count', { n: chainHistory.length }) : t('sdm_tab_history') },
   ];
 
   // ══════════════════════════════════════════
@@ -1165,7 +1174,7 @@ const SixDegreesOfMe = ({ tool }) => {
               <h2 className={`text-2xl font-bold ${c.text}`}>
                 <span className="me-2">{tool?.icon ?? '🔗'}</span>{tool?.title ?? 'Six Degrees of Me'}
               </h2>
-              <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? 'Find the hidden chains between any two parts of your life'}</p>
+              <p className={`text-sm ${c.textSecondary}`}>{t('sdm_tagline')}</p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {(result || thingA.trim() || thingB.trim() || betweenResult) && (
@@ -1180,9 +1189,10 @@ const SixDegreesOfMe = ({ tool }) => {
       <div className="flex gap-1 pt-3 border-b overflow-x-auto" style={{ borderColor: isDark ? '#3f3f46' : '#e2e8f0' }}>
         {TABS.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+            className={`px-3 py-2 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap text-start ${
               activeTab === tab.id ? c.tabActive : c.tabInactive}`}>
-            {tab.label}
+            <span className="block">{tab.label}</span>
+            {tab.sub && <span className={`block text-[10px] font-normal ${c.textMuted}`}>{tab.sub}</span>}
           </button>
         ))}
       </div>
@@ -1228,9 +1238,32 @@ const SixDegreesOfMe = ({ tool }) => {
               </div>
             </div>
 
-            {/* Challenge mode pills */}
+            {/* The gallery. This tool's difficulty is not knowing what to
+                type — it is never having considered that two particular
+                things might be connected. Reading the pairs is the pitch;
+                one tap fills both boxes. */}
             <div className="mb-4">
-              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_challenge_mode_label')}</p>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2`}>{t('sdm_try_these')}</p>
+              <div className="flex flex-col gap-1.5">
+                {PAIRS.map((pr, i) => (
+                  <button key={i} onClick={() => { setThingA(t(pr.aKey)); setThingB(t(pr.bKey)); }}
+                    className={`text-start text-[11px] px-2.5 py-1.5 rounded-lg border transition-all ${c.pillInactive}`}>
+                    {t(pr.aKey)} <span className={`inline-block rtl:-scale-x-100 ${c.textMuted}`}>→</span> {t(pr.bKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Challenge mode pills — collapsed. Not because they are bad,
+                because they are advanced: the first run should be two boxes
+                and a button. */}
+            <div className="mb-4">
+              <button onClick={() => setShowChallenge(v => !v)} aria-expanded={showChallenge}
+                className={`flex items-center gap-1.5 text-[11px] font-bold ${c.accentTxt}`}>
+                {t('sdm_make_it_harder')} <Caret open={showChallenge} />
+              </button>
+              {showChallenge && (<>
+              <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuted} mb-2 mt-2`}>{t('sdm_challenge_mode_label')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {CHALLENGES.map(ch => (
                   <button key={ch.id}
@@ -1247,6 +1280,7 @@ const SixDegreesOfMe = ({ tool }) => {
                   🎯 {t(CHALLENGES.find(ch => ch.id === challengeMode)?.descKey)}
                 </p>
               )}
+              </>)}
             </div>
 
             <p className={`text-[11px] ${c.textMuted} mb-3`}>
