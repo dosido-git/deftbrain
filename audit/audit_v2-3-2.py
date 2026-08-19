@@ -800,7 +800,10 @@ for name, fpath in tools:
     # RentersDepositSaver, 2026-08-18: the history was a list of the addresses
     # someone had inspected. Low value to them, and a record of where a person
     # has lived is not something to keep by default.
-    _NO_HISTORY_TOOLS = {'RentersDepositSaver'}
+    # RoastMe, 2026-08-19: the history was a list of the things a person had
+    # asked to be mocked for. Keeping that is a worse idea the longer you look
+    # at it.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

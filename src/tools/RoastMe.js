@@ -102,7 +102,6 @@ const RoastMe = ({ tool }) => {
 
   // ── Persistent state ──
   const [results, setResults] = usePersistentState('roastme-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('roastme-history', []);
 
   // ── API ──
   const handleReset = () => { setContent(''); setResults(null); setError(''); };
@@ -121,15 +120,10 @@ const RoastMe = ({ tool }) => {
         userRegion,
       });
       setResults(data);
-      setSessionHistory(prev => [
-        // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-        { id: Date.now(), date: new Date().toISOString(), preview: content.slice(0, 40), result: data },
-        ...prev,
-      ].slice(0, 6));
     } catch (err) {
       setError(err.message || t('rm_error'));
     }
-  }, [content, contentType, heatLevel, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [content, contentType, heatLevel, callToolEndpoint, setResults, userLocale, userCurrency, userRegion, t]);
 
   // ── buildFullText ──
   const buildFullText = useCallback(() => {
@@ -364,23 +358,6 @@ const RoastMe = ({ tool }) => {
         </div>
       )}
       {/* ── History ── */}
-      {sessionHistory?.length > 0 && (
-        <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('rm_recent_roasts')}</h3>
-          <div className="space-y-1.5">
-            {sessionHistory.map(entry => (
-              <button key={entry.id}
-                onClick={() => setResults(entry.result)}
-                className={`w-full text-start px-3 py-2 rounded-lg ${c.btnSecondary} text-xs flex items-center gap-2`}>
-                <span className={c.textMuted}>
-                  {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                </span>
-                <span className={`${c.text} truncate`}>{entry.preview}{entry.preview?.length >= 40 ? '…' : ''}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
