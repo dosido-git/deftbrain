@@ -1053,7 +1053,7 @@ const RentersDepositSaver = ({ tool }) => {
             <button title={t('cmd_enter')}
               onClick={generateReport}
               disabled={streamLoading || !step2Valid}
-              className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[44px]`}
+              className={`relative flex items-center gap-2 px-6 sm:pe-16 py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40 transition-colors min-h-[44px]`}
             >
               {streamLoading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🏦'}</span> {t('rds_generating')}</>
