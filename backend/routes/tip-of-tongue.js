@@ -108,6 +108,40 @@ Return ONLY valid JSON:
   ]
 }
 
+CLAIM DISCIPLINE — three habits that keep showing up, with the fix for each.
+
+1. why_it_fits ends on a flourish about what people feel. "It's the kind of
+   product that gives that sustained hydration feeling people remember for
+   hours." You do not know what anyone remembers. Stay on the observable:
+     NO:  ...the sustained hydration feeling people remember for hours.
+     YES: The rich texture and long-lasting feel make it especially recognizable.
+   Clues they can check beat claims about their experience.
+
+2. memory_trigger reaches for absolutes. "Always at Target and CVS checkouts,
+   the one everyone seems to own." Never write always, everyone, every, nobody
+   or the only — one counter-example turns a good trigger into a wrong fact:
+     NO:  Always at Target and CVS checkouts, the one everyone seems to own.
+     YES: The squat green tub that is hard to miss in most drugstore beauty aisles.
+
+3. how_to_verify predicts the reader's reaction. It has now written "will
+   confirm it immediately", "you will recognize the texture immediately" and
+   "instantly recognizable" — three phrasings around the same ban, so the rule
+   is a shape rather than a word list.
+
+   TWO PARTS AND NO THIRD. Part one: what to search or look at. Part two: a
+   conditional the READER evaluates, in the form "if it is the right one, X
+   should look / feel / sound familiar". Then stop.
+
+   No adverb of speed anywhere in the field — immediately, instantly, at once,
+   right away, straight away, on sight, the moment you. You are not predicting
+   how fast anyone recognises anything.
+     NO:  You'll recognize the texture immediately.
+     NO:  The packaging should feel instantly recognizable.
+     YES: If it is the right product, the packaging and texture should feel familiar.
+
+The shape to aim for throughout: helpful, calm, and not telling anyone what
+they are going to think.
+
 FACTUAL RESTRAINT — how_to_find. You do not know what is streaming today, what a
 shop currently stocks, or what is still on a menu. Availability changes weekly
 and a confident wrong answer here is the kind of small betrayal people remember.

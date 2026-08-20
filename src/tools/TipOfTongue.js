@@ -456,9 +456,37 @@ const TipOfTongue = ({ tool }) => {
         {/* Cross-refs */}
         <div className={'p-4 rounded-2xl border ' + c.card + ' ' + c.border}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 {t('tot_related')}</p>
+          {/* What follows an identification depends on what was identified. A
+              dish leads to cooking it; a film to catching up on it; a product,
+              scent or fabric to checking whether its reviews are real; a place
+              to going back. One link, chosen — not two shown to everybody, of
+              which one was always wrong. */}
           <div className={'space-y-1.5 text-xs ' + c.textSecondary}>
-            <p>{t('tot_xref_recipe')} <a href="/MiseEnPlace" className={linkStyle}>🍳 {t('tot_xref_mise')}</a> {t('tot_xref_mise_tail')}</p>
-            <p>{t('tot_xref_show')} <a href="/Bookmark" className={linkStyle}>🔖 {t('tot_xref_bookmark')}</a> {t('tot_xref_bookmark_tail')}</p>
+
+            {category === 'food' && (
+              <p>{t('tot_xref_food_q')}{' '}
+                <a href="/MiseEnPlace" className={linkStyle}>🍳 {t('tot_xref_mise')}</a>{' '}
+                {t('tot_xref_food_tail')}</p>
+            )}
+
+            {['product', 'scent', 'fabric'].includes(category) && (
+              <p>{t('tot_xref_product_q')}{' '}
+                <a href="/FakeReviewDetective" className={linkStyle}>🔍 {t('tot_xref_fakereview')}</a>{' '}
+                {t('tot_xref_product_tail')}</p>
+            )}
+
+            {category === 'place' && (
+              <p>{t('tot_xref_place_q')}{' '}
+                <a href="/DateNight" className={linkStyle}>💘 {t('tot_xref_datenight')}</a>{' '}
+                {t('tot_xref_place_tail')}</p>
+            )}
+
+            {!['food', 'product', 'scent', 'fabric', 'place'].includes(category) && (
+              <p>{t('tot_xref_watch_q')}{' '}
+                <a href="/Bookmark" className={linkStyle}>🔖 {t('tot_xref_bookmark')}</a>{' '}
+                {t('tot_xref_watch_tail')}</p>
+            )}
+
           </div>
         </div>
       </div>

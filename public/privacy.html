@@ -7,7 +7,6 @@
   <title>Privacy Policy | DeftBrain</title>
   <meta name="description" content="DeftBrain's privacy policy — what we collect, what we don't, and who else is involved when you use our tools.">
   <link rel="canonical" href="https://deftbrain.com/privacy">
-  <link rel="icon" href="/favicon.ico?v=2">
 
   <meta property="og:type"        content="website">
   <meta property="og:title"       content="Privacy Policy | DeftBrain">
@@ -120,9 +119,9 @@
     <div class="container prose">
 <h1>Privacy Policy</h1>
 <p><strong>Effective:</strong> May 1, 2026
-<strong>Last updated:</strong> July 15, 2026</p>
+<strong>Last updated:</strong> May 1, 2026</p>
 <h2>The short version</h2>
-<p>DeftBrain is built to need almost nothing from you. There are no accounts, no cookies, no third-party trackers, and nothing you type is stored on our servers. We count anonymous usage events ourselves (a page was viewed, a tool was run — never what you typed), and the only email address we ever hold is one you volunteer for the newsletter. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
+<p>DeftBrain is built to need almost nothing from you. There are no accounts, no emails collected, no cookies, no analytics, and nothing you type is stored on our servers. Anything you submit to a tool is sent to Anthropic&#39;s Claude API to generate a result, and the result comes back to your browser. That&#39;s the whole interaction in the typical case.</p>
 <p>A handful of specific tools also talk to other services to do their job — pronunciation audio goes through ElevenLabs, social-handle availability checks ping Instagram, X, TikTok, GitHub, and YouTube, and the fake-review tool fetches a URL you paste. Each of these is described below.</p>
 <p>This page explains what happens when you use DeftBrain, who else might see what you submit, and what control you have. It is written in plain English. It is not a contract drafted to obscure things.</p>
 <h2>Who we are</h2>
@@ -141,8 +140,8 @@
 <p>A privacy policy is partly a list of things companies don&#39;t want their users to think about. For DeftBrain:</p>
 <ul>
 <li><strong>No accounts.</strong> You can&#39;t create one, and we don&#39;t want you to.</li>
-<li><strong>No email required.</strong> Nothing on the site is gated behind an address — no &quot;create your free account&quot; prompt, no email-gated downloads. The one exception is voluntary: if you subscribe to The Deft Brief, we hold that address at our newsletter service (see &quot;The newsletter&quot; below).</li>
-<li><strong>No third-party analytics.</strong> No Google Analytics, no Plausible, no tracking scripts from anyone else. We count anonymous usage events ourselves — a page was viewed, a tool was run, a result was printed — with no cookies, no identifiers, and nothing that can be tied to you. Your input and results are never part of these events. Whether you&#39;ve visited before is known only to your own browser, which reports it as a simple yes or no. We also derive a coarse location (city/region/country) from your IP address at the moment an event is recorded, using an offline lookup we run ourselves — no third party ever sees your IP for this purpose. The IP address itself is never stored; only the resulting location string is kept.</li>
+<li><strong>No emails collected.</strong> No mailing list, no &quot;create your free account&quot; prompt, no email-gated downloads.</li>
+<li><strong>No analytics.</strong> No Google Analytics, no Plausible, no homemade tracking. As of the effective date of this policy, nothing on the site counts views, tracks events, or measures funnels.</li>
 <li><strong>No cookies.</strong> We don&#39;t set any. No first-party cookies, no third-party cookies, no consent banner. There&#39;s nothing to consent to.</li>
 <li><strong>No advertising.</strong> No ads, no retargeting pixels, no marketing partners.</li>
 <li><strong>No selling, sharing, or renting of personal information.</strong> Specifically and explicitly: we do not &quot;sell&quot; personal information as defined by California or any other US state privacy law. We have no users database to sell from.</li>
@@ -170,20 +169,12 @@
 <li><strong>Fake Review Detective.</strong> When you submit a URL to analyze, our server fetches that URL&#39;s HTML to extract reviews. The site you submit will see a request from our server&#39;s IP address, not yours. We pass a generic browser User-Agent string.</li>
 </ul>
 <p>If a tool we add later interacts with new third parties, this section will be updated in the same change that adds the tool.</p>
-<h2>The newsletter (only if you subscribe)</h2>
-<p>The site has an optional email subscription (&quot;The Deft Brief&quot;). If you choose to subscribe, your email address is the first — and only — piece of personal data DeftBrain deliberately holds about anyone, so here is exactly what happens to it:</p>
-<ul>
-<li>Your address is sent to <strong>Buttondown</strong>, the newsletter service we use, and stored there. It is not written to our own servers or logs. Buttondown&#39;s privacy policy: <a href="https://buttondown.com/legal/privacy">https://buttondown.com/legal/privacy</a>.</li>
-<li>Subscription is <strong>double opt-in</strong>: you get a confirmation email, and nothing further is sent unless you click it.</li>
-<li>The address is used for the dispatches and nothing else. It is never sold, shared, or cross-referenced with tool usage — we couldn&#39;t connect it to your tool use even if we wanted to, since tool use is anonymous.</li>
-<li>Every email contains a one-click unsubscribe that takes effect immediately and deletes you from the list. You can also email <a href="mailto:privacy@deftbrain.com">privacy@deftbrain.com</a> and we&#39;ll remove you by hand.</li>
-</ul>
 <h2>What about server logs?</h2>
 <p>Railway captures standard HTTP request information — IP address, user agent, URL, status code, response time — and retains it for 7 days. This is a typical web-hosting practice and is the legal basis under which essentially every website operates.</p>
 <p>Under GDPR, an IP address is considered personal data even though it doesn&#39;t always feel like it. We rely on Article 6(1)(f) (&quot;legitimate interests&quot; — running and securing a web service) as the lawful basis for processing this information.</p>
 <p>Our application code does not write user-submitted content to logs. We audited and removed all such logging on the effective date of this policy, and added an automated check to prevent it from being reintroduced.</p>
 <h2>Your browser&#39;s storage</h2>
-<p>Some tools (DifficultTalkCoach, Social Battery Advisor, Friendship Fade Alerter, and others) offer to remember your work between sessions. They do this by writing to your browser&#39;s <code>localStorage</code>, a built-in browser feature that lets a website store small amounts of data on your own device.</p>
+<p>Some tools (DifficultTalkCoach, Recharge Radar, Friendship Fade Alerter, and others) offer to remember your work between sessions. They do this by writing to your browser&#39;s <code>localStorage</code>, a built-in browser feature that lets a website store small amounts of data on your own device.</p>
 <p>Three things to know:</p>
 <ol>
 <li>The data stays on your device. We can&#39;t read it, and it isn&#39;t sent to any server.</li>
@@ -219,11 +210,6 @@
 <td>Tool data via localStorage</td>
 <td>Until you clear it</td>
 </tr>
-<tr>
-<td>Buttondown</td>
-<td>Email address (only if you subscribe)</td>
-<td>Until you unsubscribe</td>
-</tr>
 </tbody></table>
 <h2>International data transfers</h2>
 <p>DeftBrain operates from Massachusetts, USA. Anthropic, Railway, and ElevenLabs are US-based companies. If you access DeftBrain from outside the United States — from the EU, UK, or elsewhere — your tool input is processed in the US.</p>
@@ -254,9 +240,6 @@
 <h2>Revision history</h2>
 <ul>
 <li><strong>2026-05-01</strong> — Initial publication.</li>
-<li><strong>2026-07-03</strong> — &quot;No analytics&quot; rewritten to &quot;No third-party analytics&quot;: we now count anonymous, first-party usage events (no cookies, no identifiers) to learn which tools genuinely help. This entry exists because the old wording said we counted nothing, and that stopped being true.</li>
-<li><strong>2026-07-04</strong> — Added the newsletter section: an optional email subscription now exists, handled by Buttondown with double opt-in. A voluntarily given email address is the first personal data DeftBrain deliberately holds.</li>
-<li><strong>2026-07-15</strong> — Our first-party usage events now include a coarse location (city/region/country), derived from the IP address at the moment of the event using an offline lookup we run ourselves. No third party is involved and the IP address itself is discarded immediately — only the resulting location string is kept.</li>
 </ul>
 <hr>
 <p><em>This policy reflects our actual practices, not aspirational language. If anything you observe on the site contradicts what is written here, email <a href="mailto:privacy@deftbrain.com">privacy@deftbrain.com</a>. We will fix the practice or fix the policy, whichever is wrong.</em></p>
@@ -264,11 +247,11 @@
     </div>
   </main>
 
-  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#faf8f5">
-    <div style="max-width:1100px;margin:0 auto;padding:32px 20px;font-family:'DM Sans',system-ui,sans-serif">
-      <div style="max-width:560px">
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; The Deft Brief</p>
-        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">A short email about once a month: what shipped, and one tool worth knowing before life demands it. No spam &mdash; The Operator hates it more than you do. Unsubscribe in one click.</p>
+  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#f2ece1">
+    <div style="max-width:1100px;margin:0 auto;padding:44px 20px;font-family:'DM Sans',system-ui,sans-serif">
+      <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e0d7c6;border-radius:16px;padding:26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
+        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">One useful tool a month, in a short email &mdash; the one worth knowing about before life demands it. That is the whole thing. No spam, and unsubscribe in one click.</p>
         <form id="db-cap-form" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
           <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
           <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
@@ -299,6 +282,36 @@
         })
         .catch(function(){ msg.textContent='Something went wrong \u2014 try again.';
           btn.disabled=false; btn.textContent='Subscribe'; });
+    });
+  })();
+  </script>
+  <div style="text-align:center;margin:2.5rem auto 0;max-width:30rem;padding:0 1rem;font-family:'DM Sans',system-ui,sans-serif;">
+    <p style="font-size:1rem;font-weight:700;color:#1a2e44;margin:0;">No tool for your problem?</p>
+    <p style="font-size:0.9rem;color:#5a544a;margin:0.25rem 0 0.75rem;">Describe it &mdash; we build fast.</p>
+    <form id="db-idea-form" style="display:flex;gap:8px;">
+      <label for="db-idea-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Describe your problem</label>
+      <input id="db-idea-input" type="text" required maxlength="1000" placeholder="What are you trying to deal with?"
+        style="flex:1;min-width:0;padding:10px 16px;border-radius:12px;border:1px solid #e8e1d5;background:#fff;color:#1a2e44;font-size:14px;font-family:inherit;">
+      <button id="db-idea-btn" type="submit"
+        style="padding:10px 20px;border-radius:12px;border:0;background:#1a2e44;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">Send</button>
+    </form>
+    <p id="db-idea-msg" style="font-size:14px;font-weight:500;color:#1a2e44;margin:8px 0 0;"></p>
+  </div>
+  <script>
+  (function(){
+    var f=document.getElementById('db-idea-form'); if(!f) return;
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn=document.getElementById('db-idea-btn'), msg=document.getElementById('db-idea-msg');
+      var text=document.getElementById('db-idea-input').value.trim(); if(!text) return;
+      btn.disabled=true; btn.textContent='Sending\u2026';
+      fetch('/api/idea',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({problem:text,source:'guide-footer',path:location.pathname})})
+        .then(function(r){
+          if(r.ok){ f.style.display='none'; msg.textContent='\uD83D\uDE4F Got it \u2014 thank you. If we build it, it ships fast.'; }
+          else { msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; }
+        })
+        .catch(function(){ msg.textContent='Something went wrong \u2014 try again.'; btn.disabled=false; btn.textContent='Send'; });
     });
   })();
   </script>

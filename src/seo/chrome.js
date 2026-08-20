@@ -94,8 +94,8 @@ function getCaptureHTML() {
   return `  <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#f2ece1">
     <div style="max-width:1100px;margin:0 auto;padding:44px 20px;font-family:'DM Sans',system-ui,sans-serif">
       <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e0d7c6;border-radius:16px;padding:26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; The Deft Brief</p>
-        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">A short email about once a month: what shipped, and one tool worth knowing before life demands it. No spam &mdash; The Operator hates it more than you do. Unsubscribe in one click.</p>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
+        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">One useful tool a month, in a short email &mdash; the one worth knowing about before life demands it. That is the whole thing. No spam, and unsubscribe in one click.</p>
         <form id="db-cap-form" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
           <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
           <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
