@@ -53,7 +53,13 @@ const TheDebrief = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     btnPrimary:   isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
-    btnDis:       isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     border:       isDark ? 'border-zinc-700' : 'border-gray-200',
     success:      isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:      isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
@@ -451,7 +457,7 @@ const TheDebrief = ({ tool }) => {
       </div>
 
         <button title={t('cmd_enter')} onClick={submit} disabled={loading || !canSubmit}
-      className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
+      className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + ((!canSubmit) ? c.btnIdle : c.btnPrimary)}>
       {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('td_processing')}</>
         : mode === 'distill' ? <><span className="me-1">{tool?.icon ?? '📋'}</span> {t('td_extract')}</>
         : mode === 'followup' ? <><span>📨</span> {t('td_draft_followups')}</>

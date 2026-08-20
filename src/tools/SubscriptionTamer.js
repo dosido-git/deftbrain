@@ -136,6 +136,13 @@ const SubscriptionTamer = ({ tool }) => {
     text: isDark ? 'text-zinc-50' : 'text-slate-900',
     labelText: isDark ? 'text-zinc-300' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnDanger: isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300 border-red-700/50' : 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200',
     danger: isDark ? 'bg-red-900/20 border-red-700/50 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     success: isDark ? 'bg-emerald-900/20 border-emerald-700/50 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -733,7 +740,7 @@ const SubscriptionTamer = ({ tool }) => {
         {/* Analyze + Example buttons */}
         <div className="flex flex-wrap gap-3 mt-5">
           <button title={t('cmd_enter')} onClick={runAnalysis} disabled={validSubs.length === 0 || isRunning}
-            className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`relative flex-1 ${(validSubs.length === 0) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading && !scanning ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧹'}</span> {t('ss_analyze_btn')}</>}
           {!loading && (
             <kbd aria-hidden="true"

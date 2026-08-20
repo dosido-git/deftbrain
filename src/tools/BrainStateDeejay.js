@@ -157,6 +157,13 @@ const BrainStateDeejay = ({ tool }) => {
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     border:        isDark ? 'border-zinc-700' : 'border-slate-200',
     success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -709,7 +716,7 @@ const BrainStateDeejay = ({ tool }) => {
 
       <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || !currentState || !desiredState}
-      className={`relative disabled:opacity-40 flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
+      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
       {loading ? (
         <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
       ) : (
@@ -1078,7 +1085,7 @@ const BrainStateDeejay = ({ tool }) => {
           {/* New Playlist / Share Settings (#6) */}
           <button title={t('cmd_enter')} onClick={generate}
             disabled={loading || !currentState || !desiredState}
-            className={`relative w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ${c.btnPrimary}`}>
+            className={`relative w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
             {t('bsd_new_playlist')}
           {!loading && (
             <kbd aria-hidden="true"

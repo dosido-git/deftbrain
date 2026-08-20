@@ -60,7 +60,11 @@ const TipOfTongue = ({ tool }) => {
     border:        isDark ? 'border-[#3d3630]' : 'border-[#e8e1d5]',
     btnPrimary:    'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-[#332e2a] hover:bg-[#3d3630] text-[#c8c3b9] border border-[#3d3630]' : 'bg-[#f3efe8] hover:bg-[#e8e1d5] text-[#5e5042] border border-[#d5cab8]',
-    btnDis:        isDark ? 'bg-[#332e2a] text-[#5a544a] cursor-not-allowed' : 'bg-[#e8e1d5] text-[#8a8275] cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label do the work of being visible.
+    // Border clears 3:1 against the card in both themes, label clears 7:1.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     success:       isDark ? 'bg-[#5a8a5c]/10 border-[#5a8a5c]/40 text-[#7aba7c]' : 'bg-[#e8f0e8] border-[#5a8a5c]/30 text-[#3a6a3c]',
     warning:       isDark ? 'bg-[#c8872e]/10 border-[#c8872e]/30 text-[#d9a04e]' : 'bg-[#f9edd8] border-[#c8872e]/30 text-[#93541f]',
     danger:        isDark ? 'bg-[#b54a3f]/15 border-[#b54a3f]/40 text-[#e88880]' : 'bg-[#fceae8] border-[#e8a8a0] text-[#b54a3f]',
@@ -268,13 +272,15 @@ const TipOfTongue = ({ tool }) => {
       </div>
 
       <button title={t('cmd_enter')} onClick={identify} disabled={loading || !description.trim()}
-        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !description.trim() ? c.btnDis : c.btnPrimary)}>
+        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all '
+          + (loading ? c.btnPrimary : !description.trim() ? c.btnIdle : c.btnPrimary)}>
         {loading
           ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_searching')}</>
           : <><span>{tool?.icon ?? '💭'}</span> {t('tot_identify')}</>}
         {!loading && (
           <kbd aria-hidden="true"
-            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            className={'hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide '
+              + (description.trim() ? 'border-white/30 bg-white/15' : (isDark ? 'border-cyan-500/50 text-cyan-300' : 'border-cyan-600/50 text-cyan-800'))}>
             ⌘↵
           </kbd>
         )}
@@ -434,7 +440,7 @@ const TipOfTongue = ({ tool }) => {
               className={'w-full h-16 p-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm mb-3'} />
             <div className="flex gap-2">
               <button title={t('cmd_enter')} onClick={refine} disabled={loading}
-                className={'relative flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ' + (loading ? c.btnDis : c.btnPrimary)}>
+                className={'relative flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
                 {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
               {!loading && (
                 <kbd aria-hidden="true"

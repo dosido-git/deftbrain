@@ -78,6 +78,13 @@ const BrainDumpBuddy = ({ tool }) => {
       ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-cyan-500'
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 text-zinc-200 hover:bg-zinc-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -858,7 +865,7 @@ const BrainDumpBuddy = ({ tool }) => {
 
           {/* Structure button */}
           <button title={t('cmd_enter')} onClick={handleStructure} disabled={loading || !hasDump}
-          className={`relative w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all shadow-lg`}>
+          className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasDump) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
           {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🧠'}</span> {t('bdb_sorting')}</span> : <span><span>🧠</span> {t('bdb_structure_this')}</span>}
           {!loading && (
             <kbd aria-hidden="true"

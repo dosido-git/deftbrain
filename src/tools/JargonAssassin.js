@@ -42,6 +42,13 @@ const JargonAssassin = ({ tool }) => {
     textMuted:     isDark ? 'text-zinc-400'   : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
@@ -398,7 +405,7 @@ const JargonAssassin = ({ tool }) => {
         <textarea value={docText} onChange={e => { setDocText(e.target.value); if (e.target.value) { setFileBase64(null); setFileMediaType(null); setFileName(''); } }} placeholder={fileBase64 ? t('jarg_ph_file') : t('jarg_ph_paste')} rows={fileBase64 ? 3 : 8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
         <div className="flex justify-between"><span className={`text-xs ${c.textMuteded}`}>{t('jarg_chars', { count: docText.length.toLocaleString() })}</span>{docText.length > 40000 && <span className={`text-xs ${c.danger} border rounded px-2 py-0.5`}>⚠️ {t('jarg_may_truncate')}</span>}</div>
         <div className="flex gap-2">
-          <button title={t('cmd_enter')} onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`relative flex-1 py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}{!loading && (
+          <button title={t('cmd_enter')} onClick={handleTranslate} disabled={loading || (!docText.trim() && !fileBase64)} className={`relative flex-1 py-3 rounded-xl font-bold text-sm ${((!docText.trim() && !fileBase64)) ? c.btnIdle : c.btnPrimary}`}>{loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗡️'}</span> {t('jarg_working')}</> : <><span className='me-1'>{tool?.icon ?? '🗡️'}</span> {t('jarg_translate')}</>}{!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
               ⌘↵

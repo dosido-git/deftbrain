@@ -1482,12 +1482,30 @@ for name, fpath in tools:
             _cn_value = _btn_open[_start:_p]
         else:
             continue
+        # Exception (2026-08-20): c.btnIdle. PF-13 assumes the only way to show
+        # "not available yet" is to fade the button, and fading is what made
+        # these invisible: a disabled submit measured 1.08:1 against its own
+        # card in light mode and 1.10:1 in dark, because opacity-40 was applied
+        # on top of an already-muted fill. btnIdle replaces the fade with an
+        # outline — empty fill so it can never read as armed, but a 3:1 border
+        # and a 7:1 label so it is unmistakably a button. Same intent, better
+        # discharged. Named explicitly so arbitrary ternaries stay banned.
         # Exception (v2.8): pendingClass() from src/components/PendingAction.js.
         # It emits disabled:opacity-40 for every non-pending button and swaps in
         # a ring for the single button that is currently working — the one case
         # PF-13's flat rule cannot express. Naming the helper explicitly keeps
         # arbitrary `${loading ? a : b}` ternaries banned as before.
-        if 'disabled:opacity-40' not in _cn_value and 'pendingClass(' not in _cn_value:
+        # Exception (2026-08-20, second half): a button whose ONLY disable
+        # condition is the loading flag is never "unavailable" — it is busy, and
+        # busy is not a failure state. Those buttons swap their label and spin
+        # their icon, which distinguishes them perfectly well; fading them is
+        # how "working" ended up looking like "broken" on 92 tools.
+        _disabled_expr = re.search(r'disabled=\{([^{}]*)\}', _btn_open)
+        _only_loading = bool(_disabled_expr) and bool(re.fullmatch(
+            r'\s*(loading|isLoading|isRunning|isGenerating|busy|pending|generating)\s*',
+            _disabled_expr.group(1)))
+        if ('disabled:opacity-40' not in _cn_value and 'pendingClass(' not in _cn_value
+                and 'btnIdle' not in _cn_value and not _only_loading):
             _line_n = content[:_btn_m.start()].count('\n') + 1
             _pf13_violations.append(_line_n)
     if _pf13_violations:

@@ -62,6 +62,13 @@ const WrongAnswersOnly = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-[#2a5248]/30 border-[#3a6e60] text-[#e4f2f0]' : 'bg-[#fafefe] border-[#b8dcd8] text-[#1e3030]',
@@ -243,7 +250,7 @@ const WrongAnswersOnly = ({ tool }) => {
 
         <p className={`text-xs ${c.textMuted} mb-2`}>{t('wao_chaos_q')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}</p>
 
-        <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${(!question.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🙃'}</span> {t('wao_making')}</>
             : <><span>{tool?.icon ?? '🙃'}</span> {t('wao_run')}</>} {!loading && (

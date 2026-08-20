@@ -106,6 +106,13 @@ const BrainRoulette = ({ tool }) => {
     verdictComplicated: isDark ? 'text-slate-400'   : 'text-slate-500',
     verdictTrue:        isDark ? 'text-emerald-400' : 'text-emerald-600',
     btnDis:        'opacity-40 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     pillActive:    isDark ? 'bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500 shadow-sm' : 'bg-cyan-100 text-cyan-700 ring-2 ring-cyan-300 shadow-sm',
     pillInactive:  isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800',
     pillCustom:    isDark ? 'bg-cyan-900/30 text-cyan-300 ring-2 ring-cyan-500 shadow-sm' : 'bg-cyan-100 text-cyan-700 ring-2 ring-cyan-300 shadow-sm',
@@ -1234,7 +1241,7 @@ const BrainRoulette = ({ tool }) => {
             ) : !customTopic.trim() && (
               <div className="flex gap-3">
                 <button title={t('cmd_enter')} onClick={() => handleSpin(false)} disabled={!canSpin || !hasInterests}
-                  className={`relative w-full disabled:opacity-40 font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+                  className={`relative w-full font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 ${(!canSpin || !hasInterests) ? c.btnIdle : c.btnPrimary}`}>
                   {loading && !result ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎲'}</span> {t('bro_spinning')}</> : cooldownTick > 0 ? <>{t('bro_wait_sec', { sec: cooldownTick })}</> : <><span className={isSpinning ? 'animate-bounce inline-block' : ''}>{tool?.icon ?? '🎲'}</span> {t('bro_spin')}</>}
                 {!loading && (
                   <kbd aria-hidden="true"

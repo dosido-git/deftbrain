@@ -45,6 +45,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -965,7 +972,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div className="flex gap-3">
                   <button title={t('cmd_enter')} onClick={saveRelationship}
                     disabled={!form.name || !form.relationshipType || !form.frequency || !form.lastContact}
-                    className={`relative flex-1 py-3 rounded-lg font-bold ${c.btnPrimary} disabled:opacity-40 min-h-[48px] flex items-center justify-center gap-2`}>
+                    className={`relative flex-1 py-3 rounded-lg font-bold ${(!form.name || !form.relationshipType || !form.frequency || !form.lastContact) ? c.btnIdle : c.btnPrimary} min-h-[48px] flex items-center justify-center gap-2`}>
                     <span className="me-1">{tool?.icon ?? '💔'}</span>{form.id ? t('ffa_btn_update') : t('ffa_add_person')}
                   {(
                     <kbd aria-hidden="true"

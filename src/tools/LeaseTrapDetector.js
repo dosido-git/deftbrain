@@ -71,6 +71,13 @@ const LeaseTrapDetector = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-orange-500 focus:ring-orange-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-orange-500 focus:ring-orange-500/20',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     btnSoft:       isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
     border:        isDark ? 'border-zinc-700' : 'border-zinc-200',
@@ -634,7 +641,7 @@ const LeaseTrapDetector = ({ tool }) => {
                 </div>
                 {error && <div className={`p-3 rounded-xl border ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
                 <button title={t('cmd_enter')} onClick={handleFindMissing} disabled={missingLoading || (!missingContractText.trim() && !fileBase64)}
-                  className={`relative w-full py-4 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all ${c.btnPrimary}`}>
+                  className={`relative w-full py-4 rounded-xl font-black text-lg shadow-lg transition-all ${(missingLoading || (!missingContractText.trim() && !fileBase64)) ? c.btnIdle : c.btnPrimary}`}>
                   {missingLoading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_scanning')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span>{t('ltd_missing_cta')}</>}
                 {!missingLoading && (
                   <kbd aria-hidden="true"

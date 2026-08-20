@@ -89,6 +89,13 @@ const GentlePushGenerator = ({ tool }) => {
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20'
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -738,7 +745,7 @@ const GentlePushGenerator = ({ tool }) => {
 
           {/* Generate button */}
           <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || !growthArea.trim()}
-            className={`relative w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} ${c.text} disabled:opacity-40 transition-all shadow-lg`}>
+            className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!growthArea.trim()) ? c.btnIdle : c.btnPrimary} ${c.text} transition-all shadow-lg`}>
             {loading ? <span><span className="animate-spin inline-block">{tool?.icon ?? '🫸'}</span> {t('gpg_generating')}</span> : <span><span className="me-1">{tool?.icon ?? '🫸'}</span> {t('gpg_generate_3')}</span>}
           {!loading && (
             <kbd aria-hidden="true"

@@ -51,6 +51,13 @@ const ResearchDecoder = ({ tool }) => {
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -305,7 +312,7 @@ const ResearchDecoder = ({ tool }) => {
             <textarea value={paperText} onChange={e => setPaperText(e.target.value)} placeholder={t('rd_abstract_ph')} rows={8} className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${c.input}`} />
           </div>
           <div className="flex flex-wrap gap-2">{FIELDS.map(f => <button key={f.id} onClick={() => setField(f.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${field === f.id ? c.pillActive : `${c.pillInactive} ${c.border}`}`}><span className="me-1">{f.icon}</span> {f.label}</button>)}</div>
-          <button title={t('cmd_enter')} onClick={handleDigest} disabled={!paperText.trim() || loading} className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          <button title={t('cmd_enter')} onClick={handleDigest} disabled={!paperText.trim() || loading} className={`relative w-full ${(!paperText.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '📄'}</span> {t('rd_working')}</>
             : <><span className="me-1">{tool?.icon ?? '📄'}</span> {t('rd_decode_paper')}</>}

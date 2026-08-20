@@ -183,6 +183,13 @@ const CrashPredictor = ({ tool }) => {
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -995,7 +1002,7 @@ const CrashPredictor = ({ tool }) => {
 
         {mode==='analysis'&&!analysis&&!loading&&(
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-8 text-center`}><p className={`text-lg ${c.textMuteded} mb-3`}>📊 {t('cpr_no_analysis')}</p>
-            <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading||logs.length<3} className={`relative ${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-40 sm:pe-14`}>{logs.length<3?t('cpr_need_more_days',{count:3-logs.length}):t('cpr_run_analysis')}{!loading&&logs.length>=3&&<kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>}</button></div>
+            <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading||logs.length<3} className={`relative ${(logs.length<3) ? c.btnIdle : c.btnPrimary} px-6 py-2 rounded-lg font-semibold sm:pe-14`}>{logs.length<3?t('cpr_need_more_days',{count:3-logs.length}):t('cpr_run_analysis')}{!loading&&logs.length>=3&&<kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>}</button></div>
         )}
 
         {/* ═══════════ HISTORY ═══════════ */}

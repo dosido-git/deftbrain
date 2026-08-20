@@ -64,6 +64,13 @@ const ComebackCooker = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
@@ -325,7 +332,7 @@ const ComebackCooker = ({ tool }) => {
           <button title={t('cmd_enter')}
           onClick={handleSubmit}
           disabled={loading || !situation.trim()}
-          className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
+          className={`relative w-full ${(!situation.trim()) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
           >
           {loading
             ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('cbc_cooking')}</>

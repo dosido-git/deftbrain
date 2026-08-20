@@ -113,6 +113,13 @@ const TheFinalWord = ({ tool }) => {
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-slate-700',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     accentTxt: isDark ? 'text-amber-400' : 'text-amber-600',
     border: isDark ? 'border-zinc-700' : 'border-slate-200',
@@ -1015,7 +1022,7 @@ const TheFinalWord = ({ tool }) => {
                   <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !loading && handleSubmit()} placeholder={t('tfw_q_ph')} className={`flex-1 px-4 py-3 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                   <VoiceButton />
                 </div>
-                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !question.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!question.trim()) ? c.btnIdle : c.btnPrimary}`}>
                   {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>🔍</span>} {loading ? t('tfw_q_deliberating') : t('tfw_q_submit')}
                 {!loading && (
                   <kbd aria-hidden="true"
@@ -1093,7 +1100,7 @@ const TheFinalWord = ({ tool }) => {
                       <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('tfw_dispute_context_label')}</label>
                       <input value={disputeContext} onChange={(e) => setDisputeContext(e.target.value)} placeholder={t('tfw_dispute_context_ph')} className={`w-full px-4 py-2.5 rounded-xl border-2 text-sm transition-all focus:outline-none focus:ring-2 ${c.input}`} />
                     </div>
-                    <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${c.btnPrimary}`}>
+                    <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || !claimA.trim() || !claimB.trim()} className={`relative w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${(!claimA.trim() || !claimB.trim()) ? c.btnIdle : c.btnPrimary}`}>
                       {loading ? <span className='inline-block animate-spin'>{tool?.icon ?? '⚖️'}</span> : <span>⚖️</span>} {loading ? t('tfw_dispute_reviewing') : t('tfw_dispute_submit')}
                     {!loading && (
                       <kbd aria-hidden="true"

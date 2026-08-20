@@ -61,6 +61,13 @@ const EmailUrgencyTriager = ({ tool }) => {
     input:         isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-50 placeholder:text-zinc-500 focus:border-emerald-500 focus:ring-emerald-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     danger:        isDark ? 'bg-red-900/30 hover:bg-red-900/50 text-red-300' : 'bg-red-50 hover:bg-red-100 text-red-700',
     // Status tier colors (domain-specific)
@@ -539,7 +546,7 @@ const EmailUrgencyTriager = ({ tool }) => {
                 className={`w-full h-44 p-4 border-2 rounded-lg ${c.input} outline-none focus:ring-2 resize-none text-sm font-mono`} />
             </div>
             <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading || !emailContent.trim()}
-            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
+            className={`relative w-full ${(!emailContent.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📬'}</span> {t('eut_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '📬'}</span>{t('eut_analyze_urgency')}</>}
             {!loading && (
               <kbd aria-hidden="true"

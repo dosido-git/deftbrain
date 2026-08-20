@@ -47,6 +47,13 @@ const LeverageLogic = ({ tool }) => {
     textMuted: isDark ? 'text-zinc-400' : 'text-gray-500',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-500 focus:ring-amber-500/20' : 'bg-white border-zinc-300 text-gray-900 placeholder:text-zinc-400 focus:border-amber-500 focus:ring-amber-500/20',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     btnSoft: isDark ? 'bg-zinc-700/50 hover:bg-zinc-600/50 text-zinc-300' : 'bg-zinc-50 hover:bg-zinc-100 text-gray-500',
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
@@ -736,7 +743,7 @@ const LeverageLogic = ({ tool }) => {
               <p className={`text-xs ${c.textSecondary} mb-4`}>{t('llog_counter_intro')}</p>
               <label htmlFor="ll-they-just-said" className={`block text-sm font-semibold ${c.textSecondary} mb-1`}>{t('llog_counter_q')} <span className={c.required}>*</span></label>
               <textarea id="ll-they-just-said" value={theyJustSaid} onChange={e => setTheyJustSaid(e.target.value)} placeholder={t('llog_ph_counter')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
-              <button title={t('cmd_enter')} onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchCounter} disabled={counterLoading || !theyJustSaid.trim()} className={`relative w-full py-3 rounded-xl font-bold ${(counterLoading || !theyJustSaid.trim()) ? c.btnIdle : c.btnPrimary}`}>
                 {counterLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {counterLoading ? t('llog_thinking') : t('llog_what_say')}
               {!counterLoading && (
