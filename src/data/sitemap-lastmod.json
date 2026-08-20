@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "98aedeec14383ad47597b392fa946963b3e818ba",
+  "hash": "83950de7cd156c3606f5123c13b9d5ba556c1fce",
   "lastmod": "2026-08-20"
  },
  "static:about": {
@@ -80,8 +80,8 @@
   "lastmod": "2026-08-16"
  },
  "tool:LayoverMaximizer": {
-  "hash": "2fd0dc7aed75b0fe3dd8bfb209fbbed98349457d",
-  "lastmod": "2026-08-13"
+  "hash": "982934ebd7015d46b12af5f8e936cc9259d084ab",
+  "lastmod": "2026-08-20"
  },
  "tool:LeaseTrapDetector": {
   "hash": "fd843d9c4586a21fb0e0b98156d4fef92be45cae",

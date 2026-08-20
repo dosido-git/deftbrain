@@ -82,13 +82,40 @@ for (const t of tools) {
   if (!t.primer.edge || !String(t.primer.edge).trim()) todos.push(id);
 }
 
+// ── Structural fields ────────────────────────────────────────────────────────
+// The preamble is not the only thing a catalog entry has to carry. Four fields
+// are load-bearing and silent when absent: `icon` renders throughout the tool
+// and in its copy header, `categories` places it in the taxonomy and the hub
+// pages, `tags` feed Tool Finder's matching, and `headerColor` is the
+// Try-an-example button's background — missing, it falls back to #888888 and
+// the tool gets a grey button nobody notices is wrong.
+//
+// Reading the required module rather than the file text, deliberately: an
+// earlier hand-rolled check regexed `^  headerColor:` and reported VelvetHammer
+// as missing one, when it was present and indented four spaces. A field check
+// that can be fooled by whitespace is worse than none, because it is believed.
+const REQUIRED_FIELDS = ['title', 'tagline', 'description', 'icon', 'categories', 'tags', 'headerColor'];
+for (const t of tools) {
+  const id = t.id || '(no id)';
+  for (const f of REQUIRED_FIELDS) {
+    const v = t[f];
+    const empty = v === undefined || v === null || v === ''
+      || (Array.isArray(v) && v.length === 0)
+      || (typeof v === 'string' && !v.trim());
+    if (empty) errors.push(`${id}: missing \`${f}\` — see the note above primer-audit's REQUIRED list`);
+  }
+  if (t.headerColor && !/^#[0-9a-fA-F]{6}$/.test(String(t.headerColor).trim())) {
+    errors.push(`${id}: headerColor "${t.headerColor}" is not a 6-digit hex — the button concatenates '80' for alpha`);
+  }
+}
+
 if (errors.length) {
   console.error(`\n❌ primer-audit: ${errors.length} problem(s)\n`);
   errors.forEach((e) => console.error(`   ${e}`));
   console.error('');
   process.exitCode = 1;
 } else {
-  console.log(`✅ primer-audit: ${tools.length} tool(s) have a complete preamble.`);
+  console.log(`✅ primer-audit: ${tools.length} tool(s) have a complete preamble and every structural field.`);
 }
 
 if (todos.length) {
