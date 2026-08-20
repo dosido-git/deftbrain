@@ -413,20 +413,20 @@ const TheDebrief = ({ tool }) => {
 
       <div className={c.card + ' border rounded-xl p-5 space-y-3'}>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>{t('td_meeting_type')}</label>
+          <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('td_meeting_type')}</label>
           <div className="flex flex-wrap gap-1.5">
             {MEETING_TYPES.map(mt => <Pill key={mt.value} active={meetingType === mt.value} onClick={() => setMeetingType(mt.value)}>{t(mt.labelKey)}</Pill>)}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('td_attendees_label')}</label>
+            <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_attendees_label')}</label>
             <input type="text" value={attendees} onChange={e => setAttendees(e.target.value)}
               placeholder={t('td_attendees_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
           </div>
           <div>
-            <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('td_context_label')}</label>
+            <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_context_label')}</label>
             <input type="text" value={context} onChange={e => setContext(e.target.value)}
               placeholder={t('td_context_ph')}
               className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -434,7 +434,7 @@ const TheDebrief = ({ tool }) => {
         </div>
 
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('td_focus_label')}</label>
+          <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('td_focus_label')}</label>
           <input type="text" value={focus} onChange={e => setFocus(e.target.value)}
             placeholder={t('td_focus_ph')}
             className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -442,7 +442,7 @@ const TheDebrief = ({ tool }) => {
 
         {mode === 'followup' && (
           <div>
-            <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>{t('td_tone')}</label>
+            <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('td_tone')}</label>
             <div className="flex flex-wrap gap-1.5">
               {TONES.map(tn => <Pill key={tn.value} active={tone === tn.value} onClick={() => setTone(tn.value)}>{t(tn.labelKey)}</Pill>)}
             </div>
@@ -451,7 +451,7 @@ const TheDebrief = ({ tool }) => {
       </div>
 
         <button title={t('cmd_enter')} onClick={submit} disabled={loading || !canSubmit}
-      className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
+      className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !canSubmit ? c.btnDis : c.btnPrimary)}>
       {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '📋'}</span> {t('td_processing')}</>
         : mode === 'distill' ? <><span className="me-1">{tool?.icon ?? '📋'}</span> {t('td_extract')}</>
         : mode === 'followup' ? <><span>📨</span> {t('td_draft_followups')}</>

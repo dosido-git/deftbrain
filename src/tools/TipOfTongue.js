@@ -414,7 +414,7 @@ const TipOfTongue = ({ tool }) => {
               className={'w-full h-16 p-3 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm mb-3'} />
             <div className="flex gap-2">
               <button title={t('cmd_enter')} onClick={refine} disabled={loading}
-                className={'flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ' + (loading ? c.btnDis : c.btnPrimary)}>
+                className={'relative flex-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 disabled:opacity-40 ' + (loading ? c.btnDis : c.btnPrimary)}>
                 {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_refining')}</> : <><span>🔍</span> {t('tot_try_again')}</>}
               {!loading && (
                 <kbd aria-hidden="true"

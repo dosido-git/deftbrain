@@ -340,7 +340,7 @@ const PronounceItRight = ({ tool }) => {
       {/* Examples */}
 
       <button title={t('cmd_enter')} onClick={submit} disabled={loading || (!batchMode && !word.trim()) || (batchMode && !batchWords.trim())}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' +
+        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' +
           c.btnPrimary}>
         {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('pir_looking_up')}</>
           : <><span className="me-1">{tool?.icon ?? '🗣️'}</span> {t('pir_cta')}</>}

@@ -338,7 +338,7 @@ const Bookmark = ({ tool }) => {
       </div>
 
       <button title={t('cmd_enter')} onClick={recall} disabled={loading || !title.trim() || !stoppedAt.trim()}
-        className={'flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !title.trim() || !stoppedAt.trim() ? c.btnDisabled : c.btnPrimary)}>
+        className={'relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !title.trim() || !stoppedAt.trim() ? c.btnDisabled : c.btnPrimary)}>
         {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? '🔖'}</span> {t('bk_recalling')}</> : <><span>{tool?.icon ?? '🔖'}</span> {t('bk_where_was_i')}</>}
       {!loading && (
         <kbd aria-hidden="true"
