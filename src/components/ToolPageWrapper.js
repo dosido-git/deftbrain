@@ -8,6 +8,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useTranslation } from '../i18n/useTranslation';
 import LocaleSelectors from './LocaleSelectors';
 import FeedbackTap from './FeedbackTap';
+import { ensurePrintStyles } from './printStyles';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -22,147 +23,8 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Inject @media print into <head> — works for both system Cmd+P and the DeftBrain button
-  useEffect(() => {
-    const id = 'db-wrapper-print-css';
-    if (document.getElementById(id)) return;
-    const s = document.createElement('style');
-    s.id = id;
-    s.textContent = `
-      [data-print-show-flex] { display: none; }
-      /* Print-only blocks: hidden on screen via Tailwind, shown on paper. */
-      @media print {
-        /* Hide chrome */
-        [data-print-hide] { display: none !important; }
-        /* Show print-only branding */
-        [data-print-show-flex] { display: flex !important; }
-        [data-print-show] { display: block !important; }
-        /* Collapse sidebar grid to single column */
-        [data-print-grid] { display: block !important; }
-        [data-print-main] { grid-column: 1 / -1 !important; max-width: 100% !important; }
-        /* White page background — works for both light and dark mode */
-        html, body { background: white !important; background-color: white !important; }
-        /* The outer wrapper (min-h-screen bg-zinc-900 in dark mode) */
-        [data-print-wrapper] { background: white !important; background-color: white !important; }
-        /* THE KEY FIX: the tool card section and its immediate child (the p-8 gradient div).
-           In dark mode these are bg-zinc-800 / transparent-over-zinc-800.
-           Setting them white removes the black gaps between content cards. */
-        [data-print-section],
-        [data-print-section] > div {
-          background: white !important;
-          background-color: white !important;
-          overflow: visible !important;
-          border: none !important;
-          box-shadow: none !important;
-          border-radius: 0 !important;
-        }
-        /* ...and once that inner div has no border, no background and no
-           radius, it is an invisible box — but it still carries the m-8 p-6 it
-           needs on screen to sit inside the card. On paper that is 56px of
-           inset on every side, indenting the content away from an edge nobody
-           can see. Vertically it is 112px of the page spent twice over; the
-           real cost is horizontal, because 112px of lost column width rewraps
-           every paragraph and makes the whole document taller. The page margin
-           is the margin on paper. */
-        [data-print-section] > div { margin: 0 !important; padding: 0 !important; }
-        /* This used to read [data-print-main] > header, aimed at Firefox
-           breaking between the title and the tool card. It matched nothing —
-           on every tool page the header element is a SIBLING of
-           [data-print-main],
-           and carries data-print-hide, so it is not even on the paper. What
-           prints above the card is the [data-print-show-flex] block below.
-           A dead selector fixed nothing, which is why the break came back. */
-        /* A tall card that cannot be fragmented does not shrink — the engine
-           moves it whole to the next page and overflows from there, leaving
-           the rest of the current page empty. WebKit does this readily, and
-           it is why an Apology Calibrator printout opened with two-thirds of
-           page one blank; Firefox does it to Procedure Probe, whose form is
-           one 875px card. The old rule reached the card's descendants but not
-           the card itself, so the outermost — and only unfragmentable —
-           element was the one element it missed. Nothing here sets
-           break-inside: avoid, so this only overrides what the engine decides
-           on its own. */
-        [data-print-main],
-        [data-print-section],
-        [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }
-        /* Interactive controls mean nothing on paper. */
-        [data-print-section] button:disabled { display: none !important; }
-        /* ── Dark mode must not survive onto paper ──────────────────────────
-           The DeftBrain Print button builds its own light document, so it has
-           always come out readable. Cmd+P prints the live DOM, and the rules
-           above only whitened [data-print-section] and its immediate child —
-           so every card INSIDE it kept bg-zinc-800 while its text stayed light,
-           and any pale-tinted card (the hero, the anniversary box, "Make it
-           even better") composited over white and turned light-on-light,
-           i.e. invisible. Compare the two PDFs from 2026-08-08.
-
-           This cannot be solved by flipping a theme token: dark mode here is
-           chosen in JavaScript -- isDark ? 'bg-zinc-800' : 'bg-white' -- so the
-           class names are already baked into the markup by the time CSS runs.
-           The surface is small and enumerable, so map it directly. */
-        [data-print-section] .bg-zinc-600,
-        [data-print-section] .bg-zinc-700,
-        [data-print-section] .bg-zinc-800,
-        [data-print-section] .bg-zinc-900,
-        [data-print-section] [class*="bg-zinc-700/"],
-        [data-print-section] [class*="bg-zinc-800/"] {
-          background-color: #ffffff !important;
-          background-image: none !important;
-        }
-        /* Light-on-dark text, now on white. Zinc 100–400 all become ink; 500+
-           is already mid-grey and stays legible as secondary text. */
-        [data-print-section] .text-white,
-        [data-print-section] .text-zinc-50,
-        [data-print-section] .text-zinc-100,
-        [data-print-section] .text-zinc-200,
-        [data-print-section] .text-zinc-300 { color: #18181b !important; }
-        [data-print-section] .text-zinc-400 { color: #52525b !important; }
-        /* ...except where white text is still correct. A saturated button
-           (bg-red-600, bg-emerald-600) keeps its colour on paper — the Print
-           button's output keeps those too — so inking its label would put dark
-           text on a dark fill. Only zinc backgrounds were whitened above, so
-           anything carrying a non-zinc bg- class is exempt. Must follow the
-           rule it overrides. */
-        [data-print-section] [class*="bg-"]:not([class*="bg-zinc"]):not([class*="bg-white"]).text-white {
-          color: #ffffff !important;
-        }
-        /* Accent text picked for a dark card. On white these land at 1.7–2.8:1
-           (cyan-400 on white is 1.81). The Print button's document already uses
-           the light-mode shades, so map each to its 700 counterpart to match. */
-        [data-print-section] .text-amber-300,
-        [data-print-section] .text-amber-400 { color: #b45309 !important; }
-        [data-print-section] .text-cyan-300,
-        [data-print-section] .text-cyan-400 { color: #0e7490 !important; }
-        [data-print-section] .text-emerald-300,
-        [data-print-section] .text-emerald-400 { color: #047857 !important; }
-        [data-print-section] .text-fuchsia-300,
-        [data-print-section] .text-fuchsia-400 { color: #a21caf !important; }
-        [data-print-section] .text-green-300,
-        [data-print-section] .text-green-400 { color: #15803d !important; }
-        [data-print-section] .text-lime-300,
-        [data-print-section] .text-lime-400 { color: #4d7c0f !important; }
-        [data-print-section] .text-orange-300,
-        [data-print-section] .text-orange-400 { color: #c2410c !important; }
-        [data-print-section] .text-red-300,
-        [data-print-section] .text-red-400 { color: #b91c1c !important; }
-        [data-print-section] .text-sky-300,
-        [data-print-section] .text-sky-400 { color: #0369a1 !important; }
-        [data-print-section] .text-yellow-300,
-        [data-print-section] .text-yellow-400 { color: #a16207 !important; }
-        /* Borders drawn for a dark ground disappear on white. */
-        [data-print-section] .border-zinc-600,
-        [data-print-section] .border-zinc-700,
-        [data-print-section] .border-zinc-800 { border-color: #d4d4d8 !important; }
-        /* Tinted cards (hero, budget, callouts) keep their colour — the Print
-           button's output keeps them too, and matching it is the goal. Their
-           TEXT is the part that breaks, and the rules above already fix it. */
-
-        /* Suppress transitions during print capture */
-        * { transition: none !important; animation: none !important; }
-      }
-    `;
-    document.head.appendChild(s);
-  }, []);
+  // Cmd+P and the DeftBrain Print button share one stylesheet — see printStyles.js
+  useEffect(() => { ensurePrintStyles(); }, []);
 
   // Auto-detect tool in priority order:
   let detectedTool = tool;

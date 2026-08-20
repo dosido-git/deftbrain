@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { ensurePrintStyles } from './printStyles';
 import { track } from '../utils/analytics';
 import { flushSync } from 'react-dom';
 import { useTheme } from '../hooks/useTheme';
@@ -180,32 +181,9 @@ export const PrintBtn = ({ label }) => {
       flushSync(() => setLightTheme());
     }
 
-    // Ensure print CSS is in <head> (ToolPageWrapper also injects this on mount,
-    // but this is a safety net for edge cases)
-    if (!document.getElementById('db-wrapper-print-css')) {
-      const style = document.createElement('style');
-      style.id = 'db-wrapper-print-css';
-      style.textContent = [
-        '[data-print-show-flex] { display: none; }',
-        '@media print {',
-        '  [data-print-hide] { display: none !important; }',
-        '  [data-print-show-flex] { display: flex !important; }',
-        '  [data-print-show] { display: block !important; }',
-        '  [data-print-main], [data-print-section], [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }',
-        '  [data-print-grid] { display: block !important; }',
-        '  [data-print-main] { grid-column: 1 / -1 !important; max-width: 100% !important; }',
-        '  html, body { background: white !important; background-color: white !important; }',
-        '  [data-print-wrapper] { background: white !important; background-color: white !important; }',
-        '  [data-print-section], [data-print-section] > div {',
-        '    background: white !important; background-color: white !important;',
-        '    overflow: visible !important; border: none !important;',
-        '    box-shadow: none !important; border-radius: 0 !important;',
-        '  }',
-        '  * { transition: none !important; animation: none !important; }',
-        '}',
-      ].join('\n');
-      document.head.appendChild(style);
-    }
+    // Safety net: on a page where ToolPageWrapper has not mounted, install the
+    // same sheet it would have. Shared source, so it cannot drift from it.
+    ensurePrintStyles();
 
     // Restore dark mode after print dialog closes
     const restore = () => {
