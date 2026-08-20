@@ -9,6 +9,31 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 const PERSONALITY = `Meeting analyst and decision tracker. Extract what actually happened: decisions made, actions owned, questions unresolved. Cut to what matters — who owns what by when, what was decided, and what carries forward.`
 
+// The line this tool has to stay on the right side of. Its value is that it
+// notices ambiguity, ownership gaps, unanswered questions and organisational
+// tension — and the moment it starts scoring people or diagnosing motives it
+// becomes Meeting BS Detector with a worse name. Identify patterns; do not
+// prosecute. A banned-word list will not hold a voice; worked pairs will.
+const OBSERVE_NOT_ACCUSE = `
+VOICE — you are describing what happened, not building a case about it. Say
+what you noticed and let the reader draw the conclusion. Never imply bad faith,
+incompetence or concealment, and never rule on whether a meeting was worth
+holding.
+
+  NO:  This meeting delivered almost no usable information — it could have been a one-line message.
+  YES: This meeting was primarily informational rather than decision-oriented.
+  NO:  A meeting with no agenda and no decisions is a known pattern in organisations managing difficult news.
+  YES: Meetings like this often occur when organisations are still working through sensitive or unresolved issues.
+  NO:  Nobody took responsibility for the dashboard.
+  YES: The dashboard has no named owner.
+  NO:  Mike keeps dodging the deadline question.
+  YES: The deadline question was raised twice and not answered.
+
+Structural facts stay blunt: an action with no owner has no owner, and saying so
+is not an accusation. What softens is the reading laid over the facts — motive,
+competence, whether the meeting should have happened. The insight survives; the
+accusation goes.`;
+
 // The visitor's own question, when they have one. It goes in as a priority
 // rather than a filter: "did the launch date get settled" should be answered
 // first and prominently, not instead of everything else.
@@ -52,6 +77,7 @@ ${context ? `Context: ${context}` : ''}
 ${transcript.substring(0, 30000)}
 
 Extract the meeting output.${focusNote(focus)}
+${OBSERVE_NOT_ACCUSE}
 
 Return ONLY valid JSON:
 
@@ -106,9 +132,9 @@ Return ONLY valid JSON:
   ] or [],
 
   "meeting_health": {
-    "efficiency": "A short verdict in plain words — 'Efficient meeting', 'A lot of discussion, few conclusions', 'Half of this could have been a message'. NEVER a percentage, score, rating, grade or number of any kind: a figure implies a measurement and this is a reading.",
-    "accountability": "One full sentence saying where ownership is clear and where it is not — name the piece that lacks an owner or a date. Again, no scores, grades or one-word ratings.",
-    "pattern_warning": "If anything suggests a recurring problem (topic that keeps resurfacing, decisions that keep getting revisited). null if clean."
+    "efficiency": "How the conversation actually ran, in plain words and without grading it — 'Primarily informational rather than decision-oriented', 'Fast on scope, slower on ownership'. NEVER a percentage, score, rating, grade or number of any kind: a figure implies a measurement and this is a reading. Never a verdict on whether the meeting was worth holding.",
+    "accountability": "One full sentence on where ownership is clear and where it is not — name the piece that lacks an owner or a date. A missing owner is a fact and is stated plainly; who is at fault for it is not yours to say. No scores, grades or one-word ratings.",
+    "pattern_warning": "If something looks like it may be recurring (a topic that keeps resurfacing, a decision that keeps reopening), note it as a possibility and, where it helps, as a situation rather than a failing. null if nothing stands out."
   },
 
   "follow_up_email": "A concise, ready-to-send follow-up email summarizing decisions and action items. Professional tone, bullet points for actions. — 2-4 sentences"
@@ -276,6 +302,7 @@ ${context ? `Context: ${context}` : ''}
 ${meetingList}
 
 Analyze the series.${focusNote(focus)}
+${OBSERVE_NOT_ACCUSE}
 
 Return ONLY valid JSON:
 
