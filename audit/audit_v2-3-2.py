@@ -1502,7 +1502,7 @@ for name, fpath in tools:
         # how "working" ended up looking like "broken" on 92 tools.
         _disabled_expr = re.search(r'disabled=\{([^{}]*)\}', _btn_open)
         _only_loading = bool(_disabled_expr) and bool(re.fullmatch(
-            r'\s*(loading|isLoading|isRunning|isGenerating|busy|pending|generating)\s*',
+            r'\s*\w*(?:[Ll]oading|[Rr]unning|[Gg]enerating|[Cc]ompressing|[Bb]usy|[Pp]ending)\w*\s*',
             _disabled_expr.group(1)))
         if ('disabled:opacity-40' not in _cn_value and 'pendingClass(' not in _cn_value
                 and 'btnIdle' not in _cn_value and not _only_loading):

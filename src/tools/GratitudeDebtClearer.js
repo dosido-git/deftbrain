@@ -1425,7 +1425,7 @@ const GratitudeDebtClearer = ({ tool }) => {
             <button title={t('cmd_enter')}
               onClick={handleGenerate}
               disabled={loading}
-              className={`relative flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40 ${
+              className={`relative flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 ${
                 loading ? c.btnDisabled + ' cursor-not-allowed' : c.btnPrimary
               }`}
               aria-label={t('gdc_gen_aria')}

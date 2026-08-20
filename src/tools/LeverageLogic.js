@@ -392,7 +392,7 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button title={t('cmd_enter')} onClick={analyze} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={analyze} disabled={loading} className={`relative w-full py-3.5 rounded-xl font-bold text-base ${c.btnPrimary}`}>
               {loading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
               {loading ? t('llog_building') : t('llog_build_strategy')}
               {!loading && (
@@ -810,7 +810,7 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_sim_q')}</label>
                 <textarea value={simOpening} onChange={e => setSimOpening(e.target.value)} placeholder={t('llog_ph_sim')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button title={t('cmd_enter')} onClick={fetchSimulation} disabled={simLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchSimulation} disabled={simLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                 {simLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {simLoading ? t('llog_simulating') : t('llog_run_sim')}
               {!simLoading && (
@@ -889,7 +889,7 @@ const LeverageLogic = ({ tool }) => {
                   </div>
                 </div>
               </div>
-              <button title={t('cmd_enter')} onClick={fetchEmailDraft} disabled={emailLoading} className={`relative w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchEmailDraft} disabled={emailLoading} className={`relative w-full py-3 rounded-xl font-bold mt-3 ${c.btnPrimary}`}>
                 {emailLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {emailLoading ? t('llog_drafting') : t('llog_draft_email_btn')}
               {!emailLoading && (
@@ -1039,7 +1039,7 @@ const LeverageLogic = ({ tool }) => {
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_final_outcome_q')} <span className={c.required}>*</span></label>
                 <textarea value={finalOutcome} onChange={e => setFinalOutcome(e.target.value)} placeholder={t('llog_ph_outcome')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y mb-3 focus:outline-none focus:ring-2 ${c.input}`} />
               </div>
-              <button title={t('cmd_enter')} onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+              <button title={t('cmd_enter')} onClick={fetchDebrief} disabled={debriefLoading || !finalOutcome.trim()} className={`relative w-full py-3 rounded-xl font-bold ${(!finalOutcome.trim()) ? c.btnIdle : c.btnPrimary}`}>
                 {debriefLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                 {debriefLoading ? t('llog_analyzing') : t('llog_run_debrief')}
               {!debriefLoading && (

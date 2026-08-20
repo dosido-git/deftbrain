@@ -566,7 +566,7 @@ const LeaseTrapDetector = ({ tool }) => {
               {t('ltd_xref_deposit_post')}
             </p>
 
-            <button title={t('cmd_enter')} onClick={analyzeLease} disabled={loading} className={`relative w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg disabled:opacity-40 transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
+            <button title={t('cmd_enter')} onClick={analyzeLease} disabled={loading} className={`relative w-full py-4 sm:py-5 rounded-xl font-black text-lg shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] ${c.btnPrimary}`}>
             {loading ? <><span className="animate-spin inline-block me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyzing')}</> : <><span className="me-2">{tool?.icon ?? '🏡'}</span> {t('ltd_analyze_cta')}</>}
             {!loading && (
               <kbd aria-hidden="true"

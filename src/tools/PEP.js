@@ -682,7 +682,7 @@ const PEP = ({ tool }) => {
         </div>
 
         <div className="flex gap-3">
-          <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading} className={`relative flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary} disabled:opacity-40`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_building')}</> : <><span className="me-1">{tool?.icon ?? '✨'}</span>{t('pep_build_menu')}</>}{!loading && (
+          <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading} className={`relative flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : c.btnPrimary}`}>{loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '✨'}</span> {t('pep_building')}</> : <><span className="me-1">{tool?.icon ?? '✨'}</span>{t('pep_build_menu')}</>}{!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
               ⌘↵

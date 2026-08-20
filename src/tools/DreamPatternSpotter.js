@@ -590,7 +590,7 @@ const DreamPatternSpotter = ({ tool }) => {
           <button title={t('cmd_enter')}
               onClick={handlePatternAnalyze}
               disabled={loading}
-              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
+              className={`relative w-full ${c.btnPrimary} py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 mt-6`}
             >
               {loading ? (
                 <>

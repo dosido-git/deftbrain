@@ -1028,7 +1028,7 @@ const SubscriptionTamer = ({ tool }) => {
               ))}
             </div>
             <button title={t('cmd_enter')} onClick={runOptimize} disabled={loading}
-              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`relative w-full ${c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_optimizing')}</> : <><span>⚡</span> {t('ss_find_savings')}</>}
             {!loading && (
               <kbd aria-hidden="true"
@@ -1158,7 +1158,7 @@ const SubscriptionTamer = ({ tool }) => {
           </div>
 
           <button title={t('cmd_enter')} onClick={runNegotiate} disabled={loading || !negService.trim()}
-            className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`relative w-full ${(!negService.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading ? <><span className="animate-spin">{tool?.icon ?? '🧹'}</span> {t('ss_neg_generating')}</> : <><span>📞</span> {t('ss_neg_get_script')}</>}
             {!loading && (
               <kbd aria-hidden="true"

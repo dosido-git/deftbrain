@@ -574,8 +574,8 @@ const MagicMouth = ({ tool }) => {
             <button title={t('cmd_enter')}
               onClick={handleSubmit}
               disabled={loading || !whatYouWant.trim()}
-              className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
-                disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
+              className={`relative w-full ${(!whatYouWant.trim()) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm shadow-md
+                disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`}
             >
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_finding_angle')}</>

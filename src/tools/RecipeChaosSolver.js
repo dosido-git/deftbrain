@@ -1858,7 +1858,7 @@ const RecipeChaosSolver = ({ tool }) => {
         )}
 
         <button title={t('cmd_enter')} onClick={runScale} disabled={!scaleRecipe.trim() || !scaleTarget || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!scaleRecipe.trim() || !scaleTarget) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_scaling')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_scale_recipe_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -2006,7 +2006,7 @@ const RecipeChaosSolver = ({ tool }) => {
 
         <button title={t('cmd_enter')} onClick={runMultiSwap}
           disabled={multiSwapIngredients.filter(i => i.trim()).length < 2 || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(multiSwapIngredients.filter(i => i.trim()).length < 2) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_analyzing_interactions')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_find_combined')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -2176,7 +2176,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runPreflight} disabled={!pfRecipe.trim() || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!pfRecipe.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_pf_checking')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_pf_run')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -2368,7 +2368,7 @@ const RecipeChaosSolver = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runFlavorFix} disabled={!ffDish.trim() || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!ffDish.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {t('rcs_ff_diagnosing')}</> : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_ff_fix_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"

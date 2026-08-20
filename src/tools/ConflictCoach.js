@@ -594,7 +594,7 @@ const ConflictCoach = ({ tool }) => {
 
           <div className="flex gap-3">
             <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading}
-              className={`relative flex-1 ${c.btnPrimary} disabled:opacity-40 font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`relative flex-1 ${c.btnPrimary} font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> {t('cc_analyzing')}</>
                 : <><span>{tool?.icon ?? '📱'}</span> {t('cc_analyze')}</>}

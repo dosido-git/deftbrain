@@ -74,6 +74,13 @@ const MissingLink = ({ tool }) => {
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
                           : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200'
                           : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -325,7 +332,7 @@ const MissingLink = ({ tool }) => {
 
 
       <button title={t('cmd_enter')} onClick={trace} disabled={loading || !concept.trim()}
-        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !concept.trim() ? c.btnDis : c.btnPrimary)}>
+        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + (!concept.trim() ? c.btnIdle : c.btnPrimary)}>
         {loading ? <><span className="relative inline-block animate-spin">{tool?.icon ?? '⛓️'}</span> {t('tg_tracing')}</> : <><span className="me-1">{tool?.icon ?? '⛓️'}</span> {t('tg_find_gap')}</>}
       {!loading && (
         <kbd aria-hidden="true"

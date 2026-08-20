@@ -1067,7 +1067,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               <button title={t('cmd_enter')}
                 onClick={handleRightNow}
                 disabled={loading}
-                className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+                className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime}`}
               >
                 {loading ? (
                   <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_building')}</>

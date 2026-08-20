@@ -1366,7 +1366,7 @@ const NameStorm = ({ tool }) => {
           {/* Submit */}
           <div className="flex gap-2">
             <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || (isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))}
-              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`relative w-full ${((isBlendMode ? filledSeeds.length < 2 : (!category || (!vibe.trim() && vibeChips.length === 0)))) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
                 ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blending') : isDomainMode ? t('ns_brainstorming_domains') : t('ns_brainstorming_names')}</>
                 : <><span className="me-1">{tool?.icon ?? '⚡'}</span> {isBlendMode ? t('ns_blend_names') : isDomainMode ? t('ns_storm_domains') : t('ns_storm_names')}</>}

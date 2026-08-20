@@ -831,7 +831,7 @@ const MeetingBSDetector = ({ tool }) => {
         <button onClick={addCalMeeting} className={`text-xs font-bold ${c.textSecondary} mb-4 min-h-[32px]`}>{t('mbd_cal_add')}</button>
 
         <button title={t('cmd_enter')} onClick={runCalendar} disabled={!calMeetings.some(m => m.title.trim()) || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!calMeetings.some(m => m.title.trim())) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_cal_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -1061,7 +1061,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runRecurring} disabled={!recName.trim() || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!recName.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rec_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -1186,7 +1186,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runMessages} disabled={!msgMeeting.trim() || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!msgMeeting.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_msg_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -1278,7 +1278,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runAgenda} disabled={!agTopic.trim() || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!agTopic.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_ag_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"
@@ -1667,7 +1667,7 @@ const MeetingBSDetector = ({ tool }) => {
             </div>
 
             <button title={t('cmd_enter')} onClick={runReport} disabled={loading}
-              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+              className={`relative w-full ${c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_rep_btn')}</>}
             {!loading && (
               <kbd aria-hidden="true"
@@ -1852,7 +1852,7 @@ const MeetingBSDetector = ({ tool }) => {
         )}
 
         <button title={t('cmd_enter')} onClick={runTeam} disabled={!teamMeetings.some(m => m.title.trim()) || loading}
-          className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${(!teamMeetings.some(m => m.title.trim())) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_team_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"

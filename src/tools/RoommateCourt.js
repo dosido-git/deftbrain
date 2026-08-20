@@ -924,7 +924,7 @@ const RoommateCourt = ({ tool }) => {
         {/* Assign button */}
         {roommates.length >= 2 && choreList.length >= 1 && !assignResult && !isShuffling && (
           <button title={t('cmd_enter')} onClick={assignChores} disabled={loading}
-            className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 min-h-[48px] ${c.btnPrimary}`}>
+            className={`relative w-full py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 min-h-[48px] ${c.btnPrimary}`}>
             {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '⚖️'}</span> {t('rc_spinning')}</>
               : <><span>🎰</span> {t('rc_spin_wheel')}</>}

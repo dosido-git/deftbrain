@@ -344,7 +344,7 @@ const RoastMe = ({ tool }) => {
 
           {/* Actions */}
           <button title={t('cmd_enter')} onClick={runRoast} disabled={loading}
-            className={`relative w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
+            className={`relative w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
             🔥 {t('rm_roast_again')}
           {!loading && (
             <kbd aria-hidden="true"
