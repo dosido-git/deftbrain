@@ -129,8 +129,14 @@ CLAIM DISCIPLINE — three habits that keep showing up, with the fix for each.
    is a shape rather than a word list.
 
    TWO PARTS AND NO THIRD. Part one: what to search or look at. Part two: a
-   conditional the READER evaluates, in the form "if it is the right one, X
-   should look / feel / sound familiar". Then stop.
+   conditional the READER evaluates, and the second half of it must be about
+   what THEY will notice, never about what the thing will have. "The glaze will
+   have that blue-gray cast" states a fact about the object; "you should notice
+   that blue-gray cast in the glaze" points their attention and lets them judge.
+   Use should notice, should look familiar, should feel familiar, should sound
+   right. Then stop.
+     NO:  If it matches, the glaze will have that subtle blue-gray cast.
+     YES: If it is the right colour, you should notice that subtle blue-gray cast in the glaze.
 
    No adverb of speed anywhere in the field — immediately, instantly, at once,
    right away, straight away, on sight, the moment you. You are not predicting

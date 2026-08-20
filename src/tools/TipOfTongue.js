@@ -285,6 +285,12 @@ const TipOfTongue = ({ tool }) => {
   // ══════════════════════════════════════════
   // RESULTS
   // ══════════════════════════════════════════
+  // The categories with a genuine next step. Colour and "something else" are
+  // deliberately absent: there is no tool that follows from identifying a
+  // ceramic glaze, and the catch-all that used to cover them offered a
+  // TV-catch-up tool to someone holding a paint chip.
+  const XREF_CATEGORIES = ['food', 'film', 'music', 'product', 'scent', 'fabric', 'place'];
+
   const renderResults = () => {
     if (!results) return null;
     const matches = results.matches || [];
@@ -305,7 +311,7 @@ const TipOfTongue = ({ tool }) => {
               <div className="flex items-center gap-3 mb-2">
                 <span className={'text-xl font-bold ' + confText(m.confidence)}>#{idx + 1}</span>
                 <div className="flex-1 min-w-0">
-                  <p className={'text-base font-bold ' + c.text + ' truncate'}>{m.name}</p>
+                  <p className={'text-base font-bold ' + c.text + ' leading-snug line-clamp-3'}>{m.name}</p>
                 </div>
                 <span className={'text-xs font-bold px-2.5 py-1 rounded-full ' + confBg(m.confidence) + ' ' + confText(m.confidence)}>
                   {m.confidence === 'high' ? '🎯 ' + t('tot_conf_likely') : m.confidence === 'medium' ? '🤔 ' + t('tot_conf_maybe') : '💭 ' + t('tot_conf_possible')}
@@ -408,7 +414,7 @@ const TipOfTongue = ({ tool }) => {
               {matches.map((m, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <span className={'text-xs font-bold ' + c.textMuted + ' w-6'}>{idx + 1}.</span>
-                  <span className={'text-xs ' + c.text + ' flex-1 truncate'}>{m.name}</span>
+                  <span className={'text-xs ' + c.text + ' flex-1 line-clamp-2'}>{m.name}</span>
                   {['yes', 'close', 'no'].map(val => (
                     <button key={val} onClick={() => setMatchFeedback(prev => ({ ...prev, [idx]: val }))}
                       className={'px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ' +
@@ -453,7 +459,11 @@ const TipOfTongue = ({ tool }) => {
           </div>
         )}
 
-        {/* Cross-refs */}
+        {/* Cross-refs. Colour, fabric-free "something else" and anything with no
+            honest follow-on show nothing at all — a suggestion the reader cannot
+            use costs more than an empty space, and the old catch-all was handing
+            a ceramic glaze a TV-catch-up tool. */}
+        {XREF_CATEGORIES.includes(category) && (
         <div className={'p-4 rounded-2xl border ' + c.card + ' ' + c.border}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>🔗 {t('tot_related')}</p>
           {/* What follows an identification depends on what was identified. A
@@ -481,7 +491,7 @@ const TipOfTongue = ({ tool }) => {
                 {t('tot_xref_place_tail')}</p>
             )}
 
-            {!['food', 'product', 'scent', 'fabric', 'place'].includes(category) && (
+            {['film', 'music'].includes(category) && (
               <p>{t('tot_xref_watch_q')}{' '}
                 <a href="/Bookmark" className={linkStyle}>🔖 {t('tot_xref_bookmark')}</a>{' '}
                 {t('tot_xref_watch_tail')}</p>
@@ -489,6 +499,7 @@ const TipOfTongue = ({ tool }) => {
 
           </div>
         </div>
+        )}
       </div>
     );
   };
