@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "769f1fce04ebc7bc84a8071547271e4836a88ec1",
-  "lastmod": "2026-08-19"
+  "hash": "990a83db69235f7b5ad517e2ea4e62064745a12e",
+  "lastmod": "2026-08-20"
  },
  "static:about": {
   "hash": "fd6635f5d7af8b1c3e6be0a5139c3bcda14fe500",
@@ -136,8 +136,8 @@
   "lastmod": "2026-08-19"
  },
  "tool:TheDebrief": {
-  "hash": "4fc4f0e14588b2d0b31a53bf9245dfcad9b6f7f3",
-  "lastmod": "2026-08-19"
+  "hash": "e3dc11687f3655d3139ba276233f3afb8746853f",
+  "lastmod": "2026-08-20"
  },
  "tool:TheGap": {
   "hash": "a1ac3c3efebbac5aaf0f6527547d3c1f913cc070",

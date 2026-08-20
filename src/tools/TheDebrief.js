@@ -210,10 +210,15 @@ const TheDebrief = ({ tool }) => {
   }, [setMode, setMeetingType, setAttendees, setContext, setTone, setTranscript, setResults, t]);
 
   const handleReset = useCallback(() => {
-    setTranscript(''); setAttendees(''); setContext(''); setFocus('');
+    setTranscript(''); setAttendees(''); setContext(''); setFocus(''); setMeetingType('auto'); setTone('professional');
     setResults(null); setError(''); setExpandedSections({});
     setMeetings([{ title: '', date: '', transcript: '' }, { title: '', date: '', transcript: '' }]);
   }, []);
+
+  // Everything handleReset clears — kept as one derived value so the two
+  // cannot drift apart again.
+  const hasInput = !!(results || transcript.trim() || attendees.trim() || context.trim() || focus.trim()
+    || meetings.some(m => m.title?.trim() || m.date?.trim() || m.transcript?.trim()));
 
   const priBg = (p) => p === 'high' ? c.highPri : p === 'medium' ? c.medPri : c.lowPri;
   const CAN_CHANGE = { Yes: 'td_can_change_yes', Probably: 'td_can_change_probably', No: 'td_can_change_no' };
@@ -332,7 +337,7 @@ const TheDebrief = ({ tool }) => {
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-          {(results || attendees.trim() || context.trim() || transcript.trim()) ? (
+          {hasInput ? (
             <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
               ↺ {t('start_over')}
             </button>

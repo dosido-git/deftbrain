@@ -2246,7 +2246,7 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The meeting ended and nobody wrote anything down.",
-    give: "The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Series.",
+    give: "The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Spot Patterns.",
     get: "Decisions, action items with owners, open questions, and drafted follow-up messages.",
   },
   seoDescription: "Paste any meeting transcript and instantly get the decisions, action items with owners and deadlines, and ready-to-send follow-ups — without digging through notes.",
