@@ -730,6 +730,21 @@ const WaitingModeLiberator = ({ tool }) => {
                 {t('wml_add')}
               </button>
               {draftTime.trim() && !draftParsed && (<p className={`text-xs ${c.textMuted}`}>{t('wml_time_hint')}</p>
+              )} {/* The chip sets the day as well as suggesting a time, but the day
+                   was set invisibly — the time box shows 10:00 AM whether that
+                   is today or Thursday. This says which one out loud, so the
+                   preset is doing visible work rather than asking to be
+                   trusted. */}
+              {draftParsed && (<p className={`text-xs ${c.textMuted}`}>
+                  {t('wml_resolved', {
+                    // "+3d" is the calendar machinery this row exists to get
+                    // rid of. Past tomorrow, say the day's name.
+                    day: draftDayOffset === 0 ? t('wml_today')
+                      : draftDayOffset === 1 ? t('wml_tomorrow')
+                      : draftParsed.toLocaleDateString(undefined, { weekday: 'long' }),
+                    time: formatTimeShort(draftParsed),
+                  })}
+                </p>
               )} </div>
 
             {/* ── ADDED EVENTS LIST ── */} {events.length > 0 && (<div className="space-y-2 pt-1">
