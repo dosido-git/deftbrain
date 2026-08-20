@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -57,7 +58,7 @@ const SESSION_MODES = [
   { id: 'sprint',           icon: '⚡', labelKey: 'vbd_mode_sprint',           descKey: 'vbd_mode_sprint_desc',           defaultFreq: 10 },
   { id: 'grind',            icon: '⛏️', labelKey: 'vbd_mode_grind',            descKey: 'vbd_mode_grind_desc',            defaultFreq: 15 },
   { id: 'creative',         icon: '🎨', labelKey: 'vbd_mode_creative',         descKey: 'vbd_mode_creative_desc',         defaultFreq: 20 },
-  { id: 'avoidance_buster', icon: '🌱', labelKey: 'vbd_mode_avoidance_buster', descKey: 'vbd_mode_avoidance_buster_desc', defaultFreq: 10 },
+  { id: 'avoidance_buster', icon: '🌱', labelKey: 'vbd_mode_avoidance_buster', descKey: 'vbd_mode_avoidance_buster_desc', defaultFreq: 15 },
 ];
 
 // Mode-specific color accents for active session
@@ -164,6 +165,7 @@ const VirtualBodyDouble = ({ tool }) => {
   const [duration, setDuration] = useState(25);
   const [customDuration, setCustomDuration] = useState('');
   const [checkInFreq, setCheckInFreq] = useState(15);
+  const [showFreq, setShowFreq] = useState(false);
   const [environment, setEnvironment] = useState('');
   const [mood, setMood] = useState('');
   const [goals, setGoals] = useState('');
@@ -604,6 +606,7 @@ const VirtualBodyDouble = ({ tool }) => {
           </div>
           )} {/* Session Mode selector (v4) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
             <label className={`block text-sm font-semibold ${c.text}`}>{t('vbd_session_mode_label')}</label>
+            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('vbd_not_sure')}</p>
             <div className="grid grid-cols-2 gap-2">
               {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-start transition-all border ${
                     sessionMode === m.id
@@ -659,12 +662,20 @@ const VirtualBodyDouble = ({ tool }) => {
               </div>
             </div>
 
-            {/* Check-in frequency */} <div>
-              <label className={`block text-sm font-semibold ${c.text} mb-2`}>{t('vbd_checkin_freq')}</label>
-              <div className="flex flex-wrap gap-2">
-                {CHECK_IN_FREQS.map(f => (<button key={f.min} onClick={() => setCheckInFreq(f.min)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${checkInFreq === f.min ? c.tagActive : c.tag}`}>
-                    {t(f.labelKey)} </button>
-                ))} </div>
+            {/* Check-in frequency. The mode already sets this — every mode
+                carries the interval that suits it — so it is an override rather
+                than a decision, and it waits behind a disclosure. */}
+            <div>
+              <button onClick={() => setShowFreq(v => !v)} aria-expanded={showFreq}
+                className={`flex items-center gap-1.5 text-xs font-semibold ${c.textMuted}`}>
+                {t('vbd_advanced_checkins')} <Caret open={showFreq} />
+              </button>
+              {showFreq && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {CHECK_IN_FREQS.map(f => (<button key={f.min} onClick={() => setCheckInFreq(f.min)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${checkInFreq === f.min ? c.tagActive : c.tag}`}>
+                      {t(f.labelKey)} </button>
+                  ))} </div>
+              )}
             </div>
           </div>
 
