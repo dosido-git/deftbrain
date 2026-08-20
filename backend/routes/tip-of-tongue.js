@@ -90,7 +90,6 @@ Return ONLY valid JSON:
     {
       "name": "Most likely identification — specific name",
       "confidence": "high | medium | low",
-      "confidence_pct": 85,
       "why_it_fits": "Which specific details from their description match this — be vivid and connect the dots",
       "memory_trigger": "The one detail that will make them go 'YES that's it!' — a specific sensory moment, visual, or fact",
       "how_to_verify": "How to confirm this is right — what to search, listen for, look at, taste",
@@ -112,7 +111,7 @@ Return ONLY valid JSON:
 RULES:
 1. Return 3-4 matches, ranked by confidence (highest first). If genuinely unsure, include fewer — don't pad with low-confidence guesses.
 2. At most 3 items in also_try.
-3. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value. (confidence_pct stays a number.)
+3. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value; the interface reads it as a code and shows the reader a phrase. Never put a percentage, score or rating anywhere in the response.
 4. Keep every field to one tight sentence.
 5. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 
@@ -175,7 +174,6 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
     {
       "name": "Refined identification",
       "confidence": "high | medium | low",
-      "confidence_pct": 85,
       "why_it_fits": "Why this is a better match given the feedback",
       "memory_trigger": "The detail that will confirm it",
       "how_to_verify": "How to check",
@@ -188,7 +186,7 @@ Based on their feedback, refine the identification. Return ONLY valid JSON:
 
 RULES:
 1. Return 2-3 refined matches.
-2. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value. (confidence_pct stays a number.)
+2. "confidence" MUST be exactly one of these English lowercase codes — high, medium, low — regardless of the output language. Do NOT translate this value; the interface reads it as a code and shows the reader a phrase. Never put a percentage, score or rating anywhere in the response.
 3. Keep every field to one tight sentence.
 4. Never place a double-quote (") character inside any JSON string value — it breaks the JSON.`;
 

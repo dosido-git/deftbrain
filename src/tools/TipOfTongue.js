@@ -97,6 +97,8 @@ const TipOfTongue = ({ tool }) => {
   // Results / UI
   const [error, setError] = useState('');
   const [expandedMatch, setExpandedMatch] = useState(0);
+  const [foundIt, setFoundIt] = useState(null);
+  const [showAlsoTry, setShowAlsoTry] = useState(false);
 
   // Refinement
   const [refineMode, setRefineMode] = useState(false);
@@ -114,7 +116,7 @@ const TipOfTongue = ({ tool }) => {
     if (!results?.matches?.length) return '';
     const lines = [`🔍 ${currentCat.emoji} ${t(currentCat.labelKey)}`, '', `"${description}"`, ''];
     results.matches.forEach((m, i) => {
-      lines.push(`${i + 1}. ${m.name} (${m.confidence_pct || '?'}% confidence)`);
+      lines.push(`${i + 1}. ${m.name} (${m.confidence === 'high' ? t('tot_conf_likely') : m.confidence === 'medium' ? t('tot_conf_maybe') : t('tot_conf_possible')})`);
       lines.push(`   ${m.why_it_fits}`);
       if (m.how_to_find) lines.push(`   → ${m.how_to_find}`);
       lines.push('');
@@ -188,7 +190,6 @@ const TipOfTongue = ({ tool }) => {
 
   const confBg   = (conf) => conf === 'high' ? c.highBg : conf === 'medium' ? c.medBg : c.lowBg;
   const confText = (conf) => conf === 'high' ? c.highText : conf === 'medium' ? c.medText : c.lowText;
-  const confBar  = (pct) => Math.max(5, Math.min(100, pct || 50));
 
   useEffect(() => {
     if (results && resultsRef.current) {
@@ -310,16 +311,10 @@ const TipOfTongue = ({ tool }) => {
                 <span className={'text-xl font-bold ' + confText(m.confidence)}>#{idx + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className={'text-base font-bold ' + c.text + ' truncate'}>{m.name}</p>
-                  <p className={'text-xs ' + c.textMuted + ' mt-0.5'}>{t('tot_confidence', { pct: m.confidence_pct })}</p>
                 </div>
                 <span className={'text-xs font-bold px-2.5 py-1 rounded-full ' + confBg(m.confidence) + ' ' + confText(m.confidence)}>
                   {m.confidence === 'high' ? '🎯 ' + t('tot_conf_likely') : m.confidence === 'medium' ? '🤔 ' + t('tot_conf_maybe') : '💭 ' + t('tot_conf_possible')}
                 </span>
-              </div>
-              {/* Confidence bar */}
-              <div className={'w-full h-1.5 rounded-full ' + c.inset + ' overflow-hidden'}>
-                <div className={'h-full rounded-full transition-all ' + (m.confidence === 'high' ? 'bg-[#5a8a5c]' : m.confidence === 'medium' ? 'bg-[#c8872e]' : 'bg-[#4a6a8a]')}
-                  style={{ width: confBar(m.confidence_pct) + '%' }} />
               </div>
             </button>
 
@@ -348,6 +343,11 @@ const TipOfTongue = ({ tool }) => {
                 )}
 
                 {/* How to find */}
+                <button onClick={() => setFoundIt(foundIt === m.name ? null : m.name)}
+                  className={'w-full py-2.5 rounded-xl text-xs font-bold border ' + (foundIt === m.name ? c.pillActive : c.pillInactive)}>
+                  {t('tot_thats_it')}
+                </button>
+
                 {m.how_to_find && (
                   <div className={'border rounded-lg p-3 ' + c.cardAlt + ' ' + c.border}>
                     <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>📍 {t('tot_how_find')}</p>
@@ -380,10 +380,14 @@ const TipOfTongue = ({ tool }) => {
         ))}
 
         {/* Also try */}
-        {results.also_try?.length > 0 && (
+        {results.also_try?.length > 0 && foundIt && (
           <div className={'border rounded-xl p-5 ' + c.card + ' ' + c.border}>
-            <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>✨ {t('tot_also_like')}</p>
-            <div className="space-y-2">
+            <p className={'text-sm font-bold ' + c.text + ' mb-2'}>{t('tot_since_liked', { name: foundIt })}</p>
+            <button onClick={() => setShowAlsoTry(v => !v)} aria-expanded={showAlsoTry}
+              className={'flex items-center gap-1.5 text-xs font-bold mb-3 ' + c.accentTxt}>
+              ✨ {t('tot_also_like')} <Caret open={showAlsoTry} />
+            </button>
+            <div className={'space-y-2 ' + (showAlsoTry ? '' : 'hidden')}>
               {results.also_try.map((item, idx) => (
                 <div key={idx} className={'p-3 rounded-lg ' + c.inset}>
                   <p className={'text-sm font-semibold ' + c.text}>{item.name}</p>
