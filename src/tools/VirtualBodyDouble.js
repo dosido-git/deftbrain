@@ -570,9 +570,10 @@ const VirtualBodyDouble = ({ tool }) => {
 
           {/* Header */} <div className="mb-2 flex items-start justify-between gap-3">
             <div>
-            <h1 className={`text-2xl font-bold ${c.text}`}>
-              <span className="me-2">{tool?.icon ?? '👥'}</span>{tool?.title} </h1>
-            <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '👥'}</span>{t('vbd_tagline')}
+            </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
@@ -582,10 +583,6 @@ const VirtualBodyDouble = ({ tool }) => {
               </button>
             ) : null}
           </div>
-          <div className={`px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
-            <span className="font-bold">{t('vbd_intro_bold')}</span> {t('vbd_intro_rest')}
-          </div>
-
           {/* Status bar — only when there is something to show */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>

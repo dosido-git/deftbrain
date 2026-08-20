@@ -5565,7 +5565,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     { q: "How does a virtual body double work?",
       a: "You tell it what you're working on, how long, and how you're feeling; it builds the session — an opening nudge to start, check-ins at your chosen rhythm, ambient encouragement, help when you're stuck, and a proper wrap-up. It runs in a tab beside your work. No camera, no other humans, no scheduling." },
     { q: "Which session mode should I pick?",
-      a: "Deep Work for near-silent library presence, Sprint for short intense bursts, Grind for boring repetitive tasks (solidarity and dark humor, no fake enthusiasm), Creative for non-linear work where wandering is part of the process, and Avoidance Buster when the task is the one you've been dreading — extra-gentle, extra-small first steps." },
+      a: "Deep Work for near-silent library presence, Sprint for short intense bursts, Long Haul for boring repetitive tasks (steady company, no fake enthusiasm), Creative for non-linear work where wandering is part of the process, and Avoidance Buster when the task is the one you've been dreading — extra-gentle, extra-small first steps." },
     { q: "What if I get stuck mid-session?",
       a: "Hit the stuck button and it triages: diagnoses why you stalled (unclear next step, energy crash, task too big), gives you a literal next physical action, and offers micro-steps or a productive pivot. Getting unstuck without abandoning the session is most of the value." },
   ],
@@ -5577,7 +5577,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "👥",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "An AI coworking companion that stays with you through a focus session — checking in, cheering you on, and helping you get unstuck. Pick from 6 modes (Deep Work, Sprint, Grind, Creative, Avoidance Buster, or Standard) and it adapts its whole personality to match. Like having someone else in the room, without the small talk.",
+  description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Pick a mode, set a task, and you're not alone anymore.",
   guide: {
     overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
 
@@ -5598,7 +5598,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     },
 
     tips: [
-      "Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Grind for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off",
+      "Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Long Haul for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off",
       "The accountability card is designed for screenshots — use it to build social momentum",
       "25-45 minute sessions tend to work better than marathons. Start short, extend if you're in flow.",
       "Invite a real friend to cowork using the built-in message generator"
