@@ -4,6 +4,29 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry, NO_INVENTED_FACTS 
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
+// A frequency claim reads as a proven one. "The single most common reason" and
+// "statistically the most common sticking point" are not wrong, but a reader
+// does not separate common from established — and this tool has no study behind
+// it, only a pattern it has seen described. Testing also caught it reaching for
+// "the literature on calculus misconceptions consistently identifies", which is
+// an authority it does not have.
+const FREQUENCY_RULE = `
+On how common something is: soften every superlative and never cite research,
+literature, studies or data you cannot name.
+
+  NO:  The single most common reason students get stuck here.
+  YES: One of the most common reasons students get stuck here.
+  NO:  Statistically the most common sticking point for this topic.
+  YES: A very common sticking point for this topic.
+  NO:  The literature on misconceptions consistently identifies this.
+  YES: This trips up a lot of people at the same stage.
+  NO:  Research shows 80% of students miss this.
+  YES: Plenty of people miss this.
+
+"Common", "often", "a lot of people" are all fine. "The single most", "always",
+"statistically", "studies show", "the literature" are not. You are describing a
+pattern you recognise, not reporting a finding.`;
+
 // ════════════════════════════════════════════════════════════
 // POST /the-gap — Trace back to the missing prerequisite
 // ════════════════════════════════════════════════════════════
@@ -40,7 +63,9 @@ ${whatIKnow ? `WHAT I DO UNDERSTAND: ${whatIKnow}` : ''}
 ${whereItBroke ? `WHERE IT BROKE: ${whereItBroke}` : ''}
 LEVEL: ${levelNote}
 
-Trace back to find the gap. Return ONLY valid JSON:
+Trace back to find the gap. ${FREQUENCY_RULE}
+
+Return ONLY valid JSON:
 
 {
   "concept_analysis": "1-2 sentences: what this concept actually requires you to understand, and why it's commonly confusing.",
@@ -136,6 +161,8 @@ router.post('/the-gap/dig', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const userPrompt = `ORIGINAL STRUGGLE: "${originalConcept || 'not specified'}"
 PREREQUISITE TO DIG INTO: "${prerequisite}"
 TEST RESULT: ${testResult === 'failed' ? 'They could NOT answer the quick test — this is likely the gap' : testResult === 'unsure' ? 'They were UNSURE on the quick test — partial understanding' : 'They PASSED the quick test but want to strengthen it anyway'}
+
+${FREQUENCY_RULE}
 
 Provide a focused refresher. Return ONLY valid JSON:
 

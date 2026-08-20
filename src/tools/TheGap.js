@@ -119,6 +119,7 @@ const TheGap = ({ tool }) => {
   const [level, setLevel] = useState('undergrad');
   const [digResults, setDigResults] = useState(null);
   const [showDeeper, setShowDeeper] = useState(false);
+  const [digFocus, setDigFocus] = useState(null);
   const [digTarget, setDigTarget] = useState(null);
   const [error, setError] = useState('');
   const [expandedNodes, setExpandedNodes] = useState({});
@@ -127,6 +128,9 @@ const TheGap = ({ tool }) => {
 
   // useRef
   const resultsRef = useRef(null);
+  const altRef = useRef(null);
+  const visualRef = useRef(null);
+  const exampleRef = useRef(null);
 
   // usePersistentState — all together after useRef
   const [sessionHistory, setSessionHistory] = usePersistentState('the-gap-history', []);
@@ -167,6 +171,15 @@ const TheGap = ({ tool }) => {
       setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('tg_err_trace')); }
   }, [concept, subject, whatIKnow, whereItBroke, level, callToolEndpoint, setSessionHistory, setResults, userLocale, userCurrency, userRegion, t]);
+
+  // Take them to the part they asked for once it exists.
+  useEffect(() => {
+    if (!digResults || !digFocus) return;
+    const target = digFocus === 'visual' ? visualRef.current : exampleRef.current;
+    if (!target) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [digResults, digFocus]);
 
   const dig = useCallback(async (prerequisite, testResult) => {
     setDigTarget(prerequisite); setDigResults(null);
@@ -473,13 +486,33 @@ const TheGap = ({ tool }) => {
 
             <button onClick={() => setShowDeeper(v => !v)} aria-expanded={showDeeper}
               className={'mt-3 flex items-center gap-1.5 text-xs font-bold ' + linkStyle}>
-              {t('tg_go_deeper')} <Caret open={showDeeper} />
+              {t('tg_still_stuck')} <Caret open={showDeeper} />
             </button>
             {showDeeper && (
-              <button onClick={() => dig(gap.concept, 'failed')}
-                className={'w-full mt-2 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
-                <span>🔍</span> {t('tg_deep_dive_btn')}
-              </button>
+              <div className="mt-2 flex flex-col gap-1.5">
+                <button onClick={() => { setDigFocus('visual'); dig(gap.concept, 'failed'); }}
+                  className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border ' + c.cardAlt}>
+                  {t('tg_stuck_visual')}
+                </button>
+                <button onClick={() => { setDigFocus('example'); dig(gap.concept, 'failed'); }}
+                  className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border ' + c.cardAlt}>
+                  {t('tg_stuck_example')}
+                </button>
+                <a href="/AnalogyEngine"
+                  className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border block ' + c.cardAlt}>
+                  {t('tg_stuck_analogy')}
+                </a>
+                {results?.if_thats_not_it?.length > 0 && (
+                  <button onClick={() => { setShowAlternatives(true); setTimeout(() => altRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60); }}
+                    className={'w-full py-2.5 rounded-xl text-xs font-bold text-start px-3 border ' + c.cardAlt}>
+                    {t('tg_stuck_different')}
+                  </button>
+                )}
+                <button onClick={() => dig(gap.concept, 'failed')}
+                  className={'w-full mt-1 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
+                  <span>🔍</span> {t('tg_deep_dive_btn')}
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -518,7 +551,7 @@ const TheGap = ({ tool }) => {
 
         {/* Alternatives */}
         {results?.if_thats_not_it?.length > 0 && (
-          <div>
+          <div ref={altRef}>
             <button onClick={() => setShowAlternatives(!showAlternatives)}
               className={'w-full flex items-center gap-2 p-3 rounded-xl ' + c.cardAlt + ' border hover:opacity-80'}>
               <span>🤔</span>
@@ -581,7 +614,7 @@ const TheGap = ({ tool }) => {
         )}
 
         {r.visual_or_analogy && (
-          <div className={'p-3 rounded-lg ' + c.cardAlt + ' mb-3'}>
+          <div ref={visualRef} className={'p-3 rounded-lg mb-3 scroll-mt-24 ' + (digFocus === 'visual' ? c.tipBg + ' border-2' : c.cardAlt)}>
             <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>{t('tg_analogy')}</p>
             <p className={'text-xs ' + c.text}>{r.visual_or_analogy}</p>
           </div>
@@ -595,7 +628,7 @@ const TheGap = ({ tool }) => {
         )}
 
         {r.worked_example && (
-          <div className={c.card + ' border rounded-xl p-4 mb-3'}>
+          <div ref={exampleRef} className={'rounded-xl p-4 mb-3 scroll-mt-24 ' + (digFocus === 'example' ? c.tipBg + ' border-2' : c.card + ' border')}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>{t('tg_worked_example')}</p>
             <p className={'text-sm ' + c.text + ' whitespace-pre-wrap'}>{r.worked_example}</p>
           </div>
