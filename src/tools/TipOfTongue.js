@@ -266,11 +266,17 @@ const TipOfTongue = ({ tool }) => {
         </div>
       </div>
 
-      <button onClick={identify} disabled={loading || !description.trim()}
-        className={'w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !description.trim() ? c.btnDis : c.btnPrimary)}>
+      <button title={t('cmd_enter')} onClick={identify} disabled={loading || !description.trim()}
+        className={'relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !description.trim() ? c.btnDis : c.btnPrimary)}>
         {loading
           ? <><span className="animate-spin inline-block">{tool?.icon ?? "💭"}</span> {t('tot_searching')}</>
           : <><span>{tool?.icon ?? '💭'}</span> {t('tot_identify')}</>}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
       </button>
     </div>
   );

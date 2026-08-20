@@ -995,7 +995,7 @@ const CrashPredictor = ({ tool }) => {
 
         {mode==='analysis'&&!analysis&&!loading&&(
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-8 text-center`}><p className={`text-lg ${c.textMuteded} mb-3`}>📊 {t('cpr_no_analysis')}</p>
-            <button onClick={handleAnalyze} disabled={loading||logs.length<3} className={`${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-40`}>{logs.length<3?t('cpr_need_more_days',{count:3-logs.length}):t('cpr_run_analysis')}</button></div>
+            <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading||logs.length<3} className={`relative ${c.btnPrimary} px-6 py-2 rounded-lg font-semibold disabled:opacity-40 sm:pe-14`}>{logs.length<3?t('cpr_need_more_days',{count:3-logs.length}):t('cpr_run_analysis')}{!loading&&logs.length>=3&&<kbd aria-hidden="true" className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">⌘↵</kbd>}</button></div>
         )}
 
         {/* ═══════════ HISTORY ═══════════ */}

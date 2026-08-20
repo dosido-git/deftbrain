@@ -241,3 +241,25 @@ These are notes-to-future-self about audit failures observed in past sessions. E
 - **Manual sweep after script-clean.** Script-clean is necessary, not sufficient. Always do a structural read-through of the return statement and primary render helpers before declaring an audit complete. The standard manual checks: PF-3 header card structure, render-helper reset placement, cross-ref placement (pre-result inline below submit / post-result inside results card), no nested `c.card` with `shadow-lg`.
 - **Future PF-14 patcher: paren-depth across lines.** If a future PF-14 patcher swaps `useState`/`usePersistentState` ordering, it must paren-depth-walk multi-line `useState([…])` declarations and treat continuations as part of the same logical declaration. Session 2026-05-06 ephemeral patcher treated `const [x, setX] = useState([` as a single line and tore the array body apart, producing Babel parse errors in `SubscriptionGuiltTrip` and `TheDebrief`.
 - **Future PF-14 patcher: respect main-component scope.** PF-14's audit-script v2.2 reports lines from the main-component body only. A patcher consuming those line numbers cannot accidentally relocate declarations across function boundaries from PF-14 reports alone — but if the patcher does its own scanning (e.g. sed-style "find first const c"), it must independently respect function boundaries. Subcomponents in multi-component files (LayoverMaximizer's Section, DoctorVisitTranslator's BiText/DiagramBtn) receive `c` and `isDark` as props; injecting `const c = {…}` into their body creates a Babel `Identifier 'c' has already been declared` shadow conflict.
+
+## OPEN — 49 tool taglines still English-only in 12 languages (2026-08-20)
+
+Commit 37065c81 switched 59 tool cards from `tool?.tagline ?? t(...)` to `t(...)`,
+so the translated tagline is finally reached. 49 were left because the locale
+tagline is *different copy* from the catalog tagline — switching blind would have
+replaced a current English tagline with a stale one.
+
+To finish: for each tool below, take the catalog `tagline` from `src/data/tools.js`
+as the source of truth, write it into the `en` block of the locale file, translate
+it into the other 12 languages, then drop the `tool?.tagline ??` prefix in the tool
+file. ~490 strings; it needs real translation, not a codemod.
+
+Two are not stale but wrong, and are worth doing first:
+
+- **BillRescue** — locale tagline reads "Personalized rabbit holes you can't
+  resist", which looks like BrainRoulette's. Catalog: "A bill isn't a verdict.
+  It's a puzzle to solve."
+- **ConflictCoach** — locale tagline is ComebackCooker's, word for word. Catalog:
+  "Stop, breathe, and craft the right response".
+
+Full list: ArgueSmarter, BikeMedic, BillRescue, BuyWise, ConflictCoach, CrashPredictor, CrisisPrioritizer, CutToTheChase, DateNight, DecisionCoach, DoctorVisitPrep, DoctorVisitTranslator, EmailUrgencyTriager, FanTheory, FocusPocus, FocusSoundArchitect, GratitudeDebtClearer, GravityWell, JargonAssassin, LaundroMat, LuckSurface, MagicMouth, MarkupDetective, MeetingBSDetector, MeetingHijackPreventer, Mend, MicroAdventureMapper, MissingLink, NameThatFeeling, NerveCheck, PEP, PetWeirdnessDecoder, PlainTalk, PlantRescue, PlotHole, PreMortem, ProcedureProbe, ReadTheRoom, RecipeChaosSolver, RoommateCourt, SignalVsNoise, SkillGapMap, SocialBatteryAdvisor, SubscriptionTamer, TaskAvalancheBreaker, TheCrux, TheRunthrough, TruthBomb, WhereDidTheTimeGo
