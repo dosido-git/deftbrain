@@ -43,6 +43,15 @@ const TheGap = ({ tool }) => {
   // a procedural deficit" — they arrive thinking "I don't get integration by
   // parts". So the taxonomy earns its keep only after the trace, as one line
   // that tells you which kind of stuck you were.
+  // The diagnosis is the MOST LIKELY gap traced from a handful of words, and how
+  // sure that is swings hard on how much the reader told us. Saying so is the
+  // difference between a reading and a verdict.
+  const CONFIDENCE = {
+    High:   { key: 'tg_conf_high',   tone: 'successTxt' },
+    Medium: { key: 'tg_conf_medium', tone: 'warningTxt' },
+    Low:    { key: 'tg_conf_low',    tone: 'textMuted' },
+  };
+
   const GAP_TYPE_WHY = {
     conceptual: t('tg_gt_conceptual_why'),
     procedural: t('tg_gt_procedural_why'),
@@ -109,6 +118,7 @@ const TheGap = ({ tool }) => {
   const [whereItBroke, setWhereItBroke] = useState('');
   const [level, setLevel] = useState('undergrad');
   const [digResults, setDigResults] = useState(null);
+  const [showDeeper, setShowDeeper] = useState(false);
   const [digTarget, setDigTarget] = useState(null);
   const [error, setError] = useState('');
   const [expandedNodes, setExpandedNodes] = useState({});
@@ -416,6 +426,27 @@ const TheGap = ({ tool }) => {
             </div>
             <p className={'text-xs ' + c.textSecondary + ' mb-3'}>{gap.why_this_one}</p>
 
+            {CONFIDENCE[gap.confidence] && (
+              <div className={'rounded-xl border p-3 mb-3 ' + c.card}>
+                <p className={'text-xs font-bold ' + c[CONFIDENCE[gap.confidence].tone]}>
+                  {t('tg_confidence', { val: t(CONFIDENCE[gap.confidence].key) })}
+                </p>
+                {gap.confidence_reasons?.length > 0 && (
+                  <>
+                    <p className={'text-[10px] font-bold uppercase tracking-wide mt-2 mb-1 ' + c.textMuted}>{t('tg_confidence_why')}</p>
+                    <ul className="space-y-1">
+                      {gap.confidence_reasons.map((r, i) => (
+                        <li key={i} className={'text-xs leading-relaxed ' + c.textSecondary + ' flex gap-2'}>
+                          <span className={c.textMuted} aria-hidden="true">•</span>
+                          <span>{typeof r === 'string' ? r : r?.reason}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Refresher */}
             {gap.refresher && (
               <div className={'rounded-xl border ' + c.card + ' p-4 space-y-3'}>
@@ -440,10 +471,16 @@ const TheGap = ({ tool }) => {
               </div>
             )}
 
-            <button onClick={() => dig(gap.concept, 'failed')}
-              className={'w-full mt-3 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
-              <span>🔍</span> {t('tg_deep_dive_btn')}
+            <button onClick={() => setShowDeeper(v => !v)} aria-expanded={showDeeper}
+              className={'mt-3 flex items-center gap-1.5 text-xs font-bold ' + linkStyle}>
+              {t('tg_go_deeper')} <Caret open={showDeeper} />
             </button>
+            {showDeeper && (
+              <button onClick={() => dig(gap.concept, 'failed')}
+                className={'w-full mt-2 py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ' + c.btnPrimary}>
+                <span>🔍</span> {t('tg_deep_dive_btn')}
+              </button>
+            )}
           </div>
         )}
 

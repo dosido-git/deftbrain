@@ -62,6 +62,10 @@ Trace back to find the gap. Return ONLY valid JSON:
     "gap_type": "EXACTLY one of these four English words, never translated: conceptual | procedural | definitional | notational",
     "gap_type_explanation": "What type of gap this is and what that means for how to fix it",
     "why_this_one": "Why this is likely the gap — what symptoms point here",
+    "confidence": "EXACTLY one of these three English words, never translated, never anything else: High | Medium | Low",
+    "confidence_reasons": [
+      "One short line for why this diagnosis is as sure as it is — 2-4 of them. Draw on: how directly the prerequisite feeds the target concept, what their own description of being stuck points to, and how common this gap is for this topic. Be honest downward: if they gave only a concept name and no description, that is a real reason confidence is not High, and saying so is more useful than sounding certain."
+    ],
     "refresher": {
       "core_idea": "The key idea explained simply and clearly — 3-5 sentences max. This should be an actual mini-lesson, not a pointer to go read something.",
       "common_confusion": "The specific misconception that usually causes this gap",

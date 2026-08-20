@@ -70,7 +70,14 @@
             "common_confusion": "Viele Studierende sehen (2x+1)³ und leiten es ab wie x³, also mit 3(2x+1)². Sie vergessen den zweiten Faktor g'(x) = 2, weil sie die innere Funktion nicht als eigenständige Funktion wahrnehmen, die ebenfalls variiert.",
             "practice": "1. Zerlege folgende Funktionen schriftlich in äußere und innere Funktion, bevor du ableitest: a) h(x) = e^(x²+1), b) h(x) = (cos(x))⁴, c) h(x) = ln(3x−2). 2. Leite anschließend jede Funktion Schritt für Schritt ab und benenne laut (oder schriftlich), welchen Teil du gerade ableitest.",
             "time_estimate": "1–2 Lerneinheiten à 45 Minuten"
-          }
+          },
+          "confidence": "Medium",
+          "confidence_reasons": [
+            "Die Angabe, dass Funktionen und Steigung verstanden sind, legt nahe, dass konzeptuelle Grundlagen sitzen – das zeigt auf einen notationalen oder prozeduralen Engpass.",
+            "Schüler auf Bachelorniveau stolpern bei der Kettenregel sehr häufig über genau die Substitutionsschreibweise, nicht über das Konzept der Verkettung selbst.",
+            "Die Beschreibung ist knapp gehalten; ohne konkretes Beispiel, wo es hakt, bleibt etwas Unsicherheit, ob vielleicht doch das Erkennen der Funktionsschichten das eigentliche Problem ist.",
+            "Mittlere Konfidenz, weil zwei eng verwandte Schwachstellen (Notation vs. Schichterkennung) gleichzeitig plausibel sind."
+          ]
         },
         "chain_visualization": "Funktionsbegriff → [Funktionsverkettung erkennen ⬅ LÜCKE HIER] → Grundableitungen → Kettenregel anwenden",
         "forward_connection": "Sobald du eine Funktion wie h(x) = sin(x²) automatisch als Schachtelung liest – äußere Funktion sin, innere Funktion x² – wird die Kettenregel fast selbstverständlich: Du leitest die äußere ab (cos(x²)), lässt dabei die innere stehen, und multiplizierst mit der Ableitung der inneren (2x). Das Ergebnis h'(x) = cos(x²) · 2x entsteht dann aus einem klaren Bild, nicht aus einer auswendig gelernten Formel.",
@@ -90,7 +97,8 @@
           "step_3": "Kehre zu deinen ursprünglichen Kettenregel-Aufgaben zurück und arbeite jede in drei expliziten Schritten ab: (1) Verkettung benennen, (2) äußere ableiten, (3) mit innerer Ableitung multiplizieren.",
           "total_time": "ca. 2–3 Stunden verteilt auf 2 Tage"
         },
-        "encouragement": "Die Kettenregel ist tatsächlich eine der ersten Stellen im Studium, wo Analysis aufhört, eine Sammlung von Tricks zu sein, und anfängt, strukturelles Denken zu verlangen. Dass du genau hier feststeckst, ist kein Zeichen von Schwäche – es ist das Zeichen, dass du an der richtigen Stelle bist und das richtige Problem erkannt hast."
+        "encouragement": "Die Kettenregel ist tatsächlich eine der ersten Stellen im Studium, wo Analysis aufhört, eine Sammlung von Tricks zu sein, und anfängt, strukturelles Denken zu verlangen. Dass du genau hier feststeckst, ist kein Zeichen von Schwäche – es ist das Zeichen, dass du an der richtigen Stelle bist und das richtige Problem erkannt hast.",
+        "subject_detected": "Mathematik"
       }
     },
     {
