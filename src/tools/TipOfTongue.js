@@ -343,11 +343,6 @@ const TipOfTongue = ({ tool }) => {
                 )}
 
                 {/* How to find */}
-                <button onClick={() => setFoundIt(foundIt === m.name ? null : m.name)}
-                  className={'w-full py-2.5 rounded-xl text-xs font-bold border ' + (foundIt === m.name ? c.pillActive : c.pillInactive)}>
-                  {t('tot_thats_it')}
-                </button>
-
                 {m.how_to_find && (
                   <div className={'border rounded-lg p-3 ' + c.cardAlt + ' ' + c.border}>
                     <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-1'}>📍 {t('tot_how_find')}</p>
@@ -364,7 +359,7 @@ const TipOfTongue = ({ tool }) => {
                 {/* Refine feedback buttons */}
                 {!refineMode && (
                   <div className="flex gap-1.5">
-                    <button onClick={() => { setRefineMode(true); setMatchFeedback(prev => ({ ...prev, [idx]: 'yes' })); }}
+                    <button onClick={() => { setFoundIt(m.name); setRefineMode(true); setMatchFeedback(prev => ({ ...prev, [idx]: 'yes' })); }}
                       className={'flex-1 py-2 rounded-lg text-xs font-bold border ' + c.pillInactive + ' hover:border-[#5a8a5c]'}>
                       ✅ {t('tot_thats_it')}
                     </button>

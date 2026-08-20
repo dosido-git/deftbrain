@@ -6,7 +6,6 @@ export const tipOfTongue = {
   en: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Describe it from memory — DeftBrain will figure out what it is.",
-    tot_thats_it: "✓ That's it!",
     tot_since_liked: "Since you were after {{name}} —",
     tot_fragments: "Fragments are enough. Odd details often work better than complete descriptions.",
     // Category labels
@@ -118,7 +117,6 @@ export const tipOfTongue = {
   es: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Descríbelo de memoria: DeftBrain averiguará qué es.",
-    tot_thats_it: "✓ ¡Es eso!",
     tot_since_liked: "Ya que buscabas {{name}} —",
     tot_fragments: "Con fragmentos basta. Los detalles raros suelen funcionar mejor que las descripciones completas.",
     tot_cat_food: "Comida / Bebida",
@@ -219,7 +217,6 @@ export const tipOfTongue = {
   zh: {
     tot_title: "Tip of Tongue",
     tot_tagline: "凭记忆描述它，DeftBrain 来帮你认出它是什么。",
-    tot_thats_it: "✓ 就是它！",
     tot_since_liked: "既然你找的是《{{name}}》——",
     tot_fragments: "零碎的印象就够了。奇怪的细节往往比完整的描述更管用。",
     tot_cat_food: "食物 / 饮品",
@@ -320,7 +317,6 @@ export const tipOfTongue = {
   hi: {
     tot_title: "Tip of Tongue",
     tot_tagline: "याद के सहारे बताइए — DeftBrain पता लगा लेगा कि वह क्या है।",
-    tot_thats_it: "✓ यही है!",
     tot_since_liked: "चूँकि आप {{name}} ढूँढ रहे थे —",
     tot_fragments: "टुकड़े ही काफ़ी हैं। अजीब-सी बातें अक्सर पूरे विवरण से ज़्यादा काम आती हैं।",
     tot_cat_food: "खाना / पेय",
@@ -421,7 +417,6 @@ export const tipOfTongue = {
   ar: {
     tot_title: "Tip of Tongue",
     tot_tagline: "صِفه من ذاكرتك، وسيكتشف DeftBrain ما هو.",
-    tot_thats_it: "✓ هذا هو!",
     tot_since_liked: "بما أنك كنت تبحث عن {{name}} —",
     tot_fragments: "الشذرات تكفي. التفاصيل الغريبة غالبًا ما تفيد أكثر من الوصف الكامل.",
     tot_cat_food: "طعام / شراب",
@@ -522,7 +517,6 @@ export const tipOfTongue = {
   pt: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Descreva de memória — o DeftBrain descobre o que é.",
-    tot_thats_it: "✓ É isso!",
     tot_since_liked: "Já que você procurava {{name}} —",
     tot_fragments: "Fragmentos bastam. Detalhes estranhos costumam funcionar melhor que descrições completas.",
     tot_cat_food: "Comida / Bebida",
@@ -623,7 +617,6 @@ export const tipOfTongue = {
   fr: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Décrivez-le de mémoire, DeftBrain trouvera ce que c'est.",
-    tot_thats_it: "✓ C'est ça !",
     tot_since_liked: "Puisque vous cherchiez {{name}} —",
     tot_fragments: "Des bribes suffisent. Les détails bizarres marchent souvent mieux qu'une description complète.",
     tot_cat_food: "Nourriture / Boisson",
@@ -724,7 +717,6 @@ export const tipOfTongue = {
   de: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Beschreiben Sie es aus dem Gedächtnis — DeftBrain findet heraus, was es ist.",
-    tot_thats_it: "✓ Das ist es!",
     tot_since_liked: "Da Sie {{name}} gesucht haben —",
     tot_fragments: "Bruchstücke reichen. Merkwürdige Einzelheiten helfen oft mehr als eine vollständige Beschreibung.",
     tot_cat_food: "Essen / Trinken",
@@ -825,7 +817,6 @@ export const tipOfTongue = {
   ja: {
     tot_title: "Tip of Tongue",
     tot_tagline: "覚えているままに書いてください。DeftBrain がそれを突き止めます。",
-    tot_thats_it: "✓ これです！",
     tot_since_liked: "探していたのが「{{name}}」なら —",
     tot_fragments: "断片で十分です。妙にひっかかる細部のほうが、きちんとした説明よりよく効きます。",
     tot_cat_food: "食べ物 / 飲み物",
@@ -926,7 +917,6 @@ export const tipOfTongue = {
   ko: {
     tot_title: "Tip of Tongue",
     tot_tagline: "기억나는 대로 설명해 주세요. DeftBrain이 그게 뭔지 알아냅니다.",
-    tot_thats_it: "✓ 바로 이거예요!",
     tot_since_liked: "찾으시던 게 {{name}}였다면 —",
     tot_fragments: "조각이면 충분합니다. 이상하게 남아 있는 디테일이 완전한 설명보다 잘 통할 때가 많습니다.",
     tot_cat_food: "음식 / 음료",
@@ -1027,7 +1017,6 @@ export const tipOfTongue = {
   ru: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Опишите по памяти — DeftBrain определит, что это.",
-    tot_thats_it: "✓ Это оно!",
     tot_since_liked: "Раз вы искали {{name}} —",
     tot_fragments: "Обрывков достаточно. Странные детали работают лучше полного описания.",
     tot_cat_food: "Еда / Напиток",
@@ -1128,7 +1117,6 @@ export const tipOfTongue = {
   th: {
     tot_title: "Tip of Tongue",
     tot_tagline: "บรรยายจากความทรงจำ แล้ว DeftBrain จะหาให้ว่ามันคืออะไร",
-    tot_thats_it: "✓ ใช่อันนี้เลย!",
     tot_since_liked: "ในเมื่อคุณตามหา {{name}} อยู่ —",
     tot_fragments: "เศษเสี้ยวก็พอแล้ว รายละเอียดแปลก ๆ มักได้ผลกว่าคำบรรยายที่ครบถ้วน",
     tot_cat_food: "อาหาร / เครื่องดื่ม",
@@ -1229,7 +1217,6 @@ export const tipOfTongue = {
   vi: {
     tot_title: "Tip of Tongue",
     tot_tagline: "Hãy tả theo trí nhớ — DeftBrain sẽ tìm ra đó là gì.",
-    tot_thats_it: "✓ Đúng nó rồi!",
     tot_since_liked: "Vì bạn đang tìm {{name}} —",
     tot_fragments: "Chỉ vài mảnh vụn là đủ. Những chi tiết kỳ quặc thường hiệu quả hơn mô tả đầy đủ.",
     tot_cat_food: "Đồ ăn / Thức uống",
