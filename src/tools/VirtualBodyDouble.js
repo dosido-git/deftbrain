@@ -249,6 +249,8 @@ const VirtualBodyDouble = ({ tool }) => {
   const resultsRef = useRef(null);
   const ambientTimerRef = useRef(null);
   const chatLogRef = useRef(null);
+  const viewTopRef = useRef(null);
+  const firstViewRef = useRef(true);
   const stickToBottomRef = useRef(true);
   const nextCheckInRef = useRef(0);
   const completeRef = useRef(null);
@@ -268,6 +270,30 @@ const VirtualBodyDouble = ({ tool }) => {
   const modeLabel = t(SESSION_MODES.find(m => m.id === sessionMode)?.labelKey || 'vbd_mode_default');
 
   // Auto-scroll chat
+  // A view swap replaces a tall form with a short session, and the browser keeps
+  // the scroll position it already had — which is now near the bottom of a much
+  // shorter page. Nothing scrolled; the page got smaller underneath you. So the
+  // first thing you saw after starting a session was the footer. Only bites on
+  // the first submit, because that is the only transition that changes the page
+  // height by that much.
+  useEffect(() => {
+    if (firstViewRef.current) { firstViewRef.current = false; return; }
+    // Computed against the document rather than scrollIntoView, which resolves
+    // against every scroll container between here and the root and is easy to
+    // get a surprising answer from.
+    const id = setTimeout(() => {
+      const el = viewTopRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 12;
+      // Instant. A smooth glide loses: the kickoff messages land while it is
+      // still animating, and the browser's scroll anchoring adjusts for the
+      // layout change mid-flight, so the animation ends somewhere neither of
+      // them intended. Measured: it asked for 431 and settled at 1554.
+      window.scrollTo(0, Math.max(0, top));
+    }, 80);
+    return () => clearTimeout(id);
+  }, [view]);
+
   useEffect(() => {
     const log = chatLogRef.current;
     // Instant, not smooth. A smooth scroll emits its own scroll events all the
@@ -601,7 +627,7 @@ const VirtualBodyDouble = ({ tool }) => {
   // RENDER: SETUP
   // ══════════════════════════════════════════════════
   if (view === 'setup') {
-    return (<div className="px-4 py-2">
+    return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Header */} <div className="mb-2 flex items-start justify-between gap-3">
@@ -819,7 +845,7 @@ const VirtualBodyDouble = ({ tool }) => {
   if (view === 'active') {
     const progress = actualDuration > 0 ? ((actualDuration * 60 - secondsRemaining) / (actualDuration * 60)) * 100 : 0;
 
-    return (<div className="px-4 py-2">
+    return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-4">
 
           {/* Timer header with mode-colored bar */} <div className={`${c.card} border rounded-xl p-5 text-center ${modeColors.glow} shadow-sm`}>
@@ -925,7 +951,7 @@ const VirtualBodyDouble = ({ tool }) => {
   // RENDER: COMPLETE
   // ══════════════════════════════════════════════════
   if (view === 'complete') {
-    return (<div className="px-4 py-2">
+    return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
 
           <div data-copy-results ref={resultsRef} data-results-anchor />
@@ -1041,7 +1067,7 @@ const VirtualBodyDouble = ({ tool }) => {
     // Audit S5.5 Pattern A: alias to `results` so the audit's regex detects the
     // post-result cross-ref below as inside a results-conditional block.
     const results = reviewData;
-    return (<div className="px-4 py-2">
+    return (<div ref={viewTopRef} className="px-4 py-2">
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> {t('vbd_session_insights')}</h2>
