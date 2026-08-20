@@ -294,16 +294,11 @@ const TipOfTongue = ({ tool }) => {
         {results.category_detected && (
           <p className={'text-xs font-medium ' + c.textMuted}>{t('tot_looking_for')} {results.category_detected}</p>
         )}
-        {/* Thinking */}
-        {(results.thinking || results.refined_thinking) && (
-          <div className={'p-4 rounded-xl ' + c.inset}>
-            <p className={'text-xs font-bold ' + c.textMuted + ' mb-1'}>🧠 {t('tot_reasoning')}</p>
-            <p className={'text-sm ' + c.text}>{results.refined_thinking || results.thinking}</p>
-          </div>
-        )}
 
-        {/* Matches */}
-        {matches.map((m, idx) => (
+        {/* Matches. When the backend says one is dominant, only it gets a card
+            and the rest become a single "not it?" line — three full cards after
+            an unmistakable match invites doubt the evidence does not support. */}
+        {(results.dominant ? matches.slice(0, 1) : matches).map((m, idx) => (
           <div key={idx} className={'rounded-xl border-2 overflow-hidden transition-all ' + confBg(m.confidence)}>
             <button onClick={() => setExpandedMatch(expandedMatch === idx ? -1 : idx)}
               className="w-full text-start p-5">
@@ -350,9 +345,13 @@ const TipOfTongue = ({ tool }) => {
                   </div>
                 )}
 
-                {/* Fun fact */}
-                {m.fun_fact && (
-                  <p className={'text-xs ' + c.textMuted + ' italic'}>💎 {m.fun_fact}</p>
+                {/* Fun fact — after the confirmation, never before. Solve the
+                    problem first, then spark wonder. */}
+                {m.fun_fact && foundIt === m.name && (
+                  <div className={'p-3 rounded-lg border ' + c.tipBg}>
+                    <p className={'text-xs font-bold ' + c.tipText + ' mb-1'}>{t('tot_thats_the_one')} 💎 {t('tot_one_fun_thing')}</p>
+                    <p className={'text-sm ' + c.tipText}>{m.fun_fact}</p>
+                  </div>
                 )}
 
 
@@ -373,6 +372,13 @@ const TipOfTongue = ({ tool }) => {
             )}
           </div>
         ))}
+
+        {results.dominant && matches.length > 1 && (
+          <p className={'text-xs ' + c.textMuted}>
+            {t('tot_not_it')}{' '}
+            {matches.slice(1).map(m => m.name).join(' · ')}
+          </p>
+        )}
 
         {/* Also try */}
         {results.also_try?.length > 0 && foundIt && (
