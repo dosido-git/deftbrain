@@ -665,12 +665,16 @@ const WaitingModeLiberator = ({ tool }) => {
     return (<div className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-4">
 
-          {/* Header */} <div className="pt-2 pb-1">
+          {/* Header — PF-30: no in-card <h2>. ToolPageWrapper already renders the
+              tool's name as the page h1, so repeating it here made the visitor
+              read the same words twice before reaching an input. The icon moves
+              onto the tagline, which is the line that says something. */}
+          <div className="pt-0.5 pb-1">
             <div className="flex items-start justify-between gap-3">
-              <div>
-              <h2 className={`text-2xl font-bold ${c.text}`}>
-                <span className="me-2">{tool?.icon ?? '⏳'}</span>{tool?.title} </h2>
-              <p className={`${c.textSecondary} text-sm mt-1`}>{tool?.tagline}</p>
+              <div className="min-w-0">
+              <p className={`text-base ${c.textSecondary}`}>
+                <span className="me-2 text-lg">{tool?.icon ?? '⏳'}</span>{t('wml_tagline')}
+              </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
