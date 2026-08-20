@@ -239,6 +239,9 @@ const TipOfTongue = ({ tool }) => {
         <textarea value={description} onChange={e => setDescription(e.target.value)}
           placeholder={t(currentCat.phKey)}
           className={'w-full h-28 p-4 border-2 rounded-xl ' + c.input + ' outline-none focus:ring-2 resize-none text-sm'} />
+        {/* People stall here thinking they do not remember enough. Proving they
+            do is the entire tool, so say it before they close the tab. */}
+        <p className={'text-xs mt-2 ' + c.textSecondary}>{t('tot_fragments')}</p>
       </div>
 
       {/* Context fields */}
@@ -544,7 +547,7 @@ const TipOfTongue = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '💭'}</span>{tool?.tagline ?? t('tot_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '💭'}</span>{t('tot_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>

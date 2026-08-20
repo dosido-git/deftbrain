@@ -5,7 +5,8 @@
 export const tipOfTongue = {
   en: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Describe it from memory — we'll figure out what it was",
+    tot_tagline: "Describe it from memory — DeftBrain will figure out what it is.",
+    tot_fragments: "Fragments are enough. Odd details often work better than complete descriptions.",
     // Category labels
     tot_cat_food: "Food / Drink",
     tot_cat_music: "Music",
@@ -115,7 +116,8 @@ export const tipOfTongue = {
   },
   es: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Descríbelo de memoria — averiguaremos qué era",
+    tot_tagline: "Descríbelo de memoria: DeftBrain averiguará qué es.",
+    tot_fragments: "Con fragmentos basta. Los detalles raros suelen funcionar mejor que las descripciones completas.",
     tot_cat_food: "Comida / Bebida",
     tot_cat_music: "Música",
     tot_cat_film: "Película / Serie",
@@ -214,7 +216,8 @@ export const tipOfTongue = {
   },
   zh: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "凭记忆描述它——我们来帮你弄清那是什么",
+    tot_tagline: "凭记忆描述它，DeftBrain 来帮你认出它是什么。",
+    tot_fragments: "零碎的印象就够了。奇怪的细节往往比完整的描述更管用。",
     tot_cat_food: "食物 / 饮品",
     tot_cat_music: "音乐",
     tot_cat_film: "电影 / 剧集",
@@ -313,7 +316,8 @@ export const tipOfTongue = {
   },
   hi: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "याद के सहारे बताएं — हम पता लगा लेंगे कि वह क्या था",
+    tot_tagline: "याद के सहारे बताइए — DeftBrain पता लगा लेगा कि वह क्या है।",
+    tot_fragments: "टुकड़े ही काफ़ी हैं। अजीब-सी बातें अक्सर पूरे विवरण से ज़्यादा काम आती हैं।",
     tot_cat_food: "खाना / पेय",
     tot_cat_music: "संगीत",
     tot_cat_film: "फ़िल्म / शो",
@@ -412,7 +416,8 @@ export const tipOfTongue = {
   },
   ar: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "صفه من الذاكرة — وسنكتشف ما كان",
+    tot_tagline: "صِفه من ذاكرتك، وسيكتشف DeftBrain ما هو.",
+    tot_fragments: "الشذرات تكفي. التفاصيل الغريبة غالبًا ما تفيد أكثر من الوصف الكامل.",
     tot_cat_food: "طعام / شراب",
     tot_cat_music: "موسيقى",
     tot_cat_film: "فيلم / مسلسل",
@@ -511,7 +516,8 @@ export const tipOfTongue = {
   },
   pt: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Descreva de memória — vamos descobrir o que era",
+    tot_tagline: "Descreva de memória — o DeftBrain descobre o que é.",
+    tot_fragments: "Fragmentos bastam. Detalhes estranhos costumam funcionar melhor que descrições completas.",
     tot_cat_food: "Comida / Bebida",
     tot_cat_music: "Música",
     tot_cat_film: "Filme / Série",
@@ -610,7 +616,8 @@ export const tipOfTongue = {
   },
   fr: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Décrivez-le de mémoire — on trouvera ce que c'était",
+    tot_tagline: "Décrivez-le de mémoire, DeftBrain trouvera ce que c'est.",
+    tot_fragments: "Des bribes suffisent. Les détails bizarres marchent souvent mieux qu'une description complète.",
     tot_cat_food: "Nourriture / Boisson",
     tot_cat_music: "Musique",
     tot_cat_film: "Film / Série",
@@ -709,7 +716,8 @@ export const tipOfTongue = {
   },
   de: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Beschreibe es aus dem Gedächtnis — wir finden heraus, was es war",
+    tot_tagline: "Beschreiben Sie es aus dem Gedächtnis — DeftBrain findet heraus, was es ist.",
+    tot_fragments: "Bruchstücke reichen. Merkwürdige Einzelheiten helfen oft mehr als eine vollständige Beschreibung.",
     tot_cat_food: "Essen / Trinken",
     tot_cat_music: "Musik",
     tot_cat_film: "Film / Serie",
@@ -808,7 +816,8 @@ export const tipOfTongue = {
   },
   ja: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "記憶を頼りに説明してください — それが何だったか突き止めます",
+    tot_tagline: "覚えているままに書いてください。DeftBrain がそれを突き止めます。",
+    tot_fragments: "断片で十分です。妙にひっかかる細部のほうが、きちんとした説明よりよく効きます。",
     tot_cat_food: "食べ物 / 飲み物",
     tot_cat_music: "音楽",
     tot_cat_film: "映画 / 番組",
@@ -907,7 +916,8 @@ export const tipOfTongue = {
   },
   ko: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "기억나는 대로 설명해 주세요 — 그게 무엇이었는지 알아내 드립니다",
+    tot_tagline: "기억나는 대로 설명해 주세요. DeftBrain이 그게 뭔지 알아냅니다.",
+    tot_fragments: "조각이면 충분합니다. 이상하게 남아 있는 디테일이 완전한 설명보다 잘 통할 때가 많습니다.",
     tot_cat_food: "음식 / 음료",
     tot_cat_music: "음악",
     tot_cat_film: "영화 / 방송",
@@ -1006,7 +1016,8 @@ export const tipOfTongue = {
   },
   ru: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Опишите по памяти — мы выясним, что это было",
+    tot_tagline: "Опишите по памяти — DeftBrain определит, что это.",
+    tot_fragments: "Обрывков достаточно. Странные детали работают лучше полного описания.",
     tot_cat_food: "Еда / Напиток",
     tot_cat_music: "Музыка",
     tot_cat_film: "Фильм / Сериал",
@@ -1105,7 +1116,8 @@ export const tipOfTongue = {
   },
   th: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "อธิบายจากความทรงจำ — เราจะหาให้ว่ามันคืออะไร",
+    tot_tagline: "บรรยายจากความทรงจำ แล้ว DeftBrain จะหาให้ว่ามันคืออะไร",
+    tot_fragments: "เศษเสี้ยวก็พอแล้ว รายละเอียดแปลก ๆ มักได้ผลกว่าคำบรรยายที่ครบถ้วน",
     tot_cat_food: "อาหาร / เครื่องดื่ม",
     tot_cat_music: "เพลง",
     tot_cat_film: "หนัง / รายการ",
@@ -1204,7 +1216,8 @@ export const tipOfTongue = {
   },
   vi: {
     tot_title: "Tip of Tongue",
-    tot_tagline: "Mô tả theo trí nhớ — chúng tôi sẽ tìm ra nó là gì",
+    tot_tagline: "Hãy tả theo trí nhớ — DeftBrain sẽ tìm ra đó là gì.",
+    tot_fragments: "Chỉ vài mảnh vụn là đủ. Những chi tiết kỳ quặc thường hiệu quả hơn mô tả đầy đủ.",
     tot_cat_food: "Đồ ăn / Thức uống",
     tot_cat_music: "Âm nhạc",
     tot_cat_film: "Phim / Chương trình",

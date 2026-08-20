@@ -1616,12 +1616,12 @@ export const tools = [
   seoDescription: "Can't remember what it's called? Describe whatever fragment you recall and get it identified — food, music, films, scents, products, and more. Free, no signup.",
   seoTitle: "Tip-of-the-Tongue Finder: Name That Thing",
   title: "Tip of Tongue",
-  tagline: "Describe it from memory — I'll figure out what it is.",
+  tagline: "Describe it from memory — DeftBrain will figure out what it is.",
   tags: ['remember', 'forgot', 'what is it called', 'tip of tongue', 'word', 'memory', 'describe'],
   icon: "💭",
   categories: ['Diversions'],
   headerColor: "#d4dde8",
-  description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever fragment you remember and AI cross-references sensory details, context, and vibes to identify it. Works for food, music, films, products, scents, colors, places, fabrics, and anything else. Refine mode narrows results based on your feedback.",
+  description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.",
   guide: {
     overview: "TipOfTongue takes fragmentary, vibes-based descriptions and identifies what you're thinking of. Pick a category (food, music, film, product, scent, color, place, fabric, or other), describe what you remember however you can, and AI cross-references sensory details, time/place context, and elimination clues to find ranked matches. Each match includes why it fits, a memory trigger to confirm it, how to verify, and where to find it. If the first round is close but not right, refine mode uses your yes/no/close feedback to dramatically narrow the search.",
     howToUse: [
