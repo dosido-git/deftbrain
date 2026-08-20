@@ -248,7 +248,8 @@ const VirtualBodyDouble = ({ tool }) => {
   const breakTimerRef = useRef(null);
   const resultsRef = useRef(null);
   const ambientTimerRef = useRef(null);
-  const chatEndRef = useRef(null);
+  const chatLogRef = useRef(null);
+  const stickToBottomRef = useRef(true);
   const nextCheckInRef = useRef(0);
   const completeRef = useRef(null);
   const ambientMsgsRef = useRef([]);
@@ -267,7 +268,16 @@ const VirtualBodyDouble = ({ tool }) => {
   const modeLabel = t(SESSION_MODES.find(m => m.id === sessionMode)?.labelKey || 'vbd_mode_default');
 
   // Auto-scroll chat
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatLog, buddyTyping]);
+  useEffect(() => {
+    const log = chatLogRef.current;
+    // Instant, not smooth. A smooth scroll emits its own scroll events all the
+    // way down, and the kickoff messages arrive staggered — so each new one
+    // interrupted the last animation part-way and the handler below read that
+    // half-finished position as "the reader scrolled away". The log then stopped
+    // following for the rest of the session. An instant pin emits one event, at
+    // the bottom, which is the truth.
+    if (log && stickToBottomRef.current) log.scrollTop = log.scrollHeight;
+  }, [chatLog, buddyTyping]);
 
   // Notification permission
   useEffect(() => {
@@ -382,6 +392,7 @@ const VirtualBodyDouble = ({ tool }) => {
       ambientIndexRef.current = 0;
       setSecondsRemaining(actualDuration * 60); setSecondsElapsed(0); setCheckInsDone(0);
       nextCheckInRef.current = 0; setChatLog([]); setShowCheckIn(false); setCheckInResponse(null);
+      stickToBottomRef.current = true;
       setStuckData(null); setExtendData(null); setCompletionData(null); setCardData(null);
       setMoodAfter(''); setCompletionNote(''); setSubTaskChecked({}); setShowCard(false);
       setView('active');
@@ -857,7 +868,8 @@ const VirtualBodyDouble = ({ tool }) => {
                     {st} </button>
                 ))} </div>
             </div>
-          )} {/* Chat log */} <div className={`${c.card} border rounded-xl p-4`} style={{ maxHeight: '360px', overflowY: 'auto' }}>
+          )} {/* Chat log */} <div ref={chatLogRef} className={`${c.card} border rounded-xl p-4`} style={{ maxHeight: '360px', overflowY: 'auto' }}
+            onScroll={e => { const l = e.currentTarget; stickToBottomRef.current = l.scrollHeight - l.scrollTop - l.clientHeight < 60; }}>
             <div className="space-y-3">
               {chatLog.map((msg, i) => (<div key={i} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
@@ -878,7 +890,7 @@ const VirtualBodyDouble = ({ tool }) => {
                     </div>
                   </div>
                 </div>
-              )} <div ref={chatEndRef} />
+              )}
             </div>
           </div>
 
