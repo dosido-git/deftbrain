@@ -35,8 +35,6 @@ const TONES = [
   { value: 'casual',       labelKey: 'td_tone_casual' },
 ];
 
-const PRI_BADGE = { high: '🔴', medium: '🟡', low: '🟢' };
-
 // ════════════════════════════════════════════════════════════
 // MAIN
 // ════════════════════════════════════════════════════════════
@@ -218,11 +216,17 @@ const TheDebrief = ({ tool }) => {
   }, []);
 
   const priBg = (p) => p === 'high' ? c.highPri : p === 'medium' ? c.medPri : c.lowPri;
+  const CAN_CHANGE = { Yes: 'td_can_change_yes', Probably: 'td_can_change_probably', No: 'td_can_change_no' };
 
   // ── Copy builders ──
   const buildDistillCopy = useCallback(() => {
     if (!results) return '';
     const lines = [t('td_copy_debrief'), '', results?.meeting_summary || '', ''];
+    if (results?.at_risk?.length) {
+      lines.push('🚨 ' + t('td_at_risk'));
+      results.at_risk.forEach(r => lines.push(`• ${typeof r === 'string' ? r : r?.risk}`));
+      lines.push('');
+    }
     if (results?.decisions?.length) {
       lines.push(t('td_copy_decisions'));
       results?.decisions?.forEach((d, i) => lines.push(`${i + 1}. ${d.decision}`));
@@ -463,6 +467,20 @@ const TheDebrief = ({ tool }) => {
           <p className={'text-sm font-bold ' + c.text}>{results?.meeting_summary}</p>
         </div>
 
+        {results?.at_risk?.length > 0 && (
+          <div className={'p-5 rounded-2xl border-2 ' + c.warningBox}>
+            <p className={'text-xs font-bold uppercase tracking-wide mb-3 ' + c.warningTxt}>🚨 {t('td_at_risk')}</p>
+            <ul className="space-y-2">
+              {results.at_risk.map((r, i) => (
+                <li key={i} className={'text-sm leading-relaxed ' + c.text + ' flex gap-2'}>
+                  <span className={c.warningTxt} aria-hidden="true">•</span>
+                  <span>{typeof r === 'string' ? r : r?.risk}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Decisions */}
         {results?.decisions?.length > 0 && (
           <Section title={t('td_decisions_made')} emoji="✅" sKey="decisions" badge={results?.decisions?.length + ''} defaultOpen>
@@ -473,7 +491,12 @@ const TheDebrief = ({ tool }) => {
                   {d.context && <p className={'text-xs ' + c.textSecondary + ' mt-1'}>{d.context}</p>}
                   <div className="flex gap-3 mt-1">
                     {d.who_decided && <span className={'text-[10px] ' + c.textMuted}>👤 {d.who_decided}</span>}
-                    {d.reversibility && <span className={'text-[10px] ' + c.textMuted}>↩️ {d.reversibility}</span>}
+                    {CAN_CHANGE[d.can_still_change] && (
+                      <span className={'text-[10px] ' + c.textMuted}>
+                        ↩️ {t('td_can_change_q')} <span className={'font-bold ' + c.text}>{t(CAN_CHANGE[d.can_still_change])}</span>
+                        {d.change_note ? ` — ${d.change_note}` : ''}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -488,7 +511,6 @@ const TheDebrief = ({ tool }) => {
               {results?.action_items?.map((a, i) => (
                 <div key={i} className={c.card + ' border rounded-lg p-3'}>
                   <div className="flex items-start gap-3">
-                    <span className="text-base mt-0.5">{PRI_BADGE[a.priority] || '⚪'}</span>
                     <div className="flex-1 min-w-0">
                       <p className={'text-sm font-semibold ' + c.text}>{a.action}</p>
                       <div className="flex flex-wrap gap-2 mt-1.5">
@@ -513,9 +535,24 @@ const TheDebrief = ({ tool }) => {
           </Section>
         )}
 
+        {/* Tensions — before the open questions, because friction is often why a question stayed open */}
+        {results?.tensions?.length > 0 && (
+          <Section title={t('td_tensions')} emoji="⚡" sKey="tensions" defaultOpen>
+            <div className="space-y-2 mt-3">
+              {results?.tensions?.map((ten, i) => (
+                <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
+                  <p className={'text-xs font-bold ' + c.warningTxt}>{ten.topic}</p>
+                  <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{ten.nature}</p>
+                  <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{t('td_resolution', { val: ten.resolution })}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
         {/* Open Questions */}
         {results?.open_questions?.length > 0 && (
-          <Section title={t('td_open_questions')} emoji="❓" sKey="questions" badge={results?.open_questions?.length + ''}>
+          <Section title={t('td_open_questions')} emoji="❓" sKey="questions" badge={results?.open_questions?.length + ''} defaultOpen>
             <div className="space-y-2 mt-3">
               {results?.open_questions?.map((q, i) => (
                 <div key={i} className={'p-3 rounded-lg ' + c.cardAlt}>
@@ -530,24 +567,9 @@ const TheDebrief = ({ tool }) => {
 
         {/* Parking Lot */}
         {results?.parking_lot?.length > 0 && (
-          <Section title={t('td_parking_lot')} emoji="🅿️" sKey="parking">
+          <Section title={t('td_parking_lot')} emoji="🅿️" sKey="parking" defaultOpen>
             <div className="space-y-1 mt-3">
               {results?.parking_lot?.map((p, i) => <p key={i} className={'text-xs ' + c.textSecondary}>• {p}</p>)}
-            </div>
-          </Section>
-        )}
-
-        {/* Tensions */}
-        {results?.tensions?.length > 0 && (
-          <Section title={t('td_tensions')} emoji="⚡" sKey="tensions">
-            <div className="space-y-2 mt-3">
-              {results?.tensions?.map((ten, i) => (
-                <div key={i} className={'p-3 rounded-lg border ' + c.warningBox}>
-                  <p className={'text-xs font-bold ' + c.warningTxt}>{ten.topic}</p>
-                  <p className={'text-xs ' + c.textSecondary + ' mt-0.5'}>{ten.nature}</p>
-                  <p className={'text-[10px] ' + c.textMuted + ' mt-0.5'}>{t('td_resolution', { val: ten.resolution })}</p>
-                </div>
-              ))}
             </div>
           </Section>
         )}

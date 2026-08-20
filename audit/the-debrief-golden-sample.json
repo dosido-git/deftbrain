@@ -23,18 +23,25 @@
         "meeting_summary": "Q3-Launch-Planungsmeeting mit dem Ergebnis, dass der Launch-Termin von 10. auf 15. verschoben wurde und konkrete Aufgaben an Ben, Clara und unbekannte Zuständige für Marketing verteilt wurden.",
         "meeting_type_detected": "Sprint-/Release-Planungsmeeting",
         "duration_estimate": "ca. 10–15 Minuten",
+        "at_risk": [
+          "Marketing hat keinen Verantwortlichen: Die Frage wurde explizit aufgeworfen, aber nicht beantwortet – diese Aufgabe bleibt komplett unbesetzt.",
+          "Claras Frontend-Deadline hängt davon ab, dass die API-Spec heute fertiggestellt wird – trifft das nicht zu, verschiebt sich die Fertigstellung auf Montag, was den Launch gefährdet.",
+          "David war gegen den Launch am 15. – seine Einwände wurden nicht ausgeräumt, die Entscheidung könnte erneut angefochten werden."
+        ],
         "decisions": [
           {
-            "decision": "Der Q3-Launch wird auf den 15. verschoben, nicht wie geplant am 10.",
-            "context": "Die API ist noch nicht fertig und Ben benötigt bis Freitag; eine frühere Fertigstellung wäre nicht realistisch.",
-            "who_decided": "Anna (trotz Gegenstimme von David)",
-            "reversibility": "Committed – schwer rückgängig zu machen, da sich das Team darauf ausrichtet"
+            "decision": "Der Q3-Launch-Termin wurde von dem 10. auf den 15. verschoben.",
+            "context": "Ben benötigt bis Freitag für die API, Clara braucht die fertige API-Spec für das Frontend – der 10. war nicht mehr realistisch.",
+            "who_decided": "Anna (gegen Davids Widerspruch)",
+            "can_still_change": "Probably",
+            "change_note": "David war dagegen; sollten weitere gewichtige Einwände folgen oder technische Probleme eskalieren, könnte die Entscheidung erneut diskutiert werden."
           },
           {
-            "decision": "Ben schickt die API-Spezifikation heute Nachmittag an Clara.",
-            "context": "Clara kann das Frontend nur rechtzeitig fertigstellen, wenn die Spec heute vorliegt.",
-            "who_decided": "Ben, auf Nachfrage von Anna",
-            "reversibility": "Leicht anpassbar, sofern rechtzeitig kommuniziert"
+            "decision": "Clara übernimmt QA mit Deadline Donnerstag.",
+            "context": "QA muss vor dem Launch abgeschlossen sein; Clara wurde direkt zugewiesen.",
+            "who_decided": "Anna",
+            "can_still_change": "Probably",
+            "change_note": "Könnte sich verschieben, wenn die API-Spec nicht rechtzeitig vorliegt und Claras Kapazität durch Frontend-Verzögerungen gebunden ist."
           }
         ],
         "action_items": [
@@ -103,9 +110,9 @@
           }
         ],
         "meeting_health": {
-          "efficiency": "80% – das Meeting war kompakt und ergebnisorientiert; lediglich Davids Einwand und das Marketing-Thema wurden nicht vollständig behandelt.",
-          "accountability": "Größtenteils gut – Ben und Clara haben klare Aufgaben und Deadlines; Marketing-Zuständigkeit bleibt kritische Lücke.",
-          "pattern_warning": "Das Marketing-Material wurde als offen markiert, aber niemandem zugewiesen – falls dies öfter vorkommt, deutet es auf eine strukturelle Lücke im Verantwortungsbereich Marketing hin."
+          "efficiency": "Sehr kompaktes Meeting mit klaren Ergebnissen, aber zu schnell abgeschlossen – kritische Punkte wie Marketing-Verantwortung und Davids Einwände wurden übergangen statt gelöst.",
+          "accountability": "Ben und Clara haben klare Aufgaben mit Deadlines; die Marketing-Verantwortung hat weder einen Eigentümer noch eine Deadline und ist das größte offene Loch dieser Runde.",
+          "pattern_warning": "Entscheidungen werden gegen Widerspruch durchgesetzt ohne den Dissens aufzulösen – falls das ein Muster ist, drohen spätere Eskalationen oder stille Blockaden."
         },
         "follow_up_email": "Hallo zusammen, hier die Zusammenfassung unseres heutigen Planungsmeetings zum Q3-Launch.\n\nEntscheidung: Der Launch-Termin wurde verbindlich auf den 15. verschoben.\n\nOffene Aufgaben:\n- Ben: API-Spec heute Nachmittag an Clara senden; Backend-Fertigstellung bis Freitag, 18.07.\n- Clara: Frontend-Anpassung bis Freitag (oder Montag, falls Spec verspätet); QA-Tests bis Donnerstag, 17.07.\n- Marketing-Material: NOCH NICHT ZUGEWIESEN – bitte bis Ende des Tages klären, wer das übernimmt.\n\nBitte meldet euch, wenn es Blocker gibt. Viele Grüße, Anna"
       }

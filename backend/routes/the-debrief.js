@@ -60,12 +60,17 @@ Return ONLY valid JSON:
   "meeting_type_detected": "What type of meeting this appears to be",
   "duration_estimate": "Estimated meeting length based on transcript volume",
 
+  "at_risk": [
+    "One short line naming a single thing that could go wrong before the next meeting, and why. Draw from: an action with no owner, a deadline nobody actually agreed to, a dependency on someone who was not in the room, a decision likely to be reopened, a concern raised and never answered. Name the specific thing — not 'some tasks lack owners' but 'the fast-follow dashboard has no owner'. Empty array if the meeting genuinely left nothing hanging; do not manufacture risk."
+  ],
+
   "decisions": [
     {
       "decision": "What was decided — stated as a fact",
       "context": "Brief context for why this decision was made — 1-2 sentences",
       "who_decided": "Who made or drove this decision, if identifiable",
-      "reversibility": "Easily reversed if wrong, or committed/hard to undo"
+      "can_still_change": "EXACTLY one of these three English words, never translated, never anything else: Yes | Probably | No",
+      "change_note": "One clause on what would have to happen for it to change, or why it is now settled. Written in the reader's language."
     }
   ],
 
@@ -101,15 +106,15 @@ Return ONLY valid JSON:
   ] or [],
 
   "meeting_health": {
-    "efficiency": "How much of the meeting produced value vs. filler — percentage estimate",
-    "accountability": "Were owners and deadlines assigned, or was it vague?",
+    "efficiency": "A short verdict in plain words — 'Efficient meeting', 'A lot of discussion, few conclusions', 'Half of this could have been a message'. NEVER a percentage, score, rating, grade or number of any kind: a figure implies a measurement and this is a reading.",
+    "accountability": "One full sentence saying where ownership is clear and where it is not — name the piece that lacks an owner or a date. Again, no scores, grades or one-word ratings.",
     "pattern_warning": "If anything suggests a recurring problem (topic that keeps resurfacing, decisions that keep getting revisited). null if clean."
   },
 
   "follow_up_email": "A concise, ready-to-send follow-up email summarizing decisions and action items. Professional tone, bullet points for actions. — 2-4 sentences"
 }
 
-LIMITS (keep the response compact so it never gets cut off): decisions AT MOST 8, action_items AT MOST 12, open_questions AT MOST 6, parking_lot AT MOST 6, tensions AT MOST 5. Keep each field to one sentence (the noted multi-sentence fields excepted). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
+LIMITS (keep the response compact so it never gets cut off): at_risk AT MOST 5, decisions AT MOST 8, action_items AT MOST 12, open_questions AT MOST 6, parking_lot AT MOST 6, tensions AT MOST 5. can_still_change is one of the three exact English words and nothing else — the interface reads it as a value, so a translated or reworded one renders wrong. Keep each field to one sentence (the noted multi-sentence fields excepted). Never place a double-quote (") character inside any JSON string value — a literal " breaks the JSON.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
