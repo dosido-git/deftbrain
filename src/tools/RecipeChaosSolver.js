@@ -1268,7 +1268,7 @@ const RecipeChaosSolver = ({ tool }) => {
           className={`relative w-full ${
             problemCategory === 'timing_issue' && problemDescription.toLowerCase().includes('burn')
               ? c.btnEmergency : c.btnPrimary
-          } disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          } font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🍳'}</span> {pantryImageBase64 ? t('rcs_scanning_solving') : t('rcs_finding_solution')}</>
             : <><span>{tool?.icon ?? '🍳'}</span> {t('rcs_rescue_dish')}</>

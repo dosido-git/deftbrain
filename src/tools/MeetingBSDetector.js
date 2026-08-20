@@ -934,7 +934,7 @@ const MeetingBSDetector = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={runLive} disabled={!liveWhat.trim() || loading}
-          className={`relative w-full bg-red-600 hover:bg-red-500 text-white disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${!liveWhat.trim() ? c.btnIdle : 'bg-red-600 hover:bg-red-500 text-white'} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn_loading')}</> : <><span className="me-1">{tool?.icon ?? '🕵️'}</span> {t('mbd_live_btn')}</>}
         {!loading && (
           <kbd aria-hidden="true"

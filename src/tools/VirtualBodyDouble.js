@@ -134,6 +134,13 @@ const VirtualBodyDouble = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -699,7 +706,7 @@ const VirtualBodyDouble = ({ tool }) => {
             </div>
           </div>
 
-          {/* Start button */} <button title={t('cmd_enter')} onClick={handleStart} disabled={loading || !task.trim()} className={`relative w-full py-4 rounded-xl font-bold text-lg ${modeColors.badge} ${c.accentTxt} disabled:opacity-40 transition-all shadow-lg hover:opacity-90`}>
+          {/* Start button */} <button title={t('cmd_enter')} onClick={handleStart} disabled={loading || !task.trim()} className={`relative w-full py-4 rounded-xl font-bold text-lg ${!task.trim() ? c.btnIdle : `${modeColors.badge} ${c.accentTxt}`} transition-all shadow-lg hover:opacity-90`}>
             {loading ? (<span><span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> {t('vbd_setting_up')}</span>
             ) : (<span><span>{SESSION_MODES.find(m => m.id === sessionMode)?.icon || '▶️'}</span> {t('vbd_start_session', { mode: modeLabel })}</span>
             )} {!loading && (

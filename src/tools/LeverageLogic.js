@@ -964,7 +964,7 @@ const LeverageLogic = ({ tool }) => {
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_prep_unsure')}</label>
                   <textarea value={whatYouDontKnow} onChange={e => setWhatYouDontKnow(e.target.value)} placeholder={t('llog_ph_prep_unsure')} rows={2} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
                 </div>
-                <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary} disabled:opacity-40`}>
+                <button title={t('cmd_enter')} onClick={fetchPrepCheck} disabled={prepLoading} className={`relative w-full py-3 rounded-xl font-bold ${c.btnPrimary}`}>
                   {prepLoading ? <span className="animate-spin inline-block me-2">{tool?.icon ?? '⚖️'}</span> : <span className="me-2">{tool?.icon ?? '⚖️'}</span>}
                   {prepLoading ? t('llog_assessing') : t('llog_check_readiness')}
                 {!prepLoading && (

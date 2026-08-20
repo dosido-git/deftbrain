@@ -316,7 +316,7 @@ const WrongAnswersOnly = ({ tool }) => {
               <p className={`text-[10px] font-bold uppercase mb-1`}>✅ {t('wao_actually')}</p>
               <p className="text-xs">{results.real_answer_hint}</p>
             </div>
-          )} {/* Again */} <button title={t('cmd_enter')} onClick={runWrong} disabled={loading || !question.trim()} className={`relative w-full ${c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px] disabled:opacity-40`}>
+          )} {/* Again */} <button title={t('cmd_enter')} onClick={runWrong} disabled={loading || !question.trim()} className={`relative w-full ${!question.trim() ? c.btnIdle : c.btnSecondary} font-bold py-3 rounded-lg min-h-[44px]`}>
             {tool?.icon ?? '🙃'} {t('wao_different')}
           {!loading && (
                              <kbd aria-hidden="true"

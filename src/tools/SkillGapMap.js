@@ -58,6 +58,13 @@ const SkillGapMap = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -491,7 +498,7 @@ const SkillGapMap = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={mode === 'map' ? handleAnalyze : handleExplore}
             disabled={loading || !currentRole.trim() || (mode === 'map' && !targetRole.trim())}
-            className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading ? (isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-gray-200 text-gray-400') : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
+            className={`relative w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2 shadow-lg ${(!currentRole.trim() || (mode === 'map' && !targetRole.trim())) ? c.btnIdle : mode === 'explore' ? `${isDark ? 'bg-cyan-600 hover:bg-cyan-500' : 'bg-cyan-600 hover:bg-cyan-700'} text-white` : c.btnPrimary}`}>
             {loading ? (<><span className="inline-block animate-spin text-lg">{tool?.icon ?? '🗺️'}</span> {mode === 'explore' ? t('sgm_exploring') : t('sgm_mapping')}</>) : mode === 'explore' ? (<><span className="text-lg">🧭</span> {t('sgm_explore_paths')}</>) : (<><span className="text-lg">🗺️</span> {t('sgm_map_gaps')}</>)}
           {!loading && (
             <kbd aria-hidden="true"

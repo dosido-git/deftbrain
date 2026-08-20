@@ -247,6 +247,13 @@ const SafeWalk = ({ tool }) => {
     // SafeWalk extensions
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-zinc-500 hover:text-zinc-800',
     btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     tabActive:     isDark ? 'bg-emerald-500 text-zinc-900' : 'bg-zinc-800 text-white',
     tabInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-zinc-500 hover:text-zinc-700 border-zinc-200',
     dangerBg:      isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-200',
@@ -1229,8 +1236,8 @@ const SafeWalk = ({ tool }) => {
         </div>
 
         <button title={t('cmd_enter')} onClick={submitAssessment} disabled={loading || !canSubmit}
-        className={`relative flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40
-          ${canSubmit ? c.btnPrimary : c.btnDis}`}>
+        className={`relative flex-1 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2
+          ${canSubmit ? c.btnPrimary : c.btnIdle}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚶'}</span> {t('sw_assessing')}</>
           : <><span>{tool?.icon ?? '🚶'}</span> {t('sw_assess')}</>}

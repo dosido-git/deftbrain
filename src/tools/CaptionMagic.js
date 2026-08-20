@@ -94,6 +94,13 @@ const CaptionMagic = ({ tool }) => {
     // Buttons
     btnDelete:      isDark ? 'bg-red-900/40 text-red-300 hover:bg-red-900/60' : 'bg-red-100 text-red-600 hover:bg-red-200',
     stateDisabled:  isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-100 text-gray-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     // Content surfaces
     captionBg:      isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
     tonePill:       isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
@@ -575,7 +582,7 @@ const CaptionMagic = ({ tool }) => {
         <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || (!imageBase64 && !imageDescription.trim())}
       className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all
-        ${loading || (!imageBase64 && !imageDescription.trim()) ? c.stateDisabled : c.btnPrimary} disabled:opacity-40`}>
+        ${(!imageBase64 && !imageDescription.trim()) ? c.btnIdle : c.btnPrimary}`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> {t('cm_crafting')}</>
         : <><span>{tool?.icon ?? '📸'}</span> {t('cm_generate')}</>}
       {!loading && (

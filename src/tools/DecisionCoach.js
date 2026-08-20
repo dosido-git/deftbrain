@@ -81,6 +81,13 @@ const DecisionCoach = ({ tool }) => {
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
     input: isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-500 focus:border-cyan-500' : 'bg-white border-zinc-300 text-gray-900 placeholder-zinc-400 focus:border-cyan-500',
     btnPrimary: isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
@@ -546,7 +553,7 @@ const DecisionCoach = ({ tool }) => {
       {/* Go button + Try example */}
       <button title={t('cmd_enter')} onClick={() => { if (decideMode === 'proscons') handleProsCons(); else if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else { generate([]); if (timerDuration) startTimer(timerDuration); } }}
       disabled={loading || (decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())}
-      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnDecide} disabled:opacity-40`}>
+      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 ${((decideMode === 'standard' && !decisionNeeded.trim()) || (decideMode === 'proscons' && prosOptions.filter(o => o.trim()).length < 2) || (decideMode === 'devils' && (!decisionNeeded.trim() || !gutInstinct.trim())) || (decideMode === 'chain' && !decisionNeeded.trim())) ? c.btnIdle : c.btnDecide}`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : decideMode === 'proscons' ? <><span>⚖️</span> {t('dc_btn_compare')}</> : decideMode === 'devils' ? <><span>🎭</span> {t('dc_btn_checkgut')}</> : decideMode === 'chain' ? <><span>🔗</span> {t('dc_btn_solvechain')}</> : <><span>🎯</span> {t('dc_btn_decide')}</>}
       
         {!loading && (

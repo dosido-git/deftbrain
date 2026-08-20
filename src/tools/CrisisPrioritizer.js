@@ -125,6 +125,13 @@ const CrisisPrioritizer = ({ tool }) => {
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder-zinc-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -1069,7 +1076,7 @@ const CrisisPrioritizer = ({ tool }) => {
           </div>}
 
           {/* Submit */}
-          <button title={t('cmd_enter')} onClick={handlePrioritize} disabled={loading || filledTasks.length === 0} className={`relative w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg disabled:opacity-40 ${loading || filledTasks.length === 0 ? `${c.btnSecondary} cursor-not-allowed` : c.btnPrimary}`}>
+          <button title={t('cmd_enter')} onClick={handlePrioritize} disabled={loading || filledTasks.length === 0} className={`relative w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 shadow-lg ${filledTasks.length === 0 ? c.btnIdle : c.btnPrimary}`}>
             {loading ? <><span className="animate-spin">{tool?.icon ?? '🚨'}</span> {t('cp_submit_analyzing')}</> : <>{timeframe === 'right_now' ? t('cp_submit_now') : timeframe === 'this_week' ? t('cp_submit_week') : t('cp_submit_weeks')}</>}
           {!loading && (
             <kbd aria-hidden="true"

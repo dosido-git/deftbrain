@@ -279,6 +279,13 @@ const LaundroMat = ({ tool }) => {
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-gray-500 hover:text-gray-800',
     btnDisabled:   isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
     success:       isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/30 border-amber-700 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800',
@@ -1219,7 +1226,7 @@ const LaundroMat = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
-              ${(loadDesc.trim() || labelImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
+              ${(!loadDesc.trim() && !labelImage) ? c.btnIdle : c.btnPrimary}`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me')}</>}
           {!loading && (
             <kbd aria-hidden="true"

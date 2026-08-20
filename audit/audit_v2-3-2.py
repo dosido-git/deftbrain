@@ -1501,9 +1501,12 @@ for name, fpath in tools:
         # their icon, which distinguishes them perfectly well; fading them is
         # how "working" ended up looking like "broken" on 92 tools.
         _disabled_expr = re.search(r'disabled=\{([^{}]*)\}', _btn_open)
-        _only_loading = bool(_disabled_expr) and bool(re.fullmatch(
-            r'\s*\w*(?:[Ll]oading|[Rr]unning|[Gg]enerating|[Cc]ompressing|[Bb]usy|[Pp]ending)\w*\s*',
-            _disabled_expr.group(1)))
+        # ...and a disjunction of busy flags is still just busy — RecipeChaosSolver
+        # guards on loading || compressingRecipe || compressingPantry.
+        _busy_tok = re.compile(r'\s*\w*(?:[Ll]oading|[Rr]unning|[Gg]enerating|[Cc]ompressing|[Bb]usy|[Pp]ending)\w*\s*')
+        _only_loading = bool(_disabled_expr) and all(
+            _busy_tok.fullmatch(_part) for _part in _disabled_expr.group(1).split('||')
+        ) and _disabled_expr.group(1).strip() != ''
         if ('disabled:opacity-40' not in _cn_value and 'pendingClass(' not in _cn_value
                 and 'btnIdle' not in _cn_value and not _only_loading):
             _line_n = content[:_btn_m.start()].count('\n') + 1

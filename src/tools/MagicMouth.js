@@ -803,7 +803,7 @@ const MagicMouth = ({ tool }) => {
             </div>
             {error && <div className={`p-3 rounded-xl border text-sm flex items-start gap-2 ${c.danger}`}><span>⚠️</span>{error}</div>}
             <button title={t('cmd_enter')} onClick={handleNuclear} disabled={loading || !nuclearCompany.trim() || !nuclearProblem.trim()}
-              className={`relative w-full py-3 rounded-xl font-semibold disabled:opacity-40 text-white transition-all`}
+              className={`relative w-full py-3 rounded-xl font-semibold transition-all ${(!nuclearCompany.trim() || !nuclearProblem.trim()) ? c.btnIdle : 'text-white'}`}
               style={{ background: isDark ? 'linear-gradient(135deg, #8a3028, #b54a3f)' : 'linear-gradient(135deg, #b54a3f, #8a3028)' }}>
               {loading
               ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗣️'}</span> {t('mm_mapping')}</>

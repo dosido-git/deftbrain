@@ -106,6 +106,13 @@ const MiseEnPlace = ({ tool }) => {
     accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200'
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     border:        isDark ? 'border-zinc-700' : 'border-gray-200',
@@ -461,8 +468,8 @@ const MiseEnPlace = ({ tool }) => {
         <button title={t('cmd_enter')} onClick={plan}
       disabled={loading || (!ingredients.trim() && !imageBase64)}
       className={`relative w-full py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-        loading || (!ingredients.trim() && !imageBase64) ? `${c.btnSecondary} opacity-50` : c.btnPrimary
-      } disabled:opacity-40`}>
+        (!ingredients.trim() && !imageBase64) ? c.btnIdle : c.btnPrimary
+      }`}>
       {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('mep_building')}</>
         : <><span>🍳</span> {t('mep_build_btn')}</>}
       {!loading && (

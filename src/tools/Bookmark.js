@@ -77,7 +77,13 @@ const Bookmark = ({ tool }) => {
     threadCard:    isDark ? 'bg-zinc-700/30' : 'bg-slate-50',
     histBg:        isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
     histAccent:    isDark ? 'text-cyan-400' : 'text-cyan-600',
-    btnDisabled:   'bg-zinc-400 text-zinc-200 cursor-not-allowed opacity-60',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnGhost:      isDark ? 'bg-transparent text-zinc-500 hover:bg-zinc-700' : 'bg-transparent text-gray-400 hover:bg-gray-100',
     dangerFg:      isDark ? 'text-red-300' : 'text-red-700',
     successFg:     isDark ? 'text-emerald-300' : 'text-emerald-800',
@@ -347,7 +353,7 @@ const Bookmark = ({ tool }) => {
       </div>
 
       <button title={t('cmd_enter')} onClick={recall} disabled={loading || !title.trim() || !stoppedAt.trim()}
-        className={'relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-40 ' + (loading || !title.trim() || !stoppedAt.trim() ? c.btnDisabled : c.btnPrimary)}>
+        className={'relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ' + ((!title.trim() || !stoppedAt.trim()) ? c.btnIdle : c.btnPrimary)}>
         {loading ? <><span className="relative animate-spin inline-block">{tool?.icon ?? '🔖'}</span> {t('bk_recalling')}</> : <><span>{tool?.icon ?? '🔖'}</span> {t('bk_where_was_i')}</>}
       {!loading && (
         <kbd aria-hidden="true"

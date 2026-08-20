@@ -162,7 +162,13 @@ const DriveHome = ({ tool }) => {
     driveBorder:   'border-slate-700',
     driveTextSec:  'text-slate-400',
     driveBtn:      'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600',
-    btnDis:        isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     tabActive:     isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-600 text-white',
     tabInactive:   isDark ? 'bg-zinc-800 text-zinc-400 hover:text-zinc-200 border-zinc-700' : 'bg-white text-gray-500 hover:text-gray-700 border-gray-200',
     // dangerBg/dangerText flagged as banned c keys — TODO: rename or restructure to use combined `danger`
@@ -975,7 +981,7 @@ const DriveHome = ({ tool }) => {
         {/* Submit */}
         <div>
           <button title={t('cmd_enter')} onClick={submitAssessment} disabled={loading || !canSubmit}
-          className={`relative w-full ${canSubmit ? c.btnPrimary : c.btnDis} disabled:opacity-40 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
+          className={`relative w-full ${canSubmit ? c.btnPrimary : c.btnIdle} font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
             ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> {t('dh_assessing')}</>
             : <><span>{tool?.icon ?? '🚗'}</span> {t('dh_assess')}</>}

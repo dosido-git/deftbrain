@@ -496,6 +496,13 @@ const FocusSoundArchitect = ({ tool }) => {
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     input:         isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-500 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500/20',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
+    // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
+    // meaning "ready"; the border and label carry the visibility. Important
+    // modifiers because tools carry their own border/text utilities on the
+    // submit and Tailwind resolves conflicts by stylesheet order, not class
+    // order. See the PF-13 exception in audit/audit_v2-3-2.py.
+    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
+                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -1734,8 +1741,8 @@ const FocusSoundArchitect = ({ tool }) => {
             className={`relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
               soundPrefs.length > 0
                 ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
-                : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-            } disabled:opacity-40`}>
+                : c.btnIdle
+            }`}>
             {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_design_my_soundscape')}</>}
           {!loading && (
             <kbd aria-hidden="true"
