@@ -254,12 +254,12 @@ as the source of truth, write it into the `en` block of the locale file, transla
 it into the other 12 languages, then drop the `tool?.tagline ??` prefix in the tool
 file. ~490 strings; it needs real translation, not a codemod.
 
-Two are not stale but wrong, and are worth doing first:
-
-- **BillRescue** — locale tagline reads "Personalized rabbit holes you can't
-  resist", which looks like BrainRoulette's. Catalog: "A bill isn't a verdict.
-  It's a puzzle to solve."
-- **ConflictCoach** — locale tagline is ComebackCooker's, word for word. Catalog:
-  "Stop, breathe, and craft the right response".
+Correction (2026-08-20): an earlier version of this entry said BillRescue and
+ConflictCoach were "carrying another tool's tagline". They were not — their
+locale files were always correct. Four pairs of tools shared an i18n key prefix,
+so the merged namespace resolved those keys to whichever file merged last. Fixed
+in a136e3a6 (cbc_/mkd_/pwp_/bro_) and Gate 5 now fails on a prefix collision.
+Both tools are still on this list, but only because their locale tagline is
+older copy than the catalog's — the ordinary case, not a bug.
 
 Full list: ArgueSmarter, BikeMedic, BillRescue, BuyWise, ConflictCoach, CrashPredictor, CrisisPrioritizer, CutToTheChase, DateNight, DecisionCoach, DoctorVisitPrep, DoctorVisitTranslator, EmailUrgencyTriager, FanTheory, FocusPocus, FocusSoundArchitect, GratitudeDebtClearer, GravityWell, JargonAssassin, LaundroMat, LuckSurface, MagicMouth, MarkupDetective, MeetingBSDetector, MeetingHijackPreventer, Mend, MicroAdventureMapper, MissingLink, NameThatFeeling, NerveCheck, PEP, PetWeirdnessDecoder, PlainTalk, PlantRescue, PlotHole, PreMortem, ProcedureProbe, ReadTheRoom, RecipeChaosSolver, RoommateCourt, SignalVsNoise, SkillGapMap, SocialBatteryAdvisor, SubscriptionTamer, TaskAvalancheBreaker, TheCrux, TheRunthrough, TruthBomb, WhereDidTheTimeGo

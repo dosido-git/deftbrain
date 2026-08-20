@@ -722,6 +722,11 @@ const BillRescue = ({ tool }) => {
     if (r.hardship_letter) {
       out += `📝 ${t('br_copy_hardship_letter')}:\n${r.hardship_letter}\n\n`;
     }
+    if (r.know_your_rights?.length) {
+      out += `⚖️ ${t('br_copy_rights')}:\n`;
+      r.know_your_rights.forEach(right => { out += `• ${right.right}: ${right.explanation}\n`; });
+      out += '\n';
+    }
     if (r.what_they_wont_tell_you?.length) {
       out += `🤫 ${t('br_copy_insider')}:\n`;
       r.what_they_wont_tell_you.forEach(s => { out += `• ${s}\n`; });
@@ -1161,6 +1166,19 @@ const BillRescue = ({ tool }) => {
                   {r.money_you_might_not_owe.map((right, i) => (
                     <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
                       <p className="text-xs font-bold">{right.emoji ? `${right.emoji} ` : ''}{right.right}</p>
+                      <p className="text-[10px] mt-1">{right.explanation}</p>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )}
+
+            {r.know_your_rights?.length > 0 && (
+              <Section icon="⚖️" title={t('br_sec_rights')} defaultOpen c={c}>
+                <div className="space-y-2">
+                  {r.know_your_rights.map((right, i) => (
+                    <div key={i} className={`${c.highlightBg} border rounded-lg p-3`}>
+                      <p className="text-xs font-bold">{right.right}</p>
                       <p className="text-[10px] mt-1">{right.explanation}</p>
                     </div>
                   ))}

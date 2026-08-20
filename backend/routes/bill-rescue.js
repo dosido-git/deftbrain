@@ -328,6 +328,10 @@ Return ONLY valid JSON with ALL applicable sections:
 ` : ''}
   "hardship_letter": "COMPLETE letter ready to send. 150-250 words. Date, 'To Whom It May Concern', situation (${reasonText}), specific request, proposed terms${hasAfford ? ` of ${sym}${canAffordMonthly}/month` : ''}, polite closing. Not a template — fill in realistic details.",
 
+  "know_your_rights": [
+    {"right": "A specific legal right that applies to THIS bill type, this amount and this overdue status. Name the statute, rule or programme where there is one, and only where you are sure of it.", "explanation": "What it means in plain language and how to use it — the sentence to say, or the thing to ask for. — 1-2 sentences"}
+  ],
+
   "what_they_wont_tell_you": ["3-5 insider facts for this bill type. Game-changers billing depts won't volunteer."],
 
   "assistance_programs": [
@@ -348,7 +352,7 @@ Return ONLY valid JSON with ALL applicable sections:
 
 Your response MUST contain ALL ${keysB.length} top-level keys — ${keysB.join(', ')} — and NO other keys.
 
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
+OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes): know_your_rights ≤ 4, what_they_wont_tell_you ≤ 4, assistance_programs ≤ 3, never_do ≤ 4. A focused, fully-closed response beats a long truncated one.
 
 CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 - NEVER state a company phone number or email address that is not in the VERIFIED CURRENT FACTS block or the user's own bill — tell them to use the number printed on the bill instead.`;
@@ -367,7 +371,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
 
     // max_tokens: was 8000 on the single call (6000 truncated every Arabic
     // paste-bill call — 2026-07-23 audit; DE passed at 161s). Split 4500 (core:
-    // autopsy + steps + scripts + payment plan) + 3500 (support: letters +
+    // autopsy + steps + scripts + payment plan) + 4400 (support: rights + letters +
     // programs + worst case) — sum unchanged, each half has generous headroom.
     const [coreHalf, supportHalf] = await Promise.all([
       callClaudeWithRetry({
@@ -378,7 +382,7 @@ CONSISTENCY RULES (recompute before writing — numbers must reconcile):
       }, { label: 'bill-rescue-core' }),
       callClaudeWithRetry({
         model: MODELS.SMART,
-        max_tokens: 3500,
+        max_tokens: 4400,
         system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
         messages: [{ role: 'user', content: contentFor(userPromptB) }],
       }, { label: 'bill-rescue-support' }),
