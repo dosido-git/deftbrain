@@ -160,13 +160,16 @@ technically indistinguishable — unique titles/descs, self-canonicals, 19-21KB,
 
 **SHIPPED July 14 — `src/data/tools-keep-list.json`** (mirrors guides/keep-list.json):
 - **focus (18):** LeaseTrapDetector, RentersDepositSaver, DoctorVisitTranslator,
-  DoctorVisitPrep, ProcedureProbe, ComplaintEscalationWriter, ApologyCalibrator,
-  DifficultTalkCoach, VirtualBodyDouble, TipOfTongue, TheAlibi, BragSheetBuilder,
-  GhostWriter, FakeReviewDetective, LayoverMaximizer, RulebookBreaker, BillRescue,
-  PlainTalk. Chosen on: flagship depth (eval 5s), uniqueness/rising terms (body
+  DoctorVisitPrep, ProcedureProbe, ComplaintEscalationWriter, Mend,
+  DifficultTalkCoach, VirtualBodyDouble, TipOfTongue, TheWholeStory,
+  BragSheetBuilder, GhostWriter, FakeReviewDetective, LayoverMaximizer,
+  NotSoFast, BillRescue, PlainTalk. Chosen on: flagship depth (eval 5s), uniqueness/rising terms (body
   doubling, tip-of-tongue), or real search phrases. 6 are YMYL — accepted trade.
 - **keepers (19):** the other already-indexed tools per the 6/25 export (never
-  throw away a win; ContrastReport→WhichLife, DebateMe→ArgueBetter renames applied).
+  throw away a win). Renames since have been applied to the JSON as they
+  happened — ContrastReport→WhichLife, DebateMe→ArgueSmarter, TheGap→MissingLink.
+  `src/data/tools-keep-list.json` is the source of truth; the names in this
+  paragraph are a snapshot and will drift again.
 - **Mechanics:** sitemap-app.xml lists only the 37 (41 URLs total, from 126);
   the other **85 tools stay fully live** for users but get
   `<meta name="robots" content="noindex">` in prerendered HTML (prerender.js).
