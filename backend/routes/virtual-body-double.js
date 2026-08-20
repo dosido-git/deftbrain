@@ -7,6 +7,31 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ═══════════════════════════════════════════════════
 // SESSION MODE PERSONALITY DEFINITIONS
 // ═══════════════════════════════════════════════════
+// Injected into every prompt that puts words in the companion's mouth.
+const COMPANION_VOICE = `
+VOICE — you are a person sitting nearby, not a productivity coach:
+- Say the thing, then stop. Never explain why the suggestion works; a friend
+  does not justify themselves, and the justification is what makes it coaching.
+- No technique names, no pep-talk verbs, no "remember that...", no reframing
+  their feelings back at them.
+- First person is fine. You are in the room.
+- Use contractions. Apostrophes are safe and a companion who says "we have got
+  45 minutes" instead of "we've got 45 minutes" sounds like a form letter.
+NO:  "Just open the doc and let it be ugly for now."
+YES: "Let's just get the document open. Nothing has to be good yet."
+NO:  "Put your phone face-down and maybe grab a drink so you have one less reason to get up."
+YES: "One small favour: move the phone out of reach."
+NO:  "Take a deep breath and remember that progress beats perfection."
+YES: "I'm here. Start anywhere."
+The exception is the first concrete step, which SHOULD be specific and
+actionable — for a performance review, "Type one sentence about anything you
+got done this year, even if it feels small." That one is a real instruction,
+and it is welcome.
+
+The pairs above are TONE samples from a different session. Never reuse their
+wording, and never open a message with the same words twice — write for the
+task in front of you.`;
+
 const MODE_PERSONALITIES = {
   default: {
     instruction: 'You are a calm, encouraging coworking companion — like a friend sitting across the table while you both work. Not a coach, not a therapist. Just a presence.',
@@ -79,9 +104,11 @@ CHECK-IN EVERY: ${freqMin} minutes (delivered separately — do NOT include chec
 ENVIRONMENT: ${environment || 'not specified'}
 CURRENT MOOD: ${mood || 'not specified'}
 SESSION GOALS: ${goals || 'just get it done'}
+${req.body.companionName ? `COMPANION NAME: ${String(req.body.companionName).slice(0, 40)} — this person has worked with you before. Use this EXACT name in session_personality.name; do not invent a new one. Your style may change with the mode; your name does not.` : ''}
 ${subTasks?.length ? `SUB-TASKS: ${subTasks.map((s, i) => `${i + 1}. ${s}`).join(', ')}` : ''}
 
 Generate a complete session plan. Match the mode personality exactly.
+${COMPANION_VOICE}
 
 
 Also generate 4-6 "ambient" micro-messages matching this style:
@@ -93,7 +120,7 @@ Return ONLY valid JSON:
   "kickoff": {
     "greeting": "Opening message matching mode personality",
     "first_step": "One tiny concrete action to start",
-    "environment_tip": "One environment suggestion (or null)"
+    "environment_tip": "One small physical ask that protects their attention - something to move or put away, not advice about focus. Open it differently each time. Never the words null or none; if nothing fits, offer to sit quietly instead."
   },
   "ambient_messages": ["Tiny micro-message matching mode (under 6 words)"],
   "break_suggestion": {
@@ -206,6 +233,7 @@ ${currentSubTask ? `CURRENT SUB-TASK: "${currentSubTask}"` : ''}
 ${note ? `THEIR NOTE: "${note}"` : ''}
 
 Respond naturally matching the mode personality. 1-3 sentences.
+${COMPANION_VOICE}
 ${mode === 'creative' ? 'If drifting, don\'t redirect — ask what caught their attention.' : ''}
 ${mode === 'avoidance_buster' ? 'Extra gentle. Even "I opened the tab" counts as progress.' : ''}
 ${mode === 'grind' ? 'Commiserate genuinely. Dry humour welcome, but never make the work sound heroic or grim.' : ''}
@@ -378,38 +406,6 @@ ${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.
     }, { label: 'VBD-Break' });
 
         if (!parsed.activity) {
-          return res.status(500).json({ error: 'Could not start the session. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // INVITE — Generate coworking invite message
-      // ────────────────────────────────────────────
-      case 'invite': {
-        const { task, duration, platform, userLanguage } = req.body;
-
-        const prompt = withLanguage(`Generate a casual message inviting someone to virtual coworking.
-TASK: "${task || 'some focused work'}" DURATION: ${duration || '30 minutes'} PLATFORM: ${platform || 'text'}
-
-Return ONLY valid JSON:
-{
-  "messages": [
-    { "tone": "casual", "text": "The message" },
-    { "tone": "funny", "text": "A humorous version" }
-  ],
-  "platform_tip": "One tip for virtual coworking"
-}
-
-${JSON_RULES}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'VBD-Invite' });
-
-        if (!parsed.messages) {
           return res.status(500).json({ error: 'Could not start the session. Please try again.' });
         }
         return res.json(parsed);

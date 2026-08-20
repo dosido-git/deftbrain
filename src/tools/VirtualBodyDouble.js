@@ -18,6 +18,17 @@ const DURATIONS = [
   { min: 90, labelKey: 'vbd_dur_90', icon: '🎯' },
 ];
 
+// ─── How often the companion speaks, in seconds: [first message, then every] ───
+// Someone quietly working at the next desk does not speak every two minutes,
+// and the longer silences are what make them feel like company rather than a
+// notification. Sprint keeps a shorter leash because the whole point of a
+// 15-minute burst is that somebody is counting with you.
+const AMBIENT_CADENCE = {
+  deep_work: { first: [360, 480], gap: [720, 1080] },
+  sprint:    { first: [120, 180], gap: [240, 360] },
+  default:   { first: [180, 300], gap: [480, 720] },
+};
+
 const CHECK_IN_FREQS = [
   { min: 10, labelKey: 'vbd_freq_10' },
   { min: 15, labelKey: 'vbd_freq_15' },
@@ -206,7 +217,6 @@ const VirtualBodyDouble = ({ tool }) => {
   const [completionData, setCompletionData] = useState(null);
   const [stuckData, setStuckData] = useState(null);
   const [, setExtendData] = useState(null);
-  const [inviteData, setInviteData] = useState(null);
   const [reviewData, setReviewData] = useState(null);
 
   // ─── State: Card (v4) ───
@@ -220,6 +230,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
   // ─── State: Persistent ───
   const [sessionLog, setSessionLog] = usePersistentState('vbd-session-log', []);
+  const [companionName, setCompanionName] = usePersistentState('vbd-companion-name', '');
 
   // ─── Refs ───
   const loadExample = () => {
@@ -247,6 +258,10 @@ const VirtualBodyDouble = ({ tool }) => {
   const actualDuration = useCustom ? (parseInt(customDuration) || 25) : duration;
   const totalCheckIns = Math.max(1, Math.floor(actualDuration / checkInFreq));
   const currentSubTask = subTasks.length > 0 ? subTasks.find((_, i) => !subTaskChecked[i]) : null;
+  const minsToCheckIn = Math.max(1, checkInFreq - (Math.floor(secondsElapsed / 60) % checkInFreq));
+  const presenceLine = isPaused ? t('vbd_presence_paused')
+    : (isOnBreak || showCheckIn) ? t('vbd_presence_here')
+    : t('vbd_presence_next', { mins: minsToCheckIn });
   const subTasksCompleted = Object.values(subTaskChecked).filter(Boolean).length;
   const modeColors = MODE_COLORS[sessionMode] || MODE_COLORS.default;
   const modeLabel = t(SESSION_MODES.find(m => m.id === sessionMode)?.labelKey || 'vbd_mode_default');
@@ -307,12 +322,10 @@ const VirtualBodyDouble = ({ tool }) => {
     if (view !== 'active' || isPaused || isOnBreak) return;
     const msgs = ambientMsgsRef.current;
     if (!msgs?.length) return;
-    // Deep work mode: longer gaps
-    const isDeep = sessionMode === 'deep_work';
-    const minDelay = isDeep ? 90000 : 45000;
-    const maxDelay = isDeep ? 240000 : 120000;
+    const [firstLo, firstHi] = AMBIENT_CADENCE[sessionMode]?.first || AMBIENT_CADENCE.default.first;
+    const [gapLo, gapHi] = AMBIENT_CADENCE[sessionMode]?.gap || AMBIENT_CADENCE.default.gap;
     const scheduleNext = () => {
-      const delay = minDelay + Math.random() * (maxDelay - minDelay);
+      const delay = (gapLo + Math.random() * (gapHi - gapLo)) * 1000;
       ambientTimerRef.current = setTimeout(() => {
         const msg = msgs[ambientIndexRef.current % msgs.length];
         ambientIndexRef.current++;
@@ -321,7 +334,7 @@ const VirtualBodyDouble = ({ tool }) => {
         scheduleNext();
       }, delay);
     };
-    const initDelay = setTimeout(scheduleNext, isDeep ? 40000 : 20000);
+    const initDelay = setTimeout(scheduleNext, (firstLo + Math.random() * (firstHi - firstLo)) * 1000);
     return () => { clearTimeout(initDelay); clearTimeout(ambientTimerRef.current); };
   }, [view, isPaused, isOnBreak, addChat, sessionMode]);
 
@@ -360,9 +373,11 @@ const VirtualBodyDouble = ({ tool }) => {
       const data = await callToolEndpoint('virtual-body-double', {
         action: 'start', task: task.trim(), duration: actualDuration, checkInFrequency: checkInFreq,
         environment, mood, goals: goals.trim(), subTasks: subTasks.length > 0 ? subTasks : undefined, mode: sessionMode,
+        companionName: companionName || undefined,
         userLocale, userCurrency, userRegion,
       });
       setSessionPlan(data);
+      if (!companionName && data.session_personality?.name) setCompanionName(data.session_personality.name);
       ambientMsgsRef.current = data.ambient_messages || [];
       ambientIndexRef.current = 0;
       setSecondsRemaining(actualDuration * 60); setSecondsElapsed(0); setCheckInsDone(0);
@@ -370,9 +385,12 @@ const VirtualBodyDouble = ({ tool }) => {
       setStuckData(null); setExtendData(null); setCompletionData(null); setCardData(null);
       setMoodAfter(''); setCompletionNote(''); setSubTaskChecked({}); setShowCard(false);
       setView('active');
-      addBuddyMessage(data.kickoff?.greeting, '👋', 500);
-      if (data.kickoff?.first_step) addBuddyMessage(t('vbd_first_step', { step: data.kickoff.first_step }), '🎯', 2500);
-      if (data.kickoff?.environment_tip) addBuddyMessage(data.kickoff.environment_tip, '💡', 4500);
+      addBuddyMessage(data.kickoff?.greeting, '👋', 600);
+      if (data.kickoff?.first_step) addBuddyMessage(t('vbd_first_step', { step: data.kickoff.first_step }), '🎯', 4000);
+      // A model with nothing to say here has been known to say so in words —
+      // "None" is a truthy string, and it would arrive as a chat message.
+      const tip = String(data.kickoff?.environment_tip || '').trim();
+      if (tip && !/^(none|null|n\/a|-)$/i.test(tip)) addBuddyMessage(tip, '💡', 9000);
     } catch (err) { setError(err.message || t('vbd_err_start')); } };
 
   // ─── Quick-start from past session ───
@@ -522,12 +540,6 @@ const VirtualBodyDouble = ({ tool }) => {
     } catch (err) { setSecondsRemaining(extraMin * 60); setView('active'); addChat('buddy', t('vbd_chat_round_2')); } };
 
   // ─── Invite ───
-  const handleInvite = async () => {
-    try {
-      const data = await callToolEndpoint('virtual-body-double', { action: 'invite', task, duration: `${actualDuration} minutes`, platform: 'text', userLocale, userCurrency, userRegion });
-      setInviteData(data);
-    } catch (err) { setError(t('vbd_err_invite')); } };
-
   // ─── Review ───
   const handleReview = async () => {
     if (sessionLog.length < 3) { setError(t('vbd_err_need_3')); return; } try {
@@ -538,10 +550,11 @@ const VirtualBodyDouble = ({ tool }) => {
   const resetForm = () => {
     setTask(''); setGoals(''); setMood(''); setEnvironment('');
     setError(''); setSessionPlan(null); setStuckData(null);
-    setExtendData(null); setCompletionData(null); setInviteData(null);
+    setExtendData(null); setCompletionData(null);
     setChatLog([]); setSubTasks([]); setSubTaskChecked({});
     setShowBreakdown(false); setBreakdownData(null);
     setCardData(null); setShowCard(false);
+    setUseCustom(false); setPutOff(false); setCustomDuration('');
   };
 
   const buildSessionText = () => {
@@ -803,9 +816,10 @@ const VirtualBodyDouble = ({ tool }) => {
               <span className="text-xs">{SESSION_MODES.find(m => m.id === sessionMode)?.icon}</span>
               <div className={`w-2 h-2 rounded-full ${modeColors.bar} animate-pulse`} />
               <span className={`text-xs font-medium ${c.textMuted}`}>
-                {sessionPlan?.session_personality?.name || t('vbd_buddy')} {t('vbd_is_here')}
+                {companionName || sessionPlan?.session_personality?.name || t('vbd_buddy')} {t('vbd_is_here')}
                 {sessionPlan?.session_personality?.style ? ` · ${sessionPlan.session_personality.style}` : ''} </span>
             </div>
+            <p className={`text-xs ${c.textMuted} -mt-2 mb-3`}>{presenceLine}</p>
 
             <div className={`text-5xl font-mono font-bold ${c.text} mb-2`}>
               {isOnBreak ? formatTime(breakSecondsRemaining) : formatTime(secondsRemaining)} </div>
@@ -877,12 +891,12 @@ const VirtualBodyDouble = ({ tool }) => {
                 ))} </div>
               <input type="text" value={checkInNote} onChange={e => setCheckInNote(e.target.value)} placeholder={t('vbd_add_note')} className={`w-full p-2 rounded-lg border text-sm ${c.input}`} />
             </div>
-          )} {/* Stuck + Invite buttons */} {!isOnBreak && !showCheckIn && (<div className="flex gap-3">
-              <button onClick={handleStuck} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium disabled:opacity-40 ${c.warning} border ${c.warning} transition-all`}>
+          )} {/* Stuck (primary) + check in now */} {!isOnBreak && !showCheckIn && (<div className="space-y-2">
+              <button onClick={handleStuck} disabled={loading} className={`w-full py-3.5 rounded-xl text-sm font-bold disabled:opacity-40 ${c.warning} border ${c.warning} transition-all`}>
                 {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '👥'}</span> : <span>🧱</span>} {t('vbd_im_stuck')}
               </button>
-              <button onClick={handleInvite} disabled={loading} className={`flex-1 py-3 rounded-xl text-sm font-medium disabled:opacity-40 ${c.tag} transition-all`}>
-                <span>👋</span> {t('vbd_invite_friend')}
+              <button onClick={() => setShowCheckIn(true)} className={`w-full py-2.5 rounded-xl text-xs font-medium ${c.tag} transition-all`}>
+                <span>👋</span> {t('vbd_check_in_now')}
               </button>
             </div>
           )} {/* Stuck data */} {stuckData && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
@@ -892,16 +906,6 @@ const VirtualBodyDouble = ({ tool }) => {
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
               ))} {stuckData.environment_shift && <p className={`text-sm ${c.textSecondary}`}><span>🔄</span> {t('vbd_try_prefix')} {stuckData.environment_shift}</p>} {stuckData.bailout_option && <p className={`text-xs ${c.textMuted} italic`}>{t('vbd_or_prefix')} {stuckData.bailout_option}</p>} </div>
-          )} {/* Invite data */} {inviteData && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
-              <h3 className={`text-sm font-bold ${c.text}`}><span>👋</span> {t('vbd_invite_buddy')}</h3>
-              {inviteData.messages?.map((msg, i) => (<div key={i} className="space-y-1">
-                  <p className={`text-xs font-medium ${c.textMuted} capitalize`}>{msg.tone}</p>
-                  <div className={`p-3 rounded-lg ${isDark ? 'bg-zinc-700' : 'bg-gray-50'}`}>
-                    <p className={`text-sm ${c.text}`}>{msg.text}</p>
-                  </div>
-                </div>
-              ))}
-              {inviteData.platform_tip && <p className={`text-xs ${c.textMuted} italic`}>💡 {inviteData.platform_tip}</p>} </div>
           )} </div>
       </div>
     );
