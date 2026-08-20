@@ -5942,7 +5942,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "TheGap",
+  id: "MissingLink",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -5953,15 +5953,15 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   },
   seoDescription: "Stuck on a concept? Trace backward through the prerequisites to find the exact point your understanding broke — then get a focused fix. Free.",
   seoTitle: "Find Your Knowledge Gap Study Helper",
-  title: "The Gap",
+  title: "Missing Link",
   tagline: "Stuck on a concept? We'll find where your understanding broke.",
   tags: ['stuck', 'concept', 'confused', 'gap', 'knowledge', 'study', 'struggling', 'fundamentals'],
-  icon: "🔍",
+  icon: "⛓️",
   categories: ['Go Deep!'],
   headerColor: "#d4dde8",
-  description: "Name the concept you're stuck on. The Gap traces backwards through everything it depends on and finds the exact point where your understanding broke — the missing building block, not the hard part you keep re-reading.",
+  description: "Name the concept you're stuck on. Missing Link traces backwards through everything it depends on and finds the exact point where your understanding broke — the missing building block, not the hard part you keep re-reading.",
   guide: {
-    overview: "The Gap solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. The Gap traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
+    overview: "Missing Link solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. Missing Link traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.",
     howToUse: [
       "Enter the concept you're stuck on — be specific ('integration by parts' not just 'calculus')",
       "Add subject, your level (high school through grad), and what you DO understand to help calibrate",
@@ -5973,7 +5973,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     example: {
       scenario: "You're in Calculus II and can't understand integration by parts. You've watched three YouTube videos and it still doesn't click.",
       action: "Enter 'Integration by parts', subject 'Calculus', level 'Undergrad', add 'I can do basic integrals but u-substitution was already shaky'.",
-      result: "The Gap builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click."
+      result: "Missing Link builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click."
     },
     tips: [
       "The 'What do you understand?' field is gold — it lets the tool skip prerequisites you already have",

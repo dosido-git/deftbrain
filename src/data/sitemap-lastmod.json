@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "41a0196866a5a2f30b11277dc8eee8a9a96aecfd",
+  "hash": "5b99316c3f014a7ba07e1c98dcfc21c5303e82e1",
   "lastmod": "2026-08-20"
  },
  "static:about": {
@@ -174,5 +174,9 @@
  "tool:TheWholeStory": {
   "hash": "936309ccf465509d1b06b5b2db615016b6ff50cd",
   "lastmod": "2026-08-19"
+ },
+ "tool:MissingLink": {
+  "hash": "e824eed768c38129e3048e24fdd95cb681030e4f",
+  "lastmod": "2026-08-20"
  }
 }

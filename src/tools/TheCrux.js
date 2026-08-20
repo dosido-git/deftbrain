@@ -862,7 +862,7 @@ const TheCrux = ({ tool }) => {
             <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuted}`}>🔗 {t('rec_related')}</p>
             <div className="flex flex-wrap gap-3">
               <a href="/BrainDumpBuddy" className={`text-xs ${linkStyle}`}>🧠 {t('rec_braindump')}</a>
-              <a href="/TheGap"          className={`text-xs ${linkStyle}`}>🔍 {t('rec_thegap')}</a>
+              <a href="/MissingLink"          className={`text-xs ${linkStyle}`}>⛓️ {t('rec_missinglink')}</a>
             </div>
           </div>
         </div>

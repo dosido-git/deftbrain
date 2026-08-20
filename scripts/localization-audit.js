@@ -118,7 +118,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/ContextCollapse.js',
   'src/tools/TipOfTongue.js',
   'src/tools/PlotTwist.js',
-  'src/tools/TheGap.js',
+  'src/tools/MissingLink.js',
   'src/tools/SpiralStopper.js',
   'src/tools/PronounceItRight.js',
   'src/tools/GhostWriter.js',
