@@ -14,11 +14,11 @@ const PREVIEW_CHARS = 40; // chars of the product kept for the history-row label
 // popcorn are running the same arithmetic and asking completely different
 // questions. Optional — unanswered, the tool behaves as it always has.
 const MOTIVES = [
-  { value: 'overpriced', icon: '😤', labelKey: 'md_why_overpriced' },
-  { value: 'deciding',   icon: '🤔', labelKey: 'md_why_deciding' },
-  { value: 'curious',    icon: '👀', labelKey: 'md_why_curious' },
-  { value: 'negotiate',  icon: '🤝', labelKey: 'md_why_negotiate' },
-  { value: 'unfair',     icon: '⚖️', labelKey: 'md_why_unfair' },
+  { value: 'overpriced', icon: '😤', labelKey: 'mkd_why_overpriced' },
+  { value: 'deciding',   icon: '🤔', labelKey: 'mkd_why_deciding' },
+  { value: 'curious',    icon: '👀', labelKey: 'mkd_why_curious' },
+  { value: 'negotiate',  icon: '🤝', labelKey: 'mkd_why_negotiate' },
+  { value: 'unfair',     icon: '⚖️', labelKey: 'mkd_why_unfair' },
 ];
 
 const MarkupDetective = ({ tool }) => {
@@ -80,12 +80,12 @@ const MarkupDetective = ({ tool }) => {
 
   // Example pills — labels + seed text, localized and currency-aware.
   const EXAMPLES = [
-    { label: t('md_ex1_label', { sym }), text: t('md_ex1_text', { sym }) },
-    { label: t('md_ex2_label', { sym }), text: t('md_ex2_text', { sym }) },
-    { label: t('md_ex3_label', { sym }), text: t('md_ex3_text', { sym }) },
-    { label: t('md_ex4_label', { sym }), text: t('md_ex4_text', { sym }) },
-    { label: t('md_ex5_label', { sym }), text: t('md_ex5_text', { sym }) },
-    { label: t('md_ex6_label', { sym }), text: t('md_ex6_text', { sym }) },
+    { label: t('mkd_ex1_label', { sym }), text: t('mkd_ex1_text', { sym }) },
+    { label: t('mkd_ex2_label', { sym }), text: t('mkd_ex2_text', { sym }) },
+    { label: t('mkd_ex3_label', { sym }), text: t('mkd_ex3_text', { sym }) },
+    { label: t('mkd_ex4_label', { sym }), text: t('mkd_ex4_text', { sym }) },
+    { label: t('mkd_ex5_label', { sym }), text: t('mkd_ex5_text', { sym }) },
+    { label: t('mkd_ex6_label', { sym }), text: t('mkd_ex6_text', { sym }) },
   ];
 
   // ── Refs ──
@@ -113,7 +113,7 @@ const MarkupDetective = ({ tool }) => {
         markup: data.markup_multiplier,
       }, ...prev].slice(0, 6));
     } catch (err) {
-      setError(err.message || t('md_error'));
+      setError(err.message || t('mkd_error'));
     }
   }, [product, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
@@ -126,29 +126,29 @@ const MarkupDetective = ({ tool }) => {
   // ── Build copy text ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🏷️ ${t('md_copy_header')} — ${product}`, ''];
-    lines.push(`${t('md_copy_markup')} ${results?.markup_multiplier}x`);
-    lines.push(`${t('md_copy_youpay')} ${results?.price_paid || '?'}`);
-    lines.push(`${t('md_copy_fair')} ${results?.fair_price}`);
+    const lines = [`🏷️ ${t('mkd_copy_header')} — ${product}`, ''];
+    lines.push(`${t('mkd_copy_markup')} ${results?.markup_multiplier}x`);
+    lines.push(`${t('mkd_copy_youpay')} ${results?.price_paid || '?'}`);
+    lines.push(`${t('mkd_copy_fair')} ${results?.fair_price}`);
     lines.push('');
-    lines.push(t('md_copy_breakdown'));
+    lines.push(t('mkd_copy_breakdown'));
     (results?.cost_breakdown || []).forEach(item => {
       lines.push(`  ${item.label}: ${item.amount} (${item.percent}%)`);
     });
     if (results?.psychological_tactics?.length) {
       lines.push('');
-      lines.push(t('md_copy_tactics'));
+      lines.push(t('mkd_copy_tactics'));
       results?.psychological_tactics?.forEach(tac => lines.push(
         typeof tac === 'string' ? `  • ${tac}` : `  • ${tac.name}${tac.how_it_works ? ` — ${tac.how_it_works}` : ''}`));
     }
     if (results?.industry_secrets?.length) {
       lines.push('');
-      lines.push(t('md_copy_secrets'));
+      lines.push(t('mkd_copy_secrets'));
       results?.industry_secrets?.forEach(s => lines.push(`  • ${s}`));
     }
     if (results?.how_to_pay_less?.length) {
       lines.push('');
-      lines.push(t('md_copy_payless'));
+      lines.push(t('mkd_copy_payless'));
       results?.how_to_pay_less?.forEach(tip => lines.push(`  • ${tip}`));
     }
     lines.push(BRAND);
@@ -205,7 +205,7 @@ const MarkupDetective = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🏷️'}</span>{tool?.tagline ?? t('md_tagline')}
+                <span className="me-2 text-lg">{tool?.icon ?? '🏷️'}</span>{tool?.tagline ?? t('mkd_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -230,7 +230,7 @@ const MarkupDetective = ({ tool }) => {
           {/* History panel */}
           {showHistory && sessionHistory.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('md_recent_lookups')}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('mkd_recent_lookups')}</p>
               {sessionHistory.map(h => (
                 <button key={h.id} onClick={() => { setProduct(h.preview); setShowHistory(false); }}
                   className={`w-full text-start flex items-center justify-between px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
@@ -244,12 +244,12 @@ const MarkupDetective = ({ tool }) => {
           {/* Textarea — required field */}
           <div>
             <label className={`text-sm font-medium ${c.label} block mb-2`}>
-              {t('md_q_label')} <span className={c.required}>*</span>
+              {t('mkd_q_label')} <span className={c.required}>*</span>
             </label>
             <textarea
               value={product}
               onChange={e => setProduct(e.target.value)}
-              placeholder={t('md_ph', { sym })}
+              placeholder={t('mkd_ph', { sym })}
               rows={3}
               className={`w-full p-3 border rounded-lg text-sm resize-none ${c.input}`}
             />
@@ -257,7 +257,7 @@ const MarkupDetective = ({ tool }) => {
 
           {/* Quick examples */}
           <div>
-            <p className={`text-xs font-semibold ${c.textMuted} mb-2`}>{t('md_popular')}</p>
+            <p className={`text-xs font-semibold ${c.textMuted} mb-2`}>{t('mkd_popular')}</p>
             <div className="flex flex-wrap gap-1.5">
               {EXAMPLES.map(ex => (
                 <button key={ex.label} onClick={() => setProduct(ex.text)}
@@ -269,8 +269,8 @@ const MarkupDetective = ({ tool }) => {
           </div>
 
           <div>
-            <p className={`text-xs font-semibold ${c.textMuted} mb-2`}>{t('md_why_label')} <span className="font-normal opacity-70">{t('md_why_optional')}</span></p>
-            <div role="group" aria-label={t('md_why_label')} className="flex flex-wrap gap-1.5">
+            <p className={`text-xs font-semibold ${c.textMuted} mb-2`}>{t('mkd_why_label')} <span className="font-normal opacity-70">{t('mkd_why_optional')}</span></p>
+            <div role="group" aria-label={t('mkd_why_label')} className="flex flex-wrap gap-1.5">
               {MOTIVES.map(m => (
                 <button key={m.value} onClick={() => setMotive(motive === m.value ? '' : m.value)}
                   className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${motive === m.value ? c.pillActive : c.pillInactive}`}>
@@ -282,7 +282,7 @@ const MarkupDetective = ({ tool }) => {
 
           {/* Pre-result cross-ref */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('md_xref_q')} <a href="/BuyWise" className={`text-xs ${linkStyle}`}>🛒 {t('md_buywise')}</a>.
+            {t('mkd_xref_q')} <a href="/BuyWise" className={`text-xs ${linkStyle}`}>🛒 {t('mkd_buywise')}</a>.
           </p>
 
           {/* Submit */}
@@ -291,8 +291,8 @@ const MarkupDetective = ({ tool }) => {
             disabled={loading || !canSubmitRef.current}
             className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏷️'}</span> {t('md_investigating')}</>
-              : <><span className="me-1">{tool?.icon ?? '🏷️'}</span> {t('md_investigate')}</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🏷️'}</span> {t('mkd_investigating')}</>
+              : <><span className="me-1">{tool?.icon ?? '🏷️'}</span> {t('mkd_investigate')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -301,7 +301,7 @@ const MarkupDetective = ({ tool }) => {
           )}
           </button>
 
-          <p className={`text-xs text-center ${c.textMuted}`}>{t('md_disclaimer')}</p>
+          <p className={`text-xs text-center ${c.textMuted}`}>{t('mkd_disclaimer')}</p>
 
           {error && (
             <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>
@@ -316,11 +316,11 @@ const MarkupDetective = ({ tool }) => {
           {/* Verdict banner */}
           <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
             {results?.product_identified && (
-              <p className={`text-xs font-medium ${c.textMuted} mb-3`}>{t('md_analyzing')} {results.product_identified}</p>
+              <p className={`text-xs font-medium ${c.textMuted} mb-3`}>{t('mkd_analyzing')} {results.product_identified}</p>
             )}
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
-                <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>{t('md_markup_mult')}</p>
+                <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>{t('mkd_markup_mult')}</p>
                 <p className={`text-4xl font-black ${markupColor(results?.markup_multiplier)}`}>
                   {results?.markup_multiplier}x
                 </p>
@@ -328,18 +328,18 @@ const MarkupDetective = ({ tool }) => {
               <div className="text-end">
                 {results?.price_paid && (
                   <div className="mb-1">
-                    <p className={`text-xs ${c.textMuted}`}>{t('md_you_pay')}</p>
+                    <p className={`text-xs ${c.textMuted}`}>{t('mkd_you_pay')}</p>
                     <p className={`text-xl font-bold ${c.text}`}>{results?.price_paid}</p>
                   </div>
                 )}
                 {results?.true_cost && (
                   <div className="mb-1">
-                    <p className={`text-xs ${c.textMuted}`}>{t('md_true_cost')}</p>
+                    <p className={`text-xs ${c.textMuted}`}>{t('mkd_true_cost')}</p>
                     <p className={`text-xl font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{results?.true_cost}</p>
                   </div>
                 )}
                 <div>
-                  <p className={`text-xs ${c.textMuted}`}>{t('md_fair_price')}</p>
+                  <p className={`text-xs ${c.textMuted}`}>{t('mkd_fair_price')}</p>
                   <p className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{results?.fair_price}</p>
                 </div>
               </div>
@@ -352,13 +352,13 @@ const MarkupDetective = ({ tool }) => {
           {/* Cost breakdown */}
           {results?.cost_breakdown?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-2`}>💰 {t('md_where_money')}</h3>
+              <h3 className={`font-bold text-sm ${c.text} mb-2`}>💰 {t('mkd_where_money')}</h3>
               <div className="flex flex-wrap gap-3 mb-4">
                 {[
-                  { colorKey: 'chartMaterials', label: t('md_legend_materials') },
-                  { colorKey: 'chartLabor',     label: t('md_legend_labor') },
-                  { colorKey: 'chartBrand',     label: t('md_legend_brand') },
-                  { colorKey: 'chartProfit',    label: t('md_legend_profit') },
+                  { colorKey: 'chartMaterials', label: t('mkd_legend_materials') },
+                  { colorKey: 'chartLabor',     label: t('mkd_legend_labor') },
+                  { colorKey: 'chartBrand',     label: t('mkd_legend_brand') },
+                  { colorKey: 'chartProfit',    label: t('mkd_legend_profit') },
                 ].map(({ colorKey, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
                     <span className={`inline-block w-2.5 h-2.5 rounded-full ${c[colorKey]}`} />
@@ -388,7 +388,7 @@ const MarkupDetective = ({ tool }) => {
           {/* Psychological tactics */}
           {results?.psychological_tactics?.length > 0 && (
             <div className={`${c.warning} border rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>🧠 {t('md_tactics_title')}</h3>
+              <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>🧠 {t('mkd_tactics_title')}</h3>
               <ul className="space-y-1.5">
                 {results?.psychological_tactics?.map((tac, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
@@ -408,7 +408,7 @@ const MarkupDetective = ({ tool }) => {
           {/* Industry secrets */}
           {results?.industry_secrets?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🔍 {t('md_secrets_title')}</h3>
+              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🔍 {t('mkd_secrets_title')}</h3>
               <ul className="space-y-1.5">
                 {results?.industry_secrets?.map((s, i) => (
                   <li key={i} className={`text-sm ${c.textSecondary} flex items-start gap-2`}>
@@ -422,7 +422,7 @@ const MarkupDetective = ({ tool }) => {
           {/* How to pay less */}
           {results?.how_to_pay_less?.length > 0 && (
             <div className={`${c.success} border rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm mb-3 ${c.successTxt}`}>💡 {t('md_pay_less_title')}</h3>
+              <h3 className={`font-bold text-sm mb-3 ${c.successTxt}`}>💡 {t('mkd_pay_less_title')}</h3>
               <ul className="space-y-1.5">
                 {results?.how_to_pay_less?.map((tip, i) => (
                   <li key={i} className="text-sm flex items-start gap-2">
@@ -435,10 +435,10 @@ const MarkupDetective = ({ tool }) => {
 
           {/* Post-result cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('md_related')}</p>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mkd_related')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/BuyWise" className={`text-xs ${linkStyle}`}>🛒 {t('md_buywise')}</a>
-              <a href="/FakeReviewDetective" className={`text-xs ${linkStyle}`}>🕵️ {t('md_fakereview')}</a>
+              <a href="/BuyWise" className={`text-xs ${linkStyle}`}>🛒 {t('mkd_buywise')}</a>
+              <a href="/FakeReviewDetective" className={`text-xs ${linkStyle}`}>🕵️ {t('mkd_fakereview')}</a>
             </div>
           </div>
 

@@ -341,7 +341,17 @@ function main() {
 
   if (!withFindings.length && !parseErrors.length) {
     const langN = catalog.SUPPORTED_LANGUAGES.length;
-    console.log(`✅ localization-audit: ${results.length} tool(s) fully localized across ${langN} languages.`);
+    const collisions = checkPrefixCollisions(root);
+    if (collisions.length) {
+      console.log('\n✖ i18n prefix collision — two tools share a key namespace:');
+      for (const c of collisions) {
+        console.log(`  ${c.prefix}_  ${c.a}  vs  ${c.b}`);
+        console.log(`     ${c.shared.length} key(s) where one tool renders the other's string: ${c.shared.join(', ')}`);
+      }
+      console.log('\n  Fix: give the smaller of the two a unique prefix, in its locale file and its tool file.');
+      process.exit(1);
+    }
+    console.log(`✅ localization-audit: ${results.length} tool(s) fully localized across ${langN} languages, no prefix collisions.`);
     process.exit(0);
   }
 
@@ -355,6 +365,47 @@ function main() {
   }
   console.log(`\n✖ ${count} localization issue(s) across ${withFindings.length} file(s).`);
   process.exit(1);
+}
+
+// ── Prefix collisions ────────────────────────────────────────────────────────
+// Every tool's block spreads into one flat namespace per language, so two tools
+// sharing a key prefix is not a style problem — for any key they both define,
+// whichever merges last wins and the other tool silently renders its
+// neighbour's string. Four pairs had drifted into this (cc_, md_, pp_, br_),
+// and nothing caught it: the strings were valid, present in all 13 languages,
+// and simply belonged to the wrong tool.
+function checkPrefixCollisions(root) {
+  const dir = path.join(root, 'src/i18n/locales/tools');
+  if (!fs.existsSync(dir)) return [];
+  const byPrefix = new Map();
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.js'))) {
+    const src = fs.readFileSync(path.join(dir, f), 'utf8');
+    let i = src.indexOf('\n  en: {');
+    if (i < 0) i = src.indexOf('\n  "en": {');
+    if (i < 0) continue;
+    let j = src.indexOf('\n  es: {', i);
+    if (j < 0) j = src.indexOf('\n  "es": {', i);
+    const blk = src.slice(i, j > 0 ? j : src.length);
+    const counts = new Map(); const keys = new Set();
+    for (const m of blk.matchAll(/^ {4}"?([a-z0-9]{2,5})_([a-z0-9_]+)"?\s*:/gm)) {
+      counts.set(m[1], (counts.get(m[1]) || 0) + 1);
+      keys.add(m[1] + '_' + m[2]);
+    }
+    if (!counts.size) continue;
+    const prefix = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    const own = new Set([...keys].filter(k => k.startsWith(prefix + '_')));
+    if (!byPrefix.has(prefix)) byPrefix.set(prefix, []);
+    byPrefix.get(prefix).push({ file: f, keys: own });
+  }
+  const out = [];
+  for (const [prefix, list] of byPrefix) {
+    if (list.length < 2) continue;
+    for (let a = 0; a < list.length; a++) for (let b = a + 1; b < list.length; b++) {
+      const shared = [...list[a].keys].filter(k => list[b].keys.has(k)).sort();
+      out.push({ prefix, a: list[a].file, b: list[b].file, shared });
+    }
+  }
+  return out;
 }
 
 if (require.main === module) main();

@@ -47,10 +47,10 @@ const ComebackCooker = ({ tool }) => {
   const { t } = useTranslation();
 
   const MOOD_OPTIONS = [
-    { id: 'surgical',  label: t('cc_mood_surgical'),  icon: '🧊', desc: t('cc_mood_surgical_desc') },
-    { id: 'witty',     label: t('cc_mood_witty'),     icon: '⚡', desc: t('cc_mood_witty_desc') },
-    { id: 'petty',     label: t('cc_mood_petty'),     icon: '💅', desc: t('cc_mood_petty_desc') },
-    { id: 'dignified', label: t('cc_mood_dignified'), icon: '👑', desc: t('cc_mood_dignified_desc') },
+    { id: 'surgical',  label: t('cbc_mood_surgical'),  icon: '🧊', desc: t('cbc_mood_surgical_desc') },
+    { id: 'witty',     label: t('cbc_mood_witty'),     icon: '⚡', desc: t('cbc_mood_witty_desc') },
+    { id: 'petty',     label: t('cbc_mood_petty'),     icon: '💅', desc: t('cbc_mood_petty_desc') },
+    { id: 'dignified', label: t('cbc_mood_dignified'), icon: '👑', desc: t('cbc_mood_dignified_desc') },
   ];
 
   const c = {
@@ -130,7 +130,7 @@ const ComebackCooker = ({ tool }) => {
       };
       setSessionHistory(prev => [entry, ...prev].slice(0, 6));
     } catch (err) {
-      setError(err.message || t('cc_error'));
+      setError(err.message || t('cbc_error'));
     }
   };
 
@@ -165,22 +165,22 @@ const ComebackCooker = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const moodLabel = MOOD_OPTIONS.find(m => m.id === mood)?.label || mood;
-    let out = `🍳 ${t('cc_copy_header')}\n\n`;
-    out += `${t('cc_copy_situation')} ${situation}\n`;
-    if (whatTheySaid) out += `${t('cc_copy_theysaid')} "${whatTheySaid}"\n`;
-    out += `${t('cc_copy_mood')} ${moodLabel}\n\n`;
-    if (results?.situation_read) out += `${t('cc_copy_read')} ${results?.situation_read}\n\n`;
-    out += `━━ ${t('cc_copy_comebacks')} ━━\n\n`;
+    let out = `🍳 ${t('cbc_copy_header')}\n\n`;
+    out += `${t('cbc_copy_situation')} ${situation}\n`;
+    if (whatTheySaid) out += `${t('cbc_copy_theysaid')} "${whatTheySaid}"\n`;
+    out += `${t('cbc_copy_mood')} ${moodLabel}\n\n`;
+    if (results?.situation_read) out += `${t('cbc_copy_read')} ${results?.situation_read}\n\n`;
+    out += `━━ ${t('cbc_copy_comebacks')} ━━\n\n`;
     (results?.comebacks || []).forEach((cb, i) => {
       out += `${i + 1}. "${cb.line}"\n`;
       out += `   [${cb.technique}] ${cb.why_it_works}\n`;
       out += `   🎬 ${cb.delivery_note}\n\n`;
     });
     if (results?.the_nuclear_option) {
-      out += `━━ ${t('cc_copy_nuclear')} ━━\n"${results?.the_nuclear_option?.line}"\n⚠️ ${results?.the_nuclear_option?.warning}\n\n`;
+      out += `━━ ${t('cbc_copy_nuclear')} ━━\n"${results?.the_nuclear_option?.line}"\n⚠️ ${results?.the_nuclear_option?.warning}\n\n`;
     }
     if (results?.the_high_road) {
-      out += `━━ ${t('cc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why_its_devastating}\n\n`;
+      out += `━━ ${t('cbc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why_its_devastating}\n\n`;
     }
     return out + BRAND;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -225,7 +225,7 @@ const ComebackCooker = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🍳'}</span>{t('cc_tagline')}
+                <span className="me-2 text-lg">{tool?.icon ?? '🍳'}</span>{t('cbc_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -242,39 +242,39 @@ const ComebackCooker = ({ tool }) => {
 
         {/* Pre-result cross-ref */}
         <p className={`text-xs text-center ${c.textMuted} mb-4`}>
-          {t('cc_xref_pre_q')}{' '}
-          <a href="/VelvetHammer" className={linkStyle}>✉️ {t('cc_velvethammer')}</a>{' '}
-          {t('cc_xref_pre_post')}
+          {t('cbc_xref_pre_q')}{' '}
+          <a href="/VelvetHammer" className={linkStyle}>✉️ {t('cbc_velvethammer')}</a>{' '}
+          {t('cbc_xref_pre_post')}
         </p>
 
         <div className="space-y-4">
           {/* Situation */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="me-1.5">📍</span>{t('cc_q_label')} <span className={c.required}>*</span>
+              <span className="me-1.5">📍</span>{t('cbc_q_label')} <span className={c.required}>*</span>
             </label>
             <textarea
               value={situation}
               onChange={e => setSituation(e.target.value)}
-              placeholder={t('cc_q_ph')}
+              placeholder={t('cbc_q_ph')}
               rows={3}
               maxLength={500}
               className={`w-full px-4 py-3 rounded-xl text-sm border focus:outline-none transition-colors resize-none ${c.input}`}
             />
-            <p className={`text-xs ${c.textMuted} mt-1`}>{t('cc_ctrl_enter')}</p>
+            <p className={`text-xs ${c.textMuted} mt-1`}>{t('cbc_ctrl_enter')}</p>
           </div>
 
           {/* What they said */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="me-1.5">💬</span>{t('cc_said_label')}{' '}
-              <span className={`font-normal ${c.textMuted}`}>{t('cc_said_hint')}</span>
+              <span className="me-1.5">💬</span>{t('cbc_said_label')}{' '}
+              <span className={`font-normal ${c.textMuted}`}>{t('cbc_said_hint')}</span>
             </label>
             <input
               type="text"
               value={whatTheySaid}
               onChange={e => setWhatTheySaid(e.target.value)}
-              placeholder={t('cc_said_ph')}
+              placeholder={t('cbc_said_ph')}
               maxLength={300}
               className={`w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors ${c.input}`}
             />
@@ -283,14 +283,14 @@ const ComebackCooker = ({ tool }) => {
           {/* Relationship */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-1.5`}>
-              <span className="me-1.5">👤</span>{t('cc_rel_label')}{' '}
-              <span className={`font-normal ${c.textMuted}`}>{t('cc_rel_hint')}</span>
+              <span className="me-1.5">👤</span>{t('cbc_rel_label')}{' '}
+              <span className={`font-normal ${c.textMuted}`}>{t('cbc_rel_hint')}</span>
             </label>
             <input
               type="text"
               value={relationship}
               onChange={e => setRelationship(e.target.value)}
-              placeholder={t('cc_rel_ph')}
+              placeholder={t('cbc_rel_ph')}
               maxLength={100}
               className={`w-full px-4 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors ${c.input}`}
             />
@@ -299,7 +299,7 @@ const ComebackCooker = ({ tool }) => {
           {/* Mood */}
           <div>
             <label className={`text-sm font-semibold ${c.text} block mb-2`}>
-              <span className="me-1.5">🎭</span>{t('cc_mood_label')}
+              <span className="me-1.5">🎭</span>{t('cbc_mood_label')}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {MOOD_OPTIONS.map(m => (
@@ -328,8 +328,8 @@ const ComebackCooker = ({ tool }) => {
           className={`relative w-full ${c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
           >
           {loading
-            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('cc_cooking')}</>
-            : <><span>{tool?.icon ?? '🍳'}</span> {t('cc_cook')}</>}
+            ? <><span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> {t('cbc_cooking')}</>
+            : <><span>{tool?.icon ?? '🍳'}</span> {t('cbc_cook')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -343,7 +343,7 @@ const ComebackCooker = ({ tool }) => {
       {/* ── HISTORY ── */}
       {sessionHistory.length > 0 && !results && (
         <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('cc_recent')}</h3>
+          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('cbc_recent')}</h3>
           <div className="space-y-1.5">
             {sessionHistory.map(entry => (
               <button
@@ -374,14 +374,14 @@ const ComebackCooker = ({ tool }) => {
               disabled={loading || !situation.trim()}
               className={`px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-40 transition-colors ${c.btnPrimary}`}
             >
-              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> : <><span>🔁</span> {t('cc_different_mood')}</>}
+              {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🍳'}</span> : <><span>🔁</span> {t('cbc_different_mood')}</>}
             </button>
           </div>
 
           {/* Situation read */}
           {results?.situation_read && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 text-center`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('cc_the_read')}</p>
+              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('cbc_the_read')}</p>
               <p className={`text-sm italic ${c.text}`}>{results?.situation_read}</p>
             </div>
           )}
@@ -390,7 +390,7 @@ const ComebackCooker = ({ tool }) => {
           {results?.comebacks?.length > 0 && (
             <div className="space-y-3">
               <h3 className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} px-1`}>
-                {t('cc_should_have_said')}
+                {t('cbc_should_have_said')}
               </h3>
               {results?.comebacks?.map((cb, i) => {
                 const isOpen = expandedCards[i];
@@ -417,11 +417,11 @@ const ComebackCooker = ({ tool }) => {
                     {isOpen && (
                       <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ms-8`}>
                         <div>
-                          <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>{t('cc_why_it_works')}</p>
+                          <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>{t('cbc_why_it_works')}</p>
                           <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{cb.why_it_works}</p>
                         </div>
                         <div className={`${c.deliveryBg} rounded-xl p-3`}>
-                          <p className={`text-xs font-semibold ${c.deliveryText} mb-1`}>🎬 {t('cc_delivery')}</p>
+                          <p className={`text-xs font-semibold ${c.deliveryText} mb-1`}>🎬 {t('cbc_delivery')}</p>
                           <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{cb.delivery_note}</p>
                         </div>
                       </div>
@@ -436,7 +436,7 @@ const ComebackCooker = ({ tool }) => {
           {results?.the_high_road && (
             <div className={`${c.highRoadBg} border rounded-xl p-5`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.highRoadText} mb-3 flex items-center gap-1.5`}>
-                <span>👑</span> {t('cc_high_road')}
+                <span>👑</span> {t('cbc_high_road')}
               </p>
               <p className={`text-base font-semibold ${c.text} leading-snug mb-3`}
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -456,13 +456,13 @@ const ComebackCooker = ({ tool }) => {
                   onClick={() => setRevealedNuclear(true)}
                   className={`w-full ${c.btnSecondary} py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2`}
                 >
-                  <span>☢️</span> {t('cc_reveal_nuclear')}
-                  <span className={`text-xs ${c.textMuted}`}>{t('cc_fantasy_drawer')}</span>
+                  <span>☢️</span> {t('cbc_reveal_nuclear')}
+                  <span className={`text-xs ${c.textMuted}`}>{t('cbc_fantasy_drawer')}</span>
                 </button>
               ) : (
                 <div className={`${c.nuclearBg} border rounded-xl p-5`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.nuclearText} mb-3 flex items-center gap-1.5`}>
-                    <span>☢️</span> {t('cc_nuclear_option')}
+                    <span>☢️</span> {t('cbc_nuclear_option')}
                   </p>
                   <p className={`text-base font-semibold ${c.text} leading-snug mb-3`}
                      style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
@@ -478,20 +478,20 @@ const ComebackCooker = ({ tool }) => {
 
           {/* Disclaimer */}
           <p className={`text-xs ${c.textMuted} text-center italic`}>
-            {t('cc_disclaimer')}
+            {t('cbc_disclaimer')}
           </p>
 
           {/* Cross-refs — post-result with conditional */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
             <p className={`text-xs ${c.textMuted} text-center`}>
-              {t('cc_xref_ongoing_q')}{' '}
-              <a href="/ConflictCoach" className={linkStyle}>🥊 {t('cc_conflictcoach')}</a>{' '}
-              {t('cc_xref_ongoing_post')}
+              {t('cbc_xref_ongoing_q')}{' '}
+              <a href="/ConflictCoach" className={linkStyle}>🥊 {t('cbc_conflictcoach')}</a>{' '}
+              {t('cbc_xref_ongoing_post')}
             </p>
             <p className={`text-xs ${c.textMuted} text-center`}>
-              {t('cc_xref_practice_q')}{' '}
-              <a href="/ArgueSmarter" className={linkStyle}>🥊 {t('cc_argumentsimulator')}</a>{' '}
-              {t('cc_xref_practice_post')}
+              {t('cbc_xref_practice_q')}{' '}
+              <a href="/ArgueSmarter" className={linkStyle}>🥊 {t('cbc_argumentsimulator')}</a>{' '}
+              {t('cbc_xref_practice_post')}
             </p>
           </div>
 

@@ -11,14 +11,14 @@ const PREVIEW_CHARS = 40;
 
 // Life events — value is sent to the backend verbatim; labelKey is the i18n label.
 const EVENTS = [
-  { value: 'Moving to a new home',        emoji: '📦', labelKey: 'pp_ev_move' },
-  { value: 'New baby',                    emoji: '👶', labelKey: 'pp_ev_baby' },
-  { value: 'Starting a new job',          emoji: '💼', labelKey: 'pp_ev_job' },
-  { value: 'Getting married',             emoji: '💍', labelKey: 'pp_ev_marriage' },
-  { value: 'Going through a divorce',     emoji: '📄', labelKey: 'pp_ev_divorce' },
-  { value: 'Death of a loved one',        emoji: '🕊️', labelKey: 'pp_ev_death' },
-  { value: 'Buying a home',               emoji: '🏡', labelKey: 'pp_ev_buyhome' },
-  { value: 'Retiring',                    emoji: '🌅', labelKey: 'pp_ev_retire' },
+  { value: 'Moving to a new home',        emoji: '📦', labelKey: 'pwp_ev_move' },
+  { value: 'New baby',                    emoji: '👶', labelKey: 'pwp_ev_baby' },
+  { value: 'Starting a new job',          emoji: '💼', labelKey: 'pwp_ev_job' },
+  { value: 'Getting married',             emoji: '💍', labelKey: 'pwp_ev_marriage' },
+  { value: 'Going through a divorce',     emoji: '📄', labelKey: 'pwp_ev_divorce' },
+  { value: 'Death of a loved one',        emoji: '🕊️', labelKey: 'pwp_ev_death' },
+  { value: 'Buying a home',               emoji: '🏡', labelKey: 'pwp_ev_buyhome' },
+  { value: 'Retiring',                    emoji: '🌅', labelKey: 'pwp_ev_retire' },
 ];
 
 const PaperworkPath = ({ tool }) => {
@@ -81,8 +81,8 @@ const PaperworkPath = ({ tool }) => {
   const loadExample = useCallback(() => {
     // An interstate move, and the paperwork nobody plans for.
     const ex = pickExample('PaperworkPath', [
-      { event: EVENTS[0].value, sit: 'pp_example_situation',  loc: 'pp_example_location' },
-      { event: EVENTS[5].value, sit: 'pp_example2_situation', loc: 'pp_example2_location' },
+      { event: EVENTS[0].value, sit: 'pwp_example_situation',  loc: 'pwp_example_location' },
+      { event: EVENTS[5].value, sit: 'pwp_example2_situation', loc: 'pwp_example2_location' },
     ]);
     setLifeEvent(ex.event);
     setSituation(t(ex.sit));
@@ -107,7 +107,7 @@ const PaperworkPath = ({ tool }) => {
         preview: lifeEvent.slice(0, PREVIEW_CHARS),
       }, ...prev].slice(0, 6));
     } catch (err) {
-      setError(err.message || t('pp_error'));
+      setError(err.message || t('pwp_error'));
     }
   }, [lifeEvent, situation, location, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
@@ -119,21 +119,21 @@ const PaperworkPath = ({ tool }) => {
   // ── Build copy text ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🗂️ ${t('pp_copy_header')} — ${lifeEvent}`, ''];
+    const lines = [`🗂️ ${t('pwp_copy_header')} — ${lifeEvent}`, ''];
     if (results?.situation_summary) { lines.push(results.situation_summary); lines.push(''); }
-    lines.push(t('pp_copy_checklist'));
+    lines.push(t('pwp_copy_checklist'));
     (results?.document_checklist || []).forEach(d => {
       lines.push(`  [${(d.priority || '').toUpperCase()}] ${d.document} — ${d.why}`);
-      if (d.where_to_get) lines.push(`      ${t('pp_copy_where')}: ${d.where_to_get}`);
+      if (d.where_to_get) lines.push(`      ${t('pwp_copy_where')}: ${d.where_to_get}`);
     });
     lines.push('');
-    lines.push(t('pp_copy_order'));
+    lines.push(t('pwp_copy_order'));
     (results?.ordered_steps || []).forEach(s => {
       lines.push(`  ${s.order}. ${s.action} (${s.timing})`);
     });
     if (results?.watch_outs?.length) {
       lines.push('');
-      lines.push(t('pp_copy_watch'));
+      lines.push(t('pwp_copy_watch'));
       results.watch_outs.forEach(w => lines.push(`  • ${w}`));
     }
     if (results?.verify_note) { lines.push(''); lines.push(`⚠️ ${results.verify_note}`); }
@@ -181,7 +181,7 @@ const PaperworkPath = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🗂️'}</span>{t('pp_tagline')}
+                <span className="me-2 text-lg">{tool?.icon ?? '🗂️'}</span>{t('pwp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -206,7 +206,7 @@ const PaperworkPath = ({ tool }) => {
           {/* History panel */}
           {showHistory && sessionHistory.length > 0 && (
             <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pp_recent')}</p>
+              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('pwp_recent')}</p>
               {sessionHistory.map(h => (
                 <button key={h.id} onClick={() => { setLifeEvent(h.preview); setShowHistory(false); }}
                   className={`w-full text-start px-3 py-2 rounded-lg ${c.card} border ${c.border} hover:opacity-80 transition-opacity`}>
@@ -219,7 +219,7 @@ const PaperworkPath = ({ tool }) => {
           {/* Life event — required */}
           <div>
             <label className={`text-sm font-medium ${c.label} block mb-2`}>
-              {t('pp_event_label')} <span className={c.required}>*</span>
+              {t('pwp_event_label')} <span className={c.required}>*</span>
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
               {EVENTS.map(ev => (
@@ -233,23 +233,23 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Location — optional */}
           <div>
-            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pp_location_label')}</label>
+            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_location_label')}</label>
             <input
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              placeholder={t('pp_location_ph')}
+              placeholder={t('pwp_location_ph')}
               className={`w-full p-3 border rounded-lg text-sm ${c.input}`}
             />
           </div>
 
           {/* Situation — optional */}
           <div>
-            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pp_situation_label')}</label>
+            <label className={`text-sm font-medium ${c.label} block mb-2`}>{t('pwp_situation_label')}</label>
             <textarea
               value={situation}
               onChange={e => setSituation(e.target.value)}
-              placeholder={t('pp_situation_ph')}
+              placeholder={t('pwp_situation_ph')}
               rows={3}
               className={`w-full p-3 border rounded-lg text-sm resize-none ${c.input}`}
             />
@@ -257,7 +257,7 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Pre-result cross-ref (S5.5 — a tool link must be visible before submit) */}
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('pp_xref_pre')} <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pp_xref_deposit')}</a>.
+            {t('pwp_xref_pre')} <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pwp_xref_deposit')}</a>.
           </p>
 
           {/* Submit */}
@@ -266,8 +266,8 @@ const PaperworkPath = ({ tool }) => {
             disabled={loading || !canSubmitRef.current}
             className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
-              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗂️'}</span> {t('pp_building')}</>
-              : <><span className="me-1">{tool?.icon ?? '🗂️'}</span> {t('pp_build')}</>}
+              ? <><span className="inline-block animate-spin">{tool?.icon ?? '🗂️'}</span> {t('pwp_building')}</>
+              : <><span className="me-1">{tool?.icon ?? '🗂️'}</span> {t('pwp_build')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -276,7 +276,7 @@ const PaperworkPath = ({ tool }) => {
           )}
           </button>
 
-          <p className={`text-xs text-center ${c.textMuted}`}>{t('pp_disclaimer')}</p>
+          <p className={`text-xs text-center ${c.textMuted}`}>{t('pwp_disclaimer')}</p>
 
           {error && (
             <div className={`p-3 rounded-lg border text-sm ${c.danger}`}>⚠️ {error}</div>
@@ -298,7 +298,7 @@ const PaperworkPath = ({ tool }) => {
           {/* Document checklist */}
           {results?.document_checklist?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🗂️ {t('pp_checklist_title')}</h3>
+              <h3 className={`font-bold text-sm ${c.text} mb-3`}>🗂️ {t('pwp_checklist_title')}</h3>
               <div className="space-y-2">
                 {results.document_checklist.map((d, i) => (
                   <div key={i} className={`border rounded-lg p-3 ${priorityStyle(d.priority)}`}>
@@ -338,11 +338,11 @@ const PaperworkPath = ({ tool }) => {
               isDark ? 'bg-orange-600'  : 'bg-orange-500',
             ];
             const eventLeftPct = (colOf(0) / totalCols) * 100;
-            const weekLabel = (w) => w === 0 ? (results.event_label || t('pp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
+            const weekLabel = (w) => w === 0 ? (results.event_label || t('pwp_cal_event')) : (w < 0 ? `${w}` : `+${w}`);
             return (
               <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-                <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pp_order_title')}</h3>
-                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pp_cal_note_rel', { label: results.event_label || t('pp_cal_event') })}</p>
+                <h3 className={`font-bold text-sm ${c.text} mb-1`}>🗓️ {t('pwp_order_title')}</h3>
+                <p className={`text-xs ${c.textMuted} mb-4`}>{t('pwp_cal_note_rel', { label: results.event_label || t('pwp_cal_event') })}</p>
 
                 {/* Relative-week timeline (Gantt). Scrolls sideways on small screens. */}
                 <div className="overflow-x-auto -mx-1 px-1 mb-5">
@@ -356,7 +356,7 @@ const PaperworkPath = ({ tool }) => {
                     <div className="grid mb-1.5" style={{ gridTemplateColumns: `repeat(${totalCols}, minmax(0, 1fr))` }}>
                       {cols.map((w) => (
                         <div key={w} className={`text-center text-[10px] font-bold pb-1 ${w === 0 ? c.warningTxt : c.textMuted} ${w === 0 ? 'border-b-2 ' + (isDark ? 'border-amber-500' : 'border-amber-400') : ''}`}>
-                          {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `${t('pp_cal_week')} ${weekLabel(w)}`}
+                          {w === 0 ? <>📍<br /><span className="leading-tight">{weekLabel(0)}</span></> : `${t('pwp_cal_week')} ${weekLabel(w)}`}
                         </div>
                       ))}
                     </div>
@@ -400,7 +400,7 @@ const PaperworkPath = ({ tool }) => {
           {/* Watch-outs */}
           {results?.watch_outs?.length > 0 && (
             <div className={`${c.warning} border rounded-xl p-5`}>
-              <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>⚠️ {t('pp_watch_title')}</h3>
+              <h3 className={`font-bold text-sm mb-3 ${c.warningTxt}`}>⚠️ {t('pwp_watch_title')}</h3>
               <ul className="space-y-1.5">
                 {results.watch_outs.map((w, i) => (
                   <li key={i} className="text-sm flex items-start gap-2"><span className="mt-0.5 shrink-0">•</span>{w}</li>
@@ -418,11 +418,11 @@ const PaperworkPath = ({ tool }) => {
 
           {/* Cross-refs */}
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pp_related')}</p>
+            <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('pwp_related')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pp_xref_deposit')}</a>
-              <a href="/BillRescue" className={`text-xs ${linkStyle}`}>💸 {t('pp_xref_bill')}</a>
-              <a href="/FinalWish" className={`text-xs ${linkStyle}`}>🕊️ {t('pp_xref_final')}</a>
+              <a href="/RentersDepositSaver" className={`text-xs ${linkStyle}`}>🏠 {t('pwp_xref_deposit')}</a>
+              <a href="/BillRescue" className={`text-xs ${linkStyle}`}>💸 {t('pwp_xref_bill')}</a>
+              <a href="/FinalWish" className={`text-xs ${linkStyle}`}>🕊️ {t('pwp_xref_final')}</a>
             </div>
           </div>
 
