@@ -1603,17 +1603,17 @@ export const tools = [
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
     { q: "How do I find a word that's on the tip of my tongue?",
-      a: "Describe everything you remember — the vibe, roughly what it means, what it's definitely not, where you encountered it — and Tip of Tongue cross-references the fragments to give you ranked candidates with confidence levels. Fragmentary, sensory, half-wrong descriptions are exactly what it's built for." },
+      a: "Describe whatever you remember — meaning, sound, context, first letter, what it reminds you of, or what it definitely isn't. Tip of Tongue uses those fragments to suggest likely matches and explain what clues led to each one." },
     { q: "Can it find a movie or song I can't remember the name of?",
-      a: "Yes — 'that movie where…' and 'that song that goes…' are its most common jobs. Give it the era, the mood, a scene you remember, an actor's face you can picture, or misremembered lyrics; it returns matches with the specific detail that will make you go 'YES, that's it', plus how to verify each one." },
+      a: "Yes. Describe the era, mood, scene, instruments, voice, plot fragment, half-remembered lyric, or anything else that stuck with you. Tip of Tongue suggests likely matches and gives you details you can use to check them." },
     { q: "What kinds of things can it identify?",
-      a: "Words and phrases, movies and shows, songs, foods and dishes, products, scents, colors, places, fabrics — anything you can half-describe. Each category cross-references differently: food by flavor and texture, music by era and vocal style, products by packaging and where you bought it." },
+      a: "Songs, movies and shows, foods and drinks, products, scents, colors, places, fabrics, words and other things you can describe from partial memory. Different clues matter for different categories — flavor and texture for food, for example, or era and vocal style for music." },
     { q: "What if none of the matches are right?",
-      a: "Mark what was close and what was wrong, add any new fragment that surfaced, and refine — 'close' answers are gold because they tell it which direction to pivot. Two or three rounds of refinement usually corner the answer for genuinely obscure memories." },
+      a: "Mark what was close, rule out what was wrong, and add any new detail that surfaced. Even a near miss can help narrow the next round." },
     { q: "Why does a word disappear right when I try to remember it?",
-      a: "The tip-of-the-tongue state is a retrieval failure, not a memory loss — your brain has the word but the phonological pathway to say it is temporarily blocked, which is why you can often recall the first letter or syllable count. Describing around the word (exactly what this tool asks you to do) activates neighboring pathways and is one of the reliable ways to spring it loose." },
+      a: "A tip-of-the-tongue moment usually means the word feels familiar but isn't immediately accessible. Indirect clues — sounds, syllables, related ideas, or context — can sometimes help bring it back. Describing around the missing word gives you more routes to the answer than simply trying harder to recall it." },
   ],
-  seoDescription: "Can't remember what it's called? Describe whatever fragment you recall and get it identified — food, music, films, scents, products, and more. Free, no signup.",
+  seoDescription: "Can't remember the name of a song, movie, food, product, color, scent or place? Describe the fragments you remember and narrow down what it was. Free, no signup.",
   seoTitle: "Tip-of-the-Tongue Finder: Name That Thing",
   title: "Tip of Tongue",
   tagline: "Describe it from memory — DeftBrain will figure out what it is.",
@@ -1623,26 +1623,29 @@ export const tools = [
   headerColor: "#d4dde8",
   description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.",
   guide: {
-    overview: "TipOfTongue takes fragmentary, vibes-based descriptions and identifies what you're thinking of. Pick a category (food, music, film, product, scent, color, place, fabric, or other), describe what you remember however you can, and AI cross-references sensory details, time/place context, and elimination clues to find ranked matches. Each match includes why it fits, a memory trigger to confirm it, how to verify, and where to find it. If the first round is close but not right, refine mode uses your yes/no/close feedback to dramatically narrow the search.",
+    overview: "Tip of Tongue helps when you remember pieces of something but not its name. Describe whatever you still have — a flavor, lyric fragment, packaging color, scene, scent, place, texture, era, or just the general feel. DeftBrain uses those clues to suggest the strongest matches, explain why each one fits, and give you an easy way to verify them. If none is quite right, tell it what was close or wrong and keep narrowing the search.",
+
     howToUse: [
-      "Pick a category — or leave it on 'other' and let the AI figure it out",
-      "Describe what you remember: sensory details, vibes, fragments, partial facts — anything helps",
-      "Optionally add 'it's NOT this' eliminators, time/place context, or extra clues",
-      "Review ranked matches — each shows confidence level, why it fits, and a memory trigger",
-      "If a match is close but not quite right, use refine mode to narrow down further"
+      "Pick a category if you know it — otherwise choose Something Else.",
+      "Describe whatever you remember — sensory details, vibes, fragments, partial facts, even details you aren't completely sure about.",
+      "Add what you know it isn't, where or when you encountered it, or any odd detail that might help.",
+      "Check the strongest matches and the clues behind them. Use the memory trigger and verification suggestion to see whether one clicks.",
+      "If none is right, mark what was close, add anything else you remember, and narrow it down again."
     ],
+
     example: {
-      scenario: "You ate something incredible at a restaurant two years ago — it was a cold noodle dish, slightly sweet and nutty, with crispy things on top. Asian but you're not sure which cuisine.",
-      action: "Select 'Food', describe the memory. Add context: 'ate at a trendy restaurant in Brooklyn, summer 2023'.",
-      result: "Top match: Sichuan cold sesame noodles (liang mian) — confidence 75%. The nutty flavor is tahini/sesame paste, crispy things likely fried shallots or peanuts. Memory trigger: 'If the sauce was thick and clung to the noodles rather than pooling at the bottom, this is it.' How to find: Dan Dan Noodles at Xi'an Famous Foods, or recipe with 3 tbsp tahini + soy + chili oil + rice vinegar."
+      scenario: "You remember a cold noodle dish from a restaurant a few years ago. It was slightly sweet and nutty, with something crispy on top, and you think it may have been Chinese.",
+      action: "Enter: 'Cold noodles, sesame-like sauce, slightly sweet, crispy topping. Ate it at a small restaurant around 2023. Not peanut noodles.'",
+      result: "Tip of Tongue suggests a few plausible dishes, explains which remembered details point toward each one, and gives you something concrete to check — such as the sauce, toppings, or typical preparation. Mark the closest match and refine from there."
     },
+
     tips: [
-      "Sensory details are more useful than facts — 'it felt creamy and had a green label' beats 'I think it was organic'",
-      "The 'it's NOT this' field is powerful — eliminating wrong answers narrows the search fast",
-      "Time and place context helps enormously — 'heard on the radio in 2015' or 'bought at a farmers market'",
-      "If the first round gets close, use refine mode — marking matches as 'close' gives the AI the most signal"
+      "Sensory details can be surprisingly useful — 'it felt creamy and came in a green jar' may be more distinctive than a vague factual description.",
+      "Say what it definitely isn't. Ruling out an obvious near-match can narrow the search quickly.",
+      "When and where you encountered it can be especially useful — a coffee shop, TV episode, vacation, store, or approximate year.",
+      "If one result is close, say so. Knowing what almost fits often reveals which direction to search next."
     ]
-  }
+  },
 },
 
 {
