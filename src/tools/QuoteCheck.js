@@ -234,25 +234,34 @@ function QuoteCheck({ tool }) {
     cant_tell:     { bg: isDark ? 'bg-zinc-700/60 border-zinc-500'       : 'bg-slate-100 border-slate-300',    txt: isDark ? 'text-zinc-200'    : 'text-slate-800',   icon: '🤔', label: t('qc_verdict_cant_tell') },
   }[results?.verdict] ?? { bg: c.warning, txt: c.warningTxt, icon: '📋', label: results?.verdict } : null;
 
+  // The title row, shared by both phases. It used to live only inside
+  // renderInput, which unmounts the moment a result exists — so with the
+  // output on screen there was no way to start over at all.
+  const renderHeaderRow = () => (
+    <div className="pb-3 border-b border-zinc-500">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('qc_tagline')}
+          </p>
+          {!results && (
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          )}
+        </div>
+        {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+        {(hasInput) ? (
+          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+            ↺ {t('qc_new_quote')}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+
   const renderInput = () => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-      <div className="pb-3 border-b border-zinc-500">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('qc_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-          </div>
-          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-          {(hasInput) ? (
-            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-              ↺ {t('qc_new_quote')}
-            </button>
-          ) : null}
-        </div>
-      </div>
+      {renderHeaderRow()}
 
       {/* Repair type */}
       <div>
@@ -572,16 +581,7 @@ function QuoteCheck({ tool }) {
       {!results && renderInput()}
       {results ? (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🧾'}</span>{tool?.tagline ?? t('qc_tagline')}
-                </p>
-              </div>
-            </div>
-          </div>
+          {renderHeaderRow()}
         </div>
       ) : null}
       {results && renderResults()}

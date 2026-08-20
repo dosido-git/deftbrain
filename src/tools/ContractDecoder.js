@@ -207,25 +207,34 @@ function ContractDecoder({ tool }) {
     low:    { bg: isDark ? 'bg-emerald-900/40 border-emerald-600' : 'bg-emerald-50 border-emerald-400', txt: isDark ? 'text-emerald-200' : 'text-emerald-800', icon: '✅', label: t('cd_risk_low') },
   }[results.overall_risk] ?? { bg: c.warning, txt: c.warningTxt, icon: '📋', label: t('cd_risk_reviewed') } : null;
 
+  // The title row, shared by both phases. It used to live only inside
+  // renderInput, which unmounts the moment a result exists — so with the
+  // output on screen there was no way to start over at all.
+  const renderHeaderRow = () => (
+    <div className="pb-3 border-b border-zinc-500">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{tool?.tagline ?? t('cd_tagline')}
+          </p>
+          {!results && (
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          )}
+        </div>
+        {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+        {(results || context.trim() || contractText.trim() || focusAreas.length) ? (
+          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+            ↺ {t('cd_new_contract')}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+
   const renderInput = () => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-      <div className="pb-3 border-b border-zinc-500">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{tool?.tagline ?? t('cd_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-          </div>
-          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-          {(results || context.trim() || contractText.trim() || focusAreas.length) ? (
-            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-              ↺ {t('cd_new_contract')}
-            </button>
-          ) : null}
-        </div>
-      </div>
+      {renderHeaderRow()}
 
       {/* Contract type */}
       <div>
@@ -436,16 +445,7 @@ function ContractDecoder({ tool }) {
       {!results && renderInput()}
       {results ? (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{tool?.tagline ?? t('cd_tagline')}
-                </p>
-              </div>
-            </div>
-          </div>
+          {renderHeaderRow()}
         </div>
       ) : null}
       {results && renderResults()}
