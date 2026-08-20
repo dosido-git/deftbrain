@@ -225,6 +225,57 @@ function retryBackoffMs(attempt) {
  * @param {object} options - { label, max_tokens (for simple mode), maxRetries }
  * @returns {object} - Parsed JSON response
  */
+// ── "Is the API actually able to answer?" ─────────────────────────────
+// On 2026-07-30 the credit balance hit zero. Every tool returned 500 and
+// /api/health went on reporting ok, because health only ever proved that Node
+// was running. During a launch window that is the one shot, spent.
+//
+// Two kinds of failure look identical in a log and are not: a 429 or a 529 is
+// weather, and a 401/403/credit-exhausted is a wall. Only the second means the
+// product is down for everyone, and only the second should page anybody.
+//
+// Recorded from REAL traffic rather than a synthetic ping, which is what makes
+// it safe to put on the deploy probe: a freshly-booted container has made no
+// calls, so there is nothing to report and health stays green. It can only go
+// red once the API has actually refused to serve users.
+function classifyApiError(err) {
+  const status = err && err.status;
+  const msg = ((err && err.message) || '').toLowerCase();
+  if (status === 401 || /authentication_error|invalid x-api-key/.test(msg)) return 'auth';
+  if (status === 403 || /permission_error/.test(msg)) return 'auth';
+  if (/credit balance|billing|insufficient.*(credit|quota)|payment required/.test(msg)) return 'billing';
+  if (status === 402) return 'billing';
+  if (status === 404 || /not_found/.test(msg)) return 'retired';
+  return 'transient';   // 429, 5xx, 529 overload, network — weather
+}
+
+// { at, kind, message, consecutive } — null once a call succeeds.
+let _apiBlock = null;
+
+function noteApiOutcome(err) {
+  if (!err) { _apiBlock = null; return; }        // a success clears the alarm
+  const kind = classifyApiError(err);
+  if (kind === 'transient') return;              // weather is not an outage
+  _apiBlock = {
+    at: Date.now(),
+    kind,
+    message: ((err && err.message) || String(err)).slice(0, 160),
+    consecutive: (_apiBlock && _apiBlock.kind === kind ? _apiBlock.consecutive : 0) + 1,
+  };
+}
+
+// A single blip is not an outage; two in a row with no success between them is.
+// Also expires, so a resolved billing problem stops paging once traffic recovers
+// — and a long-idle service is not reported as down on the strength of an hour-old
+// failure nobody has retried.
+const API_BLOCK_TTL_MS = 10 * 60 * 1000;
+function getApiBlock() {
+  if (!_apiBlock) return null;
+  if (_apiBlock.consecutive < 2) return null;
+  if (Date.now() - _apiBlock.at > API_BLOCK_TTL_MS) return null;
+  return _apiBlock;
+}
+
 async function callClaudeWithRetry(promptOrRequest, options = {}) {
   const { label = 'tool', maxRetries = 2 } = options;
   let lastError;
@@ -259,8 +310,11 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
     let message;
     try {
       message = await anthropic.messages.create(requestParams);
+      noteApiOutcome(null);
     } catch (err) {
       // API/network error (429, 5xx, overload) — transient, worth retrying.
+      // A 401/403/credit-exhausted is not: it is recorded so /api/health can
+      // stop claiming the service is fine while every tool 500s.
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} API error:`, err.message);
       if (attempt < maxRetries) {
@@ -303,6 +357,9 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
     }
   }
 
+  // Every retry is spent and the caller is getting a 500. One refused request,
+  // not one refused attempt, is the unit the health signal counts.
+  noteApiOutcome(lastError);
   throw new Error(`[${label}] All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`);
 }
 
@@ -394,14 +451,22 @@ async function checkModels() {
       return { model, ok: true, retired: false };
     } catch (err) {
       const status = err && err.status;
-      const retired = status === 404 || /not_found/i.test((err && err.message) || '');
-      return { model, ok: false, retired, error: `${status || '?'} ${(err && err.message) || err}`.slice(0, 140) };
+      const kind = classifyApiError(err);
+      return {
+        model, ok: false,
+        retired: kind === 'retired',
+        blocked: kind === 'auth' || kind === 'billing',
+        kind,
+        error: `${status || '?'} ${(err && err.message) || err}`.slice(0, 140),
+      };
     }
   }));
   const retired = results.filter(r => r.retired).map(r => r.model);
-  // allOk = no CONFIRMED retirement. Transient failures don't flip it (avoids
-  // false 503s), but they're still visible in `results`.
-  _modelStatus = { at: Date.now(), allOk: retired.length === 0, retired, results };
+  const blocked = results.filter(r => r.blocked).map(r => r.model);
+  // allOk = no CONFIRMED retirement AND nothing refusing to bill or authenticate.
+  // Transient failures still don't flip it (avoids false 503s), but a zero credit
+  // balance is not transient — it stayed invisible here for exactly that reason.
+  _modelStatus = { at: Date.now(), allOk: retired.length === 0 && blocked.length === 0, retired, blocked, results };
   return _modelStatus;
 }
 
@@ -420,4 +485,4 @@ NOT PROVIDED IS A MARKER FOR YOU, NOT A PHRASE FOR THEM. Never write it, or any 
 
 function getModelStatus() { return _modelStatus; }
 
-module.exports = { anthropic, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, MODELS, ALL_MODELS };
+module.exports = { anthropic, classifyApiError, noteApiOutcome, getApiBlock, cleanJsonResponse, repairMalformedJson, callClaudeWithRetry, withLanguage, withLocaleContext, checkModels, getModelStatus, NO_INVENTED_FACTS, MODELS, ALL_MODELS };

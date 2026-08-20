@@ -33,8 +33,31 @@ function keyMatchesHdr(provided, expected) {
 // the healthcheck with a 301 → Railway marks the deploy unhealthy → failed
 // deploys. Registered here, it always answers 200 regardless of host/proto.
 // No model call, no rate limit, no side effects. /api/test is a local-test alias.
+const { getApiBlock } = require('./lib/claude');
+
+// Health means "can this thing do its job", not "is Node running". On
+// 2026-07-30 the credit balance hit zero, every tool returned 500, and this
+// endpoint kept saying ok — so nothing alerted. It now reports what real
+// traffic has actually observed: a 401/403/credit-exhausted seen twice in a row
+// with no success between them is the product being down for everyone.
+//
+// Safe on Railway's deploy probe by construction: the signal comes from calls
+// this container has made, so a fresh boot has nothing to report and answers
+// 200. It can only go red after the API has genuinely refused to serve someone.
 app.get(['/api/health', '/api/test'], (req, res) => {
-  res.json({ status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) });
+  const block = getApiBlock();
+  const body = { status: 'ok', service: 'deftbrain-api', uptime_s: Math.floor(process.uptime()) };
+  if (!block) return res.json(body);
+  res.status(503).json({
+    ...body,
+    status: block.kind === 'billing' ? 'MODELS_UNREACHABLE_BILLING' : 'MODELS_UNREACHABLE_AUTH',
+    detail: block.kind === 'billing'
+      ? 'The API is refusing billed calls — check the credit balance and auto-reload.'
+      : 'The API is refusing to authenticate — check ANTHROPIC_API_KEY.',
+    observed_failures: block.consecutive,
+    last_error: block.message,
+    since_s: Math.floor((Date.now() - block.at) / 1000),
+  });
 });
 
 // ── Model liveness endpoint ──
@@ -51,10 +74,16 @@ app.get('/api/health/models', async (req, res) => {
     try { status = await checkModels(); }
     catch (e) { return res.status(500).json({ status: 'check_failed', error: e.message }); }
   }
+  // Two different emergencies, and the label has to say which: a retirement is
+  // "one model went away", a block is "we cannot bill or authenticate at all".
+  const state = status.allOk ? 'ok'
+    : (status.blocked || []).length ? 'MODELS_BLOCKED'
+    : 'MODEL_RETIRED';
   res.status(status.allOk ? 200 : 503).json({
-    status: status.allOk ? 'ok' : 'MODEL_RETIRED',
+    status: state,
     checked_at: new Date(status.at).toISOString(),
     retired: status.retired,
+    blocked: status.blocked || [],
     models: status.results,
   });
 });
