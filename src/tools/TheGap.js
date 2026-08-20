@@ -39,6 +39,16 @@ const TheGap = ({ tool }) => {
     definitional: t('tg_gt_definitional'),
     notational: t('tg_gt_notational'),
   };
+  // The four types are a finding, not a menu. Nobody arrives thinking "I suspect
+  // a procedural deficit" — they arrive thinking "I don't get integration by
+  // parts". So the taxonomy earns its keep only after the trace, as one line
+  // that tells you which kind of stuck you were.
+  const GAP_TYPE_WHY = {
+    conceptual: t('tg_gt_conceptual_why'),
+    procedural: t('tg_gt_procedural_why'),
+    definitional: t('tg_gt_definitional_why'),
+    notational: t('tg_gt_notational_why'),
+  };
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -94,6 +104,7 @@ const TheGap = ({ tool }) => {
   // useState — all together first
   const [showHistory, setShowHistory] = useState(false);
   const [subject, setSubject] = useState('');
+  const [showSubject, setShowSubject] = useState(false);
   const [whatIKnow, setWhatIKnow] = useState('');
   const [whereItBroke, setWhereItBroke] = useState('');
   const [level, setLevel] = useState('undergrad');
@@ -166,7 +177,7 @@ const TheGap = ({ tool }) => {
 
   const loadExample = useCallback(() => {
     const ex = pickExample('TheGap', EXAMPLES);
-    setConcept(ex.concept); setSubject(ex.subject); setLevel(ex.level);
+    setConcept(ex.concept); setSubject(''); setShowSubject(false); setLevel(ex.level);
     setResults(null); setDigResults(null); setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
@@ -254,28 +265,36 @@ const TheGap = ({ tool }) => {
           onKeyDown={e => { if (e.key === 'Enter' && concept.trim()) trace(); }} />
       </div>
 
+      <p className={'text-xs leading-relaxed ' + c.textSecondary}>{t('tg_reassure')}</p>
+
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('tg_subject_label')}</label>
-          <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
-            placeholder={t('tg_subject_ph')}
-            className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+          <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_subject_auto')}</label>
+          {showSubject ? (
+            <input type="text" value={subject} onChange={e => setSubject(e.target.value)}
+              placeholder={t('tg_subject_ph')}
+              className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
+          ) : (
+            <button onClick={() => setShowSubject(true)} className={'text-xs font-semibold ' + linkStyle}>
+              {t('tg_subject_set')}
+            </button>
+          )}
         </div>
         <div>
-          <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-2 block'}>{t('tg_level_label')}</label>
+          <label className={'text-sm font-semibold ' + c.text + ' mb-2 block'}>{t('tg_level_label')}</label>
           <div className="flex flex-wrap gap-1">
             {LEVELS.map(l => <Pill key={l.value} active={level === l.value} onClick={() => setLevel(l.value)}>{l.label}</Pill>)}
           </div>
         </div>
       </div>
       <div>
-        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('tg_know_label')}</label>
+        <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_know_label')}</label>
         <input type="text" value={whatIKnow} onChange={e => setWhatIKnow(e.target.value)}
           placeholder={t('tg_know_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
       </div>
       <div>
-        <label className={'text-xs font-bold ' + c.textSecondary + ' uppercase tracking-wide mb-1 block'}>{t('tg_broke_label')}</label>
+        <label className={'text-sm font-semibold ' + c.text + ' mb-1 block'}>{t('tg_broke_label')}</label>
         <input type="text" value={whereItBroke} onChange={e => setWhereItBroke(e.target.value)}
           placeholder={t('tg_broke_ph')}
           className={'w-full px-3 py-2 rounded-xl border text-sm ' + c.input + ' outline-none'} />
@@ -294,7 +313,7 @@ const TheGap = ({ tool }) => {
       </button>
       <p className={'text-xs text-center ' + c.textMuted}>{t('tg_ai_disclaimer')}</p>
       <p className={'text-xs ' + c.textMuted}>
-        {t('tg_braindump_q')} <a href="/BrainDumpBuddy" className={linkStyle}>🧠 {t('tg_braindump_link')}</a> {t('tg_braindump_rest')}
+        {t('tg_braindump_q')} <a href="/TheCrux" className={linkStyle}>🎯 {t('tg_braindump_link')}</a> {t('tg_braindump_rest')}
       </p>
     </div>
   );
@@ -381,8 +400,18 @@ const TheGap = ({ tool }) => {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">🎯</span>
               <div>
+                {results?.subject_detected && (
+                  <p className={'text-[10px] font-bold uppercase tracking-wide mb-0.5 ' + c.textMuted}>
+                    {t('tg_subject_detected', { val: results.subject_detected })}
+                  </p>
+                )}
                 <p className={'text-base font-bold ' + c.text}>{t('tg_likely_gap')} {gap.concept}</p>
-                <p className={'text-xs ' + c.textSecondary}>{GAP_TYPE_LABELS[gap.gap_type] || gap.gap_type_explanation}</p>
+                {GAP_TYPE_LABELS[gap.gap_type] && (
+                  <p className={'text-xs font-bold mt-0.5 ' + c.text}>
+                    ✓ {t('tg_gap_identified')}: {GAP_TYPE_LABELS[gap.gap_type]}
+                  </p>
+                )}
+                <p className={'text-xs ' + c.textSecondary}>{GAP_TYPE_WHY[gap.gap_type] || gap.gap_type_explanation}</p>
               </div>
             </div>
             <p className={'text-xs ' + c.textSecondary + ' mb-3'}>{gap.why_this_one}</p>
@@ -616,7 +645,7 @@ const TheGap = ({ tool }) => {
       {results && (
         <div className={'p-4 rounded-2xl border ' + c.card}>
           <p className={'text-xs font-bold ' + c.textMuted + ' uppercase tracking-wide mb-2'}>{t('tg_related_tools')}</p>
-          <p className={'text-xs ' + c.textSecondary}>{t('tg_related_text')} <a href="/TheCrux" className={linkStyle}>🧠 {t('tg_recall_link')}</a> {t('tg_related_rest')}</p>
+          <p className={'text-xs ' + c.textSecondary}>{t('tg_related_text')} <a href="/AnalogyEngine" className={linkStyle}>🔀 {t('tg_recall_link')}</a> {t('tg_related_rest')}</p>
         </div>
       )}
       {error && (

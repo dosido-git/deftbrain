@@ -35,7 +35,7 @@ ${NO_INVENTED_FACTS}`;
       : 'Student is at the undergraduate level.';
 
     const userPrompt = `STRUGGLING WITH: "${concept}"
-${subject ? `SUBJECT/COURSE: ${subject}` : 'SUBJECT/COURSE: NOT PROVIDED'}
+${subject ? `SUBJECT/COURSE (given by the reader — use it): ${subject}` : 'SUBJECT/COURSE: not given — work it out from the concept itself and report it in subject_detected.'}
 ${whatIKnow ? `WHAT I DO UNDERSTAND: ${whatIKnow}` : ''}
 ${whereItBroke ? `WHERE IT BROKE: ${whereItBroke}` : ''}
 LEVEL: ${levelNote}
@@ -55,9 +55,11 @@ Trace back to find the gap. Return ONLY valid JSON:
     }
   ],
 
+  "subject_detected": "The field this concept belongs to, in one or two words — Calculus, Molecular biology, Statistics. Echo back the reader's own subject if they gave one.",
+
   "likely_gap": {
     "concept": "The prerequisite most likely to be the gap",
-    "gap_type": "conceptual | procedural | definitional | notational",
+    "gap_type": "EXACTLY one of these four English words, never translated: conceptual | procedural | definitional | notational",
     "gap_type_explanation": "What type of gap this is and what that means for how to fix it",
     "why_this_one": "Why this is likely the gap — what symptoms point here",
     "refresher": {
