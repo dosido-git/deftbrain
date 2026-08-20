@@ -325,25 +325,35 @@ const TheDebrief = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // INPUT
   // ════════════════════════════════════════════════════════════
+  // The title row, shared by both phases. It used to exist twice — once inside
+  // renderInput and once in the results card — and only the input copy carried
+  // the reset. renderInput unmounts the moment a result exists, so with the
+  // report on screen there was no way to start over at all.
+  const renderHeaderRow = () => (
+    <div className="pb-3 border-b border-zinc-500">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
+          </p>
+          {!results && (
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          )}
+        </div>
+        {/* PF-16: the tool's one reset, on the title row, in both phases. */}
+        {hasInput ? (
+          <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+            ↺ {t('start_over')}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+
   const renderInput = () => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
-      <div className="pb-3 border-b border-zinc-500">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-            <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
-            </p>
-            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-          </div>
-          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-          {hasInput ? (
-            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-              ↺ {t('start_over')}
-            </button>
-          ) : null}
-        </div>
-      </div>
+      {renderHeaderRow()}
 
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {MODES.map(m => (
@@ -828,19 +838,19 @@ const TheDebrief = ({ tool }) => {
     <div className={`space-y-4 ${c.text}`}>
       {!results && renderInput()}
 
+      {/* Foot of the tool, below the submit — someone who arrived with a
+          lecture or a podcast rather than a meeting is in the wrong place,
+          and this is where to say so without interrupting the form. */}
+      {!results && (
+        <p className={'text-xs ' + c.textMuted}>
+          {t('td_xref_crux_q')} <a href="/TheCrux" className={linkStyle}>🎯 {t('td_xref_crux')}</a> {t('td_xref_crux_tail')}
+        </p>
+      )}
+
       {/* ── Results phase: persistent header card with reset (ternary, not && — see PF-3 replace-mode note) ── */}
       {results ? (
         <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-          <div className="pb-3 border-b border-zinc-500">
-            <div className="flex items-start justify-between">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '📋'}</span>{t('td_tagline')}
-                </p>
-              </div>
-            </div>
-          </div>
+          {renderHeaderRow()}
         </div>
       ) : null}
 
