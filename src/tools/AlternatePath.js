@@ -217,7 +217,7 @@ const AlternatePath = ({ tool }) => {
             {/* PF-30 — the wrapper already prints "Alternate Path" as the page
                 <h1>. The tagline asks the question the title only names. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🌀'}</span>{tool?.tagline ?? t('ap_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '🌀'}</span>{t('ap_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}

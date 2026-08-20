@@ -9,7 +9,7 @@ export const contractDecoder = {
     cd_your_situation: "What you told us",
     cd_chars_analyzed: "{{count}} characters analyzed",
     cd_title: "Contract Decoder",
-    cd_tagline: "Paste any contract — know exactly what you're signing.",
+    cd_tagline: "Paste any contract — know exactly what you're signing",
     cd_type_label: "Contract type",
     cd_type_employment: "Employment",
     cd_type_freelance: "Freelance / NDA",

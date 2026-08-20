@@ -274,7 +274,7 @@ const AwkwardSilenceFiller = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '💬'}</span>{tool?.tagline ?? t('asf_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '💬'}</span>{t('asf_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}

@@ -5,7 +5,7 @@
 export const partyArchitect = {
   en: {
     pa_title: "Party Architect",
-    pa_tagline: "Host events people actually remember",
+    pa_tagline: "Host events people actually remember.",
     pa_start_over: "↺ Start Over",
     pa_occasion_label: "What's the occasion?",
     pa_occasion_ph: "e.g., housewarming, birthday dinner, game night, holiday party, team offsite",

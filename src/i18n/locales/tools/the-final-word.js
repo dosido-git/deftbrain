@@ -6,7 +6,7 @@
 // value (e.g. mode/category labels, button labels) is intentional — keep it inside the string.
 export const theFinalWord = {
   en: {
-    tfw_tagline: "Arguments settled. Facts checked. No appeals.*",
+    tfw_tagline: "Arguments settled. Facts checked. No appeals.",
     tfw_mode_question_label: "Quick Answer",
     tfw_mode_question_desc: "Ask anything",
     tfw_mode_dispute_label: "Settle It",

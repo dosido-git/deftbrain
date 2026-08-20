@@ -9,7 +9,7 @@ export const hecklerPrep = {
     hp_ex2_proposal: "Close the Aldergate branch and consolidate services into the central library, with a fortnightly mobile van stopping on Aldergate Road.",
     hp_ex2_objections: "That the mobile van is a fig leaf. That we already cut hours twice and promised we would not close it. That the children who use it after school cannot get to the central library. That the consultation is a formality and the decision is already made — which, mostly, it is.",
     hp_title: "Heckler Prep",
-    hp_tagline: "Anticipate the hardest questions before they land",
+    hp_tagline: "Anticipate the hardest questions before they land.",
     hp_coldopen_q: "Open strong first —",
     hp_coldopen_name: "Cold Open Craft",
     hp_coldopen_rest: "sharpens your first 90 seconds before you handle the heckling.",

@@ -219,7 +219,7 @@ const TicketTackler = ({ tool }) => {
           <div>
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🎫'}</span>{tool?.tagline ?? t('tt_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '🎫'}</span>{t('tt_tagline')}
             </p>
             <button
               onClick={loadExample}

@@ -2406,7 +2406,7 @@ const LayoverMaximizer = ({ tool }) => {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '✈️'}</span>{tool?.tagline ?? t('lmx_tagline')}
+                  <span className="me-2 text-lg">{tool?.icon ?? '✈️'}</span>{t('lmx_tagline')}
                 </p>
                 {/* Dark ink in BOTH themes: the pill sits on the tool's own
                     headerColor, which is pale on almost every tool, so white

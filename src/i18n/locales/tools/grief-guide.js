@@ -5,7 +5,7 @@ export const griefGuide = {
   en: {
     gg_your_situation: "What you told us",
     gg_title: "GriefGuide",
-    gg_tagline: "Compassionate guidance for navigating loss — yours or someone else's.",
+    gg_tagline: "Compassionate guidance for navigating loss — yours or someone else's",
     gg_intro: "Whatever you're going through, you don't have to figure it out alone. This tool offers guidance, not answers — grief is personal and there's no right way to do it. In a crisis or thinking of harming yourself? Reach out now — US/Canada: call or text 988; UK/Ireland: Samaritans 116 123; or your local emergency number.",
     gg_who_label: "Who is this for?",
     gg_mode_myself: "I'm grieving",

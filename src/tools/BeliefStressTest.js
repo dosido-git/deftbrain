@@ -168,7 +168,7 @@ const BeliefStressTest = ({ tool }) => {
             {/* PF-30 — the wrapper already prints "Belief Stress Test" as the
                 page <h1>. The tagline says what the title only names. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '🔬'}</span>{tool?.tagline ?? t('bst_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '🔬'}</span>{t('bst_tagline')}
             </p>
             <button onClick={loadExample} disabled={loading}
               style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}

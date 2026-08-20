@@ -4,7 +4,7 @@
 export const ideaAutopsy = {
   en: {
     ia_title: "Idea Autopsy",
-    ia_tagline: "Stress-test your business idea before you invest time or money.",
+    ia_tagline: "Stress-test your business idea before you invest time or money",
     ia_stage_label: "Where are you with this idea?",
     ia_stage_idea: "Just an idea",
     ia_stage_exploring: "Early exploration",

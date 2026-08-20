@@ -8,7 +8,7 @@ export const hobbyMatch = {
     hm_ex2_schedule: "Twenty minutes after bedtime, most nights. Occasionally a whole Saturday morning if my partner takes the toddler.",
     hm_ex2_physical: "Fine, just permanently tired. Nothing that needs leaving the flat after 7pm.",
     hm_ex2_tried: "Book club (could never finish the book in time). An online course I stopped opening. Knitting, which I liked but the needles live in a drawer now.",
-    hm_tagline: "Discover hobbies you didn't know existed",
+    hm_tagline: "Discover hobbies you didn't know existed.",
     hm_xref_intro: "Not sure what energizes you?",
     hm_braindump: "Brain Dump Buddy",
     hm_xref_braindump_after: "helps you list what you actually love first.",

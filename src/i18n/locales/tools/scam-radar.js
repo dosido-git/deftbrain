@@ -6,7 +6,7 @@ export const scamRadar = {
   en: {
     scam_your_situation: "What you told us",
     scam_title: "Scam Radar",
-    scam_tagline: "Paste any suspicious message — know in seconds if it's a scam.",
+    scam_tagline: "Paste any suspicious message — know in seconds if it's a scam",
     scam_disclaimer: "Automated guidance, not financial or legal advice — always verify independently before acting.",
     scam_msg_type: "Message type",
     scam_type_email: "Email",

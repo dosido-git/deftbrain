@@ -241,7 +241,7 @@ const FutureProof = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '🔮'}</span>{tool?.tagline ?? t('fp_tagline')}
+                <span className="me-2 text-lg">{tool?.icon ?? '🔮'}</span>{t('fp_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>

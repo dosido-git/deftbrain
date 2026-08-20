@@ -184,7 +184,7 @@ const RoastMe = ({ tool }) => {
             <h2 className={`text-xl font-bold ${c.text}`}>
               <span className="me-2">{tool?.icon ?? '🔥'}</span>{tool?.title ?? 'Roast Me'}
             </h2>
-            <p className={`text-sm ${c.textSecondary}`}>{tool?.tagline ?? t('rm_tagline')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{t('rm_tagline')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {(results || content.trim()) ? (

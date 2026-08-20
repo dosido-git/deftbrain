@@ -11,7 +11,7 @@ export const mentalHealthNavigator = {
     mhn_front_door: "If you're not sure what kind of help you need, this is a good place to start.",
     mhn_your_situation: "What you told us",
     mhn_title: "Mental Health Navigator",
-    mhn_tagline: "Find the right support for what you're going through.",
+    mhn_tagline: "Find the right support for what you're going through",
     mhn_intro: "This tool helps you understand what kind of support might fit your situation — and how to reach it. It doesn't diagnose or treat anything. If things feel overwhelming or unsafe right now, please reach out — help is available. US/Canada: call or text 988. UK/Ireland: Samaritans 116 123. Or your local emergency number.",
     mhn_q_situation: "What's been on your mind?",
     mhn_select_all: "(select all that apply)",

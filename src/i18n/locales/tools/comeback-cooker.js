@@ -4,7 +4,7 @@
 export const comebackCooker = {
   en: {
     cc_title: "Comeback Cooker",
-    cc_tagline: "The perfect response you thought of three hours too late.",
+    cc_tagline: "The perfect response you thought of 3 hours too late.",
     cc_xref_pre_q: "Need to actually say something?",
     cc_velvethammer: "Velvet Hammer",
     cc_xref_pre_post: "gets the tone right when you actually have to send it.",

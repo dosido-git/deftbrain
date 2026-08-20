@@ -5,7 +5,7 @@
 export const toastWriter = {
   en: {
     tst_title: "Toast Writer",
-    tst_tagline: "Toasts, speeches, and tributes that land",
+    tst_tagline: "Toasts, speeches, and tributes that land.",
     tst_q_person: "Who is this for?",
     tst_ph_person: "e.g., my best friend Sarah, my dad, my coworker Mike",
     tst_occasion: "The occasion",

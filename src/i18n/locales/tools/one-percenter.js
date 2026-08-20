@@ -5,7 +5,7 @@
 export const onePercenter = {
   en: {
     op_title: "One Percenter",
-    op_tagline: "The single 1% change with the largest compound effect on your year.",
+    op_tagline: "The single 1% change with the largest compound effect on your year",
     op_xref_intro: "Need to clear the noise first?",
     op_braindump: "Brain Dump Buddy",
     op_braindump_after: "empties your head before you map the routine.",

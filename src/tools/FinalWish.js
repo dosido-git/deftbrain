@@ -1216,7 +1216,7 @@ async function decrypt(){
         <div className="pb-3 border-b border-zinc-500">
           {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
           <p className={`text-base ${c.textSecondary}`}>
-            <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{tool?.tagline ?? t('fws_tagline')}
+            <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
           </p>
           <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
         </div>
@@ -1287,10 +1287,16 @@ async function decrypt(){
       ) : null}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <button onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
-          className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
+        <button title={t('cmd_enter')} onClick={() => { setScreen('chapter'); setCurrentChapter(0); }} disabled={!trustedPerson.trim()}
+          className={`group relative p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
           <div className="flex items-center gap-2 mb-2"><span>📖</span><span className={`text-sm font-bold ${c.text}`}>{t('fws_mode_guide_title')}</span></div>
           <p className={`text-xs ${c.textMuteded}`}>{t('fws_mode_guide_desc')}</p>
+          {trustedPerson.trim() && (
+            <kbd aria-hidden="true"
+              className={`hidden sm:flex items-center absolute end-3 top-3 px-1.5 py-0.5 rounded border text-[10px] font-bold tracking-wide ${c.border} ${c.textMuteded}`}>
+              ⌘↵
+            </kbd>
+          )}
         </button>
         <button onClick={() => { setScreen('interview'); askNextQuestion(); }} disabled={!trustedPerson.trim()}
           className={`group p-5 rounded-2xl border-2 text-start transition-all ${trustedPerson.trim() ? `${c.border} ${c.cardAltHover} hover:border-amber-400` : `${c.border} opacity-50 cursor-not-allowed`}`}>
@@ -2107,7 +2113,7 @@ async function decrypt(){
           <div className="min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{tool?.tagline ?? t('fws_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '📜'}</span>{t('fws_tagline')}
             </p>
           </div>
           {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}

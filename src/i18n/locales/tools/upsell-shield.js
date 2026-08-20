@@ -9,7 +9,7 @@ export const upsellShield = {
     us_ex2_budget: "Around {{sym}}1,800. There is no estate to draw on — this comes out of my own account.",
     us_ex2_concerns: "That saying no to anything will look like I did not love him. I have been told the basic option is 'what most families find rather bare'. I cried twice on the phone and I will be on my own in the room.",
     us_title: "Upsell Shield",
-    us_tagline: "Walk into high-pressure sales prepared",
+    us_tagline: "Walk into high-pressure sales prepared.",
     us_hook: "Sales environments are scripted. The anchoring, the urgency, the manager routine — it's all rehearsed. UpsellShield maps the exact playbook they'll run and puts the counter-moves in your hands before you walk in the door.",
     us_q_situation: "What sales situation are you walking into?",
     us_ph_situation: "e.g., buying a used car, getting a roofing quote, phone store upgrade",

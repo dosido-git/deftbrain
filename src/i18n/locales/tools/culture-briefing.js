@@ -13,7 +13,7 @@ export const cultureBriefing = {
     cb_serious_label: "Mistakes that damage trust",
     cb_confidence_low: "This destination is less commonly documented — double-check specifics locally before relying on them.",
     cb_title: "Culture Briefing",
-    cb_tagline: "Know before you go — cultural intelligence for any destination.",
+    cb_tagline: "Know before you go — cultural intelligence for any destination",
     cb_new_briefing: "New briefing",
     cb_building: "Building briefing…",
     cb_get_briefing: "Get My Briefing",

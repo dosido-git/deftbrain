@@ -8,7 +8,7 @@ export const sleepArchitect = {
     sa_your_situation: "What you told us",
     sa_title: "SleepArchitect",
     sa_disclaimer: "General sleep-hygiene guidance, not medical advice. For chronic insomnia, loud snoring, or ongoing daytime sleepiness, see a doctor or sleep specialist.",
-    sa_tagline: "A personalized sleep improvement protocol built around your habits.",
+    sa_tagline: "A personalized sleep improvement protocol built around your habits",
     sa_goal_label: "What's your biggest sleep struggle?",
     sa_goal_fall_asleep: "Fall asleep faster",
     sa_goal_stay_asleep: "Stay asleep all night",
