@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "fd18028e999cfa01db11c7fabe4d1310efd22220",
+  "hash": "b431f49d37508d4eb887fc862641a3e89752221b",
   "lastmod": "2026-08-20"
  },
  "static:about": {
@@ -152,8 +152,8 @@
   "lastmod": "2026-08-20"
  },
  "tool:WaitingModeLiberator": {
-  "hash": "92664fcd7eda42f3ccb1c0ca6dbe13c6d29a5f12",
-  "lastmod": "2026-08-14"
+  "hash": "645fd3abdf76f6bca7f1b9f431c721874c3c31ff",
+  "lastmod": "2026-08-20"
  },
  "tool:WhichLife": {
   "hash": "f673711fd7fc51bf4a687b7ec5f66c949290a534",

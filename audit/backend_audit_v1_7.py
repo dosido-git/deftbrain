@@ -179,6 +179,42 @@ DEPRECATED_MODELS = {
 # Detection — is this a backend route file?
 # ────────────────────────────────────────────────────────────────────────────
 
+def _schema_top_level_keys(schema_text):
+    """Keys at brace depth 1 of a JSON-ish schema literal.
+
+    This used to key off indentation — a key was top-level if it sat exactly
+    two spaces in. That is true of most schemas in this repo and false of any
+    written at another indent, where it silently returned the NESTED keys that
+    happened to land on two spaces instead. lazy-workout-adapter reported eight
+    working branches as permanently broken on that basis. Depth is the thing
+    that actually defines top-level, so count it.
+    """
+    keys = set()
+    depth = 0
+    i = 0
+    n = len(schema_text)
+    while i < n:
+        ch = schema_text[i]
+        if ch == '"':
+            j = i + 1
+            while j < n and schema_text[j] != '"':
+                j += 2 if schema_text[j] == '\\' else 1
+            word = schema_text[i + 1:j]
+            k = j + 1
+            while k < n and schema_text[k] in ' \t':
+                k += 1
+            if depth == 1 and k < n and schema_text[k] == ':' and re.fullmatch(r'[a-z_][a-z0-9_]*', word):
+                keys.add(word)
+            i = j + 1
+            continue
+        if ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+        i += 1
+    return keys
+
+
 def is_route_file(content):
     """A file qualifies as a route file if it constructs an express.Router()
     AND exports it. This excludes lib/, middleware files that import Router
@@ -739,33 +775,72 @@ def audit_file(filepath):
     if is_api_caller:
         # Split content into route-level chunks for per-route analysis
         _route_chunks = re.split(r'(router\.(post|get)\s*\()', no_comments)
+        # A route file is usually ONE router.post with an N-way `action` switch,
+        # so a chunk holds every branch. Taking the first guard and the first
+        # schema in the chunk pairs branch 4's guard with branch 1's schema and
+        # reports a mismatch that is not there — and, worse, examines only one
+        # guard per file no matter how many branches follow it. Each guard is
+        # paired with the schema immediately above it, which inside a switch is
+        # its own branch's, and every guard is checked.
         for _chunk in _route_chunks:
-            # Find guard
-            _guard_m = re.search(r'if\s*\(\s*!parsed\.(\w+)\s*\)', _chunk)
-            if not _guard_m:
+            _guards = [(m.start(), m.group(1))
+                       for m in re.finditer(r'if\s*\(\s*!parsed\.(\w+)\s*\)', _chunk)]
+            if not _guards:
                 continue
-            _guard_field = _guard_m.group(1)
-            # Find JSON schema — look for "Return ONLY valid JSON" or similar
-            _schema_m = re.search(
-                r'Return ONLY (?:valid )?(?:this )?JSON[^{]*(\{[^`]+?\})\s*[`"]',
-                _chunk,
-                re.DOTALL
-            )
-            if not _schema_m:
+            # Brace-matched from the opening {, not a non-greedy [^`]+?} — that
+            # stops at the first CLOSING brace, so a schema whose second key is
+            # an array of objects got sliced after key one and every later key
+            # read as missing. layover-maximizer's `lounges` guard was reported
+            # broken on a schema that declares lounges four lines down.
+            _schemas = []
+            for _m in re.finditer(r'Return ONLY (?:valid )?(?:this )?JSON[^{]*?(\{)', _chunk, re.DOTALL):
+                _i = _m.start(1)
+                _depth = 0
+                for _j in range(_i, len(_chunk)):
+                    if _chunk[_j] == '{':
+                        _depth += 1
+                    elif _chunk[_j] == '}':
+                        _depth -= 1
+                        if _depth == 0:
+                            _schemas.append((_m.start(), _chunk[_i:_j + 1]))
+                            break
+                else:
+                    continue
+            if not _schemas:
                 continue
-            _schema_text = _schema_m.group(1)
-            # Top-level keys: lines with exactly 2 spaces indent + "key":
-            _top_keys = set(re.findall(r'\n  "([a-z_][a-z0-9_]*)":', _schema_text))
-            if not _top_keys:
-                # Try without newline (single-line schema)
-                _top_keys = set(re.findall(r'"([a-z_][a-z0-9_]*)":', _schema_text[:500]))
-            if _top_keys and _guard_field not in _top_keys:
-                fails.append(
-                    f'S7.13: response guard checks `parsed.{_guard_field}` but '
-                    f'"{_guard_field}" is not a top-level key in this route\'s JSON schema '
-                    f'(found top-level keys: {sorted(list(_top_keys))[:6]}). '
-                    'Guard will always fire — route always returns error.'
-                )
+            # A branch's schemas are the ones between the previous guard and this
+            # one. Usually that is a single schema; on a parallel-split route it
+            # is two, issued together and merged into one object before the
+            # guard sees it — bill-rescue guards `verdict`, which the core half
+            # declares and the support half does not. Checking only the nearest
+            # schema called seven working routes permanently broken.
+            _prev = -1
+            for _gpos, _guard_field in _guards:
+                _branch = [_txt for _spos, _txt in _schemas if _prev < _spos < _gpos]
+                _prev = _gpos
+                if not _branch:
+                    continue
+                # A branch may build its schema from a helper — date-night writes
+                # `Return ONLY valid JSON: ${responseSchema(hasVenues)}`. There is
+                # no literal to read, so the key set is unknown, and "not in the
+                # schema" cannot be asserted about a schema we cannot see. Skip
+                # the guard rather than guess.
+                _top_keys = set()
+                _unreadable = False
+                for _schema_text in _branch:
+                    _keys = _schema_top_level_keys(_schema_text)
+                    if not _keys:
+                        _unreadable = True
+                    _top_keys |= _keys
+                if _unreadable:
+                    continue
+                if _top_keys and _guard_field not in _top_keys:
+                    fails.append(
+                        f'S7.13: response guard checks `parsed.{_guard_field}` but '
+                        f'"{_guard_field}" is not a top-level key in this route\'s JSON schema '
+                        f'(found top-level keys: {sorted(list(_top_keys))[:6]}). '
+                        'Guard will always fire — route always returns error.'
+                    )
 
 
     return fails

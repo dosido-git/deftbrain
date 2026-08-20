@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -129,6 +128,41 @@ const parseTimeInput = (input, dayOffset = 0) => {
   return d;
 };
 
+// The symptom is not "I have an appointment", it is "I cannot stop checking
+// how long until the appointment". Anxiety says how much it costs; this says
+// whether it will keep interrupting — a different question with a different
+// answer. It changes what the plan has to do: someone who checks constantly
+// needs the alarm named out loud and shorter blocks, not longer ones.
+const CLOCK_OPTIONS = [
+  { id: 'never',      icon: '🙂', labelKey: 'wml_clock_never' },
+  { id: 'sometimes',  icon: '👀', labelKey: 'wml_clock_sometimes' },
+  { id: 'constantly', icon: '🔁', labelKey: 'wml_clock_constantly' },
+];
+
+const SOON_OPTIONS = [
+  { id: 'hour',      icon: '⏰',  labelKey: 'wml_soon_hour',      dayOffset: 0, minutes: null },
+  { id: 'afternoon', icon: '🌤️', labelKey: 'wml_soon_afternoon', dayOffset: 0, minutes: 14 * 60 },
+  { id: 'tonight',   icon: '🌙',  labelKey: 'wml_soon_tonight',   dayOffset: 0, minutes: 19 * 60 },
+  { id: 'tomorrow',  icon: '📅',  labelKey: 'wml_soon_tomorrow',  dayOffset: 1, minutes: 10 * 60 },
+  { id: 'this_week', icon: '🗓️', labelKey: 'wml_soon_week',      dayOffset: 3, minutes: 10 * 60 },
+];
+
+// "This afternoon" said at six in the evening is not a time — fall back to an
+// hour from now rather than quietly booking something that has already been.
+const suggestedTimeFor = (opt) => {
+  const now = new Date();
+  const d = new Date(now);
+  if (opt.minutes == null) {
+    d.setMinutes(d.getMinutes() + 60, 0, 0);
+  } else {
+    d.setDate(d.getDate() + opt.dayOffset);
+    d.setHours(Math.floor(opt.minutes / 60), opt.minutes % 60, 0, 0);
+    if (opt.dayOffset === 0 && d <= now) { d.setTime(now.getTime()); d.setMinutes(d.getMinutes() + 60, 0, 0); }
+  }
+  d.setMinutes(Math.ceil(d.getMinutes() / 5) * 5, 0, 0);
+  return d;
+};
+
 const formatTimeShort = (date) => {
   if (!date) return '';
   return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -223,15 +257,16 @@ const WaitingModeLiberator = ({ tool }) => {
   const [energy, setEnergy] = useState(3);
   const [userTasks, setUserTasks] = useState('');
   const [anxietyBefore, setAnxietyBefore] = useState(5);
+  const [clockChecking, setClockChecking] = useState('sometimes');
 
   // ─── State: Event entry row ───
   const [draftDayOffset, setDraftDayOffset] = useState(0);
+  const [draftSoon, setDraftSoon] = useState('');
   const [draftName, setDraftName] = useState('');
   const [draftTime, setDraftTime] = useState('');
   const [draftType, setDraftType] = useState('');
   const [draftCustomType, setDraftCustomType] = useState('');
   const [expandedEventId, setExpandedEventId] = useState(null);
-  const [contextOpen, setContextOpen] = useState(true);
 
   // ─── State: Results ───
   const [results, setResults] = usePersistentState('waitingmodeliberator-result', null);
@@ -285,7 +320,7 @@ const WaitingModeLiberator = ({ tool }) => {
     if (!parsed) return;
     const newEv = { ...makeEvent(), name: draftName.trim(), time: draftTime.trim(), dayOffset: draftDayOffset, type: draftType, customType: draftCustomType, prepMinutes: 15, travelMinutes: 15 };
     setEvents(prev => [...prev, newEv]);
-    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0);
+    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setDraftSoon('');
     setTimeout(() => {
       newEventRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       nameInputRef.current?.focus();
@@ -388,6 +423,20 @@ const WaitingModeLiberator = ({ tool }) => {
   };
 
   // ─── Past debriefs for anxiety sessionHistory ───
+  // Only sessions that were actually debriefed can say anything about reality,
+  // so an empty history stays silent rather than guessing.
+  const anxietyTrack = (() => {
+    const done = sessionLog
+      .filter(s => s.debrief?.reality && s.anxietyBefore != null)
+      .slice(0, 6)
+      .map(s => ({ anxiety: s.anxietyBefore, wasFine: ['fine', 'okay'].includes(s.debrief.reality) }))
+      .reverse();
+    if (done.length < 2) return null;
+    const avg = Math.round(done.reduce((sum, d) => sum + d.anxiety, 0) / done.length * 10) / 10;
+    const fineCount = done.filter(d => d.wasFine).length;
+    return { points: done, avg, fineCount, overshoot: avg >= 6 && fineCount > done.length / 2 ? 1 : 0 };
+  })();
+
   const pastDebriefs = sessionLog
     .filter(s => s.debrief && s.events?.[0]?.type === events[0]?.type)
     .map(s => ({ date: s.date, anxietyBefore: s.anxietyBefore, appointmentReality: s.debrief?.reality }));
@@ -418,7 +467,7 @@ const WaitingModeLiberator = ({ tool }) => {
           const dayOff = parsedDayOffset(ev.parsed);
           return { name: ev.name || '', time: dayOff > 0 ? `${dayOff === 1 ? 'Tomorrow' : `In ${dayOff} days`}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes, prepAlarm: formatTimeShort(new Date(ev.parsed.getTime() - totalPrep * 60 * 1000)) };
         }),
-        currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy,
+        currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy, clockChecking, anxietyBefore,
         firstPrepAlarm: earliestPrepAlarm ? formatTimeShort(earliestPrepAlarm) : null,
         userLocale, userCurrency, userRegion,
       });
@@ -505,7 +554,7 @@ const WaitingModeLiberator = ({ tool }) => {
     // so removeEvent (filter-by-id) would delete BOTH rows. Offset by index.
     setEvents(session.events?.length ? session.events.map((ev, idx) => ({ ...makeEvent(), ...ev, id: Date.now() + idx })) : []);
     setEnergy(session.energy || 3); setUserTasks(session.userTasks || ''); setError('');
-    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setExpandedEventId(null);
+    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setDraftSoon(''); setExpandedEventId(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -532,8 +581,8 @@ const WaitingModeLiberator = ({ tool }) => {
     countdownTargetRef.current = null; blockTargetRef.current = null;
     setCountdownSeconds(null); setCompletedBlocks({}); setShowPrepAlert(false);
     clearInterval(countdownRef.current); clearInterval(blockTimerRef.current);
-    setEvents([]); setEnergy(3); setUserTasks(''); setAnxietyBefore(5); setError('');
-    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setExpandedEventId(null); setContextOpen(false);
+    setEvents([]); setEnergy(3); setUserTasks(''); setAnxietyBefore(5); setClockChecking('sometimes'); setError('');
+    setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setDraftSoon(''); setExpandedEventId(null);
     setLaunchData(null); setLaunchStep(0); blockTargetRef.current = null; setBlockTimerSecs(0); setBlockTimerRunning(false);
     setDebriefData(null); setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote('');
   };
@@ -631,9 +680,6 @@ const WaitingModeLiberator = ({ tool }) => {
                 </button>
               ) : null}
             </div>
-            <div className={`mt-4 px-4 py-3 rounded-xl ${c.accentLight} border text-sm ${c.accentLightText} leading-relaxed`}>
-              <span className="font-bold">{t('wml_intro_bold')}</span> {t('wml_intro_rest')}
-            </div>
           </div>
 
           {/* Session stats bar */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl px-4 py-2.5 flex items-center justify-between`}>
@@ -662,12 +708,15 @@ const WaitingModeLiberator = ({ tool }) => {
 
             {/* Time + Add button */} <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <p className={`text-xs font-medium ${c.textSecondary}`}>{t('wml_when')}</p>
-                <div className="flex gap-1">
-                  {[{offset:0,key:'wml_today'},{offset:1,key:'wml_tomorrow'},{offset:2,key:'wml_plus2days'}].map(d => (<button key={d.offset} onClick={() => setDraftDayOffset(d.offset)} className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${draftDayOffset === d.offset ? c.tagActive : c.tag}`}>
-                      {t(d.key)} </button>
-                  ))} </div>
+                <p className={`text-xs font-medium ${c.textSecondary}`}>{t('wml_how_soon')}</p>
               </div>
+              <div className="flex flex-wrap gap-1.5">
+                {SOON_OPTIONS.map(o => (<button key={o.id} onClick={() => {
+                    setDraftSoon(o.id); setDraftDayOffset(o.dayOffset);
+                    setDraftTime(formatTimeShort(suggestedTimeFor(o)));
+                  }} className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${draftSoon === o.id ? c.tagActive : c.tag}`}>
+                    <span className="me-1">{o.icon}</span>{t(o.labelKey)} </button>
+                ))} </div>
               <input
                 ref={timeInputRef} type="text"
                 value={draftTime} onChange={e => setDraftTime(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }} placeholder={t('wml_time_ph')}
@@ -766,51 +815,51 @@ const WaitingModeLiberator = ({ tool }) => {
                 })} </div>
             )} </div>
 
-          {/* ── CONTEXT CARD (collapsible) ── */} <div className={`${c.card} border rounded-xl overflow-hidden`}>
-            <button
-              onClick={() => setContextOpen(o => !o)} className={`w-full flex items-center justify-between px-4 py-3 text-sm font-semibold ${c.text}`} >
-              <span>
-                <span className="me-2">⚙️</span>
-                {t('wml_context_header')}
-                {!contextOpen && <span className={`ms-2 text-xs font-normal ${c.textMuted}`}>({t(ENERGY_LEVELS.find(e => e.id === energy)?.labelKey)}, {anxietyBefore}/10)</span>} </span>
-              <Caret open={contextOpen} />
-            </button>
+          {/* ── HOW YOU'RE DOING ── */} <div className={`${c.card} border rounded-xl p-4 space-y-4`}>
+            <p className={`text-sm font-semibold ${c.text}`}>{t('wml_context_header')}</p>
+            {/* Energy */} <div className="space-y-2">
+              <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_energy_q')}</p>
+              <div className="flex gap-1.5">
+                {ENERGY_LEVELS.map(e => (<button key={e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
+                    <span className="block text-base">{e.icon}</span>
+                    <span className={`block text-[9px] font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{t(e.labelKey)}</span>
+                  </button>
+                ))} </div>
+              <p className={`text-xs ${c.textMuted} text-center`}>{t(ENERGY_LEVELS.find(e => e.id === energy)?.descKey)}</p>
+            </div>
 
-            {contextOpen && (<div className="px-4 pb-4 space-y-4 border-t" style={{ borderColor: 'inherit' }}>
-                {/* Energy */} <div className="space-y-2 pt-3">
-                  <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_energy_q')}</p>
-                  <div className="flex gap-1.5">
-                    {ENERGY_LEVELS.map(e => (<button key={e.id} onClick={() => setEnergy(e.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${energy === e.id ? c.tagActive : c.tag}`}>
-                        <span className="block text-base">{e.icon}</span>
-                        <span className={`block text-[9px] font-medium mt-0.5 ${energy === e.id ? '' : c.textMuted}`}>{t(e.labelKey)}</span>
-                      </button>
-                    ))} </div>
-                  <p className={`text-xs ${c.textMuted} text-center`}>{t(ENERGY_LEVELS.find(e => e.id === energy)?.descKey)}</p>
-                </div>
-
-                {/* Anxiety slider */} <div className="space-y-2">
-                  <p className={`text-xs font-semibold ${c.textSecondary}`}>
-                    {t('wml_anxiety_q')} <span>{anxietyBefore <= 3 ? '😌' : anxietyBefore <= 6 ? '😐' : anxietyBefore <= 8 ? '😰' : '😫'}</span>
-                  </p>
-                  <input type="range" min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
-                  <div className="flex justify-between">
-                    <span className={`text-[10px] ${c.textMuted}`}>{t('wml_chill')}</span>
-                    <span className={`text-sm font-bold ${c.text}`}>{anxietyBefore}/10</span>
-                    <span className={`text-[10px] ${c.textMuted}`}>{t('wml_dreading')}</span>
-                  </div>
-                  {pastDebriefs.length > 0 && (<p className={`text-xs ${c.accentLightText} ${c.accentLight} rounded-lg px-3 py-2 border`}>
-                      <span>📊</span> {t('wml_past_appts', { n: Math.min(pastDebriefs.length, 5), type: events[0]?.type || '', avg: Math.round(pastDebriefs.slice(0, 5).reduce((s, d) => s + (d.anxietyBefore || 5), 0) / Math.min(pastDebriefs.length, 5)), outcome: pastDebriefs.filter(d => ['fine','okay'].includes(d.appointmentReality)).length > pastDebriefs.length / 2 ? t('wml_outcome_fine') : t('wml_outcome_manageable') })}
-                    </p>
-                  )} </div>
-
-                {/* Tasks */} <div className="space-y-1.5">
-                  <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_tasks_q')} <span className={c.textMuted}>({t('optional')})</span></p>
-                  <p className={`text-xs ${c.textMuted} -mt-1`}>{t('wml_tasks_sub')}</p>
-                  <textarea value={userTasks} onChange={e => setUserTasks(e.target.value)} placeholder={t('wml_tasks_ph')}
-                    rows={3} className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm resize-none`} />
-                </div>
+            {/* Anxiety slider */} <div className="space-y-2">
+              <p className={`text-xs font-semibold ${c.textSecondary}`}>
+                {t('wml_anxiety_q')} <span>{anxietyBefore <= 3 ? '😌' : anxietyBefore <= 6 ? '😐' : anxietyBefore <= 8 ? '😰' : '😫'}</span>
+              </p>
+              <input type="range" min="1" max="10" value={anxietyBefore} onChange={e => setAnxietyBefore(parseInt(e.target.value))} className="w-full accent-cyan-500" />
+              <div className="flex justify-between">
+                <span className={`text-[10px] ${c.textMuted}`}>{t('wml_chill')}</span>
+                <span className={`text-sm font-bold ${c.text}`}>{anxietyBefore}/10</span>
+                <span className={`text-[10px] ${c.textMuted}`}>{t('wml_dreading')}</span>
               </div>
-            )} </div>
+              {pastDebriefs.length > 0 && (<p className={`text-xs ${c.accentLightText} ${c.accentLight} rounded-lg px-3 py-2 border`}>
+                  <span>📊</span> {t('wml_past_appts', { n: Math.min(pastDebriefs.length, 5), type: events[0]?.type || '', avg: Math.round(pastDebriefs.slice(0, 5).reduce((s, d) => s + (d.anxietyBefore || 5), 0) / Math.min(pastDebriefs.length, 5)), outcome: pastDebriefs.filter(d => ['fine','okay'].includes(d.appointmentReality)).length > pastDebriefs.length / 2 ? t('wml_outcome_fine') : t('wml_outcome_manageable') })}
+                </p>
+              )} </div>
+
+            {/* Clock-checking */} <div className="space-y-2">
+              <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_clock_q')}</p>
+              <div className="flex gap-1.5">
+                {CLOCK_OPTIONS.map(o => (<button key={o.id} onClick={() => setClockChecking(o.id)} className={`flex-1 py-2 rounded-xl text-center transition-all ${clockChecking === o.id ? c.tagActive : c.tag}`}>
+                    <span className="block text-base">{o.icon}</span>
+                    <span className={`block text-[9px] font-medium mt-0.5 ${clockChecking === o.id ? '' : c.textMuted}`}>{t(o.labelKey)}</span>
+                  </button>
+                ))} </div>
+            </div>
+
+            {/* Tasks */} <div className="space-y-1.5">
+              <p className={`text-xs font-semibold ${c.textSecondary}`}>{t('wml_tasks_q')} <span className={c.textMuted}>({t('optional')})</span></p>
+              <p className={`text-xs ${c.textMuted} -mt-1`}>{t('wml_tasks_sub')}</p>
+              <textarea value={userTasks} onChange={e => setUserTasks(e.target.value)} placeholder={t('wml_tasks_ph')}
+                rows={3} className={`w-full p-3 rounded-lg border ${c.input} outline-none text-sm resize-none`} />
+            </div>
+          </div>
 
           {/* ── SUBMIT ── */} <div className="flex gap-2">
           <button title={t('cmd_enter')} onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasAnyTime) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
@@ -965,6 +1014,24 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           )} {/* Permission */} {results.permission && (<div className={`${c.accentLight} border rounded-xl p-5`}>
               <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg me-1">🔓</span> {results.permission}</p>
+            </div>
+          )} {results.clock_freedom && (<div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-sm ${c.textSecondary}`}><span className="me-1">🕰️</span> {results.clock_freedom}</p>
+            </div>
+          )} {anxietyTrack && (<div className={`${c.card} border rounded-xl p-4`}>
+              <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}><span>📊</span> {t('wml_track_header')}</p>
+              <div className="flex items-end gap-1.5 mb-2" aria-hidden="true">
+                {anxietyTrack.points.map((pt, i) => (<div key={i} className="flex-1 flex flex-col items-center gap-1">
+                    <div className={`w-full rounded-t ${pt.wasFine ? 'bg-emerald-400' : 'bg-amber-400'}`} style={{ height: `${Math.max(6, pt.anxiety * 5)}px` }} />
+                    <span className={`text-[9px] ${c.textMuted}`}>{pt.anxiety}</span>
+                  </div>
+                ))} </div>
+              <p className={`text-sm ${c.textSecondary}`}>
+                {anxietyTrack.overshoot > 0
+                  ? t('wml_track_over', { n: anxietyTrack.points.length, avg: anxietyTrack.avg, fine: anxietyTrack.fineCount })
+                  : t('wml_track_even', { n: anxietyTrack.points.length, avg: anxietyTrack.avg })}
+              </p>
+              <p className={`text-xs ${c.textMuted} mt-1`}>{t('wml_track_today', { today: anxietyBefore })}</p>
             </div>
           )} {/* Reframe */} {results.reframe && !reframes && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-sm ${c.textSecondary} italic`}>💡 {results.reframe}</p>

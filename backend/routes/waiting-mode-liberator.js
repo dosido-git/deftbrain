@@ -21,7 +21,7 @@ router.post('/waiting-mode-liberator', rateLimit(DEFAULT_LIMITS), async (req, re
       // LIBERATE — Main: multi-event time analysis
       // ────────────────────────────────────────────
       case 'liberate': {
-        const { events, currentTime, userTasks, energy, firstPrepAlarm, userLanguage } = req.body;
+        const { events, currentTime, userTasks, energy, firstPrepAlarm, clockChecking, anxietyBefore, userLanguage } = req.body;
 
         if (!events?.length) {
           return res.status(400).json({ error: 'Add at least one appointment.' });
@@ -59,6 +59,11 @@ ENERGY LEVEL: ${energy || 3}/5
 ${energyDesc[parseInt(energy) || 3]}
 
 ${userTasks?.trim() ? `THEIR ACTUAL TASKS: "${userTasks.trim()}"` : 'No specific tasks listed.'}
+${anxietyBefore ? `DREAD ABOUT THE EVENT: ${anxietyBefore}/10` : ''}
+CLOCK-CHECKING: ${{
+  never: 'Never — they can put it down. Do not belabour reassurance they did not ask for; just give them the windows.',
+  constantly: 'Constantly — this is the actual problem. The plan has to earn the right to be forgotten: name the alarm explicitly, keep blocks SHORT (20-30 min) so there is a natural surfacing point, and make clock_freedom about why checking is now unnecessary rather than telling them to stop.',
+}[clockChecking] || 'Sometimes — it interrupts but does not dominate. One clear alarm reference is enough.'}
 
 RULES:
 - Prep alarms are PRECOMPUTED: echo each event's provided prep alarm EXACTLY as given — never recompute or adjust it.${firstPrepAlarm ? `\n- FIRST PREP ALARM (precomputed — echo exactly): ${firstPrepAlarm}` : ''}
@@ -67,6 +72,7 @@ RULES:
 - Map tasks to windows respecting energy. Low energy = easy first, high = deep work first.
 - Energy 1-2: include rest/snack blocks. Don't pack schedule.
 - "permission" references ALL free windows.
+- The point of this tool is permission, not scheduling: permission to start, to stop watching the clock, and to trust that something else is keeping time. Never imply the plan is a commitment.
 - Concrete start/end times for all blocks.
 - Use their tasks if listed, not generic suggestions.
 
@@ -84,6 +90,7 @@ Return ONLY valid JSON:
     "task": "Specific task — one sentence", "why_it_fits": "Energy + time reasoning — one sentence", "intensity": "low|medium|high"
   }],
   "reframe": "Cognitive reframe for their situation — one sentence",
+  "clock_freedom": "One sentence giving them permission to stop tracking the time, built on the alarm that is already set. Say what will fetch them, not what they should feel.",
   "prep_plans": [{ "event_time": "2:00 PM", "alarm_time": "1:25 PM (echo the precomputed prep alarm)", "steps": ["Step 1", "Step 2"] }],
   "worst_case": "Safety net advice — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;

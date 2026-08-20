@@ -5631,7 +5631,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "⏳",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "Maps your free windows around appointments and matches tasks to your energy level so 'I have a thing later' doesn't freeze your whole day. Includes a guided launch to get you started on any block, and tracks pre-appointment anxiety against reality so you can see — over time — how much your brain overprepares for nothing.",
+  description: "Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.",
   guide: {
     overview: "You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Enter your tasks and energy level — it assigns each one to a window it can actually fit. After the appointment, a 3-tap debrief compares your pre-appointment anxiety to how it actually went. Over sessions, the pattern becomes undeniable.",
 
