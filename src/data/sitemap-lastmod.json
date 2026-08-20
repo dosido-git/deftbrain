@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "4498467cdd44316805cfdc768e80171d7ed8b917",
+  "hash": "fd18028e999cfa01db11c7fabe4d1310efd22220",
   "lastmod": "2026-08-20"
  },
  "static:about": {
@@ -148,7 +148,7 @@
   "lastmod": "2026-08-20"
  },
  "tool:VirtualBodyDouble": {
-  "hash": "44f244dd0877cef55bf15efe2cc29bd59272ebb1",
+  "hash": "640e03f16fd7743a3fe77038df18c5b33457e25b",
   "lastmod": "2026-08-20"
  },
  "tool:WaitingModeLiberator": {

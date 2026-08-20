@@ -39,6 +39,9 @@ const MOODS = [
   { id: 'scattered', icon: '🌀', labelKey: 'vbd_mood_scattered' },
   { id: 'tired', icon: '😴', labelKey: 'vbd_mood_tired' },
   { id: 'anxious', icon: '😰', labelKey: 'vbd_mood_anxious' },
+  // Overwhelmed is one of the most common reasons a person reaches for a body
+  // double, and it was the one state this row could not say.
+  { id: 'overwhelmed', icon: '😵', labelKey: 'vbd_mood_overwhelmed' },
   { id: 'motivated', icon: '🔥', labelKey: 'vbd_mood_motivated' },
   { id: 'neutral', icon: '😐', labelKey: 'vbd_mood_neutral' },
 ];
@@ -171,6 +174,8 @@ const VirtualBodyDouble = ({ tool }) => {
   const [task, setTask] = useState('');
   const [duration, setDuration] = useState(25);
   const [customDuration, setCustomDuration] = useState('');
+  const [useCustom, setUseCustom] = useState(false);
+  const [putOff, setPutOff] = useState(false);
   const [checkInFreq, setCheckInFreq] = useState(15);
   const [showFreq, setShowFreq] = useState(false);
   const [environment, setEnvironment] = useState('');
@@ -220,7 +225,7 @@ const VirtualBodyDouble = ({ tool }) => {
   const loadExample = () => {
     const ex = pickExample('VirtualBodyDouble', EXAMPLES);
     setTask(t(ex.taskKey));
-    setDuration(ex.duration);
+    setDuration(ex.duration); setUseCustom(false);
     setCheckInFreq(ex.checkInFreq);
     setEnvironment(t(ex.environmentKey));
     setMood(t(ex.moodKey));
@@ -239,7 +244,7 @@ const VirtualBodyDouble = ({ tool }) => {
   const ambientIndexRef = useRef(0);
 
   // ─── Computed ───
-  const actualDuration = customDuration ? parseInt(customDuration) || 25 : duration;
+  const actualDuration = useCustom ? (parseInt(customDuration) || 25) : duration;
   const totalCheckIns = Math.max(1, Math.floor(actualDuration / checkInFreq));
   const currentSubTask = subTasks.length > 0 ? subTasks.find((_, i) => !subTaskChecked[i]) : null;
   const subTasksCompleted = Object.values(subTaskChecked).filter(Boolean).length;
@@ -372,7 +377,7 @@ const VirtualBodyDouble = ({ tool }) => {
 
   // ─── Quick-start from past session ───
   const handleRepeat = (session) => {
-    setTask(session.task || ''); setDuration(session.duration || 25); setCustomDuration('');
+    setTask(session.task || ''); setDuration(session.duration || 25); setCustomDuration(''); setUseCustom(false);
     setCheckInFreq(session.checkInFreq || 15); setEnvironment(session.environment || '');
     setSessionMode(session.mode || 'default'); setMood(''); setGoals('');
     setSubTasks([]); setShowBreakdown(false); setBreakdownData(null); setError('');
@@ -608,25 +613,7 @@ const VirtualBodyDouble = ({ tool }) => {
                 )} </div>
             </div>
           </div>
-          )} {/* Session Mode selector (v4) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
-            <label className={`block text-sm font-semibold ${c.text}`}>{t('vbd_session_mode_label')}</label>
-            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('vbd_not_sure')}</p>
-            <div className="grid grid-cols-2 gap-2">
-              {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-start transition-all border ${
-                    sessionMode === m.id
-                      ? `${MODE_COLORS[m.id].badge} text-white border-transparent shadow-lg`
-                      : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'} ${c.cardHover}`
-                  }`}>
-                  <span className="text-lg">{m.icon}</span>
-                  <div>
-                    <span className="text-sm font-medium block">{t(m.labelKey)}</span>
-                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{t(m.descKey)}</span>
-                  </div>
-                </button>
-              ))} </div>
-          </div>
-
-          {/* Task input + breakdown */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
+          )} {/* Session Mode selector (v4) */} {/* What are you working on — asked first, because it is the answer people already have */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>
             <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>{t('vbd_what_working_on')} <span className={c.required}>*</span></label>
               <div className="flex gap-2">
@@ -637,6 +624,22 @@ const VirtualBodyDouble = ({ tool }) => {
                   </button>
                 )} </div>
             </div>
+
+            {/* One checkbox, no text field. "I've been putting this off" is one
+                of the most common reasons a person opens this tool, and it is
+                not something anyone wants to have to compose a sentence about.
+                Ticking it picks the gentlest companion below — the routing is
+                the answer, so the note only says what just happened. */}
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" checked={putOff} className="mt-0.5 w-4 h-4 accent-emerald-500"
+                onChange={e => {
+                  const on = e.target.checked;
+                  const next = SESSION_MODES.find(m => m.id === (on ? 'avoidance_buster' : 'default'));
+                  setPutOff(on); setSessionMode(next.id); setCheckInFreq(next.defaultFreq);
+                }} />
+              <span className={`text-sm ${c.textSecondary}`}>{t('vbd_put_off')}</span>
+            </label>
+            {putOff && <p className={`text-xs ${c.textMuted} -mt-2 ms-6`}>{t('vbd_put_off_note')}</p>}
 
             {/* Sub-task breakdown */} {showBreakdown && breakdownData && (<div className={`${c.accentLight} border rounded-xl p-4 space-y-2`}>
                 <div className="flex items-center justify-between">
@@ -660,10 +663,22 @@ const VirtualBodyDouble = ({ tool }) => {
             )} {/* Duration */} <div>
               <label className={`block text-sm font-semibold ${c.text} mb-2`}>{t('vbd_how_long')}</label>
               <div className="flex flex-wrap gap-2">
-                {DURATIONS.map(d => (<button key={d.min} onClick={() => { setDuration(d.min); setCustomDuration(''); }} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${duration === d.min && !customDuration ? c.tagActive : c.tag}`}>
+                {DURATIONS.map(d => (<button key={d.min} onClick={() => { setDuration(d.min); setCustomDuration(''); setUseCustom(false); }} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${duration === d.min && !useCustom ? c.tagActive : c.tag}`}>
                     <span>{d.icon}</span> {t(d.labelKey)} </button>
-                ))} <input type="number" value={customDuration} onChange={e => setCustomDuration(e.target.value)} placeholder={t('vbd_custom')} className={`w-20 px-3 py-2 rounded-lg border text-sm ${c.input}`} min="5" max="180" />
+                ))} {/* Custom was the one control in this row that wasn't a chip:
+                     a bare number field parked underneath the buttons, which read
+                     as something left over rather than as the sixth choice. It is
+                     a chip now, and the field opens only once it is chosen. */}
+                <button onClick={() => setUseCustom(true)} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${useCustom ? c.tagActive : c.tag}`}>
+                  <span>✏️</span> {t('vbd_custom')} </button>
               </div>
+              {useCustom && (
+                <div className="flex items-center gap-2 mt-2">
+                  <input type="number" value={customDuration} onChange={e => setCustomDuration(e.target.value)} placeholder="30"
+                    className={`w-24 px-3 py-2 rounded-lg border text-sm ${c.input}`} min="5" max="180" />
+                  <span className={`text-sm ${c.textMuted}`}>{t('vbd_minutes')}</span>
+                </div>
+              )}
             </div>
 
             {/* Check-in frequency. The mode already sets this — every mode
@@ -681,6 +696,24 @@ const VirtualBodyDouble = ({ tool }) => {
                   ))} </div>
               )}
             </div>
+          </div>
+
+          {/* Choose your companion (v5) */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <label className={`block text-sm font-semibold ${c.text}`}>{t('vbd_companion_label')}</label>
+            <p className={`text-xs ${c.textMuted} -mt-1`}>{t('vbd_not_sure')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {SESSION_MODES.map(m => (<button key={m.id} onClick={() => { setSessionMode(m.id); setCheckInFreq(m.defaultFreq); setPutOff(m.id === 'avoidance_buster'); }} className={`flex items-start gap-2.5 p-3 rounded-xl text-start transition-all border ${
+                    sessionMode === m.id
+                      ? `${MODE_COLORS[m.id].badge} text-white border-transparent shadow-lg`
+                      : `${c.tag} ${isDark ? 'border-zinc-600' : 'border-gray-200'} ${c.cardHover}`
+                  }`}>
+                  <span className="text-lg">{m.icon}</span>
+                  <div>
+                    <span className="text-sm font-medium block">{t(m.descKey)}</span>
+                    <span className={`text-xs ${sessionMode === m.id ? 'text-white/70' : c.textMuted}`}>{t(m.labelKey)}</span>
+                  </div>
+                </button>
+              ))} </div>
           </div>
 
           {/* Optional context */} <div className={`${c.card} border rounded-xl p-5 space-y-4`}>

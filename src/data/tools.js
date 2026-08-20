@@ -5577,7 +5577,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "👥",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Pick a mode, set a task, and you're not alone anymore.",
+  description: "Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Say what you're working on, pick a companion, and you're not alone anymore.",
   guide: {
     overview: "Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.",
 

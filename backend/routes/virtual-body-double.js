@@ -146,7 +146,7 @@ MOOD: ${mood || 'not specified'}
 Rules:
 - Each sub-task should be a specific, completable action
 - Time estimates should add up to roughly ${durationMin} minutes
-- If mood is tired/scattered, make sub-tasks smaller
+- If mood is tired/scattered/overwhelmed, make sub-tasks smaller
 - 3-6 sub-tasks max
 - First one is easiest (momentum builder)
 - Last one can be optional/"bonus"
