@@ -73,7 +73,13 @@ function getToolIndexHTML(tools, relatedHTML = '') {
   // load site-wide. The flex layout is applied only for the [open] state instead.
   return `
   <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
-    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}</style>
+    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}
+    /* This strip lives outside #root, so it survives hydration and no
+       React print rule reaches it — a tool print-out ended with a whole
+       page of site navigation. DashBoard carries its own copy of this
+       rule for the same reason; here it travels with the markup, so
+       every page that emits the strip suppresses it on paper. */
+    @media print{.db-tool-index{display:none!important}}</style>
     ${related}<details style="border-top:1px solid #e8e1d5;padding-top:14px">
       <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
       <nav style="font-size:13px;line-height:1.5;margin-top:14px">

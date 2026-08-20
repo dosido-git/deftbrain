@@ -58,7 +58,7 @@ const Footer = () => {
   // A normal JS comment, not a JSX one: a {/* */} between `return (` and the
   // root element is a second child of the return and does not compile.
   return (
-    <footer className={`${c.bg} border-t ${c.border}`}>
+    <footer data-print-hide className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 

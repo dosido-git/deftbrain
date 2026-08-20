@@ -79,7 +79,7 @@ const EmailCapture = () => {
   };
 
   return (
-    <div className={`${c.bg} border-t ${c.border}`}>
+    <div data-print-hide className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-5xl mx-auto px-5 py-10 sm:py-12">
         <div className={`max-w-xl mx-auto rounded-2xl border ${c.cardBd} ${c.card} px-6 py-7 shadow-sm`}>
           <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>

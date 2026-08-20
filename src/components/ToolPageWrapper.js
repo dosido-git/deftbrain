@@ -56,6 +56,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
           box-shadow: none !important;
           border-radius: 0 !important;
         }
+        /* ...and once that inner div has no border, no background and no
+           radius, it is an invisible box — but it still carries the m-8 p-6 it
+           needs on screen to sit inside the card. On paper that is 56px of
+           inset on every side, indenting the content away from an edge nobody
+           can see. Vertically it is 112px of the page spent twice over; the
+           real cost is horizontal, because 112px of lost column width rewraps
+           every paragraph and makes the whole document taller. The page margin
+           is the margin on paper. */
+        [data-print-section] > div { margin: 0 !important; padding: 0 !important; }
         /* This used to read [data-print-main] > header, aimed at Firefox
            breaking between the title and the tool card. It matched nothing —
            on every tool page the header element is a SIBLING of
