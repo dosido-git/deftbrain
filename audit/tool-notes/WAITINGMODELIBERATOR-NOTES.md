@@ -41,3 +41,26 @@ ADHD "waiting mode" tool: appointments → free-window plan + prep-alarm countdo
 - **Removed**: `reframe` backend action + More reframes button (turned relief into
   content consumption).
 
+### Same day, subtraction pass
+
+The first version of `windows` swung the other way: five windows for one
+dentist appointment three days out, an open day split into morning/afternoon/
+evening, and an explanatory paragraph under each card.
+
+- **At most 3-4 windows, and a free day is ONE window.** Splitting an open day
+  into thirds hands the clock back the authority the tool exists to take from it.
+- **`bounded`**. Clock times only where the clock actually binds (a gap between
+  two commitments). A free day gets `time_label` in words — "Wide open",
+  "Until 10:40 AM" — and no start/end. The output was saying "stop watching the
+  clock" directly above a clock-map of the whole day.
+- **The day-of window is mandatory** when the event is not today: "Appointment
+  morning · Until 10:40 AM" is the whole argument in one line.
+- **`fit_note` -> `note`, usually null.** "At energy 2, short physical tasks like
+  moving laundry ... are exactly what this window holds" explains the recommender,
+  not the recommendation. Also banned: totting up how much would still fit, which
+  contradicts "one thing is enough".
+- **time_label must agree with its own start/end** — a window labelled "about an
+  hour and forty minutes" beside 8:20 PM - 11:00 PM costs the reader's trust in
+  the arithmetic, which is the one thing this tool sells.
+- **Countdown**: `62h 23m` -> `2d 14h`, and `3d` rather than `3d 0h`.
+

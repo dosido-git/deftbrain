@@ -414,6 +414,9 @@ const WaitingModeLiberator = ({ tool }) => {
     const h = Math.floor(secs / 3600);
     const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
+    // Nobody thinks in 62-hour intervals. Past a day, say days — and drop a
+    // trailing zero rather than printing "3d 0h".
+    if (h >= 24) { const d = Math.floor(h / 24); return h % 24 ? `${d}d ${h % 24}h` : `${d}d`; }
     if (h > 0) return `${h}h ${m}m`;
     if (m > 0) return `${m}:${s.toString().padStart(2, '0')}`;
     return `${s}s`;
@@ -1065,12 +1068,18 @@ const WaitingModeLiberator = ({ tool }) => {
                   const badge = intensityBadge(w.intensity);
                   const picked = chosenTask[i];
                   return (<div key={i} className={`p-4 rounded-xl border ${c.blockBg} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
+                      {/* Clock times only where the clock actually binds. A whole
+                          free day gets said in words — handing someone a
+                          start-and-end for a day that has neither is the clock
+                          taking charge again by another route. */}
                       <div className="flex items-baseline justify-between gap-2 flex-wrap">
                         <span className={`text-sm font-semibold ${c.text}`}>{w.label}</span>
-                        <span className={`text-xs font-mono ${c.textMuted}`}>{w.start} – {w.end}</span>
+                        {w.bounded && w.start && w.end && (
+                          <span className={`text-xs font-mono ${c.textMuted}`}>{w.start} – {w.end}</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-sm ${c.textSecondary}`}>{w.free_summary || t('wml_minutes', { m: w.minutes })}</span>
+                        <span className={`text-sm ${c.textSecondary}`}>{w.time_label || t('wml_minutes', { m: w.minutes })}</span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded ${badge.bg} ${badge.text}`}>{badge.label}</span>
                       </div>
                       {w.suggestions?.length > 0 && (<div className="mt-3 space-y-1.5">
@@ -1082,7 +1091,7 @@ const WaitingModeLiberator = ({ tool }) => {
                             </button>
                           ))} </div>
                       )} <p className={`text-xs ${c.textMuted} mt-2`}>{t('wml_pick_any')}</p>
-                      {w.fit_note && <p className={`text-xs ${c.textMuted} mt-1 italic`}>{w.fit_note}</p>}
+                      {w.note && <p className={`text-xs ${c.textMuted} mt-1 italic`}>{w.note}</p>}
                       {picked && (<div className="mt-3">
                           <p className={`text-xs ${c.textSecondary} mb-1.5`}>{t('wml_want_help')}</p>
                           <button onClick={() => handleStartWithMe(i)} disabled={loading} className={`w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>

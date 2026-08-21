@@ -81,10 +81,15 @@ GROUNDING — the tool's credibility rests entirely on this:
 
 RULES:
 - Prep alarms are PRECOMPUTED: echo each event's provided prep alarm EXACTLY as given — never recompute or adjust it.${firstPrepAlarm ? `\n- FIRST PREP ALARM (precomputed — echo exactly): ${firstPrepAlarm}` : ''}
-- Identify ALL free windows (max 5 windows; max 4 steps per prep plan). Include the window after the last event if useful.
-- CONSISTENT NUMBERS: total_free_minutes must equal the sum of the windows' minutes; free_until must match the last window's end.
+- FEWER, BIGGER WINDOWS. At most 3, occasionally 4. A window is a MEANINGFUL stretch, not every stretch: one per genuine gap BETWEEN commitments, one per free day, and one for the run-up on the day of the event. A completely open day is ONE window — never split into morning / afternoon / evening. Cutting an open day into thirds hands the clock back the authority this tool exists to take away from it, and five near-identical cards for one appointment prove nothing except that you can subdivide.
+- CLOCK TIMES ONLY FOR BOUNDED GAPS. A window squeezed between two commitments has a real start and end, and those matter. A whole free day does not: set bounded=false, leave start and end null, and let time_label say it in human words — "Wide open", "Just under 3 hours", "Until 10:40 AM". Telling someone not to watch the clock and then handing them a clock-map of their day says two things at once.
+- If the first event is NOT today, one of the windows is always the run-up on the day itself, ending at that event's prep alarm — "Appointment morning · Until 10:40 AM". That window is the whole argument: even the day of the thing is yours until the alarm.
+- LABEL WHAT IT ACTUALLY IS. "Appointment morning" if it is the morning of the event. Never a label that contradicts your own description of the window.
+- Max 4 steps per prep plan.
+- CONSISTENT NUMBERS: total_free_minutes must equal the sum of the windows' minutes; free_until must match the last window's end. When a window is bounded, time_label must agree with its own start and end — 8:20 PM to 11:00 PM is not "about an hour and forty minutes", and a number that contradicts the clock beside it costs you the reader.
 - DO NOT BUILD A TIMETABLE. Each window gets 2-4 loose suggestions, not a minute-by-minute schedule. Naming a start and end time for every individual task replaces one thing owning their day with another thing owning their day. The window has times; the suggestions inside it do not.
-- Suggestions respect the stated energy. Energy 1-2: at least one window whose suggestion is rest, food or nothing, and say plainly that nothing is a real option.
+- Suggestions respect the stated energy. Every window offers doing nothing as one of its options, phrased as a choice and not as a consolation: "Nothing. Leaving this time open is a real option."
+- SAY LESS. The suggestions carry their own reasoning — a person reading "Move the laundry to the dryer" under a low-energy window does not need to be told that short physical tasks suit low energy. "note" is usually null. Use it only when there is something the list itself cannot say, like why an empty window is not a gap to fill. Never explain the matching, never total up how much would still fit, never mention their energy number back at them.
 - "permission" references ALL free windows.
 - The point of this tool is permission, not scheduling: permission to start, to stop watching the clock, and to trust that something else is keeping time. Never imply the plan is a commitment.
 - Concrete start/end times for all blocks.
@@ -100,11 +105,12 @@ Return ONLY valid JSON:
   "free_until": "Plain language total — one sentence",
   "permission": "Specific liberating hero text — one sentence",
   "windows": [{
-    "label": "Short natural name for this gap — Tonight, Between appointments, After the interview",
-    "start": "10:30 AM", "end": "11:30 AM", "minutes": 60,
-    "free_summary": "How much time this is, in plain words — about an hour and a half",
+    "label": "Short natural name for this gap — Tonight, Tomorrow, Appointment morning",
+    "start": "10:30 AM — null unless bounded=true", "end": "11:30 AM — null unless bounded=true", "minutes": 60,
+    "bounded": true,
+    "time_label": "How much time this is, in human words — Just under 3 hours, Wide open, Until 10:40 AM",
     "suggestions": ["Short thing that fits — a few words, no times attached"],
-    "fit_note": "One sentence on why these fit the TIME or their stated energy. Never about how they will feel.",
+    "note": "USUALLY null. One sentence only when the list cannot say it itself.",
     "intensity": "low|medium|high"
   }],
   "reframe": "Cognitive reframe for their situation — one sentence",
