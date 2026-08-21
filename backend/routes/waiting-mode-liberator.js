@@ -103,7 +103,7 @@ TRAVEL: post-event windows must budget the RETURN travel from the event, not jus
 
 Return ONLY valid JSON:
 {
-  "events_summary": [{ "time": "Echo the event's time string EXACTLY as given above, day word included — Monday, 2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],
+  "events_summary": [{ "short_name": "The event as a natural noun phrase that can be dropped into 'How was ___ actually?' — 'the dentist appointment', 'your annual physical', 'the interview'. Not the raw label they typed.", "time": "Echo the event's time string EXACTLY as given above, day word included — Monday, 2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],
   "first_prep_alarm": "1:25 PM (echo the precomputed first prep alarm exactly)",
   "total_free_minutes": 180,
   "free_until": "Plain language total — one sentence",

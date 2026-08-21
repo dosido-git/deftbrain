@@ -897,7 +897,7 @@ const WaitingModeLiberator = ({ tool }) => {
           </div>
 
           {/* ── SUBMIT ── */} <div className="flex gap-2">
-          <button title={t('cmd_enter')} onClick={handleLiberate} disabled={loading || !hasAnyTime} className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasAnyTime) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
+          <button title={t('cmd_enter')} onClick={handleLiberate} data-print-keep disabled={loading || !hasAnyTime} className={`relative w-full py-4 rounded-xl font-bold text-lg ${(!hasAnyTime) ? c.btnIdle : c.btnPrimary} transition-all shadow-lg`}>
             {loading
               ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_calculating')}</span>
               : <span>{tool?.icon ?? '⏳'} {t('wml_liberate')}</span>} {!loading && (
@@ -1141,9 +1141,14 @@ const WaitingModeLiberator = ({ tool }) => {
   // RENDER: DEBRIEF (v4)
   // ══════════════════════════════════════════════════
   if (view === 'debrief') {
-    const firstEventLabel = events[0]?.name
-      || (events[0]?.type && events[0].type !== 'other' ? (events[0].type && APPT_TYPES.find(a => a.id === events[0].type) ? t(APPT_TYPES.find(a => a.id === events[0].type).labelKey) : events[0].type) : null)
-      || events[0]?.time
+    // The plan already asked the model to write this event as a phrase that fits
+    // inside a sentence, because "How was Doctor appointment — annual physical
+    // actually?" is what interpolating a raw label gets you. If it is missing,
+    // fall back to the part before any dash — people write "Dentist — first visit
+    // in four years", and the half before the dash is almost always the noun.
+    const firstEventLabel = results?.events_summary?.[0]?.short_name
+      || (events[0]?.name || '').split(/\s+[—–-]\s+/)[0].trim()
+      || (events[0]?.type && events[0].type !== 'other' && APPT_TYPES.find(a => a.id === events[0].type) ? t(APPT_TYPES.find(a => a.id === events[0].type).labelKey) : null)
       || t('wml_the_appointment');
 
     return (<div ref={viewTopRef} className="py-6 px-4">
@@ -1191,7 +1196,7 @@ const WaitingModeLiberator = ({ tool }) => {
               className={`w-full p-3 rounded-lg border ${c.input} text-sm`} />
           </div>
 
-          {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
+          {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} data-print-keep disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
               {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div data-copy-results ref={resultsRef} data-results-anchor />

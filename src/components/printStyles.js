@@ -92,7 +92,11 @@ export const PRINT_CSS = `
         [data-print-section],
         [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }
         /* Interactive controls mean nothing on paper. */
-        [data-print-section] button:disabled { display: none !important; }
+        /* ...except the one the form exists to reach. A disabled dead control is
+           noise on paper; a disabled primary CTA is what tells a reader where the
+           page was going, and hiding it made a printed form look like it led
+           nowhere. Opt out with data-print-keep. */
+        [data-print-section] button:disabled:not([data-print-keep]) { display: none !important; }
         /* The branding line is 29px tall and lives at the very end of the
            document, which is exactly the position an engine will drop when the
            last page break lands on top of it. Keeping it whole, and off the
