@@ -55,10 +55,16 @@ const Footer = () => {
   // reader on paper needs, having no address bar. Tool pages hide their chrome
   // via data-print-hide, which this deliberately does not use.
   //
+  // 2026-08-20: data-print-hide was added here anyway, while removing a whole
+  // page of navigation from tool print-outs — the interlink block, the
+  // newsletter and the tools index all genuinely did not belong on paper, and
+  // this got swept up with them. It is not chrome. Reverted the same day. If
+  // you are here to hide it again: the paragraph above is the reason not to.
+  //
   // A normal JS comment, not a JSX one: a {/* */} between `return (` and the
   // root element is a second child of the return and does not compile.
   return (
-    <footer data-print-hide className={`${c.bg} border-t ${c.border}`}>
+    <footer className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
 

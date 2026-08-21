@@ -19,6 +19,13 @@
  * page MORE useful in print, not less — it is where the site name, the URL,
  * the guide links and what the newsletter is all live. Tool pages still strip
  * their chrome via data-print-hide, which none of these three use.
+ *
+ * 2026-08-20: all three were given data-print-hide anyway. The reasoning was
+ * that a tool print-out ended with a page of navigation — true, but the page
+ * of navigation was the point, and this comment said so. Reverted the same
+ * day, on the owner's report that the footer had gone missing. What stays
+ * hidden is the db-tool-index strip: the collapsed A-Z link wall exists for
+ * crawlers, and DashBoard has hidden it in print for exactly that reason.
  */
 import React, { useState } from 'react';
 import { useTheme } from '../hooks/useTheme';
@@ -79,7 +86,7 @@ const EmailCapture = () => {
   };
 
   return (
-    <div data-print-hide className={`${c.bg} border-t ${c.border}`}>
+    <div className={`${c.bg} border-t ${c.border}`}>
       <div className="max-w-5xl mx-auto px-5 py-10 sm:py-12">
         <div className={`max-w-xl mx-auto rounded-2xl border ${c.cardBd} ${c.card} px-6 py-7 shadow-sm`}>
           <p className={`text-[11px] uppercase tracking-[0.18em] font-bold ${c.accent}`}>
