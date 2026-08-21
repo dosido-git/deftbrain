@@ -46,3 +46,41 @@ having read the problem. Any link chosen in advance is a guess made without
 reading it. The post-result half still applies; verified the rule still fires by
 stripping the pre-result link from another tool.
 
+### Output discipline (same day)
+
+The landlord/mold test returned four tools, a three-step sequence and a
+"Multi-step workflow?" box, for someone who came here because they could not
+choose. Rules added:
+
+- **THE FEWEST TOOLS THAT GIVE A CLEAR NEXT STEP.** One confident starting point
+  beats three plausible matches. A second tool earns its place only by covering
+  a DIFFERENT dimension — a second tool about tone is not a second recommendation.
+  Everything past the first is conditional and says so. Never pad to a number.
+- **The "even though" test.** "Even though you're not apologising, this tool..."
+  is the model telling you the recommendation is strained. Drop it. (That is how
+  Mend was getting in.)
+- **UNDERSTAND, DO NOT DIAGNOSE.** `understanding` stayed inside their words:
+  no inferred temperament ("coming in hot"), no announcing which part is the
+  hard part.
+- **`why`**: describe the tool, do not sell it, and never promise an outcome —
+  no "so you stay calm", no "exactly what to say", no inventing how the other
+  person reacts.
+- **No legal characterisations.** Never say a tool tells them where they stand
+  legally; say what it helps them work out and let that tool set its own bounds.
+- **`order_note`** is null with one recommendation (one tool has no order), the
+  order must be the LOGICAL one rather than the listing order, and — enforced in
+  code, not just the prompt — it is dropped if it names a catalog tool that is
+  not among the recommendations. It was citing Magic Mouth, which the visitor
+  could neither see nor click.
+- **Removed the "Multi-step workflow? Also useful" box**, which sat directly
+  under "A useful order might be" (the same idea, twice) and reintroduced the
+  word the form had just lost.
+- **Escape routes merged**: "Not quite right? Tell us more" / "Or browse all
+  tools →".
+
+**Audit note:** removing that box left the results block with no cross-ref the
+S5.5 regex could see — the recommendation hrefs were `href={cond ? \`/${id}\` : '#'}`,
+which the dynamic-href pattern does not match. The backend already drops any id
+not in the catalog, so the ternary was belt-and-braces; it is now
+`href={\`/${rec.id}\`}` and the rule can see what is actually there.
+

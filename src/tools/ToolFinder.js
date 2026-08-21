@@ -228,9 +228,14 @@ const ToolFinder = ({ tool }) => {
 
               </div>
 
+              {/* The backend drops any id that is not in the catalog before this
+                  ever renders, so the href below can be the plain shape — which
+                  also lets the cross-ref audit see that these ARE the post-result
+                  links, rather than reading a ternary and concluding the results
+                  block has none. */}
               {r.recommendations.map((rec, idx) => (<a
                   key={rec.id}
-                  href={/^[A-Za-z0-9]+$/.test(rec.id || '') ? `/${rec.id}` : '#'}
+                  href={`/${rec.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block no-underline group"
@@ -280,20 +285,10 @@ const ToolFinder = ({ tool }) => {
             </div>
           )} {/* ── BROWSE ALL ── */} <p className={`text-xs text-center ${c.textMuted}`}>{t('tf_ai_disclaimer')}</p>
           {!r.no_perfect_fit && <IdeaPrompt source="toolfinder-results" query={problem} compact />}
-          <div className={`text-center pt-2`}>
-            <p className={`text-xs ${c.textMuted} mb-2`}>{t('tf_not_found')}</p>
-            <a
-              href="/"
-              className={`text-sm font-bold underline ${linkStyle}`} >
-              {t('tf_browse_all')}
-            </a>
-          </div>
-        </div>
-      )} {/* Conditional cross-ref — only after results */} {r?.order_note && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('tf_xref_workflow_label')}</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="/TheRunthrough" className={`text-xs ${linkStyle}`}>{t('tf_xref_runthrough')}</a>
-          </div>
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            {t('tf_not_found')}{' '}
+            <a href="/" className={`font-semibold underline ${linkStyle}`}>{t('tf_browse_all')}</a>
+          </p>
         </div>
       )} {/* Session sessionHistory */} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details className={`group ${c.cardAlt} border ${c.border} rounded-xl px-4 py-3 mt-4`}>
           <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">

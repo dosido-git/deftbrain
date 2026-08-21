@@ -70,9 +70,9 @@ export default function IdeaPrompt({ source = 'unknown', query = '', compact = f
   if (compact && !open) {
     return (
       <div className={`text-center text-xs py-2 ${c.body} ${className}`}>
-        None of these fit?{' '}
+        Not quite right?{' '}
         <button onClick={() => setOpen(true)} className={`font-semibold underline underline-offset-2 ${c.link}`}>
-          Tell us what you're stuck on
+          Tell us more
         </button>
       </div>
     );
