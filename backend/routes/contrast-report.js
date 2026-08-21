@@ -39,7 +39,18 @@ The more vivid a scene is, the more an invented detail feels like insight. You w
 - TEXTURE IS FREE; INTERIOR LIFE IS NOT. Invent the ordinary as much as you need — weather, a commute, a kitchen, a queue, what is on the radio. Do not invent their motivations, values, fears, psychological tendencies, relationship dynamics, or how any of it turns out.
 - THE ANALYSIS MAY NOT TREAT THE FICTION AS EVIDENCE. You just made these two days up. Nothing in them is a finding about this person, and how the writing went is a fact about writing, not about them. Never report which path was richer, easier, more alive or more fun to write — novelty is simply easier to dramatise than continuity, and saying so with "this is not an endorsement" attached is still a thumb on the scale.
 - Their reaction to the stories is the material. Your reaction to your own stories is not.
+- NEVER ATTRIBUTE A MOTIVE THEY DID NOT STATE. An uncertainty is not a motive. "I cannot tell whether I want this or whether I am just bored" is a person wondering; it is not a person fleeing.
+  NO:  the boredom you were running from
+  YES: the boredom you are wondering about
+- DESCRIBE THE MEANINGFUL MOMENT; DO NOT EXPLAIN IT. When a line lands on something that might matter, stop at the fact. The reader decides whether it means anything, and telling them robs the moment of the only thing that made it worth writing.
+  NO:  The work came from you, which means something.
+  YES: The work came from you.
+- Do not invent a consequence to make a cost land harder. "Harder to reverse", "calcifies", "a door quietly closing" are all predictions dressed as description. A cost can simply be the thing they already named, still there later.
+  NO:  two years of competence without challenge calcifies into something harder to name, and harder to reverse
+  YES: two more years of familiar, manageable work leaves the question you are asking now still waiting for you
 ${whatsHard?.trim() ? 'What they said makes this hard is the centre of gravity. Both days should be days in which that tension is quietly present — not discussed, not resolved, just there.' : ''}
+
+The NO/YES pairs above are shape, not wording. Never reuse their sentences; write for the two paths in front of you.
 
 Return ONLY valid JSON:
 
@@ -50,7 +61,7 @@ Return ONLY valid JSON:
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",
     "a_moment_to_notice": "One imagined moment from this day worth pausing on. Offered to be reacted to, not as proof of anything. One sentence.",
-    "a_cost_to_imagine": "One imagined cost of this path. You are imagining it, not reporting it - it has not happened. One sentence."
+    "a_cost_to_imagine": "One imagined cost of this path. You are imagining it, not reporting it - it has not happened, so hedge it visibly and do not invent a consequence to give it weight. One sentence."
   },
   "path_b": {
     "label": "Short label for this path (3-5 words)",
@@ -59,9 +70,9 @@ Return ONLY valid JSON:
     "a_cost_to_imagine": "Same rules. One sentence."
   },
   "what_to_notice": {
-    "the_tradeoff": "The tradeoff THEY described, restated from their own words - what each path keeps and what it costs. Only facts they supplied. No claim about what they will feel or miss. 1-2 sentences.",
-    "watch_your_reaction": "Point them at their own response: which moments they leaned into, which made them resist or think 'no, it would not be like that'. Say that both reactions are useful. Never guess what their reaction was. 1-2 sentences.",
-    "a_question_to_sit_with": "One question derived NEUTRALLY from the tradeoff they described, balanced so it does not lean toward either path. Not a discovery about their psychology. One sentence."
+    "the_tradeoff": "The tradeoff THEY described, in near enough their own words that they could point at each clause and find where it came from. NAME the specific things - good manager, predictable hours, two clients, eight months of savings - rather than gesturing at 'something real' or 'the thing you cannot name'. Do not add an inference to make it rounder: if they told you they have savings and clients lined up, the second path is not simply giving up security. 2-3 sentences.",
+    "watch_your_reaction": "Point them at their own response, and stop there. Both reactions are useful: the corrections show where the sketch missed, the moments that pull them in show where to look more closely. Do NOT say what a lean-in reveals about what they want - a scene can pull because it is frightening or novel, not because it is wanted. 1-2 sentences.",
+    "a_question_to_sit_with": "One question that ILLUMINATES THE DILEMMA THEY ALREADY NAMED - do not out-clever them by finding a deeper one underneath it. The strongest version isolates a variable in their own uncertainty. If they said they cannot tell whether they want out or are just bored, ask: 'If nothing about your current job got worse, would you still want to leave?' That diagnoses nothing and could actually be answered. One sentence."
   }
 }`;
 }

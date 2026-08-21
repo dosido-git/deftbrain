@@ -81,3 +81,32 @@ whole tool:
   evidence of the right answer. Now it points at the noticing.
 - Golden recaptured (schema keys changed), 3/3.
 
+### Four more, all the same shape
+
+Each of these is the model supplying something the user did not:
+
+- **No motive they did not state.** An uncertainty is not a motive. "I cannot
+  tell whether I want this or whether I am just bored" is wondering, not
+  fleeing — so "the boredom you were running from" becomes "the boredom you are
+  wondering about".
+- **Describe the meaningful moment; do not explain it.** "The work came from
+  you, which means something" tells the reader what to feel and takes away the
+  only thing that made the line worth writing. "The work came from you." Note
+  the contrast with "That is not nothing", which pushes back against dismissal
+  rather than assigning significance — that one is fine.
+- **No invented consequence to make a cost land harder.** "Calcifies", "harder
+  to reverse", "a door quietly closing" are predictions dressed as description.
+  A cost can simply be the thing they already named, still there in two years.
+- **`a_question_to_sit_with` illuminates the dilemma they named** rather than
+  finding a deeper one underneath it. Best form isolates a variable in their own
+  uncertainty. Live: "If nothing about your current job got worse — same
+  manager, same hours, same work — would you still want to leave?"
+- **`the_tradeoff` names the specifics** (good manager, predictable hours, two
+  clients, eight months of savings) instead of gesturing at "something real",
+  and does not add an inference to round it out — someone with savings and
+  clients lined up is not simply giving up security.
+- **`watch_your_reaction` stops at the pointing.** A scene can pull because it
+  is frightening, not because it is wanted.
+- Anti-verbatim line added (the NO/YES pairs are shape, not wording) — see
+  [[deftbrain-voice-prompt-traps]].
+
