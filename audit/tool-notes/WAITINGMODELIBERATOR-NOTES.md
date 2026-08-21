@@ -64,3 +64,30 @@ evening, and an explanatory paragraph under each card.
   the arithmetic, which is the one thing this tool sells.
 - **Countdown**: `62h 23m` -> `2d 14h`, and `3d` rather than `3d 0h`.
 
+### Debrief: measures the tool's job, not the user's productivity
+
+- **Q1 rewritten.** "Did you use your free time?" with "Crushed it" as the best
+  answer contradicted the entire output, which spends its length saying the time
+  is yours and doing nothing is a real option. Someone who deliberately did
+  nothing had to file it under "Stayed frozen". Now: "How much of your day did
+  you get back?" — Most of it / A good chunk / A little / Still felt stuck.
+- **The blue "how did that compare?" callout is gone.** It asked a question with
+  no answer field, below the field it would have used. The form collects; the
+  output interprets. The debrief prompt now leads with the comparison.
+- **Note placeholder was leading the witness** ("I worried for no reason").
+  Neutral now, and the label asks what they want to remember.
+- **"Skip debrief and save" saved nothing they had just answered** — the entry
+  only stored a debrief if the AI call had run. Renamed "Save without debrief",
+  and it stores the three answers plus clockBefore/clockAfter, which is the part
+  that compounds into the history.
+- **CALIBRATION rules** in the debrief prompt: one session is one data point and
+  may not be described as a pattern; `trend` is null with no history; a pattern
+  claim must name how many sessions; and when the dread was justified, say so
+  without spin — a tool that only reports good news stops being worth reading.
+  Verified both directions live.
+- **Block completion removed.** The tick-box died with the timetable; the counter
+  survived at a permanent zero and fed the debrief, which produced "you only
+  completed 1 of 3 blocks" — exactly the scoring this pass removes, from a number
+  nothing sets. Payload is `windowCount` now, with an explicit "never score them
+  on it" note.
+

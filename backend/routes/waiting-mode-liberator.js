@@ -229,7 +229,7 @@ Return ONLY valid JSON:
       // DEBRIEF — Post-appointment reflection (v4)
       // ────────────────────────────────────────────
       case 'debrief': {
-        const { events, blocksCompleted, totalBlocks, energy, anxietyBefore, usedTime, appointmentReality, clockBefore, clockAfter, note, pastDebriefs, userLanguage } = req.body;
+        const { events, windowCount, energy, anxietyBefore, usedTime, appointmentReality, clockBefore, clockAfter, note, pastDebriefs, userLanguage } = req.body;
 
         const primaryType = events?.[0]?.type || 'general';
 
@@ -241,24 +241,29 @@ Return ONLY valid JSON:
         const prompt = withLanguage(`Generate a post-appointment debrief for someone who used the Waiting Mode Liberator.
 
 APPOINTMENT TYPE: ${primaryType}
-BLOCKS COMPLETED: ${blocksCompleted}/${totalBlocks}
+FREE WINDOWS THEY WERE GIVEN: ${windowCount || '?'} (how many they used is not tracked and is not the point — never score them on it)
 ENERGY WAS: ${energy}/5
 ANXIETY BEFORE: ${anxietyBefore || '?'}/10
-DID THEY USE THE TIME: ${usedTime || 'partially'}
+HOW MUCH OF THE DAY THEY GOT BACK: ${usedTime || 'not specified'} (most | chunk | little | stuck — this is about waiting mode loosening, NOT about productivity. Someone who deliberately did nothing and felt free has "most". Never treat an empty day as a failure.)
 HOW WAS THE APPOINTMENT: ${appointmentReality || 'not specified'}
 CLOCK-WATCHING — they PREDICTED "${clockBefore || 'sometimes'}" beforehand and REPORT "${clockAfter || 'not specified'}" afterwards
 ${note ? `THEIR NOTE: "${note}"` : ''}
 ${anxietyHistory}
 
 Generate:
-1. A reflection on how they used their time (be honest but kind)
-2. An anxiety reality-check — compare their anxiety to what actually happened
+1. A reflection on how much of the day they got back — not on how productive they were
+2. The comparison this whole tool exists to make: what they expected, against what happened. Lead with it plainly — "You expected this to be rough. It turned out okay." — and then stop. One appointment is one data point.
 3. If there's anxiety history for this appointment type, show the trend
 4. One concrete takeaway for next time
 5. If they didn't use the time well, don't guilt — reframe as data
 6. clock_check: compare the clock-watching they PREDICTED to what they REPORT. If they expected to watch it constantly and did not, say so plainly — that is the finding this tool exists to surface, and it is about the alarm doing the holding, not about them being disciplined. If they watched it as much as they feared, say that plainly too and do not spin it.
 
 Say only what the numbers above support. Never assert a cause for how they felt, and never tell them what they have "learned" — state what happened and let it stand.
+
+CALIBRATION — the line this tool has to walk:
+- ONE session is one session. From a single debrief you may say what happened and nothing else. "Your brain overestimates this" is a claim about a person, and one appointment cannot support it.
+- A PATTERN needs the history above, and even then say how many: "across your last five medical appointments" is a fact; "your brain always does this" is not. If there is no history, "trend" is null — do not manufacture one.
+- If their dread was justified — it really was rough — say so without spin. A tool that only ever reports good news stops being worth reading. The finding is sometimes "you were right to be worried", and that is still useful.
 
 Return ONLY valid JSON:
 {

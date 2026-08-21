@@ -69,10 +69,10 @@ const ENERGY_LEVELS = [
 
 // ─── Debrief options (v4) ───
 const TIME_USAGE_OPTIONS = [
-  { id: 'crushed_it', icon: '🏆', labelKey: 'wml_usage_crushed' },
-  { id: 'mostly',     icon: '👍', labelKey: 'wml_usage_mostly' },
-  { id: 'some',       icon: '🤷', labelKey: 'wml_usage_some' },
-  { id: 'froze',      icon: '🧊', labelKey: 'wml_usage_froze' },
+  { id: 'most',   icon: '🙌', labelKey: 'wml_back_most' },
+  { id: 'chunk',  icon: '👍', labelKey: 'wml_back_chunk' },
+  { id: 'little', icon: '🤏', labelKey: 'wml_back_little' },
+  { id: 'stuck',  icon: '🧊', labelKey: 'wml_back_stuck' },
 ];
 
 // The form asked how much they'd be watching the clock. Asking again afterwards
@@ -288,7 +288,6 @@ const WaitingModeLiberator = ({ tool }) => {
   const [showPrepAlert, setShowPrepAlert] = useState(false);
 
   // ─── State: Block tracking ───
-  const [completedBlocks, setCompletedBlocks] = useState({});
   const [chosenTask, setChosenTask] = useState({});
 
   // ─── State: Start With Me (v4) ───
@@ -383,9 +382,6 @@ const WaitingModeLiberator = ({ tool }) => {
         blockTargetRef.current = null;
         setBlockTimerRunning(false);
         playChime();
-        if (launchBlockIdx !== null) {
-          setCompletedBlocks(p => ({ ...p, [launchBlockIdx]: true }));
-        }
         setBlockTimerSecs(0);
       } else setBlockTimerSecs(remaining);
     };
@@ -459,7 +455,7 @@ const WaitingModeLiberator = ({ tool }) => {
   const handleLiberate = async () => {
     const validationError = validateEvents();
     if (validationError) { setError(validationError); return; } setError(''); setResults(null); setOneThingData(null);
-    setCompletedBlocks({}); setChosenTask({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
+    setChosenTask({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
     setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote(''); setDebriefClock('');
 
     const now = new Date();
@@ -534,8 +530,7 @@ const WaitingModeLiberator = ({ tool }) => {
       const data = await callToolEndpoint('waiting-mode-liberator', {
         action: 'debrief',
         events: events.map(ev => ({ time: ev.time, type: ev.type })),
-        blocksCompleted: Object.values(completedBlocks).filter(Boolean).length,
-        totalBlocks: results?.windows?.length || 0,
+        windowCount: results?.windows?.length || 0,
         energy, anxietyBefore, usedTime: debriefUsedTime, appointmentReality: debriefReality,
         clockBefore: clockChecking, clockAfter: debriefClock,
         note: debriefNote.trim(), pastDebriefs,
@@ -565,15 +560,16 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── Save session ───
   const saveSession = () => {
-    const blocksCompleted = Object.values(completedBlocks).filter(Boolean).length;
     const entry = {
       id: Date.now(),
       events: events.map(ev => ({ time: ev.time, type: ev.type, prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes })),
       energy, userTasks: userTasks.trim(), anxietyBefore,
       freeMinutes: results?.total_free_minutes || 0,
-      blocksCompleted, totalBlocks: results?.windows?.length || 0,
+      totalBlocks: results?.windows?.length || 0,
       usedOneThing: !!oneThingData, usedLaunch: !!launchData,
-      debrief: debriefData ? { usedTime: debriefUsedTime, reality: debriefReality, note: debriefNote.trim() } : null,
+      debrief: (debriefUsedTime || debriefReality || debriefClock || debriefNote.trim())
+        ? { usedTime: debriefUsedTime, reality: debriefReality, clockBefore: clockChecking, clockAfter: debriefClock, note: debriefNote.trim() }
+        : null,
       date: new Date().toISOString(),
     };
     setSessionLog(prev => [entry, ...prev].slice(0, 50)); // cap at 50: pattern analysis requires sufficient sessionHistory (documented exception)
@@ -584,7 +580,7 @@ const WaitingModeLiberator = ({ tool }) => {
     setView('setup');
     setResults(null); setOneThingData(null); setReviewData(null);
     countdownTargetRef.current = null; blockTargetRef.current = null;
-    setCountdownSeconds(null); setCompletedBlocks({}); setShowPrepAlert(false);
+    setCountdownSeconds(null); setShowPrepAlert(false);
     clearInterval(countdownRef.current); clearInterval(blockTimerRef.current);
     setEvents([]); setEnergy(3); setUserTasks(''); setAnxietyBefore(5); setClockChecking('sometimes'); setError('');
     setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setDraftSoon(''); setExpandedEventId(null);
@@ -925,10 +921,10 @@ const WaitingModeLiberator = ({ tool }) => {
                             {s.events?.map(e => e.time).join(', ')} </span>
                           {s.events?.length > 1 && <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.tag}`}>{t('wml_events_count', { n: s.events.length })}</span>} </div>
                         <span className={`text-xs ${c.textMuted}`}>
-                          {t('wml_blocks_meta', { free: s.freeMinutes, done: s.blocksCompleted, total: s.totalBlocks })} · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'} {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''} · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} </span>
+                          {t('wml_free_meta', { free: s.freeMinutes, n: s.totalBlocks || 0 })} · {ENERGY_LEVELS.find(e => e.id === s.energy)?.icon || '😐'} {s.debrief ? ` · ${REALITY_OPTIONS.find(r => r.id === s.debrief.reality)?.icon || ''}` : ''} · {new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} </span>
                       </div>
                       <div className="flex items-center gap-2 ms-2 flex-shrink-0">
-                        {s.blocksCompleted > 0 && <span className="text-xs">✅</span>} <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} font-medium`} title={t('wml_repeat')}>🔁</button>
+                        <button onClick={() => handleRepeat(s)} className={`text-xs px-2.5 py-1.5 rounded-lg ${c.tag} font-medium`} title={t('wml_repeat')}>🔁</button>
                       </div>
                     </div>
                   );
@@ -1188,12 +1184,7 @@ const WaitingModeLiberator = ({ tool }) => {
               className={`w-full p-3 rounded-lg border ${c.input} text-sm`} />
           </div>
 
-          {/* Anxiety comparison banner */} {anxietyBefore >= 6 && (<div className={`${c.accentLight} border rounded-xl p-4`}>
-              <p className={`text-sm ${c.accentLightText}`}>
-                <span>🧠</span> {t('wml_anxiety_banner', { n: anxietyBefore, label: firstEventLabel })}
-              </p>
-            </div>
-          )} {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
+          {/* Generate debrief */} {!debriefData && (<button onClick={handleDebrief} disabled={loading || (!debriefUsedTime && !debriefReality)} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary} disabled:opacity-40 transition-all`}>
               {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div data-copy-results ref={resultsRef} data-results-anchor />
