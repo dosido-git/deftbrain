@@ -31,9 +31,24 @@ Write two vivid "day in the life" narratives — one for each path, set ${tf} fr
 Then surface what you noticed — not advice, just honest observation.
 
 GROUNDING — the whole risk of this tool is here:
-The more vivid a scene is, the more an invented detail feels like insight. You will have to imagine most of these two days, because almost nothing was supplied. That is allowed; passing the invention off as knowledge is not.
+The more vivid a scene is, the more an invented detail feels like insight. You will have to imagine most of these two days from a handful of things they told you. That is allowed; passing the invention off as knowledge is not.
+
+THIS OUTPUT HAS THREE ZONES, AND THEY DO NOT SHARE A STANDARD.
+
+ZONE 1 — "decision_framed". NO invention whatsoever. Restate their choice in as close to their own words as a sentence allows. It sits at the top and frames everything below it, so it must contain nothing they did not write. "Leave, and start over on my own" is leaving and starting over; it is not a journey of self-discovery.
+  NO:  ...or to leave that life and find out who you are outside of it.
+  YES: ...or to leave and start over on your own.
+
+ZONE 2 — the two narratives. Imagination encouraged. Invent the coffee, the plumber, the armchair, the delayed email, the weather, the queue, the commute. Do NOT invent major facts, motives, psychological traits or outcomes.
+
+ZONE 3 — "what_to_notice", and "how_to_read". Back to Zone 1's standard. You may point at the narratives, but you may not analyse invented details as though they revealed something about this person. Everything asserted here has to be traceable to what they wrote.
 - Anything they told you is fixed. Never contradict it, never quietly resolve it — if they did not say whether a partner is moving too, do not decide.
 - Where you invent, invent lightly and visibly: the texture of a morning, a queue, a phone call, weather. Not a salary, a diagnosis, a pregnancy, a breakup, a named person who does not exist, or a fact about their family.
+- In Zone 3, an uncertainty they stated stays an uncertainty. Never settle it, never grade it, and never describe the parts of their life they did not describe.
+  NO:  the love is not in question              (they said "I still love him" - that is a statement, not a verdict)
+  NO:  whether you have been asking yourself the real question   (they said "whether I have stopped asking" - leave it open)
+  NO:  inside a life that mostly works           (you have no idea whether it works)
+  YES: You said you still love him, and you cannot tell whether you are building the life you want or whether you have stopped asking. Staying preserves the relationship and shared life you have built over nine years; leaving means stepping outside it to find out what being on your own is actually like. Neither path answers your question automatically.
 - Where the invention IS load-bearing, let the sentence show it is a guess — "maybe", "some version of", "if it goes the way these usually do". A reader who thinks "no, it would not be like that" has learned something real; a reader who cannot tell what you made up has not.
 - No verdicts. Never say which path is better, never predict an outcome, never tell them what they want.
 - TEXTURE IS FREE; INTERIOR LIFE IS NOT. Invent the ordinary as much as you need — weather, a commute, a kitchen, a queue, what is on the radio. Do not invent their motivations, values, fears, psychological tendencies, relationship dynamics, or how any of it turns out.
@@ -55,8 +70,8 @@ The NO/YES pairs above are shape, not wording. Never reuse their sentences; writ
 Return ONLY valid JSON:
 
 {
-  "decision_framed": "Restate the core decision in one clean sentence",
-  "how_to_read": "One or two sentences, in your own words: these are not predictions, they are two plausible days built from what they told you, and the useful thing is what they react to - including the parts that feel wrong.",
+  "decision_framed": "ZONE 1. Restate the core decision in one clean sentence, in as close to their own words as the sentence allows. No interpretation, no reframing, nothing they did not write.",
+  "how_to_read": "One or two sentences, in your own words: these are not predictions, they are two plausible days built from THE FEW THINGS THEY SHARED - phrase it that way round, never 'almost nothing you told me', which is honest but reads as a complaint about their input - the texture is imagined, the tension at the centre is theirs, and the useful thing is what they react to, including the parts that feel wrong.",
   "path_a": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",

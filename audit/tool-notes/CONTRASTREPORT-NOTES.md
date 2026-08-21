@@ -110,3 +110,28 @@ Each of these is the model supplying something the user did not:
 - Anti-verbatim line added (the NO/YES pairs are shape, not wording) — see
   [[deftbrain-voice-prompt-traps]].
 
+### Three epistemic zones (the architecture, 2026-08-21)
+
+This replaces the pile of individual restraint rules with a structure. The three
+parts of the output do NOT share a standard, and saying so in the prompt fixes a
+whole class of leak at once:
+
+- **ZONE 1 — `decision_framed`.** No invention at all, near-verbatim. It sits at
+  the top and frames everything below, so anything interpretive there
+  contaminates the rest. "Leave, and start over on my own" is leaving and
+  starting over; it is not "find out who you are outside of it".
+- **ZONE 2 — the two narratives.** Imagination encouraged — coffee, plumbers,
+  armchairs, weather, queues. Never major facts, motives, traits or outcomes.
+- **ZONE 3 — `what_to_notice` + `how_to_read`.** Back to Zone 1's standard.
+  It may point AT the narratives but may not analyse invented details as
+  revealing something about the person. Every assertion traceable to their input.
+
+Zone 3 additionally: an uncertainty they stated STAYS uncertain. Never settle it
+("the love is not in question" from "I still love him"), never grade it
+("whether you have been asking yourself the real question" from "whether I have
+stopped asking"), and never characterise the parts of their life they did not
+describe ("inside a life that mostly works").
+
+`how_to_read` says "the few things you shared", not "almost nothing you told me"
+— same honesty, and the second reads as a complaint about their input.
+
