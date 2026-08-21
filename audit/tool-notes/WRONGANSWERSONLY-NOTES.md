@@ -58,3 +58,29 @@ match it, so the whole results block reads as pre-result and BOTH halves of S5.5
 fire in turn. The fix is a single `{results && (cond ? A : B)}` block, which is
 better code anyway.
 
+### Invent the explanation, never the instruction
+
+The safety rule that matters more than the decline list, because it applies to
+questions that ARE safe. `decline_reason` covers "how much insulin"; this covers
+"why do we yawn" answering with "press an ice pack to your anterior insula for
+12 seconds". Obviously nonsense in context — and a generation pattern that only
+has to meet a different question once.
+
+Unlimited: fake mechanisms, studies, statistics, history, experts, terminology.
+Never: a thing to DO. Nothing applied to a body, ingested, held, pressed,
+breathed or performed, however harmless it sounds. Describe what the fictional
+experts believe, discovered or practise — do not tell the reader to do it.
+
+    NO:  press an ice pack to your anterior insula for 12 seconds
+    YES: professional athletes reportedly train their anterior insulas to resist
+         synchronisation, a technique known as Competitive Yawn Independence
+
+`expert_tip` in particular was the leak — its schema said "bonus advice", which
+is a word that asks for an imperative. It says bonus LORE now, explicitly
+descriptive. Verified across yawning, onions and hiccups: every tip came back as
+something practitioners do, none as something the reader should.
+
+Cross-refs kept inside Diversions: Which Life? is a reflective tool about a real
+decision, which is a strange place to land from a page whose whole promise is
+that nothing on it is true. Plot Hole in its place.
+

@@ -337,7 +337,10 @@ const WrongAnswersOnly = ({ tool }) => {
             <div className="flex flex-wrap gap-3">
               <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
               <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
-              <a href="/WhichLife" className={`text-xs ${linkStyle}`}>🤔 {t('wao_whatif')}</a>
+              {/* Kept in Diversions. Which Life? sat here and is a reflective
+                  tool about a real decision — a strange place to land from a
+                  page whose entire promise is that nothing on it is true. */}
+              <a href="/PlotHole" className={`text-xs ${linkStyle}`}>🕳️ {t('wao_plothole')}</a>
             </div>
           </div>
         </div>
