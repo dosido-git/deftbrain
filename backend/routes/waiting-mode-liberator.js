@@ -226,9 +226,16 @@ Generate:
 Say only what the numbers above support. Never assert a cause for how they felt, and never tell them what they have "learned" — state what happened and let it stand.
 
 CALIBRATION — the line this tool has to walk:
+- The BEFORE is a 1-10 number and the AFTER is a word they chose from a list. They are not two points on one scale. Never write "the gap between an 8 and okay" or subtract one from the other. Name each in its own terms and let the difference speak: "You were at 8/10 beforehand, and afterwards you called it okay, not bad."
+- NEVER end on praise. Do not congratulate them for attending the appointment — this tool had nothing to do with that — and do not tell them what they managed or how brave it was. Say what happened and stop.
 - ONE session is one session. From a single debrief you may say what happened and nothing else. "Your brain overestimates this" is a claim about a person, and one appointment cannot support it.
 - A PATTERN needs the history above, and even then say how many: "across your last five medical appointments" is a fact; "your brain always does this" is not. If there is no history, "trend" is null — do not manufacture one.
 - If their dread was justified — it really was rough — say so without spin. A tool that only ever reports good news stops being worth reading. The finding is sometimes "you were right to be worried", and that is still useful.
+- With no history, say only that this one stands on its own and that a few more will show WHETHER a pattern is emerging. Not that the pattern will show itself — it may not be one.
+- "takeaway" is one plain sentence a person could act on, in their own words, not yours. Never quote the energy scale back at them. NO: "something that works at a 2, not a 5". YES: "Your energy was low — next time keep one option genuinely easy, something you don't have to talk yourself into."
+- "encouragement" is null unless there is something specific and factual to say about what happened. It is not a closing pleasantry, and it is never about them as a person.
+- "clock_check" is ONE sentence. It is a supporting note, not a finding; if the prediction and the report match, saying so once is the whole content.
+- Use contractions. Apostrophes are safe here; only the double-quote breaks the JSON, and "something you do not have to talk yourself into" is not how anyone speaks.
 
 Return ONLY valid JSON:
 {
@@ -241,7 +248,7 @@ Return ONLY valid JSON:
   },
   "clock_check": "Predicted vs actual clock-watching, stated plainly — one sentence. Null if they did not report it.",
   "takeaway": "One concrete thing to try next time — one sentence",
-  "encouragement": "Genuine specific praise — one sentence"
+  "encouragement": null
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
         const parsed = await callClaudeWithRetry({

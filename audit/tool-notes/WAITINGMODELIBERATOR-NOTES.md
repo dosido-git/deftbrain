@@ -113,3 +113,24 @@ evening, and an explanatory paragraph under each card.
   actually standing. The six-name "Related tools" block on the printout is the
   SITEWIDE `RelatedLinks` SEO layer, not this tool's — left alone deliberately.
 
+### Debrief output: ordered by what was learned
+
+- **Reordered.** The questionnaire runs time -> event -> clock, and the output walked
+  back through it in that order, reaching the one genuinely new fact third. Now:
+  time as a one-line headline, expectation-vs-reality as the hero card, clock as a
+  small supporting line, takeaway. The discovery leads.
+- **Praise card deleted** (`encouragement` -> null in the schema, render removed).
+  Congratulating someone for attending an appointment this tool had no part in is
+  an AI-therapist tic. New rule: NEVER end on praise.
+- **The before is a number, the after is a word.** They are not one scale — "the gap
+  between an 8 and okay" implies arithmetic that does not exist. Each is named in
+  its own terms now.
+- **No-history language**: "a few more will show WHETHER a pattern is emerging",
+  not "the pattern will show itself". History is real — `wml-session-log` in
+  localStorage, filtered to the same appointment type and posted as `pastDebriefs` —
+  so the claim is honest, but it is per-browser, not per-account.
+- **`takeaway`** stopped quoting the energy scale back at the reader ("something that
+  works at a 2, not a 5").
+- **`clock_check` capped at one sentence** — a supporting note, not a finding.
+- **CTA**: "Save and start over" -> "Save for next time", which is what saving is for.
+

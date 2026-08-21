@@ -531,7 +531,7 @@ const WaitingModeLiberator = ({ tool }) => {
       });
       setDebriefData(data);
     } catch (err) {
-      setDebriefData({ time_reflection: t('wml_fb_time'), anxiety_check: { before: anxietyBefore, reality_assessment: t('wml_fb_reality'), insight: null }, takeaway: t('wml_fb_takeaway'), encouragement: t('wml_fb_encouragement') });
+      setDebriefData({ time_reflection: t('wml_fb_time'), anxiety_check: { before: anxietyBefore, reality_assessment: t('wml_fb_reality'), insight: null }, takeaway: t('wml_fb_takeaway') });
     } };
 
   // ─── API: Review ───
@@ -592,7 +592,6 @@ const WaitingModeLiberator = ({ tool }) => {
       debriefData.time_reflection ? t('wml_copy_time', { text: debriefData.time_reflection }) : '',
       debriefData.anxiety_check?.insight ? t('wml_copy_insight', { text: debriefData.anxiety_check.insight }) : '',
       debriefData.takeaway ? t('wml_copy_next', { text: debriefData.takeaway }) : '',
-      debriefData.encouragement ? `\n${debriefData.encouragement}` : '',
       BRAND,
     ].filter(Boolean);
     return lines.join('\n');
@@ -1200,13 +1199,10 @@ const WaitingModeLiberator = ({ tool }) => {
               {loading ? <span><span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> {t('wml_reflecting')}</span> : <span><span>🔍</span> {t('wml_get_debrief')}</span>} </button>
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div data-copy-results ref={resultsRef} data-results-anchor />
-              {/* Time reflection */} {debriefData.time_reflection && (<div className={`${c.accentLight} border rounded-xl p-5`}>
-                  <p className={`text-sm ${c.accentLightText}`}><span>⏱️</span> {debriefData.time_reflection}</p>
-                </div>
-              )} {debriefData.clock_check && (<div className={`${c.card} border rounded-xl p-5`}>
-                  <p className={`text-sm ${c.textSecondary}`}><span className="me-1">🕰️</span> {debriefData.clock_check}</p>
-                </div>
-              )} {/* Anxiety reality check */} {debriefData.anxiety_check && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+              {/* Headline: how much of the day came back. One line, no card. */}
+              {debriefData.time_reflection && (<p className={`text-sm ${c.textSecondary}`}>
+                  <span className="me-1">⏱️</span>{debriefData.time_reflection}</p>
+              )} {/* The discovery. */} {debriefData.anxiety_check && (<div className={`${c.card} border-2 rounded-xl p-5 space-y-3`}>
                   <h3 className={`text-sm font-bold ${c.text}`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
                   <div className="flex items-center justify-center gap-6">
                     <div className="text-center">
@@ -1216,7 +1212,7 @@ const WaitingModeLiberator = ({ tool }) => {
                     <span className={`text-xl ${c.textMuted}`}>→</span>
                     <div className="text-center">
                       <p className="text-2xl">{REALITY_OPTIONS.find(r => r.id === debriefReality)?.icon || '😐'}</p>
-                      <p className={`text-[10px] ${c.textMuted} uppercase`}>{t('wml_what_happened')}</p>
+                      <p className={`text-[10px] ${c.textMuted} uppercase`}>{t(REALITY_OPTIONS.find(r => r.id === debriefReality)?.labelKey || 'wml_what_happened')}</p>
                     </div>
                   </div>
                   {debriefData.anxiety_check.reality_assessment && (<p className={`text-sm ${c.textSecondary} text-center`}>{debriefData.anxiety_check.reality_assessment}</p>
@@ -1225,11 +1221,11 @@ const WaitingModeLiberator = ({ tool }) => {
                     </div>
                   )} {debriefData.anxiety_check.insight && (<p className={`text-sm font-medium ${c.text} text-center italic`}>💡 {debriefData.anxiety_check.insight}</p>
                   )} </div>
+              )} {/* Supporting observation, deliberately small. */}
+              {debriefData.clock_check && (<p className={`text-xs ${c.textMuted}`}>
+                  <span className="me-1">🕰️</span>{debriefData.clock_check}</p>
               )} {/* Takeaway */} {debriefData.takeaway && (<div className={`${c.card} border rounded-xl p-4`}>
                   <p className={`text-sm ${c.text}`}><span>🎯</span> {t('wml_next_time', { text: debriefData.takeaway })}</p>
-                </div>
-              )} {/* Encouragement */} {debriefData.encouragement && (<div className={`${c.success} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {debriefData.encouragement}</p>
                 </div>
               )} {/* Save */} <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
                 <span>💾</span> {t('wml_save_done')}
