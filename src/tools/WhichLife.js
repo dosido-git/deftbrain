@@ -431,14 +431,19 @@ const WhichLife = ({ tool }) => {
             <label className={`text-sm font-semibold ${c.text}`}>
               <span className="me-1.5">{tool?.icon ?? '🔮'}</span> {t('cr_howfar')}
             </label>
-            {TIMEFRAME_OPTIONS.map(opt => (
-              <button
-                key={opt.id}
-                onClick={() => setTimeframe(opt.id)}
-                className={`flex-1 border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150 ${timeframe === opt.id ? c.chipActive : c.chipInactive}`}>
-                {t(opt.labelKey)}
-              </button>
-            ))}
+            {/* The chips carried flex-1 with no flex parent, so they were plain
+                inline-blocks: no gap between them, and butted up against the end
+                of the label because space-y only spaces block siblings. */}
+            <div className="flex gap-2">
+              {TIMEFRAME_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => setTimeframe(opt.id)}
+                  className={`flex-1 border rounded-xl py-2 text-sm font-medium text-center transition-all duration-150 ${timeframe === opt.id ? c.chipActive : c.chipInactive}`}>
+                  {t(opt.labelKey)}
+                </button>
+              ))}
+            </div>
           </div>
 
           <button title={t('cmd_enter')}
