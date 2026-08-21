@@ -1836,7 +1836,7 @@ export const tools = [
   icon: "🔮",
   categories: ['What If?', 'Veer'],
   headerColor: "#f5e0c0",
-  description: "Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.",
+  description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
   guide: {
     overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
     howToUse: [

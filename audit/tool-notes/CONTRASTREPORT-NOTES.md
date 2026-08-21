@@ -18,3 +18,38 @@ Two-path life-decision contrast: frames the decision, narrates a vivid "day in e
 - 0 baseline audit issues (was clean). No truncation at 2000 (modest schema, DE ~35s).
 - No golden neutralization — no arrays; all fields are objects/strings.
 - This tool was earlier repaired for a dead-model 500 (lib/claude default) + a silent handleSubmit fail — those predate this lock; verified working here.
+
+## 2026-08-20 — grounding the vividness
+
+The risk in this tool is structural: the more vivid a scene is, the more an
+invented detail reads as insight. The form asked for two path labels and a bio,
+then wrote two 300-word Tuesdays, so nearly everything in them was invented and
+nothing said so.
+
+- **`whatsHard`** — one new optional field, "What's making this choice hard?"
+  "Stay married" / "Leave" describes two paths and says nothing about the
+  conflict. This is where the decision lives, and it becomes the centre of
+  gravity both days are written around (present, not discussed, not resolved).
+- **"About you" -> "What matters here?"** The old label invited biography
+  ("I love cooking"); the new one asks for what should shape the futures
+  (parents ten minutes away). Also less intrusive for a field asking for
+  something personal.
+- **Path A/B carry a helper line** — "and what would change or stay the same?"
+  — which grounds the input without adding a field.
+- **GROUNDING block in the prompt.** Supplied facts are fixed and never
+  quietly resolved; invention is allowed but must be light (weather, a queue)
+  and never load-bearing (salary, diagnosis, a named person); where it IS
+  load-bearing the sentence hedges visibly, because a reader who thinks "no,
+  it wouldn't be like that" has learned something and a reader who cannot tell
+  what was invented has not.
+- **`how_to_read`** renders above both narratives: these are not predictions,
+  here is what came from you, and the parts that feel wrong are data too.
+- **Two example controls merged into one.** The header button loaded one fixed
+  decision; a second ✕ button below rotated through six but filled only the two
+  paths. `loadExample` (the audit-protected name) now rotates AND fills the
+  optional context, so an example demonstrates the whole form.
+- **Cross-link moved below the form.** Good routing in front of an empty form
+  is an exit ramp before the entrance.
+- **CTA** "Show me both futures" -> "Show me both lives", `data-print-keep` so
+  the destination survives on paper while disabled.
+

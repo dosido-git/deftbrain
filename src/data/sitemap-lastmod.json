@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "e1be89978ee89234d73d41ae5a84b25e3a341515",
+  "hash": "da740a2ede5758dbe83abd236753e7add089a2ab",
   "lastmod": "2026-08-21"
  },
  "static:about": {
@@ -156,8 +156,8 @@
   "lastmod": "2026-08-20"
  },
  "tool:WhichLife": {
-  "hash": "f673711fd7fc51bf4a687b7ec5f66c949290a534",
-  "lastmod": "2026-08-14"
+  "hash": "f3d264df517bb67808bb5b59f41929587ec668fa",
+  "lastmod": "2026-08-21"
  },
  "tool:WrongAnswersOnly": {
   "hash": "696a3a612e84dcfe42ac4a8c76998be7fdd53700",

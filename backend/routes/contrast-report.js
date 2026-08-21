@@ -15,14 +15,14 @@ Return ONLY valid JSON. No preamble, no markdown fences, no text before or after
 // ════════════════════════════════════════════
 // HELPER: Build user prompt (shared by both routes)
 // ════════════════════════════════════════════
-function buildPrompt({ pathA, pathB, aboutYou, timeframe }) {
+function buildPrompt({ pathA, pathB, aboutYou, whatsHard, timeframe }) {
   const tf = timeframe || '2 years';
   return `THE CONTRAST REPORT
 
 THE DECISION:
 Path A: "${pathA.trim()}"
 Path B: "${pathB.trim()}"
-${aboutYou?.trim() ? `\nABOUT THIS PERSON:\n"${aboutYou.trim()}"` : ''}
+${aboutYou?.trim() ? `\nWHAT MATTERS HERE (their words):\n"${aboutYou.trim()}"` : ''}${whatsHard?.trim() ? `\nWHAT MAKES THIS HARD (their words):\n"${whatsHard.trim()}"` : ''}
 
 TIMEFRAME: ${tf} from now
 
@@ -30,10 +30,19 @@ Write two vivid "day in the life" narratives — one for each path, set ${tf} fr
 
 Then surface what you noticed — not advice, just honest observation.
 
+GROUNDING — the whole risk of this tool is here:
+The more vivid a scene is, the more an invented detail feels like insight. You will have to imagine most of these two days, because almost nothing was supplied. That is allowed; passing the invention off as knowledge is not.
+- Anything they told you is fixed. Never contradict it, never quietly resolve it — if they did not say whether a partner is moving too, do not decide.
+- Where you invent, invent lightly and visibly: the texture of a morning, a queue, a phone call, weather. Not a salary, a diagnosis, a pregnancy, a breakup, a named person who does not exist, or a fact about their family.
+- Where the invention IS load-bearing, let the sentence show it is a guess — "maybe", "some version of", "if it goes the way these usually do". A reader who thinks "no, it would not be like that" has learned something real; a reader who cannot tell what you made up has not.
+- No verdicts. Never say which path is better, never predict an outcome, never tell them what they want.
+${whatsHard?.trim() ? 'What they said makes this hard is the centre of gravity. Both days should be days in which that tension is quietly present — not discussed, not resolved, just there.' : ''}
+
 Return ONLY valid JSON:
 
 {
   "decision_framed": "Restate the core decision in one clean sentence",
+  "how_to_read": "One or two sentences, in your own words: these are not predictions, they are two plausible days built from what they told you, and the useful thing is what they react to - including the parts that feel wrong.",
   "path_a": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",
@@ -59,7 +68,7 @@ Return ONLY valid JSON:
 // ════════════════════════════════════════════
 router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
+    const { pathA, pathB, aboutYou, whatsHard, timeframe, userLanguage } = req.body;
 
     const MAX_INPUT = 5000;
     if ((pathA || '').length > MAX_INPUT || (pathB || '').length > MAX_INPUT || (aboutYou || '').length > MAX_INPUT) {
@@ -70,7 +79,7 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     }
 
     const parsed = await callClaudeWithRetry(
-      buildPrompt({ pathA, pathB, aboutYou, timeframe }),
+      buildPrompt({ pathA, pathB, aboutYou, whatsHard, timeframe }),
       {
         label: 'contrast-report',
         model: MODELS.SMART,
@@ -96,7 +105,7 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 // callClaudeWithRetry does not support streaming. This is the documented exception.
 // ════════════════════════════════════════════
 router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { pathA, pathB, aboutYou, timeframe, userLanguage } = req.body;
+  const { pathA, pathB, aboutYou, whatsHard, timeframe, userLanguage } = req.body;
 
   if (!pathA?.trim() || !pathB?.trim()) {
     return res.status(400).json({ error: "Describe both paths you're considering." });
@@ -118,7 +127,7 @@ router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, re
       model: MODELS.SMART,
       max_tokens: 4000,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, timeframe }) }],
+      messages: [{ role: 'user', content: buildPrompt({ pathA, pathB, aboutYou, whatsHard, timeframe }) }],
     });
 
     stream.on('text', (chunk) => {
