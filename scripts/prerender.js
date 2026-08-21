@@ -153,7 +153,16 @@ function loadGuidesByTool() {
   return byTool;
 }
 
-function relatedTools(tool, all, n = 6) {
+// n was 6. Six naked tool names at the end of a focused result read as a menu
+// the reader has to work through, and dilute the one transition the tool
+// actually wants to offer. Two keeps the interlink without the noise — the
+// guide and hub blocks above it are where the internal linking really lives,
+// and they are untouched.
+//
+// This function is mirrored in the other file of this pair (src/components/
+// RelatedLinks.js and scripts/prerender.js). Users and crawlers must see the
+// same links, so change n in BOTH or not at all.
+function relatedTools(tool, all, n = 2) {
   const tags = new Set((tool.tags || []).map(s => s.toLowerCase()));
   const cats = new Set(tool.categories || []);
   return all
