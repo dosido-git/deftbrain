@@ -6,7 +6,7 @@ export const toolFinder = {
   en: {
     tf_input_label: "What do you need help with?",
     tf_input_ph: "e.g., My landlord is trying to keep my security deposit and I think it's unfair...",
-    tf_tagline: "Tell me what you're dealing with — I'll find the right tool.",
+    tf_tagline: "Tell us what you're dealing with — we'll find the right tool.",
     tf_situations_label: "Not sure what to say? Try one",
     tf_sit_brother: "My brother and I haven't spoken in six months and I don't know how to approach him",
     tf_sit_bill: "Something on this bill doesn't make sense",
@@ -39,7 +39,7 @@ export const toolFinder = {
   es: {
     tf_input_label: "¿Con qué necesitas ayuda?",
     tf_input_ph: "p. ej., Mi arrendador intenta quedarse con mi depósito de garantía y creo que es injusto...",
-    tf_tagline: "Cuéntame qué te está pasando y encuentro la herramienta adecuada.",
+    tf_tagline: "Cuéntanos qué te está pasando y encontramos la herramienta adecuada.",
     tf_situations_label: "¿No sabes qué poner? Prueba uno",
     tf_sit_brother: "Mi hermano y yo llevamos seis meses sin hablarnos y no sé cómo acercarme a él",
     tf_sit_bill: "Hay algo en esta factura que no cuadra",
@@ -72,7 +72,7 @@ export const toolFinder = {
   zh: {
     tf_input_label: "你需要什么帮助？",
     tf_input_ph: "例如：房东想扣留我的押金，我觉得这不公平……",
-    tf_tagline: "说说你正遇到什么，我来找到合适的工具。",
+    tf_tagline: "告诉我们你正遇到什么，我们来找到合适的工具。",
     tf_situations_label: "不知道怎么说？试试这些",
     tf_sit_brother: "我和我哥哥半年没说过话了，我不知道该怎么开口",
     tf_sit_bill: "这张账单上有些地方说不通",
@@ -105,7 +105,7 @@ export const toolFinder = {
   hi: {
     tf_input_label: "आपको किसमें मदद चाहिए?",
     tf_input_ph: "उदाहरण के लिए, मेरा मकान मालिक मेरी सिक्योरिटी डिपॉज़िट रखने की कोशिश कर रहा है और मुझे लगता है कि यह अनुचित है...",
-    tf_tagline: "बताइए क्या चल रहा है — मैं सही टूल ढूँढ दूँगा।",
+    tf_tagline: "हमें बताइए क्या चल रहा है — हम सही टूल ढूँढ देंगे।",
     tf_situations_label: "समझ नहीं आ रहा क्या लिखें? इनमें से कोई चुनिए",
     tf_sit_brother: "मेरे भाई और मेरी छह महीने से बात नहीं हुई और मुझे नहीं पता कैसे शुरू करूँ",
     tf_sit_bill: "इस बिल में कुछ बात समझ नहीं आ रही",
@@ -138,7 +138,7 @@ export const toolFinder = {
   ar: {
     tf_input_label: "بماذا تحتاج المساعدة؟",
     tf_input_ph: "مثلاً، مالك العقار يحاول الاحتفاظ بتأميني، وأعتقد أن ذلك غير عادل...",
-    tf_tagline: "أخبرني بما تواجهه، وسأجد لك الأداة المناسبة.",
+    tf_tagline: "أخبرنا بما تواجهه، وسنجد لك الأداة المناسبة.",
     tf_situations_label: "لا تدري ماذا تكتب؟ جرّب واحدة",
     tf_sit_brother: "لم أتحدث مع أخي منذ ستة أشهر ولا أعرف كيف أبدأ معه",
     tf_sit_bill: "هناك شيء في هذه الفاتورة لا يبدو منطقيًا",
@@ -171,7 +171,7 @@ export const toolFinder = {
   pt: {
     tf_input_label: "Com o que você precisa de ajuda?",
     tf_input_ph: "ex.: Meu locador está tentando ficar com meu depósito de garantia e acho que é injusto...",
-    tf_tagline: "Me conte o que está acontecendo — eu encontro a ferramenta certa.",
+    tf_tagline: "Conte pra gente o que está acontecendo — encontramos a ferramenta certa.",
     tf_situations_label: "Não sabe o que dizer? Experimente um",
     tf_sit_brother: "Meu irmão e eu não nos falamos há seis meses e não sei como me aproximar",
     tf_sit_bill: "Tem algo nesta conta que não faz sentido",
@@ -204,7 +204,7 @@ export const toolFinder = {
   fr: {
     tf_input_label: "De quoi avez-vous besoin d'aide ?",
     tf_input_ph: "p. ex., Mon propriétaire essaie de garder ma caution et je trouve ça injuste...",
-    tf_tagline: "Dites-moi ce qui vous arrive, je trouve le bon outil.",
+    tf_tagline: "Dites-nous ce qui vous arrive, nous trouverons le bon outil.",
     tf_situations_label: "Vous ne savez pas quoi écrire ? Essayez-en un",
     tf_sit_brother: "Mon frère et moi ne nous parlons plus depuis six mois et je ne sais pas comment l'aborder",
     tf_sit_bill: "Il y a quelque chose sur cette facture qui ne colle pas",
@@ -237,7 +237,7 @@ export const toolFinder = {
   de: {
     tf_input_label: "Wobei brauchst du Hilfe?",
     tf_input_ph: "z. B. Mein Vermieter will meine Kaution einbehalten, und ich finde das unfair...",
-    tf_tagline: "Sag mir, worum es geht - ich finde das passende Werkzeug.",
+    tf_tagline: "Sag uns, worum es geht - wir finden das passende Werkzeug.",
     tf_situations_label: "Unsicher, was du schreiben sollst? Probier eins",
     tf_sit_brother: "Mein Bruder und ich reden seit sechs Monaten nicht mehr und ich weiß nicht, wie ich auf ihn zugehen soll",
     tf_sit_bill: "Auf dieser Rechnung stimmt etwas nicht",
@@ -336,7 +336,7 @@ export const toolFinder = {
   ru: {
     tf_input_label: "С чем вам нужна помощь?",
     tf_input_ph: "например: Мой арендодатель пытается удержать мой залог, и я считаю это несправедливым...",
-    tf_tagline: "Расскажите, с чем вы столкнулись, — я найду подходящий инструмент.",
+    tf_tagline: "Расскажите, с чем вы столкнулись, — мы найдём подходящий инструмент.",
     tf_situations_label: "Не знаете, что написать? Попробуйте одно",
     tf_sit_brother: "Мы с братом не разговаривали полгода, и я не знаю, как к нему подступиться",
     tf_sit_bill: "В этом счёте что-то не сходится",
@@ -369,7 +369,7 @@ export const toolFinder = {
   th: {
     tf_input_label: "คุณต้องการความช่วยเหลือเรื่องอะไร?",
     tf_input_ph: "เช่น เจ้าของบ้านพยายามจะยึดเงินมัดจำของฉัน และฉันคิดว่ามันไม่ยุติธรรม...",
-    tf_tagline: "เล่าให้ฟังว่าเจอเรื่องอะไรอยู่ แล้วเราจะหาเครื่องมือที่ใช่ให้",
+    tf_tagline: "เล่าให้เราฟังว่าเจอเรื่องอะไรอยู่ แล้วเราจะหาเครื่องมือที่ใช่ให้",
     tf_situations_label: "ไม่รู้จะพิมพ์อะไร? ลองอันนึงดู",
     tf_sit_brother: "ผมกับพี่ชายไม่ได้คุยกันมาหกเดือนแล้ว และไม่รู้จะเริ่มยังไง",
     tf_sit_bill: "มีบางอย่างในบิลใบนี้ที่ไม่สมเหตุสมผล",
@@ -402,7 +402,7 @@ export const toolFinder = {
   vi: {
     tf_input_label: "Bạn cần giúp đỡ về điều gì?",
     tf_input_ph: "ví dụ: Chủ nhà của tôi đang cố giữ tiền đặt cọc của tôi và tôi thấy điều đó không công bằng...",
-    tf_tagline: "Kể tôi nghe bạn đang gặp chuyện gì — tôi sẽ tìm đúng công cụ.",
+    tf_tagline: "Hãy kể cho chúng tôi bạn đang gặp chuyện gì — chúng tôi sẽ tìm đúng công cụ.",
     tf_situations_label: "Chưa biết viết gì? Thử một cái",
     tf_sit_brother: "Tôi và anh trai đã sáu tháng không nói chuyện và tôi không biết mở lời thế nào",
     tf_sit_bill: "Có gì đó trong hóa đơn này không hợp lý",
