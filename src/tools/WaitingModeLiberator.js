@@ -319,6 +319,8 @@ const WaitingModeLiberator = ({ tool }) => {
   const nameInputRef  = useRef(null);
   const timeInputRef  = useRef(null);
   const resultsRef    = useRef(null);
+  const viewTopRef    = useRef(null);
+  const firstViewRef  = useRef(true);
 
   // ─── Event helpers ───
   const updateEvent = (id, field, value) => {
@@ -640,12 +642,28 @@ const WaitingModeLiberator = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   }, [loading, view, hasAnyTime]);
 
-  // ─── Scroll to results ───
+  // ─── Every view change starts at the top of the new view ───
   useEffect(() => {
-    if (!results) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    return () => clearTimeout(t);
-  }, [results]);
+    if (firstViewRef.current) { firstViewRef.current = false; return; }
+    // Twice, because the first measurement is taken while the view is still
+    // settling — fonts, the countdown, the events card — and everything that
+    // lands above the fold afterwards drags the top out of frame again. The
+    // first pass gets you there immediately; the second corrects the drift.
+    const at = (ms) => setTimeout(() => {
+      const el = viewTopRef.current;
+      if (!el) return;
+      // The page chrome is sticky and ~97px tall, so aligning the view root to
+      // the top of the WINDOW parks its first hundred pixels underneath the
+      // header. Measure the bar rather than hardcoding it — it is taller on
+      // small screens and absent when it has scrolled away.
+      const bar = document.querySelector('[data-print-hide].sticky');
+      const offset = (bar ? bar.getBoundingClientRect().height : 0) + 8;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo(0, Math.max(0, top));
+    }, ms);
+    const ids = [at(80), at(420)];
+    return () => ids.forEach(clearTimeout);
+  }, [view]);
 
   // ══════════════════════════════════════════════════
   // RENDER: SETUP
@@ -654,7 +672,7 @@ const WaitingModeLiberator = ({ tool }) => {
     const draftParsed = parseTimeInput(draftTime, draftDayOffset);
     const canCommit   = !!draftParsed;
 
-    return (<div className="pt-2 pb-6 px-4">
+    return (<div ref={viewTopRef} className="pt-2 pb-6 px-4">
         <div className="max-w-xl mx-auto space-y-4">
 
           {/* Header — PF-30: no in-card <h2>. ToolPageWrapper already renders the
@@ -938,7 +956,7 @@ const WaitingModeLiberator = ({ tool }) => {
     const currentStepData = steps[launchStep];
     const blockDone = blockTimerSecs <= 0 && blockTimerRunning === false && launchStep >= steps.length;
 
-    return (<div className="py-6 px-4">
+    return (<div ref={viewTopRef} className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Guided launch header */} <div className={`${c.launch} border-2 rounded-2xl p-6 text-center shadow-lg`}>
@@ -997,7 +1015,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // RENDER: ACTIVE
   // ══════════════════════════════════════════════════
   if (view === 'active' && results) {
-    return (<div className="pt-1 pb-6 px-4">
+    return (<div ref={viewTopRef} className="pt-1 pb-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Results anchor */} <div data-copy-results ref={resultsRef} data-results-anchor />
@@ -1101,11 +1119,13 @@ const WaitingModeLiberator = ({ tool }) => {
                   <span className={`text-sm ${c.text}`}>{step}</span>
                 </div>
               ))} </div>
-          ))} {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>{t('wml_safety_net', { text: results.worst_case })}</p></div>} {/* Actions — go to debrief instead of direct save (v4) */} <div className="flex gap-3">
+          ))} {results.worst_case && <div className={`${c.card} border rounded-xl p-4`}><p className={`text-xs ${c.textMuted}`}>{t('wml_safety_net', { text: results.worst_case })}</p></div>} {/* Actions */} <div className="space-y-2">
             <button onClick={() => setView('debrief')} className={`w-full py-3.5 rounded-xl font-bold ${c.btnPrimary}`}>
               <span>📝</span> {t('wml_done_debrief')}
             </button>
-
+            <button onClick={() => setView('setup')} className={`w-full py-2.5 rounded-xl text-sm font-medium ${c.tag} transition-all`}>
+              <span>↩</span> {t('wml_back_to_events')}
+            </button>
           </div>
 
           <p className={`text-xs ${c.textMuted} text-center`}>
@@ -1126,7 +1146,7 @@ const WaitingModeLiberator = ({ tool }) => {
       || events[0]?.time
       || t('wml_the_appointment');
 
-    return (<div className="py-6 px-4">
+    return (<div ref={viewTopRef} className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
           <div className="text-center mb-2">
             <span className="text-3xl">📝</span>
@@ -1207,10 +1227,12 @@ const WaitingModeLiberator = ({ tool }) => {
                   <p className={`text-sm ${c.accentTxt}`}><span>💚</span> {debriefData.encouragement}</p>
                 </div>
               )} {/* Save */} <button onClick={saveSession} className={`w-full py-4 rounded-xl font-bold text-lg ${c.btnPrimary}`}>
-                <span>💾</span> {t('wml_save_session')}
+                <span>💾</span> {t('wml_save_done')}
               </button>
             </div>
-          )} {/* Skip debrief */} {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>
+          )} {/* Skip the analysis. Same destination as saving after it: the
+                 answers are kept and the tool returns to an empty form. */}
+          {!debriefData && (<button onClick={saveSession} className={`w-full py-2 rounded-lg text-xs ${c.textMuted} underline`}>
               {t('wml_skip_save')}
             </button>
           )} </div>
@@ -1220,7 +1242,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // RENDER: INSIGHTS
   // ══════════════════════════════════════════════════
   if (view === 'insights') {
-    return (<div className="py-6 px-4">
+    return (<div ref={viewTopRef} className="py-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${c.text}`}><span>📈</span> {t('wml_patterns_title')}</h2>

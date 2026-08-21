@@ -281,17 +281,24 @@ const VirtualBodyDouble = ({ tool }) => {
     // Computed against the document rather than scrollIntoView, which resolves
     // against every scroll container between here and the root and is easy to
     // get a surprising answer from.
-    const id = setTimeout(() => {
+    // Instant, and twice. A smooth glide loses — the kickoff messages land while
+    // it is still animating and scroll anchoring adjusts mid-flight, so it ends
+    // somewhere neither of them intended (it asked for 431 and settled at 1554).
+    // The second pass corrects for whatever rendered above the fold in between.
+    const at = (ms) => setTimeout(() => {
       const el = viewTopRef.current;
       if (!el) return;
-      const top = el.getBoundingClientRect().top + window.scrollY - 12;
-      // Instant. A smooth glide loses: the kickoff messages land while it is
-      // still animating, and the browser's scroll anchoring adjusts for the
-      // layout change mid-flight, so the animation ends somewhere neither of
-      // them intended. Measured: it asked for 431 and settled at 1554.
+      // The page chrome is sticky and ~97px tall, so aligning the view root to
+      // the top of the WINDOW parks its first hundred pixels underneath the
+      // header. Measure the bar rather than hardcoding it — it is taller on
+      // small screens and absent when it has scrolled away.
+      const bar = document.querySelector('[data-print-hide].sticky');
+      const offset = (bar ? bar.getBoundingClientRect().height : 0) + 8;
+      const top = el.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo(0, Math.max(0, top));
-    }, 80);
-    return () => clearTimeout(id);
+    }, ms);
+    const ids = [at(80), at(420)];
+    return () => ids.forEach(clearTimeout);
   }, [view]);
 
   useEffect(() => {
