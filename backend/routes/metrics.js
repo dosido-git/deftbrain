@@ -243,12 +243,19 @@ function lineChart(days) {
   const x = i => P + (days.length < 2 ? 0 : (i * (W - 2 * P)) / (days.length - 1));
   const y = v => H - P - (v * (H - 2 * P)) / max;
   const pts = k => days.map((d, i) => `${x(i).toFixed(1)},${y(d[k]).toFixed(1)}`).join(' ');
+  // A polyline needs two points. The past-day range often has one bucket, which
+  // drew an empty chart under a heading, so a lone day is plotted as dots.
+  const dots = days.length === 1
+    ? `<circle cx="${x(0)}" cy="${y(days[0].views)}" r="3" fill="#2c4a6e"/>`
+      + `<circle cx="${x(0)}" cy="${y(days[0].runs)}" r="3" fill="#c8872e"/>`
+    : '';
   const labels = days.map((d, i) => (i === 0 || i === days.length - 1 || i === Math.floor(days.length / 2))
     ? `<text x="${x(i)}" y="${H - 8}" font-size="10" text-anchor="middle" fill="#888">${d.day.slice(5)}</text>` : '').join('');
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">
     <text x="${P}" y="14" font-size="10" fill="#888">max ${max}</text>
     <polyline points="${pts('views')}" fill="none" stroke="#2c4a6e" stroke-width="2"/>
     <polyline points="${pts('runs')}" fill="none" stroke="#c8872e" stroke-width="2"/>
+    ${dots}
     ${labels}
     <text x="${W - P}" y="14" font-size="10" text-anchor="end"><tspan fill="#2c4a6e">— views</tspan>  <tspan fill="#c8872e">— runs</tspan></text>
   </svg>`;
@@ -308,6 +315,7 @@ router.get('/metrics', rateLimit(METRIC_LIMITS, 'metrics-dash:'), (req, res) => 
     <input id="key" type="password" placeholder="metrics key" autocomplete="off" spellcheck="false">
     <label><input id="remember" type="checkbox" checked> remember</label>
     <select id="range" onchange="onRange()">
+      <option value="1d">Past day</option>
       <option value="7d">Past week</option>
       <option value="14d">Past 2 weeks</option>
       <option value="30d" selected>Past month</option>
@@ -421,11 +429,11 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
   if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
   try {
     // ── time-range filter (query param; key stays in the header) ──
-    const RANGE_DAYS = { '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
+    const RANGE_DAYS = { '1d': 1, '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
     const rangeParam = RANGE_DAYS[req.query.range] ? String(req.query.range)
       : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
     const rangeDays = RANGE_DAYS[rangeParam] || null;
-    const rangeText = { '7d': 'past week', '14d': 'past 2 weeks', '30d': 'past month', '90d': 'past 3 months', all: 'all time' }[rangeParam];
+    const rangeText = { '1d': 'past day', '7d': 'past week', '14d': 'past 2 weeks', '30d': 'past month', '90d': 'past 3 months', all: 'all time' }[rangeParam];
 
     const allRows = readMetrics();
     const cutoffISO = rangeDays ? new Date(Date.now() - rangeDays * 86400000).toISOString() : null;
