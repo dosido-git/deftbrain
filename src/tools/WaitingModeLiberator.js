@@ -531,7 +531,7 @@ const WaitingModeLiberator = ({ tool }) => {
       });
       setDebriefData(data);
     } catch (err) {
-      setDebriefData({ time_reflection: t('wml_fb_time'), anxiety_check: { before: anxietyBefore, reality_assessment: t('wml_fb_reality'), insight: null }, takeaway: t('wml_fb_takeaway') });
+      setDebriefData({ anxiety_check: { before: anxietyBefore, reality_assessment: t('wml_fb_reality'), insight: null }, takeaway: t('wml_fb_takeaway') });
     } };
 
   // ─── API: Review ───
@@ -589,7 +589,7 @@ const WaitingModeLiberator = ({ tool }) => {
     const lines = [
       t('wml_copy_debrief_header', { label: eventLabel }),
       '',
-      debriefData.time_reflection ? t('wml_copy_time', { text: debriefData.time_reflection }) : '',
+      debriefUsedTime ? t('wml_copy_time', { text: t(`wml_reclaim_${debriefUsedTime}`) }) : '',
       debriefData.anxiety_check?.insight ? t('wml_copy_insight', { text: debriefData.anxiety_check.insight }) : '',
       debriefData.takeaway ? t('wml_copy_next', { text: debriefData.takeaway }) : '',
       BRAND,
@@ -1200,8 +1200,8 @@ const WaitingModeLiberator = ({ tool }) => {
           )} {/* Debrief results */} {debriefData && (<div className="space-y-4">
               <div data-copy-results ref={resultsRef} data-results-anchor />
               {/* Headline: how much of the day came back. One line, no card. */}
-              {debriefData.time_reflection && (<p className={`text-sm ${c.textSecondary}`}>
-                  <span className="me-1">⏱️</span>{debriefData.time_reflection}</p>
+              {debriefUsedTime && (<p className={`text-sm ${c.textSecondary}`}>
+                  <span className="me-1">⏱️</span>{t(`wml_reclaim_${debriefUsedTime}`)}</p>
               )} {/* The discovery. */} {debriefData.anxiety_check && (<div className={`${c.card} border-2 rounded-xl p-5 space-y-3`}>
                   <h3 className={`text-sm font-bold ${c.text}`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>
                   <div className="flex items-center justify-center gap-6">

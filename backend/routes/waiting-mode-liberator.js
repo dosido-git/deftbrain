@@ -216,17 +216,20 @@ ${note ? `THEIR NOTE: "${note}"` : ''}
 ${anxietyHistory}
 
 Generate:
-1. A reflection on how much of the day they got back — not on how productive they were
-2. The comparison this whole tool exists to make: what they expected, against what happened. Lead with it plainly — "You expected this to be rough. It turned out okay." — and then stop. One appointment is one data point.
-3. If there's anxiety history for this appointment type, show the trend
-4. One concrete takeaway for next time
-5. If they didn't use the time well, don't guilt — reframe as data
-6. clock_check: compare the clock-watching they PREDICTED to what they REPORT. If they expected to watch it constantly and did not, say so plainly — that is the finding this tool exists to surface, and it is about the alarm doing the holding, not about them being disciplined. If they watched it as much as they feared, say that plainly too and do not spin it.
+1. The comparison this whole tool exists to make: what they expected, against what happened. Lead with it plainly — "You expected this to be rough. It turned out okay." — and then stop. One appointment is one data point.
+2. If there's anxiety history for this appointment type, show the trend
+3. One concrete takeaway for next time
+4. clock_check: compare the clock-watching they PREDICTED to what they REPORT. If they expected to watch it constantly and did not, say so plainly — that is the finding this tool exists to surface, and it is about the alarm doing the holding, not about them being disciplined. If they watched it as much as they feared, say that plainly too and do not spin it.
 
 Say only what the numbers above support. Never assert a cause for how they felt, and never tell them what they have "learned" — state what happened and let it stand.
 
 CALIBRATION — the line this tool has to walk:
-- The BEFORE is a 1-10 number and the AFTER is a word they chose from a list. They are not two points on one scale. Never write "the gap between an 8 and okay" or subtract one from the other. Name each in its own terms and let the difference speak: "You were at 8/10 beforehand, and afterwards you called it okay, not bad."
+- The BEFORE is a 1-10 number and the AFTER is a word they chose from a list. They are not two points on one scale. Never write "the gap between an 8 and okay" or subtract one from the other. Name each in its own terms, note that there is a difference, and stop.
+- A rating does not mean anything in general. It is this person's number on a slider, not a measurement, and it predicts nothing about what an appointment "usually" is. Never characterise what a score typically promises, implies or leads to.
+  NO:  That is a different thing than what a 6 usually promises.
+  YES: You were at 6/10 going in, and afterwards you called it meh - not a disaster, not fine, just flat. That is a difference worth noticing.
+  Then stop. No theory.
+- Do not translate the number into a claim about what they expected, and do not label their thinking. "You expected this to be rough" and "you weren't catastrophising" are both verdicts on a person from one slider position. Report the number, report the word, note the difference or the absence of one.
 - NEVER end on praise. Do not congratulate them for attending the appointment — this tool had nothing to do with that — and do not tell them what they managed or how brave it was. Say what happened and stop.
 - ONE session is one session. From a single debrief you may say what happened and nothing else. "Your brain overestimates this" is a claim about a person, and one appointment cannot support it.
 - A PATTERN needs the history above, and even then say how many: "across your last five medical appointments" is a fact; "your brain always does this" is not. If there is no history, "trend" is null — do not manufacture one.
@@ -239,7 +242,6 @@ CALIBRATION — the line this tool has to walk:
 
 Return ONLY valid JSON:
 {
-  "time_reflection": "How they used the time — honest, encouraging — one sentence",
   "anxiety_check": {
     "before": ${anxietyBefore || 5},
     "reality_assessment": "What actually happened vs what they feared — 1-2 sentences",
@@ -256,7 +258,7 @@ Return ONLY valid JSON:
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-Debrief' });
-        if (!parsed.time_reflection) {
+        if (!parsed.anxiety_check) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
