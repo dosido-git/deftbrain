@@ -1,6 +1,6 @@
 {
  "homepage": {
-  "hash": "da740a2ede5758dbe83abd236753e7add089a2ab",
+  "hash": "d2fa588aa00c06209c0709d91b7308c48e5859fd",
   "lastmod": "2026-08-21"
  },
  "static:about": {
@@ -160,8 +160,8 @@
   "lastmod": "2026-08-21"
  },
  "tool:WrongAnswersOnly": {
-  "hash": "696a3a612e84dcfe42ac4a8c76998be7fdd53700",
-  "lastmod": "2026-08-14"
+  "hash": "dd58e1dbd3e0a30dd04b74b8f78a5cf297f12d71",
+  "lastmod": "2026-08-21"
  },
  "tool:HiddenPaths": {
   "hash": "6d5497f2f0be336719f9ed58d232c30c690cc34e",

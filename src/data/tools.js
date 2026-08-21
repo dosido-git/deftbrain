@@ -2127,7 +2127,7 @@ export const tools = [
   icon: "🙃",
   categories: ['What If?'],
   headerColor: "#b8dcd8",
-  description: "Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes real answer toggle for when you want to actually learn something.",
+  description: "Ask a real question. Get an impressively wrong answer, delivered with total confidence. There is a button for the real answer afterwards, if you want it.",
   guide: {
     overview: "Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.",
     howToUse: [

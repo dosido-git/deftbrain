@@ -6,27 +6,22 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const PERSONALITY = `World's most confidently wrong expert. Give beautifully structured, internally consistent, completely incorrect answers. The humor is HOW right you sound while being totally wrong — impeccable logic, unshakeable confidence, surgically fabricated facts.
 
-RULES: Every wrong answer must be internally consistent. Use real expert structure (citations, percentages, researcher names, "as research shows..."). Wrongness escalates — start plausible, end absurd. Never offensive. Real answer must not appear anywhere in the response.`;
+RULES: Every wrong answer must be internally consistent. Use real expert structure (citations, percentages, researcher names, "as research shows..."). Wrongness escalates — start plausible, end absurd. Never offensive. Real answer must not appear anywhere in the response.
+
+NO HEDGING, EVER. This is the one tool on this site where uncertainty is the enemy. No "perhaps", no "might", no "one possibility", no "it is worth noting", no "some researchers believe". You are not speculating; you are stating settled fact that happens to be entirely false. The comedy is the gap between the confidence and the content, and a single qualifier collapses it.
+
+THE ONE THING YOU WILL NOT DO. The premise is authoritative misinformation delivered straight, and it only works where believing it costs nobody anything. If a wrong answer could plausibly get someone hurt — medication and doses, allergies and first aid, electrical or gas work, chemicals that should not be mixed, driving, firearms, what to do in an emergency, whether symptoms need a doctor, anything about a child's safety — do not answer it wrongly. Do not lecture either. Decline in character, in one line, and hand them something better: set decline_reason and leave every other field null.`;
 
 // ════════════════════════════════════════════════════════════
 // POST /wrong-answers-only — Confidently incorrect answers
 // ════════════════════════════════════════════════════════════
 router.post('/wrong-answers-only', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { question, category, seriousness, userLanguage } = req.body;
+    const { question, seriousness, userLanguage } = req.body;
 
     if (!question?.trim()) {
       return res.status(400).json({ error: 'Ask me anything — I\'ll get it wrong!' });
     }
-
-    const categoryHints = {
-      science: 'Answer like a confident but completely wrong scientist. Use fake studies, invented chemical compounds, and nonsense equations that look real.',
-      history: 'Answer like a confident but completely wrong historian. Invent plausible-sounding dates, treaties, and historical figures. Mix real names with fake events.',
-      cooking: 'Answer like a confident but completely wrong chef. Invent cooking techniques, fake temperatures, and ingredient combinations that sound professional but are absurd.',
-      life: 'Answer like a confident but completely wrong life coach. Give advice that sounds wise but is logically backwards. Use fake psychology terms.',
-      tech: 'Answer like a confident but completely wrong tech expert. Invent protocols, fake error codes, and debugging steps that sound legitimate.',
-      nature: 'Answer like a confident but completely wrong nature documentary narrator. Invent animal behaviors, fake Latin species names, and absurd evolutionary explanations.'
-    };
 
     const seriousnessMap = {
       deadpan: 'DEADPAN — 100% serious delivery. No winks, no hints you\'re joking. Pure confidence. Academic tone throughout.',
@@ -37,8 +32,8 @@ router.post('/wrong-answers-only', rateLimit(DEFAULT_LIMITS), async (req, res) =
     const userPrompt = `WRONG ANSWERS ONLY:
 
 QUESTION: "${question.trim()}"
-CATEGORY: ${category || 'general'}
-${categoryHints[category] || 'Answer like a confident expert in whatever field this question touches. Be completely, beautifully wrong.'}
+
+Work out for yourself what field this belongs to and answer as its most confident practitioner — the scientist with the fake study, the historian with the invented treaty, the chef with the impossible temperature, the nature documentary narrator with the made-up Latin. Nobody told you the category and nobody needed to.
 
 TONE: ${seriousnessMap[seriousness] || seriousnessMap.playful}
 
@@ -57,7 +52,8 @@ Return ONLY valid JSON:
   "common_misconception": "What you claim is the 'common misconception' — which is actually the real answer, framed as something only amateurs believe",
   "expert_tip": "A final piece of confidently wrong bonus advice that takes the wrongness to its logical extreme",
   "wrongness_level": 7,
-  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing"
+  "real_answer_hint": "A very brief, subtle hint toward the actual truth — for people who want to learn something real after laughing",
+  "decline_reason": "null in almost every case. ONLY when a wrong answer could get someone hurt: one line, in character, no lecture, that names something better to ask instead. Every other field null when this is set."
 }
 
 RULES:
@@ -72,6 +68,11 @@ model: MODELS.FAST,
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'wrong-answers-only' });
+    // A decline is a valid answer, not a failure — it arrives with every other
+    // field null on purpose.
+    if (parsed.decline_reason) {
+      return res.json({ decline_reason: parsed.decline_reason });
+    }
     if (!parsed.confident_answer) {
       return res.status(500).json({ error: 'Could not generate a wrong answer. Please try again.' });
     }

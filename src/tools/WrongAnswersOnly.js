@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -17,33 +17,28 @@ const WrongAnswersOnly = ({ tool }) => {
   const { t } = useTranslation();
 
   // ── Localized constants ──
-  const CATEGORIES = [
-    { value: 'science', label: t('wao_cat_science'), icon: '🔬' },
-    { value: 'history', label: t('wao_cat_history'), icon: '📜' },
-    { value: 'cooking', label: t('wao_cat_cooking'), icon: '👨‍🍳' },
-    { value: 'life', label: t('wao_cat_life'), icon: '🧘' },
-    { value: 'tech', label: t('wao_cat_tech'), icon: '💻' },
-    { value: 'nature', label: t('wao_cat_nature'), icon: '🌿' },
-  ];
-
   const SERIOUSNESS = [
     { value: 'deadpan', label: t('wao_ser_deadpan'), icon: '😐', desc: t('wao_ser_deadpan_desc') },
     { value: 'playful', label: t('wao_ser_playful'), icon: '😏', desc: t('wao_ser_playful_desc') },
     { value: 'unhinged', label: t('wao_ser_unhinged'), icon: '🤪', desc: t('wao_ser_unhinged_desc') },
   ];
 
-  const QUICK_QUESTIONS = [
-    t('wao_qq_sky'),
-    t('wao_qq_planes'),
-    t('wao_qq_cats'),
-    t('wao_qq_thunder'),
-    t('wao_qq_wifi'),
-    t('wao_qq_dream'),
-    t('wao_qq_magnets'),
-    t('wao_qq_pizza'),
-    t('wao_qq_wwi'),
-    t('wao_qq_vaccines'),
+  const QUESTION_POOL = [
+    'wao_qq_sky', 'wao_qq_planes', 'wao_qq_cats', 'wao_qq_thunder',
+    'wao_qq_wifi', 'wao_qq_dream', 'wao_qq_magnets', 'wao_qq_pizza',
+    'wao_qq_flamingos', 'wao_qq_yawn', 'wao_qq_doughnuts', 'wao_qq_dogscircle',
+    'wao_qq_popcorn', 'wao_qq_eyebrows', 'wao_qq_tennis', 'wao_qq_onions',
   ];
+  // Four, drawn once per mount, so a second visit offers different bait.
+  const QUICK_QUESTIONS = useMemo(() => {
+    const pool = [...QUESTION_POOL];
+    const out = [];
+    while (out.length < 4 && pool.length) {
+      out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    }
+    return out.map(k => t(k));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const EXAMPLES = [
     { question: t('wao_ex_yawn'), category: 'science' },
@@ -88,7 +83,6 @@ const WrongAnswersOnly = ({ tool }) => {
 
   // ── State ──
   const [question, setQuestion] = useState('');
-  const [category, setCategory] = useState('science');
   const [seriousness, setSeriousness] = useState('playful');
   const [results, setResults] = usePersistentState('wronganswersonly-result', null);
   const [error, setError] = useState('');
@@ -98,7 +92,6 @@ const WrongAnswersOnly = ({ tool }) => {
   const loadExample = () => {
     const ex = pickExample('WrongAnswersOnly', EXAMPLES);
     setQuestion(ex.question);
-    setCategory(ex.category);
   };
 
   const resultsRef = useRef(null);
@@ -123,7 +116,6 @@ const WrongAnswersOnly = ({ tool }) => {
     try {
       const data = await callToolEndpoint('wrong-answers-only', {
         question: question.trim(),
-        category,
         seriousness,
         seed: Date.now(),
         userLocale,
@@ -138,7 +130,7 @@ const WrongAnswersOnly = ({ tool }) => {
       }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('wao_error'));
-    } }, [question, category, seriousness, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+    } }, [question, seriousness, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   // Run with an explicit question value — avoids stale closure from pill clicks
 
@@ -225,18 +217,10 @@ const WrongAnswersOnly = ({ tool }) => {
             className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`} onKeyDown={e => e.key === 'Enter' && question.trim() && runWrong()} />
         </div>
 
-        {/* Category + Seriousness */} <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        {/* How wrong — the one control the model cannot infer, and the only
+             one that is part of the joke. */} <div className="mb-5">
           <div>
-            <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('wao_category')}</label>
-            <div className="flex flex-wrap gap-1.5">
-              {CATEGORIES.map(cat => (<button key={cat.value} onClick={() => setCategory(cat.value)} className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors min-h-[30px] ${
-                    category === cat.value ? c.pillActive : c.pillInactive
-                  }`}>
-                  <span className="me-1">{cat.icon}</span>{cat.label} </button>
-              ))} </div>
-          </div>
-          <div>
-            <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('wao_how_serious')}</label>
+            <label className={`text-xs font-bold ${c.labelText} uppercase block mb-2`}>{t('wao_how_wrong')}</label>
             <div className="flex gap-2">
               {SERIOUSNESS.map(s => (<button key={s.value} onClick={() => setSeriousness(s.value)} className={`flex-1 py-2 rounded-lg border text-center transition-colors min-h-[44px] ${
                     seriousness === s.value ? c.pillActive : c.pillInactive
@@ -247,8 +231,6 @@ const WrongAnswersOnly = ({ tool }) => {
               ))} </div>
           </div>
         </div>
-
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('wao_chaos_q')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}</p>
 
         <button title={t('cmd_enter')} onClick={runWrong} disabled={!question.trim() || loading} className={`relative w-full ${(!question.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
           {loading
@@ -261,12 +243,25 @@ const WrongAnswersOnly = ({ tool }) => {
         )}
         </button>
         <p className={`text-xs text-center ${c.textMuted}`}>{t('wao_disclaimer')}</p>
+        {!results && (
+          <p className={`text-xs text-center ${c.textMuted} mt-3`}>
+            {t('wao_chaos_q')} <a href="/PlotTwist" className={linkStyle}>🔀 {t('wao_plottwist')}</a> {t('wao_chaos_tail')}
+          </p>
+        )}
       </div>
 
       {/* Error */} {error && (<div className={`${c.danger} border rounded-lg p-4 flex items-start gap-3`}>
           <span>⚠️</span><p className="text-sm">{error}</p>
         </div>
-      )} {/* Results */} {results && (<div className="space-y-4">
+      )} {/* One results block, two shapes. A decline arrives with every other
+             field null on purpose, so it is a kind of result rather than a
+             separate condition racing it on the same state. */}
+      {results && (results.decline_reason ? (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-6 text-center`}>
+          <span className="text-3xl block mb-2">{tool?.icon ?? '🙃'}</span>
+          <p className={`text-sm ${c.text}`}>{results.decline_reason}</p>
+        </div>
+      ) : (<div className="space-y-4">
           <div className="flex justify-end">
             <div data-copy-results ref={resultsRef} data-results-anchor />
           </div>
@@ -286,8 +281,17 @@ const WrongAnswersOnly = ({ tool }) => {
                 </div>
               )} </div>
           )} {/* The wrong answer */} {results.confident_answer && (<div className={`${c.card} border rounded-xl p-5`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🎓 {t('wao_expert_answer')}</h3>
+              {/* The one place this tool gets to misbehave. The comedy is a
+                  dead-serious presentation of nonsense, so the stamp plays it
+                  perfectly straight and the asterisk does the work. */}
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h3 className={`text-sm font-bold ${c.text}`}>🎓 {t('wao_expert_answer')}</h3>
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded border ${c.pillActive}`}>
+                  ✓ {t('wao_verified')}
+                </span>
+              </div>
               <p className={`text-sm ${c.textSecondary} leading-relaxed whitespace-pre-line`}>{results.confident_answer}</p>
+              <p className={`text-[9px] ${c.textMuted} mt-2 italic`}>{t('wao_verified_note')}</p>
             </div>
           )} {/* Fake evidence */} {results.supporting_evidence?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
               <h3 className={`text-sm font-bold ${c.text} mb-3`}>📎 {t('wao_evidence')}</h3>
@@ -330,13 +334,14 @@ const WrongAnswersOnly = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🔗 {t('wao_more_like')}</p>
             <div className="flex flex-wrap gap-3">
+              <a href="/PlotTwist" className={`text-xs ${linkStyle}`}>🔀 {t('wao_plottwist')}</a>
               <a href="/TimeWarp" className={`text-xs ${linkStyle}`}>⏰ {t('wao_timewarp')}</a>
               <a href="/WhichLife" className={`text-xs ${linkStyle}`}>🤔 {t('wao_whatif')}</a>
             </div>
           </div>
         </div>
-      )} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('wao_recent')}</p>
+      ))} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🙃 {t('wao_previously_wrong')}</p>
           <div className="space-y-1">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wao_session')}</span>
