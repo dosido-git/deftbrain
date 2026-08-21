@@ -91,3 +91,25 @@ evening, and an explanatory paragraph under each card.
   nothing sets. Payload is `windowCount` now, with an explicit "never score them
   on it" note.
 
+### Final subtraction
+
+- **"Can't do the whole plan? Just pick one thing" removed** end to end (banner,
+  handler, state, `one-thing` backend branch). It made sense when the output WAS
+  a plan; now the page has already said you don't need to do all of this, so a
+  banner asking what to do if you can't finish reintroduces the thing to fail at.
+- **Weekday, not arithmetic.** "In 3 days" -> "Sunday", in the payload, the
+  committed event row and the entry preview. The schema exemplars were time-only
+  (`"time": "2:00 PM"`), so the model was dropping the day word it had been given
+  — both now say "echo EXACTLY as given, day word included".
+- **The buffer is a start time, not a journey time.** "Head out with the 35-minute
+  buffer you set" still read as "the trip takes 35 minutes". Rule + NO/YES pairs:
+  the alarm is the cue to start, the buffer covers getting ready AND getting there,
+  and how it splits is unknown.
+- **Dread language is conditioned on the number.** The slider asks how they FEEL;
+  at 1-4 they are not worried and must not be written to as if they were.
+- **One contextual transition instead of a link row.** The results view had no
+  cross-reference at all (the two that existed were on the form and the insights
+  view). Now one line where someone who picked something and still can't start is
+  actually standing. The six-name "Related tools" block on the printout is the
+  SITEWIDE `RelatedLinks` SEO layer, not this tool's — left alone deliberately.
+

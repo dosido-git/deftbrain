@@ -280,7 +280,6 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── State: Results ───
   const [results, setResults] = usePersistentState('waitingmodeliberator-result', null);
-  const [oneThingData, setOneThingData] = useState(null);
   const [reviewData, setReviewData] = useState(null);
 
   // ─── State: Countdown ───
@@ -454,7 +453,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // ─── API: Liberate ───
   const handleLiberate = async () => {
     const validationError = validateEvents();
-    if (validationError) { setError(validationError); return; } setError(''); setResults(null); setOneThingData(null);
+    if (validationError) { setError(validationError); return; } setError(''); setResults(null);
     setChosenTask({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
     setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote(''); setDebriefClock('');
 
@@ -475,7 +474,8 @@ const WaitingModeLiberator = ({ tool }) => {
         events: sortedEvents.map(ev => {
           const totalPrep = (parseInt(ev.prepMinutes) || 0) + (parseInt(ev.travelMinutes) || 0);
           const dayOff = parsedDayOffset(ev.parsed);
-          return { name: ev.name || '', time: dayOff > 0 ? `${dayOff === 1 ? 'Tomorrow' : `In ${dayOff} days`}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes, prepAlarm: formatTimeShort(new Date(ev.parsed.getTime() - totalPrep * 60 * 1000)) };
+          const dayWord = dayOff === 0 ? '' : dayOff === 1 ? 'Tomorrow' : ev.parsed.toLocaleDateString('en-US', { weekday: 'long' });
+          return { name: ev.name || '', time: dayWord ? `${dayWord}, ${formatTimeShort(ev.parsed)}` : formatTimeShort(ev.parsed), type: ev.type === 'other' && ev.customType ? ev.customType : (ev.type || ev.name || 'general'), prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes, prepAlarm: formatTimeShort(new Date(ev.parsed.getTime() - totalPrep * 60 * 1000)) };
         }),
         currentTime: formatTimeShort(now), userTasks: userTasks.trim(), energy, clockChecking, anxietyBefore,
         firstPrepAlarm: earliestPrepAlarm ? formatTimeShort(earliestPrepAlarm) : null,
@@ -514,15 +514,6 @@ const WaitingModeLiberator = ({ tool }) => {
     } catch (err) { setError(t('wml_err_launch')); } };
 
   // ─── API: One thing ───
-  const handleOneThing = async () => {
-    try {
-      const data = await callToolEndpoint('waiting-mode-liberator', {
-        action: 'one-thing', freeMinutes: results?.total_free_minutes, userTasks: userTasks.trim(),
-        appointmentType: events[0]?.type || '', energy,
-        userLocale, userCurrency, userRegion,
-      });
-      setOneThingData(data);
-    } catch (err) { setError(t('wml_err_pick')); } };
 
   // ─── API: Debrief (v4) ───
   const handleDebrief = async () => {
@@ -566,7 +557,7 @@ const WaitingModeLiberator = ({ tool }) => {
       energy, userTasks: userTasks.trim(), anxietyBefore,
       freeMinutes: results?.total_free_minutes || 0,
       totalBlocks: results?.windows?.length || 0,
-      usedOneThing: !!oneThingData, usedLaunch: !!launchData,
+      usedLaunch: !!launchData,
       debrief: (debriefUsedTime || debriefReality || debriefClock || debriefNote.trim())
         ? { usedTime: debriefUsedTime, reality: debriefReality, clockBefore: clockChecking, clockAfter: debriefClock, note: debriefNote.trim() }
         : null,
@@ -578,7 +569,7 @@ const WaitingModeLiberator = ({ tool }) => {
 
   const resetAndGoBack = () => {
     setView('setup');
-    setResults(null); setOneThingData(null); setReviewData(null);
+    setResults(null); setReviewData(null);
     countdownTargetRef.current = null; blockTargetRef.current = null;
     setCountdownSeconds(null); setShowPrepAlert(false);
     clearInterval(countdownRef.current); clearInterval(blockTimerRef.current);
@@ -762,9 +753,15 @@ const WaitingModeLiberator = ({ tool }) => {
                         <div className="flex-1 min-w-0">
                           <span className={`text-sm font-semibold ${c.text}`}>
                             {ev.name || typeLabel || t('wml_appointment')} </span>
-                          {(() => { const dOff = parsedDayOffset(parseTimeInput(ev.time, ev.dayOffset)); return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ms-1.5 ${c.badge}`}>
-                              {dOff === 1 ? t('wml_tomorrow') : t('wml_plus_days', { n: dOff })} </span>
-                          ); })()} <span className={`text-xs ${c.textMuted} ms-1.5`}>· {ev.time}</span>
+                          {(() => {
+                            const at = parseTimeInput(ev.time, ev.dayOffset);
+                            const dOff = parsedDayOffset(at);
+                            // Same rule as the entry preview: past tomorrow, a weekday
+                            // reads as a day and "+3d" reads as arithmetic.
+                            return dOff > 0 && (<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ms-1.5 ${c.badge}`}>
+                              {dOff === 1 ? t('wml_tomorrow') : at.toLocaleDateString(undefined, { weekday: 'long' })} </span>
+                            );
+                          })()} <span className={`text-xs ${c.textMuted} ms-1.5`}>· {ev.time}</span>
                           <span className={`text-xs ${c.textMuted} ms-1`}>{t('wml_prep_travel', { prep: ev.prepMinutes, travel: ev.travelMinutes })}</span>
                         </div>
                         <span className={`text-xs ${c.textMuted}`}>{isExpanded ? '✏️' : '✏️'}</span>
@@ -898,12 +895,11 @@ const WaitingModeLiberator = ({ tool }) => {
           )} {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}>⚠️ {error}</p></div>} <p className={`text-center text-xs ${c.textMuted}`}>{t('wml_disclaimer')}</p>
 
           {/* Cross-refs */} <div className={`${c.card} border rounded-xl p-4`}>
-            <p className={`text-xs font-medium ${c.textMuted} mb-2`}>{t('wml_related')}</p>
-            <div className="flex flex-wrap gap-2">
-              {[{ id: 'VirtualBodyDouble', icon: '👥', labelKey: 'wml_xref_vbd' }, { id: 'CrisisPrioritizer', icon: '🚨', labelKey: 'wml_xref_crisis' }, { id: 'SocialBatteryAdvisor', icon: '⚡', labelKey: 'wml_xref_dopamine' }].map(x => (<a key={x.id} href={`/${x.id}`}
-                  className={`text-xs px-3 py-1.5 rounded-lg ${c.tag} ${c.cardHover} transition-colors`}>
-                  <span>{x.icon}</span> {t(x.labelKey)} </a>
-              ))} </div>
+            <p className={`text-xs ${c.textMuted}`}>
+              {t('wml_xref_stuck_q')}{' '}
+              <a href="/VirtualBodyDouble" className={`font-medium ${isDark ? 'text-cyan-300' : 'text-cyan-800'} underline`}>👥 {t('wml_xref_vbd')}</a>{' '}
+              {t('wml_xref_stuck_tail')}
+            </p>
           </div>
 
           {/* Recent sessions */} {sessionLog.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
@@ -1098,21 +1094,6 @@ const WaitingModeLiberator = ({ tool }) => {
                   );
                 })} </div>
             </div>
-          )} {/* One thing */} {!oneThingData && (<button onClick={handleOneThing} disabled={loading} className={`w-full py-3 rounded-xl text-sm font-medium ${c.warning} border ${c.warning} transition-all disabled:opacity-40`}>
-              {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🎯</span>} {t('wml_pick_one')}
-            </button>
-          )} {oneThingData && (<div className={`${c.warning} border-2 rounded-xl p-5 space-y-3`}>
-              <h3 className={`text-sm font-bold ${c.warning}`}><span>🎯</span> {t('wml_one_thing')}</h3>
-              <p className={`text-base font-medium ${c.warning}`}>{oneThingData.the_one_thing}</p>
-              <div className={`p-3 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-100/50'}`}>
-                <p className={`text-xs font-bold ${c.warning} mb-1`}>{t('wml_first_action')}</p>
-                <p className={`text-sm ${c.warning}`}>{oneThingData.first_physical_action}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className={`text-xs ${c.warning}`}>⏱️ {oneThingData.time_needed}</span>
-                <span className={`text-xs ${c.warning}`}>{oneThingData.why_this_one}</span>
-              </div>
-              {oneThingData.escape_hatch && <p className={`text-xs ${c.warning} italic`}>🚪 {oneThingData.escape_hatch}</p>} {oneThingData.momentum_hook && <p className={`text-xs ${c.warning} opacity-70`}>→ {oneThingData.momentum_hook}</p>} </div>
           )} {/* Prep plans */} {results.prep_plans?.map((pp, i) => (<div key={i} className={`${c.card} border rounded-xl p-5 space-y-2`}>
               <h3 className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider`}><span>⏰</span> {t('wml_prep_for', { time: pp.event_time, alarm: pp.alarm_time })}</h3>
               {pp.steps?.map((step, j) => (<div key={j} className={`flex items-start gap-2 p-2 rounded-lg ${c.blockBg}`}>
@@ -1126,6 +1107,12 @@ const WaitingModeLiberator = ({ tool }) => {
             </button>
 
           </div>
+
+          <p className={`text-xs ${c.textMuted} text-center`}>
+            {t('wml_xref_stuck_q')}{' '}
+            <a href="/VirtualBodyDouble" className={linkStyle}>👥 {t('wml_xref_vbd')}</a>{' '}
+            {t('wml_xref_stuck_tail')}
+          </p>
 
           {error && <div className={`${c.danger} border rounded-xl p-4`}><p className={`text-sm ${c.errorText}`}><span>⚠️</span> {error}</p></div>} </div>
       </div>
@@ -1282,16 +1269,12 @@ const WaitingModeLiberator = ({ tool }) => {
               </div>
             ))} </div>
         </div>
-      )} {/* Related tools */} <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-2`}>
-        <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('wml_related_short')}</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/TaskAvalancheBreaker" className={`text-xs ${linkStyle}`}>⚡ {t('wml_xref_avalanche')}</a>
-          <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ {t('wml_xref_pep')}</a>
-        </div>
-      </div>
+      )} {/* One transition, not a menu — see the cross-ref note above. */}
       {results && (
         <p className={`text-xs ${c.textMuted} mt-3 text-center`}>
-          {t('wml_waiting_xref')} <a href="/TaskAvalancheBreaker" className={linkStyle}>⛏️ {t('wml_xref_avalanche')}</a> {t('wml_avalanche_tail')}
+          {t('wml_xref_stuck_q')}{' '}
+          <a href="/VirtualBodyDouble" className={linkStyle}>👥 {t('wml_xref_vbd')}</a>{' '}
+          {t('wml_xref_stuck_tail')}
         </p>
       )}
       </div>

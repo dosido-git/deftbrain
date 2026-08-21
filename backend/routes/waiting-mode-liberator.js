@@ -59,7 +59,7 @@ ENERGY LEVEL: ${energy || 3}/5
 ${energyDesc[parseInt(energy) || 3]}
 
 ${userTasks?.trim() ? `THEIR ACTUAL TASKS: "${userTasks.trim()}"` : 'No specific tasks listed.'}
-${anxietyBefore ? `DREAD ABOUT THE EVENT: ${anxietyBefore}/10` : ''}
+${anxietyBefore ? `HOW THEY FEEL ABOUT THE EVENT: ${anxietyBefore}/10, where 1 is completely fine and 10 is dreading it. Match your language to the number: at 1-4 they are not worried and must not be written to as though they were, at 5-6 say nothing about it either way, and only above 7 is this something they are dreading. Never tell them how they feel.` : ''}
 CLOCK-CHECKING: ${{
   never: 'Never — they can put it down. Do not belabour reassurance they did not ask for; just give them the windows.',
   constantly: 'Constantly — this is the actual problem. The plan has to earn the right to be forgotten: name the alarm explicitly, keep blocks SHORT (20-30 min) so there is a natural surfacing point, and make clock_freedom about why checking is now unnecessary rather than telling them to stop.',
@@ -71,7 +71,11 @@ GROUNDING — the tool's credibility rests entirely on this:
   YES: You have enough time here for a real conversation instead of squeezing one in.
   NO:  After the walk your head will be clearer, so emails will go faster.
   YES: Twenty-five minutes is enough for a first pass at the inbox.
-- Never invent logistics. You do not know where they are, how far away the event is, whether it is remote, what they need to bring, or what the room is like. Prep steps may only reference what the input actually contains. The prep buffer is the number THEY entered — refer to it as the buffer they set, never as a travel time you calculated or verified.
+- Never invent logistics. You do not know where they are, how far away the event is, whether it is remote, what they need to bring, or what the room is like. Prep steps may only reference what the input actually contains.
+- The buffer is the gap between the alarm and the appointment, and it is the number THEY entered. It covers getting ready AND getting there, and you do not know how it splits. Never restate it as a travel time, an arrival time, or a departure time.
+  NO:  Leave the house - you have exactly 35 minutes built in for travel.
+  NO:  Head out with the 35-minute buffer you set.
+  YES: The alarm at 10:40 is your cue to start. The 35 minutes after it are yours for getting ready and getting there.
 - "reframe" describes the situation, not the person. Keep any metaphor; drop the diagnosis.
   NO:  You are not frozen because you are lazy - you are frozen because your brain is holding two appointments in short-term memory like open tabs.
   YES: Two appointments can sit in the back of your mind like open tabs. The alarms can keep watch now, so you do not have to.
@@ -99,7 +103,7 @@ TRAVEL: post-event windows must budget the RETURN travel from the event, not jus
 
 Return ONLY valid JSON:
 {
-  "events_summary": [{ "time": "2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],
+  "events_summary": [{ "time": "Echo the event's time string EXACTLY as given above, day word included — Monday, 2:00 PM", "type": "medical|work|social|admin|errand|school|other (echo the input type EXACTLY)", "prep_alarm": "1:25 PM" }],
   "first_prep_alarm": "1:25 PM (echo the precomputed first prep alarm exactly)",
   "total_free_minutes": 180,
   "free_until": "Plain language total — one sentence",
@@ -115,7 +119,7 @@ Return ONLY valid JSON:
   }],
   "reframe": "Cognitive reframe for their situation — one sentence",
   "clock_freedom": "One sentence giving them permission to stop tracking the time, built on the alarm that is already set. Say what will fetch them, not what they should feel.",
-  "prep_plans": [{ "event_time": "2:00 PM", "alarm_time": "1:25 PM (echo the precomputed prep alarm)", "steps": ["Step 1", "Step 2"] }],
+  "prep_plans": [{ "event_time": "Echo the event's time string EXACTLY as given above, day word included — Monday, 2:00 PM", "alarm_time": "1:25 PM (echo the precomputed prep alarm)", "steps": ["Step 1", "Step 2"] }],
   "worst_case": "Safety net advice — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
 
@@ -181,45 +185,6 @@ Return ONLY valid JSON:
       messages: [{ role: 'user', content: prompt }]
     }, { label: 'WML-StartWithMe' });
         if (!parsed.launch_line) {
-          return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
-      // ONE-THING — Ultra-low-stakes single task
-      // ────────────────────────────────────────────
-      case 'one-thing': {
-        const { freeMinutes, userTasks, appointmentType, energy, userLanguage } = req.body;
-
-        const prompt = withLanguage(`Someone is frozen before an appointment and can't commit to a plan. Pick ONE absurdly low-stakes task they can start in 30 seconds.
-
-FREE TIME: ~${freeMinutes || '?'} minutes
-${userTasks?.trim() ? `THEIR TASKS: "${userTasks.trim()}"` : 'No specific tasks listed.'}
-APPOINTMENT TYPE: ${appointmentType || 'not specified'}
-ENERGY: ${energy || 2}/5 (${parseInt(energy) <= 2 ? 'low — pick something VERY easy' : 'moderate — can handle a real task'})
-
-Rules:
-- 10-15 min MAX. Frame as embarrassingly small.
-- Physical first action. Escape hatch. Pick from their tasks if listed.
-- Energy ≤ 2: easiest possible (not "write the report" — "open the doc and read paragraph 1")
-
-Return ONLY valid JSON:
-{
-  "the_one_thing": "Single task, framed as tiny — one sentence",
-  "first_physical_action": "Literal body movement — one sentence",
-  "time_needed": "10-15 minutes — one sentence",
-  "escape_hatch": "Permission to stop — one sentence",
-  "why_this_one": "Brief reason — one sentence",
-  "momentum_hook": "What they'll probably do next (no pressure) — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'WML-OneThing' });
-        if (!parsed.the_one_thing) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
