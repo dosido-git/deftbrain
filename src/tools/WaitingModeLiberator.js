@@ -75,6 +75,16 @@ const TIME_USAGE_OPTIONS = [
   { id: 'froze',      icon: '🧊', labelKey: 'wml_usage_froze' },
 ];
 
+// The form asked how much they'd be watching the clock. Asking again afterwards
+// is what turns a prediction into evidence — and the thing worth discovering
+// here is not "the appointment was fine", it is "I did not have to hold it in
+// my head all day".
+const CLOCK_AFTER_OPTIONS = [
+  { id: 'forgot',     icon: '🙂', labelKey: 'wml_after_forgot' },
+  { id: 'some',       icon: '👀', labelKey: 'wml_after_some' },
+  { id: 'constantly', icon: '🔁', labelKey: 'wml_after_constantly' },
+];
+
 const REALITY_OPTIONS = [
   { id: 'fine',       icon: '😌', labelKey: 'wml_reality_fine' },
   { id: 'okay',       icon: '😐', labelKey: 'wml_reality_okay' },
@@ -270,7 +280,6 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── State: Results ───
   const [results, setResults] = usePersistentState('waitingmodeliberator-result', null);
-  const [reframes, setReframes] = useState(null);
   const [oneThingData, setOneThingData] = useState(null);
   const [reviewData, setReviewData] = useState(null);
 
@@ -280,6 +289,7 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── State: Block tracking ───
   const [completedBlocks, setCompletedBlocks] = useState({});
+  const [chosenTask, setChosenTask] = useState({});
 
   // ─── State: Start With Me (v4) ───
   const [launchData, setLaunchData] = useState(null);
@@ -293,6 +303,7 @@ const WaitingModeLiberator = ({ tool }) => {
   const [debriefUsedTime, setDebriefUsedTime] = useState('');
   const [debriefReality, setDebriefReality] = useState('');
   const [debriefNote, setDebriefNote] = useState('');
+  const [debriefClock, setDebriefClock] = useState('');
   const [debriefData, setDebriefData] = useState(null);
 
   // ─── Persistent ───
@@ -388,7 +399,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // jump straight past the halfway second, so === would silently skip the check-in.
   useEffect(() => {
     if (!blockTimerRunning) { midCheckFiredRef.current = false; return; }
-    const block = results?.time_blocks?.[launchBlockIdx];
+    const block = { task: chosenTask[launchBlockIdx] || results?.windows?.[launchBlockIdx]?.suggestions?.[0] };
     if (!block) return;
     const halfwayMark = Math.floor((block.minutes * 60) / 2);
     if (!midCheckFiredRef.current && blockTimerSecs > 0 && blockTimerSecs <= halfwayMark) {
@@ -444,9 +455,9 @@ const WaitingModeLiberator = ({ tool }) => {
   // ─── API: Liberate ───
   const handleLiberate = async () => {
     const validationError = validateEvents();
-    if (validationError) { setError(validationError); return; } setError(''); setResults(null); setReframes(null); setOneThingData(null);
-    setCompletedBlocks({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
-    setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote('');
+    if (validationError) { setError(validationError); return; } setError(''); setResults(null); setOneThingData(null);
+    setCompletedBlocks({}); setChosenTask({}); setShowPrepAlert(false); setLaunchData(null); setDebriefData(null);
+    setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote(''); setDebriefClock('');
 
     const now = new Date();
     const sortedEvents = [...events]
@@ -484,8 +495,10 @@ const WaitingModeLiberator = ({ tool }) => {
 
   // ─── API: Start With Me (v4) ───
   const handleStartWithMe = async (blockIdx) => {
-    const block = results?.time_blocks?.[blockIdx];
-    if (!block) return;
+    const w = results?.windows?.[blockIdx];
+    if (!w) return;
+    const block = { task: chosenTask[blockIdx] || w.suggestions?.[0], minutes: w.minutes, intensity: w.intensity };
+    if (!block.task) return;
     setLaunchBlockIdx(blockIdx);
     try {
       const data = await callToolEndpoint('waiting-mode-liberator', {
@@ -500,18 +513,6 @@ const WaitingModeLiberator = ({ tool }) => {
       setShowMidCheck(false);
       setView('launching');
     } catch (err) { setError(t('wml_err_launch')); } };
-
-  // ─── API: Reframes ───
-  const handleReframes = async () => {
-    const primaryType = events[0]?.type || '';
-    try {
-      const data = await callToolEndpoint('waiting-mode-liberator', {
-        action: 'reframe', appointmentType: primaryType, freeMinutes: results?.total_free_minutes,
-        anxietyLevel: APPT_TYPES.find(a => a.id === primaryType)?.anxietyDefault || 'moderate', energy,
-        userLocale, userCurrency, userRegion,
-      });
-      setReframes(data);
-    } catch (err) { /* bonus */ } };
 
   // ─── API: One thing ───
   const handleOneThing = async () => {
@@ -531,8 +532,9 @@ const WaitingModeLiberator = ({ tool }) => {
         action: 'debrief',
         events: events.map(ev => ({ time: ev.time, type: ev.type })),
         blocksCompleted: Object.values(completedBlocks).filter(Boolean).length,
-        totalBlocks: results?.time_blocks?.length || 0,
+        totalBlocks: results?.windows?.length || 0,
         energy, anxietyBefore, usedTime: debriefUsedTime, appointmentReality: debriefReality,
+        clockBefore: clockChecking, clockAfter: debriefClock,
         note: debriefNote.trim(), pastDebriefs,
         userLocale, userCurrency, userRegion,
       });
@@ -566,7 +568,7 @@ const WaitingModeLiberator = ({ tool }) => {
       events: events.map(ev => ({ time: ev.time, type: ev.type, prepMinutes: ev.prepMinutes, travelMinutes: ev.travelMinutes })),
       energy, userTasks: userTasks.trim(), anxietyBefore,
       freeMinutes: results?.total_free_minutes || 0,
-      blocksCompleted, totalBlocks: results?.time_blocks?.length || 0,
+      blocksCompleted, totalBlocks: results?.windows?.length || 0,
       usedOneThing: !!oneThingData, usedLaunch: !!launchData,
       debrief: debriefData ? { usedTime: debriefUsedTime, reality: debriefReality, note: debriefNote.trim() } : null,
       date: new Date().toISOString(),
@@ -577,14 +579,14 @@ const WaitingModeLiberator = ({ tool }) => {
 
   const resetAndGoBack = () => {
     setView('setup');
-    setResults(null); setReframes(null); setOneThingData(null); setReviewData(null);
+    setResults(null); setOneThingData(null); setReviewData(null);
     countdownTargetRef.current = null; blockTargetRef.current = null;
     setCountdownSeconds(null); setCompletedBlocks({}); setShowPrepAlert(false);
     clearInterval(countdownRef.current); clearInterval(blockTimerRef.current);
     setEvents([]); setEnergy(3); setUserTasks(''); setAnxietyBefore(5); setClockChecking('sometimes'); setError('');
     setDraftName(''); setDraftTime(''); setDraftType(''); setDraftCustomType(''); setDraftDayOffset(0); setDraftSoon(''); setExpandedEventId(null);
     setLaunchData(null); setLaunchStep(0); blockTargetRef.current = null; setBlockTimerSecs(0); setBlockTimerRunning(false);
-    setDebriefData(null); setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote('');
+    setDebriefData(null); setDebriefUsedTime(''); setDebriefReality(''); setDebriefNote(''); setDebriefClock('');
   };
 
   const buildDebriefText = () => {
@@ -607,7 +609,7 @@ const WaitingModeLiberator = ({ tool }) => {
   const buildSummaryText = () => {
     if (!results) return '';
     const evLines = results.events_summary?.map(e => `  ${e.time} (${e.type}) — ${t('wml_copy_prep_at')} ${e.prep_alarm}`).join('\n') || '';
-    const blockLines = results.time_blocks?.map(b => `  ${b.start}–${b.end}: ${b.task}`).join('\n') || '';
+    const blockLines = results.windows?.map(w => `  ${w.label} (${w.start}–${w.end}): ${(w.suggestions || []).join(', ')}`).join('\n') || '';
     return [t('wml_copy_summary_header'), `${t('wml_copy_events')}\n${evLines}`, t('wml_copy_free_time', { text: results.free_until }), '', results.permission, '', `${t('wml_copy_blocks')}\n${blockLines}`, BRAND].join('\n');
   };
 
@@ -662,14 +664,14 @@ const WaitingModeLiberator = ({ tool }) => {
     const draftParsed = parseTimeInput(draftTime, draftDayOffset);
     const canCommit   = !!draftParsed;
 
-    return (<div className="py-6 px-4">
+    return (<div className="pt-2 pb-6 px-4">
         <div className="max-w-xl mx-auto space-y-4">
 
           {/* Header — PF-30: no in-card <h2>. ToolPageWrapper already renders the
               tool's name as the page h1, so repeating it here made the visitor
               read the same words twice before reaching an input. The icon moves
               onto the tagline, which is the line that says something. */}
-          <div className="pt-0.5 pb-1">
+          <div className="pb-1">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
               <p className={`text-base ${c.textSecondary}`}>
@@ -726,7 +728,7 @@ const WaitingModeLiberator = ({ tool }) => {
                 value={draftTime} onChange={e => setDraftTime(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && canCommit) commitDraft(); }} placeholder={t('wml_time_ph')}
                 className={`flex-1 px-3 py-2.5 rounded-xl border ${c.input} text-sm outline-none`} />
               <button
-                onClick={commitDraft} disabled={!canCommit} className={`px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 transition-all`} >
+                onClick={commitDraft} disabled={!canCommit} className={`mt-1 px-4 py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40 transition-all`} >
                 {t('wml_add')}
               </button>
               {draftTime.trim() && !draftParsed && (<p className={`text-xs ${c.textMuted}`}>{t('wml_time_hint')}</p>
@@ -963,7 +965,7 @@ const WaitingModeLiberator = ({ tool }) => {
               </>
             ) : blockTimerRunning ? (<>
                 <p className={`text-xs font-medium ${c.launchAccent} uppercase tracking-wider mb-1`}>
-                  {results?.time_blocks?.[launchBlockIdx]?.task} </p>
+                  {chosenTask[launchBlockIdx] || results?.windows?.[launchBlockIdx]?.suggestions?.[0]} </p>
                 <div className={`text-5xl font-mono font-bold ${c.launchText} my-3`}>
                   {formatCountdown(blockTimerSecs)} </div>
                 <p className={`text-sm ${c.launchAccent}`}>{t('wml_keep_going')}</p>
@@ -1000,10 +1002,7 @@ const WaitingModeLiberator = ({ tool }) => {
   // RENDER: ACTIVE
   // ══════════════════════════════════════════════════
   if (view === 'active' && results) {
-    const blocksCompleted = Object.values(completedBlocks).filter(Boolean).length;
-    const totalBlocks = results.time_blocks?.length || 0;
-
-    return (<div className="py-6 px-4">
+    return (<div className="pt-1 pb-6 px-4">
         <div className="max-w-xl mx-auto space-y-5">
 
           {/* Results anchor */} <div data-copy-results ref={resultsRef} data-results-anchor />
@@ -1019,6 +1018,10 @@ const WaitingModeLiberator = ({ tool }) => {
                 <div className={`text-5xl font-mono font-bold ${c.heroText} my-3`}>{formatCountdown(countdownSeconds)}</div>
                 <p className={`text-sm ${c.heroAccent}`}>{t('wml_first_prep_at')} <span className="font-bold">{results.first_prep_alarm || '—'}</span></p>
               </>
+            )} {results.clock_freedom && !showPrepAlert && (
+              <p className={`text-sm ${c.heroAccent} mt-3 pt-3 border-t border-current/20`}>
+                <span className="me-1">🕰️</span>{results.clock_freedom}
+              </p>
             )} </div>
 
           {/* Event timeline */} {results.events_summary?.length > 0 && (<div className={`${c.card} border rounded-xl p-4`}>
@@ -1033,9 +1036,6 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           )} {/* Permission */} {results.permission && (<div className={`${c.accentLight} border rounded-xl p-5`}>
               <p className={`text-sm font-medium ${c.accentLightText} leading-relaxed`}><span className="text-lg me-1">🔓</span> {results.permission}</p>
-            </div>
-          )} {results.clock_freedom && (<div className={`${c.card} border rounded-xl p-4`}>
-              <p className={`text-sm ${c.textSecondary}`}><span className="me-1">🕰️</span> {results.clock_freedom}</p>
             </div>
           )} {anxietyTrack && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider mb-2`}><span>📊</span> {t('wml_track_header')}</p>
@@ -1052,44 +1052,43 @@ const WaitingModeLiberator = ({ tool }) => {
               </p>
               <p className={`text-xs ${c.textMuted} mt-1`}>{t('wml_track_today', { today: anxietyBefore })}</p>
             </div>
-          )} {/* Reframe */} {results.reframe && !reframes && (<div className={`${c.card} border rounded-xl p-4`}>
+          )} {results.reframe && (<div className={`${c.card} border rounded-xl p-4`}>
               <p className={`text-sm ${c.textSecondary} italic`}>💡 {results.reframe}</p>
-              <button onClick={handleReframes} disabled={loading} className={`text-xs ${c.textMuted} mt-2 underline disabled:opacity-40`}>{t('wml_more_reframes')}</button>
             </div>
-          )} {reframes && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
-              <h3 className={`text-xs font-bold ${c.textMuted} uppercase tracking-wider`}><span>🔄</span> {t('wml_perspective_shifts')}</h3>
-              {reframes.reframes?.map((r, i) => (<div key={i} className={`p-3 rounded-lg ${c.blockBg}`}>
-                  <p className={`text-xs font-medium ${c.textMuted} mb-1`}>{r.emoji} {r.angle}</p>
-                  <p className={`text-sm ${c.text}`}>{r.text}</p>
-                </div>
-              ))} {reframes.truth_bomb && <p className={`text-xs ${c.textMuted} italic border-t ${c.border} pt-2 mt-2`}>🎯 {reframes.truth_bomb}</p>} </div>
-          )} {/* Time blocks with "Start With Me" button (v4) */} {results.time_blocks?.length > 0 && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
-              <div className="flex items-center justify-between">
-                <h3 className={`text-sm font-bold ${c.text}`}><span>📋</span> {t('wml_your_plan')} · {blocksCompleted}/{totalBlocks}</h3>
-                <span className={`text-xs ${c.textMuted}`}>{results.free_until}</span>
+          )} {results.windows?.length > 0 && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+              <div>
+                <h3 className={`text-sm font-bold ${c.text}`}><span>🪟</span> {t('wml_what_fits')}</h3>
+                <p className={`text-xs ${c.textMuted} mt-1`}>{t('wml_one_is_enough')}</p>
               </div>
-              <div className="space-y-2">
-                {results.time_blocks.map((block, i) => {
-                  const isCompleted = completedBlocks[i];
-                  const badge = intensityBadge(block.intensity);
-                  return (<div key={i} className={`p-4 rounded-xl border-2 transition-all ${isCompleted ? (isDark ? 'bg-emerald-900/30 border-emerald-700 opacity-60' : 'bg-emerald-50 border-emerald-200 opacity-60') : `${c.blockBg} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}`}>
-                      <div className="flex items-start gap-3">
-                        <button onClick={() => setCompletedBlocks(prev => ({ ...prev, [i]: !prev[i] }))} className="text-lg mt-0.5">
-                          {isCompleted ? '✅' : '⬜'} </button>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className={`text-xs font-mono font-medium ${c.textMuted}`}>{block.start} – {block.end}</span>
-                            <div className="flex items-center gap-2">
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${badge.bg} ${badge.text}`}>{badge.label}</span>
-                              <span className={`text-xs ${c.textMuted}`}>{t('wml_minutes', { m: block.minutes })}</span>
-                            </div>
-                          </div>
-                          <p className={`text-sm font-medium ${isCompleted ? 'line-through' : ''} ${c.text}`}>{block.task}</p>
-                          {block.why_it_fits && <p className={`text-xs ${c.textMuted} mt-1`}>{block.why_it_fits}</p>} </div>
+              <div className="space-y-3">
+                {results.windows.map((w, i) => {
+                  const badge = intensityBadge(w.intensity);
+                  const picked = chosenTask[i];
+                  return (<div key={i} className={`p-4 rounded-xl border ${c.blockBg} ${isDark ? 'border-zinc-600' : 'border-gray-200'}`}>
+                      <div className="flex items-baseline justify-between gap-2 flex-wrap">
+                        <span className={`text-sm font-semibold ${c.text}`}>{w.label}</span>
+                        <span className={`text-xs font-mono ${c.textMuted}`}>{w.start} – {w.end}</span>
                       </div>
-                      {/* Start With Me button (v4) */} {!isCompleted && (<button onClick={() => handleStartWithMe(i)} disabled={loading} className={`mt-2 w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>
-                          {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🚀</span>} {t('wml_start_block')}
-                        </button>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-sm ${c.textSecondary}`}>{w.free_summary || t('wml_minutes', { m: w.minutes })}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${badge.bg} ${badge.text}`}>{badge.label}</span>
+                      </div>
+                      {w.suggestions?.length > 0 && (<div className="mt-3 space-y-1.5">
+                          {w.suggestions.map((sug, j) => (<button key={j}
+                              onClick={() => setChosenTask(prev => ({ ...prev, [i]: prev[i] === sug ? undefined : sug }))}
+                              className={`w-full text-start flex items-start gap-2 px-2.5 py-2 rounded-lg text-sm transition-all ${picked === sug ? c.tagActive : `${c.tag} ${c.cardHover}`}`}>
+                              <span className="flex-shrink-0">{picked === sug ? '✓' : '○'}</span>
+                              <span>{sug}</span>
+                            </button>
+                          ))} </div>
+                      )} <p className={`text-xs ${c.textMuted} mt-2`}>{t('wml_pick_any')}</p>
+                      {w.fit_note && <p className={`text-xs ${c.textMuted} mt-1 italic`}>{w.fit_note}</p>}
+                      {picked && (<div className="mt-3">
+                          <p className={`text-xs ${c.textSecondary} mb-1.5`}>{t('wml_want_help')}</p>
+                          <button onClick={() => handleStartWithMe(i)} disabled={loading} className={`w-full py-2 rounded-lg text-xs font-medium ${c.accentLight} ${c.launchAccent} transition-all disabled:opacity-40`}>
+                            {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '⏳'}</span> : <span>🚀</span>} {t('wml_start_block')}
+                          </button>
+                        </div>
                       )} </div>
                   );
                 })} </div>
@@ -1163,6 +1162,17 @@ const WaitingModeLiberator = ({ tool }) => {
             </div>
           </div>
 
+          {/* Q3: did the alarm do its job? */} <div className={`${c.card} border rounded-xl p-5 space-y-3`}>
+            <p className={`text-sm font-semibold ${c.text}`}>{t('wml_clock_after_q')}</p>
+            <p className={`text-xs ${c.textMuted} -mt-2`}>{t('wml_clock_after_sub', { said: t(CLOCK_OPTIONS.find(o => o.id === clockChecking)?.labelKey || 'wml_clock_sometimes').toLowerCase() })}</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {CLOCK_AFTER_OPTIONS.map(o => (<button key={o.id} onClick={() => setDebriefClock(o.id)} className={`py-3 rounded-xl text-center transition-all ${debriefClock === o.id ? c.tagActive : c.tag}`}>
+                  <span className="block text-lg">{o.icon}</span>
+                  <span className="block text-[10px] font-medium mt-0.5">{t(o.labelKey)}</span>
+                </button>))}
+            </div>
+          </div>
+
           {/* Optional note */} <div className={`${c.card} border rounded-xl p-5`}>
             <p className={`text-sm font-medium ${c.textSecondary} mb-2`}>{t('wml_anything_else')}</p>
             <input type="text" value={debriefNote} onChange={e => setDebriefNote(e.target.value)} placeholder={t('wml_note_ph')}
@@ -1180,6 +1190,9 @@ const WaitingModeLiberator = ({ tool }) => {
               <div data-copy-results ref={resultsRef} data-results-anchor />
               {/* Time reflection */} {debriefData.time_reflection && (<div className={`${c.accentLight} border rounded-xl p-5`}>
                   <p className={`text-sm ${c.accentLightText}`}><span>⏱️</span> {debriefData.time_reflection}</p>
+                </div>
+              )} {debriefData.clock_check && (<div className={`${c.card} border rounded-xl p-5`}>
+                  <p className={`text-sm ${c.textSecondary}`}><span className="me-1">🕰️</span> {debriefData.clock_check}</p>
                 </div>
               )} {/* Anxiety reality check */} {debriefData.anxiety_check && (<div className={`${c.card} border rounded-xl p-5 space-y-3`}>
                   <h3 className={`text-sm font-bold ${c.text}`}><span>🧠</span> {t('wml_anxiety_vs_reality')}</h3>

@@ -65,12 +65,26 @@ CLOCK-CHECKING: ${{
   constantly: 'Constantly — this is the actual problem. The plan has to earn the right to be forgotten: name the alarm explicitly, keep blocks SHORT (20-30 min) so there is a natural surfacing point, and make clock_freedom about why checking is now unnecessary rather than telling them to stop.',
 }[clockChecking] || 'Sometimes — it interrupts but does not dominate. One clear alarm reference is enough.'}
 
+GROUNDING — the tool's credibility rests entirely on this:
+- Explain why something fits the TIME AVAILABLE or the energy level they stated. Never predict how they will feel, never explain their psychology, never diagnose why they are stuck. You do not know that a phone call is easy for them or that a walk will clear their head.
+  NO:  A phone call is socially engaging but not mentally demanding, so it suits moderate energy.
+  YES: You have enough time here for a real conversation instead of squeezing one in.
+  NO:  After the walk your head will be clearer, so emails will go faster.
+  YES: Twenty-five minutes is enough for a first pass at the inbox.
+- Never invent logistics. You do not know where they are, how far away the event is, whether it is remote, what they need to bring, or what the room is like. Prep steps may only reference what the input actually contains. The prep buffer is the number THEY entered — refer to it as the buffer they set, never as a travel time you calculated or verified.
+- "reframe" describes the situation, not the person. Keep any metaphor; drop the diagnosis.
+  NO:  You are not frozen because you are lazy - you are frozen because your brain is holding two appointments in short-term memory like open tabs.
+  YES: Two appointments can sit in the back of your mind like open tabs. The alarms can keep watch now, so you do not have to.
+- "worst_case" is grounded entirely in the plan you just gave — which window still exists, which alarm still fires. Never promise an outcome or a state ("you will still show up rested").
+- The NO/YES pairs above are tone samples from a different session. Never reuse their wording; write for the day in front of you.
+- Use contractions. Apostrophes are safe here; only the double-quote breaks the JSON, and a plan that says "you do not have to" instead of "you don't have to" reads like a form letter.
+
 RULES:
 - Prep alarms are PRECOMPUTED: echo each event's provided prep alarm EXACTLY as given — never recompute or adjust it.${firstPrepAlarm ? `\n- FIRST PREP ALARM (precomputed — echo exactly): ${firstPrepAlarm}` : ''}
-- Identify ALL free windows (max 8 time_blocks; max 4 steps per prep plan). Include window after last event if useful.
-- CONSISTENT NUMBERS: total_free_minutes must equal the sum of the time_blocks minutes; free_until must match the last block's end.
-- Map tasks to windows respecting energy. Low energy = easy first, high = deep work first.
-- Energy 1-2: include rest/snack blocks. Don't pack schedule.
+- Identify ALL free windows (max 5 windows; max 4 steps per prep plan). Include the window after the last event if useful.
+- CONSISTENT NUMBERS: total_free_minutes must equal the sum of the windows' minutes; free_until must match the last window's end.
+- DO NOT BUILD A TIMETABLE. Each window gets 2-4 loose suggestions, not a minute-by-minute schedule. Naming a start and end time for every individual task replaces one thing owning their day with another thing owning their day. The window has times; the suggestions inside it do not.
+- Suggestions respect the stated energy. Energy 1-2: at least one window whose suggestion is rest, food or nothing, and say plainly that nothing is a real option.
 - "permission" references ALL free windows.
 - The point of this tool is permission, not scheduling: permission to start, to stop watching the clock, and to trust that something else is keeping time. Never imply the plan is a commitment.
 - Concrete start/end times for all blocks.
@@ -85,9 +99,13 @@ Return ONLY valid JSON:
   "total_free_minutes": 180,
   "free_until": "Plain language total — one sentence",
   "permission": "Specific liberating hero text — one sentence",
-  "time_blocks": [{
-    "window": 1, "start": "10:30 AM", "end": "11:30 AM", "minutes": 60,
-    "task": "Specific task — one sentence", "why_it_fits": "Energy + time reasoning — one sentence", "intensity": "low|medium|high"
+  "windows": [{
+    "label": "Short natural name for this gap — Tonight, Between appointments, After the interview",
+    "start": "10:30 AM", "end": "11:30 AM", "minutes": 60,
+    "free_summary": "How much time this is, in plain words — about an hour and a half",
+    "suggestions": ["Short thing that fits — a few words, no times attached"],
+    "fit_note": "One sentence on why these fit the TIME or their stated energy. Never about how they will feel.",
+    "intensity": "low|medium|high"
   }],
   "reframe": "Cognitive reframe for their situation — one sentence",
   "clock_freedom": "One sentence giving them permission to stop tracking the time, built on the alarm that is already set. Say what will fetch them, not what they should feel.",
@@ -102,7 +120,7 @@ Return ONLY valid JSON:
     }, { label: 'WML-Liberate' });
         // total_free_minutes is numeric — 0 is a VALID answer (back-to-back events), so
         // never truthiness-guard it. Key on always-present structural fields instead.
-        if (parsed.total_free_minutes == null && !parsed.time_blocks && !parsed.events_summary) {
+        if (parsed.total_free_minutes == null && !parsed.windows && !parsed.events_summary) {
           return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
         }
         return res.json(parsed);
@@ -202,43 +220,10 @@ Return ONLY valid JSON:
       }
 
       // ────────────────────────────────────────────
-      // REFRAME — Cognitive reframes
-      // ────────────────────────────────────────────
-      case 'reframe': {
-        const { appointmentType, freeMinutes, anxietyLevel, energy, userLanguage } = req.body;
-
-        const prompt = withLanguage(`Generate 3 cognitive reframes for someone stuck in "waiting mode."
-
-APPOINTMENT TYPE: ${appointmentType || 'general'}
-FREE TIME: ~${freeMinutes || '?'} minutes
-ANXIETY: ${anxietyLevel || 'moderate'}
-ENERGY: ${energy || 3}/5
-
-Each: specific to appointment type, shift "dead time" → "valuable block", 1-3 sentences, wise friend tone.
-${parseInt(energy) <= 2 ? 'Acknowledge low energy. Don\'t push productivity guilt.' : ''}
-
-Return ONLY valid JSON:
-{
-  "reframes": [{ "angle": "Name", "text": "The reframe — one sentence", "emoji": "One emoji (one emoji)" }],
-  "truth_bomb": "One blunt honest sentence — one sentence"
-}`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;
-
-        const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'WML-Reframe' });
-        if (!parsed.reframes) {
-          return res.status(500).json({ error: 'Could not analyze your wait time. Please try again.' });
-        }
-        return res.json(parsed);
-      }
-
-      // ────────────────────────────────────────────
       // DEBRIEF — Post-appointment reflection (v4)
       // ────────────────────────────────────────────
       case 'debrief': {
-        const { events, blocksCompleted, totalBlocks, energy, anxietyBefore, usedTime, appointmentReality, note, pastDebriefs, userLanguage } = req.body;
+        const { events, blocksCompleted, totalBlocks, energy, anxietyBefore, usedTime, appointmentReality, clockBefore, clockAfter, note, pastDebriefs, userLanguage } = req.body;
 
         const primaryType = events?.[0]?.type || 'general';
 
@@ -255,6 +240,7 @@ ENERGY WAS: ${energy}/5
 ANXIETY BEFORE: ${anxietyBefore || '?'}/10
 DID THEY USE THE TIME: ${usedTime || 'partially'}
 HOW WAS THE APPOINTMENT: ${appointmentReality || 'not specified'}
+CLOCK-WATCHING — they PREDICTED "${clockBefore || 'sometimes'}" beforehand and REPORT "${clockAfter || 'not specified'}" afterwards
 ${note ? `THEIR NOTE: "${note}"` : ''}
 ${anxietyHistory}
 
@@ -264,6 +250,9 @@ Generate:
 3. If there's anxiety history for this appointment type, show the trend
 4. One concrete takeaway for next time
 5. If they didn't use the time well, don't guilt — reframe as data
+6. clock_check: compare the clock-watching they PREDICTED to what they REPORT. If they expected to watch it constantly and did not, say so plainly — that is the finding this tool exists to surface, and it is about the alarm doing the holding, not about them being disciplined. If they watched it as much as they feared, say that plainly too and do not spin it.
+
+Say only what the numbers above support. Never assert a cause for how they felt, and never tell them what they have "learned" — state what happened and let it stand.
 
 Return ONLY valid JSON:
 {
@@ -274,6 +263,7 @@ Return ONLY valid JSON:
     "trend": "Anxiety trend across sessions (or null if first time) — one sentence",
     "insight": "The key realization (e.g., 'Your medical appointment anxiety averages 8 but outcomes average 3. Your brain is lying.') — one sentence"
   },
+  "clock_check": "Predicted vs actual clock-watching, stated plainly — one sentence. Null if they did not report it.",
   "takeaway": "One concrete thing to try next time — one sentence",
   "encouragement": "Genuine specific praise — one sentence"
 }`, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + NO_QUOTE_RULE;

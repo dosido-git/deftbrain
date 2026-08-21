@@ -5,11 +5,12 @@
     "model": "claude-sonnet-4-6, 6 actions",
     "baseline": "9fc5683 (batch-3 fix pass)",
     "how_to_regress": "npm run check:golden waiting-mode-liberator  (dev backend up)",
-    "note": "liberate guards precomputed-alarm echo + clean type enum; review guards the total_sessions guard fix."
+    "note": "liberate guards precomputed-alarm echo + clean type enum; review guards the total_sessions guard fix.",
+    "how_to_regression_diff": " 2026-08-20: time_blocks -> windows. The old shape gave every task a start and an end time, which turned 'you are free' into a minute-by-minute schedule — one owner of the day swapped for another. Windows carry the times; the 2-4 suggestions inside them do not. Recaptured on the same input."
   },
   "cases": [
     {
-      "name": "liberate-single-event",
+      "name": "liberate-single-event [windows, not a timetable]",
       "endpoint": "/api/waiting-mode-liberator",
       "input": {
         "action": "liberate",
@@ -39,41 +40,37 @@
         ],
         "first_prep_alarm": "1:55 PM",
         "total_free_minutes": 115,
-        "free_until": "You have a clear, uninterrupted stretch from 10:00 AM until your prep alarm at 1:55 PM — that's 115 minutes of genuine free time.",
-        "permission": "You have a solid 115-minute window across two easy blocks before your dentist prep alarm fires at 1:55 PM, and both of your tasks fit cleanly inside it — you are not too blocked to begin, you just needed the map.",
-        "time_blocks": [
+        "free_until": "You have from right now until 1:55 PM — just under two hours of genuine free space.",
+        "permission": "Both your tasks fit inside this window with room to spare, the alarm is already set, and nothing is asking you to start at any particular minute.",
+        "windows": [
           {
-            "window": 1,
+            "label": "This morning",
             "start": "10:00 AM",
-            "end": "10:30 AM",
-            "minutes": 30,
-            "task": "Walk the dog — head out now for a 25–30 minute loop.",
-            "why_it_fits": "Light physical activity is a perfect match for moderate energy first thing, and getting it done early removes it from your mental load before the day builds.",
-            "intensity": "low"
-          },
-          {
-            "window": 2,
-            "start": "10:30 AM",
-            "end": "11:55 AM",
-            "minutes": 85,
-            "task": "Reply to emails — work through your inbox, prioritizing anything that needs a response today.",
-            "why_it_fits": "You're warmed up from the walk and functional-but-not-sharp energy is exactly right for composed, thoughtful replies — no deep focus required.",
+            "end": "1:55 PM",
+            "minutes": 115,
+            "free_summary": "Just under two hours — enough for both tasks without rushing either one",
+            "suggestions": [
+              "Walk the dog",
+              "Reply to emails — even a first pass through the inbox counts"
+            ],
+            "fit_note": "At energy 3 out of 5, both of these are doable without needing to be sharp — and 115 minutes is enough to give each one real space rather than squeezing them in.",
             "intensity": "medium"
           }
         ],
-        "reframe": "The dentist appointment isn't eating your day — it's bookending a clean, contained morning where both your tasks fit with room to spare.",
+        "reframe": "The dentist appointment is taken care of — it's on the calendar, the alarm's set — so it doesn't need to live in the front of your mind until 1:55.",
+        "clock_freedom": "The 1:55 PM alarm will come get you when it's time to shift gears; until then, the clock is its problem, not yours.",
         "prep_plans": [
           {
             "event_time": "2:30 PM",
             "alarm_time": "1:55 PM",
             "steps": [
-              "Stop what you're doing when the 1:55 PM alarm fires — no finishing one more thing.",
-              "Use the restroom, grab water or a snack if needed, and collect anything you need to bring.",
-              "Head out the door so travel time is comfortable, not rushed."
+              "Stop whatever you're doing when the alarm fires",
+              "Gather anything you need to bring",
+              "Head out — the 35-minute buffer you set covers prep and travel"
             ]
           }
         ],
-        "worst_case": "If the walk runs long or emails take over, drop back to just the highest-priority replies — the dentist alarm at 1:55 PM is your hard stop and everything else can wait until after you're home."
+        "worst_case": "If the morning slips away and you only finish one task, the 1:55 PM alarm still fires, the dentist window still holds, and the other task is still there when you're back."
       }
     },
     {

@@ -13,3 +13,31 @@ ADHD "waiting mode" tool: appointments → free-window plan + prep-alarm countdo
 6. Keyboard handler uses the ref pattern and excludes TEXTAREA/BUTTON from plain-Enter (stale closure once submitted OLD events; Enter in the tasks textarea hijacked submit).
 7. `events_summary[].type` echoes the input type exactly (clean token — frontend keys icon lookup on it); time exemplars are bare ("2:00 PM"). Liberate arrays capped (≤8 blocks, ≤4 steps) + CONSISTENT NUMBERS rule.
 8. Try Example events carry `prepMinutes/travelMinutes` (missing ones rendered a literal `{{prep}}m`) and `dayOffset: 1` (immune to the past-time trap at any hour).
+
+## 2026-08-20 — the plan stopped being a timetable
+
+- **`time_blocks` -> `windows`.** The old schema gave every task a start and an end
+  time; the output said "you're free" and then accounted for every minute of the
+  evening. One owner of the day swapped for another. Windows carry the times
+  (that arithmetic is the point); the 2-4 suggestions inside them do not.
+  Three-way sync: backend schema, frontend renderer, golden case, copy-to-clipboard.
+- **Start-with-me is now per WINDOW, after a pick.** It was under every task, which
+  made the plan a set of commands. Picking a suggestion reveals "Want help getting
+  started?" — help with a decision already made.
+- **GROUNDING block in the liberate prompt.** The model was narrating the user's
+  psychology ("a phone call is socially engaging but not mentally demanding",
+  "after the walk your head will be clearer") and inventing logistics ("you have
+  exactly 35 minutes built in for travel", "open your video app"). Rules: explain
+  fit against TIME or STATED energy only; never predict feelings; never invent
+  logistics; the prep buffer is the number THEY entered. Same anti-verbatim and
+  contractions clauses as VirtualBodyDouble — see [[deftbrain-voice-prompt-traps]].
+- **`reframe`** describes the situation, not the person (keep the metaphor, drop the
+  diagnosis). **`worst_case`** is grounded in the plan, never in a promised state.
+- **`clock_freedom`** elevated into the hero, under the countdown — it is the sentence
+  that makes the rest of the page believable.
+- **Debrief closes the loop**: `clockBefore` (predicted) vs `clockAfter` (reported)
+  -> `clock_check`. The finding worth surfacing is "I didn't have to hold it in my
+  head all day", not "the appointment was fine".
+- **Removed**: `reframe` backend action + More reframes button (turned relief into
+  content consumption).
+

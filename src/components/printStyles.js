@@ -93,6 +93,14 @@ export const PRINT_CSS = `
         [data-print-section] div { break-inside: auto !important; page-break-inside: auto !important; }
         /* Interactive controls mean nothing on paper. */
         [data-print-section] button:disabled { display: none !important; }
+        /* The branding line is 29px tall and lives at the very end of the
+           document, which is exactly the position an engine will drop when the
+           last page break lands on top of it. Keeping it whole, and off the
+           boundary, costs nothing and removes the failure mode. */
+        [data-print-show-flex] {
+          break-inside: avoid !important; page-break-inside: avoid !important;
+          break-before: avoid !important; page-break-before: avoid !important;
+        }
         /* ── Dark mode must not survive onto paper ──────────────────────────
            The DeftBrain Print button builds its own light document, so it has
            always come out readable. Cmd+P prints the live DOM, and the rules
