@@ -515,7 +515,7 @@ export const tools = [
   icon: "🧰",
   categories: ['Do It!'],
   headerColor: "#e0b8b8",
-  description: "Not sure where to start? Describe what's going on in your own words. We'll find the best place to start and show you what comes next.",
+  description: "Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.",
   guide: {
     overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
     howToUse: [
