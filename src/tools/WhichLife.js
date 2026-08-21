@@ -223,20 +223,20 @@ const WhichLife = ({ tool }) => {
     if (results?.path_a) {
       out += `━━ ${t('cr_path_caps')} A: ${results?.path_a?.label} ━━\n\n`;
       out += `${results?.path_a?.narrative?.trimEnd()}…\n\n`;
-      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_a?.the_good_moment}\n`;
-      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_a?.the_honest_cost}\n\n`;
+      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_a?.a_moment_to_notice}\n`;
+      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_a?.a_cost_to_imagine}\n\n`;
     }
     if (results?.path_b) {
       out += `━━ ${t('cr_path_caps')} B: ${results?.path_b?.label} ━━\n\n`;
       out += `${results?.path_b?.narrative?.trimEnd()}…\n\n`;
-      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_b?.the_good_moment}\n`;
-      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_b?.the_honest_cost}\n\n`;
+      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_b?.a_moment_to_notice}\n`;
+      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_b?.a_cost_to_imagine}\n\n`;
     }
-    if (results?.what_i_noticed) {
+    if (results?.what_to_notice) {
       out += `━━ ${t('cr_copy_what_noticed')} ━━\n\n`;
-      out += `${t('cr_copy_pull')} ${results?.what_i_noticed?.the_pull}\n\n`;
-      out += `${t('cr_copy_trading')} ${results?.what_i_noticed?.what_youre_trading}\n\n`;
-      out += `${t('cr_copy_question')} ${results?.what_i_noticed?.the_question_underneath}\n\n`;
+      out += `${t('cr_copy_trading')} ${results?.what_to_notice?.the_tradeoff}\n\n`;
+      out += `${t('cr_copy_reaction')} ${results?.what_to_notice?.watch_your_reaction}\n\n`;
+      out += `${t('cr_copy_question')} ${results?.what_to_notice?.a_question_to_sit_with}\n\n`;
     }
     return out + BRAND;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -305,20 +305,20 @@ const WhichLife = ({ tool }) => {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {path.the_good_moment && (
+          {path.a_moment_to_notice && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${isA ? c.pathAAccent : c.pathBAccent} mb-2 flex items-center gap-1.5`}>
-                <span>✦</span> {t('cr_good_moment')}
+                <span>✦</span> {t('cr_moment_notice')}
               </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.the_good_moment}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.a_moment_to_notice}</p>
             </div>
           )}
-          {path.the_honest_cost && (
+          {path.a_cost_to_imagine && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
-                <span>✧</span> {t('cr_honest_cost')}
+                <span>✧</span> {t('cr_cost_imagine')}
               </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.the_honest_cost}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.a_cost_to_imagine}</p>
             </div>
           )}
         </div>
@@ -537,39 +537,39 @@ const WhichLife = ({ tool }) => {
           </div>
 
           {/* What I noticed */}
-          {results?.what_i_noticed && (
+          {results?.what_to_notice && (
             <div className="space-y-4">
               <div className={`flex items-center gap-4 py-2`}>
                 <div className={`flex-1 border-t ${c.border}`} />
-                <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted}`}>{t('cr_what_noticed')}</span>
+                <span className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted}`}>{t('cr_what_notice')}</span>
                 <div className={`flex-1 border-t ${c.border}`} />
               </div>
 
-              {results?.what_i_noticed?.the_pull && (
-                <div className={`${c.cardAlt} rounded-2xl p-5`}>
-                  <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
-                    <span>🧲</span> {t('cr_the_pull')}
-                  </p>
-                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_i_noticed?.the_pull}</p>
-                </div>
-              )}
-
-              {results?.what_i_noticed?.what_youre_trading && (
+              {results?.what_to_notice?.the_tradeoff && (
                 <div className={`${c.card} border ${c.border} rounded-2xl p-5`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
-                    <span>⚖️</span> {t('cr_youre_trading')}
+                    <span>⚖️</span> {t('cr_the_tradeoff')}
                   </p>
-                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_i_noticed?.what_youre_trading}</p>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_to_notice?.the_tradeoff}</p>
                 </div>
               )}
 
-              {results?.what_i_noticed?.the_question_underneath && (
+              {results?.what_to_notice?.watch_your_reaction && (
+                <div className={`${c.cardAlt} rounded-2xl p-5`}>
+                  <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
+                    <span>👀</span> {t('cr_watch_reaction')}
+                  </p>
+                  <p className={`text-sm ${c.text} leading-relaxed`}>{results?.what_to_notice?.watch_your_reaction}</p>
+                </div>
+              )}
+
+              {results?.what_to_notice?.a_question_to_sit_with && (
                 <div className={`${c.cardAlt} border ${c.border} rounded-2xl p-6 text-center`}>
                   <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-3`}>
-                    {t('cr_question_underneath')}
+                    {t('cr_question_sit_with')}
                   </p>
                   <p className={`text-base italic ${c.text} leading-relaxed max-w-md mx-auto`}>
-                    "{results?.what_i_noticed?.the_question_underneath}"
+                    "{results?.what_to_notice?.a_question_to_sit_with}"
                   </p>
                 </div>
               )}

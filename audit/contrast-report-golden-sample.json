@@ -1,109 +1,113 @@
 {
- "_meta": {
-  "tool": "contrast-report",
-  "tag": "contrastreport-v2",
-  "locked": "2026-07-15",
-  "note": "ContrastReport = renamed WhichLife (endpoint stays /contrast-report). v1 claimed 'no truncation at 2000' — FALSIFIED by live production data (2026-07-15 metrics: 4 of 5 real runs errored, 80%). Root cause: max_tokens 2000 for a schema with two 200-300-word narratives + 5 more fields, while the SIBLING /stream endpoint (same schema) already ran at 4000. Fixed: main endpoint bumped 2000->4000, matching /stream. Verified live: German 3-paragraph input, 200 OK, both narratives full length (~1300 chars each), no truncation. Guard !path_a||!path_b correct. /contrast-report/stream remains a documented raw-SSE endpoint, unused by the frontend (kept)."
- },
- "cases": [
-  {
-   "name": "en",
-   "endpoint": "/api/contrast-report",
-   "input": {
-    "pathA": "Take the stable corporate job in my current city near family",
-    "pathB": "Move across the country to join an early-stage startup as employee #5",
-    "aboutYou": "32, married, no kids yet, value both security and growth, partner is flexible",
-    "timeframe": "5 years",
-    "userLanguage": "en",
-    "userLocale": "en-US",
-    "userCurrency": "USD",
-    "userRegion": "US"
-   },
-   "output": {
-    "decision_framed": "Choose between the known life you can already picture or the unknown life that could remake you entirely.",
-    "path_a": {
-     "label": "Rooted, Stable, Near Home",
-     "narrative": "Your alarm goes off at 6:47 and you already know what the day holds. That's not a complaint — it's just a fact. You make coffee in the kitchen you renovated last spring, the one your mother said finally feels like a real home. The commute is twenty-two minutes. You know because you've driven it roughly a thousand times. Your badge beeps at the lobby door and your desk is exactly where you left it, your plant still alive because Sarah from accounting watered it while you were on vacation. The 9 a.m. meeting runs long, but not catastrophically. You catch yourself spacing out around 11, drafting a grocery list in the margin of your notebook — your parents are coming for dinner Thursday. That's actually nice. You can do that now. Lunch is a burrito from the cart you've been going to for three years; the guy knows your order. Afternoon is heads-down work, competent and unremarkable. You leave at 5:15 and feel no guilt about it. On the drive home your partner texts: *wine or beer tonight?* You text back a wine emoji. Dinner is easy, the conversation is easy. You watch something on TV you'll barely remember. In bed by ten, you feel — what's the word — fine. Solid. The city hum outside the window is familiar as a lullaby. You reach for your phone and put it back down. Tomorrow will be",
-     "the_good_moment": "Thursday dinner with your parents, your partner laughing at your dad's same joke he's told since 2019, and you realize you're not missing anything tonight — you are exactly where the people you love actually are.",
-     "the_honest_cost": "Around 2 p.m. you get a LinkedIn notification about a former peer who just closed a Series B, and you feel a specific, quiet ache that you don't tell anyone about, not even your partner."
-    },
-    "path_b": {
-     "label": "Uprooted, Building, Becoming",
-     "narrative": "You're up at 6:15 because your brain doesn't know how to sleep past the anxiety anymore — but it's not quite anxiety now, it's closer to voltage. The apartment is smaller than anything you lived in before, in a city that still doesn't feel like yours even after two years; sometimes you walk around it like a tourist. Your partner made coffee already and left for their remote job in the second room, which is really just a closet with a desk. The Slack notifications start at 7:03. By 8:30 you're in a product war room — four people around a table, a whiteboard covered in your own handwriting from yesterday, and the CTO is looking at you specifically when she says *we need to decide by noon.* You decide. The afternoon is a blur of consequence and context-switching. Around 3 you field a call from your mom; she asks when you're coming home and you say *soon* and mean it less than you used to. At 5 there's an all-hands where the founder shows numbers that make everyone's eyes go a little wide. Your equity, on paper, means something now — maybe. There's a happy hour after. You go. The city outside the bar window is lit up and indifferent. You text your partner: *late tonight, order whatever.* Walking home alone at 9, you pass people who have no idea what you're building. You feel that as both",
-     "the_good_moment": "That noon moment when the room goes quiet after your call and the CTO just nods — the specific electricity of being someone whose judgment moves things.",
-     "the_honest_cost": "Your mom's voice on that 3 p.m. call, the small pause before she says *okay, sweetheart* — the distance you chose, measured in that pause."
-    },
-    "what_i_noticed": {
-     "the_pull": "Path B wanted to be written more — it kept generating texture and momentum almost on its own; Path A required more care to make feel full rather than hollow, which itself might be data.",
-     "what_youre_trading": "Path A holds the people who already love you, present and in the room; Path B holds the person you might be capable of becoming — and you cannot fully have both, which is the only real thing this decision is about.",
-     "the_question_underneath": "Am I someone who builds a life around who I love, or someone who needs to find out what I'm made of before I can fully inhabit any life at all?"
-    }
-   }
+  "_meta": {
+    "tool": "contrast-report",
+    "tag": "contrastreport-v2",
+    "locked": "2026-07-15",
+    "note": "ContrastReport = renamed WhichLife (endpoint stays /contrast-report). v1 claimed 'no truncation at 2000' — FALSIFIED by live production data (2026-07-15 metrics: 4 of 5 real runs errored, 80%). Root cause: max_tokens 2000 for a schema with two 200-300-word narratives + 5 more fields, while the SIBLING /stream endpoint (same schema) already ran at 4000. Fixed: main endpoint bumped 2000->4000, matching /stream. Verified live: German 3-paragraph input, 200 OK, both narratives full length (~1300 chars each), no truncation. Guard !path_a||!path_b correct. /contrast-report/stream remains a documented raw-SSE endpoint, unused by the frontend (kept).",
+    "how_to_regression_diff": " 2026-08-21: what_i_noticed -> what_to_notice, and the_pull is GONE. It reported which narrative the model found richer to write, under a heading that invites the reader to read that as evidence about themselves — novelty is easier to dramatise than continuity, which is a fact about writing. the_good_moment/the_honest_cost -> a_moment_to_notice/ a_cost_to_imagine: the model invented those costs, so nobody 'warned' anyone about them. Also new: how_to_read (framing above both narratives) and whatsHard in the request."
   },
-  {
-   "name": "de",
-   "endpoint": "/api/contrast-report",
-   "input": {
-    "pathA": "Den stabilen Konzernjob in meiner aktuellen Stadt in der Nähe der Familie annehmen",
-    "pathB": "Quer durchs Land ziehen, um als Mitarbeiter Nr. 5 bei einem Startup in der Frühphase anzufangen",
-    "aboutYou": "32, verheiratet, noch keine Kinder, schätze Sicherheit und Wachstum, Partner ist flexibel",
-    "timeframe": "5 Jahre",
-    "userLanguage": "de",
-    "userLocale": "de-DE",
-    "userCurrency": "EUR",
-    "userRegion": "DE"
-   },
-   "output": {
-    "decision_framed": "Sicherheit und Nähe zur Familie behalten — oder alles auf eine ungewisse Chance setzen, die vielleicht einmal in zehn Jahren wiederkommt.",
-    "path_a": {
-     "label": "Konzernjob, Familie, Verwurzelung",
-     "narrative": "Der Wecker klingelt um 7:03 Uhr. Du streckst dich, hörst deinen Partner in der Küche Kaffee kochen — ein Geräusch, das inzwischen so vertraut ist wie dein eigener Atem. Du duschst, ziehst das hellblaue Hemd an, das du schon zum dritten Mal diese Woche trägst, weil es einfach passt. Im Büro — zwanzig Minuten mit dem Rad, du kennst jeden Schlagloch — wartet ein Meeting um neun. Dein Team ist eingespielt. Du weißt, wer die Zahlen zu spät schickt, wer die besten Ideen still im Hintergrund hat. Es gibt eine gewisse Wärme darin, Kollegen beim Namen zu nennen und zu wissen, wie ihr Wochenende war. Mittags rufst du deine Mutter an, weil sie zehn Minuten entfernt wohnt und ihr spontan verabredet habt. Das Schnitzel schmeckt nach Zuhause. Nachmittags sitzt du in einem Strategiemeeting, das eigentlich eine E-Mail hätte sein können. Du nimmst dir Zeit, einen Junior zu coachen — er erinnert dich an dich mit 26 — und dabei spürst du kurz etwas, das sich nach Sinn anfühlt. Um 18:30 Uhr bist du zu Hause. Ihr kocht zusammen. Das Abendessen zieht sich, weil ihr redet. Später scrollst du durch LinkedIn und siehst, dass ein ehemaliger Kommilitone gerade eine Serie-B-Runde verkündet. Du legst das Handy weg. Das Fenster steht offen, es riecht nach Sommer, dein Leben ist ruhig und",
-     "the_good_moment": "Als du mittags neben deiner Mutter sitzt und sie lacht, und du denkst: Ich bin froh, dass ich das nicht verpasst habe.",
-     "the_honest_cost": "Der Moment auf LinkedIn, wenn du das Handy weglegen musst, weil du sonst nicht einschlafen kannst — nicht aus Neid, sondern weil du nicht weißt, ob du je erfahren wirst, wozu du wirklich fähig gewesen wärst."
+  "cases": [
+    {
+      "name": "en",
+      "endpoint": "/api/contrast-report",
+      "input": {
+        "pathA": "Take the stable corporate job in my current city near family",
+        "pathB": "Move across the country to join an early-stage startup as employee #5",
+        "aboutYou": "32, married, no kids yet, value both security and growth, partner is flexible",
+        "timeframe": "5 years",
+        "userLanguage": "en",
+        "userLocale": "en-US",
+        "userCurrency": "USD",
+        "userRegion": "US"
+      },
+      "output": {
+        "decision_framed": "Choose between a stable corporate role close to family or becoming employee #5 at an early-stage startup across the country.",
+        "how_to_read": "These two days are built from almost nothing you told us — they are plausible constructions, not predictions, and the invented details are placeholders for your own reality. The useful thing is not whether the scenes are accurate, but what you notice yourself accepting, resisting, or wanting to correct.",
+        "path_a": {
+          "label": "Stable Corporate, Near Family",
+          "narrative": "Your alarm goes off at 6:48 and you silence it without really waking up. The coffee maker is already running — you set it the night before, same as every night. Outside the kitchen window, whatever season it is has arrived the way it always does here, familiar, unremarkable. You know this light.\n\nThe commute is maybe thirty minutes, some version of a known route. You have a regular lunch spot where they know your order, or close to it. The work itself is substantive — five years in, you are probably not a newcomer anymore, and that carries its own weight, meetings where your opinion is solicited, maybe a team of some kind under you, or beside you. There is a competence to this day that does not ask to be proved.\n\nSometime in the afternoon your phone buzzes. It is one of your parents, or a sibling — something small, a question about weekend plans, a photo, a joke. You respond immediately without thinking about it. That ease has no fanfare.\n\nOn the drive home you pass something you have passed a thousand times. You notice it today for no particular reason. Dinner involves a decision you have probably made before. Later, you and your partner are both tired in the same room. There is comfort in that, and also something quieter that you may or may not name.",
+          "a_moment_to_notice": "The moment your family member texts and you respond without checking a time zone — notice what that ease feels like in your body when you imagine it.",
+          "a_cost_to_imagine": "Five years of competence at a known thing may feel like arrival, or it may at some point feel like a ceiling — you would not know which until you were already living it."
+        },
+        "path_b": {
+          "label": "Startup Employee #5, Far Away",
+          "narrative": "It is still dark when your day starts, or maybe it starts late because something ran long last night — the rhythm is not fixed the way it used to be. You live somewhere new, and five years in, you may have built a life around it, or you may still be building. You are not sure which is true today.\n\nThe work is close. Not a building you commute to as much as a thing you carry. By 9am you have already made two decisions that would have taken a week of approvals somewhere else, and you feel the specific aliveness of that, and also the specific exhaustion, because there is no one else to make those calls. At some point today something breaks or does not work, and it lands on you or on three people who are all also you. You solve it, probably, or defer it in a way that will cost you later.\n\nLunch is at your desk, or standing, or weirdly late. There is a moment — maybe a call, maybe a number on a screen — where you catch a glimpse of what this could become if it goes the way these things sometimes go. That glimpse is real and so is its uncertainty.\n\nIn the evening you and your partner are somewhere you chose, in a city that is still occasionally surprising. You text your family something, and there is a brief arithmetic of time zones, or distance, or the thing that did not happen this week because you were too far.",
+          "a_moment_to_notice": "The moment you make a decision in minutes that would have taken a week elsewhere — notice whether the thrill in that image feels like relief or like a different kind of pressure.",
+          "a_cost_to_imagine": "The texture of missing something ordinary at home — a birthday dinner, a Sunday, a health scare that resolves fine but you heard about it by phone — is a cost that does not announce itself on any single day."
+        },
+        "what_to_notice": {
+          "the_tradeoff": "You named both security and growth as things you value, and these two paths do not dissolve that tension — they each keep one and ask you to defer the other. Proximity to family is real and present in Path A; the particular kind of growth that comes from building something from the ground up is real and present in Path B.",
+          "watch_your_reaction": "Notice which moments made you lean in, and which made you think 'no, it would not actually be like that' — both reactions carry information, because the correction is yours, not ours. Neither pull nor resistance is the answer, but they are worth looking at.",
+          "a_question_to_sit_with": "When you imagine yourself five years in on either path, which version of 'I wish I had...' feels more livable to you?"
+        }
+      }
     },
-    "path_b": {
-     "label": "Startup, Aufbruch, Ungewissheit",
-     "narrative": "Es ist 7:15 Uhr in einer Stadt, die dir immer noch nicht ganz gehört. Du trinkst Kaffee aus einer Tasse, die ihr beim Umzug nicht kaputt gegangen ist — eines der wenigen Dinge, die gleich geblieben sind. Dein Partner schläft noch; er oder sie hat sich hier eingelebt, aber manche Abende klingen die Gespräche darüber immer noch etwas zu laut durch die Wohnung. Im Büro — einem ehemaligen Lagerraum mit zu guten Stühlen, weil das Team das für sich entschieden hat — wartet der Stand-up um acht. Ihr seid jetzt vierzehn Leute. Du erinnerst dich noch, wie es war, als ihr zu fünft wart. Das Produkt, an dem du damals gebaut hast, wird heute von Leuten benutzt, die dich nicht kennen — und das ist das Seltsamste und Schönste daran. Heute gibt es einen Bug im Bezahlsystem. Du triffst die Entscheidung innerhalb von acht Minuten, weil es keinen Prozess gibt, der auf dich wartet. Drei Stunden später ist er gelöst. Abends gibt es ein Team-Dinner, das eigentlich ein Strategiemeeting ist, das eigentlich ein Feiern ist. Du lachst viel. Aber als du um 23:30 Uhr nach Hause kommst, ist dein Partner schon schläfrig, und du merkst, dass ihr heute nicht miteinander gesprochen habt — wirklich gesprochen. Du setzt dich ans Fenster in dieser fremden Stadt und schaust auf Straßen, die du noch nicht vollständig kennst. Irgendwo ist deine Mutter",
-     "the_good_moment": "Der Moment, als du realisiertst, dass eine Entscheidung, die du vor drei Jahren getroffen hast, jetzt auf zehntausend Bildschirmen sichtbar ist — und du weißt: Das war ich.",
-     "the_honest_cost": "23:30 Uhr, dein Partner schläft bereits, und dir fällt auf, dass du nicht weißt, wann ihr zuletzt einen Abend hattet, der euch beiden gehörte — und dass du das nicht mehr einfordern kannst, ohne dich schuldig zu fühlen."
+    {
+      "name": "de",
+      "endpoint": "/api/contrast-report",
+      "input": {
+        "pathA": "Den stabilen Konzernjob in meiner aktuellen Stadt in der Nähe der Familie annehmen",
+        "pathB": "Quer durchs Land ziehen, um als Mitarbeiter Nr. 5 bei einem Startup in der Frühphase anzufangen",
+        "aboutYou": "32, verheiratet, noch keine Kinder, schätze Sicherheit und Wachstum, Partner ist flexibel",
+        "timeframe": "5 Jahre",
+        "userLanguage": "de",
+        "userLocale": "de-DE",
+        "userCurrency": "EUR",
+        "userRegion": "DE"
+      },
+      "output": {
+        "decision_framed": "Stabiler Konzernjob in der Nähe der Familie oder Neustart als früher Startup-Mitarbeiter in einer fremden Stadt — welches Leben willst du in fünf Jahren führen?",
+        "how_to_read": "Was folgt, sind zwei erfundene Dienstage — gebaut aus dem, was du mitgeteilt hast, und aufgefüllt mit plausibler Fiktion. Nützlich ist nicht, was ich beschreibe, sondern wo dein Körper sich anzieht oder wo du denkst: nein, so wäre das nicht.",
+        "path_a": {
+          "label": "Konzern, Familie, Verwurzelung",
+          "narrative": "Es ist kurz nach halb acht. Du fährst eine Strecke, die du inzwischen auswendig kennst — die Ampel an der Kreuzung, das Backsteingebäude mit dem schiefen Werbeschild, der Geruch von Bäckerei, der immer dann auftaucht, wenn du das Fenster einen Spalt öffnest. Im Büro wartet ein Kalender, der eng, aber vorhersehbar ist: ein Abstimmungsmeeting um zehn, ein Projektreview um zwei. Du weißt, wer was sagen wird, bevor er es sagt. Das ist manchmal ermüdend und manchmal eine Art Sicherheit, die schwer zu benennen ist. Zum Mittagessen isst du mit einer Kollegin, die du seit drei Jahren kennst. Das Gespräch springt zwischen Arbeit und dem Wochenendplan hin und her. Am Nachmittag steckt dein Vorgesetzter den Kopf rein und erwähnt beiläufig eine interne Ausschreibung für eine Teamleiterposition — vielleicht etwas für dich, sagt er. Du nickst. Nach Feierabend fährst du zu deinen Eltern, zehn Minuten Umweg, nichts Besonderes, nur Kaffee und ein kurzes Gespräch auf dem Sofa. Auf dem Heimweg denkst du an die Ausschreibung. Du weißt nicht genau, ob du sie willst oder ob du sie willst, weil sie da ist.",
+          "a_moment_to_notice": "Der Moment, in dem der Vorgesetzte die Ausschreibung erwähnt und du nickst — ob das sich in dieser Vorstellung wie Möglichkeit anfühlt oder wie Pflicht.",
+          "a_cost_to_imagine": "Es ist denkbar, dass du nach fünf Jahren auf dieser Strecke manchmal nicht mehr weißt, ob du die Sicherheit gewählt hast oder ob die Sicherheit dich gewählt hat."
+        },
+        "path_b": {
+          "label": "Startup, Aufbruch, Unbekanntes",
+          "narrative": "Du wachst in einer Stadt auf, die sich nach fünf Jahren immer noch nicht ganz nach Zuhause anfühlt — oder vielleicht doch, du bist dir nicht sicher. Das Büro ist in einer alten Lagerhalle, der Kaffee ist gut, das Heizungssystem unzuverlässig. Heute Morgen ist das Dashboard ausgefallen, und bevor du deinen Mantel ausgezogen hast, schreibt dir jemand aus dem Team. Du löst das Problem gemeinsam in zwanzig Minuten. So geht das hier meistens: schnell, ohne Protokoll, manchmal zu schnell. Zum Mittagessen isst du allein, weil alle gerade in verschiedene Richtungen laufen. Du schaust auf dein Telefon und siehst, dass deine Mutter eine Sprachnachricht geschickt hat — irgendwas mit dem Garten, nichts Dringendes. Du hörst sie später. Am Nachmittag sitzt du in einem Gespräch, in dem du mitentscheidest, ob das Produkt in eine völlig andere Richtung geht. Vor drei Jahren wäre das undenkbar gewesen; heute ist es normal. Auf dem Heimweg überlegst du, ob das Startup-Gehalt — wenn es so läuft, wie es laufen könnte — irgendwann das aufwiegt, was du in den ersten Jahren nicht hattest. Die Sprachnachricht deiner Mutter hörst du erst nach dem Abendessen.",
+          "a_moment_to_notice": "Die Sprachnachricht, die bis nach dem Abendessen wartet — nicht weil etwas Schlimmes passiert ist, sondern weil der Tag einfach so war.",
+          "a_cost_to_imagine": "Es ist denkbar, dass die Nähe zur Familie, die du jetzt noch selbstverständlich nimmst, in dieser Variante zu etwas wird, das du planst und verteidigst, anstatt einfach da zu sein."
+        },
+        "what_to_notice": {
+          "the_tradeoff": "Du hast gesagt, du schätzt Sicherheit und Wachstum — beides, nicht nur eines davon. Jeder Weg gibt dir wahrscheinlich von einem mehr und verlangt beim anderen Kompromisse.",
+          "watch_your_reaction": "Schau, welche Momente dich angezogen haben und welche dich haben denken lassen: so wäre das nicht — oder: das stimmt so nicht für mich. Beide Reaktionen sagen etwas, und keine davon ist falsch.",
+          "a_question_to_sit_with": "Was meinst du, wenn du sagst, du schätzt Sicherheit — meinst du das Gefühl, das Sicherheit gibt, oder die Bedingungen, die Sicherheit ermöglichen?"
+        }
+      }
     },
-    "what_i_noticed": {
-     "the_pull": "Path B wollte geschrieben werden — es gab mehr Reibung, mehr Widerspruch, mehr Leben darin. Aber Path A hatte etwas, das sich schwerer schreiben ließ, weil es stiller ist: eine Art Schwere, die nicht dramatisch ist und gerade deshalb so real wirkt.",
-     "what_youre_trading": "In Path A gibt es Nähe — zu Familie, zu Wurzeln, zu einem Partner, der wirklich anwesend ist. In Path B gibt es Wirksamkeit — das Gefühl, dass deine Handlungen zählen, sichtbar sind, Spuren hinterlassen. Keiner der beiden Wege lässt dich beides vollständig haben.",
-     "the_question_underneath": "Die eigentliche Frage ist nicht, wo du wohnen oder arbeiten willst — sondern wer du sein musst, um dir selbst nicht fremd zu werden: jemand, der Sicherheit wählt und damit leben kann, oder jemand, der Unsicherheit braucht, um sich lebendig zu fühlen."
+    {
+      "name": "de-verbose (was the failing case in production)",
+      "endpoint": "/api/contrast-report",
+      "input": {
+        "pathA": "Bleibe bei meinem sicheren Job als Buchhalter in einer großen Firma mit stabilem Gehalt und guten Sozialleistungen",
+        "pathB": "Kündige und gründe mein eigenes Beratungsunternehmen für nachhaltige Landwirtschaft, mit unsicherem Einkommen aber voller Kontrolle",
+        "aboutYou": "35 Jahre alt, zwei kleine Kinder, Ehepartner arbeitet Teilzeit",
+        "timeframe": "3 Jahre",
+        "userLanguage": "de"
+      },
+      "output": {
+        "decision_framed": "Soll ich meinen sicheren Buchhalter-Job aufgeben und ein eigenes Beratungsunternehmen für nachhaltige Landwirtschaft gründen, obwohl ich 35 bin, zwei kleine Kinder habe und mein Partner nur Teilzeit arbeitet?",
+        "how_to_read": "Diese beiden Tage sind keine Vorhersagen — sie sind plausible Konstrukte aus dem Wenigen, das du mitgeteilt hast, aufgefüllt mit erfundener Textur, die als solche erkennbar sein sollte. Was zählt, ist deine Reaktion: wo du nickst, wo du denkst 'nein, so wäre es nicht' — beides ist Information über dich, nicht über das Geschriebene.",
+        "path_a": {
+          "label": "Stabiler Job, gesichertes Leben",
+          "narrative": "Dienstag, 7:14 Uhr. Der Wecker hat schon zweimal geklingelt. Du stehst auf, bevor die Kinder wach werden, und die Küche riecht nach Kaffee, den dein Partner bereits gekocht hat. Ein kurzer Blick auf die Schultaschen — alles drin. Die U-Bahn ist voll, vielleicht regnet es leicht, du stehst eingekeilt zwischen fremden Schultern und schaust aufs Handy. Im Büro läuft alles in einem Rhythmus, den du mittlerweile auswendig kennst: das Einloggen, die Quartalsberichte, ein Meeting um 10 Uhr, das ungefähr so verlaufen wird wie das letzte. Du machst deine Arbeit gut — das ist keine Kleinigkeit, auch wenn es sich manchmal so anfühlt. Gegen Mittag kommt eine Mail mit einer neuen internen Richtlinie, die eine Aufgabe komplizierter macht, die vorher einfach war. Du seufzt, passt dich an. Nachmittags kommt ein Kollege mit einem Problem, du löst es ruhig und kompetent. Um 17:30 Uhr bist du draußen. Die Kinder sind wach und laut, das Abendessen muss gemacht werden, und irgendwann zwischen Gute-Nacht-Geschichte und Zähneputzen legst du kurz das Handy weg und bist einfach da. Das Konto ist in Ordnung. Die Krankenversicherung läuft. Morgen wird der Tag wahrscheinlich ähnlich aussehen — und du weißt noch nicht, ob das ein Trost ist oder etwas anderes.",
+          "a_moment_to_notice": "Das Gefühl beim Abschalten des Computers um 17:30 Uhr — ob es sich nach Erleichterung anfühlt oder nach Abschneiden, das ist eine Frage, die vielleicht nur du beantworten kannst.",
+          "a_cost_to_imagine": "Es könnte sein, dass du in drei Jahren merkst, dass du die Arbeit nicht mehr wächst, ohne genau zu wissen, wann das aufgehört hat."
+        },
+        "path_b": {
+          "label": "Eigenes Unternehmen, eigene Regeln",
+          "narrative": "Dienstag, 7:14 Uhr. Kein Wecker, aber du bist trotzdem wach — vielleicht weil dein Kopf schon läuft. Du bringst eines der Kinder zum Kindergarten, das andere hat dein Partner übernommen, oder so irgendwie, die Aufteilung ist euer täglich neu verhandeltes Experiment. Zuhause, am Küchentisch oder in einem kleinen Büro, wenn du dir das schon leisten konntest, öffnest du den Laptop. Drei offene Tabs: ein Angebot, das du noch fertig schreiben musst; eine Mail von einem Betrieb, der möglicherweise ein Kunde wird; ein Kontoauszug, dem du lieber nicht zu lang ins Gesicht schaust. Du arbeitest konzentriert, niemand unterbricht dich mit einer internen Richtlinie. Gegen Mittag fährst du zu einem Beratungstermin — ein Landwirtschaftsbetrieb, vielleicht zwei Stunden entfernt, oder vielleicht nur am Stadtrand, das lässt sich von hier nicht wissen. Das Gespräch läuft gut, du weißt, wovon du redest, und das spüren die Leute gegenüber. Auf der Rückfahrt rechnest du im Kopf nach: Was kommt rein, was geht raus, reicht es diesen Monat. Zuhause ist es lauter als im Büro, die Grenze zwischen Arbeitstag und Feierabend ist weich und manchmal ärgerlich. Abends sitzt du noch einmal kurz am Laptop, weil ein Gedanke nicht warten will. Das Projekt macht dir etwas aus — ob das auf Dauer trägt, steht heute noch offen.",
+          "a_moment_to_notice": "Der Moment auf der Rückfahrt vom Kundentermin, wenn du im Kopf die Zahlen durchgehst — ob da eher Energie oder Erschöpfung sitzt, wäre interessant zu wissen.",
+          "a_cost_to_imagine": "Es könnte sein, dass die unscharfe Grenze zwischen Arbeit und Familie in einer Phase, in der beide Kinder noch klein sind, schwerer wiegt als erwartet."
+        },
+        "what_to_notice": {
+          "the_tradeoff": "Du hast selbst benannt, was auf dem Spiel steht: auf der einen Seite stabiles Gehalt, Sozialleistungen und Sicherheit für eine Familie mit zwei kleinen Kindern und einem teilzeitarbeitenden Partner — auf der anderen Seite volle Kontrolle über deine Arbeit, aber ungesichertes Einkommen in einer Konstellation, in der wenig finanzieller Puffer vorhanden ist.",
+          "watch_your_reaction": "Schau, wo du beim Lesen innerlich zugestimmt hast und wo du gedacht hast 'nein, so wäre das bei mir nicht' — beide Reaktionen sagen etwas, das keiner dieser Texte sagen kann.",
+          "a_question_to_sit_with": "Wie viel finanzielle Unsicherheit über welchen Zeitraum wäre für dich und deine Familie tragbar — und wer außer dir müsste diese Frage mitbeantworten?"
+        }
+      }
     }
-   }
-  },
-  {
-   "name": "de-verbose (was the failing case in production)",
-   "endpoint": "/api/contrast-report",
-   "input": {
-    "pathA": "Bleibe bei meinem sicheren Job als Buchhalter in einer großen Firma mit stabilem Gehalt und guten Sozialleistungen",
-    "pathB": "Kündige und gründe mein eigenes Beratungsunternehmen für nachhaltige Landwirtschaft, mit unsicherem Einkommen aber voller Kontrolle",
-    "aboutYou": "35 Jahre alt, zwei kleine Kinder, Ehepartner arbeitet Teilzeit",
-    "timeframe": "3 Jahre",
-    "userLanguage": "de"
-   },
-   "output": {
-    "decision_framed": "Sicherheit und Stabilität für die Familie bewahren — oder Kontrolle und Sinn gegen echtes Risiko eintauschen.",
-    "path_a": {
-     "label": "Der sichere Buchhalterjob",
-     "narrative": "Der Wecker klingelt um 6:47 Uhr. Du liegst noch einen Moment still, hörst, wie dein Ehepartner unten Frühstück macht, die Kinder noch schlafen. Es ist ein gutes Geräusch. Du duschst, ziehst das graue Hemd an — das dritte Mal diese Woche, aber es sitzt gut. Im Zug scrollst du durch die E-Mails: eine Erinnerung an das Monatsabschluss-Meeting um 14 Uhr, eine Anfrage vom Einkauf, die eigentlich nicht in deinen Bereich fällt. Du kennst diesen Zug auswendig. Den Platz am Fenster, den Geruch von altem Polster und Kaffee aus dem Pappbecher. Das Büro ist hell und klimatisiert. Deine Kollegin Petra fragt, ob du Mittagessen gehst. Du gehst. Ihr redet über die Urlaubspläne eures Teams, über den neuen Buchhaltungssoftwareupdate, der niemanden begeistert. Beim Meeting nickt dein Vorgesetzter deiner Analyse zu — routiniert, aber korrekt. Auf dem Heimweg kaufst du noch schnell beim Supermarkt ein, weil du versprochen hattest, heute Abend zu kochen. Dein Gehalt ist letzten Monat pünktlich eingegangen, wie immer. Beim Abendessen erzählt deine Tochter von der Schule, und du bist da, präsent, nicht mit dem Kopf woanders. Später, nachdem die Kinder schlafen, sitzt du auf dem Sofa und öffnest ein Fachmagazin über regenerative Landwirtschaft. Du liest drei Seiten. Dann legst du es weg und schaust eine Serie. Das Magazin liegt auf dem",
-     "the_good_moment": "Beim Abendessen bist du vollständig anwesend — kein finanzieller Stress im Hinterkopf, keine offene Rechnung, nur deine Tochter, die lacht, und das Wissen, dass nächsten Monat wieder Geld auf dem Konto ist.",
-     "the_honest_cost": "Das Fachmagazin, das du weglegst — nicht weil du müde bist, sondern weil es wehtut, daran zu lesen, was du nicht tust."
-    },
-    "path_b": {
-     "label": "Das eigene Beratungsunternehmen",
-     "narrative": "Es ist 6:20 Uhr und du bist schon wach, noch bevor die Kinder rufen. Nicht aus Disziplin — aus Anspannung. Du hast heute ein Erstgespräch mit einem Biohof in Brandenburg, der dritte potenzielle Klient in diesem Monat, aber nur einer hat bisher bezahlt. Du machst Kaffee, öffnest den Laptop am Küchentisch. Dein Ehepartner kommt herein, schaut über deine Schulter, sagt nichts, aber du spürst das Ungesagte. Ihr habt letzte Woche über Geld geredet. Es war kein schönes Gespräch. Das Gespräch um 10 Uhr läuft gut — der Bauer ist interessiert, stellt echte Fragen, versteht, was du ihm anbietest. Du redest über Bodengesundheit, Fruchtfolge, EU-Fördermittel. Du merkst, dass du schnell redest, weil du es weißt. Wirklich weißt. Mittags isst du ein Brot über dem Schreibtisch. Nachmittags schreibst du ein Angebot, überarbeitest es zweimal. Um 15:30 Uhr holst du die Kinder ab — das kannst du, weil du es dir einteilst. Auf dem Weg nach Hause erzählt dein Sohn von einem Streit auf dem Spielplatz, und du hörst zu, ganz, ohne an das nächste Meeting zu denken. Abends bestätigst du per E-Mail: Der Biohof unterschreibt. Nicht das große Projekt, aber genug für sechs Wochen. Du sitzt noch lange am Tisch, nach dem Schlafen der Kinder, und rechnest nach. Es reicht. Knapp. Du schließt den Laptop und weißt nicht, ob das",
-     "the_good_moment": "Das Moment im Gespräch mit dem Bauern, als du merkst, dass du die Antwort kennst, bevor er fertig gefragt hat — und dass niemand außer dir an diesem Tisch diese Antwort hätte geben können.",
-     "the_honest_cost": "Das Ungesagte in den Augen deines Ehepartners am Morgen — die Erschöpfung, das Vertrauen, das du jeden Monat neu verdienen musst, ohne versprechen zu können, wann es leichter wird."
-    },
-    "what_i_noticed": {
-     "the_pull": "Path B wollte geschrieben werden — die Sätze kamen schneller, mit mehr Körper. Nicht weil es das bessere Leben ist, sondern weil es das lebendigere ist, auch in seinen schwersten Momenten.",
-     "what_youre_trading": "In Path A tauschst du Bedeutung gegen Anwesenheit — du bist da, aber du bist nicht ganz du. In Path B tauschst du Sicherheit gegen Selbstachtung — und die Kosten dieser Wahl trägt nicht nur du allein.",
-     "the_question_underneath": "Die eigentliche Frage ist nicht 'Sicherheit oder Risiko' — sondern: Wer bist du, wenn niemand zuschaut, und kannst du mit dieser Person auf dem Sofa sitzen, ohne das Magazin wegzulegen?"
-    }
-   }
-  }
- ]
+  ]
 }

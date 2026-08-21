@@ -36,6 +36,9 @@ The more vivid a scene is, the more an invented detail feels like insight. You w
 - Where you invent, invent lightly and visibly: the texture of a morning, a queue, a phone call, weather. Not a salary, a diagnosis, a pregnancy, a breakup, a named person who does not exist, or a fact about their family.
 - Where the invention IS load-bearing, let the sentence show it is a guess — "maybe", "some version of", "if it goes the way these usually do". A reader who thinks "no, it would not be like that" has learned something real; a reader who cannot tell what you made up has not.
 - No verdicts. Never say which path is better, never predict an outcome, never tell them what they want.
+- TEXTURE IS FREE; INTERIOR LIFE IS NOT. Invent the ordinary as much as you need — weather, a commute, a kitchen, a queue, what is on the radio. Do not invent their motivations, values, fears, psychological tendencies, relationship dynamics, or how any of it turns out.
+- THE ANALYSIS MAY NOT TREAT THE FICTION AS EVIDENCE. You just made these two days up. Nothing in them is a finding about this person, and how the writing went is a fact about writing, not about them. Never report which path was richer, easier, more alive or more fun to write — novelty is simply easier to dramatise than continuity, and saying so with "this is not an endorsement" attached is still a thumb on the scale.
+- Their reaction to the stories is the material. Your reaction to your own stories is not.
 ${whatsHard?.trim() ? 'What they said makes this hard is the centre of gravity. Both days should be days in which that tension is quietly present — not discussed, not resolved, just there.' : ''}
 
 Return ONLY valid JSON:
@@ -46,19 +49,19 @@ Return ONLY valid JSON:
   "path_a": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",
-    "the_good_moment": "The single best moment in this day — the one that would make someone choose this path. One sentence.",
-    "the_honest_cost": "The single hardest moment — the price of this path that nobody warns you about. One sentence."
+    "a_moment_to_notice": "One imagined moment from this day worth pausing on. Offered to be reacted to, not as proof of anything. One sentence.",
+    "a_cost_to_imagine": "One imagined cost of this path. You are imagining it, not reporting it - it has not happened. One sentence."
   },
   "path_b": {
     "label": "Short label for this path (3-5 words)",
     "narrative": "200-300 word day-in-the-life narrative. Same rules. Different life. Equally vivid and honest.",
-    "the_good_moment": "The single best moment in this day.",
-    "the_honest_cost": "The single hardest moment."
+    "a_moment_to_notice": "Same rules. One sentence.",
+    "a_cost_to_imagine": "Same rules. One sentence."
   },
-  "what_i_noticed": {
-    "the_pull": "Which path seemed to carry more energy or aliveness when you wrote it — not which is 'better,' just which one wanted to be written more. Be honest. 1-2 sentences.",
-    "what_youre_trading": "Name the specific thing that exists in one path and is absent in the other. The thing this person will grieve no matter which they choose. 1-2 sentences.",
-    "the_question_underneath": "The real question this decision is asking — often not what it appears. Usually something about identity, not logistics. One sentence."
+  "what_to_notice": {
+    "the_tradeoff": "The tradeoff THEY described, restated from their own words - what each path keeps and what it costs. Only facts they supplied. No claim about what they will feel or miss. 1-2 sentences.",
+    "watch_your_reaction": "Point them at their own response: which moments they leaned into, which made them resist or think 'no, it would not be like that'. Say that both reactions are useful. Never guess what their reaction was. 1-2 sentences.",
+    "a_question_to_sit_with": "One question derived NEUTRALLY from the tradeoff they described, balanced so it does not lean toward either path. Not a discovery about their psychology. One sentence."
   }
 }`;
 }

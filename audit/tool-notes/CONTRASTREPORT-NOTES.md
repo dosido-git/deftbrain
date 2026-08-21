@@ -53,3 +53,31 @@ nothing said so.
 - **CTA** "Show me both futures" -> "Show me both lives", `data-print-keep` so
   the destination survives on paper while disabled.
 
+### 2026-08-21 — the analysis stopped reading its own fiction as evidence
+
+Two rules now govern the post-narrative section, and they are the point of the
+whole tool:
+
+> The narrative may imagine a future. The analysis may not pretend the imagined
+> future is evidence.
+> The user's reaction to the stories is the material. The model's reaction to
+> its OWN stories is not.
+
+- **`the_pull` DELETED.** It reported which narrative had "more aliveness" —
+  which is a fact about storytelling (novelty dramatises more easily than
+  continuity), served under a heading that invites the reader to take it as
+  psychological evidence. "That is not an endorsement" does not unsay it.
+- **`what_i_noticed` -> `what_to_notice`**: `the_tradeoff` (their own words only),
+  `watch_your_reaction` (points at the reader, never guesses what they felt),
+  `a_question_to_sit_with` (derived neutrally, balanced so it leans neither way).
+  The old `the_question_underneath` produced beautiful sentences that could be
+  written to push either direction — the eloquence itself was the bias.
+- **`the_good_moment`/`the_honest_cost` -> `a_moment_to_notice`/`a_cost_to_imagine`.**
+  The model invented those costs; nobody "warned" anyone about them.
+- **TEXTURE IS FREE; INTERIOR LIFE IS NOT.** Invent weather, a commute, a queue.
+  Never invent motivations, values, fears, psychological tendencies, relationship
+  dynamics or outcomes.
+- Bottom disclaimer: "your gut reaction is the data" promoted a first feeling to
+  evidence of the right answer. Now it points at the noticing.
+- Golden recaptured (schema keys changed), 3/3.
+
