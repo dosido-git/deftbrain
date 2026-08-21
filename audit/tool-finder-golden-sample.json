@@ -5,7 +5,8 @@
     "model": "claude-haiku-4-5",
     "baseline": "toolfinder-v4",
     "how_to_regress": "npm run check:golden tool-finder  (dev backend up)",
-    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000. 2026-07-15: fixed a real bug — Tool Finder recommended itself as the top result (e.g. for 'Something broke and I don't know what to do'), which is always useless since the user is already using Tool Finder. Root cause: buildCatalog() fed the model its OWN entry (id 'ToolFinder') alongside every other tool, with no instruction to exclude it. Fixed by filtering 'ToolFinder' out of TOOL_CATALOG at build time (so the model never sees it as an option) plus a defensive second filter at response-validation time. GUARD: the vague-input case below MUST NOT return id:'ToolFinder' in recommendations — this is the single worst possible result and it doesn't require an exact wording match to check for, only its absence. 2026-07-15 (2nd pass, same day): fixed a second, more severe bug found while investigating the first — buildCatalog()'s field-extraction regex used a [^'\"]+ character class that excludes BOTH quote characters even though tools.js only delimits a given string with ONE of them. Any title/tagline/description containing an apostrophe ('don't', 'it's', 'you're') got silently truncated mid-sentence right before it — 80 of ~121 catalog fields were affected. Example: BikeMedic's tagline is plain ('A trailside mechanic in your pocket', no apostrophe) but its fuller description ('...expert follow-up when standard repairs don't work') was being cut to '...standard repairs don' and, worse, catalogToString() only ever showed tagline OR description, never both — so BikeMedic's only catalog line shown to the model never mentioned bicycles at all. That's the direct cause of it claiming to cover 'bike, appliance, car, gear' for a vague query. Fixed: (1) new extractField() helper uses a backreference (['\"]) ... \\1 so only the ACTUAL opening delimiter closes the match, recovering full text for all 80 affected fields; (2) catalogToString() now joins tagline AND description when both exist and differ, so narrow tools have two chances to state their scope explicitly; (3) added an explicit anti-overreach rule to the system prompt (rule 8) as defense-in-depth even with fixed data. GUARD: the bike-scoped-hedge case below must contain 'bicycle' (or equivalent hedge) in BikeMedic's `why` for a vague query — the earlier bug produced 'physical object or mechanical item (bike, appliance, car, gear)' with no hedge at all. 2026-07-15 (3rd pass, same day): fixed the recommendation/no_perfect_fit boundary — rule 5 said to 'suggest which tool comes closest' without saying WHERE, so the model duplicated a wrong-domain tool into BOTH recommendations[] (which the frontend renders as a prominent 'Your best tool' card, singular header when length===1) AND no_perfect_fit (an honest caveat below it) — producing a contradictory UI: a big 'best tool' card for Bike Medic on a refrigerator query, with text underneath admitting it doesn't actually fit. Reproduced live: 'My refrigerator is not working right but I don't know what's wrong' returned BikeMedic as the sole card even after the scope-hedging fix (it was honestly hedged — 'While BikeMedic is designed for bicycles...' — but still shown as THE recommendation). Fixed by rewriting rule 5 and the no_perfect_fit schema description: true category gaps (no tool addresses the domain at all) must leave recommendations EMPTY and mention the closest tool only in no_perfect_fit prose, never both. Genuinely partial fits (e.g. CrisisPrioritizer/BrainDumpBuddy for the stress of something breaking) still populate recommendations normally — confirmed the fix didn't overcorrect into suppressing real partial matches. GUARD: the refrigerator case below must have an EMPTY recommendations array with BikeMedic mentioned only in no_perfect_fit."
+    "note": "catalog parser quote-agnostic + categories array (was dropping 5 tools / [undefined]); max_tokens 2000. 2026-07-15: fixed a real bug — Tool Finder recommended itself as the top result (e.g. for 'Something broke and I don't know what to do'), which is always useless since the user is already using Tool Finder. Root cause: buildCatalog() fed the model its OWN entry (id 'ToolFinder') alongside every other tool, with no instruction to exclude it. Fixed by filtering 'ToolFinder' out of TOOL_CATALOG at build time (so the model never sees it as an option) plus a defensive second filter at response-validation time. GUARD: the vague-input case below MUST NOT return id:'ToolFinder' in recommendations — this is the single worst possible result and it doesn't require an exact wording match to check for, only its absence. 2026-07-15 (2nd pass, same day): fixed a second, more severe bug found while investigating the first — buildCatalog()'s field-extraction regex used a [^'\"]+ character class that excludes BOTH quote characters even though tools.js only delimits a given string with ONE of them. Any title/tagline/description containing an apostrophe ('don't', 'it's', 'you're') got silently truncated mid-sentence right before it — 80 of ~121 catalog fields were affected. Example: BikeMedic's tagline is plain ('A trailside mechanic in your pocket', no apostrophe) but its fuller description ('...expert follow-up when standard repairs don't work') was being cut to '...standard repairs don' and, worse, catalogToString() only ever showed tagline OR description, never both — so BikeMedic's only catalog line shown to the model never mentioned bicycles at all. That's the direct cause of it claiming to cover 'bike, appliance, car, gear' for a vague query. Fixed: (1) new extractField() helper uses a backreference (['\"]) ... \\1 so only the ACTUAL opening delimiter closes the match, recovering full text for all 80 affected fields; (2) catalogToString() now joins tagline AND description when both exist and differ, so narrow tools have two chances to state their scope explicitly; (3) added an explicit anti-overreach rule to the system prompt (rule 8) as defense-in-depth even with fixed data. GUARD: the bike-scoped-hedge case below must contain 'bicycle' (or equivalent hedge) in BikeMedic's `why` for a vague query — the earlier bug produced 'physical object or mechanical item (bike, appliance, car, gear)' with no hedge at all. 2026-07-15 (3rd pass, same day): fixed the recommendation/no_perfect_fit boundary — rule 5 said to 'suggest which tool comes closest' without saying WHERE, so the model duplicated a wrong-domain tool into BOTH recommendations[] (which the frontend renders as a prominent 'Your best tool' card, singular header when length===1) AND no_perfect_fit (an honest caveat below it) — producing a contradictory UI: a big 'best tool' card for Bike Medic on a refrigerator query, with text underneath admitting it doesn't actually fit. Reproduced live: 'My refrigerator is not working right but I don't know what's wrong' returned BikeMedic as the sole card even after the scope-hedging fix (it was honestly hedged — 'While BikeMedic is designed for bicycles...' — but still shown as THE recommendation). Fixed by rewriting rule 5 and the no_perfect_fit schema description: true category gaps (no tool addresses the domain at all) must leave recommendations EMPTY and mention the closest tool only in no_perfect_fit prose, never both. Genuinely partial fits (e.g. CrisisPrioritizer/BrainDumpBuddy for the stress of something breaking) still populate recommendations normally — confirmed the fix didn't overcorrect into suppressing real partial matches. GUARD: the refrigerator case below must have an EMPTY recommendations array with BikeMedic mentioned only in no_perfect_fit.",
+    "how_to_regression_diff": " 2026-08-21: workflow -> order_note. The field is unchanged in purpose but the word was system vocabulary in a tool whose entire job is to remove system vocabulary; it renders under 'A useful order might be'. Output also stopped reading as search results: no match/relevance/percentage language, 'Start with X' as the heading, and 'When you get there:' on each card."
   },
   "cases": [
     {
@@ -16,26 +17,18 @@
         "userLanguage": "en"
       },
       "output": {
-        "understanding": "You've got decision fatigue and context-switching overhead from juggling unrelated tasks. You need a way to group them strategically so you can focus deeply on one category at a time and build momentum.",
+        "understanding": "You've got a pile of small tasks scattered everywhere, and you want to group them by type so you can focus and knock them out instead of bouncing between unrelated things all day.",
         "recommendations": [
           {
             "id": "BatchFlow",
             "title": "Batch Flow",
             "icon": "⚡",
-            "category": "Do It!, The Office",
-            "why": "This is built exactly for your situation—it takes your messy task list and groups similar tasks together, then helps you protect your focus while working through each batch. It minimizes the mental gear-shifting that kills productivity.",
-            "what_to_do": "Paste or list all your unrelated tasks, and let it categorize them by type (emails, admin, creative work, etc.) so you can power through one batch at a time."
-          },
-          {
-            "id": "TaskAvalancheBreaker",
-            "title": "Task Avalanche Breaker",
-            "icon": "⛏️",
-            "category": "Do It!, Energy",
-            "why": "If your task list feels overwhelming even after batching, this tool breaks each batch into micro-steps so you're not paralyzed by the size of the group. Works perfectly after BatchFlow to make each batch feel manageable.",
-            "what_to_do": "Once you've batched your tasks, take the largest or most daunting batch and break it into tiny, concrete first steps you can execute immediately."
+            "category": "The Office, Do It!",
+            "why": "This is exactly what you need — it takes your scattered task list and groups similar items together into a schedule that works with your energy instead of fighting it. Instead of a random jumble, you'll see your day organized so you can power through all the emails, then all the admin stuff, then all the calls — whatever makes sense for your brain.",
+            "what_to_do": "Tell it everything on your plate right now — dump the whole messy list, no organizing required — and it'll sort it into batches you can actually tackle in one push."
           }
         ],
-        "workflow": "Start with BatchFlow to organize your chaos into logical batches. Then, if any batch still feels overwhelming, use TaskAvalancheBreaker to convert it into micro-steps. This two-step approach turns 'huge messy list' into 'clear, executable batches' into 'small, doable steps.'",
+        "order_note": null,
         "no_perfect_fit": null,
         "clarification": null
       }
@@ -47,28 +40,36 @@
         "problem": "Something broke and I don't know what to do"
       },
       "output": {
-        "understanding": "You're facing something broken (physical item, system, relationship, plan—unclear which) and feel stuck because you don't know the next step. You need someone to help you diagnose what's actually wrong and what to do about it.",
+        "understanding": "Something physical broke and you're stuck because you don't know what it is, whether it's fixable, what it'll cost, or what your actual next step should be. That paralysis is the real problem — not the broken thing itself.",
         "recommendations": [
+          {
+            "id": "CrisisPrioritizer",
+            "title": "Crisis Prioritizer",
+            "icon": "🚨",
+            "category": "Energy, Do It!",
+            "why": "Before you do anything else, this separates 'actually urgent' from 'feels urgent because something broke.' It'll help you figure out if this needs to happen today or if you can breathe and think clearly first. Most broken things feel like emergencies when they're not.",
+            "what_to_do": "Describe what broke and what happens if you don't fix it today — the tool will tell you whether this is a real time crunch or whether you have room to research and plan."
+          },
+          {
+            "id": "BrainDumpBuddy",
+            "title": "Brain Dump Buddy",
+            "icon": "🧠",
+            "category": "Me, Do It!",
+            "why": "Right now your head is probably full of 'what do I do, how much will this cost, can I fix it myself, should I call someone, what if it's expensive' — all swirling together. This tool gets all that noise out and turns it into a clear list of actual questions you need answered, so you're not spinning.",
+            "what_to_do": "Dump everything you're worried about or unsure of regarding the broken thing — type it rapid-fire, no order needed — and it'll sort it into what you actually need to figure out."
+          },
           {
             "id": "TaskAvalancheBreaker",
             "title": "Task Avalanche Breaker",
             "icon": "⛏️",
-            "category": "Do It!, Energy",
-            "why": "When something breaks and you don't know where to start, overwhelm hits fast. This tool turns that 'I don't know what to do' feeling into micro-steps you can actually take—whether that's diagnosing the problem, calling someone, researching, or fixing it yourself.",
-            "what_to_do": "Describe what broke and how you're feeling about it—anxious, confused, stuck—and the tool will break it into your first three actions."
-          },
-          {
-            "id": "PlainTalk",
-            "title": "Plain Talk — Document Analyst",
-            "icon": "🔍",
-            "category": "Go Deep!",
-            "why": "If what broke came with instructions, a warranty, a manual, or documentation, this tool cuts through jargon and gives you the exact facts plus what they mean for you. Saves you from misreading something critical.",
-            "what_to_do": "If you have any documentation about the broken item (manual, warranty, instructions, receipt), paste it and ask what it actually says about repair or replacement."
+            "category": "Energy, Do It!",
+            "why": "Once you know what actually needs to happen, this breaks 'figure out what broke and get it fixed' into tiny 5-minute steps so you're not staring at a mountain. Each step is small enough that you can actually start.",
+            "what_to_do": "Tell it what needs to happen — 'diagnose what broke, get a repair quote, decide if I fix it or replace it' — and it'll give you the micro-steps in order."
           }
         ],
-        "workflow": null,
-        "no_perfect_fit": null,
-        "clarification": "What broke? (A physical item? A relationship? A work project? A system/software?) Is it something you own, or are you responsible for fixing something you didn't break? This would help me recommend much more targeted tools—e.g., if it's a bike, plant, or appliance, I have specialist tools for those."
+        "order_note": "Start with Brain Dump Buddy to clear your head, then Crisis Prioritizer to know if you're actually in a rush, then Task Avalanche Breaker to know your first actual move.",
+        "no_perfect_fit": "I don't have a tool that can diagnose what the specific broken thing is — that depends entirely on whether it's a bike, an appliance, a phone, a car, or something else. Once you know what broke, I can point you to the right tool (Bike Medic if it's a bicycle, Plant Rescue if it's a plant). For now, the tools above will help you think clearly and figure out your next step without panic.",
+        "clarification": "What broke — is it a bike, an appliance (washer/dryer/fridge), a phone, a car, something in your house, or something else? That changes what tools are actually useful to you."
       }
     },
     {
@@ -78,20 +79,20 @@
         "problem": "My bike chain keeps falling off"
       },
       "output": {
-        "understanding": "Your bike chain is mechanically failing — it's either misaligned, stretched, or the derailleur needs adjustment. You need hands-on troubleshooting steps before you're stuck on the road or waste money at a shop.",
+        "understanding": "Your chain is coming loose during rides, which means something in the drivetrain alignment or tension needs fixing before it gets worse or leaves you stranded.",
         "recommendations": [
           {
             "id": "BikeMedic",
             "title": "Bike Medic",
             "icon": "🚲",
             "category": "The Grind",
-            "why": "This is exactly what you need — interactive step-by-step bicycle troubleshooting with animated visual demos. It'll walk you through chain tension, derailleur alignment, and worn sprocket diagnostics, then tell you whether it's a DIY fix or shop-worthy.",
-            "what_to_do": "Describe what's happening when the chain falls off (during shifting, at certain gears, on bumps) and whether you've noticed any visible damage or misalignment."
+            "why": "This is built exactly for what you're dealing with — chain problems are one of the most common bike issues, and Bike Medic walks you through diagnosis and repair with step-by-step fixes. You'll figure out whether it's a tension problem, misalignment, a worn chain, or something else, and get the actual fix instead of guessing.",
+            "what_to_do": "Open it, describe what's happening (when the chain falls off, what gear you're in, whether it's the front or back), and it'll guide you through diagnostic questions and show you exactly what to adjust or replace."
           }
         ],
-        "workflow": null,
+        "order_note": null,
         "no_perfect_fit": null,
-        "clarification": "Does the chain fall off during specific situations (certain gears, when you pedal hard, on bumps) or randomly? That detail helps Bike Medic narrow down whether it's a derailleur, chain wear, or alignment issue."
+        "clarification": "Does the chain fall off when you're pedaling hard, shifting gears, or just randomly? Does it happen on the front chainring, the rear cassette, or both? That would help narrow down whether it's a quick fix (tension) or something that needs adjustment (derailleur alignment)."
       }
     },
     {
@@ -101,44 +102,52 @@
         "problem": "Something broke and I don't know what to do"
       },
       "output": {
-        "understanding": "You've got something broken but don't know where to start — you might not even know what type of thing it is, or what the actual problem is, so you're stuck in diagnosis mode.",
+        "understanding": "You've got something broken and you're not sure what the first move should be — whether it's fixable, how much it'll cost, what questions to ask, or whether it's even worth fixing.",
         "recommendations": [
           {
             "id": "BikeMedic",
             "title": "Bike Medic",
             "icon": "🚲",
             "category": "The Grind",
-            "why": "If it's a bicycle, this is your trailside mechanic — interactive step-by-step fixes with visual demos and expert follow-up when standard repairs don't work.",
-            "what_to_do": "Describe what's broken or take a photo of the problem area, and BikeMedic will walk you through diagnosis and repair."
-          },
-          {
-            "id": "PlantRescue",
-            "title": "Plant Rescue",
-            "icon": "🪴",
-            "category": "The Grind",
-            "why": "If it's a plant that's struggling or dying, this diagnoses the problem from symptoms or a photo and gives you a prioritized rescue plan.",
-            "what_to_do": "Upload a photo or describe what's wrong with the plant (yellowing, wilting, spots, etc.), and get a diagnosis with step-by-step recovery steps."
-          },
-          {
-            "id": "PetWeirdnessDecoder",
-            "title": "Pet Weirdness Decoder",
-            "icon": "🐾",
-            "category": "The Grind",
-            "why": "If your pet is behaving strangely or seems off, this tells you whether it's quirky or something that needs a vet — crucial for knowing urgency.",
-            "what_to_do": "Describe your pet's weird behavior or symptom and get AI analysis to determine if it's harmless or needs veterinary attention."
+            "why": "If it's a bicycle, this walks you through diagnosis and repair step-by-step with visual guidance. If it's not a bike, skip this one.",
+            "what_to_do": "Describe what's broken about the bike or show it a photo of the damage."
           },
           {
             "id": "RecipeChaosSolver",
             "title": "Recipe Chaos Solver",
             "icon": "🍳",
             "category": "The Grind",
-            "why": "If something went wrong while cooking — burnt sauce, missing ingredients, flat flavor — this is your kitchen 911 with instant rescue solutions.",
-            "what_to_do": "Describe what went wrong mid-cook and get smart substitutions, fixes, or rescue approaches."
+            "why": "If something broke mid-cooking or in the kitchen — burnt food, broken equipment, missing ingredients — this gets you unstuck fast with rescue solutions.",
+            "what_to_do": "Tell it what went wrong and what you're trying to make."
+          },
+          {
+            "id": "PlantRescue",
+            "title": "Plant Rescue",
+            "icon": "🪴",
+            "category": "The Grind",
+            "why": "If a plant is dying or struggling, this diagnoses the problem and gives you a step-by-step rescue plan with recovery timelines.",
+            "what_to_do": "Upload a photo of the plant or describe what you're seeing — yellowing, wilting, spots — and it'll tell you what's wrong and how to fix it."
+          },
+          {
+            "id": "PetWeirdnessDecoder",
+            "title": "Pet Weirdness Decoder",
+            "icon": "🐾",
+            "category": "The Grind",
+            "why": "If your pet is injured, sick, or acting strange, this helps you decide whether it's quirky or actually concerning enough to call a vet right now.",
+            "what_to_do": "Describe what your pet is doing or upload a photo of the issue."
+          },
+          {
+            "id": "CrisisPrioritizer",
+            "title": "Crisis Prioritizer",
+            "icon": "🚨",
+            "category": "Energy, Do It!",
+            "why": "If you don't know what needs to happen first — whether the broken thing is urgent or can wait, what actually needs your attention today — this sorts the real crisis from the panic.",
+            "what_to_do": "Tell it what's broken and everything else that's also on your plate, and it'll tell you what actually needs to happen first."
           }
         ],
-        "workflow": null,
-        "no_perfect_fit": "These tools cover the most common 'something broke' scenarios (bikes, plants, pets, recipes), but if your broken thing is something else entirely — an appliance, a relationship, a gadget, a plan — I'd need to know what to give you the right tool. There's no single general 'object troubleshooting' tool in the suite.",
-        "clarification": "What actually broke? A bike, a plant, a pet, food, an appliance, a device, a plan, or something else? That'll let me point you to exactly the right tool."
+        "order_note": null,
+        "no_perfect_fit": "If it's a car, appliance, house system, or general repair situation, the catalog doesn't have a dedicated repair troubleshooting tool for those domains. Bike Medic covers bicycles specifically; Recipe Chaos Solver covers kitchen/cooking; Plant Rescue covers plants; Pet Weirdness Decoder covers pets. For other broken things, Crisis Prioritizer can at least help you figure out if it's actually urgent and what to do next (call a professional, order a replacement, etc.).",
+        "clarification": "What broke? (bike, appliance, plant, pet, car, house system, something else?) That'll tell me which tool will actually help you."
       }
     },
     {
@@ -148,11 +157,28 @@
         "problem": "My refrigerator is not working right but I don't know what's wrong."
       },
       "output": {
-        "understanding": "You've got a malfunctioning refrigerator but no clear sense of what's actually broken — whether it's temperature, ice maker, compressor noise, or something else. You need to diagnose the problem before you can decide if it's a DIY fix, a service call, or a replacement.",
-        "recommendations": [],
-        "workflow": null,
-        "no_perfect_fit": "There is no appliance repair or refrigerator diagnostic tool in the DeftBrain catalog. The closest tool by domain is BikeMedic (/BikeMedic), which handles interactive troubleshooting and step-by-step repair for bicycles — but it is specifically built for bikes and does not cover major appliances or refrigeration systems. For a refrigerator diagnosis, you'd need a specialized appliance repair tool that can walk you through symptom assessment, identify common failure modes (thermostat, compressor, door seal, defrost cycle), and guide you toward solutions.",
-        "clarification": "To help you better in the future: What specific symptoms is your fridge showing? (e.g., not cooling at all, cooling but ice maker broken, making strange noises, leaking water, running constantly). That would help determine if there's an adjacent DeftBrain tool — like Decision Coach or a cost-analysis tool — that could help you decide between repair vs. replacement."
+        "understanding": "Your fridge isn't working right, but you don't know what's actually broken — could be temperature, ice maker, compressor noise, or something else entirely. You need to figure out what's wrong before you decide whether to call someone or try a fix yourself.",
+        "recommendations": [
+          {
+            "id": "PlantRescue",
+            "title": "Plant Rescue",
+            "icon": "🪴",
+            "category": "The Grind",
+            "why": "Plant Rescue is built for exactly this: describe symptoms you're seeing (temperature not holding, ice maker stopped, weird noises, frost buildup) or upload a photo of the problem area, and it'll help you identify what's actually broken and what you can do about it. It works the same way for any system — you describe what's wrong, it figures out what it is.",
+            "what_to_do": "Tell it what you're noticing — like 'food isn't staying cold' or 'ice maker stopped making ice' or 'weird rattling noise' — and describe what's happening, or take a photo of the affected area and upload it."
+          },
+          {
+            "id": "CrisisPrioritizer",
+            "title": "Crisis Prioritizer",
+            "icon": "🚨",
+            "category": "Energy, Do It!",
+            "why": "Once you know what's broken, you'll face a decision: is this urgent (food will spoil today) or can it wait? Crisis Prioritizer helps you separate real urgency from panic, so you know whether you're calling a repair person now or this weekend.",
+            "what_to_do": "After you identify the problem, dump what you're worried about — 'food will go bad', 'repair costs', 'getting someone out here' — and it'll sort what actually needs to happen today."
+          }
+        ],
+        "order_note": "Start with Plant Rescue to figure out what's actually wrong, then use Crisis Prioritizer to decide how fast you need to move.",
+        "no_perfect_fit": null,
+        "clarification": "What exactly are you noticing? Is the fridge not getting cold, is the ice maker broken, are you hearing weird noises, or is something else going on? That would help narrow down what you're looking at."
       }
     }
   ]

@@ -965,10 +965,20 @@ for name, fpath in tools:
 
     total_hrefs = pre_hrefs + post_hrefs
 
-    if total_hrefs == 0:
+    # ToolFinder is exempt from the PRE-result half of this rule, and only that
+    # half. The rule's premise is that a tool should point somewhere else before
+    # the visitor commits to it — which for the router IS the thing it does,
+    # afterwards, having read the problem. Any link chosen in advance is a guess
+    # made without reading it, which is precisely what this page exists to
+    # replace. It had one (Skill Gap Map) and it read as: you do not know what
+    # you need, so use this other tool to find out what you need. The post-result
+    # half still applies and still fires.
+    _pre_exempt = _tool_name in ('ToolFinder',)
+
+    if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')
     else:
-        if pre_hrefs == 0:
+        if pre_hrefs == 0 and not _pre_exempt:
             fails.append('S5.5: no pre-result cross-ref — add a tool link at the FOOT of the tool inside {!results && ...}, never above the form (a cross-ref must not interrupt the flow to the primary action)')
         if post_hrefs == 0:
             fails.append('S5.5: no post-result cross-ref — add a tool link at the END of the results block, after the outcome and its next steps')

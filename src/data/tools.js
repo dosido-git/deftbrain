@@ -502,18 +502,20 @@ export const tools = [
   },
   seoDescription: "Describe your problem in plain language and instantly find the right DeftBrain tool for it. Get matched picks, why each fits, and what to enter. Free, no signup.",
   seoTitle: "Find the Right Tool: Describe Your Problem",
-  // Renamed 2026-08-05 after a usability review: "Tool Finder" names the
-  // mechanism from the builder's side. Users do not want to find tools, they
-  // want to solve problems. The id and route stay /ToolFinder — this is a
-  // display change only, so no redirects and no lost inbound links. seoTitle
-  // still carries "AI Tool Finder" for anyone searching the old phrasing.
-  title: "Start Here",
+  // Renamed to "Start Here" on 2026-08-05 and back to "Tool Finder" on
+  // 2026-08-21. The 2026-08-05 reasoning was that users want to solve problems
+  // rather than find tools — true of every OTHER tool on the site, and exactly
+  // backwards here: this is the one page whose entire job is finding the tool,
+  // and "Start Here" describes a position in a menu rather than what happens.
+  // The id and route have stayed /ToolFinder throughout, so both renames are
+  // display-only — no redirects, no lost inbound links.
+  title: "Tool Finder",
   tagline: "Tell me what you're dealing with — I'll find the right tool.",
   tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse', 'discover', 'guide', 'navigate', 'right tool', 'suggest', 'match'],
   icon: "🧰",
   categories: ['Do It!'],
   headerColor: "#e0b8b8",
-  description: "With 100+ tools, how can you find the right one? Describe what you need in plain language and ToolFinder employs AI to find the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.",
+  description: "Not sure where to start? Describe what's going on in your own words. We'll find the best place to start and show you what comes next.",
   guide: {
     overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
     howToUse: [

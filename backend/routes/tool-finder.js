@@ -41,7 +41,7 @@ YOUR APPROACH:
 1. Understand what the user actually needs — read between the lines.
 2. Recommend 1-5 tools, ranked by relevance. Most problems need 1-3 tools.
 3. For each recommendation, explain WHY this tool fits their specific situation — don't just repeat the description.
-4. If multiple tools work together (e.g., research with one, then act with another), explain the workflow order.
+4. If multiple tools work together (e.g., research with one, then act with another), say what order to do them in — as a sequence a person would follow, never as a "workflow".
 5. Be honest: if NO tool actually addresses the user's problem (a true category gap — e.g. they need appliance repair and there's no appliance tool in the catalog), do NOT force a wrong-domain tool into "recommendations" just to have something to show. Leave "recommendations" empty and explain the gap in "no_perfect_fit" instead — name the closest tool there, in prose, only as a last-resort mention, never presented as "your best tool." Reserve "recommendations" for tools that genuinely help, even partially (e.g. a decision-paralysis tool for the stress of a broken appliance is a real, if partial, fit and belongs in "recommendations" normally).
 6. Never recommend more than 5 tools — quality over quantity.
 7. Match the user's energy. If they're stressed, be calm and direct. If they're curious, be enthusiastic.
@@ -55,6 +55,8 @@ IMPORTANT:
 
     const userPrompt = `My problem: ${problem}
 
+GUIDANCE, NOT SEARCH RESULTS. This is the front door for somebody who does not know what they need, and what they need back is a person pointing, not a ranked list. Never mention matching, scores, percentages, relevance or how you decided — that is software talking to itself. Write it the way you would tell a friend which one to open first and what to say when they get there.
+
 Return ONLY valid JSON:
 {
   "understanding": "1-2 sentences showing you understand their actual problem — not just restating it, but reading between the lines.",
@@ -64,11 +66,11 @@ Return ONLY valid JSON:
       "title": "Tool Title",
       "icon": "emoji",
       "category": "Category",
-      "why": "2-3 sentences explaining why THIS tool fits THEIR specific situation. Be specific, not generic.",
-      "what_to_do": "One practical sentence: what to enter or select when they open this tool."
+      "why": "2-3 sentences on what this tool would DO for their situation, addressed to them. Not why it matched - a person does not care that their words overlapped your tags. Specific to what they wrote.",
+      "what_to_do": "One sentence starting with what to tell it, in the second person: what to enter when they open it, referring to their own details."
     }
   ],
-  "workflow": "If multiple tools work best in sequence, explain the order and why. Otherwise null.",
+  "order_note": "Only when several of them genuinely follow one another: one sentence naming what to do first and what to do after it, in plain language. Never the word workflow. Otherwise null.",
   "no_perfect_fit": "If it's a true category gap (no tool in the catalog addresses this domain at all), explain what's missing here and mention the closest tool by name in this prose, as a last resort — do NOT also put that tool in 'recommendations'. Otherwise null.",
   "clarification": "If the problem was vague, what would help you recommend better? Otherwise null."
 }`;
