@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -340,15 +341,22 @@ const WrongAnswersOnly = ({ tool }) => {
             </div>
           </div>
         </div>
-      ))} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>🙃 {t('wao_previously_wrong')}</p>
-          <div className="space-y-1">
+      ))} {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.length > 0 && (<details className={`group ${c.cardAlt} border ${c.border} rounded-xl px-4 py-3 mt-4`}>
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <span className={`text-xs font-bold ${c.textMuted} flex items-center gap-2`}>
+              🙃 {t('wao_previously_wrong')}
+              {/* eslint-disable-next-line no-restricted-globals */}
+              <span className="font-normal">({sessionHistory.length})</span>
+              <Caret groupOpen className="ms-auto" />
+            </span>
+          </summary>
+          <div className="space-y-1 mt-3">
             {/* eslint-disable-next-line no-restricted-globals */} {sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between">
                 <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('wao_session')}</span>
                 <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
               </div>
             ))} </div>
-        </div>
+        </details>
       )}
     </div>
   );
