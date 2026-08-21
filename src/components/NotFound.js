@@ -59,7 +59,7 @@ const NotFound = ({
             onClick={() => navigate('/ToolFinder')}
             className={`w-full py-3.5 ${c.primary} rounded-xl font-semibold transition-colors`}
           >
-            🔎 Use the ToolFinder
+            🔎 Use Tool Finder
           </button>
           <button
             onClick={() => navigate('/')}

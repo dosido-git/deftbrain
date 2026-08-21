@@ -59,7 +59,7 @@ export const base = {
     "wizard_use_together": "Use these together:",
     "best_match": "Best match",
     "submit_shortcut_hint": "⌘↵ to submit",
-    "open_full_toolfinder": "Open full ToolFinder →",
+    "open_full_toolfinder": "Open full Tool Finder →",
     "try_again": "Try again"
   },
   "es": {
@@ -119,7 +119,7 @@ export const base = {
     "wizard_use_together": "Úsalas juntas:",
     "best_match": "Mejor coincidencia",
     "submit_shortcut_hint": "⌘↵ para enviar",
-    "open_full_toolfinder": "Abrir ToolFinder completo →",
+    "open_full_toolfinder": "Abrir Tool Finder completo →",
     "try_again": "Intentar de nuevo"
   },
   "zh": {
@@ -179,7 +179,7 @@ export const base = {
     "wizard_use_together": "搭配使用：",
     "best_match": "最佳匹配",
     "submit_shortcut_hint": "⌘↵ 提交",
-    "open_full_toolfinder": "打开完整 ToolFinder →",
+    "open_full_toolfinder": "打开完整 Tool Finder →",
     "try_again": "重试"
   },
   "hi": {
@@ -239,7 +239,7 @@ export const base = {
     "wizard_use_together": "इन्हें एक साथ इस्तेमाल करें:",
     "best_match": "सर्वश्रेष्ठ मिलान",
     "submit_shortcut_hint": "⌘↵ सबमिट करने के लिए",
-    "open_full_toolfinder": "पूर्ण ToolFinder खोलें →",
+    "open_full_toolfinder": "पूर्ण Tool Finder खोलें →",
     "try_again": "फिर से प्रयास करें"
   },
   "ar": {
@@ -299,7 +299,7 @@ export const base = {
     "wizard_use_together": "استخدمها معاً:",
     "best_match": "الأفضل تطابقاً",
     "submit_shortcut_hint": "⌘↵ للإرسال",
-    "open_full_toolfinder": "افتح ToolFinder الكامل →",
+    "open_full_toolfinder": "افتح Tool Finder الكامل →",
     "try_again": "حاول مرة أخرى"
   },
   "pt": {
@@ -359,7 +359,7 @@ export const base = {
     "wizard_use_together": "Use juntas:",
     "best_match": "Melhor correspondência",
     "submit_shortcut_hint": "⌘↵ para enviar",
-    "open_full_toolfinder": "Abrir ToolFinder completo →",
+    "open_full_toolfinder": "Abrir Tool Finder completo →",
     "try_again": "Tentar novamente"
   },
   "fr": {
@@ -419,7 +419,7 @@ export const base = {
     "wizard_use_together": "À utiliser ensemble :",
     "best_match": "Meilleure correspondance",
     "submit_shortcut_hint": "⌘↵ pour envoyer",
-    "open_full_toolfinder": "Ouvrir le ToolFinder complet →",
+    "open_full_toolfinder": "Ouvrir le Tool Finder complet →",
     "try_again": "Réessayer"
   },
   "de": {
@@ -479,7 +479,7 @@ export const base = {
     "wizard_use_together": "Zusammen verwenden:",
     "best_match": "Beste Übereinstimmung",
     "submit_shortcut_hint": "⌘↵ zum Absenden",
-    "open_full_toolfinder": "Vollständigen ToolFinder öffnen →",
+    "open_full_toolfinder": "Vollständigen Tool Finder öffnen →",
     "try_again": "Erneut versuchen"
   },
   "ja": {
@@ -539,7 +539,7 @@ export const base = {
     "wizard_use_together": "組み合わせて使用：",
     "best_match": "最適",
     "submit_shortcut_hint": "⌘↵ で送信",
-    "open_full_toolfinder": "フル版ToolFinderを開く →",
+    "open_full_toolfinder": "フル版Tool Finderを開く →",
     "try_again": "もう一度試す"
   },
   "ko": {
@@ -599,7 +599,7 @@ export const base = {
     "wizard_use_together": "함께 사용하기:",
     "best_match": "최적 일치",
     "submit_shortcut_hint": "⌘↵ 제출",
-    "open_full_toolfinder": "전체 ToolFinder 열기 →",
+    "open_full_toolfinder": "전체 Tool Finder 열기 →",
     "try_again": "다시 시도"
   },
   "ru": {
@@ -659,7 +659,7 @@ export const base = {
     "wizard_use_together": "Используйте вместе:",
     "best_match": "Лучшее совпадение",
     "submit_shortcut_hint": "⌘↵ для отправки",
-    "open_full_toolfinder": "Открыть полный ToolFinder →",
+    "open_full_toolfinder": "Открыть полный Tool Finder →",
     "try_again": "Попробовать снова"
   },
   "th": {
@@ -719,7 +719,7 @@ export const base = {
     "wizard_use_together": "ใช้ร่วมกัน:",
     "best_match": "ตรงที่สุด",
     "submit_shortcut_hint": "⌘↵ เพื่อส่ง",
-    "open_full_toolfinder": "เปิด ToolFinder แบบเต็ม →",
+    "open_full_toolfinder": "เปิด Tool Finder แบบเต็ม →",
     "try_again": "ลองใหม่"
   },
   "vi": {
@@ -779,7 +779,7 @@ export const base = {
     "wizard_use_together": "Dùng cùng nhau:",
     "best_match": "Phù hợp nhất",
     "submit_shortcut_hint": "⌘↵ để gửi",
-    "open_full_toolfinder": "Mở ToolFinder đầy đủ →",
+    "open_full_toolfinder": "Mở Tool Finder đầy đủ →",
     "try_again": "Thử lại"
   }
 };
