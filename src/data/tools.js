@@ -1591,41 +1591,76 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "TipOfTongue",
+
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You can picture it, taste it, or hum it, but not name it.",
     give: "Whatever you remember — sensory fragments, vibes, partial facts. A category if you have one.",
     get: "What it most likely is, with alternatives if it's ambiguous.",
-    edge: "Built for fragments. Search engines need the name you don't have.",
+    edge: "Built for fragments. You don't need to know the name to start looking.",
   },
+
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
   faq: [
-    { q: "How do I find a word that's on the tip of my tongue?",
-      a: "Describe whatever you remember — meaning, sound, context, first letter, what it reminds you of, or what it definitely isn't. Tip of Tongue uses those fragments to suggest likely matches and explain what clues led to each one." },
-    { q: "Can it find a movie or song I can't remember the name of?",
-      a: "Yes. Describe the era, mood, scene, instruments, voice, plot fragment, half-remembered lyric, or anything else that stuck with you. Tip of Tongue suggests likely matches and gives you details you can use to check them." },
-    { q: "What kinds of things can it identify?",
-      a: "Songs, movies and shows, foods and drinks, products, scents, colors, places, fabrics, words and other things you can describe from partial memory. Different clues matter for different categories — flavor and texture for food, for example, or era and vocal style for music." },
-    { q: "What if none of the matches are right?",
-      a: "Mark what was close, rule out what was wrong, and add any new detail that surfaced. Even a near miss can help narrow the next round." },
-    { q: "Why does a word disappear right when I try to remember it?",
-      a: "A tip-of-the-tongue moment usually means the word feels familiar but isn't immediately accessible. Indirect clues — sounds, syllables, related ideas, or context — can sometimes help bring it back. Describing around the missing word gives you more routes to the answer than simply trying harder to recall it." },
+    {
+      q: "How do I find a word that's on the tip of my tongue?",
+      a: "Describe whatever you remember — meaning, sound, context, first letter, what it reminds you of, or what it definitely isn't. Tip of Tongue uses those fragments to suggest likely matches and explain what clues led to each one."
+    },
+    {
+      q: "Can it find a movie or song I can't remember the name of?",
+      a: "Yes. Describe the era, mood, scene, instruments, voice, plot fragment, half-remembered lyric, or anything else that stuck with you. Tip of Tongue suggests likely matches and gives you details you can use to check them."
+    },
+    {
+      q: "What kinds of things can it identify?",
+      a: "Songs, movies and shows, foods and drinks, products, scents, colors, places, fabrics, words and other things you can describe from partial memory. Different clues matter for different categories — flavor and texture for food, for example, or era and vocal style for music."
+    },
+    {
+      q: "What if none of the matches are right?",
+      a: "Mark what was close, rule out what was wrong, and add any new detail that surfaced. Even a near miss can help narrow the next round."
+    },
+    {
+      q: "Why does a word disappear right when I try to remember it?",
+      a: "A tip-of-the-tongue moment usually means the word feels familiar but isn't immediately accessible. Indirect clues — sounds, syllables, related ideas, or context — can sometimes help bring it back. Describing around the missing word gives you more routes to the answer than simply trying harder to recall it."
+    },
   ],
-  seoDescription: "Can't remember the name of a song, movie, food, product, color, scent or place? Describe the fragments you remember and narrow down what it was. Free, no signup.",
+
+  seoDescription:
+    "Can't remember the name of a song, movie, food, product, color, scent or place? Describe the fragments you remember and narrow down what it was. Free, no signup.",
+
   seoTitle: "Tip-of-the-Tongue Finder: Name That Thing",
+
   title: "Tip of Tongue",
-  tagline: "Describe it from memory — DeftBrain will figure out what it is.",
-  tags: ['remember', 'forgot', 'what is it called', 'tip of tongue', 'word', 'memory', 'describe'],
+
+  tagline:
+    "Describe it from memory — DeftBrain will figure out what it is.",
+
+  tags: [
+    "remember",
+    "forgot",
+    "can't remember name",
+    "what is it called",
+    "tip of tongue",
+    "identify from clues",
+    "partial memory",
+    "name that thing"
+  ],
+
   icon: "💭",
-  categories: ['Diversions'],
+
+  categories: ["Diversions"],
+
   headerColor: "#d4dde8",
-  description: "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.",
+
+  description:
+    "You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.",
+
   guide: {
-    overview: "Tip of Tongue helps when you remember pieces of something but not its name. Describe whatever you still have — a flavor, lyric fragment, packaging color, scene, scent, place, texture, era, or just the general feel. DeftBrain uses those clues to suggest the strongest matches, explain why each one fits, and give you an easy way to verify them. If none is quite right, tell it what was close or wrong and keep narrowing the search.",
+    overview:
+      "Tip of Tongue helps when you remember pieces of something but not its name. Describe whatever you still have — a flavor, lyric fragment, packaging color, scene, scent, place, texture, era, or just the general feel. DeftBrain uses those clues to suggest the strongest matches, explain why each one fits, and give you an easy way to verify them. If none is quite right, tell it what was close or wrong and keep narrowing the search.",
 
     howToUse: [
       "Pick a category if you know it — otherwise choose Something Else.",
@@ -1636,9 +1671,14 @@ export const tools = [
     ],
 
     example: {
-      scenario: "You remember a cold noodle dish from a restaurant a few years ago. It was slightly sweet and nutty, with something crispy on top, and you think it may have been Chinese.",
-      action: "Enter: 'Cold noodles, sesame-like sauce, slightly sweet, crispy topping. Ate it at a small restaurant around 2023. Not peanut noodles.'",
-      result: "Tip of Tongue suggests a few plausible dishes, explains which remembered details point toward each one, and gives you something concrete to check — such as the sauce, toppings, or typical preparation. Mark the closest match and refine from there."
+      scenario:
+        "You remember a cold noodle dish from a restaurant a few years ago. It was slightly sweet and nutty, with something crispy on top, and you think it may have been Chinese.",
+
+      action:
+        "Enter: 'Cold noodles, sesame-like sauce, slightly sweet, crispy topping. Ate it at a small restaurant around 2023. Not peanut noodles.'",
+
+      result:
+        "Tip of Tongue suggests a few plausible dishes, explains which remembered details point toward each one, and gives you something concrete to check — such as the sauce, toppings, or typical preparation. Mark the closest match and refine from there."
     },
 
     tips: [

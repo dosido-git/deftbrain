@@ -7,7 +7,25 @@
 // invented id is a dead link on a results page.
 const fs = require('fs');
 const path = require('path');
-const { toolFinderMetadata } = require('../data/toolFinderMetadata');
+const vm = require('vm');
+
+// Tool Finder's routing metadata, kept apart from the public catalog in
+// src/data/toolFinderMetadata.js. That file is ESM, like everything under
+// src/, so it cannot be require()d from CommonJS. Evaluating it is still a
+// real JS parse — a typo raises here instead of being silently skipped the
+// way a regex would skip it. Failure degrades to blurb-only routing rather
+// than taking the server down with it.
+function loadToolFinderMetadata() {
+  try {
+    const p = path.join(__dirname, '../../src/data/toolFinderMetadata.js');
+    const src = fs.readFileSync(p, 'utf8').replace(/\bexport\s+const\s+toolFinderMetadata\b/, 'const toolFinderMetadata');
+    return vm.runInNewContext(`${src}\ntoolFinderMetadata;`, {}, { timeout: 2000 }) || {};
+  } catch (err) {
+    console.error('ToolFinder: failed to load routing metadata:', err.message);
+    return {};
+  }
+}
+const toolFinderMetadata = loadToolFinderMetadata();
 
 // Extract a single-line quoted field value, respecting WHICH quote character
 // actually delimits the string (tools.js mixes ' and " across fields). A
