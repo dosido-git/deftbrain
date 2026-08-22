@@ -162,8 +162,7 @@ ACCURACY RULES: Never assert model-specific component standards (bottom-bracket 
 Return ONLY valid JSON:
 {
   "recommended_category": "category_id from list above — one sentence",
-  "confidence": 0.0 to 1.0,
-  "reasoning": "One sentence explaining why this category fits",
+  "reasoning": "Where their description points first, and that it is a starting point rather than a finding — 'What you are describing points first toward the drivetrain. Several things cause skipping under load, so we will narrow it down before recommending a fix.' Calm and plain. Never a percentage, a score, a likelihood or any number: nothing here is measured, and a figure would say otherwise. Never 'strongly indicates', 'clearly points to' or 'almost certainly'. — 1-2 sentences",
   "alternative_categories": ["second_best", "third_best"],
   "suggested_first_question": "A good diagnostic question to ask the rider — one sentence"
 }`;
@@ -216,9 +215,13 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
 
+SEQUENCE, AND WHY IT IS THIS ORDER: what they are seeing, then what is safe to check, then what is likely causing it, then whether this bike is safe to ride right now, then how to fix it, then when to stop and use a shop. The stop-riding decision comes BEFORE the repair steps, always — a rider who should not be riding needs to know that before they read a procedure, not in a note underneath one.
+When the problem touches brakes, wheels, spokes, hubs, axles, the headset, the crank or a tire that is not seated, ride_safe is false unless you have a specific reason otherwise, and the explanation opens by saying so. These parts do not degrade politely; they fail at once.
+A shop is a good answer, not a failure of this tool. Say plainly when a job is past a home fix, and describe difficulty honestly rather than encouragingly.
+
 Return ONLY valid JSON:
 {
-  "diagnosis": "What's actually wrong (different from what they already tried). Nothing else.",
+  "diagnosis": "What's most likely wrong (different from what they already tried). Name it as the leading candidate, not a settled finding. Nothing else.",
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentences explaining why the first fix didn't work and what the real issue likely is",
@@ -245,6 +248,10 @@ ${bikeContext}${photoNote}
 Diagnose the most likely cause and provide a clear, step-by-step fix. Start with the most common/probable cause, not the most dramatic one.
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
+SEQUENCE, AND WHY IT IS THIS ORDER: what they are seeing, then what is safe to check, then what is likely causing it, then whether this bike is safe to ride right now, then how to fix it, then when to stop and use a shop. The stop-riding decision comes BEFORE the repair steps, always — a rider who should not be riding needs to know that before they read a procedure, not in a note underneath one.
+When the problem touches brakes, wheels, spokes, hubs, axles, the headset, the crank or a tire that is not seated, ride_safe is false unless you have a specific reason otherwise, and the explanation opens by saying so. These parts do not degrade politely; they fail at once.
+A shop is a good answer, not a failure of this tool. Say plainly when a job is past a home fix, and describe difficulty honestly rather than encouragingly.
 
 Return ONLY valid JSON:
 {

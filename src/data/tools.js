@@ -4180,7 +4180,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
   crossRefs: ['BuyWise', 'DecisionCoach'],
-  description: "AI-enhanced bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and expert follow-up when standard repairs don't work.",
+  description: "Bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and deeper troubleshooting when the standard repair doesn't work.",
   guide: {
       overview: "Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.",
       howToUse: [

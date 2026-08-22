@@ -474,7 +474,7 @@ const FIXES = {
     stepKeys: ['bmd_fix_reseat_basic_step_1', 'bmd_fix_reseat_basic_step_2', 'bmd_fix_reseat_basic_step_3', 'bmd_fix_reseat_basic_step_4', 'bmd_fix_reseat_basic_step_5', 'bmd_fix_reseat_basic_step_6', 'bmd_fix_reseat_basic_step_7'],
     tipKey: 'bmd_fix_reseat_basic_tip',
     parts: [] },
-  fix_reseat_worn: { titleKey: 'bmd_fix_reseat_worn_title', animation: 'reseat-chain', diffKey: 'bmd_diff_easy_moderate', timeKey: 'bmd_fix_reseat_worn_time',
+  fix_reseat_worn: { stopKey: 'bmd_stop_tire', titleKey: 'bmd_fix_reseat_worn_title', animation: 'reseat-chain', diffKey: 'bmd_diff_easy_moderate', timeKey: 'bmd_fix_reseat_worn_time',
     toolKeys: ['bmd_fix_reseat_worn_tool_1'],
     stepKeys: ['bmd_fix_reseat_worn_step_1', 'bmd_fix_reseat_worn_step_2', 'bmd_fix_reseat_worn_step_3', 'bmd_fix_reseat_worn_step_4', 'bmd_fix_reseat_worn_step_5', 'bmd_fix_reseat_worn_step_6'],
     tipKey: 'bmd_fix_reseat_worn_tip',
@@ -519,22 +519,22 @@ const FIXES = {
     stepKeys: ['bmd_fix_disc_rub_step_1', 'bmd_fix_disc_rub_step_2', 'bmd_fix_disc_rub_step_3', 'bmd_fix_disc_rub_step_4', 'bmd_fix_disc_rub_step_5', 'bmd_fix_disc_rub_step_6', 'bmd_fix_disc_rub_step_7'],
     tipKey: 'bmd_fix_disc_rub_tip',
     parts: [] },
-  fix_disc_weak: { titleKey: 'bmd_fix_disc_weak_title', animation: 'brake-align', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_disc_weak_time',
+  fix_disc_weak: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_disc_weak_title', animation: 'brake-align', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_disc_weak_time',
     toolKeys: ['bmd_fix_disc_weak_tool_1', 'bmd_fix_disc_weak_tool_2'],
     stepKeys: ['bmd_fix_disc_weak_step_1', 'bmd_fix_disc_weak_step_2', 'bmd_fix_disc_weak_step_3', 'bmd_fix_disc_weak_step_4', 'bmd_fix_disc_weak_step_5', 'bmd_fix_disc_weak_step_6'],
     tipKey: 'bmd_fix_disc_weak_tip',
     parts: [{ nameKey: 'bmd_fix_disc_weak_part_1_name', exampleKey: 'bmd_fix_disc_weak_part_1_example', priceKey: 'bmd_fix_disc_weak_part_1_price' }] },
-  fix_disc_pad_worn: { titleKey: 'bmd_fix_disc_pad_worn_title', animation: 'brake-align', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_disc_pad_worn_time',
+  fix_disc_pad_worn: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_disc_pad_worn_title', animation: 'brake-align', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_disc_pad_worn_time',
     toolKeys: ['bmd_fix_disc_pad_worn_tool_1', 'bmd_fix_disc_pad_worn_tool_2'],
     stepKeys: ['bmd_fix_disc_pad_worn_step_1', 'bmd_fix_disc_pad_worn_step_2', 'bmd_fix_disc_pad_worn_step_3', 'bmd_fix_disc_pad_worn_step_4', 'bmd_fix_disc_pad_worn_step_5', 'bmd_fix_disc_pad_worn_step_6', 'bmd_fix_disc_pad_worn_step_7', 'bmd_fix_disc_pad_worn_step_8'],
     tipKey: 'bmd_fix_disc_pad_worn_tip',
     parts: [{ nameKey: 'bmd_fix_disc_pad_worn_part_1_name', exampleKey: 'bmd_fix_disc_pad_worn_part_1_example', priceKey: 'bmd_fix_disc_pad_worn_part_1_price' }] },
-  fix_disc_lever_stuck: { titleKey: 'bmd_fix_disc_lever_stuck_title', animation: 'brake-align', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_disc_lever_stuck_time',
+  fix_disc_lever_stuck: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_disc_lever_stuck_title', animation: 'brake-align', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_disc_lever_stuck_time',
     toolKeys: ['bmd_fix_disc_lever_stuck_tool_1', 'bmd_fix_disc_lever_stuck_tool_2'],
     stepKeys: ['bmd_fix_disc_lever_stuck_step_1', 'bmd_fix_disc_lever_stuck_step_2', 'bmd_fix_disc_lever_stuck_step_3', 'bmd_fix_disc_lever_stuck_step_4', 'bmd_fix_disc_lever_stuck_step_5', 'bmd_fix_disc_lever_stuck_step_6', 'bmd_fix_disc_lever_stuck_step_7', 'bmd_fix_disc_lever_stuck_step_8'],
     tipKey: 'bmd_fix_disc_lever_stuck_tip',
     parts: [{ nameKey: 'bmd_fix_disc_lever_stuck_part_1_name', exampleKey: 'bmd_fix_disc_lever_stuck_part_1_example', priceKey: 'bmd_fix_disc_lever_stuck_part_1_price' }] },
-  fix_disc_bleed: { titleKey: 'bmd_fix_disc_bleed_title', animation: 'brake-align', diffKey: 'bmd_diff_advanced', timeKey: 'bmd_fix_disc_bleed_time',
+  fix_disc_bleed: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_disc_bleed_title', animation: 'brake-align', diffKey: 'bmd_diff_advanced', timeKey: 'bmd_fix_disc_bleed_time',
     toolKeys: ['bmd_fix_disc_bleed_tool_1', 'bmd_fix_disc_bleed_tool_2', 'bmd_fix_disc_bleed_tool_3'],
     stepKeys: ['bmd_fix_disc_bleed_step_1', 'bmd_fix_disc_bleed_step_2', 'bmd_fix_disc_bleed_step_3', 'bmd_fix_disc_bleed_step_4', 'bmd_fix_disc_bleed_step_5', 'bmd_fix_disc_bleed_step_6', 'bmd_fix_disc_bleed_step_7', 'bmd_fix_disc_bleed_step_8'],
     tipKey: 'bmd_fix_disc_bleed_tip',
@@ -544,7 +544,7 @@ const FIXES = {
     stepKeys: ['bmd_fix_rim_squeal_step_1', 'bmd_fix_rim_squeal_step_2', 'bmd_fix_rim_squeal_step_3', 'bmd_fix_rim_squeal_step_4', 'bmd_fix_rim_squeal_step_5'],
     tipKey: 'bmd_fix_rim_squeal_tip',
     parts: [{ nameKey: 'bmd_fix_rim_squeal_part_1_name', exampleKey: 'bmd_fix_rim_squeal_part_1_example', priceKey: 'bmd_fix_rim_squeal_part_1_price' }] },
-  fix_rim_weak: { titleKey: 'bmd_fix_rim_weak_title', animation: 'rim-brake', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_rim_weak_time',
+  fix_rim_weak: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_rim_weak_title', animation: 'rim-brake', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_rim_weak_time',
     toolKeys: ['bmd_fix_rim_weak_tool_1', 'bmd_fix_rim_weak_tool_2'],
     stepKeys: ['bmd_fix_rim_weak_step_1', 'bmd_fix_rim_weak_step_2', 'bmd_fix_rim_weak_step_3', 'bmd_fix_rim_weak_step_4', 'bmd_fix_rim_weak_step_5', 'bmd_fix_rim_weak_step_6'],
     tipKey: 'bmd_fix_rim_weak_tip',
@@ -584,7 +584,7 @@ const FIXES = {
     stepKeys: ['bmd_fix_chain_inspect_step_1', 'bmd_fix_chain_inspect_step_2', 'bmd_fix_chain_inspect_step_3', 'bmd_fix_chain_inspect_step_4', 'bmd_fix_chain_inspect_step_5', 'bmd_fix_chain_inspect_step_6', 'bmd_fix_chain_inspect_step_7'],
     tipKey: 'bmd_fix_chain_inspect_tip',
     parts: [{ nameKey: 'bmd_fix_chain_inspect_part_1_name', exampleKey: 'bmd_fix_chain_inspect_part_1_example', priceKey: 'bmd_fix_chain_inspect_part_1_price' }] },
-  fix_brake_inspect: { titleKey: 'bmd_fix_brake_inspect_title', animation: 'center-caliper', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_brake_inspect_time',
+  fix_brake_inspect: { stopKey: 'bmd_stop_brakes', titleKey: 'bmd_fix_brake_inspect_title', animation: 'center-caliper', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_brake_inspect_time',
     toolKeys: ['bmd_fix_brake_inspect_tool_1'],
     stepKeys: ['bmd_fix_brake_inspect_step_1', 'bmd_fix_brake_inspect_step_2', 'bmd_fix_brake_inspect_step_3', 'bmd_fix_brake_inspect_step_4', 'bmd_fix_brake_inspect_step_5', 'bmd_fix_brake_inspect_step_6', 'bmd_fix_brake_inspect_step_7'],
     tipKey: 'bmd_fix_brake_inspect_tip',
@@ -629,7 +629,7 @@ const FIXES = {
     stepKeys: ['bmd_fix_internal_hub_step_1', 'bmd_fix_internal_hub_step_2', 'bmd_fix_internal_hub_step_3', 'bmd_fix_internal_hub_step_4', 'bmd_fix_internal_hub_step_5', 'bmd_fix_internal_hub_step_6', 'bmd_fix_internal_hub_step_7'],
     tipKey: 'bmd_fix_internal_hub_tip',
     parts: [{ nameKey: 'bmd_fix_internal_hub_part_1_name', exampleKey: 'bmd_fix_internal_hub_part_1_example', priceKey: 'bmd_fix_internal_hub_part_1_price' }] },
-  fix_headset_loose: { titleKey: 'bmd_fix_headset_loose_title', animation: 'tighten-headset', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_headset_loose_time',
+  fix_headset_loose: { stopKey: 'bmd_stop_steer', titleKey: 'bmd_fix_headset_loose_title', animation: 'tighten-headset', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_headset_loose_time',
     toolKeys: ['bmd_fix_headset_loose_tool_1'],
     stepKeys: ['bmd_fix_headset_loose_step_1', 'bmd_fix_headset_loose_step_2', 'bmd_fix_headset_loose_step_3', 'bmd_fix_headset_loose_step_4', 'bmd_fix_headset_loose_step_5', 'bmd_fix_headset_loose_step_6', 'bmd_fix_headset_loose_step_7'],
     tipKey: 'bmd_fix_headset_loose_tip',
@@ -639,7 +639,7 @@ const FIXES = {
     stepKeys: ['bmd_fix_headset_tight_step_1', 'bmd_fix_headset_tight_step_2', 'bmd_fix_headset_tight_step_3', 'bmd_fix_headset_tight_step_4', 'bmd_fix_headset_tight_step_5', 'bmd_fix_headset_tight_step_6'],
     tipKey: 'bmd_fix_headset_tight_tip',
     parts: [{ nameKey: 'bmd_fix_headset_tight_part_1_name', exampleKey: 'bmd_fix_headset_tight_part_1_example', priceKey: 'bmd_fix_headset_tight_part_1_price' }] },
-  fix_headset_gritty: { titleKey: 'bmd_fix_headset_gritty_title', animation: 'tighten-headset', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_headset_gritty_time',
+  fix_headset_gritty: { stopKey: 'bmd_stop_steer', titleKey: 'bmd_fix_headset_gritty_title', animation: 'tighten-headset', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_headset_gritty_time',
     toolKeys: ['bmd_fix_headset_gritty_tool_1', 'bmd_fix_headset_gritty_tool_2', 'bmd_fix_headset_gritty_tool_3'],
     stepKeys: ['bmd_fix_headset_gritty_step_1', 'bmd_fix_headset_gritty_step_2', 'bmd_fix_headset_gritty_step_3', 'bmd_fix_headset_gritty_step_4', 'bmd_fix_headset_gritty_step_5', 'bmd_fix_headset_gritty_step_6', 'bmd_fix_headset_gritty_step_7'],
     tipKey: 'bmd_fix_headset_gritty_tip',
@@ -674,12 +674,12 @@ const FIXES = {
     stepKeys: ['bmd_fix_bb_creak_step_1', 'bmd_fix_bb_creak_step_2', 'bmd_fix_bb_creak_step_3', 'bmd_fix_bb_creak_step_4', 'bmd_fix_bb_creak_step_5'],
     tipKey: 'bmd_fix_bb_creak_tip',
     parts: [{ nameKey: 'bmd_fix_bb_creak_part_1_name', exampleKey: 'bmd_fix_bb_creak_part_1_example', priceKey: 'bmd_fix_bb_creak_part_1_price' }] },
-  fix_pedal_loose: { titleKey: 'bmd_fix_pedal_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_pedal_loose_time',
+  fix_pedal_loose: { stopKey: 'bmd_stop_crank', titleKey: 'bmd_fix_pedal_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_pedal_loose_time',
     toolKeys: ['bmd_fix_pedal_loose_tool_1', 'bmd_fix_pedal_loose_tool_2'],
     stepKeys: ['bmd_fix_pedal_loose_step_1', 'bmd_fix_pedal_loose_step_2', 'bmd_fix_pedal_loose_step_3', 'bmd_fix_pedal_loose_step_4', 'bmd_fix_pedal_loose_step_5', 'bmd_fix_pedal_loose_step_6', 'bmd_fix_pedal_loose_step_7'],
     tipKey: 'bmd_fix_pedal_loose_tip',
     parts: [] },
-  fix_crank_loose: { titleKey: 'bmd_fix_crank_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy_mod', timeKey: 'bmd_fix_crank_loose_time',
+  fix_crank_loose: { stopKey: 'bmd_stop_crank', titleKey: 'bmd_fix_crank_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy_mod', timeKey: 'bmd_fix_crank_loose_time',
     toolKeys: ['bmd_fix_crank_loose_tool_1', 'bmd_fix_crank_loose_tool_2'],
     stepKeys: ['bmd_fix_crank_loose_step_1', 'bmd_fix_crank_loose_step_2', 'bmd_fix_crank_loose_step_3', 'bmd_fix_crank_loose_step_4', 'bmd_fix_crank_loose_step_5', 'bmd_fix_crank_loose_step_6', 'bmd_fix_crank_loose_step_7'],
     tipKey: 'bmd_fix_crank_loose_tip',
@@ -689,37 +689,37 @@ const FIXES = {
     stepKeys: ['bmd_fix_clipless_step_1', 'bmd_fix_clipless_step_2', 'bmd_fix_clipless_step_3', 'bmd_fix_clipless_step_4', 'bmd_fix_clipless_step_5', 'bmd_fix_clipless_step_6', 'bmd_fix_clipless_step_7'],
     tipKey: 'bmd_fix_clipless_tip',
     parts: [{ nameKey: 'bmd_fix_clipless_part_1_name', exampleKey: 'bmd_fix_clipless_part_1_example', priceKey: 'bmd_fix_clipless_part_1_price' }] },
-  fix_true_wheel: { titleKey: 'bmd_fix_true_wheel_title', animation: 'true-wheel', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_true_wheel_time',
+  fix_true_wheel: { stopKey: 'bmd_stop_wheel', titleKey: 'bmd_fix_true_wheel_title', animation: 'true-wheel', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_true_wheel_time',
     toolKeys: ['bmd_fix_true_wheel_tool_1', 'bmd_fix_true_wheel_tool_2'],
     stepKeys: ['bmd_fix_true_wheel_step_1', 'bmd_fix_true_wheel_step_2', 'bmd_fix_true_wheel_step_3', 'bmd_fix_true_wheel_step_4', 'bmd_fix_true_wheel_step_5', 'bmd_fix_true_wheel_step_6', 'bmd_fix_true_wheel_step_7'],
     tipKey: 'bmd_fix_true_wheel_tip',
     parts: [{ nameKey: 'bmd_fix_true_wheel_part_1_name', exampleKey: 'bmd_fix_true_wheel_part_1_example', priceKey: 'bmd_fix_true_wheel_part_1_price' }] },
-  fix_broken_spoke: { titleKey: 'bmd_fix_broken_spoke_title', animation: 'spoke-replace', diffKey: 'bmd_diff_mod_adv', timeKey: 'bmd_fix_broken_spoke_time',
+  fix_broken_spoke: { stopKey: 'bmd_stop_wheel', titleKey: 'bmd_fix_broken_spoke_title', animation: 'spoke-replace', diffKey: 'bmd_diff_mod_adv', timeKey: 'bmd_fix_broken_spoke_time',
     toolKeys: ['bmd_fix_broken_spoke_tool_1', 'bmd_fix_broken_spoke_tool_2', 'bmd_fix_broken_spoke_tool_3'],
     stepKeys: ['bmd_fix_broken_spoke_step_1', 'bmd_fix_broken_spoke_step_2', 'bmd_fix_broken_spoke_step_3', 'bmd_fix_broken_spoke_step_4', 'bmd_fix_broken_spoke_step_5', 'bmd_fix_broken_spoke_step_6', 'bmd_fix_broken_spoke_step_7'],
     tipKey: 'bmd_fix_broken_spoke_tip',
     parts: [{ nameKey: 'bmd_fix_broken_spoke_part_1_name', exampleKey: 'bmd_fix_broken_spoke_part_1_example', priceKey: 'bmd_fix_broken_spoke_part_1_price' }] },
-  fix_hub_play: { titleKey: 'bmd_fix_hub_play_title', animation: 'true-wheel', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_hub_play_time',
+  fix_hub_play: { stopKey: 'bmd_stop_wheel', titleKey: 'bmd_fix_hub_play_title', animation: 'true-wheel', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_hub_play_time',
     toolKeys: ['bmd_fix_hub_play_tool_1', 'bmd_fix_hub_play_tool_2'],
     stepKeys: ['bmd_fix_hub_play_step_1', 'bmd_fix_hub_play_step_2', 'bmd_fix_hub_play_step_3', 'bmd_fix_hub_play_step_4', 'bmd_fix_hub_play_step_5', 'bmd_fix_hub_play_step_6', 'bmd_fix_hub_play_step_7'],
     tipKey: 'bmd_fix_hub_play_tip',
     parts: [{ nameKey: 'bmd_fix_hub_play_part_1_name', exampleKey: 'bmd_fix_hub_play_part_1_example', priceKey: 'bmd_fix_hub_play_part_1_price' }] },
-  fix_axle: { titleKey: 'bmd_fix_axle_title', animation: 'true-wheel', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_axle_time',
+  fix_axle: { stopKey: 'bmd_stop_wheel', titleKey: 'bmd_fix_axle_title', animation: 'true-wheel', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_axle_time',
     toolKeys: ['bmd_fix_axle_tool_1'],
     stepKeys: ['bmd_fix_axle_step_1', 'bmd_fix_axle_step_2', 'bmd_fix_axle_step_3', 'bmd_fix_axle_step_4', 'bmd_fix_axle_step_5', 'bmd_fix_axle_step_6'],
     tipKey: 'bmd_fix_axle_tip',
     parts: [{ nameKey: 'bmd_fix_axle_part_1_name', exampleKey: 'bmd_fix_axle_part_1_example', priceKey: 'bmd_fix_axle_part_1_price' }] },
-  fix_tubeless_seat: { titleKey: 'bmd_fix_tubeless_seat_title', animation: 'tubeless-seat', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_tubeless_seat_time',
+  fix_tubeless_seat: { stopKey: 'bmd_stop_tire', titleKey: 'bmd_fix_tubeless_seat_title', animation: 'tubeless-seat', diffKey: 'bmd_diff_moderate', timeKey: 'bmd_fix_tubeless_seat_time',
     toolKeys: ['bmd_fix_tubeless_seat_tool_1', 'bmd_fix_tubeless_seat_tool_2', 'bmd_fix_tubeless_seat_tool_3', 'bmd_fix_tubeless_seat_tool_4'],
     stepKeys: ['bmd_fix_tubeless_seat_step_1', 'bmd_fix_tubeless_seat_step_2', 'bmd_fix_tubeless_seat_step_3', 'bmd_fix_tubeless_seat_step_4', 'bmd_fix_tubeless_seat_step_5', 'bmd_fix_tubeless_seat_step_6', 'bmd_fix_tubeless_seat_step_7', 'bmd_fix_tubeless_seat_step_8'],
     tipKey: 'bmd_fix_tubeless_seat_tip',
     parts: [{ nameKey: 'bmd_fix_tubeless_seat_part_1_name', exampleKey: 'bmd_fix_tubeless_seat_part_1_example', priceKey: 'bmd_fix_tubeless_seat_part_1_price' }] },
-  fix_bead_seat: { titleKey: 'bmd_fix_bead_seat_title', animation: 'replace-tube', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_bead_seat_time',
+  fix_bead_seat: { stopKey: 'bmd_stop_tire', titleKey: 'bmd_fix_bead_seat_title', animation: 'replace-tube', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_bead_seat_time',
     toolKeys: ['bmd_fix_bead_seat_tool_1', 'bmd_fix_bead_seat_tool_2'],
     stepKeys: ['bmd_fix_bead_seat_step_1', 'bmd_fix_bead_seat_step_2', 'bmd_fix_bead_seat_step_3', 'bmd_fix_bead_seat_step_4', 'bmd_fix_bead_seat_step_5', 'bmd_fix_bead_seat_step_6', 'bmd_fix_bead_seat_step_7'],
     tipKey: 'bmd_fix_bead_seat_tip',
     parts: [] },
-  fix_tire_blowoff: { titleKey: 'bmd_fix_tire_blowoff_title', animation: 'tubeless-seat', diffKey: 'bmd_diff_mod_adv', timeKey: 'bmd_fix_tire_blowoff_time',
+  fix_tire_blowoff: { stopKey: 'bmd_stop_tire', titleKey: 'bmd_fix_tire_blowoff_title', animation: 'tubeless-seat', diffKey: 'bmd_diff_mod_adv', timeKey: 'bmd_fix_tire_blowoff_time',
     toolKeys: ['bmd_fix_tire_blowoff_tool_1'],
     stepKeys: ['bmd_fix_tire_blowoff_step_1', 'bmd_fix_tire_blowoff_step_2', 'bmd_fix_tire_blowoff_step_3', 'bmd_fix_tire_blowoff_step_4', 'bmd_fix_tire_blowoff_step_5', 'bmd_fix_tire_blowoff_step_6', 'bmd_fix_tire_blowoff_step_7'],
     tipKey: 'bmd_fix_tire_blowoff_tip',
@@ -1639,6 +1639,13 @@ const BikeMedic = ({ tool }) => {
   const renderAIDiagnosis = (data) => (
     <div className="space-y-4 mt-6">
       <div className={`${c.card} rounded-xl border-2 ${c.border} p-6`}>
+        {/* A pill is the wrong weight for "do not ride this". The stop decision
+            comes before the diagnosis reads, not alongside the metadata. */}
+        {data.ride_safe === false && (
+          <div className={`${c.danger} border-2 rounded-xl p-3 mb-3`}>
+            <p className="text-sm font-black uppercase">{t('bmd_dont_ride')}</p>
+          </div>
+        )}
         <h3 className={`text-xl font-bold ${c.text} mb-1`}>{data.diagnosis}</h3>
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className={`text-xs font-bold uppercase px-2 py-1 rounded-full ${c.severityBg(data.severity)}`}>{data.severity}</span>
@@ -2360,7 +2367,6 @@ const BikeMedic = ({ tool }) => {
                       <div className="flex items-center gap-2 mb-2">
                         <span>✨</span>
                         <span className={`text-sm font-bold ${c.text}`}>{t('bmd_ai_recommendation')}</span>
-                        <span className={`text-xs ${c.textMuteded} ms-auto`}>{Math.round((aiRoute.confidence || 0) * 100)}%</span>
                       </div>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{aiRoute.reasoning}</p>
                       <button onClick={() => { const p = PROBLEMS.find(x => x.id === aiRoute.recommended_category); if (p) { setShowInterpreter(false); setAiRoute(null); startProblem(aiRoute.recommended_category); } }}
@@ -2542,6 +2548,11 @@ const BikeMedic = ({ tool }) => {
                     {savedFix ? t('bmd_fix_saved_exclaim') : isFav ? t('bmd_fix_saved') : t('bmd_fix_save_guide')}
                   </button>
                 </div>
+                {fix.stopKey && (
+                  <div className={`${c.warning} border-2 rounded-xl p-3 mb-3`}>
+                    <p className="text-sm"><span className="font-black text-xs uppercase block mb-1">{t('bmd_stop_label')}</span>{t(fix.stopKey)}</p>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className={`flex items-center gap-1.5 text-xs font-bold ${c.tag} px-3 py-1.5 rounded-lg`}><span>📊</span> {t(fix.diffKey)}</span>
                   <span className={`flex items-center gap-1.5 text-xs font-bold ${c.tag} px-3 py-1.5 rounded-lg`}><span>⏱️</span> {t(fix.timeKey)}</span>
