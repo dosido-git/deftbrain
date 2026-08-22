@@ -160,6 +160,11 @@ const Bookmark = ({ tool }) => {
     const isGame = results?.media_type === 'game';
     const emoji = { show: '📺', book: '📖', game: '🎮', sports: '🏟️' }[results?.media_type] || '🔖';
     const lines = [emoji + ' ' + t('bk_copy_header', { title: results?.title }), t('bk_copy_stopped', { at: results?.stopped_at }), ''];
+    if (results?.before_you_press_play?.length) {
+      lines.push(t('bk_before_play'));
+      results?.before_you_press_play?.forEach(l => lines.push('  • ' + l));
+      lines.push('');
+    }
     if (results?.the_story_so_far) lines.push(t('bk_copy_recap'), results?.the_story_so_far, '');
     if (results?.where_you_left_off) lines.push(t('bk_copy_last_scene', { scene: results?.where_you_left_off }), '');
     if (results?.vibe_check) lines.push(t('bk_vibe_check'), results?.vibe_check, '');
@@ -390,6 +395,19 @@ const Bookmark = ({ tool }) => {
         </div>
 
         {/* The story so far */}
+        {results?.before_you_press_play?.length > 0 && (
+          <div className={'p-4 rounded-xl border ' + c.mustWatchBg}>
+            <p className={'text-xs font-bold ' + c.textMuted + ' mb-2'}>{t('bk_before_play')}</p>
+            <ul className="space-y-1.5">
+              {results?.before_you_press_play?.map((line, idx) => (
+                <li key={idx} className={'text-sm ' + c.text + ' flex gap-2'}>
+                  <span aria-hidden="true" className={c.textMuted}>•</span><span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {results?.the_story_so_far && (
           <div className={c.card + ' ' + c.border + ' border rounded-xl p-5'}>
             <p className={'text-xs font-bold ' + c.textMuted + ' uppercase mb-3'}>📖 {isSports ? t('bk_season_so_far') : t('bk_story_so_far')}</p>

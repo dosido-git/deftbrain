@@ -18,8 +18,8 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 const CONTEXT_GUIDANCE = {
   work_overwhelm: 'This person is overwhelmed by work. Prioritize ruthlessly. Identify what can wait until next week, what can be delegated, and what actually needs them specifically. Many "urgent" work items are less urgent than they feel.',
   life_chaos: 'Life is chaotic — multiple domains colliding. Separate work from personal from household. Identify which category is actually on fire vs. which just feels loud.',
-  big_decision: 'They have a big decision weighing on them. Separate the decision from the noise around it. Identify what information they actually need to decide, vs. what is anxiety-generated rumination.',
-  anxiety_spiral: 'This person may be in an anxiety spiral. Be extra gentle. Many of these thoughts are worry-loops, not tasks. Aggressively separate feelings from actions. The "feelings to acknowledge" category is especially important here. The goal is to show them how few ACTUAL tasks there are vs. how many thoughts are anxiety noise.',
+  big_decision: 'They have a big decision weighing on them. Separate the decision itself from everything orbiting it. Identify what information they actually need in order to decide, and what is circling without moving them closer.',
+  anxiety_spiral: 'This person is anxious. Be extra gentle. Many of these thoughts are not tasks. Separate feelings from actions carefully. The "feelings to acknowledge" category matters most here. The goal is to show how few of these actually need doing — say that, and do not characterise the rest as anxiety or noise.',
   new_situation: 'New situation — lots of unknowns generating lots of thoughts. Focus on what they can control now vs. what will become clear later. Many thoughts are premature planning.',
   '3am_thoughts': 'These are 3am racing thoughts. Most of these will feel less urgent in daylight. Be honest about that while still respecting the thoughts. Capture the real tasks, but flag that 3am urgency is rarely real urgency.',
   planning: 'They are planning something specific. Focus on sequencing, dependencies, and breaking the plan into phases. Many planning thoughts are actually the same task described differently.',
@@ -98,7 +98,8 @@ ${NO_QUOTE_RULE}`, userLanguage) + withLocaleContext(req.body.userLocale, req.bo
 YOUR PHILOSOPHY:
 - The #1 output is the ONE NEXT STEP. Not a prioritized list. One single thing to do first. Everything else is secondary.
 - Feelings are NOT tasks. "I'm worried about the presentation" is a feeling. "Practice the presentation once" is a task. Separate them.
-- Most people in overwhelm have fewer actual tasks than they think. Half their "to-do list" is anxiety, feelings, other people's problems, and things that don't actually need doing. Show them this.
+- Most people in overwhelm have fewer actual tasks than they think. Much of a "to-do list" turns out to need no action, belong to someone else, or need nothing more than acknowledging. Show them this.
+- Sort their thoughts; do not diagnose them. Say what a thought REQUIRES — action, a decision, a conversation, nothing — never what it IS. "Three of these do not need action right now" is true and lands. "A quarter of your list is anxiety or noise" is a verdict on their mind that you were not asked for and cannot support.
 - Permission to drop things is a feature, not a failure. Aggressively identify what doesn't matter.
 - Dependencies matter. "Book flights" can't happen until "pick vacation dates." Surface these.
 - Delegate ruthlessly. Many items don't require this specific person.
@@ -133,7 +134,7 @@ Return ONLY valid JSON:
 {
   "breathe": "One calming sentence acknowledging what they just did. — one sentence",
   "overwhelm_meter": {
-    "summary": "Your brain held [X] distinct thoughts. After sorting: [Y] actual tasks, [Z] decisions, and [W] feelings/worries/noise. — 1-2 sentences",
+    "summary": "Your brain held [X] distinct thoughts. After sorting: [Y] need action, [Z] are decisions, and [W] do not need action right now. Use that framing — nothing about anxiety, worry-loops, clutter or noise. — 1-2 sentences",
     "counts": { "actual_tasks": 0, "decisions": 0, "not_actionable": 0, "can_drop": 0 },
     "relief": "Specific sentence about the ratio. — one sentence"
   },
@@ -142,8 +143,8 @@ Return ONLY valid JSON:
     "why_this_first": "Why this first. — one sentence",
     "time_estimate": "How long. Nothing else."
   },
-  "actions": [{ "task": "Specific, concrete, startable — one sentence", "deadline": "Exactly one of these and nothing else: Today, This week, When you can, null", "time_estimate": "Exactly one of these and nothing else: 5 min, 30 min, 1-2 hours" }],
-  "decisions": [{ "decision": "The choice to make — one sentence", "what_you_need": "Info needed to decide — one sentence", "deadline": "When to decide by. Nothing else." }],
+  "actions": [{ "task": "Specific, concrete, startable — one sentence", "deadline": "ONLY a date or timeframe THEY wrote down for this task, in their own words. null otherwise. Never invent one, never infer one from how urgent it sounds.", "suggested_pace": "Exactly one of these and nothing else, and only when deadline is null: Today, This week, When you can", "time_estimate": "Exactly one of these and nothing else: 5 min, 30 min, 1-2 hours" }],
+  "decisions": [{ "decision": "The choice to make — one sentence", "what_you_need": "Info needed to decide — one sentence", "deadline": "ONLY a date THEY gave for this decision, in their own words. null otherwise.", "suggested_pace": "Exactly one of these and nothing else, and only when deadline is null: Today, This week, When you can" }],
   "tell_someone": [{ "who": "Person/role — one sentence", "what": "What to communicate — one sentence", "how": "Exactly one of these and nothing else: Text, call, email" }],
   "worries": [{ "thought": "The worry — one sentence", "reframe": "Gentle, honest reframe. — one sentence" }],
   "ideas": ["Ideas worth capturing."],
@@ -153,6 +154,10 @@ Return ONLY valid JSON:
   "dependencies": [{ "first": "This first — one sentence", "then": "Before this — one sentence" }],
   "closing": "One warm, specific sentence. — one sentence"
 }
+
+DEADLINES ARE THEIRS, PACE IS YOURS. A "deadline" is a date the person wrote down. Everything else you think about timing goes in "suggested_pace", and nowhere else. Never call anything a deadline in prose — not in relief, not in closing, not in why_this_first — unless they supplied it. "Friday is the only hard deadline here" is a good sentence when they wrote Friday and a fabrication when they did not.
+
+DO NOT PRAISE YOUR OWN OUTPUT. The closing is a warm sentence about them and what happens next. It is not a review of the sorting you just did. Cut anything of the shape "and that is a genuinely good trade", "that is real progress", "look how much lighter that is" — you are marking your own work. End quietly.
 
 CONSISTENT NUMBERS: the [X]/[Y]/[Z]/[W] figures in overwhelm_meter.summary MUST equal the actual lengths of the arrays you return (Y = actions, Z = decisions, W = worries + feelings). Do not estimate — count your own output.
 

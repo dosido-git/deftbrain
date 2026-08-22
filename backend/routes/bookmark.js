@@ -25,9 +25,15 @@ router.post('/bookmark', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const spoilerPolicy = {
       strict: 'CRITICAL: Reveal NOTHING that happens after the point they stopped. No hints, no foreshadowing, no "you\'re in for a treat." Treat everything after their stopping point as classified.',
-      moderate: 'You can hint at general tone ("things get more intense") but reveal NO specific plot points, outcomes, or character fates after their stopping point.',
+      moderate: 'Thematic direction only — you may say the tone shifts or the stakes rise. No events, no outcomes, no character fates, no arrivals or departures, and nothing that would change what they expect to see next. A hint that lets them guess the thing is the thing.',
       'don\'t-care': 'They don\'t mind spoilers. You can reference future events if it helps them decide whether to continue. Still organize the recap around where they stopped.',
     }[spoilerLevel || 'strict'] || 'Reveal NOTHING after their stopping point.';
+
+    // Prepended to every media prompt — the one rule the whole tool rests on.
+    const SPOILER_CONSERVATISM = `WHEN IN DOUBT, LEAVE IT OUT. This is the rule that outranks every other instruction here, including completeness, vividness and length.
+Episode and chapter boundaries are exactly the thing recall is worst at. If you cannot place a detail with certainty on the correct side of their stopping point, do not include it — not as a hint, not softened, not hedged. A recap that is slightly thin costs them a moment of remembering. A recap that is slightly early costs them the thing they came here to protect. Those are not the same size of mistake, so never split the difference.
+Prefer what they told you they remember over what you recall about the title: their own words are dated evidence of where they actually are.
+Say plainly when something is beyond what you can place — 'that thread is still open where you stopped' or 'I would rather not guess at the exact scene' is a good answer. Filling the gap confidently is the only bad one.`;
 
     const mediaPrompts = {
       show: `MEDIA TYPE: TV Show / Series
@@ -35,6 +41,8 @@ TITLE: "${title}"
 STOPPED AT: ${stoppedAt}
 ${whatYouRemember ? `WHAT THEY REMEMBER: ${whatYouRemember}` : ''}
 ${specificQuestions ? `SPECIFIC QUESTIONS: ${specificQuestions}` : ''}
+
+${SPOILER_CONSERVATISM}
 
 SPOILER POLICY: ${spoilerPolicy}
 
@@ -45,6 +53,7 @@ Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "show",
   "stopped_at": "${stoppedAt}",
+  "before_you_press_play": ["The two to four things they actually need in their head to start again, and nothing more. Each one short — a name and why it matters, an unresolved question, where they physically are. This is the whole recap for someone who only reads one section, so it must survive on its own. Same certainty bar as everything else: only what you can place at or before their stopping point."],
   "confidence": "high | medium | low — how confident you are in your knowledge of this show up to this point",
   "confidence_note": "Brief note if confidence is not high (e.g., 'I may be off by an episode on exact scene placement') — one sentence",
 
@@ -69,7 +78,7 @@ Return ONLY valid JSON:
 
   "vibe_check": "The emotional/tonal state of the show at this point — are we in a dark stretch? Comedy peak? Building tension? — one sentence",
 
-  "where_you_left_off": "A vivid 1-2 sentence description of the last major scene or moment, to trigger their memory",
+  "where_you_left_off": "The last major scene or moment, to trigger their memory — but ONLY if you can place it with certainty at or before their stopping point. Prefer what they said they remember. null if you are not sure which scene is the last one they saw; a wrong guess here is the spoiler this tool exists to prevent. — 1-2 sentences or null",
 
   "worth_continuing": "Without spoilers, a honest take on whether the show maintains quality from this point (vague: 'the next stretch is widely considered the show's peak' or 'it gets uneven but has great moments') — one sentence",
 
@@ -87,6 +96,8 @@ STOPPED AT: ${stoppedAt}
 ${whatYouRemember ? `WHAT THEY REMEMBER: ${whatYouRemember}` : ''}
 ${specificQuestions ? `SPECIFIC QUESTIONS: ${specificQuestions}` : ''}
 
+${SPOILER_CONSERVATISM}
+
 SPOILER POLICY: ${spoilerPolicy}
 
 Generate a spoiler-safe recap. Return ONLY valid JSON:
@@ -94,6 +105,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "book",
   "stopped_at": "${stoppedAt}",
+  "before_you_press_play": ["The two to four things they actually need in their head to start again, and nothing more. Each one short — a name and why it matters, an unresolved question, where they physically are. This is the whole recap for someone who only reads one section, so it must survive on its own. Same certainty bar as everything else: only what you can place at or before their stopping point."],
   "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — one sentence",
 
@@ -120,7 +132,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "vibe_check": "The tone and emotional register at this point in the book — one sentence",
 
-  "where_you_left_off": "Vivid description of the last major moment to trigger memory — one sentence",
+  "where_you_left_off": "The last major moment, to trigger memory — ONLY if you can place it with certainty at or before their stopping point. Prefer what they said they remember. null if unsure. — one sentence or null",
 
   "worth_continuing": "Honest, spoiler-free take on whether the book rewards finishing — one sentence",
 
@@ -135,6 +147,8 @@ STOPPED AT: ${stoppedAt}
 ${whatYouRemember ? `WHAT THEY REMEMBER: ${whatYouRemember}` : ''}
 ${specificQuestions ? `SPECIFIC QUESTIONS: ${specificQuestions}` : ''}
 
+${SPOILER_CONSERVATISM}
+
 SPOILER POLICY: ${spoilerPolicy}
 
 Generate a spoiler-safe recap. Return ONLY valid JSON:
@@ -142,6 +156,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
   "title": "${title}",
   "media_type": "game",
   "stopped_at": "${stoppedAt}",
+  "before_you_press_play": ["The two to four things they actually need in their head to start again, and nothing more. Each one short — a name and why it matters, an unresolved question, where they physically are. This is the whole recap for someone who only reads one section, so it must survive on its own. Same certainty bar as everything else: only what you can place at or before their stopping point."],
   "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — one sentence",
 
@@ -172,7 +187,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "vibe_check": "The tone and feel of the game at this point — one sentence",
 
-  "where_you_left_off": "Vivid description to trigger memory — one sentence",
+  "where_you_left_off": "The last moment, to trigger memory — ONLY if you can place it with certainty at or before their stopping point. null if unsure. — one sentence or null",
 
   "worth_continuing": "Spoiler-free take on whether finishing is rewarding — one sentence",
 
@@ -187,6 +202,8 @@ STOPPED FOLLOWING: ${stoppedAt}
 ${whatYouRemember ? `WHAT THEY REMEMBER: ${whatYouRemember}` : ''}
 ${specificQuestions ? `SPECIFIC QUESTIONS: ${specificQuestions}` : ''}
 
+${SPOILER_CONSERVATISM}
+
 SPOILER POLICY: ${spoilerPolicy}
 
 Generate a catch-up guide. For sports, "spoilers" means outcomes of specific games they might want to watch. Return ONLY valid JSON:
@@ -194,6 +211,7 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
   "title": "${title}",
   "media_type": "sports",
   "stopped_at": "${stoppedAt}",
+  "before_you_press_play": ["The two to four things they actually need in their head to start again, and nothing more. Each one short — a name and why it matters, an unresolved question, where they physically are. This is the whole recap for someone who only reads one section, so it must survive on its own. Same certainty bar as everything else: only what you can place at or before their stopping point."],
   "confidence": "high | medium | low",
   "confidence_note": "Brief note if not high — especially for very recent events you may not know about — one sentence",
 

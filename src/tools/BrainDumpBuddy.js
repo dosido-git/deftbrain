@@ -476,7 +476,7 @@ const BrainDumpBuddy = ({ tool }) => {
       items.forEach(item => lines.push(`  ${textFn(item)}`));
       lines.push('');
     };
-    addCategory('✅', t('bdb_copy_actions'), r.actions, a => `[ ] ${a.task || a}${a.deadline ? ` (${a.deadline})` : ''}${a.time_estimate ? ` — ~${a.time_estimate}` : ''}`);
+    addCategory('✅', t('bdb_copy_actions'), r.actions, a => `[ ] ${a.task || a}${a.deadline ? ` (${a.deadline})` : (a.suggested_pace ? ` (${t('bdb_suggested')} ${a.suggested_pace})` : '')}${a.time_estimate ? ` — ~${a.time_estimate}` : ''}`);
     addCategory('🤔', t('bdb_copy_decisions'), r.decisions, d => `- ${d.decision || d}${d.what_you_need ? ` (${t('bdb_copy_need')}: ${d.what_you_need})` : ''}`);
     addCategory('💬', t('bdb_copy_tell_someone'), r.tell_someone, ts => `[ ] ${ts.who}: ${ts.what}`);
     addCategory('☁️', t('bdb_copy_worries'), r.worries, w => `- ${w.thought || w}${w.reframe ? `\n    → ${w.reframe}` : ''}`);
@@ -545,7 +545,7 @@ const BrainDumpBuddy = ({ tool }) => {
             {items.map((item, i) => {
               const isString = typeof item === 'string';
               const text = isString ? item : (item.task || item.decision || item.what || item.feeling || item.thought || item.idea || item.reason || JSON.stringify(item));
-              const sub = !isString && (item.why || item.note || item.delegate_to || item.who || item.deadline || item.reframe || item.context || item.validation || item.what_you_need || item.why_not_yours || item.how || item.time_estimate);
+              const sub = !isString && (item.why || item.note || item.delegate_to || item.who || item.deadline || item.suggested_pace || item.reframe || item.context || item.validation || item.what_you_need || item.why_not_yours || item.how || item.time_estimate);
               const checkKey = `${key}-${i}`;
               const checked = checkedItems[checkKey];
 
@@ -569,6 +569,7 @@ const BrainDumpBuddy = ({ tool }) => {
                           {item.delegate_to && `→ ${t('bdb_delegate_to')}: ${item.delegate_to}`}
                           {item.why_not_yours && ` — ${item.why_not_yours}`}
                           {item.deadline && ` · ${item.deadline}`}
+                          {!item.deadline && item.suggested_pace && ` · ${t('bdb_suggested')} ${item.suggested_pace}`}
                           {item.time_estimate && ` · ~${item.time_estimate}`}
                           {item.what_you_need && `${t('bdb_copy_need')}: ${item.what_you_need}`}
                           {item.why && item.why}

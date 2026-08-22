@@ -4,6 +4,7 @@
 // No currency values in this tool — no {{sym}} interpolation needed.
 export const brainDumpBuddy = {
   en: {
+    bdb_suggested: "suggested:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Everything in your head → one clear next step",
     // ── Contexts ──
@@ -120,6 +121,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "Tell {{who}}: {{what}}",
   },
   es: {
+    bdb_suggested: "sugerido:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Todo lo que tienes en la cabeza → un siguiente paso claro",
     bdb_ctx_work_overwhelm: "Saturación laboral",
@@ -230,6 +232,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "Avisar a {{who}}: {{what}}",
   },
   zh: {
+    bdb_suggested: "建议：",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "把脑子里的一切 → 变成一个清晰的下一步",
     bdb_ctx_work_overwhelm: "工作不堪重负",
@@ -340,6 +343,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "告诉 {{who}}：{{what}}",
   },
   hi: {
+    bdb_suggested: "सुझाव:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "दिमाग में जो कुछ है → एक साफ़ अगला कदम",
     bdb_ctx_work_overwhelm: "काम का बोझ",
@@ -450,6 +454,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "{{who}} को बताएँ: {{what}}",
   },
   ar: {
+    bdb_suggested: "مقترح:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "كل ما في رأسك ← خطوة تالية واحدة واضحة",
     bdb_ctx_work_overwhelm: "إرهاق العمل",
@@ -560,6 +565,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "أخبر {{who}}: {{what}}",
   },
   pt: {
+    bdb_suggested: "sugerido:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Tudo na sua cabeça → um próximo passo claro",
     bdb_ctx_work_overwhelm: "Sobrecarga no trabalho",
@@ -670,6 +676,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "Avisar {{who}}: {{what}}",
   },
   fr: {
+    bdb_suggested: "suggéré :",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Tout ce que vous avez en tête → une seule prochaine étape claire",
     bdb_ctx_work_overwhelm: "Surcharge de travail",
@@ -780,6 +787,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "Prévenir {{who}} : {{what}}",
   },
   de: {
+    bdb_suggested: "Vorschlag:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Alles in deinem Kopf → ein klarer nächster Schritt",
     bdb_ctx_work_overwhelm: "Arbeitsüberlastung",
@@ -890,6 +898,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "{{who}} sagen: {{what}}",
   },
   ja: {
+    bdb_suggested: "目安：",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "頭の中のすべて → 明確な次の一歩へ",
     bdb_ctx_work_overwhelm: "仕事の山積み",
@@ -1000,6 +1009,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "{{who}} に伝える：{{what}}",
   },
   ko: {
+    bdb_suggested: "제안:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "머릿속의 모든 것 → 명확한 다음 한 걸음",
     bdb_ctx_work_overwhelm: "업무 과부하",
@@ -1110,6 +1120,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "{{who}}에게 알리기: {{what}}",
   },
   ru: {
+    bdb_suggested: "рекомендуем:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Всё, что в голове → один ясный следующий шаг",
     bdb_ctx_work_overwhelm: "Перегруз на работе",
@@ -1220,6 +1231,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "Сказать {{who}}: {{what}}",
   },
   th: {
+    bdb_suggested: "แนะนำ:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "ทุกอย่างในหัวคุณ → ก้าวต่อไปที่ชัดเจนหนึ่งก้าว",
     bdb_ctx_work_overwhelm: "งานท่วมหัว",
@@ -1330,6 +1342,7 @@ export const brainDumpBuddy = {
     bdb_copy_tell_prefix: "บอก {{who}}: {{what}}",
   },
   vi: {
+    bdb_suggested: "gợi ý:",
     bdb_title: "Brain Dump Buddy",
     bdb_tagline: "Mọi thứ trong đầu bạn → một bước tiếp theo rõ ràng",
     bdb_ctx_work_overwhelm: "Quá tải công việc",
