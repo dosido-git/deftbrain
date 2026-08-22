@@ -1202,6 +1202,9 @@ const BuyWise = ({ tool }) => {
         )}
 
         {/* Used/Refurb Deep Dive */}
+        {(r.used_refurb_deep_dive?.viable || r.warranty_returns || r.buy_vs_subscribe || r.quality_tier) && (
+        <Section icon="📚" title={t('bw_sec_more')} c={c}>
+        <div className="space-y-3">
         {r.used_refurb_deep_dive?.viable && (
           <Section icon="♻️" title={t('bw_sec_used')} c={c}>
             {r.used_refurb_deep_dive.where_to_buy_used?.length > 0 && (
@@ -1228,16 +1231,12 @@ const BuyWise = ({ tool }) => {
             {r.used_refurb_deep_dive.risk_assessment && (
               <p className={`text-xs ${c.textSecondary}`}>⚠️ {r.used_refurb_deep_dive.risk_assessment}</p>
             )}
-            {r.used_refurb_deep_dive.platform_trust?.length > 0 && (
+            {r.used_refurb_deep_dive.used_protections?.length > 0 && (
               <div className="space-y-1">
                 <p className={`text-[10px] font-bold ${c.textSecondary} uppercase`}>{t('bw_platform_trust')}</p>
-                {r.used_refurb_deep_dive.platform_trust.map((pt, i) => (
-                  <div key={i} className={`flex items-center gap-2 text-xs ${c.textSecondary}`}>
-                    <span className={`font-bold ${pt.trust === 'HIGH' ? c.textOk : pt.trust === 'LOW' ? c.textDanger : c.textCaution}`}>
-                      {pt.trust}
-                    </span>
-                    <span>{pt.name}</span>
-                    <span className={c.textMuteded}>— {pt.why}</span>
+                {r.used_refurb_deep_dive.used_protections.map((pr, i) => (
+                  <div key={i} className={`flex gap-2 text-xs ${c.textSecondary}`}>
+                    <span aria-hidden="true" className={c.textMuteded}>•</span><span>{pr}</span>
                   </div>
                 ))}
               </div>
@@ -1280,6 +1279,9 @@ const BuyWise = ({ tool }) => {
             <p className={`text-sm ${c.textSecondary}`}>{r.quality_tier.analysis}</p>
             {r.quality_tier.spend_vs_save && <p className={`text-xs ${c.textMuteded}`}>{r.quality_tier.spend_vs_save}</p>}
           </Section>
+        )}
+        </div>
+        </Section>
         )}
 
         {/* Regret Predictor */}
@@ -1369,7 +1371,7 @@ const BuyWise = ({ tool }) => {
 
         {/* Where to Buy */}
         {r.where_to_buy?.length > 0 && (
-          <Section icon="🛒" title={t('bw_sec_where')} defaultOpen={true} c={c}>
+          <Section icon="🛒" title={t('bw_sec_where')} c={c}>
             <div className="space-y-2">
               {r.where_to_buy.map((rec, i) => (
                 <div key={i} className={`flex items-start gap-2 p-2.5 rounded-lg ${c.quoteBg}`}>

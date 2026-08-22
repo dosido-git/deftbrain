@@ -24,6 +24,10 @@ ANCHOR ON WHAT THEY GAVE YOU. When they supply a price, that price is the fact i
 
 HOW TO SAY THINGS YOU DO NOT KNOW. Never state a current price, a current discount, a dated sale or a named seller's offer as fact. Say what is worth checking and what a good answer would look like — they can check in a minute, and knowing WHAT to check is the part they were missing. Durable patterns are fine when named as patterns: this category is usually discounted around the end of the model year; refurbished stock for this type usually runs well below new. A pattern is not a price, so do not dress it as one.
 
+NO BORROWED CERTAINTY. "Almost certainly", "definitely", "you will find", "these always", "the best place is" — every one of those spends confidence you have not earned, and they attach themselves hardest to exactly the claims you cannot support: what something sells for, who has it in stock, which seller to trust, whether a warranty covers this. Where you are reasoning about a product type, say so plainly and stop. Where the answer depends on a listing, a seller or a country, say what to look for and put it in verify_before_buying. A sentence a reader could act on and find wrong an hour later has cost them more than saying nothing would have.
+
+ALSO NOT YOURS: the terms. Warranty length, return windows, card protections, marketplace safety and seller reputation are per-listing, per-country and per-year. Describe what is normal for the category and what to establish before paying. Never state a specific product's terms, and never rate a named retailer or marketplace — which sellers are safe this month is not something you know.
+
 WHAT YOU CAN SAY PLAINLY. How the product type works and fails. What it costs to keep running. What owners regret. What to inspect when buying used. What to ask when negotiating. Whether they sound like they need it. None of that needs live data, and it is most of this tool's value — do not hedge it into mush to match the parts that must be hedged.
 
 NO INVENTED LIMITS: If the user did not give a price, budget, or ceiling, do NOT invent one. Present figures as general market ranges — never as "your budget," "your limit," or a number to stay under. Do not build the verdict or negotiation around a spending cap the user never stated.
@@ -108,7 +112,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "noticed": [
     {
       "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder or DecisionCoach",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder",
       "why": "One short sentence on what that tool would do about it"
     }
   ],
@@ -132,18 +136,18 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 
   "used_refurb_deep_dive": {
     "viable": true,
-    "where_to_buy_used": ["Specific platforms/stores for used/refurb versions"],
+    "where_to_buy_used": ["The KINDS of channel a used or refurbished one turns up in for this product — the manufacturer's own certified-refurbished programme, retailer open-box, the general resale market — with what each is good and bad for. Channels, not brand-name marketplaces you would be vouching for."],
     "what_to_inspect": ["What to check when buying used — product-specific"],
-    "typical_used_price": "${sym}X - ${sym}Y",
+    "typical_used_price": "How much less a used one usually goes for as a SHARE of new for this category — 'used ones typically go for roughly half of new' — never a currency figure, because that is a market reading you did not take. null if this category has no stable pattern.",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform. Nothing else."}]
+    "used_protections": ["What to require of ANY seller before paying for a used one — the protections that make a used purchase safe for this product, phrased as conditions to insist on: a working return window, a serial number you can check against warranty status, proof of purchase date, in-person testing of the parts that fail first. Do not name or rate specific platforms or sellers: which ones are trustworthy this month is not something you know."]
   },
 
   "warranty_returns": {
-    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
-    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
-    "return_tips": "Best return policies by retailer for this product category. — one sentence",
-    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
+    "typical_warranty": "What length of warranty is normal for this KIND of product, said as a norm and not as this product's terms — and that the actual cover is on the listing and worth reading. Warranty terms vary by country, by seller and by year; you are not reading theirs. — one sentence",
+    "extended_worth_it": "Whether an extended warranty tends to be worth it for this category and what would make it worth it here — the failure this product actually has, and whether the plan covers that failure. Frame as what to check in the terms, not as a verdict on a plan you have not read. — one sentence",
+    "return_tips": "What to establish about the return window before paying — length, who pays return shipping, whether opened items are accepted, what a restocking fee would be. Never rank named retailers on their return policies: those change and you are not reading them. — one sentence",
+    "credit_card_protection": "That some cards extend manufacturer warranties or add purchase protection, and that it is worth checking THEIR card's benefits guide before paying — stated as something to check, never as something their card does. — one sentence"
   },
 
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
@@ -182,7 +186,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   }` : ''},
 
   "where_to_buy": [
-    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product. Nothing else."}
+    {"platform": "A KIND of place to look for this product — the manufacturer direct, a specialist retailer for the category, a large general retailer, the manufacturer's refurbished outlet, the used market. A category of seller, never a brand name and never a marketplace you are vouching for. Nothing else.", "why": "What that channel is good for with this product and what to watch for there — the tradeoff, not an endorsement. Nothing else."}
   ],
 
   "followup_questions": [
@@ -347,7 +351,7 @@ ${schema}`;
     "products": [${[`{"name": "${product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`].concat(compProducts.map(cp => `{"name": "${cp.product}", "pros": ["2-3 advantages"], "cons": ["1-2 drawbacks"]}`)).join(', ')}]
   },` : ''}
   "where_to_buy": [
-    {"platform": "Just the store or platform name, nothing else", "why": "Why this platform for this specific product. Nothing else."}
+    {"platform": "A KIND of place to look for this product — the manufacturer direct, a specialist retailer for the category, a large general retailer, the manufacturer's refurbished outlet, the used market. A category of seller, never a brand name and never a marketplace you are vouching for. Nothing else.", "why": "What that channel is good for with this product and what to watch for there — the tradeoff, not an endorsement. Nothing else."}
   ],
   "followup_questions": [
     "2-3 natural follow-up questions the user might want answered, phrased as the user would ask them (e.g., 'Is the base model enough or should I upgrade?', 'What accessories are actually worth buying?')"
@@ -361,7 +365,7 @@ ${schema}`;
   "noticed": [
     {
       "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
-      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder or DecisionCoach",
+      "tool": "Exactly one of these English identifiers, copied verbatim and never translated: FakeReviewDetective or MarkupDetective or UpsellShield or BillRescue or QuoteCheck or MoneyDiplomat or Giftology or ContractDecoder",
       "why": "One short sentence on what that tool would do about it"
     }
   ],
@@ -383,11 +387,11 @@ ${schema}`;
   },
   "used_refurb_deep_dive": {
     "viable": true,
-    "where_to_buy_used": ["Specific platforms/stores for used/refurb versions"],
+    "where_to_buy_used": ["The KINDS of channel a used or refurbished one turns up in for this product — the manufacturer's own certified-refurbished programme, retailer open-box, the general resale market — with what each is good and bad for. Channels, not brand-name marketplaces you would be vouching for."],
     "what_to_inspect": ["What to check when buying used — product-specific"],
-    "typical_used_price": "${sym}X - ${sym}Y",
+    "typical_used_price": "How much less a used one usually goes for as a SHARE of new for this category — 'used ones typically go for roughly half of new' — never a currency figure, because that is a market reading you did not take. null if this category has no stable pattern.",
     "risk_assessment": "What's the risk of buying used for this specific product? Be honest. — 1-2 sentences",
-    "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform. Nothing else."}]
+    "used_protections": ["What to require of ANY seller before paying for a used one — the protections that make a used purchase safe for this product, phrased as conditions to insist on: a working return window, a serial number you can check against warranty status, proof of purchase date, in-person testing of the parts that fail first. Do not name or rate specific platforms or sellers: which ones are trustworthy this month is not something you know."]
   },
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
     "analysis": "Compare buying outright vs subscribing vs renting using prices the user supplied. If none were supplied, compare the cost structure without inventing current prices and put live-price checks in verify_before_buying. — 1-2 sentences",
@@ -410,10 +414,10 @@ ${schema}`;
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
   "warranty_returns": {
-    "typical_warranty": "How long is the typical manufacturer warranty for this product? — one sentence",
-    "extended_worth_it": "Is an extended warranty worth it? Be honest — usually no, but some categories yes. — one sentence",
-    "return_tips": "Best return policies by retailer for this product category. — one sentence",
-    "credit_card_protection": "Many credit cards double manufacturer warranties. Worth checking. — one sentence"
+    "typical_warranty": "What length of warranty is normal for this KIND of product, said as a norm and not as this product's terms — and that the actual cover is on the listing and worth reading. Warranty terms vary by country, by seller and by year; you are not reading theirs. — one sentence",
+    "extended_worth_it": "Whether an extended warranty tends to be worth it for this category and what would make it worth it here — the failure this product actually has, and whether the plan covers that failure. Frame as what to check in the terms, not as a verdict on a plan you have not read. — one sentence",
+    "return_tips": "What to establish about the return window before paying — length, who pays return shipping, whether opened items are accepted, what a restocking fee would be. Never rank named retailers on their return policies: those change and you are not reading them. — one sentence",
+    "credit_card_protection": "That some cards extend manufacturer warranties or add purchase protection, and that it is worth checking THEIR card's benefits guide before paying — stated as something to check, never as something their card does. — one sentence"
   },
   "regret_predictor": {
     "common_regrets": "What do people who buy this most commonly regret? — one sentence",
