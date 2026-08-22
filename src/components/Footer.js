@@ -9,6 +9,7 @@
  */
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 
 const Footer = () => {
   const { isDark } = useTheme();
@@ -29,7 +30,9 @@ const Footer = () => {
 
   // Right-side links (extensible — append future links here)
   const links = [
-    { label: 'Find a Tool', href: '/ToolFinder' },
+    // Dropped while Tool Finder is paused — it sits on every page, and a
+    // sitewide link to a maintenance notice is not a useful footer entry.
+    ...(TOOL_FINDER_PAUSED ? [] : [{ label: 'Find a Tool', href: '/ToolFinder' }]),
     { label: 'Guides',      href: '/guides' },
     { label: 'About',       href: '/about' },
     { label: 'Privacy',     href: '/privacy' },

@@ -4,6 +4,9 @@
 // One Percenter) stay as-is across languages.
 export const toolFinder = {
   en: {
+    tf_paused_title: "Tool Finder is getting an upgrade.",
+    tf_paused_body: "In the meantime, browse all DeftBrain tools.",
+    tf_paused_cta: "Browse all tools",
     tf_input_label: "What do you need help with?",
     tf_input_ph: "e.g., My landlord is trying to keep my security deposit and I think it's unfair...",
     tf_id_start_with: "I'd start with {{title}}",
@@ -37,6 +40,9 @@ export const toolFinder = {
     tf_copy_workflow: "Workflow:",
   },
   es: {
+    tf_paused_title: "Tool Finder está recibiendo una mejora.",
+    tf_paused_body: "Mientras tanto, explora todas las herramientas de DeftBrain.",
+    tf_paused_cta: "Ver todas las herramientas",
     tf_input_label: "¿Con qué necesitas ayuda?",
     tf_input_ph: "p. ej., Mi arrendador intenta quedarse con mi depósito de garantía y creo que es injusto...",
     tf_id_start_with: "Yo empezaría por {{title}}",
@@ -70,6 +76,9 @@ export const toolFinder = {
     tf_copy_workflow: "Flujo de trabajo:",
   },
   zh: {
+    tf_paused_title: "Tool Finder 正在升级。",
+    tf_paused_body: "在此期间，欢迎浏览 DeftBrain 的全部工具。",
+    tf_paused_cta: "浏览全部工具",
     tf_input_label: "你需要什么帮助？",
     tf_input_ph: "例如：房东想扣留我的押金，我觉得这不公平……",
     tf_id_start_with: "我会先从「{{title}}」开始",
@@ -103,6 +112,9 @@ export const toolFinder = {
     tf_copy_workflow: "工作流程：",
   },
   hi: {
+    tf_paused_title: "Tool Finder को बेहतर बनाया जा रहा है।",
+    tf_paused_body: "तब तक, DeftBrain के सभी टूल देखें।",
+    tf_paused_cta: "सभी टूल देखें",
     tf_input_label: "आपको किसमें मदद चाहिए?",
     tf_input_ph: "उदाहरण के लिए, मेरा मकान मालिक मेरी सिक्योरिटी डिपॉज़िट रखने की कोशिश कर रहा है और मुझे लगता है कि यह अनुचित है...",
     tf_id_start_with: "मैं {{title}} से शुरू करूँगा",
@@ -136,6 +148,9 @@ export const toolFinder = {
     tf_copy_workflow: "वर्कफ़्लो:",
   },
   ar: {
+    tf_paused_title: "يجري تطوير Tool Finder.",
+    tf_paused_body: "في هذه الأثناء، تصفَّح جميع أدوات DeftBrain.",
+    tf_paused_cta: "تصفّح جميع الأدوات",
     tf_input_label: "بماذا تحتاج المساعدة؟",
     tf_input_ph: "مثلاً، مالك العقار يحاول الاحتفاظ بتأميني، وأعتقد أن ذلك غير عادل...",
     tf_id_start_with: "كنت سأبدأ بـ {{title}}",
@@ -169,6 +184,9 @@ export const toolFinder = {
     tf_copy_workflow: "سير العمل:",
   },
   pt: {
+    tf_paused_title: "O Tool Finder está sendo aprimorado.",
+    tf_paused_body: "Enquanto isso, explore todas as ferramentas do DeftBrain.",
+    tf_paused_cta: "Ver todas as ferramentas",
     tf_input_label: "Com o que você precisa de ajuda?",
     tf_input_ph: "ex.: Meu locador está tentando ficar com meu depósito de garantia e acho que é injusto...",
     tf_id_start_with: "Eu começaria por {{title}}",
@@ -202,6 +220,9 @@ export const toolFinder = {
     tf_copy_workflow: "Fluxo de trabalho:",
   },
   fr: {
+    tf_paused_title: "Tool Finder est en cours d'amélioration.",
+    tf_paused_body: "En attendant, parcourez tous les outils DeftBrain.",
+    tf_paused_cta: "Voir tous les outils",
     tf_input_label: "De quoi avez-vous besoin d'aide ?",
     tf_input_ph: "p. ex., Mon propriétaire essaie de garder ma caution et je trouve ça injuste...",
     tf_id_start_with: "Je commencerais par {{title}}",
@@ -235,6 +256,9 @@ export const toolFinder = {
     tf_copy_workflow: "Flux de travail :",
   },
   de: {
+    tf_paused_title: "Tool Finder wird gerade überarbeitet.",
+    tf_paused_body: "Sehen Sie sich in der Zwischenzeit alle DeftBrain-Tools an.",
+    tf_paused_cta: "Alle Tools ansehen",
     tf_input_label: "Wobei brauchst du Hilfe?",
     tf_input_ph: "z. B. Mein Vermieter will meine Kaution einbehalten, und ich finde das unfair...",
     tf_id_start_with: "Ich würde mit {{title}} anfangen",
@@ -268,6 +292,9 @@ export const toolFinder = {
     tf_copy_workflow: "Ablauf:",
   },
   ja: {
+    tf_paused_title: "Tool Finder は現在アップデート中です。",
+    tf_paused_body: "その間、DeftBrain のすべてのツールをご覧ください。",
+    tf_paused_cta: "すべてのツールを見る",
     tf_input_label: "どんなことでお困りですか？",
     tf_input_ph: "例：大家が敷金を返してくれようとせず、納得がいかないのですが……",
     tf_id_start_with: "私なら「{{title}}」から始めます",
@@ -301,6 +328,9 @@ export const toolFinder = {
     tf_copy_workflow: "ワークフロー：",
   },
   ko: {
+    tf_paused_title: "Tool Finder를 개선하고 있습니다.",
+    tf_paused_body: "그동안 DeftBrain의 모든 도구를 둘러보세요.",
+    tf_paused_cta: "모든 도구 보기",
     tf_input_label: "어떤 도움이 필요하신가요?",
     tf_input_ph: "예: 집주인이 제 보증금을 돌려주지 않으려 하는데 부당하다고 생각해요……",
     tf_id_start_with: "저라면 {{title}}부터 시작할게요",
@@ -334,6 +364,9 @@ export const toolFinder = {
     tf_copy_workflow: "워크플로:",
   },
   ru: {
+    tf_paused_title: "Tool Finder сейчас обновляется.",
+    tf_paused_body: "А пока посмотрите все инструменты DeftBrain.",
+    tf_paused_cta: "Все инструменты",
     tf_input_label: "С чем вам нужна помощь?",
     tf_input_ph: "например: Мой арендодатель пытается удержать мой залог, и я считаю это несправедливым...",
     tf_id_start_with: "Я бы начал с {{title}}",
@@ -367,6 +400,9 @@ export const toolFinder = {
     tf_copy_workflow: "Порядок действий:",
   },
   th: {
+    tf_paused_title: "Tool Finder กำลังได้รับการปรับปรุง",
+    tf_paused_body: "ระหว่างนี้ ลองดูเครื่องมือทั้งหมดของ DeftBrain",
+    tf_paused_cta: "ดูเครื่องมือทั้งหมด",
     tf_input_label: "คุณต้องการความช่วยเหลือเรื่องอะไร?",
     tf_input_ph: "เช่น เจ้าของบ้านพยายามจะยึดเงินมัดจำของฉัน และฉันคิดว่ามันไม่ยุติธรรม...",
     tf_id_start_with: "ผมจะเริ่มจาก {{title}}",
@@ -400,6 +436,9 @@ export const toolFinder = {
     tf_copy_workflow: "ขั้นตอนการทำงาน:",
   },
   vi: {
+    tf_paused_title: "Tool Finder đang được nâng cấp.",
+    tf_paused_body: "Trong lúc chờ, hãy xem tất cả công cụ của DeftBrain.",
+    tf_paused_cta: "Xem tất cả công cụ",
     tf_input_label: "Bạn cần giúp đỡ về điều gì?",
     tf_input_ph: "ví dụ: Chủ nhà của tôi đang cố giữ tiền đặt cọc của tôi và tôi thấy điều đó không công bằng...",
     tf_id_start_with: "Tôi sẽ bắt đầu với {{title}}",

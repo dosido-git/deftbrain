@@ -8,6 +8,7 @@ import LocaleSelectors from './LocaleSelectors';
 import HomeIntro from './HomeIntro';
 import DemoCards from './DemoCards';
 import ToolFinderWizard from './ToolFinderWizard';
+import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import IdeaPrompt from './IdeaPrompt';
 import keepList from '../data/tools-keep-list.json';
 
@@ -509,7 +510,7 @@ export default function DashBoard({ allTools, searchTerm, setSearchTerm }) {
       )}
 
       {/* ═══════════ TOOL FINDER WIZARD ═══════════ */}
-      {!isSearching && <div className="mt-4"><ToolFinderWizard /></div>}
+      {!isSearching && !TOOL_FINDER_PAUSED && <div className="mt-4"><ToolFinderWizard /></div>}
 
       {/* ═══════════ RECENTS + SPOTLIGHT BANDS ═══════════ */}
       {!isSearching && activeCategory === 'All' && (

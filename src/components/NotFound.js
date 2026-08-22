@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
+import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 import IdeaPrompt from './IdeaPrompt';
 
 const NotFound = ({
@@ -55,15 +56,17 @@ const NotFound = ({
         </div>
 
         <div className="space-y-3 pt-1">
-          <button
-            onClick={() => navigate('/ToolFinder')}
-            className={`w-full py-3.5 ${c.primary} rounded-xl font-semibold transition-colors`}
-          >
-            🔎 Use Tool Finder
-          </button>
+          {!TOOL_FINDER_PAUSED && (
+            <button
+              onClick={() => navigate('/ToolFinder')}
+              className={`w-full py-3.5 ${c.primary} rounded-xl font-semibold transition-colors`}
+            >
+              🔎 Use Tool Finder
+            </button>
+          )}
           <button
             onClick={() => navigate('/')}
-            className={`w-full py-3 ${c.secondary} border rounded-xl font-semibold transition-colors`}
+            className={`w-full py-3 ${TOOL_FINDER_PAUSED ? c.primary : `${c.secondary} border`} rounded-xl font-semibold transition-colors`}
           >
             Browse all tools
           </button>

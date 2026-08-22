@@ -35,6 +35,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // the static HTML to. This page was the last surface printing a raw count.
 import { TOOL_COUNT_LABEL } from '../data/toolCount';
 import { useTranslation } from '../i18n/useTranslation';
+import { TOOL_FINDER_PAUSED } from '../data/toolFinderPaused';
 // Eleven shapes a visitor might already be standing in, each answered with a
 // short, hand-picked set rather than a search. Recognition, then a door — not
 // a taxonomy to translate their problem into first. Two of these lists are the
@@ -381,15 +382,18 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
 
             It still closes the page too. That is a refrain, not a
             duplicate — said once as a promise, once as an invitation. */}
-        <p style={{
-          fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
-          fontSize: d(21), lineHeight: 1.3, margin: `${d(18)}px 0 0`,
-        }}>
-          Let&rsquo;s think it through together.
-        </p>
+        {!TOOL_FINDER_PAUSED && (
+          <p style={{
+            fontFamily: SERIF, fontWeight: 600, color: CLR.gold700,
+            fontSize: d(21), lineHeight: 1.3, margin: `${d(18)}px 0 0`,
+          }}>
+            Let&rsquo;s think it through together.
+          </p>
+        )}
 
         <form onSubmit={askSubmit} style={{ marginTop: d(10), maxWidth: MEASURE }}>
           <label htmlFor="db-ask" className="sr-only">{t('sit_type_anything')}</label>
+          {!TOOL_FINDER_PAUSED && (
           <div className="flex items-stretch" style={{
             background: '#fff', border: `1.5px solid ${CLR.sand300}`,
             borderRadius: d(14), overflow: 'hidden',
@@ -417,6 +421,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
               &rarr;
             </button>
           </div>
+          )}
 
           {/* People do not arrive knowing they want a category. They arrive
               recognising a sentence — so each of these answers with the two to
@@ -816,7 +821,11 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
         </div>
       </section>
 
-      {/* ── Closing ────────────────────────────────────────────────────── */}
+      {/* ── Closing ──────────────────────────────────────────────────────
+          The whole band exists to hand the visitor to Tool Finder, so it goes
+          with it while Tool Finder is paused. The tool list is on this page
+          already; a CTA pointing at a maintenance notice is worse than none. */}
+      {!TOOL_FINDER_PAUSED && (
       <section data-db-section="closing" className="db-hi-closing" style={{
         background: CLR.navy600, borderRadius: d(18),
         padding: `${d(26)}px ${d(30)}px`, marginBottom: d(28),
@@ -852,6 +861,7 @@ const HomeIntro = ({ categories = [], onBrowse, allTools = [] }) => {
           />
         </div>
       </section>
+      )}
     </div>
   );
 };
