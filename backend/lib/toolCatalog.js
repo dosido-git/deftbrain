@@ -7,6 +7,7 @@
 // invented id is a dead link on a results page.
 const fs = require('fs');
 const path = require('path');
+const { toolFinderMetadata } = require('../data/toolFinderMetadata');
 
 // Extract a single-line quoted field value, respecting WHICH quote character
 // actually delimits the string (tools.js mixes ' and " across fields). A
@@ -30,9 +31,7 @@ function extractField(line, field) {
 function buildCatalog() {
   try {
     const toolsPath = path.join(__dirname, '../../src/data/tools.js');
-    const content = fs.readFileSync(toolsPath, 'utf8')
-      .replace(/^([ \t]*)(problems|capabilities|accepts|notFor):\s*\[([^\]]*)\]/gm,
-               (_m, indent, name, body) => `${indent}${name}: [${body.replace(/\s*\n\s*/g, ' ')}]`);
+    const content = fs.readFileSync(toolsPath, 'utf8');
     const tools = [];
     let current = null;
 
@@ -51,23 +50,6 @@ function buildCatalog() {
       const tagline = extractField(line, 'tagline');
       const icon = extractField(line, 'icon');
       const give = extractField(line, 'give');   // primer.give — what the tool accepts
-      const primaryIntent = extractField(line, 'primaryIntent');
-      const whenToRecommend = extractField(line, 'whenToRecommend');
-      const whenNotToRecommend = extractField(line, 'whenNotToRecommend');
-      // Split on the string literals, not on commas — half these entries
-      // contain a comma inside the quotes ("Photos, scans, or uploads").
-      const arrayField = (name) => {
-        const m = line.match(new RegExp('^\\s*' + name + ':\\s*\\[([^\\]]*)\\]'));
-        if (!m) return null;
-        const vals = (m[1].match(/(['"])(?:(?!\1)[^\\]|\\.)*\1/g) || [])
-          .map(v => v.slice(1, -1).replace(/\\(['"])/g, '$1').trim())
-          .filter(Boolean);
-        return vals.length ? vals : null;
-      };
-      const problems = arrayField('problems');
-      const capabilities = arrayField('capabilities');
-      const accepts = arrayField('accepts');
-      const notFor = arrayField('notFor');
 
       if (title) current.title = title;
       if (categoriesMatch) {
@@ -81,20 +63,18 @@ function buildCatalog() {
       if (tagline) current.tagline = tagline;
       if (icon) current.icon = icon;
       if (give && !current.give) current.give = give;
-      if (primaryIntent) current.primaryIntent = primaryIntent;
-      if (whenToRecommend) current.whenToRecommend = whenToRecommend;
-      if (whenNotToRecommend) current.whenNotToRecommend = whenNotToRecommend;
-      if (problems) current.problems = problems;
-      if (capabilities) current.capabilities = capabilities;
-      if (accepts) current.accepts = accepts;
-      if (notFor) current.notFor = notFor;
     }
     if (current && current.id) tools.push(current);
 
     // Exclude Tool Finder from its own catalog — a user asking Tool Finder
     // for help is already using it, so "use Tool Finder" is a useless,
     // circular top recommendation.
-    return tools.filter(t => t.id && t.title && t.id !== 'ToolFinder');
+    return tools
+      .filter(t => t.id && t.title && t.id !== 'ToolFinder')
+      // Join the routing metadata by id. Kept in its own module so the public
+      // catalog stays about the page and this stays about the routing; a tool
+      // with no entry keeps whatever tools.js gave it.
+      .map(t => (toolFinderMetadata[t.id] ? { ...t, ...toolFinderMetadata[t.id] } : t));
   } catch (err) {
     console.error('ToolFinder: Failed to load tool catalog:', err.message);
     return [];
