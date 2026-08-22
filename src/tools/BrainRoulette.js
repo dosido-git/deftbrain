@@ -72,6 +72,27 @@ const EXAMPLES = [
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
+
+// One click from any empirical claim, folded by default. The caveat must not
+// outrank the discovery on the page, but it must be there.
+const HowSolid = ({ data, c, t }) => {
+  const [open, setOpen] = useState(false);
+  if (!data || !data.note) return null;
+  return (
+    <div className="mt-3">
+      <button type="button" onClick={() => setOpen(!open)}
+        className={`inline-flex items-center gap-1.5 text-xs ${c.textMuted} hover:underline`}>
+        <Caret open={open} /> {t('bro_how_solid')}
+      </button>
+      {open && (
+        <p className={`text-xs ${c.textSecondary} mt-1.5 leading-relaxed`}>
+          {data.level ? <span className="font-semibold">{data.level} — </span> : null}{data.note}
+        </p>
+      )}
+    </div>
+  );
+};
+
 const BrainRoulette = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -783,6 +804,7 @@ const BrainRoulette = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('bro_journey_step_label', { n: js.step_number })}</p>
               <h4 className={`text-base font-bold ${c.text} mb-2`}>{js.title}</h4>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{js.content}</p>
+              <HowSolid data={js.how_solid} c={c} t={t} />
               {js.mind_blown && <div className={`mt-3 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {js.mind_blown}</p></div>}
               {js.concepts?.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-3">
@@ -889,6 +911,7 @@ const BrainRoulette = ({ tool }) => {
               <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: 1 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{deeperResults.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{deeperResults.content}</p>
+              <HowSolid data={deeperResults.how_solid} c={c} t={t} />
               {deeperResults.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {deeperResults.mind_blown}</p></div>}
             </div>
           </div>
@@ -904,6 +927,7 @@ const BrainRoulette = ({ tool }) => {
               <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: idx + 2 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{cr.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{cr.content}</p>
+              <HowSolid data={cr.how_solid} c={c} t={t} />
               {cr.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {cr.mind_blown}</p></div>}
             </div>
           </div>
@@ -1071,8 +1095,8 @@ const BrainRoulette = ({ tool }) => {
 
       {/* Stats boxes */}
       {historyStats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-          {[{ l: t('bro_stat_explored'), v: historyStats.total, i: '🎲' }, { l: t('bro_stat_active_days'), v: historyStats.uniqueDays, i: '📅' }, { l: t('bro_stat_saved'), v: historyStats.saved, i: '🔖' }, { l: t('bro_stat_streak'), v: streak, i: '🔥' }].map(s => (
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          {[{ l: t('bro_stat_explored'), v: historyStats.total, i: '🎲' }, { l: t('bro_stat_active_days'), v: historyStats.uniqueDays, i: '📅' }, { l: t('bro_stat_saved'), v: historyStats.saved, i: '🔖' }].map(s => (
             <div key={s.l} className={`p-3 rounded-xl border ${c.statBox} text-center`}><div className="text-lg mb-0.5">{s.i}</div><div className={`text-xl font-bold ${c.text}`}>{s.v}</div><div className={`text-[10px] ${c.textMuted}`}>{s.l}</div></div>
           ))}
         </div>
@@ -1176,7 +1200,7 @@ const BrainRoulette = ({ tool }) => {
         <>
           {/* Streak */}
           <div className="flex items-center justify-between mb-5">
-            {streak > 0 ? <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${c.streak}`}><span>🔥</span> {t('bro_day_streak', { n: streak })}</div> : <div />}
+            <div />
             {seenTopics.length > 0 && <span className={`text-xs font-medium ${c.footerText}`}>{t('bro_n_explored', { n: seenTopics.length })}</span>}
           </div>
 
@@ -1278,7 +1302,10 @@ const BrainRoulette = ({ tool }) => {
                 <h2 className="text-xl font-bold text-white">{result.title}</h2>
                 {result.interest_connections?.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{result.interest_connections.map((cn, i) => <span key={i} className="text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full">{cn}</span>)}</div>}
               </div>
-              <div className="px-6 py-5"><p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{result.hook}</p></div>
+              <div className="px-6 py-5">
+                <p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{result.hook}</p>
+                <HowSolid data={result.how_solid} c={c} t={t} />
+              </div>
               <div className={`px-6 py-4 border-t flex flex-wrap items-center justify-between gap-2 ${c.resultBorder}`}>
                 <div className="flex items-center gap-2">
                   <button onClick={toggleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${isSaved ? c.savedBtnActive : c.savedBtnInactive}`}>

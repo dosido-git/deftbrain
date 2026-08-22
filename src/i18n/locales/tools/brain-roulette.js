@@ -4,6 +4,7 @@
 // Emoji in label/tab values is intentional — keep it inside the string.
 export const brainRoulette = {
   en: {
+    bro_how_solid: "How solid is this?",
     bro_tagline: "Personalized rabbit holes you can't resist",
     bro_int_science: "Science",
     bro_int_history: "History",
@@ -171,6 +172,7 @@ export const brainRoulette = {
     bro_export_connects: "**Connects:** {{connections}}",
   },
   es: {
+    bro_how_solid: "¿Qué tan sólido es esto?",
     bro_tagline: "Madrigueras personalizadas a las que no podrás resistirte",
     bro_int_science: "Ciencia",
     bro_int_history: "Historia",
@@ -338,6 +340,7 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   zh: {
+    bro_how_solid: "这个结论有多可靠？",
     bro_tagline: "让你欲罢不能的个性化深度探索",
     bro_int_science: "科学",
     bro_int_history: "历史",
@@ -505,6 +508,7 @@ export const brainRoulette = {
     bro_export_connects: "**关联：** {{connections}}",
   },
   hi: {
+    bro_how_solid: "यह कितना पक्का है?",
     bro_tagline: "ऐसे दिलचस्प सफर जिन्हें रोक पाना मुश्किल है",
     bro_int_science: "विज्ञान",
     bro_int_history: "इतिहास",
@@ -672,6 +676,7 @@ export const brainRoulette = {
     bro_export_connects: "**जोड़ता है:** {{connections}}",
   },
   ar: {
+    bro_how_solid: "ما مدى رسوخ هذا؟",
     bro_tagline: "متاهات شخصية لا تستطيع مقاومتها",
     bro_int_science: "العلوم",
     bro_int_history: "التاريخ",
@@ -839,6 +844,7 @@ export const brainRoulette = {
     bro_export_connects: "**يربط:** {{connections}}",
   },
   pt: {
+    bro_how_solid: "Quão sólido é isso?",
     bro_tagline: "Tocas de coelho personalizadas que você não consegue resistir",
     bro_int_science: "Ciência",
     bro_int_history: "História",
@@ -1006,6 +1012,7 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   fr: {
+    bro_how_solid: "Est-ce solidement établi ?",
     bro_tagline: "Des terriers personnalisés auxquels vous ne pourrez pas résister",
     bro_int_science: "Science",
     bro_int_history: "Histoire",
@@ -1173,6 +1180,7 @@ export const brainRoulette = {
     bro_export_connects: "**Relie :** {{connections}}",
   },
   de: {
+    bro_how_solid: "Wie gesichert ist das?",
     bro_tagline: "Persönliche Kaninchenlöcher, denen du nicht widerstehen kannst",
     bro_int_science: "Wissenschaft",
     bro_int_history: "Geschichte",
@@ -1340,6 +1348,7 @@ export const brainRoulette = {
     bro_export_connects: "**Verbindet:** {{connections}}",
   },
   ja: {
+    bro_how_solid: "これはどれくらい確かな話？",
     bro_tagline: "やめられない、あなただけの深掘り体験",
     bro_int_science: "科学",
     bro_int_history: "歴史",
@@ -1507,6 +1516,7 @@ export const brainRoulette = {
     bro_export_connects: "**つながり：** {{connections}}",
   },
   ko: {
+    bro_how_solid: "이건 얼마나 확실한가요?",
     bro_tagline: "끊을 수 없는 나만의 깊이 파고들기",
     bro_int_science: "과학",
     bro_int_history: "역사",
@@ -1674,6 +1684,7 @@ export const brainRoulette = {
     bro_export_connects: "**연결:** {{connections}}",
   },
   ru: {
+    bro_how_solid: "Насколько это надёжно?",
     bro_tagline: "Персональные кроличьи норы, перед которыми не устоять",
     bro_int_science: "Наука",
     bro_int_history: "История",
@@ -1841,6 +1852,7 @@ export const brainRoulette = {
     bro_export_connects: "**Связывает:** {{connections}}",
   },
   th: {
+    bro_how_solid: "เรื่องนี้หนักแน่นแค่ไหน?",
     bro_tagline: "เส้นทางความรู้สุดน่าค้นหาที่คุณห้ามใจไม่ได้",
     bro_int_science: "วิทยาศาสตร์",
     bro_int_history: "ประวัติศาสตร์",
@@ -2008,6 +2020,7 @@ export const brainRoulette = {
     bro_export_connects: "**เชื่อมโยง:** {{connections}}",
   },
   vi: {
+    bro_how_solid: "Điều này chắc chắn đến đâu?",
     bro_tagline: "Những hố thỏ cá nhân hóa mà bạn không thể cưỡng lại",
     bro_int_science: "Khoa học",
     bro_int_history: "Lịch sử",

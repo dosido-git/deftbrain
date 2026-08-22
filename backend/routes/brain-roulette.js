@@ -1,5 +1,13 @@
 const express = require('express');
 const router = express.Router();
+// Brain Roulette's whole appeal is the astonishing claim, and astonishing
+// claims are disproportionately the preliminary ones. This keeps the delight
+// without spending certainty the evidence does not support.
+const CERTAINTY_RULE = `CERTAINTY IS PART OF THE CLAIM. A rabbit hole is worth having only if it is true in the way you imply it is true. Astonishing findings are disproportionately the ones that are preliminary, contested, or drawn from one small study — so the more delightful a claim is, the more carefully you must mark where it actually stands.
+Match the language to the evidence: an established finding can be stated plainly; a contested one says so in the same breath; a single study is described as a single study; a pattern you are extending by analogy is offered as a resemblance and never as a result. Do not smooth these into one confident voice.
+The tell to avoid: a real phenomenon named as though it were a measured, agreed-upon thing, then extended to three other populations as if the extension were also measured. If the extension is your idea rather than a finding, say so — that is more interesting, not less.
+This does not mean hedging everything. Hedged prose is dull and this tool is not dull. State solid things solidly. Just do not spend certainty you do not have.`;
+
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
@@ -49,6 +57,8 @@ ${(seenTopics || []).length > 0 ? seenTopics.slice(0, 30).join(', ') : 'None yet
 TIME-AWARENESS: If relevant, connect to something about today's date, this season (${month}), or "on this day in history". This is optional — only if it genuinely adds interest, don't force it.
 
 TONE: Enthusiastic but not corny. Like a smart friend, not a textbook. Use "you" language. Start with something that immediately hooks — no preamble, no "Did you know...?" cliché.
+${CERTAINTY_RULE}
+
 
 Respond ONLY with valid JSON in this exact format:
 {
@@ -61,6 +71,7 @@ Respond ONLY with valid JSON in this exact format:
     {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
     {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"}
   ],
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
   "share_snippet": "A single punchy sentence version perfect for texting a friend — one sentence"
 }
 
@@ -104,10 +115,13 @@ AUDIENCE LEVEL: ${audienceLevel || 'curious'}
 
 Give them a rich, engaging exploration of this specific thread. Write 150-250 words in a conversational, compelling style. Use bold text for key terms. End with one more surprising connection or implication they probably didn't see coming.
 
+${CERTAINTY_RULE}
+
 Respond ONLY with valid JSON:
 {
   "title": "Section title — 3-6 words",
   "content": "The deeper exploration — 2-4 sentences",
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
     {"label": "Thread title. Nothing else.", "prompt_hint": "What to explore — one sentence"},
@@ -213,10 +227,13 @@ AUDIENCE LEVEL: ${audienceLevel || 'curious'}
 
 Continue the chain — build on what's been covered, go one level deeper still. Write 150-250 words in a conversational, compelling style. Don't recap what was already said. End with a genuinely surprising connection or implication.
 
+${CERTAINTY_RULE}
+
 Respond ONLY with valid JSON:
 {
   "title": "Section title (distinct from previous titles) — 3-6 words",
   "content": "The deeper exploration — builds on the chain, goes somewhere new — 2-4 sentences",
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use — who found it, how widely accepted it is, what would change it. Say plainly if the striking part is your extension rather than a finding."},
   "mind_blown": "One final 'whoa' sentence — one sentence",
   "chain_threads": [
     {"label": "Next thread title (question format). Nothing else.", "prompt_hint": "What to explore — one sentence"},
@@ -380,10 +397,13 @@ ${prevText || 'This is step 1 — nothing covered yet.'}
 
 Write this step as a natural continuation of what came before. Build on the previous steps' ideas — reference them briefly if it adds power. 150-250 words, conversational and compelling. End with a hint of what's coming next.
 
+${CERTAINTY_RULE}
+
 Respond ONLY with valid JSON:
 {
   "title": "Step title (matches or refines the planned title) — 3-6 words",
   "content": "The step content — builds the journey arc — 2-4 sentences",
+  "how_solid": {"level": "Exactly one of these and nothing else: established, contested, one study, analogy", "note": "Where this actually stands, in one sentence a curious non-expert can use. Say plainly if the striking part is your extension rather than a finding."},
   "mind_blown": "One 'whoa' sentence specific to this step — one sentence",
   "concepts": [
     {
