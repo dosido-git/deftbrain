@@ -44,16 +44,17 @@ template:
 ]}},**/
 export const tools = [
 {
+  modified: "2026-08-22",
   id: "MentalHealthNavigator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You know you need help but not what kind, or who to call first.",
     give: "What's been on your mind, your situation in your own words, and anything you have already tried. Two minutes.",
-    get: "Which kind of professional actually fits — therapist, psychiatrist, GP, coach, group — what each one does differently, and how to get in the door.",
-    edge: "It answers the question that comes before therapy: who to call. Most mental-health tools assume you already know.",
+    get: "Which kinds of support may fit — therapist, psychiatrist, GP, coach, group — what each one does differently, and practical ways to start.",
+    edge: "It helps with the question that comes before treatment: what kind of support might fit, and how do I start looking?",
   },
-  seoDescription: "Describe what you're going through and get free, instant guidance on the right type of mental health support, what it costs, and how to reach out.",
+  seoDescription: "Describe what you're going through and explore types of mental health support that may fit, what they do, common cost considerations, and how to reach out.",
   seoTitle: "Find a Therapist: Mental Health Support Finder",
   title: "Mental Health Navigator",
   tagline: "Find the right support for what you're going through",
@@ -63,7 +64,7 @@ export const tools = [
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
   guide: {
-    overview: "Knowing you need help is the first step — but figuring out what kind of help, and how to actually get it, is its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? The difference matters, and most people don't know where to start. MentalHealthNavigator cuts through the confusion: you describe what's been going on, and it recommends the right type of support for your situation, tells you how to find it (country-specific where possible), gives you the exact words to say when you reach out, and identifies what you can do today — not someday.",
+    overview: "Figuring out what kind of mental health support to look for can be its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? Mental Health Navigator helps you compare those roles against what you describe, identify plausible starting points, account for barriers such as cost or waitlists, and prepare what to say when you reach out. It is navigation, not diagnosis or treatment advice.",
 
     howToUse: [
       "Select what's been on your mind — you can pick multiple areas",
@@ -78,7 +79,7 @@ export const tools = [
       "You don't need to have it figured out before using this — 'general / not sure' is a valid starting point",
       "The 'What to say' section removes the most common blocker: not knowing how to start the conversation when calling a professional",
       "If cost is a barrier, always mention it — sliding scale fees, community mental health centers, and low-cost options exist in most countries",
-      "This tool is for navigation, not diagnosis — it helps you find the right door, not tell you what's on the other side",
+      "This tool is for navigation, not diagnosis — use its suggestions as starting points for finding appropriate professional support",
       "If you're in crisis right now, please reach out to a crisis line directly rather than using this tool",
       "Works across all 12 DeftBrain languages",
     ],
@@ -369,7 +370,7 @@ export const tools = [
   },
 },
 {
-  modified: "2026-04-24",
+  modified: "2026-08-22",
   id: "DoctorVisitPrep",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -490,17 +491,17 @@ export const tools = [
   }
 },
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "ToolFinder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You have a problem and no idea which tool solves it.",
     give: "Your problem in plain language.",
-    get: "One to five tools ranked, each with why it fits your situation specifically.",
-    edge: "It reads between the lines, so you don't have to know what the tool would be called.",
+    get: "One best place to start, why it fits, and what to tell it when you get there.",
+    edge: "It reads between the lines, so you don't have to know what the tool would be called — and you can correct the match in plain language if it misses.",
   },
-  seoDescription: "Describe your problem in plain language and instantly find the right DeftBrain tool for it. Get matched picks, why each fits, and what to enter. Free, no signup.",
+  seoDescription: "Describe your problem in plain language and find the best DeftBrain tool to start with. See why it fits, what to enter, and refine the match if needed. Free, no signup.",
   seoTitle: "Find the Right Tool: Describe Your Problem",
   // Renamed to "Start Here" on 2026-08-05 and back to "Tool Finder" on
   // 2026-08-21. The 2026-08-05 reasoning was that users want to solve problems
@@ -517,24 +518,24 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.",
   guide: {
-    overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
+    overview: "Tool Finder is the front door to DeftBrain when you know the problem but not the tool. Describe what is going on in ordinary language and it gives you one best place to start, explains why it fits, and tells you what useful context to bring with you. If the match is not quite right, say what is different and it will try again.",
     howToUse: [
       "Describe your problem, situation, or need in plain language",
-      "Or tap a quick-pick button to jump in",
-      "Review the recommended tools — each explains why it fits YOUR situation",
-      "Click any tool card to open it directly",
-      "Check the workflow section if multiple tools work best in sequence"
+      "Or choose one of the example situations to see how it works",
+      "Review the recommended starting tool and why it fits your situation",
+      "Use the 'When you get there' note to bring the most useful context with you",
+      "If the recommendation misses, tell Tool Finder what is different and ask for a better match"
     ],
     example: {
       scenario: "Your landlord is threatening to keep your security deposit and you got a sketchy itemized list.",
-      action: "Type the situation into ToolFinder.",
-      result: "Recommends RentersDepositSaver (best match), LeaseTrapDetector (review lease clauses), and ComplaintEscalationWriter (if they don't budge). Workflow explains the order."
+      action: "Type the situation into Tool Finder.",
+      result: "Recommends the best starting tool, explains why it fits, and tells you what to enter there. If the recommendation misses the real problem, you can say what is different and get a better match."
     },
     tips: [
-      "More detail gets better matches — 'money problem' is vague, 'my roommate owes me $200 and it's awkward' is specific",
-      "The workflow section shows how to chain tools together",
-      "Quick-pick buttons are great starting points if you're not sure how to describe it",
-      "If results aren't perfect, add more context and search again"
+      "Describe the situation the way you would tell another person; you do not need to know the category or tool name",
+      "Specific details help when they change what kind of help you need",
+      "If the first match is not quite right, say what Tool Finder got wrong or missed",
+      "Use 'Suggest a tool' only when the catalog genuinely does not seem to have what you need"
     ]
   }
 },
@@ -629,14 +630,15 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "MarkupDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Something costs more than it should and you want to know why.",
     give: "The product or service, and the price you saw.",
-    get: "Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.",
+    get: "A reasoned breakdown of what may be driving the price — materials, labor, brand premium, margin, and pricing psychology.",
+    edge: "It explains the anatomy of a price you already have; it doesn't pretend to be a live pricing database.",
   },
   seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the typical price elsewhere, and how to pay less.",
   seoTitle: "Price Breakdown: Why Does It Cost That Much?",
@@ -757,7 +759,7 @@ export const tools = [
 },
 
 {
-  modified: "2025-03-05",
+  modified: "2026-08-22",
   id: "ChaosPilot",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -765,7 +767,7 @@ export const tools = [
     when: "Nothing's wrong, but nothing's moving either.",
     give: "Your typical week in detail, and what feels stale.",
     get: "One specific disruption you can do today — targeted at the pattern causing the stagnation, not random novelty.",
-    edge: "It diagnoses the pattern first. 'Do something different' is advice; this names which thing.",
+    edge: "It looks for the pattern first. 'Do something different' is generic advice; this proposes a disruption tied to what you described.",
   },
   seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
   seoTitle: "Break Out of a Rut: Routine Disruptor",
@@ -844,7 +846,7 @@ export const tools = [
 
 
 {
-  modified: "2025-03-05",
+  modified: "2026-08-22",
   id: "BeliefStressTest",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -878,10 +880,10 @@ export const tools = [
         result: "Where it holds: prevents extremes, reduces anxiety. Fatal stress test: doesn't apply to genuinely harmful things — moderate heroin use isn't wisdom. Significant: some goods require full commitment, not moderation. Hidden structure: it's really a rule against anxiety, not a guide to quantity. Upgrade: 'Moderation is a useful default for diminishing-return activities. For things requiring mastery or commitment, replace moderation with intentionality.'"
       },
       tips: [
-        "The 'psychological function' section is often the most revealing part",
+        "The 'psychological function' section can be useful for considering what the belief may be doing for you, not just whether it is true",
         "Severity ratings on stress tests help you prioritize what's worth acting on",
         "Most useful for beliefs you've held so long you've stopped examining them",
-        "Pair with Ego Killer when you want a full demolition-and-rebuild"
+        "If another tool in the catalog is designed for a more adversarial challenge, use that when you want demolition rather than boundary-testing"
       ]
     }
 },
@@ -978,7 +980,7 @@ export const tools = [
 },
 
 {
-  modified: "2025-03-05",
+  modified: "2026-08-22",
   id: "NotSoFast",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1078,7 +1080,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "AnalogyEngine",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1256,15 +1258,15 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "ProcedureProbe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A procedure was recommended and you're about to say yes.",
     give: "The procedure and the type of provider.",
-    get: "What it is in plain language, whether it's standard for your situation, the exact questions to ask, and the alternatives.",
-    edge: "It tells you whether the recommendation itself is standard — the question most patients don't know to ask.",
+    get: "What it is in plain language, questions about why it's being recommended, alternatives to ask about, and what to clarify before deciding.",
+    edge: "It helps you question the recommendation itself — why this procedure, what alternatives exist, and what would change the recommendation.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -1290,7 +1292,7 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
   guide: {
-    overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
+    overview: "Procedure Probe helps you understand what to ask before agreeing to a medical or dental procedure. It explains the procedure in plain language, surfaces questions about why it was recommended and what alternatives may exist, outlines typical cost and recovery considerations, and helps you prepare for a more informed conversation with your provider. It does not determine whether a procedure is medically necessary for you.",
     howToUse: [
       "Enter the procedure or treatment that was recommended",
       "Pick the provider type — dentist, surgeon, etc.",
@@ -1306,8 +1308,8 @@ export const tools = [
     tips: [
       "The questions to ask section is your most powerful tool — bring them to your appointment",
       "Adding your insurance situation helps the cost picture be more accurate",
-      "If it flags 'get a second opinion,' that's worth taking seriously",
-      "The urgency check will tell you if delaying is risky — important for time-sensitive procedures"
+      "If it suggests asking about a second opinion, treat that as a prompt to discuss your options with a qualified clinician",
+      "The urgency check can help you identify questions to ask about timing; your clinician should determine whether delay is medically risky"
     ]
   }
 },
@@ -1539,14 +1541,15 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "AwkwardSilenceFiller",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The conversation just died and you're still standing there.",
     give: "The setting, and any context.",
-    get: "Five to seven things you can safely say right now, matched to that setting.",
+    get: "Five to seven low-risk things you could say right now, matched to that setting.",
+    edge: "It gives you something usable in the next few seconds — including a graceful exit when restarting the conversation isn't worth forcing.",
   },
   seoDescription: "Rescue any awkward silence with 5-7 safe things to say, matched to your setting — work, party, date, or family. Exit lines and what not to say included.",
   seoTitle: "Conversation Starters for Awkward Silences",
@@ -1575,8 +1578,8 @@ export const tools = [
     },
     
     tips: [
-      "Low-risk options are always safe; use medium-risk when feeling more comfortable",
-      "Environmental observations are universally safe across contexts",
+      "Low-risk options are designed to minimize social risk; use medium-risk ones when the setting and your comfort level support it",
+      "Environmental observations are often a low-pressure place to start because they give both people something already in the room to talk about",
       "Exit strategies give you graceful out if conversation just isn't flowing",
       "What NOT to say prevents common mistakes for each setting",
       "Some silences are fine - you don't need to fill every pause"
@@ -1860,7 +1863,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "WhichLife",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1870,7 +1873,7 @@ export const tools = [
     get: "A vivid ordinary day inside each future — specific, not idealized.",
     edge: "Pro/con lists compare features. This compares what it feels like on a Tuesday, which is what you're actually choosing between.",
   },
-  seoDescription: "Torn between two paths? Instead of a pro/con list, read a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
+  seoDescription: "Torn between two paths? Instead of another pro/con list, read a vivid ordinary day in each possible future and notice how each one feels to live. Free, no signup.",
   seoTitle: "Which Life? Compare Two Paths Side by Side",
   title: "Which Life?",
   tagline: "Feel both futures before you choose.",
@@ -1880,7 +1883,7 @@ export const tools = [
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
   guide: {
-    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
+    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with a restrained reflection on the tradeoff you described, moments to notice in your own reaction, and one question to sit with.",
     howToUse: [
       "Describe Path A — the first option you're considering",
       "Describe Path B — the alternative",
@@ -1894,10 +1897,10 @@ export const tools = [
       result: "Two vivid day-in-the-life narratives: one where you're two years into the corporate track, one where you're two years into the startup. Each includes a moment of genuine satisfaction and an honest cost. The 'what I noticed' section surfaces what you'd grieve either way."
     },
     tips: [
-      "The more context you give about yourself, the more personal and specific the narratives get",
+      "Relevant context about your priorities and constraints helps the narratives become more specific to your situation",
       "Pay attention to which narrative you read first, which you re-read, and which makes you feel something — that's data",
       "Try different timeframes on the same decision — 1 year and 10 years tell very different stories",
-      "This isn't advice. It's a simulation. Your reaction to the narratives IS the answer."
+      "This isn't advice. It's a simulation. Notice your reaction to each narrative as one more piece of information about the choice."
     ]
   }
 },
@@ -1945,7 +1948,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "AlternatePath",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1953,13 +1956,13 @@ export const tools = [
     when: "You want to know whether one moment in history actually changed anything.",
     give: "A historical event, and the one detail you'd change.",
     get: "A plausible alternate timeline, each consequence cascading into the next.",
-    edge: "It is the one thing here that answers what might have happened rather than what you should do — and it will follow an impossible premise as seriously as a real one.",
+    edge: "It explores what might have happened if history changed, rather than what did happen or what you should do.",
   },
   seoDescription: "Pick any moment in history, change one detail, and watch the consequences cascade through a plausible alternate timeline — politics, tech, and culture, up to today.",
   seoTitle: "Alternate History Generator - What-If Timelines",
   title: "Alternate Path",
   tagline: "What if history went differently?",
-  tags: ['history', 'what if', 'alternate timeline', 'counterfactual', 'historical', 'thought experiment'],
+  tags: ['alternate history', 'what if history', 'alternate timeline', 'counterfactual history', 'historical what if', 'historical thought experiment'],
   icon: "🌀",
   categories: ['What If?'],
   headerColor: "#b8dcd8",
@@ -2071,7 +2074,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "RoastMe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2079,6 +2082,7 @@ export const tools = [
     when: "You want to be made fun of accurately.",
     give: "Your resume, dating profile, LinkedIn, or whatever else.",
     get: "A roast aimed at what is specifically ridiculous about what you sent.",
+    edge: "The jokes come from your actual material, not a generic list of insults with your name pasted in.",
   },
   seoDescription: "Paste your resume, dating profile, LinkedIn bio, or any text and get a personalized comedy roast targeting your specific content. Three heat levels, zero generics.",
   seoTitle: "Roast Generator: Roast My Resume or Bio",
@@ -2152,14 +2156,15 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "WrongAnswersOnly",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You want an answer that's wrong on purpose.",
     give: "Any real question, and how straight-faced you want the answer.",
-    get: "A confident, impeccably structured, completely incorrect answer.",
+    get: "A confident, impeccably structured, deliberately incorrect answer.",
+    edge: "Being wrong is the entire assignment: the fun is in how seriously the nonsense is presented.",
   },
   seoDescription: "Ask any real question and get a confidently, beautifully wrong answer — fake studies, invented experts, nonsense equations. Three absurdity levels. Real answer on toggle.",
   seoTitle: "Wrong Answers Only: Confidently Wrong",
@@ -2285,14 +2290,15 @@ export const tools = [
   }
 },
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "TheDebrief",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The meeting ended and nobody wrote anything down.",
     give: "The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Spot Patterns.",
-    get: "Decisions, action items with owners, open questions, and drafted follow-up messages.",
+    get: "Decisions, action items with owners when stated, open questions, and drafted follow-up messages.",
+    edge: "It turns a transcript into a usable record while keeping unstated ownership and unresolved points visible instead of inventing them.",
   },
   seoDescription: "Paste any meeting transcript and instantly get the decisions, action items with owners and deadlines, and ready-to-send follow-ups — without digging through notes.",
   seoTitle: "Meeting Notes: Action Items & Decisions",
@@ -2373,7 +2379,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "TheWholeStory",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2475,7 +2481,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "ContextCollapse",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2513,7 +2519,7 @@ export const tools = [
       "The 'Key Trigger' field shows the exact word or phrase driving each audience's interpretation",
       "Rewrite suggestions preserve your voice while fixing the gaps — they don't make you sound corporate",
       "Platform notes flag things like screenshot risk, forwarding risk, and social media permanence",
-      "Use this before any announcement that goes to mixed audiences — it prevents 90% of 'that came out wrong' moments"
+      "Use this before an announcement that will reach mixed audiences, especially when different readers may bring very different context to the same words"
     ]
   }
 },
@@ -2562,7 +2568,7 @@ export const tools = [
   }
 },
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "DecoderRing",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2570,6 +2576,7 @@ export const tools = [
     when: "A message arrived and the words don't match the feeling.",
     give: "The exact message and where it came from.",
     get: "What the message could mean, how loosely to hold that, and three ways you could reply.",
+    edge: "It separates plausible readings from certainty, so an ambiguous message doesn't automatically become the worst interpretation.",
   },
   seoDescription: "Paste a confusing or passive-aggressive message and see what it might mean, what's worth noticing, and 3 ready-to-send replies. Free, no signup.",
   seoTitle: "Text Message Subtext Decoder",
@@ -2651,7 +2658,7 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "MiseEnPlace",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2694,14 +2701,15 @@ export const tools = [
 },
 
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "GhostWriter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Someone asked you for a reference and the deadline is close.",
     give: "Their name, your relationship, what they're applying for, and what you know about them.",
-    get: "A finished letter with specific evidence, in a voice that sounds like you wrote it carefully.",
+    get: "A draft letter built from the evidence you provide, ready for you to review and personalize.",
+    edge: "It builds from what you actually know about the person rather than filling a recommendation with generic praise.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -2856,7 +2864,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "BatchFlow",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2897,7 +2905,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks",
       "Add even vague time estimates ('~30 min') to the task detail field — it makes batch durations much more accurate",
       "The 'Weekly Rhythm' feature is worth setting up once — it gives you a repeatable weekly batching pattern for recurring tasks",
-      "If the same tasks keep getting deferred across sessions, the '⚠️ Stuck tasks' analysis will diagnose why and suggest a fix",
+      "If the same tasks keep getting deferred across sessions, use the '⚠️ Stuck tasks' analysis to look for patterns and possible fixes",
       "After 3+ sessions, 'Insights' shows your actual batching patterns — which modes you favor, your real completion rate, and where you lose the most time"
     ]
   }
@@ -3018,7 +3026,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     }
 },
 {
-  modified: "2026-03-10",
+  modified: "2026-08-22",
   id: "ArgueSmarter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3053,11 +3061,11 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses."
     },
     tips: [
-      "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
-      "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
+      "Devil's Advocate Prep can be useful before a meeting, presentation, or difficult conversation when you want to hear the strongest objections in advance",
+      "Try Socratic format when you want questions rather than a counter-argument; it can expose assumptions you haven't had to state explicitly",
       "Source Check your own claims, not just the AI's — discovering your own weak evidence mid-debate is better than discovering it in the real conversation",
-      "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
-      "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them"
+      "The Fallacy Gym is useful for short practice sessions; increase the difficulty when the patterns start feeling obvious",
+      "Use Rematch when you want to revisit the same topic and test whether the weak spots from the previous round still hold"
     ],
     pitfalls: [
       "The AI argues its assigned position forcefully — that's the point, not a bug. The goal is to strengthen your thinking, not to 'win'",
@@ -3260,7 +3268,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "HistoryToday",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3318,7 +3326,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "BragSheetBuilder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3395,7 +3403,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "LayoverMaximizer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3559,7 +3567,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "NameStorm",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3567,6 +3575,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     when: "You need a name and the good ones feel taken.",
     give: "What needs naming, and the energy you want.",
     get: "Twenty-five to thirty-five names across styles, with the reasoning behind each.",
+    edge: "It explores several naming directions at once, so you can react to distinct territories instead of a pile of near-duplicates.",
   },
   seoDescription: "Generate dozens of brandable names for your business, product, pet, or band in seconds. Free namer with pronunciation guides and live domain checks.",
   seoTitle: "Business & Brand Name Generator",
@@ -3659,7 +3668,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 // Changes: modified date, description trimmed, tags 6→9, duplicate tips removed, pitfalls added
 
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "DifficultTalkCoach",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3723,7 +3732,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "ComplaintEscalationWriter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3757,13 +3766,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   headerColor: "#c0d8b8",
   description: "When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.",
   guide: {
-    overview: "Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.",
+    overview: "Complaint Escalation Writer helps you turn a stalled consumer complaint into a staged escalation plan. It organizes the facts, identifies possible sources of leverage and consumer-protection rules to verify, and drafts progressively firmer messages and complaint language. Start with the lowest appropriate step and escalate only when needed; verify legal, regulatory, and filing details before relying on them.",
     
     howToUse: [
       "Name the company and select its industry (or let the tool auto-detect)",
       "Describe what happened in detail — dates, amounts, what was promised vs. delivered, names of reps",
       "Note previous resolution attempts, desired outcome, amount at stake, and what documentation you have",
-      "Review the Situation Assessment to understand your legal position and likelihood of success",
+      "Review the Situation Assessment for possible leverage, uncertainties, and rules worth verifying before you escalate",
       "Check the Evidence Checklist and gather documentation before sending anything",
       "Start with step 1 — copy the letter and send it today",
       "If there is no answer, step 2 is the regulatory complaint — and only if you need it",
@@ -3779,15 +3788,15 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     tips: [
       "The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers",
       "Gather your evidence before you send step 1 — the checklist tells you exactly what to collect",
-      "The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights",
-      "The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines",
+      "When the tool identifies potentially relevant laws or rules, verify them for your jurisdiction before relying on them in a letter",
+      "A regulatory complaint can create a formal record and may carry response requirements; verify the regulator and any applicable deadlines for your situation",
       "There is no need to jump ahead — each step leaves a record that makes the next one easier"
     ]
   }
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "PlainTalk",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4003,14 +4012,15 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "SixDegreesOfMe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Idle curiosity about how your life fits together.",
     give: "Two things from your life. A profile makes every chain richer.",
-    get: "The chain connecting them, link by link.",
+    get: "A possible chain connecting them, link by link.",
+    edge: "It looks for an interesting path through your own context rather than claiming there is one objectively correct connection.",
   },
   seoDescription: "Find the hidden chain linking any two parts of your life — your degree and your career, your fear and your favorite food. Free, and surprisingly personal.",
   seoTitle: "Find Hidden Connections Between Anything",
@@ -4108,7 +4118,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "FinalWish",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4538,7 +4548,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "FakeReviewDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4750,7 +4760,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-03-11",
+  modified: "2026-08-22",
   id: "DoctorVisitTranslator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4882,7 +4892,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "LeaseTrapDetector",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4952,12 +4962,12 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     
     pitfalls: [
       "Don't skip location - 'New York City, NY' has VERY different tenant laws than 'Albany, NY'. Be specific with city AND state.",
-      "Don't assume 'standard lease' is safe - many 'standard' leases include illegal or exploitative clauses. Always analyze.",
-      "Don't sign first, analyze later - run lease through tool BEFORE signing. After signature, you're legally bound even to illegal clauses (until you fight in court).",
-      "Yellow flags aren't 'probably fine' - questionable clauses need clarification. Vague language always benefits landlord, never tenant.",
+      "A standard form is not a guarantee that every clause fits your jurisdiction or situation; read the lease and verify any serious flags before signing.",
+      "Review the lease before signing when you can; it is usually easier to question or negotiate language before you are committed.",
+      "Treat yellow flags as questions to clarify, especially when fees, responsibilities, or timelines are vague.",
       "Green flags don't mean entire lease is safe - a lease can have good protections AND predatory clauses. Review everything.",
-      "Don't trust 'this is required by law' from landlord - if tool says something is illegal, it's illegal. Landlords lie or are ignorant of law.",
-      "Negotiation scripts aren't optional suggestions - if tool says clause is illegal, you have RIGHT to demand removal. Be firm.",
+      "If either the landlord or the tool makes a legal claim, verify it against an authoritative source for your jurisdiction before relying on it.",
+      "Use the negotiation scripts as starting points, and distinguish between a clause you dislike and one that a qualified or authoritative source confirms is unlawful or unenforceable.",
       "Don't ignore missing protections - if lease is silent on landlord's responsibilities (repairs, habitability, entry notice), you're vulnerable.",
       "Unusual fees won't 'sort themselves out' - if charged $500 for 'administrative fee', negotiate NOW or you'll pay it.",
       "Don't use tool as substitute for lawyer on complex commercial leases - this tool is built for residential rentals. Complex commercial needs attorney review."
@@ -5233,7 +5243,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "BillRescue",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5363,7 +5373,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "Mend",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5481,7 +5491,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "2026-03-10",
+  modified: "2026-08-22",
   id: "DateNight",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5587,7 +5597,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "VirtualBodyDouble",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5655,7 +5665,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "WaitingModeLiberator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5697,9 +5707,9 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
     tips: [
       "'Start With Me' is the most important button. The gap between seeing the plan and doing the plan is where most tools fail — this one walks you across it.",
-      "Always do the debrief, even if you skip the blocks. The anxiety data compounds fast.",
-      "Be honest about energy. The tool adjusts. Lying to yourself gives you a plan you can't execute.",
-      "After 3+ debriefs for the same appointment type, check Patterns — the anxiety trend is eye-opening."
+      "The debrief is useful even when you skip the planned blocks because it records what actually happened for future sessions.",
+      "Use the energy level that feels accurate today; the plan is more useful when it reflects your actual capacity.",
+      "After several debriefs for the same kind of event, check Patterns to see whether the same timing or anxiety patterns keep recurring."
     ],
 
     pitfalls: [
@@ -5986,7 +5996,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "MissingLink",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -6194,7 +6204,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "RentersDepositSaver",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
