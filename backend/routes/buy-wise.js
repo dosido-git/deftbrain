@@ -56,9 +56,9 @@ Write every field with precision — no filler, no padding, no restating what wa
 
     let userPrompt = `RESEARCH THIS PURCHASE:
 Product: ${product}
-${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — estimate typical range'}
+${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — do not invent a current market price. Give only a broad category expectation if it is durable enough to be useful; otherwise make price verification a next step'}
 Currency: ${sym}
-Urgency: ${urgency === 'today' ? 'Need it today — skip "wait for sale" advice, focus on best price NOW' : urgency === 'this_week' ? 'This week — mention upcoming sales only if imminent' : 'Flexible timing — include sale calendar and wait recommendations'}
+Urgency: ${urgency === 'today' ? 'Need it today — skip wait-for-sale advice. Focus on whether the supplied price and terms are acceptable and what can be verified immediately' : urgency === 'this_week' ? 'This week — mention only durable sale-cycle patterns you actually know; do not imply knowledge of a current promotion' : 'Flexible timing — discuss durable sale-cycle patterns and whether waiting may help; do not invent a sale calendar'}
 Priority: ${priority} (weight your advice toward this)
 ${isImpulse ? 'USER FLAGGED THIS AS IMPULSE BUY — include impulse_check section with honest evaluation' : ''}
 ${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}` : ''}` : ''}
@@ -147,7 +147,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   },
 
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
-    "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
+    "analysis": "Compare buying outright vs subscribing vs renting using prices the user supplied. If none were supplied, compare the cost structure without inventing current prices and put live-price checks in verify_before_buying. — 1-2 sentences",
     "breakeven": "At what point does buying become cheaper? — one sentence",
     "recommendation": "Clear recommendation based on their context. — one sentence"
   }`},
@@ -251,9 +251,9 @@ router.post('/buy-wise/fast', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const contextHeader = `RESEARCH THIS PURCHASE:
 Product: ${product}
-${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — estimate typical range'}
+${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — do not invent a current market price. Give only a broad category expectation if it is durable enough to be useful; otherwise make price verification a next step'}
 Currency: ${sym}
-Urgency: ${urgency === 'today' ? 'Need it today — skip "wait for sale" advice, focus on best price NOW' : urgency === 'this_week' ? 'This week — mention upcoming sales only if imminent' : 'Flexible timing — include sale calendar and wait recommendations'}
+Urgency: ${urgency === 'today' ? 'Need it today — skip wait-for-sale advice. Focus on whether the supplied price and terms are acceptable and what can be verified immediately' : urgency === 'this_week' ? 'This week — mention only durable sale-cycle patterns you actually know; do not imply knowledge of a current promotion' : 'Flexible timing — discuss durable sale-cycle patterns and whether waiting may help; do not invent a sale calendar'}
 Priority: ${priority} (weight your advice toward this)
 ${isImpulse ? 'USER FLAGGED THIS AS IMPULSE BUY — include impulse_check section with honest evaluation' : ''}
 ${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}` : ''}` : ''}
@@ -278,7 +278,6 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   "verdict": "One bold sentence: the overall recommendation — one sentence",
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
-  "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
   "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
   "interpreted_as": "The exact product this analysis is about, so the user can spot a misread at a glance: brand plus the specific product type, plus the detail that distinguishes it from a similarly-named product. If the name was ambiguous, name the reading you rejected too. — one short sentence",
   "fair_price_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
@@ -358,6 +357,7 @@ ${schema}`;
 
     // ── 2b) GROUP B — cost (the token-heavy money panels) ──
     const GROUP_B = `{
+  "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
   "noticed": [
     {
       "what": "Something concrete about THIS purchase that the buyer did not ask about, stated plainly with the actual figure or fact. Include it ONLY if it costs them money or exposes them to a real risk — a routine warranty or an ordinary return window is not worth raising, however true it is. Two entries is a lot; zero is the normal answer for a straightforward purchase, and an empty array is correct.",
@@ -390,7 +390,7 @@ ${schema}`;
     "platform_trust": [{"name": "Just the platform name, 3-6 words", "trust": "Exactly one of these English words and nothing else, untranslated: HIGH or MEDIUM or LOW", "why": "Why that trust level for this platform. Nothing else."}]
   },
   "buy_vs_subscribe": ${`null if no subscription or rental model exists, otherwise: {
-    "analysis": "Compare buying outright vs subscribing vs renting. Include real prices. — 1-2 sentences",
+    "analysis": "Compare buying outright vs subscribing vs renting using prices the user supplied. If none were supplied, compare the cost structure without inventing current prices and put live-price checks in verify_before_buying. — 1-2 sentences",
     "breakeven": "At what point does buying become cheaper? — one sentence",
     "recommendation": "Clear recommendation based on their context. — one sentence"
   }`},

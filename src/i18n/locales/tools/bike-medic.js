@@ -429,7 +429,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "Step {{n}}",
-    bmd_tree_none_match: "None of these match? Ask the AI mechanic →",
+    bmd_tree_none_match: "None of these match? Describe what’s happening →",
     bmd_tree_problem_prefix: "I have a {{label}} problem: ",
 
     // ── Copy-text builder labels ──

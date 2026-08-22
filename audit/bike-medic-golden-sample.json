@@ -1,11 +1,11 @@
 {
   "_meta": {
     "tool": "bike-medic",
-    "captured": "2026-06-27",
-    "baseline": "bikemedic-v1",
+    "captured": "2026-08-22",
+    "baseline": "bikemedic-v2",
     "model": "claude-sonnet-4-6 (all 5 modes)",
     "endpoint": "/api/bike-medic",
-    "note": "Regression reference for BikeMedic. Re-run each case's input against the live backend (npm run check:golden bike-medic) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The DIAGNOSIS case GUARDS the currency-localization fix: input is en-GB/GBP and parts_cost MUST be in GBP (£), NOT USD ($) — Types 1&2 now append withLocaleContext and the $ exemplar was removed from the schema. DO NOT silently reverse: (1) all 5 modes sonnet-4-6; (2) Types 1&2 (freeform + post-fix) append withLocaleContext(userLocale,userCurrency,userRegion) and carry NO hardcoded $ in parts_cost; (3) Types 1&2 create() is wrapped in a 3-attempt retry (they bypass callClaudeWithRetry for the photo-multipart path); (4) backend fix_ref allowlist (17 ids) must stay a subset of frontend FIXES keys. Frontend-only: result card is single-column/flex-wrap (mobile-safe); SHOP_COSTS savings use sym + fixed reference numbers (deliberate). See audit/tool-notes/BIKEMEDIC-NOTES.md.",
+    "note": "Regression reference for BikeMedic. Re-run each case's input against the live backend (npm run check:golden bike-medic) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. Re-locked 2026-08-22 (v2): route-symptom carried recommended_category 'pedals' and confidence 0.82. 'pedals' is not a category the app has — the golden had locked in a dead button — and the confidence score was removed because nothing behind it is measured.",
     "rate_limit_note": "Backend limits 4 req/min; check:golden runs the 3 cases sequentially and fits."
   },
   "cases": [
@@ -80,14 +80,13 @@
         "symptom": "clicking noise from the bottom when I pedal hard"
       },
       "output": {
-        "recommended_category": "pedals",
-        "confidence": 0.82,
-        "reasoning": "A clicking noise specifically under hard pedaling effort is the classic presentation of a loose or worn bottom bracket, loose pedal, or loose crank arm — all in the pedals/crank/BB category — because the click is load-dependent and originates at the primary power transfer point.",
+        "recommended_category": "pedal_crank",
+        "reasoning": "A clicking noise from the bottom of the bike that appears under pedaling load points first toward the pedal, crank, or bottom bracket area, as these components bear the most stress when you push hard and are common sources of this kind of noise. That said, several things in and around the drivetrain can produce a similar click, so the goal is to narrow it down before recommending any fix.",
         "alternative_categories": [
           "noise",
           "chain"
         ],
-        "suggested_first_question": "Does the click happen once per pedal revolution at the same point in the stroke, or is it more random — and does it stop completely when you stop pedaling and coast?"
+        "suggested_first_question": "Does the click happen once per full pedal revolution at a consistent point in the stroke, or is it more random — and does it go away completely when you stop pedaling and coast?"
       }
     },
     {

@@ -53,3 +53,21 @@ Types 1 & 2 bypass `callClaudeWithRetry` because the photo path needs a multipar
 - **Backend rate limit = 4 req/min.** `check:golden bike-medic` runs 3 cases sequentially and fits.
 - The backend must be **restarted** to pick up route changes (started via `node`, not nodemon).
 - Fully localized (in `LOCALIZED_TOOLS`); `bmd_*` keys in `src/i18n/locales/tools/bike-medic.js`.
+
+## v2 — 2026-08-22
+
+Two things the v1 golden had locked in as correct.
+
+- `recommended_category: "pedals"` — not a category the app has. The prompt
+  advertised `pedals`, `tubeless` and `suspension`; the frontend's ids are
+  `pedal_crank`, `tire_seat` and there is no suspension category. The Start
+  button rendered the raw id and did nothing. Fixed in the prompt, canonicalised
+  server-side against the id list with aliases, and the button now only renders
+  when the category resolves.
+- `confidence: 0.82` — removed. No calibrated diagnostic model sits behind it,
+  so the number claimed measurement about a first guess.
+
+Also: safety moved ahead of the procedure. Eighteen fixes covering brakes,
+wheels, spokes, hubs, axles, headsets, cranks and unseated tires carry a
+"Before you ride" block above the steps, and a false `ride_safe` renders as a
+block rather than a pill.
