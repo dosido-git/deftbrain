@@ -2543,7 +2543,7 @@ export const tools = [
   icon: "🔖",
   categories: ['Diversions'],
   headerColor: "#ccdfc4",
-  description: "Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped — character refreshers, active plot threads, vibe checks, and must-watch game flags.",
+  description: "Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.",
   guide: {
     overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
     howToUse: [
@@ -4083,7 +4083,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: '🎲',
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
-  description: "Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can't stop thinking about.",
+  description: "Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.",
   guide: {
     overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
 
@@ -4180,7 +4180,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
   crossRefs: ['BuyWise', 'DecisionCoach'],
-  description: "Bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and deeper troubleshooting when the standard repair doesn't work.",
+  description: "Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.",
   guide: {
       overview: "Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.",
       howToUse: [
@@ -5739,7 +5739,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🧠",
   categories: ['Me', 'Do It!'],
   headerColor: "#e0b8b8",
-  description: "Dump everything swirling in your head — typed, rapid-fire, or voice — and AI sorts the chaos into action items, decisions, worries, and things you can drop. Most overwhelm turns out to be 8 real tasks hiding under a lot of noise.",
+  description: "When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.",
   guide: {
     overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
 
@@ -6060,7 +6060,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "💲",
   categories: ['Loot', 'Veer', 'Do It!'],
   headerColor: "#c0d8b8",
-  description: "Tell us what you're about to buy and we'll think it through with you — whether the price you were quoted makes sense, what it really costs to own, cheaper ways to get the same result, what buyers tend to regret, and the few things worth checking before you pay.",
+  description: "Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.",
   guide: {
       overview: "Buy Wise thinks a purchase through with you. Enter what you're buying — and the price you've seen, if you have one — and it weighs that price against what the product involves, the true total cost of ownership including consumables and maintenance, cheaper alternatives that do most of the job, what buyers commonly regret, and negotiation questions when haggling is realistic. It ends with the few things worth checking before you pay. It reasons from what you tell it plus general knowledge of the product type; it does not look up live prices, stock or promotions, so the figures are a starting point rather than a quote. Comparison mode weighs two products side by side by your priorities, and the impulse check is an honest gut-check.",
       
