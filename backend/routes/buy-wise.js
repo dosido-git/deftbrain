@@ -20,7 +20,7 @@ const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('.
 // a cold one waits at most COLD_WAIT_MS beyond the pre-pass and then answers
 // unverified rather than making anyone sit there. The next person asking about
 // that product gets the verified answer.
-const COLD_WAIT_MS = 12000;
+const COLD_WAIT_MS = 18000;
 const PRICE_TTL_MS = 3 * 24 * 60 * 60 * 1000; // prices move; laws do not
 
 function buyWiseFacts({ product, region, currency }) {
@@ -44,13 +44,14 @@ Skip anything you cannot confirm. Do not infer, do not fill gaps from memory, an
 
 Return ONLY valid JSON:
 { "verified": [{ "kind": "price | status | warranty | issue", "detail": "What you found, one sentence, with the figure or term where there is one", "source": "The domain you saw it on" }] }`,
-    render: (clean) => {
-      if (!Array.isArray(clean.verified) || !clean.verified.length) return '';
-      const block = `\n\nVERIFIED TODAY BY WEB SEARCH — these specific facts WERE looked up and you may state them plainly, each with its source. Everything else in your answer remains unverified reasoning and keeps the rules above:\n` +
-        clean.verified.map(f => `- [${f.kind}] ${f.detail} (source: ${f.source})`).join('\n');
-      return { block, data: clean.verified };
-    },
+    render: (clean) => ({ block: renderFactsBlock(clean.verified), data: clean.verified }),
   });
+}
+
+function renderFactsBlock(verified) {
+  if (!Array.isArray(verified) || !verified.length) return '';
+  return `\n\nVERIFIED TODAY BY WEB SEARCH — these specific facts WERE looked up and you may state them plainly, each with its source. Everything else in your answer remains unverified reasoning and keeps the rules above:\n` +
+    verified.map(f => `- [${f.kind}] ${f.detail} (source: ${f.source})`).join('\n');
 }
 
 function buyWiseFactsKey({ product, region, currency }) {
@@ -70,7 +71,15 @@ CONSISTENT NUMBERS: Anchor on ONE canonical figure for the headline savings/pric
 
 CHALLENGE THE PREMISE OUT LOUD: If your recommendation contradicts a constraint the user explicitly stated (model year, spec, brand, budget, timing), say so plainly at the start of the verdict — name the constraint and why you're pushing back — instead of quietly substituting a different option.
 
-WHEN A "VERIFIED TODAY BY WEB SEARCH" BLOCK APPEARS BELOW: those specific facts were looked up today and you may state them plainly, naming the source alongside. That is the ONLY material you may present as checked. It does not license confidence anywhere else — every other sentence in your answer is still reasoning, and the rules below still govern it. If the block contradicts what you believe, the block wins; it saw a page and you did not. If there is no block, nothing was verified and the rules below govern everything.
+WHEN A "VERIFIED TODAY BY WEB SEARCH" BLOCK APPEARS BELOW: those specific facts were looked up today and you may state them plainly. That is the ONLY material you may present as checked. It does not license confidence anywhere else — every other sentence is still reasoning and the rules below still govern it. If the block contradicts what you believe, the block wins; it saw a page and you did not.
+
+NAME THE SOURCE IN THE SENTENCE. Every time you use something from that block, the domain goes in the sentence that uses it — "it lists at 599 on upliftdesk.com", "standingdeskpicks.com puts the current street price near 640". Not in a footnote, not once at the top, not left for the reader to assume: beside the claim, every time. A researched figure a reader cannot trace is indistinguishable from an invented one, and that is the whole difference this block is here to make.
+
+USE IT WHERE IT ANSWERS THE QUESTION. If the block has a price, the price range is that range with its source — not a description of market tiers. If the block says the model is current or superseded, that answers the wait-or-buy question, so answer it. Retreating to a general observation when you were handed a checked fact wastes the one thing in this answer that was actually verified.
+
+AND WHEN IT DOES NOT: say so, in those words. "I could not verify the current price today" is a complete, useful sentence — it tells the reader exactly what is missing and sends them to check it. What you must NOT do is fill the hole with an authoritative-sounding generalisation. A confident sentence about market tiers, product cycles or what things usually cost, offered in place of a fact you failed to get, is worse than the gap: it reads as knowledge and it is not. Unverified means say unverified.
+
+FEATURES ARE NOT WASTED ON PEOPLE. You know a sentence or two about this buyer's life; that is not enough to rule a capability in or out for them. "The mopping is largely wasted spend for hardwood and a dog" is a preference stated as a product fact — plenty of people with hardwood and a dog mop. Describe what the feature does, what it costs, and what would make it worth having, and let them decide whether that is them. The same goes for capacity, size, tier and every optional extra: say what it buys and what it assumes, never that this person does not need it.
 
 THE RULE THAT GOVERNS EVERYTHING BELOW:
 Product performance, failure patterns, market behaviour, warranty norms, retailer behaviour and resale patterns are NOT established facts here. You did not measure them, test them, look them up or read anyone's terms. Unless the buyer supplied it, treat all of it as context to check — useful for knowing WHAT to ask, never presented as a finding.
@@ -172,14 +181,14 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 
   "fair_price": {
     "verdict_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
-    "analysis": "Judge the price THEY gave against what this kind of product involves — what drives cost in the category, what they get for it, what would make it good or bad value. If they gave no price, say what to expect to pay and be explicit that it is a general expectation, not a current quote. Never report what these sell for today as though you checked. — 1-2 sentences",
-    "typical_range": "Where the price they gave sits within what this category spans, in words rather than currency — 'toward the upper end of mainstream, below the heavy-duty tier', 'entry level for this type'. A ${sym} range would read as a market check you did not run, and the placement is the useful part anyway. null when they gave no price. — short",
+    "analysis": "Judge the price THEY gave. Where the verified block has a current price, compare theirs against it and name the source in the sentence. Where it does not, judge what the price buys — what drives cost in this category and what they get for it — and say outright that the current market price could not be verified today rather than implying you know it. — 1-2 sentences",
+    "typical_range": "If the verified block has a current price, this is that figure or range with its source domain in the text. If it does not, say plainly that the current price could not be verified today — do NOT substitute a description of market tiers, which reads as knowledge and is not. null when they gave no price and nothing was verified. — short",
     "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
   },
 
   "timing": ${urgency === 'today' ? 'null' : `{
     "verdict_badge": "BUY NOW | WAIT | GOOD TIME",
-    "analysis": "What actually bears on the timing here, and how much of it can be settled from where you sit. Release cadence only where it is a long-standing, checkable pattern for the category, named as a pattern. Never assert that nothing is coming, that a redesign is imminent, or that there is no reason to wait — the future of a product line is not something you can see, and 'there is no reason to wait' is a prediction wearing the clothes of a fact. Where the timing question cannot be settled from here, say so and send it to verify_before_buying. — 1-2 sentences",
+    "analysis": "Answer from the verified block first. If it says the model is current, superseded or discontinued, that is the timing answer — say which, name the source, and say what it means for buying now. If the block is silent on it, say plainly that you could not verify whether a newer generation is close, and send it to verify_before_buying. Never predict a release, never assert that nothing is coming, and never offer a general observation about product cycles in place of the answer you did not get. — 1-2 sentences",
     "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
@@ -389,13 +398,19 @@ ${DECISION_SCHEMA}`, 'decision', 800);
     // Pinning the resolved product here is what stops the three groups from each
     // picking a different reading of an ambiguous name ("Canyon Bikestand" →
     // repair stand in one panel, storage rack in another).
+    // Free second look: the pre-pass just spent 10-20s, and a search that
+    // missed the cold window has often landed inside it. The groups carry
+    // every volatile claim, so it is worth re-reading the cache before they
+    // are built. No wait, no cost.
+    const groundedForGroups = grounded || renderFactsBlock(groundedData(buyWiseFactsKey(factsArgs)));
+
     const stance = `LOCKED DECISION — every section below MUST stay consistent with this; do NOT contradict it:
 - Product being analyzed: ${decision.interpreted_as || product}
 - Verdict: ${decision.verdict}
 - Fair-price stance: ${decision.fair_price_badge}
 - Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
 
-    const groupPrompt = (schema) => `${contextHeader}${grounded}
+    const groupPrompt = (schema) => `${contextHeader}${groundedForGroups}
 
 ${stance}
 
@@ -423,8 +438,8 @@ ${schema}`;
   "gift_analysis": null,`}
   "fair_price": {
     "verdict_badge": "${decision.fair_price_badge}",
-    "analysis": "Judge the price THEY gave against what this kind of product involves — what drives cost in the category, what they get for it, what would make it good or bad value. If they gave no price, say what to expect to pay and be explicit that it is a general expectation, not a current quote. Never report what these sell for today as though you checked. — 1-2 sentences",
-    "typical_range": "Where the price they gave sits within what this category spans, in words rather than currency — 'toward the upper end of mainstream, below the heavy-duty tier', 'entry level for this type'. A ${sym} range would read as a market check you did not run, and the placement is the useful part anyway. null when they gave no price. — short",
+    "analysis": "Judge the price THEY gave. Where the verified block has a current price, compare theirs against it and name the source in the sentence. Where it does not, judge what the price buys — what drives cost in this category and what they get for it — and say outright that the current market price could not be verified today rather than implying you know it. — 1-2 sentences",
+    "typical_range": "If the verified block has a current price, this is that figure or range with its source domain in the text. If it does not, say plainly that the current price could not be verified today — do NOT substitute a description of market tiers, which reads as knowledge and is not. null when they gave no price and nothing was verified. — short",
     "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
   },${compProducts.length > 0 ? `
   "comparison": {
@@ -492,7 +507,7 @@ ${schema}`;
     const GROUP_C = `{
   "timing": ${timingToday ? 'null' : `{
     "verdict_badge": "${decision.timing_badge}",
-    "analysis": "What actually bears on the timing here, and how much of it can be settled from where you sit. Release cadence only where it is a long-standing, checkable pattern for the category, named as a pattern. Never assert that nothing is coming, that a redesign is imminent, or that there is no reason to wait — the future of a product line is not something you can see, and 'there is no reason to wait' is a prediction wearing the clothes of a fact. Where the timing question cannot be settled from here, say so and send it to verify_before_buying. — 1-2 sentences",
+    "analysis": "Answer from the verified block first. If it says the model is current, superseded or discontinued, that is the timing answer — say which, name the source, and say what it means for buying now. If the block is silent on it, say plainly that you could not verify whether a newer generation is close, and send it to verify_before_buying. Never predict a release, never assert that nothing is coming, and never offer a general observation about product cycles in place of the answer you did not get. — 1-2 sentences",
     "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
@@ -542,7 +557,7 @@ ${schema}`;
     // Only what the analysis actually saw. The background refresh can land
     // after the prompt was built, and showing the buyer facts that did not
     // inform the answer would be the same overclaim in a new costume.
-    merged.verified_facts = grounded ? (stripCites(groundedData(buyWiseFactsKey(factsArgs))) || null) : null;
+    merged.verified_facts = groundedForGroups ? (stripCites(groundedData(buyWiseFactsKey(factsArgs))) || null) : null;
 
     return res.json(merged);
   } catch (error) {

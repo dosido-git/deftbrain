@@ -6,6 +6,7 @@
 // Roborock S8, PS5, Vitamix, Carrier, Nike) stay identical across languages.
 export const buyWise = {
   "en": {
+    "bw_verified_none": "Nothing could be verified on the web for this one today, so everything below is reasoning rather than a checked fact. The price and availability are worth confirming yourself before you pay.",
     "bw_verified_title": "Checked on the web today",
     "bw_verified_source": "Source:",
     "bw_sec_more": "More about this purchase",
@@ -322,6 +323,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "es": {
+    "bw_verified_none": "Hoy no se pudo verificar nada en la web sobre esto, así que todo lo de abajo es razonamiento y no un dato comprobado. Conviene que confirmes tú el precio y la disponibilidad antes de pagar.",
     "bw_verified_title": "Verificado hoy en la web",
     "bw_verified_source": "Fuente:",
     "bw_sec_more": "Más sobre esta compra",
@@ -638,6 +640,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "zh": {
+    "bw_verified_none": "今天没能在网上核实到这件商品的任何信息，因此下面的内容都是推断，而非已核实的事实。付款前请自行确认价格与是否有货。",
     "bw_verified_title": "今天已在网上核实",
     "bw_verified_source": "来源：",
     "bw_sec_more": "关于这次购买的更多内容",
@@ -954,6 +957,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "hi": {
+    "bw_verified_none": "आज इसके बारे में वेब पर कुछ भी सत्यापित नहीं हो सका, इसलिए नीचे दी गई हर बात तर्क है, जाँचा हुआ तथ्य नहीं। भुगतान से पहले कीमत और उपलब्धता खुद जाँच लें।",
     "bw_verified_title": "आज वेब पर जाँचा गया",
     "bw_verified_source": "स्रोत:",
     "bw_sec_more": "इस खरीद के बारे में और",
@@ -1270,6 +1274,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ar": {
+    "bw_verified_none": "لم يتيسّر اليوم التحقق من أي شيء على الويب بخصوص هذا المنتج، لذا فكل ما يلي استنتاج وليس معلومة مؤكَّدة. يستحق السعر والتوافر أن تتأكد منهما بنفسك قبل الدفع.",
     "bw_verified_title": "جرى التحقق منه على الويب اليوم",
     "bw_verified_source": "المصدر:",
     "bw_sec_more": "المزيد عن هذا الشراء",
@@ -1586,6 +1591,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "pt": {
+    "bw_verified_none": "Hoje não foi possível verificar nada na web sobre este item, então tudo abaixo é raciocínio e não um dado conferido. Vale confirmar preço e disponibilidade por conta própria antes de pagar.",
     "bw_verified_title": "Verificado na web hoje",
     "bw_verified_source": "Fonte:",
     "bw_sec_more": "Mais sobre esta compra",
@@ -1902,6 +1908,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "fr": {
+    "bw_verified_none": "Rien n'a pu être vérifié sur le web aujourd'hui pour ce produit : tout ce qui suit est un raisonnement, pas un fait contrôlé. Le prix et la disponibilité méritent que vous les confirmiez vous-même avant de payer.",
     "bw_verified_title": "Vérifié sur le web aujourd'hui",
     "bw_verified_source": "Source :",
     "bw_sec_more": "En savoir plus sur cet achat",
@@ -2218,6 +2225,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "de": {
+    "bw_verified_none": "Zu diesem Produkt ließ sich heute im Web nichts bestätigen, alles Folgende ist also Schlussfolgerung und keine geprüfte Angabe. Preis und Verfügbarkeit sollten Sie vor dem Bezahlen selbst nachsehen.",
     "bw_verified_title": "Heute im Web geprüft",
     "bw_verified_source": "Quelle:",
     "bw_sec_more": "Mehr zu diesem Kauf",
@@ -2534,6 +2542,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ja": {
+    "bw_verified_none": "この商品については本日ウェブで確認が取れませんでした。したがって以下はすべて推論であり、確認済みの事実ではありません。価格と在庫はお支払い前にご自身でご確認ください。",
     "bw_verified_title": "本日ウェブで確認した内容",
     "bw_verified_source": "出典：",
     "bw_sec_more": "この買い物についてもっと",
@@ -2850,6 +2859,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ko": {
+    "bw_verified_none": "오늘 이 제품에 대해서는 웹에서 확인된 것이 없습니다. 따라서 아래 내용은 모두 추론이며 확인된 사실이 아닙니다. 가격과 재고는 결제 전에 직접 확인해 보세요.",
     "bw_verified_title": "오늘 웹에서 확인한 내용",
     "bw_verified_source": "출처:",
     "bw_sec_more": "이 구매에 대해 더 보기",
@@ -3166,6 +3176,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ru": {
+    "bw_verified_none": "Сегодня по этому товару в интернете ничего подтвердить не удалось, поэтому всё ниже — рассуждение, а не проверенный факт. Цену и наличие стоит уточнить самостоятельно перед оплатой.",
     "bw_verified_title": "Проверено сегодня в интернете",
     "bw_verified_source": "Источник:",
     "bw_sec_more": "Подробнее об этой покупке",
@@ -3482,6 +3493,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "th": {
+    "bw_verified_none": "วันนี้ยังตรวจสอบข้อมูลของสินค้าชิ้นนี้บนเว็บไม่ได้ ทุกอย่างด้านล่างจึงเป็นการให้เหตุผล ไม่ใช่ข้อเท็จจริงที่ตรวจสอบแล้ว ควรเช็กราคาและความพร้อมจำหน่ายด้วยตัวเองก่อนจ่ายเงิน",
     "bw_verified_title": "ตรวจสอบบนเว็บวันนี้",
     "bw_verified_source": "แหล่งที่มา:",
     "bw_sec_more": "เพิ่มเติมเกี่ยวกับการซื้อครั้งนี้",
@@ -3798,6 +3810,7 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "vi": {
+    "bw_verified_none": "Hôm nay không xác minh được điều gì trên web về sản phẩm này, nên mọi thứ bên dưới là suy luận chứ không phải dữ kiện đã kiểm chứng. Bạn nên tự xác nhận giá và tình trạng bán trước khi trả tiền.",
     "bw_verified_title": "Đã kiểm tra trên web hôm nay",
     "bw_verified_source": "Nguồn:",
     "bw_sec_more": "Thêm về lần mua này",

@@ -636,11 +636,13 @@ const BuyWise = ({ tool }) => {
     if (r.interpreted_as) lines.push(`${t('bw_read_as')} ${r.interpreted_as}`);
     lines.push('');
     if (r.verdict) lines.push(`${r.verdict_emoji || '🧠'} ${t('bw_copy_verdict')} ${r.verdict}`, r.verdict_summary || '', '');
+    lines.push(t('bw_verified_title'));
     if (r.verified_facts?.length) {
-      lines.push(t('bw_verified_title'));
       r.verified_facts.forEach(f => lines.push('  • ' + f.detail + (f.source ? ` (${t('bw_verified_source')} ${f.source})` : '')));
-      lines.push('');
+    } else {
+      lines.push('  ' + t('bw_verified_none'));
     }
+    lines.push('');
     if (r.verify_before_buying?.length) { lines.push(t('bw_verify_title')); r.verify_before_buying.forEach(v => lines.push('  • ' + v)); lines.push(''); }
     if (r.fair_price) lines.push(`💲 ${t('bw_copy_price_check')} ${r.fair_price.verdict_badge}`, r.fair_price.analysis, r.fair_price.typical_range ? `${t('bw_copy_range')} ${r.fair_price.typical_range}` : '', '');
     if (r.timing) lines.push(`📅 ${t('bw_copy_timing')} ${r.timing.verdict_badge}`, r.timing.analysis, r.timing.next_sale ? `${t('bw_copy_next_sale')} ${r.timing.next_sale}` : '', '');
@@ -1044,9 +1046,9 @@ const BuyWise = ({ tool }) => {
           {t('bw_results_disclaimer')}
         </p>
 
-        {r.verified_facts?.length > 0 && (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('bw_verified_title')}</p>
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('bw_verified_title')}</p>
+          {r.verified_facts?.length > 0 ? (
             <ul className="space-y-2">
               {r.verified_facts.map((f, i) => (
                 <li key={i} className={`text-xs ${c.textSecondary}`}>
@@ -1055,8 +1057,10 @@ const BuyWise = ({ tool }) => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          ) : (
+            <p className={`text-xs ${c.textMuted}`}>{t('bw_verified_none')}</p>
+          )}
+        </div>
 
         {r.verdict && (
           <div className={`${c.verdict} border-2 rounded-xl p-5`}>
