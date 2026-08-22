@@ -150,7 +150,8 @@ Generate 5-10 tasks, ordered by priority. Be specific to the situation and the b
         return res.status(400).json({ error: 'Describe the problem in a few words' });
       }
 
-      const routeUserPrompt = `AVAILABLE PROBLEM CATEGORIES: flat (flat tire / puncture), chain (dropped chain / chain issues), brakes (brake problems), shifting (shifting / derailleur), headset (wobbly handlebars / steering), noise (strange noises), pedals (pedal/crank/bottom bracket), wheel (wheel problems / spokes / hub), tubeless (tubeless tire setup issues), suspension (fork/shock issues)
+      const routeUserPrompt = `AVAILABLE PROBLEM CATEGORIES — return the id EXACTLY as written here, in English, never translated and never a near-miss. Anything else is a dead end for the rider:
+flat (flat tire / puncture), chain (dropped chain / chain issues), brakes (brake problems), shifting (shifting / derailleur), headset (wobbly handlebars / steering), noise (strange noises), pedal_crank (pedal, crank or bottom bracket), wheel (wheel, spokes or hub), tire_seat (tire will not seat or keeps burping), custom (anything none of the above covers, including suspension, dropper posts and electrical)
 
 RIDER SAYS: "${symptom.trim()}"
 ${bikeProfile ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires` : ''}
@@ -161,9 +162,9 @@ ACCURACY RULES: Never assert model-specific component standards (bottom-bracket 
 
 Return ONLY valid JSON:
 {
-  "recommended_category": "category_id from list above — one sentence",
+  "recommended_category": "One id copied verbatim from the list above. Not a description, not a translation, not a plural. Use custom when nothing fits rather than inventing a category.",
   "reasoning": "Where their description points first, and that it is a starting point rather than a finding — 'What you are describing points first toward the drivetrain. Several things cause skipping under load, so we will narrow it down before recommending a fix.' Calm and plain. Never a percentage, a score, a likelihood or any number: nothing here is measured, and a figure would say otherwise. Never 'strongly indicates', 'clearly points to' or 'almost certainly'. — 1-2 sentences",
-  "alternative_categories": ["second_best", "third_best"],
+  "alternative_categories": ["Second-best id, copied verbatim from the list", "Third-best id, copied verbatim from the list"],
   "suggested_first_question": "A good diagnostic question to ask the rider — one sentence"
 }`;
 
@@ -176,6 +177,22 @@ Return ONLY valid JSON:
       if (!parsed.recommended_category && !parsed.title && !parsed.tasks) {
         return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
       }
+      // Must match PROBLEMS in src/tools/BikeMedic.js. The frontend looks this
+      // id up to open the guided path and does nothing at all when it misses,
+      // so an id the UI cannot act on never leaves here.
+      const CATEGORY_IDS = ['flat', 'chain', 'brakes', 'shifting', 'headset', 'noise', 'pedal_crank', 'wheel', 'tire_seat', 'custom'];
+      const ALIASES = { pedals: 'pedal_crank', pedal: 'pedal_crank', crank: 'pedal_crank', bottom_bracket: 'pedal_crank',
+                        tubeless: 'tire_seat', tire: 'tire_seat', tyre_seat: 'tire_seat', bead: 'tire_seat',
+                        wheels: 'wheel', spokes: 'wheel', hub: 'wheel', brake: 'brakes', gears: 'shifting',
+                        drivetrain: 'shifting', derailleur: 'shifting', steering: 'headset', noises: 'noise',
+                        puncture: 'flat', flat_tire: 'flat', suspension: 'custom', other: 'custom' };
+      const canon = (v) => {
+        const k = String(v || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+        return CATEGORY_IDS.includes(k) ? k : (ALIASES[k] || null);
+      };
+      parsed.recommended_category = canon(parsed.recommended_category) || 'custom';
+      parsed.alternative_categories = (parsed.alternative_categories || [])
+        .map(canon).filter(Boolean).filter(id => id !== parsed.recommended_category);
       return res.json(parsed);
     }
 

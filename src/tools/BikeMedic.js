@@ -2369,10 +2369,21 @@ const BikeMedic = ({ tool }) => {
                         <span className={`text-sm font-bold ${c.text}`}>{t('bmd_ai_recommendation')}</span>
                       </div>
                       <p className={`text-sm ${c.textSecondary} mb-3`}>{aiRoute.reasoning}</p>
-                      <button onClick={() => { const p = PROBLEMS.find(x => x.id === aiRoute.recommended_category); if (p) { setShowInterpreter(false); setAiRoute(null); startProblem(aiRoute.recommended_category); } }}
-                        className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>
-                        {t('bmd_start_category', { label: PROBLEMS.find(p => p.id === aiRoute.recommended_category) ? t(PROBLEMS.find(p => p.id === aiRoute.recommended_category).labelKey) : aiRoute.recommended_category })}
-                      </button>
+                      {/* Only offered when the category actually resolves. It
+                          used to render regardless, labelled with the raw id
+                          ("Start: pedals") and wired to a handler that checked
+                          the same lookup and quietly gave up — a button that
+                          announced the miss and then did nothing about it. */}
+                      {(() => {
+                        const rec = PROBLEMS.find(x => x.id === aiRoute.recommended_category);
+                        if (!rec) return null;
+                        return (
+                          <button onClick={() => { setShowInterpreter(false); setAiRoute(null); startProblem(rec.id); }}
+                            className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>
+                            {t('bmd_start_category', { label: t(rec.labelKey) })}
+                          </button>
+                        );
+                      })()}
                       {aiRoute.alternative_categories?.length > 0 && (
                         <div className="mt-2 flex gap-2 flex-wrap">
                           <span className={`text-xs ${c.textMuteded}`}>{t('bmd_also')}</span>
