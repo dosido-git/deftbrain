@@ -84,3 +84,40 @@ which the dynamic-href pattern does not match. The backend already drops any id
 not in the catalog, so the ternary was belt-and-braces; it is now
 `href={\`/${rec.id}\`}` and the rule can see what is actually there.
 
+### Over-interpretation (the second failure mode)
+
+The landlord case exposed over-RECOMMENDATION. The "huge project, every time I
+try to begin I get paralyzed" case exposed over-INTERPRETATION. Those are the
+two failure modes this prompt has to hold off, and the tool lives between them:
+**the visitor supplies the situation, Tool Finder supplies the direction.**
+
+`understanding` now restates only what they said or what follows directly, two
+sentences at most:
+
+- **A metaphor is not a diagnosis.** "Paralysed" means they cannot start; it does
+  not mean "something in your brain freezes when you try to begin".
+- **Never rule a cause OUT.** It asserted "not because you don't know what to do"
+  and then its own clarification asked whether they get stuck choosing where to
+  begin — contradicting itself inside one answer. That self-check is the useful
+  test: if the clarification could disprove the understanding, the understanding
+  overreached.
+- **Never judge whether their resources suffice.** "A week is enough time, but
+  only if you can get unstuck today" is invented and urgent at once; the project
+  might take two hours or three months.
+
+`why` describes what the tool changes about the TASK, not about them. No "your
+brain stops seeing it", no "resistance collapses", no "it removes the decision
+paralysis". Possible effects say CAN or MAY.
+
+`clarification` is deliberately kept AFTER the recommendation — asking first
+would rebuild the chatbot interrogation this page exists to avoid. Its options
+must be observable situations ("find yourself reorganising instead of starting")
+rather than internal states to choose between ("mind goes blank / anxiety kicks
+in"). Label: "One thing I'd want to know" — "Want better results?" read as prompt
+optimisation.
+
+**Voice, settled.** The SITE says *we* (the catalog description: "We'll find the
+best match"). The guide currently helping you says *I* (the tagline and the whole
+output: "I hear you", "One thing I'd want to know"). The tagline is the tool's own
+voice wherever it appears, so the catalog field matches it.
+

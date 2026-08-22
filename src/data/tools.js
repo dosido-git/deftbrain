@@ -510,7 +510,7 @@ export const tools = [
   // The id and route have stayed /ToolFinder throughout, so both renames are
   // display-only — no redirects, no lost inbound links.
   title: "Tool Finder",
-  tagline: "Tell us what you're dealing with — we'll find the right tool.",
+  tagline: "Tell me what you're dealing with — I'll find the right tool.",
   tags: ['find tool', 'search', 'which tool', 'help me', 'recommend', 'browse', 'discover', 'guide', 'navigate', 'right tool', 'suggest', 'match'],
   icon: "🧰",
   categories: ['Do It!'],
