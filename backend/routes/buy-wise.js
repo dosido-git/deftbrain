@@ -17,7 +17,14 @@ CONSISTENT NUMBERS: Anchor on ONE canonical figure for the headline savings/pric
 
 CHALLENGE THE PREMISE OUT LOUD: If your recommendation contradicts a constraint the user explicitly stated (model year, spec, brand, budget, timing), say so plainly at the start of the verdict — name the constraint and why you're pushing back — instead of quietly substituting a different option.
 
-ESTIMATES ARE ESTIMATES: Prices, discounts, and sale dates are your best estimates from general market knowledge, not live data. Phrase specific dollar figures as approximate (ranges or "~"), and never imply real-time pricing certainty.
+WHAT YOU HAVE, AND WHAT YOU DO NOT:
+You have two things: what this buyer typed, and general knowledge of how this kind of product works, wears out and gets sold. You have NOT looked anything up — no current price, no stock, no live promotion, nothing a retailer is charging this week. Nothing you write may imply otherwise.
+
+ANCHOR ON WHAT THEY GAVE YOU. When they supply a price, that price is the fact in this conversation and everything orbits it: judge THAT number, say what would make it good or bad, and name what they should check to find out. "Based on the price you were quoted, this looks reasonable but not obviously a bargain" is honest and useful. "These regularly land closer to 500-550 shipped" is a market report you did not run.
+
+HOW TO SAY THINGS YOU DO NOT KNOW. Never state a current price, a current discount, a dated sale or a named seller's offer as fact. Say what is worth checking and what a good answer would look like — they can check in a minute, and knowing WHAT to check is the part they were missing. Durable patterns are fine when named as patterns: this category is usually discounted around the end of the model year; refurbished stock for this type usually runs well below new. A pattern is not a price, so do not dress it as one.
+
+WHAT YOU CAN SAY PLAINLY. How the product type works and fails. What it costs to keep running. What owners regret. What to inspect when buying used. What to ask when negotiating. Whether they sound like they need it. None of that needs live data, and it is most of this tool's value — do not hedge it into mush to match the parts that must be hedged.
 
 NO INVENTED LIMITS: If the user did not give a price, budget, or ceiling, do NOT invent one. Present figures as general market ranges — never as "your budget," "your limit," or a number to stay under. Do not build the verdict or negotiation around a spending cap the user never stated.
 
@@ -64,6 +71,7 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
   "verdict": "One bold sentence: the overall recommendation — one sentence",
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
+  "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
   "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
   "interpreted_as": "The exact product this analysis is about, so the user can spot a misread at a glance: brand plus the specific product type, plus the detail that distinguishes it from a similarly-named product. If the name was ambiguous, name the reading you rejected too. — one short sentence"${isImpulse ? `,
 
@@ -85,15 +93,15 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
 
   "fair_price": {
     "verdict_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
-    "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}. — 1-2 sentences",
-    "typical_range": "${sym}X - ${sym}Y for [condition: new/used/refurb]",
-    "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
+    "analysis": "Judge the price THEY gave against what this kind of product involves — what drives cost in the category, what they get for it, what would make it good or bad value. If they gave no price, say what to expect to pay and be explicit that it is a general expectation, not a current quote. Never report what these sell for today as though you checked. — 1-2 sentences",
+    "typical_range": "A rough expected range for this kind of product in ${sym}, understood as a general expectation rather than a current market reading. null if you would be guessing at the category. — short",
+    "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
   },
 
   "timing": ${urgency === 'today' ? 'null' : `{
     "verdict_badge": "BUY NOW | WAIT | GOOD TIME",
     "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
-    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
+    "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
 
@@ -270,6 +278,7 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
   "verdict": "One bold sentence: the overall recommendation — one sentence",
   "verdict_emoji": "Single emoji summarizing the verdict (👍 🟡 🛑 ⏳ ✅ etc.) (one emoji)",
   "verdict_summary": "2-3 sentences expanding on the verdict with the key reasoning",
+  "verify_before_buying": ["Two to four things to check before paying, each one a specific question with the answer that would change the decision — 'ask whether the warranty transfers to a second owner; if it does not, the used saving is smaller than it looks'. This is where anything you could not look up belongs: current price, stock, live promotions, a seller's terms. Turn each one into something they can settle in a minute. Never a vague 'do your research'."],
   "product_category": "detected category: tech | kitchen | fashion | vehicle | furniture | subscription | fitness | beauty | home | outdoor | gaming | tools | office | baby | pet | other",
   "interpreted_as": "The exact product this analysis is about, so the user can spot a misread at a glance: brand plus the specific product type, plus the detail that distinguishes it from a similarly-named product. If the name was ambiguous, name the reading you rejected too. — one short sentence",
   "fair_price_badge": "GOOD PRICE | FAIR PRICE | HIGH | OVERPAYING | CHECK",
@@ -328,9 +337,9 @@ ${schema}`;
   "gift_analysis": null,`}
   "fair_price": {
     "verdict_badge": "${decision.fair_price_badge}",
-    "analysis": "Is this a good price? What do these typically sell for? Where are they cheapest? Be specific with price ranges in ${sym}. — 1-2 sentences",
-    "typical_range": "${sym}X - ${sym}Y for [condition: new/used/refurb]",
-    "where_to_find_cheaper": "Specific platform or strategy to get a better price. Not 'shop around' — name the place. — one sentence"
+    "analysis": "Judge the price THEY gave against what this kind of product involves — what drives cost in the category, what they get for it, what would make it good or bad value. If they gave no price, say what to expect to pay and be explicit that it is a general expectation, not a current quote. Never report what these sell for today as though you checked. — 1-2 sentences",
+    "typical_range": "A rough expected range for this kind of product in ${sym}, understood as a general expectation rather than a current market reading. null if you would be guessing at the category. — short",
+    "where_to_find_cheaper": "The route most likely to beat this price for THIS kind of product, and how to tell whether it did — the KIND of place and what a good price there would look like (manufacturer refurbished stock, open-box at a large retailer, the end-of-model-year window, an enthusiast marketplace). Never claim what any seller is charging right now. — one sentence"
   },${compProducts.length > 0 ? `
   "comparison": {
     "winner": "Just the winning product name, or the words It depends",
@@ -397,7 +406,7 @@ ${schema}`;
   "timing": ${timingToday ? 'null' : `{
     "verdict_badge": "${decision.timing_badge}",
     "analysis": "Is now a good time to buy this? What's the product release cycle? Any upcoming sales? — 1-2 sentences",
-    "next_sale": "Specific sale event and approximate date. null if nothing upcoming. — one sentence",
+    "next_sale": "A recurring, durable pattern only — the sale season this category actually follows, said as a pattern and never as a dated promise. null when you know of no reliable pattern, which is the honest answer more often than not. Never invent a date, never attach a discount figure. — one sentence",
     "price_cycle_note": "Does this product have a known price cycle? — one sentence"
   }`},
   "warranty_returns": {

@@ -636,6 +636,7 @@ const BuyWise = ({ tool }) => {
     if (r.interpreted_as) lines.push(`${t('bw_read_as')} ${r.interpreted_as}`);
     lines.push('');
     if (r.verdict) lines.push(`${r.verdict_emoji || '🧠'} ${t('bw_copy_verdict')} ${r.verdict}`, r.verdict_summary || '', '');
+    if (r.verify_before_buying?.length) { lines.push(t('bw_verify_title')); r.verify_before_buying.forEach(v => lines.push('  • ' + v)); lines.push(''); }
     if (r.fair_price) lines.push(`💲 ${t('bw_copy_price_check')} ${r.fair_price.verdict_badge}`, r.fair_price.analysis, r.fair_price.typical_range ? `${t('bw_copy_range')} ${r.fair_price.typical_range}` : '', '');
     if (r.timing) lines.push(`📅 ${t('bw_copy_timing')} ${r.timing.verdict_badge}`, r.timing.analysis, r.timing.next_sale ? `${t('bw_copy_next_sale')} ${r.timing.next_sale}` : '', '');
     if (r.total_cost) {
@@ -1034,6 +1035,10 @@ const BuyWise = ({ tool }) => {
         })()}
 
         {/* Verdict */}
+        <p className={`text-[11px] ${c.textMuted} px-1`}>
+          {t('bw_results_disclaimer')}
+        </p>
+
         {r.verdict && (
           <div className={`${c.verdict} border-2 rounded-xl p-5`}>
             <div className="flex items-start gap-3">
@@ -1043,6 +1048,19 @@ const BuyWise = ({ tool }) => {
                 <p className={`text-sm ${c.textSecondary}`}>{r.verdict_summary}</p>
               </div>
             </div>
+          </div>
+        )}
+
+        {r.verify_before_buying?.length > 0 && (
+          <div className={`${c.card} border-2 ${c.border} rounded-xl p-5`}>
+            <h3 className={`text-sm font-bold ${c.text} mb-2`}>{t('bw_verify_title')}</h3>
+            <ul className="space-y-1.5">
+              {r.verify_before_buying.map((v, i) => (
+                <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}>
+                  <span aria-hidden="true" className={c.textMuted}>•</span><span>{v}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -1591,10 +1609,6 @@ const BuyWise = ({ tool }) => {
           </p>
         </div>
 
-        {/* Disclaimer */}
-        <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
-          {t('bw_results_disclaimer')}
-        </p>
       </div>
     );
   };
