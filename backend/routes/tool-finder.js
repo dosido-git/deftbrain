@@ -15,8 +15,18 @@ function catalogToString() {
     const blurb = [t.tagline, t.description].filter(Boolean)
       .filter((s, i, arr) => arr.indexOf(s) === i)
       .join(' — ') || 'No description';
-    const takes = t.give ? ` TAKES: ${t.give}` : '';
-    return `${t.icon || '🔧'} ${t.title} (id ${t.id}) [${t.category || 'Uncategorized'}]: ${blurb}${takes}`;
+    // A tool with a toolFinder block gets the routing lines; one without falls
+    // back to primer.give alone, so an unfinished rollout still works.
+    const lines = [`${t.icon || '🔧'} ${t.title} (id ${t.id}) [${t.category || 'Uncategorized'}]: ${blurb}`];
+    if (t.primaryIntent) lines.push(`   FOR: ${t.primaryIntent}`);
+    if (t.problems) lines.push(`   PROBLEMS: ${t.problems.join(' | ')}`);
+    if (t.capabilities) lines.push(`   DOES: ${t.capabilities.join(' | ')}`);
+    const accepts = t.accepts ? t.accepts.join(' | ') : t.give;
+    if (accepts) lines.push(`   TAKES: ${accepts}`);
+    if (t.notFor) lines.push(`   NOT FOR: ${t.notFor.join(' | ')}`);
+    if (t.whenToRecommend) lines.push(`   RECOMMEND WHEN: ${t.whenToRecommend}`);
+    if (t.whenNotToRecommend) lines.push(`   DO NOT RECOMMEND WHEN: ${t.whenNotToRecommend}`);
+    return lines.join('\n');
   }).join('\n');
 }
 
@@ -50,9 +60,17 @@ YOUR APPROACH:
   YES: Jargon Assassin (TAKES: the document, its type). A bill is a document, and its entry names medical documents specifically.
   If you find yourself widening a tool's stated inputs so the recommendation works, you have picked the wrong tool.
 
+3c-iii. NOT FOR and DO NOT RECOMMEND WHEN are absolute. A tool listing something under NOT FOR is disqualified for that thing, no matter how well the rest of its entry reads. These lines exist because the prose could not say them. They are scoped to their own tool and nothing else: one tool saying NOT FOR: medical bills means that tool does not handle them, NOT that the catalog has no tool for them. Often the line is there precisely because a different tool owns that job — go and find it.
+3c-iv. Where a tool has FOR / PROBLEMS / DOES / TAKES lines, judge it on those and treat the blurb above them as flavour. The blurb is written to attract; those lines are written to route.
+3c-iv-b. The catalog holds two kinds of entry. An entry with FOR / PROBLEMS / DOES lines has been checked against what the tool actually does. An entry with only a blurb has not — it is a sales line, and a sales line always sounds broader than the tool is. When both kinds look like a fit, take the checked one. Only prefer a blurb-only tool when it is plainly closer to the problem, not merely more flattering about it.
+3c-v. CHECK THE DISQUALIFIERS LAST, ON EVERY TOOL YOU ARE ABOUT TO NAME. Read its NOT FOR and DO NOT RECOMMEND WHEN against this person's actual situation. If either one matches, drop the tool — even if it was your best candidate. But match it against what this person MAINLY needs, not against every word in their message: a disqualifier fires when it rules out the job they came to do, not when it happens to brush one detail. A hospital bill is a bill; that its charges are medical does not make it a clinical question.
+3c-vi. THE CONCESSION IS THE TELL. If the "why" you are writing contains a sentence admitting the tool will not do the thing this person needs — "it won't recover what's already gone", "it can't help with the part you're asking about", "this is for before, not after" — then a disqualifier just fired and you wrote an excuse instead of dropping the tool. Delete the recommendation. A "why" never concedes; if it needs to, the tool was wrong.
+3c-vii. A real limit is stated as a limit, not smoothed over. If the person has a photo and the tool takes typed text, say they will need to type it out — do not write around it as though the tool met them where they are.
+
 3d. TAKES IS BINDING AND BEATS THE PROSE. A description is marketing and generalises; TAKES is the input contract. Where they disagree, TAKES wins — and where the thing in front of the visitor is not on the TAKES list, that is the wrong tool, however well the description reads. "what_to_do" is built ONLY from what TAKES says the tool accepts. If TAKES says visit notes, do not write "paste your bill". If a tool has no TAKES line, keep it general — describe what to tell it, never what to upload.
 3e. Use the tool's PUBLIC NAME exactly as written, every time, in every field. "Doctor Visit Translator", never "DoctorVisitTranslator". The id in the catalog line exists so you can return it in the "id" field for the link; it is not a name and must never appear in prose.
 4. Never characterise what a tool will tell them about the law, their rights, or their legal position. Say what it helps them work out; let the tool set its own bounds.
+4b. NEVER return an empty "recommendations" with an empty "no_perfect_fit". Those two together are a blank page — the one answer that helps nobody. If you dropped everything, you owe an explanation: fill "no_perfect_fit".
 5. Be honest: if NO tool actually addresses the user's problem (a true category gap — e.g. they need appliance repair and there's no appliance tool in the catalog), do NOT force a wrong-domain tool into "recommendations" just to have something to show. Leave "recommendations" empty and explain the gap in "no_perfect_fit" instead — name the closest tool there, in prose, only as a last-resort mention, never presented as "your best tool." Reserve "recommendations" for tools that genuinely help, even partially (e.g. a decision-paralysis tool for the stress of a broken appliance is a real, if partial, fit and belongs in "recommendations" normally).
 6. Never recommend more than 5 tools — quality over quantity.
 7. Match the user's energy. If they're stressed, be calm and direct. If they're curious, be enthusiastic.
@@ -154,17 +172,31 @@ Return ONLY valid JSON:
     // Validate that recommended IDs actually exist, and never let Tool Finder
     // recommend itself (excluded from the catalog above, but a defensive
     // second check here since this is the single worst possible result).
+    // The prose rules insist on the public name in every visible field, and the
+    // model sometimes carries that into "id" too — "Bill Rescue" instead of
+    // "BillRescue". Dropping those silently turned a correct recommendation into
+    // a blank page, intermittently, depending on phrasing. Repair by title
+    // before rejecting; only a genuinely invented tool is dropped.
+    const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     parsed.recommendations = parsed.recommendations.filter(rec => {
+      if (!TOOL_CATALOG.some(t => t.id === rec.id)) {
+        const match = TOOL_CATALOG.find(t => norm(t.id) === norm(rec.id) || norm(t.title) === norm(rec.id));
+        if (match) rec.id = match.id;
+        else console.warn(`ToolFinder: AI recommended non-existent tool "${rec.id}"`);
+      }
       if (rec.id === 'ToolFinder') return false;
-      const exists = TOOL_CATALOG.some(t => t.id === rec.id);
-      if (!exists) console.warn(`ToolFinder: AI recommended non-existent tool "${rec.id}"`);
-      return exists;
+      return TOOL_CATALOG.some(t => t.id === rec.id);
     });
 
     // A nullable field the model sometimes omits and sometimes emits as null is
     // a coin-flip for anything comparing the shape of the response — including
     // the golden. Always present, null when there is nothing to say.
     if (!('no_perfect_fit' in parsed)) parsed.no_perfect_fit = null;
+    // A dropped-everything answer with nothing said about it renders as a blank
+    // page. Better to say plainly that nothing fit than to show a void.
+    if (!parsed.recommendations?.length && !parsed.no_perfect_fit) {
+      parsed.no_perfect_fit = "Nothing in the catalog is a clean fit for this one. Try describing the situation a different way — what you want to happen, or what's in front of you right now — and we'll look again.";
+    }
 
     // At most two: one place to start, and at most one conditional alternative.
     if (parsed.recommendations.length > 2) parsed.recommendations = parsed.recommendations.slice(0, 2);
