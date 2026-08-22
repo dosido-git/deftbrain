@@ -1138,6 +1138,16 @@ const BrainRoulette = ({ tool }) => {
   // ══════════════════════════════════════════
   // MAIN RENDER
   // ══════════════════════════════════════════
+  // Clears the whole session, not just the results it produced. The button
+  // appears when there is a result OR interests are selected, so clearing only
+  // the results left the chips lit, the topic typed and the button still
+  // sitting there — pressing it did nothing you could see. On any tab but Spin
+  // it did even less: the debate, journey, digest and flashback views all
+  // survived it.
+  //
+  // What it must NOT touch: seen topics, saved discoveries, session history,
+  // custom interests, the flashback schedule, the streak. Those are the
+  // visitor's record of what they have explored, not this session's setup.
   const handleReset = () => {
     setError('');
     setResult(null);
@@ -1145,8 +1155,22 @@ const BrainRoulette = ({ tool }) => {
     setChainResults([]);
     setExtractedConcepts(null);
     setDebateResult(null);
+    setDebateRevealed(false);
+    setDebateGuess(null);
     setJourney(null);
     setJourneySteps([]);
+    setJourneyCurrentStep(0);
+    setJourneyTheme('');
+    setDigest(null);
+    setFlashbackCard(null);
+    setFlashbackFlipped(false);
+    setSelectedInterests([]);
+    setCustomTopic('');
+    setNewInterestInput('');
+    setShowAddInterest(false);
+    setDepth('medium');
+    setAudienceLevel('curious');
+    setActiveTab('spin');
   };
 
   // ── Assign refs every render ──
