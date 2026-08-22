@@ -232,3 +232,39 @@ needed their own NO/YES:
 sometimes emitted it as null and sometimes omitted the key, which is a coin-flip
 for anything comparing response shape. The route now always emits it.
 
+### The three final rules (frozen)
+
+1. **`understanding` never rules a cause OUT.** It may say what they told you is
+   happening; it may not say what is not causing it. "The obstacle isn't unclear
+   requirements or missing skills" is an elimination the user never made — a
+   diagnosis in a summary's clothes. Boring is correct here: the intelligence
+   belongs in the recommendation, not in an elaborate restatement.
+2. **`why` is shaped, not vocabulary-filtered.** ONE sentence of what the tool
+   does, plus at most one clause tying it to what they wrote. Nothing after that.
+   Banning phrases only moved the problem — "removes the decision-making burden"
+   became "when paralysis happens at the starting line, it's often because…",
+   then "you'll walk in grounded instead of hoping it goes well". All the same
+   fault: **the sentence that comes after the useful one.** So the rule bans the
+   sentence, not the words.
+3. **Exactly ONE recommendation by default.** A second only when their own
+   description contains a second distinct need the first tool does not address —
+   and the test is to name that need by quoting the clause it lives in. No
+   clause, no second tool. "Merely because it might also be useful" is the trap,
+   and hundreds of tools are also-useful for any problem. This is what put
+   Pre-Mortem next to Task Avalanche Breaker for somebody who said one thing.
+
+**Why one is now safe:** the correction box. Before it existed, offering two or
+three was a hedge against being wrong. With it, a single confident answer costs
+nothing — if it misses, they say so in their own words and it tries again. The
+refinement loop should make Tool Finder MORE willing to give one recommendation,
+not less.
+
+`what_to_do` carries forward details they already gave (a deadline they mentioned
+belongs in it) and adds no qualifiers they did not ask for — do not tell somebody
+to begin "without planning" when the tool they are opening is a planning tool.
+
+**FROZEN.** Architecture, visual hierarchy and the refinement/fallback model are
+settled. Further work belongs in `src/data/tools.js`: Tool Finder reads tagline +
+description for every candidate, so the accuracy of its recommendations is capped
+by the accuracy of those entries.
+
