@@ -292,12 +292,13 @@ const ToolFinder = ({ tool }) => {
             </div>
           )} {/* Demand capture — the AI just confirmed no tool fits */} {r.no_perfect_fit && (
             <IdeaPrompt source="toolfinder-nofit" query={problem} />
-          )} {/* ── NOT QUITE IT ── */} {!r.no_perfect_fit && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              {!refineOpen ? (
-                <button onClick={() => setRefineOpen(true)} className={`text-sm font-semibold ${linkStyle} underline`}>
-                  {t('tf_not_what_you_meant')}
-                </button>
-              ) : (<div className="space-y-2">
+          )} {/* ── NOT QUITE IT ── */} {!r.no_perfect_fit && (
+            !refineOpen ? (
+              <button onClick={() => setRefineOpen(true)} className={`flex items-center gap-1.5 text-sm font-semibold ${linkStyle}`}>
+                {t('tf_not_what_you_meant')} <Caret open={false} />
+              </button>
+            ) : (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+                <div className="space-y-2">
                   <p className={`text-xs font-bold ${c.textMuted}`}>{t('tf_whats_different')}</p>
                   {r.clarification && <p className={`text-xs ${c.textSecondary}`}>{r.clarification}</p>}
                   <textarea
@@ -310,7 +311,8 @@ const ToolFinder = ({ tool }) => {
                     {loading ? t('tf_searching') : t('tf_find_better')}
                   </button>
                 </div>
-              )} </div>
+              </div>
+            )
           )} {/* ── BROWSE ALL ── */} <p className={`text-xs text-center ${c.textMuted}`}>{t('tf_ai_disclaimer')}</p>
           {/* Demand capture, and now unmistakably its own path: this one means
               DeftBrain has nothing, not that the first guess was poor. */}

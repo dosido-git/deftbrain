@@ -157,3 +157,29 @@ instead of as passive advice with nowhere to answer.
 and makes a correction feel like the visitor arguing; "I'd start with" is a
 recommendation from available information and leaves room to say no.
 
+### Final pass before freezing
+
+- **Refinement collapsed to a bare line** — "Not quite it? Tell me what's
+  different ▾" (shared Caret), no card until it is opened. A full grey card under
+  the recommendation reads as "here is your answer, now answer another question";
+  a line reads as "if that is not right, here is how to correct me".
+- **Universal placeholder.** It said "e.g. I know exactly what to do - breaking
+  it down isn't the problem", which was written for one test and read as leftover
+  on every other problem. Now "Tell me what's different or what I missed…", which
+  fits any correction.
+- **`clarification` must be able to change WHICH TOOL.** It was asking "do you
+  have the bill in front of you now" — operational, useful only once inside the
+  recommended tool. The rule names both halves of that distinction, and forbids
+  asking them to choose between two things they already said (the bill case both
+  "seems way too high" AND "I don't understand the charges").
+- **Describe only what the catalog entry claims.** Do not round a capability up
+  to make a match sound better, and do not imply authority a tool does not have —
+  a plain-language translator helps them SEE what to question, it does not rule
+  on whether a charge is wrong.
+- **Prefer their words to a paraphrase.** They wrote "the total seems way too
+  high"; do not render it as "the total feels wrong".
+
+**Checked, not assumed:** "danger scoring" was NOT an embellishment — it is in
+JargonAssassin's own catalog description, along with red flags and Red-Line's
+negotiation edits. The rule is still worth having, but that instance was accurate.
+
