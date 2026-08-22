@@ -8,7 +8,7 @@ export const buyWise = {
   "en": {
     "bw_verify_title": "Check these before you pay",
     "bw_title": "Buy Wise",
-    "bw_tagline": "The research you'd do if you had an hour — done in seconds",
+    "bw_tagline": "Make the purchase with your eyes open.",
     "bw_nav_research": "🔍 Research",
     "bw_nav_results": "Results",
     "bw_nav_quote": "📋 Quote Check",
@@ -321,7 +321,7 @@ export const buyWise = {
   "es": {
     "bw_verify_title": "Comprueba esto antes de pagar",
     "bw_title": "Buy Wise",
-    "bw_tagline": "La investigación que harías si tuvieras una hora — en segundos",
+    "bw_tagline": "Compra con los ojos bien abiertos.",
     "bw_nav_research": "🔍 Investigar",
     "bw_nav_results": "Resultados",
     "bw_nav_quote": "📋 Revisar presupuesto",
@@ -634,7 +634,7 @@ export const buyWise = {
   "zh": {
     "bw_verify_title": "付款前先确认这几点",
     "bw_title": "Buy Wise",
-    "bw_tagline": "本该花一小时做的功课——几秒钟搞定",
+    "bw_tagline": "睁大眼睛再下单。",
     "bw_nav_research": "🔍 研究",
     "bw_nav_results": "结果",
     "bw_nav_quote": "📋 报价核查",
@@ -947,7 +947,7 @@ export const buyWise = {
   "hi": {
     "bw_verify_title": "भुगतान से पहले ये जाँच लें",
     "bw_title": "Buy Wise",
-    "bw_tagline": "एक घंटे में जो रिसर्च करते, वह सेकंडों में",
+    "bw_tagline": "खरीदिए, लेकिन आँखें खुली रखकर।",
     "bw_nav_research": "🔍 रिसर्च",
     "bw_nav_results": "नतीजे",
     "bw_nav_quote": "📋 कोटेशन जाँच",
@@ -1260,7 +1260,7 @@ export const buyWise = {
   "ar": {
     "bw_verify_title": "تحقّق من هذا قبل الدفع",
     "bw_title": "Buy Wise",
-    "bw_tagline": "البحث الذي قد تجريه لو كان لديك ساعة — يتم في ثوانٍ",
+    "bw_tagline": "اشترِ وعينك مفتوحة.",
     "bw_nav_research": "🔍 بحث",
     "bw_nav_results": "النتائج",
     "bw_nav_quote": "📋 فحص عرض السعر",
@@ -1573,7 +1573,7 @@ export const buyWise = {
   "pt": {
     "bw_verify_title": "Confira isto antes de pagar",
     "bw_title": "Buy Wise",
-    "bw_tagline": "A pesquisa que você faria se tivesse uma hora — feita em segundos",
+    "bw_tagline": "Compre de olhos abertos.",
     "bw_nav_research": "🔍 Pesquisar",
     "bw_nav_results": "Resultados",
     "bw_nav_quote": "📋 Verificar orçamento",
@@ -1886,7 +1886,7 @@ export const buyWise = {
   "fr": {
     "bw_verify_title": "À vérifier avant de payer",
     "bw_title": "Buy Wise",
-    "bw_tagline": "Les recherches que vous feriez en une heure — en quelques secondes",
+    "bw_tagline": "Achetez en toute lucidité.",
     "bw_nav_research": "🔍 Rechercher",
     "bw_nav_results": "Résultats",
     "bw_nav_quote": "📋 Vérifier un devis",
@@ -2199,7 +2199,7 @@ export const buyWise = {
   "de": {
     "bw_verify_title": "Vor dem Bezahlen prüfen",
     "bw_title": "Buy Wise",
-    "bw_tagline": "Die Recherche, die du in einer Stunde machen würdest — in Sekunden erledigt",
+    "bw_tagline": "Kaufen Sie mit offenen Augen.",
     "bw_nav_research": "🔍 Recherche",
     "bw_nav_results": "Ergebnisse",
     "bw_nav_quote": "📋 Angebot prüfen",
@@ -2512,7 +2512,7 @@ export const buyWise = {
   "ja": {
     "bw_verify_title": "支払う前に確認したいこと",
     "bw_title": "Buy Wise",
-    "bw_tagline": "1時間かけて行う下調べを、数秒で",
+    "bw_tagline": "納得したうえで買う。",
     "bw_nav_research": "🔍 リサーチ",
     "bw_nav_results": "結果",
     "bw_nav_quote": "📋 見積もり確認",
@@ -2825,7 +2825,7 @@ export const buyWise = {
   "ko": {
     "bw_verify_title": "결제 전에 확인할 것",
     "bw_title": "Buy Wise",
-    "bw_tagline": "한 시간 들여 할 조사를 몇 초 만에",
+    "bw_tagline": "눈을 뜨고 구매하세요.",
     "bw_nav_research": "🔍 조사",
     "bw_nav_results": "결과",
     "bw_nav_quote": "📋 견적 확인",
@@ -3138,7 +3138,7 @@ export const buyWise = {
   "ru": {
     "bw_verify_title": "Проверьте это перед оплатой",
     "bw_title": "Buy Wise",
-    "bw_tagline": "Исследование, на которое ушёл бы час — за секунды",
+    "bw_tagline": "Покупайте с открытыми глазами.",
     "bw_nav_research": "🔍 Исследовать",
     "bw_nav_results": "Результаты",
     "bw_nav_quote": "📋 Проверка сметы",
@@ -3451,7 +3451,7 @@ export const buyWise = {
   "th": {
     "bw_verify_title": "เช็กสิ่งเหล่านี้ก่อนจ่ายเงิน",
     "bw_title": "Buy Wise",
-    "bw_tagline": "การค้นคว้าที่ต้องใช้เวลาเป็นชั่วโมง — เสร็จในไม่กี่วินาที",
+    "bw_tagline": "ซื้อโดยเปิดตาให้กว้าง",
     "bw_nav_research": "🔍 ค้นคว้า",
     "bw_nav_results": "ผลลัพธ์",
     "bw_nav_quote": "📋 ตรวจใบเสนอราคา",
@@ -3764,7 +3764,7 @@ export const buyWise = {
   "vi": {
     "bw_verify_title": "Kiểm tra những điều này trước khi trả tiền",
     "bw_title": "Buy Wise",
-    "bw_tagline": "Nghiên cứu mà bạn sẽ mất một giờ — xong trong vài giây",
+    "bw_tagline": "Mua hàng với đôi mắt mở to.",
     "bw_nav_research": "🔍 Nghiên cứu",
     "bw_nav_results": "Kết quả",
     "bw_nav_quote": "📋 Kiểm tra báo giá",
