@@ -674,9 +674,12 @@ const FIXES = {
     stepKeys: ['bmd_fix_bb_creak_step_1', 'bmd_fix_bb_creak_step_2', 'bmd_fix_bb_creak_step_3', 'bmd_fix_bb_creak_step_4', 'bmd_fix_bb_creak_step_5'],
     tipKey: 'bmd_fix_bb_creak_tip',
     parts: [{ nameKey: 'bmd_fix_bb_creak_part_1_name', exampleKey: 'bmd_fix_bb_creak_part_1_example', priceKey: 'bmd_fix_bb_creak_part_1_price' }] },
-  fix_pedal_loose: { stopKey: 'bmd_stop_crank', titleKey: 'bmd_fix_pedal_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_pedal_loose_time',
+  // A pedal turning in the crank and a crank arm loose on the axle are two
+  // different repairs; this guide is only the first, so it no longer borrows
+  // the crank warning.
+  fix_pedal_loose: { stopKey: 'bmd_stop_pedal', titleKey: 'bmd_fix_pedal_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy', timeKey: 'bmd_fix_pedal_loose_time',
     toolKeys: ['bmd_fix_pedal_loose_tool_1', 'bmd_fix_pedal_loose_tool_2'],
-    stepKeys: ['bmd_fix_pedal_loose_step_1', 'bmd_fix_pedal_loose_step_2', 'bmd_fix_pedal_loose_step_3', 'bmd_fix_pedal_loose_step_4', 'bmd_fix_pedal_loose_step_5', 'bmd_fix_pedal_loose_step_6', 'bmd_fix_pedal_loose_step_7'],
+    stepKeys: ['bmd_fix_pedal_loose_step_1', 'bmd_fix_pedal_loose_step_2', 'bmd_fix_pedal_loose_step_3', 'bmd_fix_pedal_loose_step_4', 'bmd_fix_pedal_loose_step_5', 'bmd_fix_pedal_loose_step_6', 'bmd_fix_pedal_loose_step_7', 'bmd_fix_pedal_loose_step_8'],
     tipKey: 'bmd_fix_pedal_loose_tip',
     parts: [] },
   fix_crank_loose: { stopKey: 'bmd_stop_crank', titleKey: 'bmd_fix_crank_loose_title', animation: 'bottom-bracket', diffKey: 'bmd_diff_easy_mod', timeKey: 'bmd_fix_crank_loose_time',
@@ -1495,6 +1498,16 @@ const BikeMedic = ({ tool }) => {
   }, [loading, activeSection, tempProfile, bikeProfile, activeQuickCheck, customSituation, rideDistance, activeBikeId]);
 
   // ── Persistent tool header — used by all sub-screens ──────────
+  // The only reset control in this file. Gated on there being something to
+  // reset, per PF-16, and rendered by both headers.
+  const renderStartOver = () => (
+    (selectedProblem || aiDiagnosis || treePath.length || customProblem.trim() || symptomText.trim() || activeSection || viewMode !== 'problems') ? (
+      <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 ${c.btnSecondary}`}>
+        {t('bmd_start_over')}
+      </button>
+    ) : null
+  );
+
   const renderPersistentHeader = (screenLabel) => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 mb-4`}>
       <div className="pb-3 border-b border-zinc-500">
@@ -1510,12 +1523,7 @@ const BikeMedic = ({ tool }) => {
             <button onClick={goBack} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
               {t('bmd_back')}
             </button>
-            {/* PF-16: gated on first input, like every other tool. */}
-            {(selectedProblem || aiDiagnosis || treePath.length || customProblem.trim() || symptomText.trim()) ? (
-              <button onClick={reset} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-                {t('bmd_start_over')}
-              </button>
-            ) : null}
+            {renderStartOver()}
           </div>
         </div>
       </div>
@@ -2284,6 +2292,10 @@ const BikeMedic = ({ tool }) => {
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
+              {/* The section tabs render under this header, which had no way
+                  back to the start at all — you could be three screens into the
+                  garage with only Back. */}
+              {renderStartOver()}
             </div>
           </div>
           <div className="pt-3">
@@ -2354,14 +2366,19 @@ const BikeMedic = ({ tool }) => {
               </button>
               {showInterpreter && (
                 <div className="mt-4">
-                  <textarea value={symptomText} onChange={e => setSymptomText(e.target.value)}
+                  {/* Editing the description invalidates the recommendation and
+                      brings Analyze back — otherwise a reworded symptom has no
+                      way to be re-read. */}
+                  <textarea value={symptomText} onChange={e => { setSymptomText(e.target.value); if (aiRoute) setAiRoute(null); }}
                     onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && symptomText.trim().length >= 10 && !loading) routeSymptom(); }}
                     placeholder={t('bmd_interpreter_ph')}
                     className={`w-full h-24 p-3 border-2 rounded-xl text-sm resize-none outline-none ${c.input}`} />
+                  {!aiRoute && (
                   <button onClick={routeSymptom} disabled={loading || symptomText.trim().length < 10}
                     className={`mt-3 w-full py-2.5 rounded-xl font-bold text-sm transition-colors ${loading || symptomText.trim().length < 10 ? `${c.btnSecondary} opacity-50` : c.btnPrimary} disabled:opacity-40`}>
                     {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin inline-block">{tool?.icon ?? '🚲'}</span> {t('bmd_analyzing')}</span> : t('bmd_analyze_symptom')}
                   </button>
+                  )}
                   {aiRoute && (
                     <div className={`mt-4 p-4 rounded-xl ${c.cardAlt}`}>
                       <div className="flex items-center gap-2 mb-2">
