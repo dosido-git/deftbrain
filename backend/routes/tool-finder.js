@@ -24,6 +24,12 @@ function catalogToString() {
     const accepts = t.accepts ? t.accepts.join(' | ') : t.give;
     if (accepts) lines.push(`   TAKES: ${accepts}`);
     if (t.notFor) lines.push(`   NOT FOR: ${t.notFor.join(' | ')}`);
+    // A handoff is a near-miss with an owner. Resolved to the public name here
+    // so the prompt never sees an id it might repeat back as a name.
+    (t.handoffs || []).forEach(h => {
+      const dest = TOOL_CATALOG.find(x => x.id === h.toolId);
+      if (dest && h.when) lines.push(`   INSTEAD: if ${h.when} → ${dest.title}`);
+    });
     if (t.whenToRecommend) lines.push(`   RECOMMEND WHEN: ${t.whenToRecommend}`);
     if (t.whenNotToRecommend) lines.push(`   DO NOT RECOMMEND WHEN: ${t.whenNotToRecommend}`);
     return lines.join('\n');
@@ -63,6 +69,7 @@ YOUR APPROACH:
 3c-iii. NOT FOR and DO NOT RECOMMEND WHEN are absolute. A tool listing something under NOT FOR is disqualified for that thing, no matter how well the rest of its entry reads. These lines exist because the prose could not say them. They are scoped to their own tool and nothing else: one tool saying NOT FOR: medical bills means that tool does not handle them, NOT that the catalog has no tool for them. Often the line is there precisely because a different tool owns that job — go and find it.
 3c-iv. Where a tool has FOR / PROBLEMS / DOES / TAKES lines, judge it on those and treat the blurb above them as flavour. The blurb is written to attract; those lines are written to route.
 3c-iv-b. The catalog holds two kinds of entry. An entry with FOR / PROBLEMS / DOES lines has been checked against what the tool actually does. An entry with only a blurb has not — it is a sales line, and a sales line always sounds broader than the tool is. When both kinds look like a fit, take the checked one. Only prefer a blurb-only tool when it is plainly closer to the problem, not merely more flattering about it.
+3c-iv-c. An INSTEAD line is a redirect, not a footnote. Where the person's situation matches one, recommend the tool it names and do not recommend the tool the line is attached to. That tool put the line there because it knows this case is not its own.
 3c-v. CHECK THE DISQUALIFIERS LAST, ON EVERY TOOL YOU ARE ABOUT TO NAME. Read its NOT FOR and DO NOT RECOMMEND WHEN against this person's actual situation. If either one matches, drop the tool — even if it was your best candidate. But match it against what this person MAINLY needs, not against every word in their message: a disqualifier fires when it rules out the job they came to do, not when it happens to brush one detail. A hospital bill is a bill; that its charges are medical does not make it a clinical question.
 3c-vi. THE CONCESSION IS THE TELL. If the "why" you are writing contains a sentence admitting the tool will not do the thing this person needs — "it won't recover what's already gone", "it can't help with the part you're asking about", "this is for before, not after" — then a disqualifier just fired and you wrote an excuse instead of dropping the tool. Delete the recommendation. A "why" never concedes; if it needs to, the tool was wrong.
 3c-vii. A real limit is stated as a limit, not smoothed over. If the person has a photo and the tool takes typed text, say they will need to type it out — do not write around it as though the tool met them where they are.

@@ -27,13 +27,25 @@ export const toolFinderMetadata = {
       "a category when the user knows one"
     ],
 
+    // Dead ends only — nothing in the catalog picks these up. A near-miss that
+    // another tool owns belongs in handoffs, where it becomes a route instead
+    // of a wall.
     notFor: [
-      "explaining the meaning of a word, term, title, product, or other thing whose name the user already knows",
-      "general factual research about something the user has already identified",
+      "explaining something whose name the user already knows",
+      "general factual research about an identified thing",
       "fact checking or verifying a claim",
-      "comparing known alternatives",
-      "finding current prices, availability, businesses, or places to buy something",
-      "recovering passwords, account credentials, or other private access information"
+      "recovering passwords, account credentials, or private access information"
+    ],
+
+    handoffs: [
+      {
+        when: "the user knows what the product is and wants to judge the price, the timing, or what it will really cost to own",
+        toolId: "BuyWise"
+      },
+      {
+        when: "the user knows what something costs and wants to understand why it costs that",
+        toolId: "MarkupDetective"
+      }
     ],
 
     primaryIntent:
