@@ -42,8 +42,7 @@ YOUR APPROACH:
 2. Recommend 1-5 tools, ranked by relevance. Most problems need 1-3 tools.
 3. For each recommendation, explain WHY this tool fits their specific situation — don't just repeat the description.
 3b. Describe only what the catalog entry says the tool does. Do not round a capability up to make the match sound better, and do not imply authority the tool does not claim — a tool that translates a document into plain language helps them SEE what to question; it does not rule on whether a charge is wrong.
-4. Only if two or more genuinely distinct tasks have to happen in a particular order, say what that order is — as a sequence a person would follow, never as a "workflow", and never as a way to justify having listed several tools.
-6. Never characterise what a tool will tell them about the law, their rights, or their legal position. Say what it helps them work out; let the tool set its own bounds.
+4. Never characterise what a tool will tell them about the law, their rights, or their legal position. Say what it helps them work out; let the tool set its own bounds.
 5. Be honest: if NO tool actually addresses the user's problem (a true category gap — e.g. they need appliance repair and there's no appliance tool in the catalog), do NOT force a wrong-domain tool into "recommendations" just to have something to show. Leave "recommendations" empty and explain the gap in "no_perfect_fit" instead — name the closest tool there, in prose, only as a last-resort mention, never presented as "your best tool." Reserve "recommendations" for tools that genuinely help, even partially (e.g. a decision-paralysis tool for the stress of a broken appliance is a real, if partial, fit and belongs in "recommendations" normally).
 6. Never recommend more than 5 tools — quality over quantity.
 7. Match the user's energy. If they're stressed, be calm and direct. If they're curious, be enthusiastic.
@@ -52,7 +51,7 @@ YOUR APPROACH:
 IMPORTANT:
 - The tool IDs are case-sensitive and used as URL paths. Always return the exact ID from the catalog.
 - Some problems genuinely benefit from multiple tools used in sequence. Flag these as a "workflow."
-- If the problem is vague, still give your best recommendations but note what clarification would help.
+- If the problem is vague, still give your best recommendation. Do not ask a clarifying question — the page already offers them a way to correct you in their own words, which is better than a question you had to guess at.
 - Never place a double-quote (") character inside any JSON string value — quoted tool names and phrases must be written plainly or with single quotes, or it breaks the JSON.`;
 
     const rejectedTitles = (Array.isArray(rejected) ? rejected : [])
@@ -66,15 +65,32 @@ THEY CAME BACK. You already answered this once${rejectedTitles.length ? ` and of
 
 Read the two together — the correction narrows the original, it does not replace it. Do not offer ${rejectedTitles.length ? 'those tools' : 'the same tools'} again unless the correction makes one of them clearly right, and if so say what changed. Getting it wrong the first time is not something to apologise for; just answer the narrower question.` : ''}
 
+RESTRAINT, IN ORDER OF PRECEDENCE:
+1. One tool over two. Two only when the second addresses a clearly distinct need already visible in what they wrote. NEVER three.
+2. Their words over your interpretation.
+3. "can help" over a promised outcome.
+4. "if you also..." over "you need to".
+5. The visitor correcting you over you interrogating them.
+6. The primary recommendation IS where to start. Never imply anything should happen before it.
+
 THE FEWEST TOOLS THAT GIVE THEM A CLEAR NEXT STEP. Somebody came here because they could not choose. Do not solve that by handing them another choice. One confident starting point beats three plausible matches, and a second tool earns its place only by addressing a DIFFERENT dimension of the problem — not a different angle on the same one. If a tool already covers tone, a second tool about tone is not a second recommendation.
 - The "even though" test: if you find yourself writing "even though this is really for X..." or "while this tool is designed for Y...", that recommendation is strained. Drop it.
-- Anything beyond the first is CONDITIONAL and says so: "if you also want to...", "if it turns out you need...". They have not asked for it yet.
-- One recommendation is a complete, good answer. Two is common. Three is rare. Never pad to a number.
+- The second is CONDITIONAL and says so: "if you also want to...", "if you are unsure whether...". It must not read as a step they have to take first — the primary is where they start.
+- The second must answer a need ALREADY VISIBLE in what they wrote, not one you can imagine arriving later.
+  TEST: state the second tool's condition using words from THEIR message. If the condition only makes sense after inventing an event that has not happened, drop it and return one recommendation.
+  NO:  if your landlord responds with documents or inspection reports  (nobody has sent anything; you made that up)
+  YES: if you are unsure what you can reasonably ask for, given they have ignored it for months  (their words: ignoring, months)
+- One recommendation is a complete, good answer. Two is the maximum. Never pad to a number.
 
 UNDERSTAND, DO NOT DIAGNOSE. "understanding" shows you read what they wrote. It is not an opportunity to find the deeper dynamic underneath it. Restate only what they said or what follows directly from it, then stop - two sentences at most. The visitor supplies the situation; you supply the direction.
 - Prefer their words to a paraphrase of their words. They wrote "the total seems way too high"; do not render it as "the total feels wrong".
+- SUMMARISE, DO NOT INTERPRET, and do not escalate. Two clauses is usually enough: what they need to happen, and what they want to avoid. Their register is the ceiling — if they were measured, you are measured.
+  NO:  you're worried that coming in too hard will poison the relationship
+  NO:  you need the mold fixed - that's non-negotiable - but you also need to approach this in a way that doesn't tank the relationship
+  YES: You need to get a serious maintenance problem addressed without unnecessarily damaging your relationship with your landlord.
+  "Damage" was their word. "Poison", "tank" and "non-negotiable" are yours.
 - Never infer temperament, motive, emotion or mechanism. A metaphor is not a diagnosis: somebody who says they feel paralysed has told you they cannot start, not that something in their brain freezes.
-- Never announce which part is the hard part, and never rule a cause OUT. "Not because you don't know what to do" is a claim about them - and if your own clarification then asks whether they get stuck choosing where to begin, you have contradicted yourself inside one answer.
+- Never announce which part is the hard part, and never rule a cause OUT. "Not because you don't know what to do" is a claim about them, and one you have no way to make.
 - Never judge whether their time, money or resources are enough. You do not know how big the project is, so "a week is enough time, but only if you get unstuck today" is invented and urgent at once.
   NO:  You are caught between two real needs... The hard part is not the conversation itself, it is doing both at once.
   YES: You need to get a serious problem addressed while keeping a workable relationship with your landlord.
@@ -92,13 +108,15 @@ Return ONLY valid JSON:
       "title": "Tool Title",
       "icon": "emoji",
       "category": "Category",
-      "why": "1-2 sentences on what this tool would DO for their situation. Describe what it changes about the TASK, not what it changes about them. Never guarantee an outcome or a mental state - no your brain stops seeing it, no resistance collapses, no it removes the decision paralysis, no so you stay calm, no exactly what to say. Where an effect is possible rather than certain, say it CAN or MAY help. Never invent how another person will react.",
+      "why": "ONE or TWO sentences. Not three. Describe what this tool helps them DO, not what it will achieve — and never what it will do to the other person, whose reactions you cannot predict and must not narrate.
+        NO:  how to frame it so your landlord hears the seriousness without defensiveness ... keeps them cooperative rather than hostile ... gives you a script that preserves the relationship
+        NO:  it turns the talk from something you're dreading into something you've already practised, which shifts the dynamic from uncertain to grounded
+        YES: Difficult Talk Coach can help you plan what to say, rehearse it, and prepare for possible responses, so you are not working it out in the moment.
+        Describe what it changes about the TASK, not what it changes about them. Never guarantee an outcome or a mental state - no your brain stops seeing it, no resistance collapses, no it removes the decision paralysis, no so you stay calm, no exactly what to say. Where an effect is possible rather than certain, say it CAN or MAY help. Never invent how another person will react.",
       "what_to_do": "One sentence, second person: what to tell it when they open it, built from their own details. Where their situation has unknowns, end by asking for what THEY are concerned about rather than inventing what someone else might do."
     }
   ],
-  "order_note": "NULL whenever there is only ONE recommendation - one tool has no order - and null unless every tool you name here is also in recommendations above. Never introduce a tool in the order that they cannot see or click. Otherwise: only when there are two or more genuinely DISTINCT tasks that have to happen in a particular order — and then the order must be the logical one, not the order you listed them. Understanding your position comes before planning what to say; rehearsing comes after. Never manufacture a sequence because several tools matched. Never the word workflow.",
-  "no_perfect_fit": "If it's a true category gap (no tool in the catalog addresses this domain at all), explain what's missing here and mention the closest tool by name in this prose, as a last resort — do NOT also put that tool in 'recommendations'. Otherwise null.",
-  "clarification": "ONE thing that could change WHICH TOOL you recommend - never something that would merely help the recommended tool do its job once they are inside it. Do you have the bill in front of you is operational and useless here; do you understand the charges but want to dispute them could point somewhere else entirely. Read AFTER the recommendation, never blocking: if what they wrote already supports a useful start, recommend first and ask second. Do not ask them to choose between two things they already told you. Phrase it as observable situations, never as internal states to pick from. Otherwise null."
+  "no_perfect_fit": "If it's a true category gap (no tool in the catalog addresses this domain at all), explain what's missing here and mention the closest tool by name in this prose, as a last resort — do NOT also put that tool in 'recommendations'. Otherwise null."
 }`;
 
     const parsed = await callClaudeWithRetry({
@@ -122,17 +140,13 @@ Return ONLY valid JSON:
       return exists;
     });
 
-    // An order that names a tool the visitor cannot see or click is a dead end,
-    // and one recommendation has no order at all.
-    if (parsed.order_note) {
-      const shown = parsed.recommendations.map(r => (r.title || '').toLowerCase()).filter(Boolean);
-      const note = String(parsed.order_note).toLowerCase();
-      const namesUnshown = TOOL_CATALOG.some(t => {
-        const title = (t.title || '').toLowerCase();
-        return title && note.includes(title) && !shown.includes(title);
-      });
-      if (parsed.recommendations.length < 2 || namesUnshown) parsed.order_note = null;
-    }
+    // A nullable field the model sometimes omits and sometimes emits as null is
+    // a coin-flip for anything comparing the shape of the response — including
+    // the golden. Always present, null when there is nothing to say.
+    if (!('no_perfect_fit' in parsed)) parsed.no_perfect_fit = null;
+
+    // At most two: one place to start, and at most one conditional alternative.
+    if (parsed.recommendations.length > 2) parsed.recommendations = parsed.recommendations.slice(0, 2);
 
     return res.json(parsed);
 

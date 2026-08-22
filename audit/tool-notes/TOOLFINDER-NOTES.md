@@ -183,3 +183,52 @@ recommendation from available information and leaves room to say no.
 JargonAssassin's own catalog description, along with red flags and Red-Line's
 negotiation edits. The rule is still worth having, but that instance was accurate.
 
+### Two features removed because they sounded intelligent
+
+`order_note` and `clarification` are both gone from the schema. Each read as a
+sophisticated capability and each gave the model room to overthink:
+
+- **The sequence contradicted the recommendation.** "I'd start with Difficult
+  Talk Coach" at the top, "Map your leverage first" at the bottom. Primary
+  recommendation and first-in-a-sequence are not the same concept, and asking a
+  visitor to hold that distinction is absurd. The conditional on the second tool
+  already carries everything the order was for.
+- **The generated question kept asking downstream things.** "Do you have the
+  bill in front of you", "is the mold documented anywhere" — useful once inside
+  the recommended tool, useless for deciding which tool. The visitor knows why a
+  recommendation is wrong better than the model knows what to ask, so the fixed
+  correction box replaced it entirely.
+
+**Recommendations capped at TWO in code**, not just in the prompt.
+
+**The restraint hierarchy** now sits at the top of the prompt, in precedence
+order: one tool over two; their words over interpretation; "can help" over a
+promised outcome; "if you also" over "you need to"; correction-by-visitor over
+interrogation-by-model; and the primary IS where to start.
+
+**Worked pairs, because abstract rules got routed around.** Three failures each
+needed their own NO/YES:
+
+    NO:  coming in too hard will poison the relationship
+    NO:  the mold fixed - that's non-negotiable - ... doesn't tank the relationship
+    YES: get a serious maintenance problem addressed without unnecessarily
+         damaging your relationship with your landlord
+    ("Damage" was their word. "Poison", "tank", "non-negotiable" are the model's.)
+
+    NO:  keeps them cooperative rather than hostile ... gives you a script that
+         preserves the relationship
+    YES: can help you plan what to say, rehearse it, and prepare for possible
+         responses, so you are not working it out in the moment
+    (Never narrate the other person's reactions - you cannot predict them.)
+
+    NO:  if your landlord responds with documents or inspection reports
+    YES: if you are unsure what you can reasonably ask for, given they have
+         ignored it for months
+    (TEST: state the second tool's condition in words from THEIR message. If it
+    only makes sense after inventing an event that has not happened, there is no
+    second tool.)
+
+**Golden flake fixed while here:** `no_perfect_fit` is nullable and the model
+sometimes emitted it as null and sometimes omitted the key, which is a coin-flip
+for anything comparing response shape. The route now always emits it.
+

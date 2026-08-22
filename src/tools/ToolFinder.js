@@ -279,13 +279,6 @@ const ToolFinder = ({ tool }) => {
                     )} </div>
                 </a>
               ))} </div>
-          )} {/* ── A USEFUL ORDER ── */} {r.order_note && (<div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
-              <span className="flex-shrink-0 mt-0.5">↕️</span>
-              <div>
-                <p className={`text-xs font-bold mb-1`}>{t('tf_useful_order')}</p>
-                <p className={`text-sm leading-relaxed`}>{r.order_note}</p>
-              </div>
-            </div>
           )} {/* ── NO PERFECT FIT ── */} {r.no_perfect_fit && (<div className={`${c.card} border ${c.border} rounded-xl p-4`}>
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('tf_closest_note')}</p>
               <p className={`text-sm ${c.textSecondary}`}>{r.no_perfect_fit}</p>
@@ -300,7 +293,6 @@ const ToolFinder = ({ tool }) => {
             ) : (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
                 <div className="space-y-2">
                   <p className={`text-xs font-bold ${c.textMuted}`}>{t('tf_whats_different')}</p>
-                  {r.clarification && <p className={`text-xs ${c.textSecondary}`}>{r.clarification}</p>}
                   <textarea
                     value={refinement} onChange={e => setRefinement(e.target.value)} autoFocus
                     placeholder={t('tf_refine_ph')} rows={2} maxLength={400}
