@@ -3,6 +3,59 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
+
+// ════════════════════════════════════════════════════════════
+// GROUNDING — the only part of this tool that knows anything current
+// ════════════════════════════════════════════════════════════
+// Everything else here reasons from training and from what the buyer typed,
+// which is why the prompt spends so much effort refusing to sound researched.
+// This one bounded search is the exception: it checks the handful of facts a
+// purchase actually turns on, and the prompt is allowed to state THOSE
+// plainly, with the source, because they were looked up.
+//
+// Latency is why it is shaped this way. The call is started before the
+// decision pre-pass and awaited after it, so the search runs inside time the
+// request was already spending. A warm or stale product adds nothing at all;
+// a cold one waits at most COLD_WAIT_MS beyond the pre-pass and then answers
+// unverified rather than making anyone sit there. The next person asking about
+// that product gets the verified answer.
+const COLD_WAIT_MS = 12000;
+const PRICE_TTL_MS = 3 * 24 * 60 * 60 * 1000; // prices move; laws do not
+
+function buyWiseFacts({ product, region, currency }) {
+  if (!product || product.trim().length < 3) return Promise.resolve('');
+  return groundedFacts({
+    cacheKey: buyWiseFactsKey({ product, region, currency }),
+    label: 'buy-wise-facts',
+    ttlMs: PRICE_TTL_MS,
+    coldWaitMs: COLD_WAIT_MS,
+    maxTokens: 2500,
+    system: 'You verify current retail facts with web search. Prefer the manufacturer and large established retailers over aggregators and affiliate blogs. Report only what you actually saw on a page today, and skip anything you could not confirm — an empty array is a correct answer. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Verify with web_search, as of today, for a buyer in region "${region || 'US'}"${currency ? ` paying in ${currency}` : ''}, the product: "${product.trim().slice(0, 200)}"
+
+Check, and report ONLY what you can actually see on a page today:
+(1) what it currently sells for new, as a range across the sellers you found;
+(2) whether it appears to be current, superseded, or discontinued;
+(3) the published manufacturer warranty term, if stated;
+(4) any widely-reported defect, recall or well-documented common failure.
+
+Skip anything you cannot confirm. Do not infer, do not fill gaps from memory, and do not include a fact you did not see on a page.
+
+Return ONLY valid JSON:
+{ "verified": [{ "kind": "price | status | warranty | issue", "detail": "What you found, one sentence, with the figure or term where there is one", "source": "The domain you saw it on" }] }`,
+    render: (clean) => {
+      if (!Array.isArray(clean.verified) || !clean.verified.length) return '';
+      const block = `\n\nVERIFIED TODAY BY WEB SEARCH — these specific facts WERE looked up and you may state them plainly, each with its source. Everything else in your answer remains unverified reasoning and keeps the rules above:\n` +
+        clean.verified.map(f => `- [${f.kind}] ${f.detail} (source: ${f.source})`).join('\n');
+      return { block, data: clean.verified };
+    },
+  });
+}
+
+function buyWiseFactsKey({ product, region, currency }) {
+  return `buywise:${normalizeKeyPart(region || 'US')}:${normalizeKeyPart(currency || '')}:${normalizeKeyPart((product || '').slice(0, 80))}`;
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — negotiation scripts and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
 
@@ -16,6 +69,8 @@ Write every field with precision — no filler, no padding, no restating what wa
 CONSISTENT NUMBERS: Anchor on ONE canonical figure for the headline savings/price gap and keep every related number consistent with it across all fields. Do not state conflicting amounts (e.g. a price as $43K in one field and $44K in another) or blur distinct quantities (total price gap vs. first-year depreciation) — label which is which.
 
 CHALLENGE THE PREMISE OUT LOUD: If your recommendation contradicts a constraint the user explicitly stated (model year, spec, brand, budget, timing), say so plainly at the start of the verdict — name the constraint and why you're pushing back — instead of quietly substituting a different option.
+
+WHEN A "VERIFIED TODAY BY WEB SEARCH" BLOCK APPEARS BELOW: those specific facts were looked up today and you may state them plainly, naming the source alongside. That is the ONLY material you may present as checked. It does not license confidence anywhere else — every other sentence in your answer is still reasoning, and the rules below still govern it. If the block contradicts what you believe, the block wins; it saw a page and you did not. If there is no block, nothing was verified and the rules below govern everything.
 
 THE RULE THAT GOVERNS EVERYTHING BELOW:
 Product performance, failure patterns, market behaviour, warranty norms, retailer behaviour and resale patterns are NOT established facts here. You did not measure them, test them, look them up or read anyone's terms. Unless the buyer supplied it, treat all of it as context to check — useful for knowing WHAT to ask, never presented as a finding.
@@ -71,6 +126,9 @@ router.post('/buy-wise', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const hasComparison = comparison && comparison.product;
     const compProducts = hasComparison ? (Array.isArray(comparison) ? comparison : [comparison]) : [];
 
+    const fallbackFactsArgs = { product, region: userRegion || userLocale, currency: userCurrency || currency };
+    const grounded = await buyWiseFacts(fallbackFactsArgs).catch(() => '');
+
     const systemPrompt = `${PERSONALITY}
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`;
@@ -84,7 +142,7 @@ Priority: ${priority} (weight your advice toward this)
 ${isImpulse ? 'USER FLAGGED THIS AS IMPULSE BUY — include impulse_check section with honest evaluation' : ''}
 ${isGift ? `GIFT MODE: Buying as a gift${giftRecipient ? ` for ${giftRecipient}` : ''}` : ''}
 ${context ? `Additional context: ${context}` : ''}
-${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i) => `  Option ${i + 2}: "${cp.product}"${cp.price ? ` (${sym}${cp.price})` : ''}`).join('\n')}` : ''}
+${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i) => `  Option ${i + 2}: "${cp.product}"${cp.price ? ` (${sym}${cp.price})` : ''}`).join('\n')}` : ''}${grounded}
 
 Return ONLY valid JSON with ALL applicable sections. Set sections to null if they don't apply.
 
@@ -232,6 +290,8 @@ Return ONLY valid JSON with ALL applicable sections. Set sections to null if the
     if (!parsed.verdict) {
       return res.status(500).json({ error: 'Could not analyze this purchase. Please try again.' });
     }
+    // Same rule as the fan-out path: show only what this answer actually used.
+    parsed.verified_facts = grounded ? (stripCites(groundedData(buyWiseFactsKey(fallbackFactsArgs))) || null) : null;
     res.json(parsed);
 
   } catch (error) {
@@ -270,6 +330,12 @@ router.post('/buy-wise/fast', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion);
 
+    const factsArgs = { product, region: userRegion || userLocale, currency: userCurrency || currency };
+    // Awaited before the decision pre-pass on purpose: the pre-pass locks the
+    // fair-price stance that every group must then agree with, so it has to
+    // see the verified price too. Warm or stale products cost nothing here.
+    const grounded = await buyWiseFacts(factsArgs).catch(() => '');
+
     const contextHeader = `RESEARCH THIS PURCHASE:
 Product: ${product}
 ${hasPrice ? `Price seen: ${sym}${price}` : 'No price specified — do not invent a current market price. Give only a broad category expectation if it is durable enough to be useful; otherwise make price verification a next step'}
@@ -306,7 +372,7 @@ ${compProducts.length > 0 ? `\nCOMPARISON REQUESTED:\n${compProducts.map((cp, i)
 }`;
     let decision;
     try {
-      decision = await callJson(`${contextHeader}
+      decision = await callJson(`${contextHeader}${grounded}
 
 Make the CORE DECISION only — the verdict and the two badges. Be decisive. Return ONLY valid JSON, no markdown, no preamble:
 
@@ -329,7 +395,7 @@ ${DECISION_SCHEMA}`, 'decision', 800);
 - Fair-price stance: ${decision.fair_price_badge}
 - Timing stance: ${timingToday ? 'N/A (needed today)' : decision.timing_badge}`;
 
-    const groupPrompt = (schema) => `${contextHeader}
+    const groupPrompt = (schema) => `${contextHeader}${grounded}
 
 ${stance}
 
@@ -472,6 +538,11 @@ ${schema}`;
         console.warn('[buy-wise/fast] group failed:', r.reason?.message || r.reason);
       }
     });
+
+    // Only what the analysis actually saw. The background refresh can land
+    // after the prompt was built, and showing the buyer facts that did not
+    // inform the answer would be the same overclaim in a new costume.
+    merged.verified_facts = grounded ? (stripCites(groundedData(buyWiseFactsKey(factsArgs))) || null) : null;
 
     return res.json(merged);
   } catch (error) {

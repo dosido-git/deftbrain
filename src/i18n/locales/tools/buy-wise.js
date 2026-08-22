@@ -6,6 +6,8 @@
 // Roborock S8, PS5, Vitamix, Carrier, Nike) stay identical across languages.
 export const buyWise = {
   "en": {
+    "bw_verified_title": "Checked on the web today",
+    "bw_verified_source": "Source:",
     "bw_sec_more": "More about this purchase",
     "bw_verify_title": "Check these before you pay",
     "bw_title": "Buy Wise",
@@ -123,7 +125,7 @@ export const buyWise = {
     "bw_still_deciding": "Still deciding?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "helps you work through the trade-offs.",
-    "bw_results_disclaimer": "Buy Wise reasons from what you tell it plus general knowledge of this kind of product. It does not look up current prices, stock or promotions — treat any figure here as a starting point and check the live ones yourself.",
+    "bw_results_disclaimer": "Buy Wise checks a few volatile facts on the web — price, availability, warranty, known faults — and shows what it found with its source. Everything else is reasoning from what you told it plus general knowledge of this kind of product, so treat it as a starting point and check anything that would change your mind.",
     "bw_walk_all_results": "All results",
     "bw_walk_need_it": "Need it?",
     "bw_walk_opportunity": "Opportunity cost:",
@@ -320,6 +322,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "es": {
+    "bw_verified_title": "Verificado hoy en la web",
+    "bw_verified_source": "Fuente:",
     "bw_sec_more": "Más sobre esta compra",
     "bw_verify_title": "Comprueba esto antes de pagar",
     "bw_title": "Buy Wise",
@@ -437,7 +441,7 @@ export const buyWise = {
     "bw_still_deciding": "¿Aún decidiendo?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "te ayuda a sopesar los pros y los contras.",
-    "bw_results_disclaimer": "Buy Wise razona con lo que le cuentas más conocimiento general de este tipo de producto. No consulta precios, stock ni promociones actuales: toma cualquier cifra como punto de partida y verifica tú los datos en vivo.",
+    "bw_results_disclaimer": "Buy Wise comprueba en la web algunos datos que cambian rápido —precio, disponibilidad, garantía, fallos conocidos— y muestra lo que encontró con su fuente. Todo lo demás es razonamiento a partir de lo que le contaste y del conocimiento general de este tipo de producto: tómalo como punto de partida y verifica lo que pueda cambiar tu decisión.",
     "bw_walk_all_results": "Todos los resultados",
     "bw_walk_need_it": "¿Lo necesitas?",
     "bw_walk_opportunity": "Costo de oportunidad:",
@@ -634,6 +638,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "zh": {
+    "bw_verified_title": "今天已在网上核实",
+    "bw_verified_source": "来源：",
     "bw_sec_more": "关于这次购买的更多内容",
     "bw_verify_title": "付款前先确认这几点",
     "bw_title": "Buy Wise",
@@ -751,7 +757,7 @@ export const buyWise = {
     "bw_still_deciding": "还在犹豫？",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "帮你理清各种取舍。",
-    "bw_results_disclaimer": "Buy Wise 依据你提供的信息和对这类产品的一般了解来判断，并不会查询当前价格、库存或促销。这里的任何数字都只是起点，实时信息请自行核对。",
+    "bw_results_disclaimer": "Buy Wise 会在网上核实几项容易变动的信息——价格、是否在售、保修、已知问题——并附上来源。其余内容都是基于你提供的信息和对这类产品的一般了解所做的推断，请当作起点，凡是会改变你决定的事都请自行核实。",
     "bw_walk_all_results": "全部结果",
     "bw_walk_need_it": "需要它吗？",
     "bw_walk_opportunity": "机会成本：",
@@ -948,6 +954,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "hi": {
+    "bw_verified_title": "आज वेब पर जाँचा गया",
+    "bw_verified_source": "स्रोत:",
     "bw_sec_more": "इस खरीद के बारे में और",
     "bw_verify_title": "भुगतान से पहले ये जाँच लें",
     "bw_title": "Buy Wise",
@@ -1065,7 +1073,7 @@ export const buyWise = {
     "bw_still_deciding": "अब भी तय नहीं कर पा रहे?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "आपको फायदे-नुकसान तौलने में मदद करता है।",
-    "bw_results_disclaimer": "Buy Wise आपकी दी गई जानकारी और इस तरह के उत्पाद की सामान्य जानकारी के आधार पर सोचता है। यह मौजूदा कीमत, स्टॉक या ऑफ़र नहीं देखता — यहाँ का कोई भी आंकड़ा शुरुआती बिंदु मानें और ताज़ा जानकारी खुद जाँचें।",
+    "bw_results_disclaimer": "Buy Wise कुछ जल्दी बदलने वाली जानकारी वेब पर जाँचता है — कीमत, उपलब्धता, वारंटी, ज्ञात खराबियाँ — और जो मिला वह स्रोत सहित दिखाता है। बाकी सब आपकी दी गई जानकारी और इस तरह के उत्पाद की सामान्य समझ पर आधारित तर्क है, इसलिए उसे शुरुआती बिंदु मानें और जो बात आपका फैसला बदल सकती है, उसे खुद जाँच लें।",
     "bw_walk_all_results": "सभी नतीजे",
     "bw_walk_need_it": "ज़रूरत है?",
     "bw_walk_opportunity": "अवसर लागत:",
@@ -1262,6 +1270,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ar": {
+    "bw_verified_title": "جرى التحقق منه على الويب اليوم",
+    "bw_verified_source": "المصدر:",
     "bw_sec_more": "المزيد عن هذا الشراء",
     "bw_verify_title": "تحقّق من هذا قبل الدفع",
     "bw_title": "Buy Wise",
@@ -1379,7 +1389,7 @@ export const buyWise = {
     "bw_still_deciding": "ما زلت تتردد؟",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "يساعدك على موازنة الإيجابيات والسلبيات.",
-    "bw_results_disclaimer": "يستنتج Buy Wise مما تخبره به إضافة إلى معرفة عامة بهذا النوع من المنتجات. وهو لا يبحث عن الأسعار أو التوافر أو العروض الحالية — تعامل مع أي رقم هنا كنقطة بداية وتحقّق بنفسك من المعطيات الحيّة.",
+    "bw_results_disclaimer": "يتحقق Buy Wise على الويب من بضع معلومات سريعة التغيّر — السعر والتوافر والضمان والأعطال المعروفة — ويعرض ما وجده مع مصدره. وما عدا ذلك استنتاج مما أخبرته به ومن معرفة عامة بهذا النوع من المنتجات، فتعامل معه كنقطة بداية وتحقّق بنفسك من كل ما قد يغيّر قرارك.",
     "bw_walk_all_results": "كل النتائج",
     "bw_walk_need_it": "تحتاجه؟",
     "bw_walk_opportunity": "تكلفة الفرصة البديلة:",
@@ -1576,6 +1586,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "pt": {
+    "bw_verified_title": "Verificado na web hoje",
+    "bw_verified_source": "Fonte:",
     "bw_sec_more": "Mais sobre esta compra",
     "bw_verify_title": "Confira isto antes de pagar",
     "bw_title": "Buy Wise",
@@ -1693,7 +1705,7 @@ export const buyWise = {
     "bw_still_deciding": "Ainda decidindo?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "ajuda você a avaliar os prós e contras.",
-    "bw_results_disclaimer": "O Buy Wise raciocina a partir do que você conta mais conhecimento geral desse tipo de produto. Ele não consulta preços, estoque ou promoções atuais — trate qualquer número aqui como ponto de partida e confira os dados ao vivo.",
+    "bw_results_disclaimer": "O Buy Wise confere na web alguns dados que mudam rápido — preço, disponibilidade, garantia, defeitos conhecidos — e mostra o que achou com a fonte. O restante é raciocínio a partir do que você contou mais conhecimento geral desse tipo de produto: trate como ponto de partida e confira o que puder mudar sua decisão.",
     "bw_walk_all_results": "Todos os resultados",
     "bw_walk_need_it": "Precisa disso?",
     "bw_walk_opportunity": "Custo de oportunidade:",
@@ -1890,6 +1902,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "fr": {
+    "bw_verified_title": "Vérifié sur le web aujourd'hui",
+    "bw_verified_source": "Source :",
     "bw_sec_more": "En savoir plus sur cet achat",
     "bw_verify_title": "À vérifier avant de payer",
     "bw_title": "Buy Wise",
@@ -2007,7 +2021,7 @@ export const buyWise = {
     "bw_still_deciding": "Toujours indécis ?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "vous aide à peser le pour et le contre.",
-    "bw_results_disclaimer": "Buy Wise raisonne à partir de ce que vous lui dites et d'une connaissance générale de ce type de produit. Il ne consulte ni prix, ni stocks, ni promotions en cours — prenez tout chiffre comme point de départ et vérifiez vous-même.",
+    "bw_results_disclaimer": "Buy Wise vérifie sur le web quelques informations volatiles — prix, disponibilité, garantie, défauts connus — et affiche ce qu'il a trouvé avec sa source. Le reste est un raisonnement à partir de ce que vous lui avez dit et d'une connaissance générale de ce type de produit : prenez-le comme point de départ et vérifiez ce qui pourrait changer votre décision.",
     "bw_walk_all_results": "Tous les résultats",
     "bw_walk_need_it": "En avez-vous besoin ?",
     "bw_walk_opportunity": "Coût d'opportunité :",
@@ -2204,6 +2218,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "de": {
+    "bw_verified_title": "Heute im Web geprüft",
+    "bw_verified_source": "Quelle:",
     "bw_sec_more": "Mehr zu diesem Kauf",
     "bw_verify_title": "Vor dem Bezahlen prüfen",
     "bw_title": "Buy Wise",
@@ -2321,7 +2337,7 @@ export const buyWise = {
     "bw_still_deciding": "Noch unentschlossen?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "hilft dir, die Abwägungen durchzugehen.",
-    "bw_results_disclaimer": "Buy Wise urteilt aus dem, was Sie schildern, plus allgemeinem Wissen über diese Art Produkt. Aktuelle Preise, Verfügbarkeit oder Aktionen ruft es nicht ab — nehmen Sie jede Zahl als Ausgangspunkt und prüfen Sie die aktuellen Werte selbst.",
+    "bw_results_disclaimer": "Buy Wise prüft im Web einige schnell veränderliche Angaben — Preis, Verfügbarkeit, Garantie, bekannte Mängel — und zeigt das Gefundene mit Quelle. Alles andere ist Schlussfolgerung aus Ihren Angaben und allgemeinem Wissen über diese Art Produkt: als Ausgangspunkt nehmen und alles selbst prüfen, was Ihre Entscheidung ändern würde.",
     "bw_walk_all_results": "Alle Ergebnisse",
     "bw_walk_need_it": "Brauchst du es?",
     "bw_walk_opportunity": "Opportunitätskosten:",
@@ -2518,6 +2534,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ja": {
+    "bw_verified_title": "本日ウェブで確認した内容",
+    "bw_verified_source": "出典：",
     "bw_sec_more": "この買い物についてもっと",
     "bw_verify_title": "支払う前に確認したいこと",
     "bw_title": "Buy Wise",
@@ -2635,7 +2653,7 @@ export const buyWise = {
     "bw_still_deciding": "まだ迷っていますか？",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "がトレードオフの整理を手伝います。",
-    "bw_results_disclaimer": "Buy Wise は、あなたが入力した内容とこの種の製品についての一般的な知識から判断しています。現在の価格・在庫・セール情報を調べているわけではありません。ここの数字は出発点として扱い、最新の情報はご自身で確認してください。",
+    "bw_results_disclaimer": "Buy Wise は、変わりやすい事柄——価格・在庫・保証・既知の不具合——をウェブで確認し、見つけた内容を出典つきで示します。それ以外は、あなたが入力した内容とこの種の製品についての一般的な知識にもとづく推論です。出発点として扱い、判断を左右することはご自身で確認してください。",
     "bw_walk_all_results": "すべての結果",
     "bw_walk_need_it": "必要？",
     "bw_walk_opportunity": "機会費用：",
@@ -2832,6 +2850,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ko": {
+    "bw_verified_title": "오늘 웹에서 확인한 내용",
+    "bw_verified_source": "출처:",
     "bw_sec_more": "이 구매에 대해 더 보기",
     "bw_verify_title": "결제 전에 확인할 것",
     "bw_title": "Buy Wise",
@@ -2949,7 +2969,7 @@ export const buyWise = {
     "bw_still_deciding": "아직 고민 중인가요?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "가 장단점을 정리하도록 도와줍니다.",
-    "bw_results_disclaimer": "Buy Wise는 입력하신 내용과 이런 종류의 제품에 대한 일반 지식으로 판단합니다. 현재 가격·재고·프로모션을 조회하지는 않습니다. 여기의 숫자는 출발점으로 보시고 실시간 정보는 직접 확인하세요.",
+    "bw_results_disclaimer": "Buy Wise는 자주 바뀌는 정보 — 가격, 재고, 보증, 알려진 결함 — 을 웹에서 확인하고 찾은 내용을 출처와 함께 보여 줍니다. 그 밖의 내용은 입력하신 정보와 이런 종류의 제품에 대한 일반 지식에 근거한 추론이니, 출발점으로 보시고 판단을 바꿀 만한 것은 직접 확인하세요.",
     "bw_walk_all_results": "모든 결과",
     "bw_walk_need_it": "필요한가요?",
     "bw_walk_opportunity": "기회비용:",
@@ -3146,6 +3166,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "ru": {
+    "bw_verified_title": "Проверено сегодня в интернете",
+    "bw_verified_source": "Источник:",
     "bw_sec_more": "Подробнее об этой покупке",
     "bw_verify_title": "Проверьте это перед оплатой",
     "bw_title": "Buy Wise",
@@ -3263,7 +3285,7 @@ export const buyWise = {
     "bw_still_deciding": "Всё ещё решаете?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "поможет взвесить все за и против.",
-    "bw_results_disclaimer": "Buy Wise рассуждает на основе того, что вы рассказали, и общих знаний о таком товаре. Он не смотрит текущие цены, наличие и акции — считайте любые цифры здесь отправной точкой и проверяйте актуальные сами.",
+    "bw_results_disclaimer": "Buy Wise проверяет в интернете несколько быстро меняющихся вещей — цену, наличие, гарантию, известные дефекты — и показывает найденное вместе с источником. Всё остальное — рассуждение на основе ваших слов и общих знаний о таком товаре: считайте это отправной точкой и проверяйте всё, что способно изменить решение.",
     "bw_walk_all_results": "Все результаты",
     "bw_walk_need_it": "Нужно ли?",
     "bw_walk_opportunity": "Альтернативные издержки:",
@@ -3460,6 +3482,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "th": {
+    "bw_verified_title": "ตรวจสอบบนเว็บวันนี้",
+    "bw_verified_source": "แหล่งที่มา:",
     "bw_sec_more": "เพิ่มเติมเกี่ยวกับการซื้อครั้งนี้",
     "bw_verify_title": "เช็กสิ่งเหล่านี้ก่อนจ่ายเงิน",
     "bw_title": "Buy Wise",
@@ -3577,7 +3601,7 @@ export const buyWise = {
     "bw_still_deciding": "ยังตัดสินใจไม่ได้?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "ช่วยคุณชั่งน้ำหนักข้อดีข้อเสีย",
-    "bw_results_disclaimer": "Buy Wise ใช้สิ่งที่คุณบอกร่วมกับความรู้ทั่วไปเกี่ยวกับสินค้าประเภทนี้ในการประเมิน ไม่ได้ค้นราคา สต็อก หรือโปรโมชันปัจจุบัน ตัวเลขในนี้จึงเป็นจุดตั้งต้น โปรดตรวจสอบข้อมูลจริงด้วยตัวเอง",
+    "bw_results_disclaimer": "Buy Wise ตรวจสอบข้อมูลที่เปลี่ยนบ่อยบนเว็บ — ราคา ความพร้อมจำหน่าย การรับประกัน ข้อบกพร่องที่รู้กัน — และแสดงสิ่งที่พบพร้อมแหล่งที่มา ส่วนที่เหลือเป็นการให้เหตุผลจากสิ่งที่คุณบอกและความรู้ทั่วไปเกี่ยวกับสินค้าประเภทนี้ จึงควรถือเป็นจุดตั้งต้นและตรวจสอบสิ่งที่อาจเปลี่ยนการตัดสินใจด้วยตนเอง",
     "bw_walk_all_results": "ผลลัพธ์ทั้งหมด",
     "bw_walk_need_it": "ต้องการไหม?",
     "bw_walk_opportunity": "ต้นทุนค่าเสียโอกาส:",
@@ -3774,6 +3798,8 @@ export const buyWise = {
     "bw_brand_footer": "BuyWise · deftbrain.com"
   },
   "vi": {
+    "bw_verified_title": "Đã kiểm tra trên web hôm nay",
+    "bw_verified_source": "Nguồn:",
     "bw_sec_more": "Thêm về lần mua này",
     "bw_verify_title": "Kiểm tra những điều này trước khi trả tiền",
     "bw_title": "Buy Wise",
@@ -3891,7 +3917,7 @@ export const buyWise = {
     "bw_still_deciding": "Vẫn đang phân vân?",
     "bw_decision_coach": "Decision Coach",
     "bw_still_deciding_tail": "giúp bạn cân nhắc được mất.",
-    "bw_results_disclaimer": "Buy Wise suy luận từ những gì bạn cung cấp cùng hiểu biết chung về loại sản phẩm này. Nó không tra giá, tồn kho hay khuyến mãi hiện tại — hãy xem mọi con số ở đây là điểm khởi đầu và tự kiểm chứng.",
+    "bw_results_disclaimer": "Buy Wise kiểm tra trên web vài thông tin hay thay đổi — giá, tình trạng bán, bảo hành, lỗi đã biết — và hiển thị những gì tìm được kèm nguồn. Phần còn lại là suy luận từ những gì bạn cung cấp cùng hiểu biết chung về loại sản phẩm này, nên hãy xem là điểm khởi đầu và tự kiểm chứng bất cứ điều gì có thể làm bạn đổi ý.",
     "bw_walk_all_results": "Tất cả kết quả",
     "bw_walk_need_it": "Có cần không?",
     "bw_walk_opportunity": "Chi phí cơ hội:",
