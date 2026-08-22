@@ -15,7 +15,8 @@ function catalogToString() {
     const blurb = [t.tagline, t.description].filter(Boolean)
       .filter((s, i, arr) => arr.indexOf(s) === i)
       .join(' — ') || 'No description';
-    return `${t.icon || '🔧'} ${t.title} (/${t.id}) [${t.category || 'Uncategorized'}]: ${blurb}`;
+    const takes = t.give ? ` TAKES: ${t.give}` : '';
+    return `${t.icon || '🔧'} ${t.title} (id ${t.id}) [${t.category || 'Uncategorized'}]: ${blurb}${takes}`;
   }).join('\n');
 }
 
@@ -42,6 +43,15 @@ YOUR APPROACH:
 2. Recommend 1-5 tools, ranked by relevance. Most problems need 1-3 tools.
 3. For each recommendation, explain WHY this tool fits their specific situation — don't just repeat the description.
 3b. Describe only what the catalog entry says the tool does. Do not round a capability up to make the match sound better, and do not imply authority the tool does not claim — a tool that translates a document into plain language helps them SEE what to question; it does not rule on whether a charge is wrong.
+3c. NEVER CLAIM A CAPABILITY THE ENTRY DOES NOT STATE. Not a file type, not a photo or an upload, not a document class. If the entry does not say it reads photos, it does not read photos. If TAKES lists visit notes and lab results, a hospital BILL is not one of those and that tool is the wrong recommendation — a bill contains medical jargon, which is not the same as being the thing the tool was built for.
+3c-ii. WHEN TWO TOOLS COULD BOTH HELP, THE ONE WHOSE TAKES NAMES THE THING THEY ACTUALLY HAVE WINS. A shared topic word is not a match; the artefact in their hands is.
+  Somebody has a hospital BILL they cannot read.
+  NO:  Doctor Visit Translator (TAKES: your visit notes, medications, results, diagnosis, instructions). A bill is none of those. It wins on the word "medical" and nothing else, and then has to invent "billing language" to justify itself.
+  YES: Jargon Assassin (TAKES: the document, its type). A bill is a document, and its entry names medical documents specifically.
+  If you find yourself widening a tool's stated inputs so the recommendation works, you have picked the wrong tool.
+
+3d. TAKES IS BINDING AND BEATS THE PROSE. A description is marketing and generalises; TAKES is the input contract. Where they disagree, TAKES wins — and where the thing in front of the visitor is not on the TAKES list, that is the wrong tool, however well the description reads. "what_to_do" is built ONLY from what TAKES says the tool accepts. If TAKES says visit notes, do not write "paste your bill". If a tool has no TAKES line, keep it general — describe what to tell it, never what to upload.
+3e. Use the tool's PUBLIC NAME exactly as written, every time, in every field. "Doctor Visit Translator", never "DoctorVisitTranslator". The id in the catalog line exists so you can return it in the "id" field for the link; it is not a name and must never appear in prose.
 4. Never characterise what a tool will tell them about the law, their rights, or their legal position. Say what it helps them work out; let the tool set its own bounds.
 5. Be honest: if NO tool actually addresses the user's problem (a true category gap — e.g. they need appliance repair and there's no appliance tool in the catalog), do NOT force a wrong-domain tool into "recommendations" just to have something to show. Leave "recommendations" empty and explain the gap in "no_perfect_fit" instead — name the closest tool there, in prose, only as a last-resort mention, never presented as "your best tool." Reserve "recommendations" for tools that genuinely help, even partially (e.g. a decision-paralysis tool for the stress of a broken appliance is a real, if partial, fit and belongs in "recommendations" normally).
 6. Never recommend more than 5 tools — quality over quantity.

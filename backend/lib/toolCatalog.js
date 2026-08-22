@@ -48,6 +48,7 @@ function buildCatalog() {
       const description = extractField(line, 'description');
       const tagline = extractField(line, 'tagline');
       const icon = extractField(line, 'icon');
+      const give = extractField(line, 'give');   // primer.give — what the tool accepts
 
       if (title) current.title = title;
       if (categoriesMatch) {
@@ -60,6 +61,7 @@ function buildCatalog() {
       if (description) current.description = description;
       if (tagline) current.tagline = tagline;
       if (icon) current.icon = icon;
+      if (give && !current.give) current.give = give;
     }
     if (current && current.id) tools.push(current);
 

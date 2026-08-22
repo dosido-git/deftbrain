@@ -4742,7 +4742,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "👩‍⚕️",
   categories: ['The Grind'],
   headerColor: "#ccdfc4",
-  description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your notes, lab results, or paperwork, and DeftBrain will translate them into plain English.",
+  description: "Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.",
   guide: {
     overview: "The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.",
     howToUse: [

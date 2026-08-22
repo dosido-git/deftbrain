@@ -268,3 +268,43 @@ settled. Further work belongs in `src/data/tools.js`: Tool Finder reads tagline 
 description for every candidate, so the accuracy of its recommendations is capped
 by the accuracy of those entries.
 
+### TAKES — the field it was never shown
+
+Doctor Visit Translator was recommended for a hospital BILL, told the visitor to
+photograph it, and was named "DoctorVisitTranslator" in prose. Three faults, one
+cause: the model judged every candidate on `tagline` + `description` and had no
+idea what any tool actually accepts.
+
+`primer.give` says exactly that — DVT's is "Your visit notes, or what you
+remember — medications, results, diagnosis, instructions." It has been in the
+catalog all along and `backend/lib/toolCatalog.js` never parsed it. Now parsed
+and rendered as **TAKES:** on every catalog line (124/124 tools have one).
+
+Rules added on top of it:
+
+- **Never claim a capability the entry does not state** — not a file type, not a
+  photo, not an upload. If the entry does not say it reads photos, it does not.
+- **TAKES is binding and beats the prose.** A description is marketing and
+  generalises; TAKES is the input contract.
+- **When two tools could both help, the one whose TAKES names the thing they
+  actually HAVE wins.** A shared topic word is not a match. "If you find
+  yourself widening a tool's stated inputs so the recommendation works, you have
+  picked the wrong tool."
+- **Public name, exactly, in every field.** The id is for the link only and must
+  never appear in prose.
+
+Now: bill -> Jargon Assassin. Visit notes -> Doctor Visit Translator. Three
+months behind -> Bill Rescue. Same three medical inputs, three different tools.
+
+**The metadata was doing the pulling.** DVT's description said "paste your notes,
+lab results, or paperwork" — "paperwork" is broad enough to include a bill, and
+the model was reading it faithfully. Narrowed to "the instructions they sent you
+home with". This is the tools.js problem in miniature: no prompt rule about
+honesty can fix an entry that overclaims.
+
+**Operational gotcha:** `TOOL_CATALOG` is built once at backend startup by
+reading `src/data/tools.js`. Nodemon watches `backend/`, so editing tools.js
+changes NOTHING for Tool Finder until the backend restarts. Two of my test runs
+were against the stale in-memory catalog before I noticed. Touch a backend file
+after editing tools.js.
+
