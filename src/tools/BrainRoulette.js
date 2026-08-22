@@ -67,6 +67,22 @@ const EXAMPLES = [
   depth: 'deep',
   audienceLevel: 'nerd',
 },
+  // Two topic-led examples, deliberately on opposite sides of the evidence
+  // line: the first has a settled answer, the second does not. Between them
+  // they show a first-time visitor both halves of what "How solid is this?"
+  // is for — an answer that earns a plain statement, and one that does not.
+  {
+  topicKey: 'bro_ex_topic_solid',
+  selectedInterests: [],
+  depth: 'medium',
+  audienceLevel: 'curious',
+},
+  {
+  topicKey: 'bro_ex_topic_speculative',
+  selectedInterests: [],
+  depth: 'deep',
+  audienceLevel: 'nerd',
+},
 ];;
 
 // ════════════════════════════════════════════════════════════
@@ -394,10 +410,11 @@ const BrainRoulette = ({ tool }) => {
   const loadExample = useCallback(() => {
     const ex = pickExample('BrainRoulette', EXAMPLES);
     setSelectedInterests(ex.selectedInterests);
+    setCustomTopic(ex.topicKey ? t(ex.topicKey) : '');
     setDepth(ex.depth);
     setAudienceLevel(ex.audienceLevel);
     setActiveTab('spin');
-  }, [setSelectedInterests]);
+  }, [setSelectedInterests, t]);
 
   // v3: Spin from concept
   const handleSpinFromConcept = async (concept) => {

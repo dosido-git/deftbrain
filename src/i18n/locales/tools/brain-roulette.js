@@ -4,6 +4,8 @@
 // Emoji in label/tab values is intentional — keep it inside the string.
 export const brainRoulette = {
   en: {
+    bro_ex_topic_solid: "how tree rings recorded a volcanic eruption on the other side of the world",
+    bro_ex_topic_speculative: "whether a city has something like a metabolism",
     bro_how_solid: "How solid is this?",
     bro_tagline: "Personalized rabbit holes you can't resist",
     bro_int_science: "Science",
@@ -172,6 +174,8 @@ export const brainRoulette = {
     bro_export_connects: "**Connects:** {{connections}}",
   },
   es: {
+    bro_ex_topic_solid: "cómo los anillos de los árboles registraron una erupción volcánica al otro lado del mundo",
+    bro_ex_topic_speculative: "si una ciudad tiene algo parecido a un metabolismo",
     bro_how_solid: "¿Qué tan sólido es esto?",
     bro_tagline: "Madrigueras personalizadas a las que no podrás resistirte",
     bro_int_science: "Ciencia",
@@ -340,6 +344,8 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   zh: {
+    bro_ex_topic_solid: "树木年轮如何记录下地球另一端的一次火山喷发",
+    bro_ex_topic_speculative: "城市是否也有类似新陈代谢的东西",
     bro_how_solid: "这个结论有多可靠？",
     bro_tagline: "让你欲罢不能的个性化深度探索",
     bro_int_science: "科学",
@@ -508,6 +514,8 @@ export const brainRoulette = {
     bro_export_connects: "**关联：** {{connections}}",
   },
   hi: {
+    bro_ex_topic_solid: "पेड़ों के छल्लों ने दुनिया के दूसरे छोर पर हुए ज्वालामुखी विस्फोट को कैसे दर्ज किया",
+    bro_ex_topic_speculative: "क्या किसी शहर में भी चयापचय जैसा कुछ होता है",
     bro_how_solid: "यह कितना पक्का है?",
     bro_tagline: "ऐसे दिलचस्प सफर जिन्हें रोक पाना मुश्किल है",
     bro_int_science: "विज्ञान",
@@ -676,6 +684,8 @@ export const brainRoulette = {
     bro_export_connects: "**जोड़ता है:** {{connections}}",
   },
   ar: {
+    bro_ex_topic_solid: "كيف سجّلت حلقات الأشجار ثوران بركان في الجهة الأخرى من العالم",
+    bro_ex_topic_speculative: "هل للمدينة شيء يشبه الأيض",
     bro_how_solid: "ما مدى رسوخ هذا؟",
     bro_tagline: "متاهات شخصية لا تستطيع مقاومتها",
     bro_int_science: "العلوم",
@@ -844,6 +854,8 @@ export const brainRoulette = {
     bro_export_connects: "**يربط:** {{connections}}",
   },
   pt: {
+    bro_ex_topic_solid: "como os anéis das árvores registraram uma erupção vulcânica do outro lado do mundo",
+    bro_ex_topic_speculative: "se uma cidade tem algo parecido com um metabolismo",
     bro_how_solid: "Quão sólido é isso?",
     bro_tagline: "Tocas de coelho personalizadas que você não consegue resistir",
     bro_int_science: "Ciência",
@@ -1012,6 +1024,8 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   fr: {
+    bro_ex_topic_solid: "comment les cernes des arbres ont enregistré une éruption volcanique à l'autre bout du monde",
+    bro_ex_topic_speculative: "si une ville possède quelque chose comme un métabolisme",
     bro_how_solid: "Est-ce solidement établi ?",
     bro_tagline: "Des terriers personnalisés auxquels vous ne pourrez pas résister",
     bro_int_science: "Science",
@@ -1180,6 +1194,8 @@ export const brainRoulette = {
     bro_export_connects: "**Relie :** {{connections}}",
   },
   de: {
+    bro_ex_topic_solid: "wie Baumringe einen Vulkanausbruch auf der anderen Seite der Welt aufgezeichnet haben",
+    bro_ex_topic_speculative: "ob eine Stadt so etwas wie einen Stoffwechsel hat",
     bro_how_solid: "Wie gesichert ist das?",
     bro_tagline: "Persönliche Kaninchenlöcher, denen du nicht widerstehen kannst",
     bro_int_science: "Wissenschaft",
@@ -1348,6 +1364,8 @@ export const brainRoulette = {
     bro_export_connects: "**Verbindet:** {{connections}}",
   },
   ja: {
+    bro_ex_topic_solid: "地球の裏側で起きた火山噴火を、木の年輪はどう記録したのか",
+    bro_ex_topic_speculative: "都市にも代謝のようなものがあるのか",
     bro_how_solid: "これはどれくらい確かな話？",
     bro_tagline: "やめられない、あなただけの深掘り体験",
     bro_int_science: "科学",
@@ -1516,6 +1534,8 @@ export const brainRoulette = {
     bro_export_connects: "**つながり：** {{connections}}",
   },
   ko: {
+    bro_ex_topic_solid: "나무의 나이테가 지구 반대편의 화산 폭발을 어떻게 기록했는가",
+    bro_ex_topic_speculative: "도시에도 신진대사 같은 것이 있을까",
     bro_how_solid: "이건 얼마나 확실한가요?",
     bro_tagline: "끊을 수 없는 나만의 깊이 파고들기",
     bro_int_science: "과학",
@@ -1684,6 +1704,8 @@ export const brainRoulette = {
     bro_export_connects: "**연결:** {{connections}}",
   },
   ru: {
+    bro_ex_topic_solid: "как годичные кольца деревьев записали извержение вулкана на другом конце света",
+    bro_ex_topic_speculative: "есть ли у города что-то вроде обмена веществ",
     bro_how_solid: "Насколько это надёжно?",
     bro_tagline: "Персональные кроличьи норы, перед которыми не устоять",
     bro_int_science: "Наука",
@@ -1852,6 +1874,8 @@ export const brainRoulette = {
     bro_export_connects: "**Связывает:** {{connections}}",
   },
   th: {
+    bro_ex_topic_solid: "วงปีของต้นไม้บันทึกการปะทุของภูเขาไฟอีกซีกโลกไว้ได้อย่างไร",
+    bro_ex_topic_speculative: "เมืองมีอะไรบางอย่างที่คล้ายกับระบบเผาผลาญหรือไม่",
     bro_how_solid: "เรื่องนี้หนักแน่นแค่ไหน?",
     bro_tagline: "เส้นทางความรู้สุดน่าค้นหาที่คุณห้ามใจไม่ได้",
     bro_int_science: "วิทยาศาสตร์",
@@ -2020,6 +2044,8 @@ export const brainRoulette = {
     bro_export_connects: "**เชื่อมโยง:** {{connections}}",
   },
   vi: {
+    bro_ex_topic_solid: "vòng gỗ của cây đã ghi lại một vụ phun trào núi lửa ở nửa kia thế giới như thế nào",
+    bro_ex_topic_speculative: "liệu một thành phố có thứ gì đó giống như quá trình trao đổi chất hay không",
     bro_how_solid: "Điều này chắc chắn đến đâu?",
     bro_tagline: "Những hố thỏ cá nhân hóa mà bạn không thể cưỡng lại",
     bro_int_science: "Khoa học",
