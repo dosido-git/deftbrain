@@ -73,13 +73,17 @@ const ToolFinder = ({ tool }) => {
   const resultsRef = useRef(null);
 
   // ─── Actions (declared before useEffect to avoid stale closures) ───
-  const findTools = useCallback(async (text) => {
+  const findTools = useCallback(async (text, correction, rejected) => {
     const query = (text !== undefined ? text : problem);
     if (!query.trim()) return;
     setError('');
     setResults(null);
     try {
-      const data = await callToolEndpoint('tool-finder', { problem: query.trim() });
+      const data = await callToolEndpoint('tool-finder', {
+        problem: query.trim(),
+        refinement: correction?.trim() || undefined,
+        rejected: rejected?.length ? rejected : undefined,
+      });
       setResults(data);
       setSessionHistory(prev => [{
         id: Date.now(), date: new Date().toISOString(),
@@ -89,6 +93,15 @@ const ToolFinder = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('tf_err'));
     } }, [problem, callToolEndpoint, setError, setResults, setSessionHistory, t]);
+
+  const [refineOpen, setRefineOpen] = useState(false);
+  const [refinement, setRefinement] = useState('');
+  const submitRefinement = useCallback(() => {
+    if (!refinement.trim()) return;
+    const rejected = (results?.recommendations || []).map(x => x.id).filter(Boolean);
+    setRefineOpen(false);
+    findTools(undefined, refinement, rejected);
+  }, [refinement, results, findTools]);
 
   // Arrive from the home page with the problem already typed: /ToolFinder?q=...
   // The home hero is a text box now, so whatever was typed there should not
@@ -224,7 +237,7 @@ const ToolFinder = ({ tool }) => {
           )} {/* ── RECOMMENDATIONS ── */} {r.recommendations && r.recommendations.length > 0 && (<div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-bold ${c.text}`}>
-                  {t('tf_start_with', { title: r.recommendations[0]?.title || '' })} </h3>
+                  {t('tf_id_start_with', { title: r.recommendations[0]?.title || '' })} </h3>
 
               </div>
 
@@ -279,11 +292,28 @@ const ToolFinder = ({ tool }) => {
             </div>
           )} {/* Demand capture — the AI just confirmed no tool fits */} {r.no_perfect_fit && (
             <IdeaPrompt source="toolfinder-nofit" query={problem} />
-          )} {/* ── CLARIFICATION ── */} {r.clarification && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('tf_clarification_label')}</p>
-              <p className={`text-sm ${c.textSecondary}`}>{r.clarification}</p>
-            </div>
+          )} {/* ── NOT QUITE IT ── */} {!r.no_perfect_fit && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              {!refineOpen ? (
+                <button onClick={() => setRefineOpen(true)} className={`text-sm font-semibold ${linkStyle} underline`}>
+                  {t('tf_not_what_you_meant')}
+                </button>
+              ) : (<div className="space-y-2">
+                  <p className={`text-xs font-bold ${c.textMuted}`}>{t('tf_whats_different')}</p>
+                  {r.clarification && <p className={`text-xs ${c.textSecondary}`}>{r.clarification}</p>}
+                  <textarea
+                    value={refinement} onChange={e => setRefinement(e.target.value)} autoFocus
+                    placeholder={t('tf_refine_ph')} rows={2} maxLength={400}
+                    onKeyDown={e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') submitRefinement(); }}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} ${c.border} ${c.text} outline-none focus:ring-2 resize-none`} />
+                  <button onClick={submitRefinement} disabled={loading || !refinement.trim()}
+                    className={`w-full ${(!refinement.trim()) ? c.btnIdle : c.btnPrimary} disabled:cursor-not-allowed font-bold py-2 rounded-lg text-sm`}>
+                    {loading ? t('tf_searching') : t('tf_find_better')}
+                  </button>
+                </div>
+              )} </div>
           )} {/* ── BROWSE ALL ── */} <p className={`text-xs text-center ${c.textMuted}`}>{t('tf_ai_disclaimer')}</p>
+          {/* Demand capture, and now unmistakably its own path: this one means
+              DeftBrain has nothing, not that the first guess was poor. */}
           {!r.no_perfect_fit && <IdeaPrompt source="toolfinder-results" query={problem} compact />}
           <p className={`text-xs ${c.textMuted} text-center`}>
             {t('tf_not_found')}{' '}

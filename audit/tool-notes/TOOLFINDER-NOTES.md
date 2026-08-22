@@ -121,3 +121,39 @@ best match"). The guide currently helping you says *I* (the tagline and the whol
 output: "I hear you", "One thing I'd want to know"). The tagline is the tool's own
 voice wherever it appears, so the catalog field matches it.
 
+### The refinement loop (the missing interaction)
+
+"Not quite right" has two meanings and they were sharing a link:
+
+1. you misunderstood me / that pick is wrong
+2. DeftBrain genuinely has nothing for this
+
+The bottom link sent (1) to the page for (2) — "No tool for your problem?
+Describe it, we build fast" — which answers a different question and tells the
+visitor we have nothing when the truth may be that the first guess was poor. A
+promise of refinement delivering product feedback.
+
+Four intentions, four separate paths now:
+
+| that's right | the card link |
+| that's not right | **Not what you meant? Tell me what's different →** (new) |
+| nothing fits at all | Can't find what you need? Suggest a tool → (IdeaPrompt) |
+| I'd rather look myself | Or browse all tools → |
+
+**How the loop works.** The link expands a textarea in place; submitting calls
+the same endpoint with `refinement` plus `rejected` (the ids already offered).
+The prompt reads the two statements together — "the correction narrows the
+original, it does not replace it" — and will not re-offer a rejected tool unless
+the correction makes one clearly right. Verified end to end: "huge project, I
+get paralysed" returns Task Avalanche Breaker; adding "breaking it down isn't
+the problem, I know what to do, I just keep avoiding it" returns **Spiral
+Stopper**, with nothing re-offered.
+
+**`clarification` folded into it.** It was already the model admitting it might
+not have enough to be sure; it now renders as the hint above the correction box
+instead of as passive advice with nowhere to answer.
+
+**Heading**: "Start with X" -> "I'd start with X". "Start with" is authoritative
+and makes a correction feel like the visitor arguing; "I'd start with" is a
+recommendation from available information and leaves room to say no.
+

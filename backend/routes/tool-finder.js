@@ -24,7 +24,7 @@ function catalogToString() {
 // ════════════════════════════════════════════════════════════
 router.post('/tool-finder', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { problem, userLanguage } = req.body;
+    const { problem, refinement, rejected, userLanguage } = req.body;
 
     if (!problem?.trim()) {
       return res.status(400).json({ error: 'Describe your problem or situation and I\'ll find the right tools.' });
@@ -54,7 +54,16 @@ IMPORTANT:
 - If the problem is vague, still give your best recommendations but note what clarification would help.
 - Never place a double-quote (") character inside any JSON string value — quoted tool names and phrases must be written plainly or with single quotes, or it breaks the JSON.`;
 
-    const userPrompt = `My problem: ${problem}
+    const rejectedTitles = (Array.isArray(rejected) ? rejected : [])
+      .map(id => (TOOL_CATALOG.find(t => t.id === id) || {}).title)
+      .filter(Boolean);
+
+    const userPrompt = `My problem: ${problem}${refinement ? `
+
+THEY CAME BACK. You already answered this once${rejectedTitles.length ? ` and offered: ${rejectedTitles.join(', ')}` : ''}, and they said it was not what they meant. Their correction, which is the more important half of what you now know:
+"${String(refinement).slice(0, 400)}"
+
+Read the two together — the correction narrows the original, it does not replace it. Do not offer ${rejectedTitles.length ? 'those tools' : 'the same tools'} again unless the correction makes one of them clearly right, and if so say what changed. Getting it wrong the first time is not something to apologise for; just answer the narrower question.` : ''}
 
 THE FEWEST TOOLS THAT GIVE THEM A CLEAR NEXT STEP. Somebody came here because they could not choose. Do not solve that by handing them another choice. One confident starting point beats three plausible matches, and a second tool earns its place only by addressing a DIFFERENT dimension of the problem — not a different angle on the same one. If a tool already covers tone, a second tool about tone is not a second recommendation.
 - The "even though" test: if you find yourself writing "even though this is really for X..." or "while this tool is designed for Y...", that recommendation is strained. Drop it.
