@@ -459,6 +459,27 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Reusable Pills
   // ══════════════════════════════════════════
+  // PF-37 — primary selections: the state you are in, the state you want, the
+  // task. Each defines the output, so each gets a card with a real tap target
+  // rather than a pill sized to its own label.
+  const renderCards = (options, value, setter, cols = 2) => (
+    <div className={`grid grid-cols-1 sm:grid-cols-${cols} gap-2`}>
+      {options.map(opt => {
+        const active = value === opt.value;
+        return (
+          <button key={opt.value} onClick={() => setter(opt.value)}
+            className={`p-3 min-h-[44px] rounded-xl border-2 text-start text-sm font-medium transition-all ${
+              active ? c.pillActive : `${c.card} ${c.border} hover:border-gray-400`}`}>
+            {active && <span className="me-1">✓</span>}
+            {t(opt.labelKey)}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  // Secondary: multi-select preferences and tags. A wrap row is right here —
+  // eight genres read as a palette, and no single one defines the output.
   const renderPills = (options, value, setter, multi = false) => (
     <div className="flex flex-wrap gap-1.5">
       {options.map(opt => {
@@ -508,18 +529,18 @@ const BrainStateDeejay = ({ tool }) => {
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
         {renderWinningSuggestion()}
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_current')} <span className={c.required}>*</span></label>
-        {renderPills(CURRENT_STATES, currentState, setCurrentState)}
+        {renderCards(CURRENT_STATES, currentState, setCurrentState)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_desired')} <span className={c.required}>*</span></label>
-        {renderPills(DESIRED_STATES, desiredState, setDesiredState)}
+        {renderCards(DESIRED_STATES, desiredState, setDesiredState)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('bsd_q_task')}</label>
         <p className={`text-xs ${c.textMuted} mb-2`}>{t('bsd_q_task_hint')}</p>
-        {renderPills(TASK_OPTIONS, task, setTask)}
+        {renderCards(TASK_OPTIONS, task, setTask, 3)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>

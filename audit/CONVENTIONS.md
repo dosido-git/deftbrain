@@ -2146,3 +2146,61 @@ line above (to reunite `medium` with its label) will happily weld the next
 audience's name onto the end of the previous sentence — "…I have data behind
 it. (Mom)". It must not fire when the previous line ends in sentence
 punctuation.
+
+
+### PF-37 · Primary selections are cards in a grid, never text-width pills
+
+A **primary selection** is a control whose value changes what the tool
+produces: the state you are in, the state you want, the kind of document, the
+spoiler level, the mode. If removing the choice would change the output, it is
+primary.
+
+Primary selections render as **cards in a responsive grid**:
+
+```jsx
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+  {SPOILER_LEVELS.map(s => (
+    <button key={s.value} onClick={() => setSpoilerLevel(s.value)}
+      className={`p-3 min-h-[44px] rounded-xl border-2 text-start transition-all ${
+        spoilerLevel === s.value ? c.pillActive : `${c.card} ${c.border} hover:border-gray-400`}`}>
+      <span className="text-sm font-medium block">{t(s.labelKey)}</span>
+      <span className={`text-[10px] ${c.textMuted}`}>{t(s.descKey)}</span>
+    </button>
+  ))}
+</div>
+```
+
+Reference implementation: `src/tools/Bookmark.js`, the spoiler-level control.
+
+The rules, and the reason for each:
+
+- **`grid`, never `flex flex-wrap`.** A wrap row sizes every control to its own
+  label, so "Yes" is a third the width of "Something else entirely" and the two
+  are equally important. A grid gives them one width and one weight.
+- **`grid-cols-1 sm:grid-cols-2`** (or `sm:grid-cols-3` when labels are two or
+  three words). One column on a phone is the point: full-width rows are the
+  easiest thing there is to hit with a thumb.
+- **`min-h-[44px]` and `p-3` at least.** The tap target has to exceed the text
+  by a comfortable margin. 44px is the smallest target most people can hit
+  reliably without looking, and a `px-3 py-1.5` pill around an `text-xs` label
+  is roughly 28px.
+- **`text-start`.** Centred text inside a full-width card reads as a banner.
+  Left-aligned reads as a choice in a list.
+- **Room for a second line.** A card can carry a short description under the
+  label; a pill cannot. If the choice needs explaining — and a primary choice
+  usually does — that is where the explanation goes, not in a paragraph above.
+
+**Not primary, and pills remain correct for these:** multi-select preferences
+and tags (genres, interests, sensitivities), filters over an existing result,
+example seeds, mode tabs, and anything where the row itself is the affordance —
+a set of eight interests reads as a palette and should. The test is whether one
+choice among them determines the shape of the output. Genres tune it; the
+starting state defines it.
+
+**Enforcement is deliberately deferred.** 115 of 126 tool files contain at least
+one `flex flex-wrap` control row, and the great majority of those are the
+secondary controls this rule exempts. An audit rule that cannot distinguish
+primary from secondary would fire on all of them, and a rule everyone learns to
+ignore is worse than no rule. Convert on contact — when a tool is being worked
+on for any reason, its primary selections come with it.
+
