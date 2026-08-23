@@ -174,8 +174,6 @@ const BrainRoulette = ({ tool }) => {
     limitBar:      isDark ? 'bg-zinc-700' : 'bg-slate-100',
     limitFill:     isDark ? 'bg-cyan-500' : 'bg-cyan-400',
     footerText:    isDark ? 'text-zinc-500' : 'text-slate-400',
-    welcomeBg:     isDark ? 'bg-cyan-900/20 border-cyan-700/40' : 'bg-cyan-50 border-cyan-200',
-    welcomeText:   isDark ? 'text-cyan-200' : 'text-cyan-900',
     chainBorder:   isDark ? 'border-s-cyan-500' : 'border-s-cyan-400',
     tabActive:     isDark ? 'border-cyan-500 text-cyan-400' : 'border-cyan-500 text-cyan-600',
     tabInactive:   isDark ? 'border-transparent text-zinc-500 hover:text-zinc-300' : 'border-transparent text-slate-400 hover:text-slate-600',
@@ -282,7 +280,6 @@ const BrainRoulette = ({ tool }) => {
   const [customInterests, setCustomInterests] = usePersistentState('brain-roulette-custom-interests', []);
   const [seenTopics, setSeenTopics] = usePersistentState('brain-roulette-seen', []);
   const [savedItems, setSavedItems] = usePersistentState('brain-roulette-saved', []);
-  const [welcomeDismissed, setWelcomeDismissed] = usePersistentState('brain-roulette-welcome', false);
   const [sessionHistory, setSessionHistory] = usePersistentState('brain-roulette-history', []);
   // NOTE: History capped at 200 (not the standard 5-6) — intentional exception.
   // Brain Roulette uses sessionHistory for: seenTopics deduplication, flashback spaced-repetition,
@@ -694,24 +691,6 @@ const BrainRoulette = ({ tool }) => {
       return !sched || now >= sched.nextReview;
     }).length;
   }, [savedItems, sessionHistory, flashbackSchedule]);
-
-  // ══════════════════════════════════════════
-  // RENDER: Welcome
-  // ══════════════════════════════════════════
-  const renderWelcome = () => {
-    if (welcomeDismissed) return null;
-    return (
-      <div className={`mb-5 p-5 rounded-2xl border ${c.welcomeBg} relative`}>
-        <button onClick={() => setWelcomeDismissed(true)} className={`absolute top-3 end-3 text-xs ${c.textMuted} hover:opacity-70`}>✕</button>
-        <h3 className={`text-sm font-bold mb-3 ${c.welcomeText}`}>{t('bro_welcome_title')}</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {[['🔬', t('bro_welcome_feat1_title'), t('bro_welcome_feat1_desc')], ['🎭', t('bro_welcome_feat2_title'), t('bro_welcome_feat2_desc')], ['🧭', t('bro_welcome_feat3_title'), t('bro_welcome_feat3_desc')], ['📬', t('bro_welcome_feat4_title'), t('bro_welcome_feat4_desc')]].map(([e, title, d]) => (
-            <div key={title} className="flex items-start gap-2"><span className="text-base">{e}</span><div><div className={`text-xs font-bold ${c.text}`}>{title}</div><div className={`text-xs ${c.textMuted}`}>{d}</div></div></div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   // ══════════════════════════════════════════
   // RENDER: v3 DEBATE TAB
@@ -1257,7 +1236,6 @@ const BrainRoulette = ({ tool }) => {
         </div>
       </div>
 
-      {renderWelcome()}
 
       {activeTab === 'saved' && renderSavedCollection()}
       {activeTab === 'stats' && renderStatsTab()}
@@ -1267,12 +1245,6 @@ const BrainRoulette = ({ tool }) => {
 
       {activeTab === 'spin' && (
         <>
-          {/* Streak */}
-          <div className="flex items-center justify-between mb-5">
-            <div />
-            {seenTopics.length > 0 && <span className={`text-xs font-medium ${c.footerText}`}>{t('bro_n_explored', { n: seenTopics.length })}</span>}
-          </div>
-
           {/* Custom topic */}
           <div className={`mb-5 p-4 rounded-2xl border ${c.border} ${c.card}`}>
             <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>{t('bro_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('bro_optional')}</span></label>
