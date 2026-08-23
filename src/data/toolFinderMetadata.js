@@ -175,6 +175,37 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user wants to pressure-test a belief they use to guide decisions or interpret life.",
     whenNotToRecommend: "Do not recommend when the user primarily wants adversarial debate, counterfactual history, or a vivid two-path decision simulation.",
   },
+  BikeMedic: {
+    problems: [
+      "Something is wrong with my bike and I do not know where to start",
+      "My bike is making a noise, skipping, rubbing, wobbling, or otherwise behaving differently",
+      "I need safe troubleshooting steps before deciding whether to repair it myself or use a bike shop",
+    ],
+    capabilities: [
+      "narrows a bicycle symptom to plausible causes without treating the symptom as proof",
+      "uses checks that help separate competing causes",
+      "uses manufacturer documentation or established technical references for component-specific specifications when available",
+      "gives step-by-step repair guidance and clear stop-riding or shop-escalation advice",
+    ],
+    accepts: [
+      "a free-text description of the bike symptom",
+      "a selected bike component or problem area",
+      "answers to diagnostic questions",
+      "bike setup or component details when known",
+    ],
+    notFor: [
+      "judging whether a bike part is worth its asking price",
+      "evaluating a repair shop quote",
+      "general purchase decisions about a bike or accessory",
+    ],
+    handoffs: [
+      { when: "the user wants to judge whether a bike, part, or accessory is worth the price rather than diagnose a mechanical problem", toolId: "BuyWise" },
+      { when: "the user already has a repair estimate and wants to evaluate the quote rather than troubleshoot the bike", toolId: "QuoteCheck" },
+    ],
+    primaryIntent: "diagnose and safely troubleshoot a bicycle problem using symptom-based checks plus verified component specifications",
+    whenToRecommend: "Recommend when the user has a bicycle symptom or component problem and needs help narrowing causes and deciding what to check or do next.",
+    whenNotToRecommend: "Do not recommend when the primary need is shopping advice, price evaluation, or analysis of a repair quote rather than mechanical troubleshooting.",
+  },
   BillRescue: {
     problems: [
       "I received a bill that seems wrong, too high, overdue, or in collections",
@@ -208,6 +239,38 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user has an actual bill or collection problem and needs to understand it and decide what action to take.",
     whenNotToRecommend: "Do not recommend for medical-note translation, general price-markup curiosity, or unrelated document comprehension.",
   },
+  Bookmark: {
+    problems: [
+      "I stopped a show or book and cannot remember enough to continue",
+      "I want a recap up to exactly where I stopped without spoilers",
+      "I am returning to a game or sports season after time away and need the context I already should know",
+    ],
+    capabilities: [
+      "recaps only material established at or before the user’s stopping point",
+      "uses chronology checks and omits details that cannot be safely placed before the boundary",
+      "refreshes characters, established threads, world details, and the user’s likely re-entry point",
+      "uses memory fragments as clues without treating them as certain facts",
+    ],
+    accepts: [
+      "the title of a show, book, game, or sports season",
+      "a stopping point such as episode, chapter, page, date, or game",
+      "optional memories of the last scene, event, or character state",
+    ],
+    notFor: [
+      "explaining a cryptic message or reference someone sent about a show or book",
+      "deciding whether to quit or continue a show for reasons beyond needing a recap",
+      "open-ended plot-hole or fan-theory exploration",
+    ],
+    handoffs: [
+      { when: "the user wants a cryptic message, joke, or reference decoded rather than a spoiler-safe recap", toolId: "DecoderRing" },
+      { when: "the user’s main question is whether to keep watching or quit rather than what they have forgotten", toolId: "PlotTwist" },
+      { when: "the user wants to explore a plot hole after catching up rather than resume from a stopping point", toolId: "PlotHole" },
+      { when: "the user wants to develop or explore a fan theory rather than receive a recap", toolId: "FanTheory" },
+    ],
+    primaryIntent: "restore the context needed to resume a story or season while strictly avoiding anything beyond the user’s stopping point",
+    whenToRecommend: "Recommend when the user knows where they stopped and wants a spoiler-safe refresher of what had happened by then.",
+    whenNotToRecommend: "Do not recommend for message decoding, keep-watching decisions, plot-hole analysis, or fan-theory exploration when recap is not the main need.",
+  },
   BragSheetBuilder: {
     problems: [
       "I need to remember and organize my accomplishments",
@@ -237,6 +300,109 @@ export const toolFinderMetadata = {
     primaryIntent: "capture and communicate the user’s real accomplishments and impact",
     whenToRecommend: "Recommend when the user needs to remember, organize, or phrase their own work achievements.",
     whenNotToRecommend: "Do not recommend for explaining career setbacks, writing references for another person, or fabricating accomplishments.",
+  },
+  BrainDumpBuddy: {
+    problems: [
+      "Everything in my head is mixed together and I cannot tell what actually needs action",
+      "I need to dump my thoughts somewhere and sort them without organizing first",
+      "I have tasks, worries, decisions, messages, and loose thoughts all competing for attention",
+    ],
+    capabilities: [
+      "sorts an unstructured brain dump by what each thought requires",
+      "separates tasks, decisions, communication, waiting, worries, other people’s responsibilities, feelings, and things that can be dropped",
+      "preserves user-stated deadlines while labeling inferred timing only as suggested pacing",
+      "surfaces one manageable next step before the full sorted list",
+      "lets the user reclassify items and continue from recorded progress",
+    ],
+    accepts: [
+      "an unsorted free-text brain dump",
+      "rapid-fire entries",
+      "voice input where available",
+      "optional context about what kind of overwhelm this is",
+    ],
+    notFor: [
+      "triaging an immediate crisis where only the few most urgent actions matter",
+      "breaking one large project into detailed micro-steps",
+      "providing live companionship or accountability while the user works",
+      "freezing because of a later appointment or event",
+    ],
+    handoffs: [
+      { when: "the user needs immediate triage of what matters most right now rather than a full brain-dump sort", toolId: "CrisisPrioritizer" },
+      { when: "the problem is one overwhelming project that needs to be broken into tiny concrete steps", toolId: "TaskAvalancheBreaker" },
+      { when: "the user already knows the task and wants an AI companion while doing it", toolId: "VirtualBodyDouble" },
+      { when: "a later appointment or event is what is making the rest of the day feel unusable", toolId: "WaitingModeLiberator" },
+    ],
+    primaryIntent: "turn a mixed mental pile into categories based on what each thought requires and identify one manageable next action",
+    whenToRecommend: "Recommend when the user describes a head full of mixed tasks, worries, decisions, and obligations and needs sorting before planning.",
+    whenNotToRecommend: "Do not recommend when the main need is crisis triage, project decomposition, body doubling, or waiting-mode around a later event.",
+  },
+  BrainRoulette: {
+    problems: [
+      "I want an interesting rabbit hole but do not know what to explore",
+      "I want to discover a surprising connection between things I already like",
+      "I am bored and want to learn something unexpected without choosing a single topic",
+    ],
+    capabilities: [
+      "finds a surprising intersection among two or more selected interests",
+      "generates rabbit holes at different depth and technical levels",
+      "checks the central factual connection after generation and labels it when the evidence is strong, uncertain, or overstated",
+      "offers follow-up questions and related concepts for continuing the exploration",
+    ],
+    accepts: [
+      "two or more selected interests",
+      "preferred depth such as quick hit, short rabbit hole, or deep dive",
+      "preferred explanation level",
+      "a request to choose a random mix instead",
+    ],
+    notFor: [
+      "pressure-testing a belief or argument",
+      "building a personal reflection chain between two parts of the user’s own life",
+      "researching a single user-specified factual question as the primary task",
+    ],
+    handoffs: [
+      { when: "the user wants to test where a belief or rule holds and breaks rather than discover a curiosity rabbit hole", toolId: "BeliefStressTest" },
+      { when: "the user wants a playful chain connecting two elements from their own life", toolId: "SixDegreesOfMe" },
+    ],
+    primaryIntent: "discover a surprising, evidence-checked rabbit hole at the intersection of multiple interests",
+    whenToRecommend: "Recommend when the user wants curiosity, discovery, or an unexpected connection among interests rather than an answer to a predetermined question.",
+    whenNotToRecommend: "Do not recommend for belief stress-testing, personal-life connection chains, or straightforward single-topic research.",
+  },
+  BuyWise: {
+    problems: [
+      "I am considering a purchase and do not know whether it is worth it",
+      "I found a price and want to know whether it is fair or whether I should wait",
+      "I am comparing two products and want the better fit for my priorities",
+      "I want to understand the real ownership cost and what to verify before paying",
+    ],
+    capabilities: [
+      "checks selected volatile product facts on the web when available and shows the source",
+      "judges a user-supplied price in the context of current evidence and the user’s priorities",
+      "compares two known purchase options",
+      "considers total cost of ownership, cheaper ways to get the needed benefit, regret risks, and realistic negotiation angles",
+      "identifies listing, warranty, configuration, condition, or return details that could change the decision",
+    ],
+    accepts: [
+      "a product or service under consideration",
+      "an optional price the user found",
+      "the user’s priorities and urgency",
+      "optional comparison product",
+      "context about use, replacement, budget, or concerns",
+    ],
+    notFor: [
+      "explaining why a known price has a particular markup when the user is not deciding whether to buy",
+      "resolving an actual bill, charge, or collection problem",
+      "generating gift ideas when the user does not yet know what product to consider",
+      "evaluating a contractor or repair quote as a quote rather than a retail purchase",
+    ],
+    handoffs: [
+      { when: "the user wants to understand the cost structure or markup behind a known price rather than decide whether to purchase", toolId: "MarkupDetective" },
+      { when: "the user has an actual bill, charge, or collection problem", toolId: "BillRescue" },
+      { when: "the user needs help choosing what gift to buy before there is a specific purchase to evaluate", toolId: "Giftology" },
+      { when: "the user has a contractor, service, or repair estimate and wants to evaluate the quote itself", toolId: "QuoteCheck" },
+    ],
+    primaryIntent: "decide whether a specific purchase or one of two known purchase options is worth buying at the price and terms available",
+    whenToRecommend: "Recommend when the user is close enough to a purchase to name the item, price, or competing options and wants a decision rather than general shopping inspiration.",
+    whenNotToRecommend: "Do not recommend for markup explanation alone, bill disputes, gift ideation before a product is chosen, or quote analysis where no retail purchase decision is involved.",
   },
   ChaosPilot: {
     problems: [

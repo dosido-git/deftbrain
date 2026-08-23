@@ -973,7 +973,14 @@ for name, fpath in tools:
     # replace. It had one (Skill Gap Map) and it read as: you do not know what
     # you need, so use this other tool to find out what you need. The post-result
     # half still applies and still fires.
-    _pre_exempt = _tool_name in ('ToolFinder',)
+    # Cold Open Craft, Comeback Cooker and Conflict Coach carried theirs ABOVE
+    # the form, which is the placement this rule exists to prevent. Rather than
+    # move them to the foot, the owner removed them on 2026-08-22: all three are
+    # tools someone arrives at already knowing what they want to write, so a
+    # suggestion to go elsewhere first interrupts a visitor who is not looking
+    # for one. Their post-result cross-refs are untouched and still enforced
+    # below, so each still points onward once there is an outcome to point from.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')
@@ -1059,6 +1066,33 @@ for name, fpath in tools:
     # Iterates ALL disabled={} expressions, not just the first — multi-mode tools have 10+.
     _CONTROL_VARS = {'loading', 'isLoading', 'isRunning', 'true', 'false', 'null', 'undefined', 'error'}
     _required_paths = set()
+    # An EITHER/OR is not two required fields. `disabled={loading || (!image &&
+    # !description.trim())}` disables submit only when BOTH are empty, so each
+    # one on its own satisfies the form and neither earns an asterisk — marking
+    # both required tells the visitor they must supply two things when they need
+    # supply one. The shape is a parenthesised group whose members are all
+    # negated and joined by &&; those paths are alternatives, so drop them
+    # before the check. A plain `|| !a || !b` chain still means both, and still
+    # fires. (Added 2026-08-22 after Caption Magic tripped this correctly-shaped
+    # image-or-description pair.)
+    _alt_paths = set()
+    for _dis_scan in re.finditer(r'disabled=\{([^}]{5,400})\}', jsx_area):
+        # Flatten .trim() first: its own parentheses would otherwise break any
+        # attempt to find the enclosing group.
+        _flat = _dis_scan.group(1).replace('.trim()', '.trim')
+        for _grp in re.finditer(r'\(([^()]{5,300})\)', _flat):
+            _inner = _grp.group(1)
+            if '&&' not in _inner:
+                continue
+            _members = [m.strip() for m in _inner.split('&&')]
+            if len(_members) < 2 or not all(m.startswith('!') for m in _members):
+                continue
+            for _vm in re.finditer(r'!\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*)', _inner):
+                _ap = _vm.group(1)
+                if _ap.endswith('.trim'):
+                    _ap = _ap[:-5]
+                if _ap:
+                    _alt_paths.add(_ap)
     for _submit_dis in re.finditer(r'disabled=\{([^}]{5,400})\}', jsx_area):
         _dis_expr = _submit_dis.group(1)
         # Greedy match: identifier + optional dotted sub-path. Trailing .trim() is inside the
@@ -1071,6 +1105,8 @@ for name, fpath in tools:
                 continue
             _root = _path.split('.')[0]
             if _root in _CONTROL_VARS:
+                continue
+            if _path in _alt_paths:
                 continue
             _required_paths.add(_path)
     for _path in _required_paths:

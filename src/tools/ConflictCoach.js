@@ -79,17 +79,6 @@ const ConflictCoach = ({ tool }) => {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
-  // Emotion-specific active state colors (tool-specific: each emotion has a semantically distinct color)
-  const emotionActive = {
-    angry:      isDark ? 'border-red-500 bg-red-900/30'      : 'border-red-500 bg-red-100',
-    hurt:       isDark ? 'border-sky-500 bg-sky-900/30'      : 'border-sky-500 bg-sky-100',
-    defensive:  isDark ? 'border-amber-500 bg-amber-900/30'  : 'border-amber-500 bg-amber-100',
-    frustrated: isDark ? 'border-amber-500 bg-amber-900/30': 'border-amber-500 bg-amber-100',
-    calm:       isDark ? 'border-green-500 bg-green-900/30'  : 'border-green-500 bg-green-100',
-    confused:   isDark ? 'border-cyan-500 bg-cyan-900/30': 'border-cyan-500 bg-cyan-100',
-  };
-  const emotionInactive = isDark ? 'border-zinc-700' : 'border-slate-200';
-
   // Temperature color map
   const tempColor = (temp) => {
     switch (temp?.toLowerCase()) {
@@ -240,7 +229,6 @@ const ConflictCoach = ({ tool }) => {
     } catch (err) { setError(err.message || t('cc_err_analysis')); }
   };
 
-  const handleEmotionToggle = (e) => { setEmotionalState(p => ({ ...p, [e]: !p[e] })); };
   const handleGoalToggle    = (g) => setGoals(p => ({ ...p, [g]: !p[g] }));
 
   const handleCopyResponse = (text) => {
@@ -471,21 +459,13 @@ const ConflictCoach = ({ tool }) => {
             </div>
           )}
 
-          {/* Person + Relationship */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-sm font-medium ${c.text} mb-1`}>{t('cc_person_label')}</label>
-              <input type="text" value={personLabel} onChange={e => setPersonLabel(e.target.value)}
-                placeholder={t('cc_person_ph')}
-                className={`w-full p-3 border rounded-lg ${c.input}`} />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium ${c.text} mb-1`}>{t('cc_relationship_label')}</label>
-              <select value={relationship} onChange={e => setRelationship(e.target.value)}
-                className={`w-full p-3 border rounded-lg ${c.input}`}>
-                {relationshipOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </div>
+          {/* Relationship */}
+          <div>
+            <label className={`block text-sm font-medium ${c.text} mb-1`}>{t('cc_relationship_label')}</label>
+            <select value={relationship} onChange={e => setRelationship(e.target.value)}
+              className={`w-full p-3 border rounded-lg ${c.input}`}>
+              {relationshipOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </select>
           </div>
 
           {/* Thread toggle */}
@@ -547,27 +527,6 @@ const ConflictCoach = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cc_draft_hint')}</p>
           </div>
 
-          {/* Emotions */}
-          <div className="border-2 rounded-lg p-4">
-            <label className={`block text-sm font-bold ${c.text} mb-2`}>{t('cc_feeling_label')}</label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {[
-                ['angry',      `😠 ${t('cc_emo_angry')}`],
-                ['hurt',       `💔 ${t('cc_emo_hurt')}`],
-                ['defensive',  `🛡️ ${t('cc_emo_defensive')}`],
-                ['frustrated', `😤 ${t('cc_emo_frustrated')}`],
-                ['calm',       `😌 ${t('cc_emo_calm')}`],
-                ['confused',   `😕 ${t('cc_emo_confused')}`],
-              ].map(([key, label]) => (
-                <label key={key} className={`p-2.5 rounded-lg border-2 cursor-pointer ${emotionalState[key] ? emotionActive[key] : emotionInactive}`}>
-                  <input type="checkbox" checked={emotionalState[key]} onChange={() => handleEmotionToggle(key)} className="sr-only" />
-                  <span className={`text-sm ${emotionalState[key] ? 'font-bold' : ''} ${c.text}`}>{label}</span>
-                </label>
-              ))}
-            </div>
-
-          </div>
-
           {/* Goals */}
           <div>
             <label className={`block text-sm font-medium ${c.text} mb-2`}>{t('cc_goal_label')}</label>
@@ -586,11 +545,6 @@ const ConflictCoach = ({ tool }) => {
               ))}
             </div>
           </div>
-
-          {/* Pre-result cross-ref */}
-          <p className={`text-xs text-center ${c.textMuteded}`}>
-            {t('cc_xref_rehearse_q')} <a href="/DifficultTalkCoach" className={linkStyle}>🎭 {t('cc_xref_difficulttalk')}</a> {t('cc_xref_rehearse_tail')}
-          </p>
 
           <div className="flex gap-3">
             <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading}

@@ -16,7 +16,7 @@ const ColdOpenCraft = ({ tool }) => {
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
-  // Channel / tone option configs (labels localized via t()).
+  // Channel options (labels localized via t()).
   const CHANNELS = [
     { value: 'email',        label: t('coc_ch_email'),     emoji: '📧' },
     { value: 'linkedin',     label: t('coc_ch_linkedin'),  emoji: '💼' },
@@ -26,11 +26,6 @@ const ColdOpenCraft = ({ tool }) => {
     { value: 'in_person',    label: t('coc_ch_inperson'),  emoji: '🤝' },
   ];
 
-  const TONES = [
-    { value: 'safe',   label: t('coc_tone_safe'),   emoji: '🛡️', desc: t('coc_tone_safe_desc') },
-    { value: 'medium', label: t('coc_tone_medium'), emoji: '⚖️', desc: t('coc_tone_medium_desc') },
-    { value: 'bold',   label: t('coc_tone_bold'),   emoji: '🔥', desc: t('coc_tone_bold_desc') },
-  ];
 
 
   const c = {
@@ -74,7 +69,6 @@ const ColdOpenCraft = ({ tool }) => {
   const [channel,         setChannel]         = usePersistentState('cold-open-craft-channel', 'email');
   const [whatYouKnow,     setWhatYouKnow]     = usePersistentState('cold-open-craft-know', '');
   const [yourBackground,  setYourBackground]  = usePersistentState('cold-open-craft-bg', '');
-  const [tone,            setTone]            = usePersistentState('cold-open-craft-tone', 'medium');
   const [results,         setResults]         = usePersistentState('cold-open-craft-results', null);
   const [sessionHistory,         setSessionHistory]         = usePersistentState('cold-open-craft-history', []);
   const resultsRef = useRef(null);
@@ -103,7 +97,6 @@ const ColdOpenCraft = ({ tool }) => {
         channel,
         whatYouKnow: whatYouKnow.trim() || null,
         yourBackground: yourBackground.trim() || null,
-        tone,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
@@ -117,12 +110,12 @@ const ColdOpenCraft = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('coc_error'));
     }
-  }, [who, why, channel, whatYouKnow, yourBackground, tone, callToolEndpoint, userLocale, userCurrency, userRegion, t]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [who, why, channel, whatYouKnow, yourBackground, callToolEndpoint, userLocale, userCurrency, userRegion, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadExample = useCallback(() => {
     const ex = pickExample('ColdOpenCraft', [
-      { n: '',  channel: 'email', tone: 'medium' },
-      { n: '2', channel: 'email', tone: 'safe' },
+      { n: '',  channel: 'email' },
+      { n: '2', channel: 'email' },
     ]);
     const k = f => `coc_ex${ex.n}_${f}`;
     setWho(t(k('who')));
@@ -130,13 +123,12 @@ const ColdOpenCraft = ({ tool }) => {
     setChannel(ex.channel);
     setWhatYouKnow(t(k('know')));
     setYourBackground(t(k('bg')));
-    setTone(ex.tone);
     setResults(null);
-  }, [setWho, setWhy, setChannel, setWhatYouKnow, setYourBackground, setTone, setResults, t]);
+  }, [setWho, setWhy, setChannel, setWhatYouKnow, setYourBackground, setResults, t]);
 
   const handleReset = useCallback(() => {
     setWho(''); setWhy(''); setChannel('email'); setWhatYouKnow('');
-    setYourBackground(''); setTone('medium'); setResults(null); setError('');
+    setYourBackground(''); setResults(null); setError('');
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Build copy text ──
@@ -195,12 +187,6 @@ const ColdOpenCraft = ({ tool }) => {
             )}
           </div>
         </div>
-
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuteded} mb-4`}>
-          {t('coc_xref_pre')}{' '}
-          <a href="/TheWholeStory" className={linkStyle}>{t('coc_thewholestory')}</a> {t('coc_xref_post')}
-        </p>
 
         <div className="space-y-4">
           {/* Who */}
@@ -279,25 +265,6 @@ const ColdOpenCraft = ({ tool }) => {
             />
           </div>
 
-          {/* Tone */}
-          <div>
-            <label className={`text-sm font-bold ${c.text} block mb-2`}>{t('coc_boldness_label')}</label>
-            <div className="flex gap-2">
-              {TONES.map(toneOpt => (
-                <button
-                  key={toneOpt.value}
-                  onClick={() => setTone(toneOpt.value)}
-                  className={`flex-1 py-2.5 rounded-xl text-[11px] font-bold border transition-colors min-h-[44px] flex flex-col items-center gap-0.5 ${
-                    tone === toneOpt.value ? c.pillActive : c.pillInactive
-                  }`}
-                >
-                  <span className="text-base">{toneOpt.emoji}</span>
-                  <span>{toneOpt.label}</span>
-                  <span className={`font-normal text-[9px] ${tone === toneOpt.value ? 'opacity-80' : c.textMuteded}`}>{toneOpt.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {error && (
             <div className={`${c.danger} border rounded-xl p-4 flex items-start gap-3`}>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -81,15 +81,6 @@ const SENSITIVITY_OPTIONS = [
   { value: 'need_rhythm', label: '🥁 Need strong rhythm', labelKey: 'bsd_sens_need_rhythm' },
   { value: 'vocals_distracting', label: '🗣️ Vocals are distracting', labelKey: 'bsd_sens_vocals_distracting' },
   { value: 'repetition_soothing', label: '♻️ Repetition is soothing', labelKey: 'bsd_sens_repetition_soothing' },
-];
-
-const QUICK_PRESETS = [
-  { label: '☀️ Morning Focus',   labelKey: 'bsd_preset_morning_focus', from: 'low_energy',  to: 'focused',   task: 'deep_work',  hours: [5,6,7,8,9,10] },
-  { label: '🎨 Creative Flow',   labelKey: 'bsd_preset_creative_flow', from: 'scattered',   to: 'creative',  task: 'creative',    hours: [10,11,14,15] },
-  { label: '🌙 Wind Down',       labelKey: 'bsd_preset_wind_down',     from: 'restless',    to: 'sleepy',    task: 'unwinding',   hours: [20,21,22,23,0] },
-  { label: '📖 Study Mode',      labelKey: 'bsd_preset_study_mode',    from: 'scattered',   to: 'focused',   task: 'studying',    hours: [13,14,15,16,17,18,19] },
-  { label: '😌 Calm My Nerves',  labelKey: 'bsd_preset_calm_nerves',   from: 'anxious',     to: 'calm',      task: '',            hours: [] },
-  { label: '⚡ Energy Boost',    labelKey: 'bsd_preset_energy_boost',  from: 'low_energy',  to: 'energized', task: 'exercise',    hours: [11,12,13,14,15,16] },
 ];
 
 const ADJUSTMENT_OPTIONS = [
@@ -193,13 +184,6 @@ const BrainStateDeejay = ({ tool }) => {
     timelineBg:    isDark ? 'bg-zinc-700' : 'bg-slate-100',
     timelineFill:  isDark ? 'bg-cyan-600' : 'bg-cyan-500',
     timelineGold:  isDark ? 'bg-amber-500' : 'bg-amber-400',
-    presetBg:      isDark
-      ? 'bg-zinc-800 border-zinc-700 hover:border-cyan-600 hover:bg-zinc-700'
-      : 'bg-white border-slate-200 hover:border-cyan-400 hover:bg-slate-50',
-    presetActive:  isDark ? 'text-cyan-400' : 'text-cyan-600',
-    presetRingActive:    isDark ? 'ring-2 ring-cyan-500/40' : 'ring-2 ring-cyan-400/50',
-    presetRingSuggested: isDark ? 'ring-1 ring-amber-500/40' : 'ring-1 ring-amber-400/50',
-    presetNowBadge:      isDark ? 'bg-amber-600 text-white' : 'bg-amber-500 text-white',
     phaseActiveTab:      'bg-cyan-700 text-white',
     // ── Semantic tokens ──
     required:  isDark ? 'text-amber-400' : 'text-amber-700',
@@ -250,15 +234,6 @@ const BrainStateDeejay = ({ tool }) => {
   const [winningCombos, setWinningCombos] = usePersistentState('brainstate-deejay-wins', []);
   const [results, setResults] = usePersistentState('brainstate-deejay-results', null);
   const [provider, setProvider] = usePersistentState('brainstate-deejay-provider', 'spotify');
-
-  // ══════════════════════════════════════════
-  // TIME-OF-DAY SUGGESTED PRESET (#5)
-  // ══════════════════════════════════════════
-  const suggestedPresetIdx = useMemo(() => {
-    const hour = new Date().getHours();
-    const idx = QUICK_PRESETS.findIndex(p => p.hours.includes(hour));
-    return idx >= 0 ? idx : -1;
-  }, []);
 
   // ══════════════════════════════════════════
   // COLLABORATIVE SHARE: decode on mount (#6)
@@ -553,11 +528,7 @@ const BrainStateDeejay = ({ tool }) => {
     }
   }, [adjustFeedback, results, genres, musicTaste, sensitivities, callToolEndpoint, saveToHistory, stopSession, t]);
 
-  const applyPreset = useCallback((preset) => {
-    setCurrentState(preset.from);
-    setDesiredState(preset.to);
-    setTask(preset.task);
-  }, []);
+
 
   // ── Assign refs every render (after all useCallbacks to avoid TDZ) ──
   handleSubmitRef.current = generate;
@@ -591,33 +562,6 @@ const BrainStateDeejay = ({ tool }) => {
   // Header is embedded in renderInputForm (input phase) and main return (results-only phase)
 
   // ══════════════════════════════════════════
-  // RENDER: Quick Presets (with time-of-day #5)
-  // ══════════════════════════════════════════
-  const renderPresets = () => (
-    <div className="mb-4">
-      <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>{t('bsd_quick_start')}</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {QUICK_PRESETS.map((preset, idx) => {
-          const isActive = currentState === preset.from && desiredState === preset.to && task === preset.task;
-          const isSuggested = idx === suggestedPresetIdx;
-          return (
-            <button key={preset.labelKey}
-              onClick={() => applyPreset(preset)}
-              className={`p-3 rounded-xl text-xs font-semibold text-start border transition-all relative ${c.presetBg} ${isActive ? c.presetRingActive : ''} ${isSuggested && !isActive ? c.presetRingSuggested : ''}`}>
-              {isSuggested && !isActive && (
-                <span className={`absolute -top-1.5 -end-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${c.presetNowBadge}`}>
-                  {t('bsd_now_badge')}
-                </span>
-              )}
-              <span className={`block text-sm mb-0.5 ${isActive ? c.presetActive : ''}`}>{t(preset.labelKey)}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  // ══════════════════════════════════════════
   // RENDER: "What Worked" suggestion (#3)
   // ══════════════════════════════════════════
   const renderWinningSuggestion = () => {
@@ -642,16 +586,10 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInputForm = () => (
     <div className="space-y-4">
-      {/* Quick presets + first input — unified in one card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5`}>
-        <div className="pb-3 border-b border-zinc-200 dark:border-zinc-700">
-          {renderPresets()}
-          {renderWinningSuggestion()}
-        </div>
-        <div className="pt-3">
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_current')} <span className={c.required}>*</span></label>
-          {renderPills(CURRENT_STATES, currentState, setCurrentState)}
-        </div>
+        {renderWinningSuggestion()}
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('bsd_q_current')} <span className={c.required}>*</span></label>
+        {renderPills(CURRENT_STATES, currentState, setCurrentState)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
@@ -695,24 +633,6 @@ const BrainStateDeejay = ({ tool }) => {
         )}
       </div>
 
-      {/* Music provider preference */}
-      <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>
-          {t('bsd_provider')}
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {MUSIC_PROVIDERS.map(p => (
-            <button key={p.value} onClick={() => setProvider(p.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${provider === p.value ? c.pillActive : c.pillInactive}`}>
-              {provider === p.value && <span className="me-1">✓</span>}
-              <span>{p.emoji}</span> {p.label}
-            </button>
-          ))}
-        </div>
-        <p className={`text-xs ${c.textMuted} mt-2`}>
-          {t('bsd_provider_hint')}
-        </p>
-      </div>
 
       <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || !currentState || !desiredState}
@@ -939,6 +859,22 @@ const BrainStateDeejay = ({ tool }) => {
             <span className={`text-sm font-semibold ${c.heroText}`}>{st.to}</span>
           </div>
           {st.task && <p className={`text-sm ${c.heroSub}`}>{t('bsd_for', { task: st.task })}</p>}
+        </div>
+
+        <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>
+            {t('bsd_provider')}
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {MUSIC_PROVIDERS.map(p => (
+              <button key={p.value} onClick={() => setProvider(p.value)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${provider === p.value ? c.pillActive : c.pillInactive}`}>
+                {provider === p.value && <span className="me-1">✓</span>}
+                <span>{p.emoji}</span> {p.label}
+              </button>
+            ))}
+          </div>
+          <p className={`text-xs ${c.textMuted} mt-2`}>{t('bsd_provider_hint')}</p>
         </div>
 
         {/* Listening Session + Breathing */}

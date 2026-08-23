@@ -247,13 +247,6 @@ const ComebackCooker = ({ tool }) => {
           </div>
         </div>
 
-        {/* Pre-result cross-ref */}
-        <p className={`text-xs text-center ${c.textMuted} mb-4`}>
-          {t('cbc_xref_pre_q')}{' '}
-          <a href="/VelvetHammer" className={linkStyle}>✉️ {t('cbc_velvethammer')}</a>{' '}
-          {t('cbc_xref_pre_post')}
-        </p>
-
         <div className="space-y-4">
           {/* Situation */}
           <div>

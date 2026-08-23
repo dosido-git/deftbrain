@@ -2525,45 +2525,43 @@ export const tools = [
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "Bookmark",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You abandoned a show or book and want back in without spoilers.",
-    give: "The title and exactly where you stopped.",
-    get: "A recap that stops exactly where you did — the few things to have in your head before you press play, then the fuller picture underneath.",
-    edge: "Wikis and search results spoil you on the way to the answer. This stops at your bookmark.",
+    when: "You left a show, book, game, or sports season unfinished and want back in without spoilers.",
+    give: "The title, exactly where you stopped, and anything you remember.",
+    get: "A recap that stays behind your stopping point, with the few things to have in your head before you resume and a fuller refresher underneath.",
+    edge: "It treats the stopping point as a hard boundary: if a detail cannot be placed safely before it, Bookmark leaves it out.",
   },
-  seoDescription: "Returning to a show, book, game, or season you abandoned? Get a free spoiler-free recap calibrated to exactly where you stopped — no spoilers past your point.",
+  seoDescription: "Returning to a show, book, game, or season after time away? Get a spoiler-free recap calibrated to exactly where you stopped. Free, no signup.",
   seoTitle: "Spoiler-Free Show & Book Recap Generator",
   title: "Bookmark",
   tagline: "Pick up where you left off — without spoilers",
-  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
+  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'catch up', 'tv', 'season', 'remember', 'series', 'chapter', 'binge', 'rewatch', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
   categories: ['Diversions'],
   headerColor: "#ccdfc4",
   description: "Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.",
   guide: {
-    overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
+    overview: "Bookmark helps you return to something you stopped without learning what happens next. Give it the title and your stopping point, plus any memory fragments you have. It uses verified chronology where available and treats the boundary conservatively: a detail that cannot be placed with confidence on the safe side is omitted. The result starts with a short 'Before you press play/read' refresher, then expands into the story so far, characters, established threads, world details when useful, and a clean re-entry cue.",
     howToUse: [
-      "Pick your media type: Show, Book, Game, or Sports",
-      "Enter the title and exactly where you stopped (episode, chapter, story point, or date)",
-      "Add what you remember — even vague recollections help calibrate the recap",
-      "Set your spoiler level: Strict (nothing after your point), Moderate (vague hints okay), or Open",
-      "Ask specific questions if something's nagging you ('Who was the guy with the scar?')"
+      "Choose the kind of thing you're returning to and enter the exact title.",
+      "Give the most precise stopping point you can — season and episode, chapter, page, game, date, or another clear marker.",
+      "Add anything you remember, even if you're unsure; Bookmark can use it to orient without treating it as fact.",
+      "Read the short refresher first, then open the fuller sections only if you need them.",
+      "If Bookmark is not confident about a boundary detail, it should omit or qualify it rather than reconstruct the scene."
     ],
     example: {
-      scenario: "You stopped watching Succession after Season 2, Episode 7. You remember something about a shareholder meeting and Kendall trying to take over, but the details are fuzzy. Your friends keep referencing it and you want to catch up without restarting.",
-      action: "Select Show, enter 'Succession' and 'Season 2, Episode 7', add what you remember, set spoiler level to Strict.",
-      result: "Bookmark delivers a present-tense recap of the power struggle up to that point, a character-by-character refresher (who's allied with whom, what each person wants), active plot threads with their unresolved tensions, the exact last major scene to trigger your memory, and an honest 'worth continuing?' take. Zero information from after S2E7."
+      scenario: "You stopped Project Hail Mary around chapter 15 and remember that Grace had just begun communicating with the alien.",
+      action: "Enter the title, chapter/page area, and that memory fragment.",
+      result: "Bookmark recaps only what is established by that point, confirms the communication breakthrough as the re-entry point, refreshes the relevant characters and active threads, and avoids future-facing teasers."
     },
     tips: [
-      "The 'What do you remember?' field dramatically improves accuracy — even wrong memories help calibrate",
-      "Sports mode's must-watch games with '🔒 Watch blind' tags let you catch up on storylines while preserving big moments",
-      "Conversation-ready talking points (sports mode) are designed to hold up in real fan discussions",
-      "Confidence indicators tell you when the model is less certain about exact episode-level details — useful for older or obscure titles",
-      "Use the 'specific questions' field for things like 'Did they make any trades?' or 'Is that character dead?' — answers respect your spoiler level"
+      "The more precise your stopping point, the safer the recap can be.",
+      "Memory fragments help even when they are fuzzy; Bookmark should use them as clues, not as proof.",
+      "For books, page numbers vary by edition, so chapter plus a remembered event is safer than page number alone.",
+      "For spoiler-sensitive details near the boundary, omission is better than a confident guess.",
+      "Active threads should describe only what is already established, not hint at what the story will do with them next."
     ]
   }
 },
@@ -4065,53 +4063,48 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-03-10",
+  modified: "2026-08-22",
   id: "BrainRoulette",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You want to fall down a rabbit hole worth the time.",
-    give: "Two or more interests, or one topic of your own instead. Plus how deep you want to go.",
-    get: "A rabbit hole at the intersection of them.",
-    edge: "It works the overlap between your interests rather than serving one at a time, so what comes back isn't findable by searching either.",
+    give: "Pick two or more interests and choose how deep you want to go — or leave the mix to Surprise.",
+    get: "An unexpected connection between the interests, plus follow-up paths if you want to keep going.",
+    edge: "The surprising claim is checked after generation, and 'How solid is this?' shows where the connection is strong, uncertain, or overstated.",
   },
-  seoDescription: "Spin up fascinating rabbit holes tuned to your interests, and follow the surprising links between topics you love. Free, endlessly bingeable, no signup.",
+  seoDescription: "Spin up surprising rabbit holes at the intersection of your interests, with claims checked and follow-up paths to explore. Free, no signup.",
   seoTitle: "Random Rabbit Hole & Curiosity Generator",
   title: 'Brain Roulette',
   tagline: "Follow your curiosity somewhere unexpected.",
-  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
+  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'discovery', 'interests', 'spin', 'education'],
   icon: '🎲',
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
   description: "Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.",
   guide: {
-    overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
-
+    overview: "Brain Roulette looks for an unexpected connection between interests that do not usually sit next to each other. Pick two or more interests, choose how deep you want to go, and spin — or use Surprise for a random mix. The discovery stays lively rather than academic, but factual claims are checked afterward. Open 'How solid is this?' to see whether the central connection held up, needed qualification, or was overstated, along with the evidence used to check it.",
     howToUse: [
-      "STEP 1: Pick 2 or more interests from the grid — the more you pick, the wilder the connections",
-      "STEP 2: Choose your depth — Quick Hit (2-3 sentences), Short Rabbit Hole (a paragraph with a twist), or Deep Dive (multi-section exploration)",
-      "STEP 3: Hit Spin! Or use Surprise Me to go completely random",
-      "STEP 4: Found something fascinating? Hit 'Go Deeper' to explore follow-up threads",
-      "STEP 5: Save your favorites to build a personal collection of mind-blowing connections"
+      "Pick two or more interests from the grid — unrelated choices usually make the best intersections.",
+      "Choose your depth: Quick Hit, Short Rabbit Hole, or Deep Dive.",
+      "Choose how technical you want the explanation to feel, then hit Spin — or use Surprise for a random mix.",
+      "Open 'How solid is this?' when you want to see how the central claim held up to checking.",
+      "Use Go Deeper or Spin From This when one part of the discovery gives you a better question."
     ],
     example: {
-      scenario: "You have History and Food selected, depth set to 'Short Rabbit Hole'",
-      action: "Hit Spin",
-      result: "You get a fascinating piece about how Roman gladiators were mostly vegetarian — nicknamed 'barley men' — and how their high-carb diet was deliberately designed to build a fat layer that protected them from surface wounds in the arena. The AI connects this to modern sports nutrition debates. Three 'Go Deeper' threads let you explore gladiator training diets, the economics of arena food vendors, or why we got gladiator diets completely wrong in movies."
+      scenario: "You select History, Food & Cooking, and Language & Words, then choose a deep dive.",
+      action: "Hit Spin.",
+      result: "Brain Roulette finds a connection between food vocabulary and language borrowing, then checks the claim. If the generated thesis stretches the evidence, 'How solid is this?' says so, preserves the parts that are supported, and shows the sources used to verify them."
     },
     tips: [
-      "Pick interests that seem unrelated — that's where the best connections hide",
-      "Use 'Surprise Me' when your usual interests feel stale — the wildcard might reveal a new obsession",
-      "The 'Go Deeper' threads are where the real magic happens — they often lead to even better discoveries",
-      "Share snippets with friends — these make great conversation starters",
-      "Your spin streak tracks consecutive sessions — see how long you can keep it going",
-      "The AI remembers what you've already seen and won't repeat topics"
+      "Pick interests that seem unrelated — that is where the strongest surprise usually comes from.",
+      "Use Surprise when you want the tool to choose the mix for you.",
+      "The rabbit hole can stay playful even when the evidence check qualifies part of it.",
+      "Go Deeper is most useful when one sentence makes you ask a better question than the original spin.",
+      "If a claim is marked overstated, treat the correction as part of the discovery rather than as a failure."
     ],
     pitfalls: [
-      "Selecting just one interest gives decent results, but 2-3 interests create much better cross-connections",
-      "If you get a dud, just spin again — the randomness means occasional misses",
-      "Deep Dive mode takes a bit longer to generate but is worth the wait",
-      "This tool is deliberately addictive — set a timer if you need to!"
+      "A plausible-sounding connection is not automatically a real one; use the evidence check when factual grounding matters.",
+      "The title may be playful, but the checked explanation should not claim more than the evidence supports.",
+      "Randomness means some intersections will be more interesting than others — spin again when one does not land."
     ]
   },
   crossRefs: ['BeliefStressTest', 'SixDegreesOfMe', 'DecisionCoach'],
@@ -4162,46 +4155,45 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-03-08",
+  modified: "2026-08-22",
   id: "BikeMedic",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Something's wrong with the bike and the shop is closed.",
-    give: "The symptom, or answers to a few diagnostic questions.",
-    get: "The candidates worth checking and the test that separates them, then the repair — with the manufacturer's own torque figures where they can be verified, and what to establish first where they cannot.",
+    when: "Something's wrong with your bike and you need to know where to start.",
+    give: "What you notice, or answers to a few diagnostic questions about the bike and component.",
+    get: "The leading possibilities, the checks that separate them, and safe next steps — with manufacturer specifications where they can be verified.",
+    edge: "It searches component documentation for exact technical facts without treating those facts as proof of the diagnosis.",
   },
-  seoDescription: "Troubleshoot common bike problems with safe checks, step-by-step guidance, and clear advice on when not to ride or when to use a bike shop.",
+  seoDescription: "Troubleshoot common bike problems with safe checks, verified component specifications, step-by-step guidance, and clear advice on when not to ride or when to use a bike shop.",
   seoTitle: "Bike Repair & Troubleshooting Diagnoser",
   title: "Bike Medic",
   tagline: "Figure out what's wrong with your bike — and what to do next.",
-  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'mechanic', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
+  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
   icon: "🚲",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
   crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.",
   guide: {
-      overview: "Bike Medic helps you troubleshoot common bicycle problems with safe checks, guided questions, animated visual demos, and step-by-step fixes. If the first fix does not solve it, deeper troubleshooting uses what you have already tried to narrow the possibilities. Your bike profile can skip irrelevant questions and tailor the guidance.",
-      howToUse: [
-        "Select the problem category or describe your symptom in the AI analyzer to get routed to the right fix",
-        "Answer diagnostic questions to narrow down the likely cause — your bike profile auto-skips known answers",
-        "Follow the step-by-step fix with animated visual guide and check off steps as you complete them",
-        "If the fix doesn't resolve it, tap 'Still broken' for AI-powered deeper diagnosis that accounts for what you already tried",
-        "Use Quick Checks mode for pre-ride, post-crash, after-rain, long-storage, or before-tour checklists"
-      ],
-      example: {
-        scenario: "Your rear disc brake makes a constant scraping noise while riding",
-        action: "Select 'Brake Problems' → 'Disc brakes' → 'Rubbing' → Follow the caliper centering steps with animated demo",
-        result: "Step-by-step caliper alignment with play/pause animation. If it still rubs, hit 'Still broken' and the AI suggests checking for a bent rotor, warped caliper mount, or contaminated pads."
-      },
-      tips: [
-        "Set up your Bike Profile via the gear icon to auto-skip questions about brake type, shifting system, and tire setup",
-        "The static troubleshooting tree works without AI — great for trailside or offline use",
-        "Use Quick Checks before long rides or after crashes to catch problems before they strand you",
-        "Every fix includes a Parts & Shopping List with real part names, examples, and price ranges"
-      ]
-    }
+    overview: "Bike Medic helps you troubleshoot common bicycle problems without pretending a symptom proves one cause. It starts with safe checks, narrows the plausible candidates, and uses component-specific documentation to make technical instructions more exact when manufacturer specifications can be verified. Safety-relevant procedures, torque values, compounds, limits, and setup details should come from that verified technical block; if a needed figure cannot be verified, Bike Medic tells you what to identify or where to look before proceeding.",
+    howToUse: [
+      "Choose the problem area or describe what you notice.",
+      "Answer the diagnostic questions so Bike Medic can narrow the plausible causes without jumping to a conclusion.",
+      "Follow the checks in order; each one should help separate possibilities rather than simply label the problem.",
+      "Use verified manufacturer specifications when the repair calls for torque, setup limits, compounds, or other component-specific details.",
+      "Stop and use a bike shop whenever the guide says not to ride, the component cannot be identified, damage is visible, or the result remains uncertain."
+    ],
+    example: {
+      scenario: "Your bike skips under load in one or two gears.",
+      action: "Describe when the skipping happens and answer the shifting and drivetrain questions.",
+      result: "Bike Medic treats cable tension, hanger alignment, chain wear, cassette wear, and setup issues as possibilities, gives checks that distinguish them, and only recommends replacement after the relevant condition is actually established."
+    },
+    tips: [
+      "Describe exactly when the symptom happens — under load, in one gear, after a crash, only when wet, or all the time.",
+      "Your bike profile can eliminate irrelevant branches and make component-specific research more accurate.",
+      "A technical specification can make a repair instruction exact; it does not prove what caused the symptom.",
+      "If a repair depends on a torque value, retaining compound, compatibility rule, or service limit that is not verified, stop and confirm it before proceeding."
+    ]
+  }
 },
 
 {
@@ -5721,65 +5713,55 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "BrainDumpBuddy",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Head full, everything blurring together.",
+    when: "Your head is full and everything is blurring together.",
     give: "All of it, unsorted. Type, rapid-fire, or talk.",
-    get: "Sorted into buckets, with one clear next step.",
-    edge: "It ends with a single next action rather than a tidy list — the list is what you already had.",
+    get: "Your thoughts sorted by what they require, with one manageable next step.",
+    edge: "It does not turn every thought into a task — and it ends with one next action instead of another overwhelming list.",
   },
   seoDescription: "Dump everything on your mind and sort it into what needs action, what needs a decision, what can wait, and what requires nothing from you. Find one manageable next step.",
   seoTitle: "Brain Dump Organizer & To-Do Sorter",
   title: "Brain Dump Buddy",
   tagline: "Everything in your head → one clear next step",
-  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'anxiety', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', '3am thoughts', 'can\'t focus', 'voice input', 'emergency mode', 'to-do list', 'mental load', 'structure thoughts', 'productive'],
+  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', 'to-do list', 'mental load'],
   icon: "🧠",
   categories: ['Me', 'Do It!'],
   headerColor: "#e0b8b8",
   description: "When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.",
   guide: {
-    overview: "Your head is full and everything is blurring together. This tool takes the whole mess — no structure required — and sorts it by what each thought requires: action, a decision, communication, waiting, or nothing right now. Then it helps you choose one manageable next step. Shrink the List looks for tasks that can be reduced or deferred. Map to My Day turns actionable items into a suggested schedule. Worry Excavator looks for concerns that contain a concrete action. Reclassify lets you correct anything that was sorted the wrong way. Emergency mode reduces the result to just three things when you want the simplest possible view.",
-
+    overview: "Brain Dump Buddy takes an unstructured pile of thoughts and sorts each one by what it requires: action, a decision, communication, waiting, acknowledgment, someone else's responsibility, or nothing right now. Dates and deadlines remain what you actually supplied; suggested pacing is clearly labeled as a suggestion. The result gives you one manageable next step first, then lets you review, reclassify, defer, drop, or continue with the rest.",
     howToUse: [
-      "Choose context (optional) — work overwhelm, anxiety spiral, 3am thoughts, etc.",
-      "Pick input mode: type, rapid-fire, or voice (just talk into your phone)",
-      "Dump everything. Don't organize. Stream of consciousness.",
-      "If barely functioning, toggle Emergency Mode for just 3 things.",
-      "AI sorts into 9 categories with overwhelm meter. Check off your Do First.",
-      "Use Power Tools: Shrink the List (challenge every item), Map to My Day (build a schedule), Compare to Last Dump (see what resolved)",
-      "Dig deeper on any worry with the 🔍 button — AI finds hidden tasks.",
-      "Disagree with a category? Reclassify any item with the arrow buttons.",
-      "Re-dump carries unchecked items forward. Pattern analysis after 3+ dumps."
+      "Dump everything without organizing it first.",
+      "Use whatever input mode is easiest — normal typing, rapid-fire entry, or voice where available.",
+      "Review the one next step before worrying about the full sorted list.",
+      "Treat suggested timing as optional pacing unless you explicitly supplied a deadline.",
+      "Reclassify anything that does not fit and note progress when you want to continue from the updated list."
     ],
-
     example: {
-      scenario: "Sunday night brain spiral: dentist, work email, mom's birthday, overwhelmed, job offer decision, messy kitchen, groceries, electric bill, Sarah's text, no exercise...",
-      action: "Context: Life chaos. Free dump all of it.",
-      result: "Overwhelm meter: 22 thoughts → 6 real tasks. Shrink the List: 'Does the whole kitchen need cleaning? Wipe the counters — 3 minutes, 80% of the stress gone.' Map to My Day: 20-minute evening schedule with breaks. Worry Excavator on 'worried about job offer': hidden task found — 'Write a pro/con list for 10 minutes.' Dump Diff shows 3 items from last week resolved without noticing."
+      scenario: "Your head contains a work deadline, an unanswered text, dry cleaning, a possible trip, a license renewal, and several worries.",
+      action: "Paste or say all of it exactly as it comes to mind.",
+      result: "Brain Dump Buddy separates real tasks from decisions, communication, worries, and things that can wait, preserves the deadline you actually named, suggests pacing for the rest, and gives you one small first move."
     },
-
     tips: [
-      "Voice mode is best when your hands are shaking or thoughts are racing fastest.",
-      "Emergency mode isn't failure — it's the right tool for acute overwhelm.",
-      "Shrink the List after every dump. Most people's lists can lose 30-50% of items.",
-      "The inflation ratio in Patterns is the big insight: most brains inflate to-do lists by 3-5x.",
-      "Reclassify freely — the AI's first sort is a starting point, not gospel."
+      "Do not pre-sort the dump; the messy version contains useful context.",
+      "A suggested 'Today' or 'This week' is pacing, not a deadline you somehow forgot.",
+      "Reclassify freely — the first sort is a practical interpretation, not a judgment about what a thought is.",
+      "If the result still feels like too much, focus only on the one next step and leave the rest collapsed.",
+      "Use the continuation flow after making progress rather than starting over from memory."
     ],
-
     pitfalls: [
-      "Don't pre-organize your dump. Raw chaos is the point.",
-      "If Shrink the List drops something you disagree with, that's fine — it's a negotiation, not an order.",
-      "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
+      "Do not treat every worry or feeling as a task that needs fixing.",
+      "Do not infer hard deadlines that the user did not state.",
+      "This is for sorting and choosing a next move, not for replacing a long-term task manager."
     ]
   },
   crossRefs: [
-    { id: 'CrisisPrioritizer', reason: 'When you\'re completely overwhelmed — cuts to the 3 things that matter most right now' },
-    { id: 'VirtualBodyDouble', reason: 'Once you know what to do, need someone to work beside you and keep you on track' },
-    { id: 'WaitingModeLiberator', reason: 'When many worries are about things blocked waiting on others' },
-    { id: 'ChaosPilot', reason: 'For urgent situations where you need to decide what to do right now' },
+    { id: 'CrisisPrioritizer', reason: 'When the user needs immediate triage rather than a full sort' },
+    { id: 'VirtualBodyDouble', reason: 'Once the next step is clear and the user wants company while doing it' },
+    { id: 'WaitingModeLiberator', reason: 'When a later event or waiting state is what is freezing the day' },
+    { id: 'ChaosPilot', reason: 'For urgent situations where the user needs to choose what to do right now' },
   ]
 },
 
@@ -6042,60 +6024,50 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-22",
   id: "BuyWise",
-  // Preamble — the four questions a new visitor has, in order.
-  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Something's in the cart and you're not sure.",
-    give: "What you're buying. The price you've seen helps.",
-    get: "A few facts checked on the web with their source — price, availability, warranty — then whether yours is fair, buy now or wait, and the true cost of owning it.",
-    edge: "Total cost of ownership, not sticker price — the cheap printer with expensive ink is the whole point.",
+    give: "What you're considering, the price you found, and what matters most to you.",
+    get: "A purchase recommendation, current facts checked on the web when available, the real ownership tradeoffs, and what to verify before paying.",
+    edge: "It combines current facts with a decision tailored to you — not just a product summary or a sticker-price check.",
   },
-  seoDescription: "Should you buy it? Talk through the price you were quoted, the true cost of ownership, cheaper alternatives, and an impulse check. Free, no signup.",
+  seoDescription: "Should you buy it? Check current facts, weigh the price and tradeoffs, compare alternatives, and see what to verify before you pay. Free, no signup.",
   seoTitle: "Should I Buy It? Purchase Decision Helper",
   title: "Buy Wise",
   tagline: "Make the purchase with your eyes open.",
-  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
+  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'compare', 'budget', 'negotiate', 'deal', 'overpaying', 'warranty'],
   icon: "💲",
   categories: ['Loot', 'Veer', 'Do It!'],
   headerColor: "#c0d8b8",
   description: "Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.",
   guide: {
-      overview: "Buy Wise thinks a purchase through with you. Enter what you're buying — and the price you've seen, if you have one — and it weighs that price against what the product involves, the true total cost of ownership including consumables and maintenance, cheaper alternatives that do most of the job, what buyers commonly regret, and negotiation questions when haggling is realistic. It ends with the few things worth checking before you pay. It checks a few volatile facts on the web — current price, whether the product is still current, the published warranty, any widely-reported fault — and shows what it found with the source. Everything else is reasoning from what you tell it plus general knowledge of the product type, so treat it as a starting point rather than a quote. Comparison mode weighs two products side by side by your priorities, and the impulse check is an honest gut-check.",
-      
-      howToUse: [
-        "Enter what you're buying — specific model or general product type both work",
-        "Add the price you've seen (optional — helps with fair price analysis)",
-        "Select your currency and urgency (need it today vs can wait)",
-        "Pick what matters most to you (price, durability, features, quality, convenience)",
-        "Toggle 'impulse buy' if you're not sure you need it — gets you an honest evaluation",
-        "Use 'Compare with another product' to evaluate two options head-to-head",
-        "Add any context that matters ('I bake once a month', 'replacing a 5-year-old laptop')",
-        "Get the analysis and review the tradeoffs, costs, and things to verify before paying"
-      ],
-      
-      example: {
-        scenario: "You're looking at a KitchenAid stand mixer for $350. You bake occasionally and your priority is durability. You can wait.",
-        action: "Enter 'KitchenAid stand mixer', price $350, urgency 'Can wait', priority 'Durability', context 'I bake once a month'",
-        result: "Verdict: 'Good mixer, but overpaying — and you might not need it.' Fair Price: Typically $250-280 on sale, $350 is full retail. Timing: Wait for Amazon Prime Day or Black Friday for 25-30% off. TCO: $350 + $40 in attachments = $390 year 1. Cheaper Alternative: Hamilton Beach stand mixer ($80) handles everything except bread dough. Regret Predictor: 'People who bake occasionally use their stand mixer about 8 times in the first year. That's $44 per use at this price.' Impulse check not triggered but context note: 'You said you bake once a month. A $35 hand mixer handles that. Save the stand mixer for when you're baking weekly.'"
-      },
-      
-      tips: [
-        "The Total Cost of Ownership often reveals the real price — a cheap printer needs expensive ink",
-        "Impulse check mode is genuinely useful — it asks questions you're avoiding",
-        "Comparison mode works best when you specify your priority so it can weight the recommendation",
-        "The negotiation scripts only appear when haggling is realistic — cars, furniture, services, rent",
-        "Adding context ('replacing old one', 'gift', 'bake once a month') dramatically improves the advice",
-        "Timing advice includes sale calendars — waiting 3 weeks can save 30%"
-      ],
-      
-      pitfalls: [
-        "Prices are AI estimates from general market knowledge — always verify current prices",
-        "The tool can't check live inventory or current sales",
-        "Negotiation advice works best for big-ticket items where haggling is expected"
-      ]
-    }
+    overview: "Buy Wise helps you decide whether a purchase makes sense for you. It uses your priorities and the price you found, checks a small set of volatile facts on the web when available — such as current price, model status, warranty, availability, or known faults — and keeps those verified facts separate from its broader reasoning. It then weighs the tradeoffs, total cost of ownership, cheaper ways to get most of the benefit, possible regret points, and anything you should settle before paying. If a fact could not be verified today, it says so rather than filling the gap with a confident generalization.",
+    howToUse: [
+      "Enter the product or service you're considering and the price you found, if you have one.",
+      "Tell it what matters most to you — price, durability, features, convenience, quality, or something else.",
+      "Add context that could change the recommendation, such as how often you'll use it or what you're replacing.",
+      "Use comparison mode when you're choosing between two known options.",
+      "Read the recommendation first, then check the verified facts and the few things to confirm before paying."
+    ],
+    example: {
+      scenario: "You're comparing two robot vacuums around $400. You have hardwood floors, a dog, travel often, and care more about convenience than mopping.",
+      action: "Enter both models, the price you found, your priorities, and your household context.",
+      result: "Buy Wise checks current facts it can verify, separates those from its reasoning, tells you which option better fits your priorities, and flags the exact model, condition, dock, warranty, or return details that could change the decision."
+    },
+    tips: [
+      "A specific model number and the exact price you found make the research much more useful.",
+      "Tell it what would make you regret the purchase — maintenance, noise, subscriptions, size, setup, or something else.",
+      "Comparison mode is strongest when you name the priority that should break the tie.",
+      "Treat verified web facts as the current evidence and the recommendation as reasoning from those facts plus what you told it.",
+      "If Buy Wise says a volatile fact could not be verified today, confirm that point directly before paying."
+    ],
+    pitfalls: [
+      "A web check can fail or return incomplete evidence; Buy Wise should say when that happens.",
+      "Seller-specific terms such as return windows and warranty coverage still need to be confirmed on the exact listing.",
+      "A good market price can still be a bad purchase for your needs, and a higher price can still be justified by the right features or terms."
+    ]
+  }
 },
 {
   modified: "2026-03-24",

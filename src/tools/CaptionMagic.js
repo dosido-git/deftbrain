@@ -504,7 +504,7 @@ const CaptionMagic = ({ tool }) => {
       )}
       <div className="mt-3">
         <label className={`text-xs font-semibold ${c.textMuted} block mb-1`}>
-          {t('cm_describe_label')} <span className={c.required}>*</span>
+          {t('cm_describe_label')}
         </label>
         <input type="text" value={imageDescription} onChange={e => setImageDescription(e.target.value)}
           placeholder={t('cm_describe_ph')}
@@ -521,6 +521,14 @@ const CaptionMagic = ({ tool }) => {
       {renderImageUpload()}
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
+        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 {t('cm_context')}</label>
+        <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_context_hint')}</p>
+        <input type="text" value={context} onChange={e => setContext(e.target.value)}
+          placeholder={t('cm_context_ph')}
+          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+      </div>
+
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 {t('cm_platform')}</label>
         {renderPills(PLATFORMS, platform, setPlatform)}
         <p className={`text-xs ${c.textMuted} mt-2`}>{t('cm_char_limit', { limit: PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString() })}</p>
@@ -535,14 +543,6 @@ const CaptionMagic = ({ tool }) => {
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 {t('cm_caption_length')}</label>
         {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
-      </div>
-
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 {t('cm_context')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_context_hint')}</p>
-        <input type="text" value={context} onChange={e => setContext(e.target.value)}
-          placeholder={t('cm_context_ph')}
-          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
 
       {/* Brand Voice Toggle (#1) */}
