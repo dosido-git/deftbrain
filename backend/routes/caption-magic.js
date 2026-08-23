@@ -267,19 +267,87 @@ For HASHTAGS: tags that genuinely fit this post. Do not label any of them trendi
 
 The voice-versus-fact line applies to tags too, and it cuts finely. A tag stating a fact the picture cannot support is a claim in one word: #sundaymorning assigns a day nobody established, #handmade assigns an author, #vintage assigns an age. A tag that is obviously part of the joke is not: #morningsomewhere claims nothing, because no one reads it as a timestamp. Play in tags where the play reads as play. Never write the leading # — the interface adds it.
 
-SIX CAPTIONS, IN THIS ORDER, EACH A DIFFERENT REGISTER:
+FIRST, BEFORE ANY OF THE COMEDY BELOW, WRITE CAPTION 1.
 
-1. STRAIGHTFORWARD — says the thing plainly, no angle. The one you use when you just want to post.
-2. WARM — affectionate about whatever is in the picture.
-3. CLEVER — a turn of phrase, a double meaning, something that lands on the second read.
-4. DRY — flat, understated, funnier for not trying.
-5. PLAYFUL — silly, loose, an obvious grin behind it.
-6. WILD CARD — go somewhere nobody expects. An absurd premise, a tiny drama between the objects, a voice that has no business being here. This one is allowed to be too much. If all six could have come from the same writer in the same mood, the sixth has failed.
+Caption 1 is the plain one: what someone posts when they just want to post. No
+joke, no angle, no wink, no clever turn. It still has to be good — warm or plain
+or observant, a line that needs no setup — because the comedy will not land for
+everyone and this is what is left when it does not. Write it now, while none of
+the mechanisms below are in your head. If it makes you smile, it is not caption
+1; keep it for later and write caption 1 again.
 
-These are instructions to you, not labels for the visitor — the register never appears in the output. Do not write six versions of one joke.
+Everything from here concerns captions 2 to 6 only.
+
+WORK BEFORE YOU WRITE.
+
+The first joke available about any photograph is the one everybody makes. A wall
+of hangers gets "the hangers have unionized" — competent, and the same idea the
+last four people had. Comedy is a search, and the good ones sit further out than
+the first competent idea.
+
+So run a private workshop first. Take the most striking thing in OBSERVED and
+push it through these separately. They are different machines and they produce
+different jokes:
+
+- MISINTERPRETATION — what else could this plausibly, or absurdly, be?
+- UNDERSTATEMENT — describe the ridiculous thing as though it were completely ordinary.
+- ESCALATION — take one visible detail to an absurd conclusion.
+- SPECIFIC ANALOGY — what unexpectedly familiar thing does this resemble?
+- DEADPAN — what would the driest possible observer say about this?
+- WORDPLAY — is there a genuinely good linguistic connection here? Do not force one; a bad pun is worse than no pun.
+- POV / PERSONIFICATION — let an object speak or act, but only if the premise is actually fresh.
+- CONTEXT COLLISION — import the language of an unrelated world: corporate meetings, dating, airports, bureaucracy, true crime, customer service, estate agents, sports commentary.
+- LITERALIZATION — take an expression absurdly literally.
+- WILD CARD — an angle unlike any of the above.
+
+Write twenty or more candidates into _candidates. Then throw most of them away
+and keep the ones that are funniest, most different from each other, and usable
+as captions someone would actually post.
+
+To see the difference the mechanisms make: given a photograph of one enormous
+traffic cone, the first idea is the cone having feelings about its job. The
+workshop instead reaches "asked for a cone and they took it personally"
+(misinterpretation), "standard issue" (understatement), "at this rate the road
+works will finish sometime in the next administration" (escalation), "municipal
+Christmas tree" (analogy), "there has been an incident" (deadpan), "someone in
+procurement misread a field" (context collision). Six machines, six jokes, and
+not one of them is the cone behaving like a person.
+
+THAT IS AN ILLUSTRATION OF SHAPE, NOT A SUPPLY OF LINES. It is about a traffic
+cone; your photograph is not. Do not reproduce or adapt any of it — the shape is
+what transfers, and the words are already used.
+
+FUNNY IS NOT THE SAME AS WHIMSICAL. Cute personification, "POV:", mock drama,
+objects holding meetings or having feelings, generic absurdity — all allowed,
+but all common first ideas. A set where four of the six run the same machine has
+not searched.
+
+DO NOT EXPLAIN THE JOKE. Prefer the shortest version that keeps it. Specificity
+and surprise beat elaboration every time:
+
+  WEAKER: the sourdough starter has developed opinions about my schedule and is expressing them through unpredictable rising times, which i think is a boundary issue we will need to work through together
+  BETTER: The starter has opinions about my schedule now.
+
+Same premise, a fifth of the words, twice the joke. Make that edit on every
+candidate before it becomes one of the six. The example is about bread on
+purpose: it demonstrates trimming, and it is nothing you could hand in.
+
+THE SIX, IN THIS ORDER:
+
+1. USEFUL — the plain one you already wrote, before the workshop. Not a joke. If what you have in slot 1 has a punchline, a twist or a knowing tone, it is in the wrong slot: move it down and write the plain one.
+2. CLEVER — a turn of phrase, a double meaning, something that arrives on the second read.
+3. FUNNY — the best joke the workshop produced.
+4. FUNNY, FROM A COMPLETELY DIFFERENT ANGLE — a different mechanism from number 3. If both are personification, one of them is wrong.
+5. WEIRD — strange rather than funny. It does not need a punchline.
+6. SWING FOR THE FENCES — the one that might not work. Allowed to be too much. If all six could have come from the same writer in the same mood, this one has failed.
+
+These are instructions to you, never labels for the visitor: no register, number
+or mechanism appears anywhere in the output. Do not write six versions of one
+joke.
 
 OUTPUT (JSON only):
 {
+  "_candidates": ["Twenty or more one-line candidates from the workshop, across the different mechanisms. Scratch paper: it is deleted before anyone sees the result, so the weak ones belong here too. A short list here means the search did not happen, and the six will be the obvious six."],
   "captions": [
     {
       "text": "The caption. Nothing else — no explanation, no note about what it does, no reason it works.",
@@ -295,7 +363,9 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     const out = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 4000,
+      // 4000 was sized for six captions. The workshop writes twenty candidates
+      // above them — scratch paper, cheap, and the entire point.
+      max_tokens: 6000,
       messages: [{ role: 'user', content: withLanguage(genPrompt, userLanguage) + locale }],
     }, { label: 'CaptionMagicGenerate' });
 
@@ -311,6 +381,14 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     } catch (err) {
       console.error('CaptionMagic validation skipped:', err.message);
     }
+
+    // Scratch paper never leaves the building. Logged rather than silently
+    // dropped: "generate twenty and keep six" is exactly the kind of invisible
+    // instruction that gets quietly ignored, and a count is the only way to
+    // know whether the search happened or the model wrote six and moved on.
+    const searched = Array.isArray(out._candidates) ? out._candidates.length : 0;
+    console.log(`[caption-magic] workshop: ${searched} candidate(s) → 6`);
+    delete out._candidates;
 
     normaliseCaptions(out);
 
@@ -622,11 +700,11 @@ CRITICAL: Return ONLY valid JSON.`;
 // comes back from the client so the new six are grounded in the same reading of
 // the photograph rather than a fresh one.
 const NUDGES = {
-  funnier:  'Go harder on the jokes. Every one of the six should be trying to land a laugh, and at least two should be genuinely silly.',
-  unhinged: 'Go off the rails. Absurd premises, objects with agendas, wildly disproportionate reactions, a voice that has clearly lost the plot. Commit — a timid unhinged caption is just a strange one.',
-  warmer:   'Warmer and more affectionate. Fondness for whatever is in this picture, without turning sentimental or greeting-card.',
-  drier:    'Drier. Flat delivery, understatement, the joke left entirely unremarked. Nothing may explain itself and nothing may wink.',
-  surprise: 'Take an angle nobody would predict from this photograph. Not the obvious read, not the second-most obvious one. Six captions that make someone say where did that come from.',
+  funnier:  'Drop the useful one. All six now compete on comedy alone, and they must use SIX DIFFERENT MECHANISMS from the workshop — six jokes built the same way is one joke told six times. Nobody asked for a caption they could post; they asked to laugh.',
+  unhinged: 'Go off the rails. Premises that have no business existing, a voice that has clearly lost the plot, reactions wildly disproportionate to a photograph. The bar for "too much" is gone. Commit — a timid unhinged caption is just a strange one, and half-committing is the only way to fail this.',
+  warmer:   'Warmer and more affectionate. Real fondness for whatever is in this picture, without turning sentimental or greeting-card. Warm is not the same as soft: it can still be funny.',
+  drier:    'Drier. Flat delivery, understatement, the joke left entirely unremarked. Nothing explains itself, nothing winks, and the funniest one should look at first glance like it is not trying at all.',
+  surprise: 'Six angles nobody would predict from this photograph. Not the obvious read, not the second-most obvious. Use six different mechanisms and skip whichever one the last set already used.',
 };
 
 router.post('/caption-magic/more', rateLimit(), async (req, res) => {
@@ -663,29 +741,42 @@ ${nudge && NUDGES[nudge] ? `THE DIRECTION THEY ASKED FOR:\n${NUDGES[nudge]}\n\nT
 ${platformName === 'none' ? 'NO PLATFORM: captions that stand on their own, with nothing that assumes a feed.' : `PLATFORM: ${platformName} (character limit: ${charLimit})`}
 LENGTH PREFERENCE: ${captionLength || 'medium'} (short = 1-2 lines, medium = 2-4 lines, long = 4-8 lines)
 
+WORK BEFORE YOU WRITE. The first joke available about any photograph is the one everybody makes. Push the most striking thing here through several different comic machines before choosing anything: MISINTERPRETATION (what else could this be), UNDERSTATEMENT (describe the ridiculous as ordinary), ESCALATION (one detail to an absurd conclusion), SPECIFIC ANALOGY (what unexpectedly familiar thing does it resemble), DEADPAN (the driest possible observer), WORDPLAY (only if genuinely good), POV/PERSONIFICATION (only if the premise is fresh), CONTEXT COLLISION (the language of an unrelated world — corporate meetings, dating, airports, bureaucracy, true crime, customer service), LITERALIZATION (an expression taken absurdly literally), WILD CARD.
+
+Write twenty or more candidates into _candidates, then keep the six that are funniest, most different from each other, and usable as real captions.
+
+FUNNY IS NOT THE SAME AS WHIMSICAL. Cute personification, "POV:", mock drama, objects holding meetings — common first ideas. Four of six running the same machine means the search did not happen.
+
+DO NOT EXPLAIN THE JOKE. Shortest version that keeps it — "The starter has opinions about my schedule now." beats the same premise with three more sentences of detail. That example is about bread deliberately: it shows the trim, and it is not a line you could hand in.
+
 Write like a real person posting to their own feed. No explanation of any caption, ever — no note about what it does, no reason it works, no label.
 
 OUTPUT (JSON only):
 {
+  "_candidates": ["twenty or more one-line candidates across the different mechanisms — scratch paper, deleted before anyone sees it"],
   "captions": [
     { "text": "the caption", "hashtags": [{ "tag": "tag1" }, { "tag": "tag2" }], "char_count": 120 }
   ]
 }
 
-Exactly six.
+Exactly six captions.
 
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
     const out = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 3500,
+      max_tokens: 5500,
       messages: [{ role: 'user', content: withLanguage(morePrompt, userLanguage) + locale }],
     }, { label: 'CaptionMagicMore' });
 
     if (!Array.isArray(out.captions)) {
       return res.status(500).json({ error: 'Could not write more captions. Please try again.' });
     }
+
+    const searched = Array.isArray(out._candidates) ? out._candidates.length : 0;
+    console.log(`[caption-magic] workshop (${nudge || 'more'}): ${searched} candidate(s) → 6`);
+    delete out._candidates;
 
     try {
       await enforceEnvelope(out, env, { userLanguage, locale, context });
