@@ -106,26 +106,12 @@ const MUSIC_PROVIDERS = [
   { value: 'soundcloud',  label: 'SoundCloud',     emoji: '☁️', makeUrl: (q) => `https://soundcloud.com/search?q=${encodeURIComponent(q)}` },
 ];
 
-const makeSpotifyUrl = (query) => `https://open.spotify.com/search/${encodeURIComponent(query)}`;
-
-const parseBpm = (bpmStr) => {
-  if (!bpmStr) return 80;
-  const match = bpmStr.match(/(\d+)/);
-  return match ? parseInt(match[1]) : 80;
-};
-
 const parseDuration = (dur) => {
   if (!dur) return 15;
   const match = dur.match(/(\d+)/);
   if (match) return parseInt(match[1]);
   if (dur.toLowerCase().includes('ongoing')) return 30;
   return 15;
-};
-
-const formatTimer = (secs) => {
-  const m = Math.floor(secs / 60);
-  const s = secs % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
 };
 
 // ════════════════════════════════════════════════════════════
@@ -184,13 +170,10 @@ const BrainStateDeejay = ({ tool }) => {
     timelineBg:    isDark ? 'bg-zinc-700' : 'bg-slate-100',
     timelineFill:  isDark ? 'bg-cyan-600' : 'bg-cyan-500',
     timelineGold:  isDark ? 'bg-amber-500' : 'bg-amber-400',
-    phaseActiveTab:      'bg-cyan-700 text-white',
     // ── Semantic tokens ──
     required:  isDark ? 'text-amber-400' : 'text-amber-700',
     labelText: isDark ? 'text-zinc-200' : 'text-gray-700',
     // ── Raw CSS values for inline styles ──
-    breathRing:    isDark ? 'rgb(8,145,178)' : 'rgb(14,116,144)',
-    breathGlow:    isDark ? 'rgb(8 145 178 / 0.3)' : 'rgb(14 116 144 / 0.2)',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -214,17 +197,10 @@ const BrainStateDeejay = ({ tool }) => {
   const [showAdjust, setShowAdjust] = useState(false);
   const [adjustFeedback, setAdjustFeedback] = useState('');
   const [adjusting, setAdjusting] = useState(false);
-  const [sessionActive, setSessionActive] = useState(false);
-  const [sessionElapsed, setSessionElapsed] = useState(0);
-  const [showCheckin, setShowCheckin] = useState(false);
-  const [checkinPhase, setCheckinPhase] = useState(0);
-  const [checkinDismissed, setCheckinDismissed] = useState([]);
   const [rated, setRated] = useState(false);
-  const [breathingActive, setBreathingActive] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
   // ── Refs ──
-  const timerRef = useRef(null);
   const resultsRef = useRef(null);
   const handleSubmitRef = useRef(null);
   const canSubmitRef = useRef(false);
@@ -254,33 +230,6 @@ const BrainStateDeejay = ({ tool }) => {
     } catch { /* ignore malformed share data */ }
   }, []);
 
-  // ══════════════════════════════════════════
-  // LISTENING SESSION TIMER (#1)
-  // ══════════════════════════════════════════
-  useEffect(() => {
-    if (sessionActive) {
-      timerRef.current = setInterval(() => {
-        setSessionElapsed(prev => prev + 1);
-      }, 1000);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [sessionActive]);
-
-  // Check for phase transitions → trigger check-in
-  useEffect(() => {
-    if (!sessionActive || !results?.playlist) return;
-    const phases = results.playlist;
-    let cumulative = 0;
-    for (let i = 0; i < phases.length - 1; i++) {
-      cumulative += parseDuration(phases[i].duration) * 60;
-      if (sessionElapsed >= cumulative + 30 && sessionElapsed < cumulative + 35 && !checkinDismissed.includes(i)) {
-        setShowCheckin(true);
-        setCheckinPhase(i + 1);
-        break;
-      }
-    }
-  }, [sessionElapsed, sessionActive, results, checkinDismissed]);
-
   // ── Ref assignments placed after useCallbacks below to avoid TDZ ──
 
   // ── Scroll to results ──
@@ -305,28 +254,9 @@ const BrainStateDeejay = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const startSession = useCallback(() => {
-    setSessionActive(true);
-  }, []);
-
-  const pauseSession = useCallback(() => {
-    setSessionActive(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-  }, []);
-
-  // Full reset of session (used by handleReset and generate)
-  const stopSession = useCallback(() => {
-    setSessionActive(false);
-    setSessionElapsed(0);
-    setCheckinDismissed([]);
-    if (timerRef.current) clearInterval(timerRef.current);
-  }, []);
-
-  const dismissCheckin = useCallback((response) => {
-    setShowCheckin(false);
-    setCheckinDismissed(prev => [...prev, checkinPhase - 1]);
-    if (response === 'worse') setShowAdjust(true);
-  }, [checkinPhase]);
+  // Kept as a no-op call site rather than unpicking reset and generate: the
+  // session it used to stop no longer exists.
+  const stopSession = useCallback(() => {}, []);
 
   // ══════════════════════════════════════════
   // WHAT WORKED LEARNING (#3)
@@ -404,8 +334,7 @@ const BrainStateDeejay = ({ tool }) => {
       lines.push(phase.characteristics || '');
       if (phase.genre_suggestions) lines.push(`${t('bsd_copy_genres')} ${phase.genre_suggestions.join(', ')}`);
       if (phase.example_artists) lines.push(`${t('bsd_copy_artists')} ${phase.example_artists.join(', ')}`);
-      if (phase.specific_tracks?.length > 0) lines.push(`${t('bsd_copy_tracks')} ${phase.specific_tracks.join(' | ')}`);
-      if (phase.spotify_search) lines.push(`${t('bsd_copy_spotify')} ${makeSpotifyUrl(phase.spotify_search)}`);
+      if (phase.search_recipe) lines.push(`${t('bsd_search_for')} ${phase.search_recipe}`);
       lines.push('');
     });
     if (results.audio_settings) {
@@ -636,7 +565,7 @@ const BrainStateDeejay = ({ tool }) => {
 
       <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || !currentState || !desiredState}
-      className={`relative flex-1 py-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
+      className={`relative flex-1 py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
       {loading ? (
         <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
       ) : (
@@ -658,145 +587,8 @@ const BrainStateDeejay = ({ tool }) => {
   );
 
   // ══════════════════════════════════════════
-  // RENDER: BPM Breathing Guide (#4)
-  // ══════════════════════════════════════════
-  const renderBreathingGuide = () => {
-    if (!results?.playlist) return null;
-    const phases = results.playlist;
-    let activePhaseIdx = 0;
-    let cumulative = 0;
-    for (let i = 0; i < phases.length; i++) {
-      const dur = parseDuration(phases[i].duration) * 60;
-      if (sessionElapsed < cumulative + dur) { activePhaseIdx = i; break; }
-      cumulative += dur;
-      if (i === phases.length - 1) activePhaseIdx = i;
-    }
-    const bpm = parseBpm(phases[activePhaseIdx]?.bpm_range);
-    // 4 beats per breath cycle: inhale 2 beats, exhale 2 beats
-    const cycleSec = (60 / bpm) * 4;
-
-    return (
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🫁</span>
-            <h3 className={`text-sm font-bold ${c.text}`}>{t('bsd_breathing_guide')}</h3>
-          </div>
-          <button onClick={() => setBreathingActive(!breathingActive)}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold ${breathingActive ? c.btnPrimary : c.btnSecondary}`}>
-            {breathingActive ? t('bsd_pause') : t('bsd_start')}
-          </button>
-        </div>
-        <p className={`text-xs ${c.textMuted} mb-4`}>
-          {t('bsd_breathe_with', { count: bpm, phase: phases[activePhaseIdx]?.phase || t('bsd_phase_fallback') })}
-        </p>
-        <div className="flex justify-center">
-          <div className="relative flex items-center justify-center" style={{ width: 130, height: 130 }}>
-            {/* Inject keyframes once */}
-            <style>{`
-              @keyframes breathPulse_${Math.round(cycleSec * 10)} {
-                0%, 100% { transform: scale(0.75); opacity: 0.5; }
-                50% { transform: scale(1.35); opacity: 1; }
-              }
-              @keyframes breathText_${Math.round(cycleSec * 10)} {
-                0%, 24% { opacity: 1; }
-                25%, 49% { opacity: 0; }
-                50%, 74% { opacity: 1; }
-                75%, 100% { opacity: 0; }
-              }
-            `}</style>
-            <div
-              style={{
-                width: 80, height: 80,
-                borderRadius: '50%',
-                border: `3px solid ${c.breathRing}`,
-                boxShadow: breathingActive ? `0 0 24px ${c.breathGlow}, 0 0 48px ${c.breathGlow}` : 'none',
-                animation: breathingActive ? `breathPulse_${Math.round(cycleSec * 10)} ${cycleSec}s ease-in-out infinite` : 'none',
-                transition: 'box-shadow 0.5s ease',
-              }}
-            />
-            {breathingActive && (
-              <span className={`absolute text-[11px] font-bold ${c.textMuted} pointer-events-none`}>{t('bsd_breathe')}</span>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // ══════════════════════════════════════════
   // RENDER: Listening Session (#1)
   // ══════════════════════════════════════════
-  const renderListeningSession = () => {
-    if (!results?.playlist) return null;
-    const phases = results.playlist;
-
-    let activePhaseIdx = 0;
-    if (sessionActive) {
-      let cumulative = 0;
-      for (let i = 0; i < phases.length; i++) {
-        const dur = parseDuration(phases[i].duration) * 60;
-        if (sessionElapsed < cumulative + dur) { activePhaseIdx = i; break; }
-        cumulative += dur;
-        if (i === phases.length - 1) activePhaseIdx = i;
-      }
-    }
-
-    return (
-      <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <span className="text-base">{sessionActive ? '🔴' : '⏱️'}</span>
-            <h3 className={`text-sm font-bold ${c.text}`}>{t('bsd_listening_session')}</h3>
-          </div>
-          <div className="flex items-center gap-2">
-            {(sessionActive || sessionElapsed > 0) && (
-              <span className={`text-sm font-mono font-bold ${c.text}`}>{formatTimer(sessionElapsed)}</span>
-            )}
-            <button onClick={sessionActive ? pauseSession : startSession}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${sessionActive ? c.btnSecondary : c.btnPrimary}`}>
-              {sessionActive ? t('bsd_session_pause') : sessionElapsed > 0 ? t('bsd_session_resume') : t('bsd_session_start')}
-            </button>
-          </div>
-        </div>
-        {sessionActive && (
-          <div className="flex gap-1 mt-2">
-            {phases.map((phase, idx) => (
-              <div key={idx} className={`flex-1 py-1.5 rounded text-center text-[10px] font-bold transition-all ${
-                idx === activePhaseIdx
-                  ? c.phaseActiveTab
-                  : `${c.cardAlt} ${c.textMuted}`
-              }`}>
-                {phase.phase}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Check-in prompt */}
-        {showCheckin && (
-          <div className={`mt-3 p-3 rounded-xl border ${c.success}`}>
-            <p className={`text-xs font-bold mb-2`}>
-              {t('bsd_checkin_q', { count: checkinPhase + 1 })}
-            </p>
-            <div className="flex gap-2">
-              {[
-                { labelKey: 'bsd_checkin_better', val: 'better' },
-                { labelKey: 'bsd_checkin_same', val: 'same' },
-                { labelKey: 'bsd_checkin_worse', val: 'worse' },
-              ].map(opt => (
-                <button key={opt.val} onClick={() => dismissCheckin(opt.val)}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-                  {t(opt.labelKey)}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   // ══════════════════════════════════════════
   // RENDER: Phase Timeline
   // ══════════════════════════════════════════
@@ -878,8 +670,6 @@ const BrainStateDeejay = ({ tool }) => {
         </div>
 
         {/* Listening Session + Breathing */}
-        {renderListeningSession()}
-        {renderBreathingGuide()}
 
         {/* Timeline */}
         {phases.length > 1 && renderTimeline(phases)}
@@ -934,31 +724,36 @@ const BrainStateDeejay = ({ tool }) => {
               </div>
             )}
 
-            {/* Specific Tracks */}
-            {phase.specific_tracks?.length > 0 && (
+            {/* Search recipe — the phase's actual deliverable, and the thing
+                the service buttons below can genuinely act on. Four AI-chosen
+                songs were never checked against the phase's own prescription;
+                a description of the sound cannot contradict itself the way a
+                track list can. */}
+            {phase.search_recipe && (
               <div className="mb-3">
-                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('bsd_tracks_start')}</div>
-                <div className="space-y-1">
-                  {phase.specific_tracks.map((track, i) => (
-                    <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs ${c.trackBg}`}>
-                      <span className={c.textMuted}>{i + 1}.</span>
-                      <span className={`font-medium ${c.trackText}`}>{track}</span>
-                    </div>
-                  ))}
+                <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('bsd_search_for')}</div>
+                <div className={`px-3 py-2 rounded-lg border text-xs ${c.trackBg}`}>
+                  <span className={`font-medium ${c.trackText}`}>{phase.search_recipe}</span>
                 </div>
               </div>
             )}
 
-            {/* Music Service Link — selected provider */}
-            {phase.spotify_search && (() => {
-              const prov = MUSIC_PROVIDERS.find(p => p.value === provider) || MUSIC_PROVIDERS[0];
-              return (
-                <a href={prov.makeUrl(phase.spotify_search)} target="_blank" rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${c.spotifyBg} ${c.spotifyText} hover:opacity-80 transition-opacity`}>
-                  <span>{prov.emoji}</span> {t('bsd_open_in', { provider: prov.label })}
-                </a>
-              );
-            })()}
+            {/* The buttons run a search. They always did — calling them
+                "Open in Spotify" under a track list implied the playlist had
+                been built there, which it never was. */}
+            {phase.search_recipe && (
+              <div>
+                <div className="flex flex-wrap gap-2">
+                  {MUSIC_PROVIDERS.map(prov => (
+                    <a key={prov.value} href={prov.makeUrl(phase.search_recipe)} target="_blank" rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${c.spotifyBg} ${c.spotifyText} hover:opacity-80 transition-opacity`}>
+                      <span>{prov.emoji}</span> {t('bsd_search_provider', { provider: prov.label })}
+                    </a>
+                  ))}
+                </div>
+                <p className={`text-[10px] ${c.textMuted} mt-1.5`}>{t('bsd_search_note')}</p>
+              </div>
+            )}
           </div>
         ))}
 
@@ -994,10 +789,10 @@ const BrainStateDeejay = ({ tool }) => {
         )}
 
         {/* Science */}
-        {results.science_note && (
+        {results.why_this_may_help && (
           <div className={`p-5 rounded-2xl border ${c.cardAlt}`}>
             <h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('bsd_science_title')}</h3>
-            <p className={`text-sm ${c.textSecondary}`}>{results.science_note}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results.why_this_may_help}</p>
           </div>
         )}
 

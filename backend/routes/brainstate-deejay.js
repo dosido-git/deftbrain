@@ -69,9 +69,8 @@ OUTPUT (JSON only):
       "bpm_range": "60-80 BPM",
       "characteristics": "tempo, style, why — one sentence",
       "genre_suggestions": ["genres that work"],
-      "example_artists": ["artist examples"],
-      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
-      "spotify_search": "search terms for this phase — one sentence"
+      "example_artists": ["Two or three artists whose catalogue sits in this sound, as reference points for the search rather than a prescription. Only artists you are certain both exist and fit — one that contradicts the characteristics above undermines the phase."],
+      "search_recipe": "The sound to look for, written as terms someone can paste into a music service: instrumentation, texture, tempo band, and the exclusions that matter — for example warm instrumental lo-fi, soft drums, 70-85 BPM, no vocals. This is this phase's deliverable, not a track list."
     },
     {
       "phase": "Main State — 2-4 words",
@@ -80,8 +79,7 @@ OUTPUT (JSON only):
       "characteristics": "what makes this effective — one sentence",
       "genre_suggestions": ["genres"],
       "example_artists": ["artists"],
-      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
-      "spotify_search": "search terms — one sentence"
+      "search_recipe": "The sound to look for, as pasteable search terms: instrumentation, texture, tempo band, exclusions. Not a track list."
     },
     {
       "phase": "Maintenance — 2-4 words",
@@ -89,14 +87,13 @@ OUTPUT (JSON only):
       "bpm_range": "80-100 BPM",
       "characteristics": "sustaining properties — one sentence",
       "genre_suggestions": ["genres"],
-      "specific_tracks": ["2-4 example tracks for this phase, each 'Track — Artist'"],
-      "spotify_search": "search terms — one sentence"
+      "search_recipe": "The sound to look for, as pasteable search terms: instrumentation, texture, tempo band, exclusions. Not a track list."
     }
   ],
   "audio_settings": {
-    "recommended_volume": "level and why — one sentence",
+    "recommended_volume": "How loud, described by what it should achieve rather than as a percentage — loud enough to soften what is around them without asking for attention of its own. A number would be false precision: it depends on the headphones, the device, the room and the recording, none of which you know. — one sentence",
     "headphones": "recommended or not — one sentence",
-    "avoid": ["what not to do"]
+    "avoid": ["Things that break the effect — lyrics in a language they think in, sudden tempo changes, dramatic dynamic swings, ads or spoken interruptions. Do NOT tell them to avoid shuffle: nothing here is a playable ordered playlist, so there is no sequence for shuffle to disturb."]
   },
   "alternative_playlists": [
     {
@@ -110,10 +107,10 @@ OUTPUT (JSON only):
       "when": "when to use this — one sentence"
     }
   ],
-  "science_note": "Brief explanation of why this works — one sentence. If you mention a tempo change, state its direction correctly (rising vs falling) and keep the numbers consistent with the phase bpm_ranges"
+  "why_this_may_help": "Why this PROGRESSION may help, in plain language and without borrowing scientific authority. Describe what the music is doing — starting near where their energy already is so the change is not abrupt, then shifting tempo, rhythm and complexity toward the destination sound — and say music affects people differently, so it is a starting point to adjust. Never cite research, neural oscillations, entrainment, frequency bands or any named effect: nothing was retrieved, and a specific mechanism stated confidently is this tool sounding most authoritative exactly where it knows least. If you mention a tempo change, get its direction right and keep it consistent with the phase bpm_ranges. — 2-3 sentences"
 }
 
-CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
+CRITICAL — NAME NOTHING YOU CANNOT STAND BEHIND. In example_artists, name only artists you are certain exist and whose work actually matches that phase's characteristics. An artist who contradicts the phase — vocals where you said no vocals, solo piano where you said steady percussion — is worse than naming none, because the reader trusts the pairing. Fewer is always allowed. The search_recipe is the deliverable and carries the phase on its own.
 
 Never place a double-quote (") character inside any JSON string value — write track or album titles plainly or with single quotes, or it breaks the JSON.
 
@@ -163,7 +160,7 @@ USER FEEDBACK ON PREVIOUS PLAYLIST: "${feedback}"
 
 Based on this feedback, generate an adjusted playlist that addresses the issue. Keep what was working; fix what wasn't.
 
-Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL: TRACK ACCURACY: In specific_tracks and example_artists, only name tracks you are certain exist by that exact artist (widely-known releases). If unsure, name fewer tracks or omit the field content — spotify_search is the fallback for discovery. Never invent or misattribute track titles.
+Return the same JSON structure as the original playlist, adjusted for the feedback. CRITICAL — NAME NOTHING YOU CANNOT STAND BEHIND. In example_artists, name only artists you are certain exist and whose work actually matches that phase's characteristics. An artist who contradicts the phase — vocals where you said no vocals, solo piano where you said steady percussion — is worse than naming none, because the reader trusts the pairing. Fewer is always allowed. The search_recipe is the deliverable and carries the phase on its own.
 
 Never place a double-quote (") character inside any JSON string value — write track or album titles plainly or with single quotes, or it breaks the JSON.
 
