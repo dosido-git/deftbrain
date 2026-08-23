@@ -8,15 +8,28 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // POST /cold-open-craft — Reach Out to Anyone
 // ════════════════════════════════════════════════════════════
 
-const systemPrompt = `Cold outreach strategist. Craft first messages to strangers that actually get responses.
+const systemPrompt = `Cold outreach writer. Help the user write a first message to someone they do not know well.
 
-RULES: Every opener must reference something specific and real about the recipient — not generic flattery. Make the ask clear and low-friction. Three versions: safe (won't backfire), bold (breaks through), creative (unexpected angle). The subject line is 40% of the open rate — treat it as a first impression.
+GROUNDING RULES:
+- Use only facts the user supplied or facts explicitly verified elsewhere in the request context.
+- Never invent a claim from the recipient's writing, the sender's work history, a shared experience, a metric, a quote, a mutual connection, or any other specific detail.
+- Never infer what the recipient thinks, values, prefers, receives a lot of, will notice, or is likely to do.
+- Do not manufacture "specificity". If a useful specific detail was not supplied, write a good message without it. Use an obvious bracketed placeholder only when the message truly cannot work without a user-specific fact; omission is preferred to placeholders.
+- Do not predict response rates, open rates, attention, memorability, or other outcomes.
+- Safe / medium / bold differ in directness and conversational risk, not in how much you invent.
+- Explain the tradeoff of each approach, not speculative psychology.
+- Follow-up timing is a practical suggestion, not a claim about how the recipient will perceive a particular number of days.
+
+STYLE:
+Make the ask clear and low-friction. Keep each message natural for the selected channel. Reference supplied recipient details when they are genuinely useful, without flattering or pretending to know more than the user provided.
 
 Never place a double-quote (") character inside any JSON string value — write quoted phrases in messages plainly or with single quotes, or it breaks the JSON.`;
 
 router.post('/cold-open-craft', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { who, why, channel, whatYouKnow, yourBackground, tone, userLanguage } = req.body;
+    // `tone` is no longer read: the form's tone selector was removed, and the
+    // three openers now vary by directness rather than by a requested voice.
+    const { who, why, channel, whatYouKnow, yourBackground, userLanguage } = req.body;
 
     if (!who?.trim() || !why?.trim()) {
       return res.status(400).json({ error: 'Tell us who you\'re reaching out to and why.' });
@@ -27,44 +40,35 @@ WHY: ${why}
 CHANNEL: ${channel || 'email'}
 ${whatYouKnow ? `WHAT I KNOW ABOUT THEM: ${whatYouKnow}` : ''}
 ${yourBackground ? `MY BACKGROUND: ${yourBackground}` : ''}
-PREFERRED TONE: ${tone || 'medium'}
 
-Generate cold openers. Return ONLY valid JSON:
+Generate three usable cold openers from ONLY the facts above. Return ONLY valid JSON:
 {
-  "situation_read": "1-2 sentences on what the sender has actually told you, and what that makes hard about the approach. Restate their situation; do not extend it. You know nothing about the recipient beyond what was supplied — not how much inbound they get, not what they value, not whether they are approachable, not where the power sits. Every one of those is mind-reading, and it reads as insight while being invented. If the sender gave you little, say the approach has little to work with and what would sharpen it.",
+  "situation_read": "1-2 grounded sentences naming the actual outreach challenge and the useful facts available. Do not characterize the recipient's personality, motives, preferences, inbox, status, or likely reaction.",
 
   "openers": [
     {
       "boldness": "safe | medium | bold",
-      "label": "Short label for this approach (e.g., 'The Specific Compliment', 'The Mutual Connection', 'The Bold Ask')",
-      "message": "The exact message to send, channel-appropriate in length.
-        THE HARD RULE, AND IT MATTERS MORE HERE THAN ANYWHERE: every factual claim in this message will be sent in the sender's name. You may use ONLY what they supplied. You may not invent what their article argued, what they built, what scale they worked at, what happened at a previous employer, what they tried and failed, or any specific of the recipient's work. If you did not read it, it did not happen.
-        Where a specific would make the message land and you were not given one, leave an obvious placeholder in square brackets — [the specific thing your piece argued], [the number that surprised you] — so they fill it in and know they must. A placeholder is honest; an invented detail they do not notice is a false claim they send to a stranger.
-        NO:  your piece on how alert ownership drift drives more burnout than volume   (they said only that they wrote about pager fatigue)
-        NO:  when I was handling 50M events a day at Square                            (they said only that they worked at Square)
-        YES: your piece on pager fatigue — [the part that stuck with me]
-        YES: I worked on this at Square, and [the specific thing you ran into]
-        Worked pairs for shape only; write your own.",
-      "why_it_works": "1-2 sentences on what this approach does differently from the other two — what it leads with, what it leaves out, what it asks for. Describe the message, not the recipient's predicted reaction. No response likelihoods, no claims about what gets replies, no 'the fastest credibility signal available' or 'the single most attention-grabbing thing you can do' — nobody measured any of that.",
-      "best_if": "When to use this one vs. the others. One sentence."
+      "label": "Short label for this approach",
+      "message": "Exact sendable message. Use supplied facts only. Do not invent specifics. Avoid placeholders unless a genuinely necessary fact is missing; if it can simply be omitted, omit it.",
+      "why_it_works": "1-2 sentences explaining what this version emphasizes and the tradeoff it makes. Do not predict response, attention, credibility, or what the recipient will think.",
+      "best_if": "One sentence describing when the user might prefer this style over the others."
     }
   ],
 
-  "subject_line": "If email: the subject line. If not email: null.",
+  "subject_line": "If email: a subject line grounded in supplied facts. If not email: null.",
 
   "what_not_to_say": [
-    "4-5 specific things to avoid in THIS situation. Not generic advice — tailored to this outreach."
+    "3-5 situation-specific cautions based only on the information supplied. Phrase them as risks or tone problems, not claims about what the recipient will think."
   ],
 
   "follow_up_plan": {
-    "when": "How long to wait, offered as a reasonable interval rather than an optimal one. You cannot predict this recipient's behaviour, so do not justify the timing by what they will be doing or feeling.",
-    "message": "A short follow-up message if they don't respond",
-    "when_to_stop": "When to accept the silence and move on"
-  },
-
+    "when": "A reasonable follow-up window framed as a suggestion, not a behavioral prediction.",
+    "message": "A short follow-up message that adds no invented facts.",
+    "when_to_stop": "A restrained stopping rule that respects silence without predicting damage or offense."
+  }
 }
 
-Generate 3 openers: one safe, one medium, one bold.`;
+Generate exactly 3 openers: safe, medium, bold. Every factual statement about either person must trace directly to the supplied fields above.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
