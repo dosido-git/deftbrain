@@ -481,13 +481,13 @@ const BrainStateDeejay = ({ tool }) => {
   // Secondary: multi-select preferences and tags. A wrap row is right here —
   // eight genres read as a palette, and no single one defines the output.
   const renderPills = (options, value, setter, multi = false) => (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
         return (
           <button key={opt.value}
             onClick={() => setter(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
+            className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
             {active && <span className="me-1">✓</span>}
             {t(opt.labelKey)}
           </button>
@@ -561,10 +561,10 @@ const BrainStateDeejay = ({ tool }) => {
         </button>
         <p className={`text-xs ${c.textMuted} mt-1`}>{t('bsd_sensitivities_hint')}</p>
         {showSensitivities && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
             {SENSITIVITY_OPTIONS.map(opt => (
               <button key={opt.value} onClick={() => toggleSensitivity(opt.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${sensitivities.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
+                className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${sensitivities.includes(opt.value) ? c.pillActive : c.pillInactive}`}>
                 {sensitivities.includes(opt.value) && <span className="me-1">✓</span>}
                 {t(opt.labelKey)}
               </button>
@@ -576,7 +576,7 @@ const BrainStateDeejay = ({ tool }) => {
 
       <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || !currentState || !desiredState}
-      className={`relative flex-1 py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
+      className={`relative w-full py-4 ps-4 pe-16 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${(!currentState || !desiredState) ? c.btnIdle : c.btnPrimary}`}>
       {loading ? (
         <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_creating')}</>
       ) : (

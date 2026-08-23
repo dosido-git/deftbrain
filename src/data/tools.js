@@ -44,17 +44,16 @@ template:
 ]}},**/
 export const tools = [
 {
-  modified: "2026-08-22",
   id: "MentalHealthNavigator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You know you need help but not what kind, or who to call first.",
     give: "What's been on your mind, your situation in your own words, and anything you have already tried. Two minutes.",
-    get: "Which kinds of support may fit — therapist, psychiatrist, GP, coach, group — what each one does differently, and practical ways to start.",
-    edge: "It helps with the question that comes before treatment: what kind of support might fit, and how do I start looking?",
+    get: "Which kind of professional actually fits — therapist, psychiatrist, GP, coach, group — what each one does differently, and how to get in the door.",
+    edge: "It answers the question that comes before therapy: who to call. Most mental-health tools assume you already know.",
   },
-  seoDescription: "Describe what you're going through and explore types of mental health support that may fit, what they do, common cost considerations, and how to reach out.",
+  seoDescription: "Describe what you're going through and get free, instant guidance on the right type of mental health support, what it costs, and how to reach out.",
   seoTitle: "Find a Therapist: Mental Health Support Finder",
   title: "Mental Health Navigator",
   tagline: "Find the right support for what you're going through",
@@ -64,7 +63,7 @@ export const tools = [
   headerColor: "#c0d8e8",
   description: "Describe what you're going through and get clear guidance on what type of support fits your situation, how to find it, what it costs, what to say when you reach out, and what you can do in the next 48 hours.",
   guide: {
-    overview: "Figuring out what kind of mental health support to look for can be its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? Mental Health Navigator helps you compare those roles against what you describe, identify plausible starting points, account for barriers such as cost or waitlists, and prepare what to say when you reach out. It is navigation, not diagnosis or treatment advice.",
+    overview: "Knowing you need help is the first step — but figuring out what kind of help, and how to actually get it, is its own challenge. Therapist? Psychiatrist? Coach? GP? Support group? The difference matters, and most people don't know where to start. MentalHealthNavigator cuts through the confusion: you describe what's been going on, and it recommends the right type of support for your situation, tells you how to find it (country-specific where possible), gives you the exact words to say when you reach out, and identifies what you can do today — not someday.",
 
     howToUse: [
       "Select what's been on your mind — you can pick multiple areas",
@@ -79,7 +78,7 @@ export const tools = [
       "You don't need to have it figured out before using this — 'general / not sure' is a valid starting point",
       "The 'What to say' section removes the most common blocker: not knowing how to start the conversation when calling a professional",
       "If cost is a barrier, always mention it — sliding scale fees, community mental health centers, and low-cost options exist in most countries",
-      "This tool is for navigation, not diagnosis — use its suggestions as starting points for finding appropriate professional support",
+      "This tool is for navigation, not diagnosis — it helps you find the right door, not tell you what's on the other side",
       "If you're in crisis right now, please reach out to a crisis line directly rather than using this tool",
       "Works across all 12 DeftBrain languages",
     ],
@@ -370,7 +369,7 @@ export const tools = [
   },
 },
 {
-  modified: "2026-08-22",
+  modified: "2026-04-24",
   id: "DoctorVisitPrep",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -491,17 +490,17 @@ export const tools = [
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "ToolFinder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You have a problem and no idea which tool solves it.",
     give: "Your problem in plain language.",
-    get: "One best place to start, why it fits, and what to tell it when you get there.",
-    edge: "It reads between the lines, so you don't have to know what the tool would be called — and you can correct the match in plain language if it misses.",
+    get: "One to five tools ranked, each with why it fits your situation specifically.",
+    edge: "It reads between the lines, so you don't have to know what the tool would be called.",
   },
-  seoDescription: "Describe your problem in plain language and find the best DeftBrain tool to start with. See why it fits, what to enter, and refine the match if needed. Free, no signup.",
+  seoDescription: "Describe your problem in plain language and instantly find the right DeftBrain tool for it. Get matched picks, why each fits, and what to enter. Free, no signup.",
   seoTitle: "Find the Right Tool: Describe Your Problem",
   // Renamed to "Start Here" on 2026-08-05 and back to "Tool Finder" on
   // 2026-08-21. The 2026-08-05 reasoning was that users want to solve problems
@@ -518,24 +517,24 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.",
   guide: {
-    overview: "Tool Finder is the front door to DeftBrain when you know the problem but not the tool. Describe what is going on in ordinary language and it gives you one best place to start, explains why it fits, and tells you what useful context to bring with you. If the match is not quite right, say what is different and it will try again.",
+    overview: "ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.",
     howToUse: [
       "Describe your problem, situation, or need in plain language",
-      "Or choose one of the example situations to see how it works",
-      "Review the recommended starting tool and why it fits your situation",
-      "Use the 'When you get there' note to bring the most useful context with you",
-      "If the recommendation misses, tell Tool Finder what is different and ask for a better match"
+      "Or tap a quick-pick button to jump in",
+      "Review the recommended tools — each explains why it fits YOUR situation",
+      "Click any tool card to open it directly",
+      "Check the workflow section if multiple tools work best in sequence"
     ],
     example: {
       scenario: "Your landlord is threatening to keep your security deposit and you got a sketchy itemized list.",
-      action: "Type the situation into Tool Finder.",
-      result: "Recommends the best starting tool, explains why it fits, and tells you what to enter there. If the recommendation misses the real problem, you can say what is different and get a better match."
+      action: "Type the situation into ToolFinder.",
+      result: "Recommends RentersDepositSaver (best match), LeaseTrapDetector (review lease clauses), and ComplaintEscalationWriter (if they don't budge). Workflow explains the order."
     },
     tips: [
-      "Describe the situation the way you would tell another person; you do not need to know the category or tool name",
-      "Specific details help when they change what kind of help you need",
-      "If the first match is not quite right, say what Tool Finder got wrong or missed",
-      "Use 'Suggest a tool' only when the catalog genuinely does not seem to have what you need"
+      "More detail gets better matches — 'money problem' is vague, 'my roommate owes me $200 and it's awkward' is specific",
+      "The workflow section shows how to chain tools together",
+      "Quick-pick buttons are great starting points if you're not sure how to describe it",
+      "If results aren't perfect, add more context and search again"
     ]
   }
 },
@@ -630,15 +629,14 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "MarkupDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Something costs more than it should and you want to know why.",
     give: "The product or service, and the price you saw.",
-    get: "A reasoned breakdown of what may be driving the price — materials, labor, brand premium, margin, and pricing psychology.",
-    edge: "It explains the anatomy of a price you already have; it doesn't pretend to be a live pricing database.",
+    get: "Where your money actually goes — materials, labor, brand premium, pure margin — and the pricing psychology in play.",
   },
   seoDescription: "Ever wonder why that coffee costs $5? Describe any product and get a free breakdown of its real cost, the markup multiplier, the typical price elsewhere, and how to pay less.",
   seoTitle: "Price Breakdown: Why Does It Cost That Much?",
@@ -759,7 +757,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2025-03-05",
   id: "ChaosPilot",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -767,7 +765,7 @@ export const tools = [
     when: "Nothing's wrong, but nothing's moving either.",
     give: "Your typical week in detail, and what feels stale.",
     get: "One specific disruption you can do today — targeted at the pattern causing the stagnation, not random novelty.",
-    edge: "It looks for the pattern first. 'Do something different' is generic advice; this proposes a disruption tied to what you described.",
+    edge: "It diagnoses the pattern first. 'Do something different' is advice; this names which thing.",
   },
   seoDescription: "Stuck in a rut? Get one free, surgically designed disruption to break the pattern keeping you stagnant — exact timing, full instructions, no random novelty.",
   seoTitle: "Break Out of a Rut: Routine Disruptor",
@@ -846,7 +844,7 @@ export const tools = [
 
 
 {
-  modified: "2026-08-22",
+  modified: "2025-03-05",
   id: "BeliefStressTest",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -880,10 +878,10 @@ export const tools = [
         result: "Where it holds: prevents extremes, reduces anxiety. Fatal stress test: doesn't apply to genuinely harmful things — moderate heroin use isn't wisdom. Significant: some goods require full commitment, not moderation. Hidden structure: it's really a rule against anxiety, not a guide to quantity. Upgrade: 'Moderation is a useful default for diminishing-return activities. For things requiring mastery or commitment, replace moderation with intentionality.'"
       },
       tips: [
-        "The 'psychological function' section can be useful for considering what the belief may be doing for you, not just whether it is true",
+        "The 'psychological function' section is often the most revealing part",
         "Severity ratings on stress tests help you prioritize what's worth acting on",
         "Most useful for beliefs you've held so long you've stopped examining them",
-        "If another tool in the catalog is designed for a more adversarial challenge, use that when you want demolition rather than boundary-testing"
+        "Pair with Ego Killer when you want a full demolition-and-rebuild"
       ]
     }
 },
@@ -980,7 +978,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2025-03-05",
   id: "NotSoFast",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1080,7 +1078,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "AnalogyEngine",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1130,17 +1128,17 @@ export const tools = [
   primer: {
     when: "You need to message a stranger and not sound like spam.",
     give: "Who they are, and what you want from the connection.",
-    get: "Three openers at different boldness levels, the psychology of each, and rough response rates.",
+    get: "Three openers at different boldness levels, why each approach may work, and a practical follow-up plan.",
   },
-  seoDescription: "Write cold outreach that actually gets replies. Three first-message openers by boldness, the psychology behind each, and what not to say. Free, no signup.",
+  seoDescription: "Need to contact someone you do not know? Get three first-message openers at different boldness levels, plus a follow-up plan and what to avoid. Free, no signup.",
   seoTitle: "Cold Outreach Message & First-DM Writer",
   title: "Cold Open Craft",
-  tagline: "First messages that actually get responses.",
+  tagline: "Make the first message easier to send — and easier to answer.",
   tags: ['cold email', 'first message', 'reach out', 'introduction', 'outreach', 'networking', 'linkedin', 'dm', 'twitter', 'instagram', 'pitch', 'mentor', 'collaboration', 'job', 'stranger', 'follow up', 'cold outreach'],
   icon: "📬",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#d4dde8",
-  description: "Reaching out to someone you don't know — for networking, a job, a collaboration, or a favor? Describe who and why, and ColdOpenCraft generates 3 openers ranked by boldness (safe, balanced, bold), explains the psychology behind each, includes a follow-up plan, and warns you what NOT to say. Channel-specific for email, LinkedIn, DM, or in-person.",
+  description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you several ways to begin, from cautious to bold, plus a sensible follow-up if they don’t reply.",
   guide: {
     overview: "ColdOpenCraft is for anyone who needs to reach out to a stranger and doesn't want to sound like spam. It generates three openers at different boldness levels, each with the psychology explained, estimated response rates, and guidance on when to use which version. Includes a follow-up plan with timing, a backup message, and the 'power move' nuclear option.",
     howToUse: [
@@ -1258,15 +1256,15 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "ProcedureProbe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "A procedure was recommended and you're about to say yes.",
     give: "The procedure and the type of provider.",
-    get: "What it is in plain language, questions about why it's being recommended, alternatives to ask about, and what to clarify before deciding.",
-    edge: "It helps you question the recommendation itself — why this procedure, what alternatives exist, and what would change the recommendation.",
+    get: "What it is in plain language, whether it's standard for your situation, the exact questions to ask, and the alternatives.",
+    edge: "It tells you whether the recommendation itself is standard — the question most patients don't know to ask.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -1292,7 +1290,7 @@ export const tools = [
   headerColor: "#ccdfc4",
   description: "A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.",
   guide: {
-    overview: "Procedure Probe helps you understand what to ask before agreeing to a medical or dental procedure. It explains the procedure in plain language, surfaces questions about why it was recommended and what alternatives may exist, outlines typical cost and recovery considerations, and helps you prepare for a more informed conversation with your provider. It does not determine whether a procedure is medically necessary for you.",
+    overview: "Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.",
     howToUse: [
       "Enter the procedure or treatment that was recommended",
       "Pick the provider type — dentist, surgeon, etc.",
@@ -1308,8 +1306,8 @@ export const tools = [
     tips: [
       "The questions to ask section is your most powerful tool — bring them to your appointment",
       "Adding your insurance situation helps the cost picture be more accurate",
-      "If it suggests asking about a second opinion, treat that as a prompt to discuss your options with a qualified clinician",
-      "The urgency check can help you identify questions to ask about timing; your clinician should determine whether delay is medically risky"
+      "If it flags 'get a second opinion,' that's worth taking seriously",
+      "The urgency check will tell you if delaying is risky — important for time-sensitive procedures"
     ]
   }
 },
@@ -1541,15 +1539,14 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "AwkwardSilenceFiller",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The conversation just died and you're still standing there.",
     give: "The setting, and any context.",
-    get: "Five to seven low-risk things you could say right now, matched to that setting.",
-    edge: "It gives you something usable in the next few seconds — including a graceful exit when restarting the conversation isn't worth forcing.",
+    get: "Five to seven things you can safely say right now, matched to that setting.",
   },
   seoDescription: "Rescue any awkward silence with 5-7 safe things to say, matched to your setting — work, party, date, or family. Exit lines and what not to say included.",
   seoTitle: "Conversation Starters for Awkward Silences",
@@ -1578,8 +1575,8 @@ export const tools = [
     },
     
     tips: [
-      "Low-risk options are designed to minimize social risk; use medium-risk ones when the setting and your comfort level support it",
-      "Environmental observations are often a low-pressure place to start because they give both people something already in the room to talk about",
+      "Low-risk options are always safe; use medium-risk when feeling more comfortable",
+      "Environmental observations are universally safe across contexts",
       "Exit strategies give you graceful out if conversation just isn't flowing",
       "What NOT to say prevents common mistakes for each setting",
       "Some silences are fine - you don't need to fill every pause"
@@ -1863,7 +1860,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "WhichLife",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -1873,7 +1870,7 @@ export const tools = [
     get: "A vivid ordinary day inside each future — specific, not idealized.",
     edge: "Pro/con lists compare features. This compares what it feels like on a Tuesday, which is what you're actually choosing between.",
   },
-  seoDescription: "Torn between two paths? Instead of another pro/con list, read a vivid ordinary day in each possible future and notice how each one feels to live. Free, no signup.",
+  seoDescription: "Torn between two paths? Instead of a pro/con list, read a vivid 'day in the life' for each future so your gut reacts before your brain does. Free, no signup.",
   seoTitle: "Which Life? Compare Two Paths Side by Side",
   title: "Which Life?",
   tagline: "Feel both futures before you choose.",
@@ -1883,7 +1880,7 @@ export const tools = [
   headerColor: "#f5e0c0",
   description: "Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.",
   guide: {
-    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with a restrained reflection on the tradeoff you described, moments to notice in your own reaction, and one question to sit with.",
+    overview: "Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.",
     howToUse: [
       "Describe Path A — the first option you're considering",
       "Describe Path B — the alternative",
@@ -1897,10 +1894,10 @@ export const tools = [
       result: "Two vivid day-in-the-life narratives: one where you're two years into the corporate track, one where you're two years into the startup. Each includes a moment of genuine satisfaction and an honest cost. The 'what I noticed' section surfaces what you'd grieve either way."
     },
     tips: [
-      "Relevant context about your priorities and constraints helps the narratives become more specific to your situation",
+      "The more context you give about yourself, the more personal and specific the narratives get",
       "Pay attention to which narrative you read first, which you re-read, and which makes you feel something — that's data",
       "Try different timeframes on the same decision — 1 year and 10 years tell very different stories",
-      "This isn't advice. It's a simulation. Notice your reaction to each narrative as one more piece of information about the choice."
+      "This isn't advice. It's a simulation. Your reaction to the narratives IS the answer."
     ]
   }
 },
@@ -1915,15 +1912,15 @@ export const tools = [
     give: "What happened, ideally their exact words, and the mood you want.",
     get: "Responses in that register — surgical, witty, petty or dignified — plus whether to send at all.",
   },
-  seoDescription: "Got the perfect comeback three hours too late? Describe the moment and get the witty clapbacks you wish you'd said — surgical to petty. Purely cathartic.",
+  seoDescription: "Still replaying what someone said? Describe the moment and get comeback ideas from witty to dignified, plus help deciding whether any response is worth sending.",
   seoTitle: "Comeback Generator: Perfect Clapbacks",
   title: "Comeback Cooker",
-  tagline: "The perfect response you thought of 3 hours too late.",
+  tagline: "For the response that arrived three hours too late.",
   tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse', 'roast', 'cathartic', 'insult', 'bully', 'revenge', 'conflict', 'clap back', 'petty'],
   icon: "🍳",
   categories: ['Humans', 'Discourse', 'Diversions'],
   headerColor: "#e0b8b8",
-  description: "Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.",
+  description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and the kind of response you wish you’d had. Comeback Cooker gives you several ways you could have answered — and helps separate the satisfying comeback from the one actually worth sending.",
   guide: {
     overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
     howToUse: [
@@ -2074,7 +2071,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "RoastMe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2082,7 +2079,6 @@ export const tools = [
     when: "You want to be made fun of accurately.",
     give: "Your resume, dating profile, LinkedIn, or whatever else.",
     get: "A roast aimed at what is specifically ridiculous about what you sent.",
-    edge: "The jokes come from your actual material, not a generic list of insults with your name pasted in.",
   },
   seoDescription: "Paste your resume, dating profile, LinkedIn bio, or any text and get a personalized comedy roast targeting your specific content. Three heat levels, zero generics.",
   seoTitle: "Roast Generator: Roast My Resume or Bio",
@@ -2156,15 +2152,14 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "WrongAnswersOnly",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You want an answer that's wrong on purpose.",
     give: "Any real question, and how straight-faced you want the answer.",
-    get: "A confident, impeccably structured, deliberately incorrect answer.",
-    edge: "Being wrong is the entire assignment: the fun is in how seriously the nonsense is presented.",
+    get: "A confident, impeccably structured, completely incorrect answer.",
   },
   seoDescription: "Ask any real question and get a confidently, beautifully wrong answer — fake studies, invented experts, nonsense equations. Three absurdity levels. Real answer on toggle.",
   seoTitle: "Wrong Answers Only: Confidently Wrong",
@@ -2290,15 +2285,14 @@ export const tools = [
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "TheDebrief",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The meeting ended and nobody wrote anything down.",
     give: "The transcript — Zoom captions, Teams, Otter. Pick Distill, Follow Up or Spot Patterns.",
-    get: "Decisions, action items with owners when stated, open questions, and drafted follow-up messages.",
-    edge: "It turns a transcript into a usable record while keeping unstated ownership and unresolved points visible instead of inventing them.",
+    get: "Decisions, action items with owners, open questions, and drafted follow-up messages.",
   },
   seoDescription: "Paste any meeting transcript and instantly get the decisions, action items with owners and deadlines, and ready-to-send follow-ups — without digging through notes.",
   seoTitle: "Meeting Notes: Action Items & Decisions",
@@ -2379,7 +2373,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "TheWholeStory",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2481,7 +2475,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "ContextCollapse",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2519,54 +2513,56 @@ export const tools = [
       "The 'Key Trigger' field shows the exact word or phrase driving each audience's interpretation",
       "Rewrite suggestions preserve your voice while fixing the gaps — they don't make you sound corporate",
       "Platform notes flag things like screenshot risk, forwarding risk, and social media permanence",
-      "Use this before an announcement that will reach mixed audiences, especially when different readers may bring very different context to the same words"
+      "Use this before any announcement that goes to mixed audiences — it prevents 90% of 'that came out wrong' moments"
     ]
   }
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "Bookmark",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You left a show, book, game, or sports season unfinished and want back in without spoilers.",
-    give: "The title, exactly where you stopped, and anything you remember.",
-    get: "A recap that stays behind your stopping point, with the few things to have in your head before you resume and a fuller refresher underneath.",
-    edge: "It treats the stopping point as a hard boundary: if a detail cannot be placed safely before it, Bookmark leaves it out.",
+    when: "You abandoned a show or book and want back in without spoilers.",
+    give: "The title and exactly where you stopped.",
+    get: "A recap up to that point and no further, plus whether it's worth resuming.",
+    edge: "Wikis and search results spoil you on the way to the answer. This stops at your bookmark.",
   },
   seoDescription: "Returning to a show, book, game, or season after time away? Get a spoiler-free recap calibrated to exactly where you stopped. Free, no signup.",
   seoTitle: "Spoiler-Free Show & Book Recap Generator",
   title: "Bookmark",
   tagline: "Pick up where you left off — without spoilers",
-  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'catch up', 'tv', 'season', 'remember', 'series', 'chapter', 'binge', 'rewatch', 'summary', 'plot', 'characters', 'episode', 'where was i'],
+  tags: ['show', 'book', 'game', 'sports', 'recap', 'spoiler', 'abandoned', 'catch up', 'catch-up', 'tv', 'season', 'remember', 'forgotten', 'series', 'chapter', 'binge', 'rewatch', 'pick up', 'return', 'summary', 'plot', 'characters', 'episode', 'where was i'],
   icon: "🔖",
   categories: ['Diversions'],
   headerColor: "#ccdfc4",
   description: "Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.",
   guide: {
-    overview: "Bookmark helps you return to something you stopped without learning what happens next. Give it the title and your stopping point, plus any memory fragments you have. It uses verified chronology where available and treats the boundary conservatively: a detail that cannot be placed with confidence on the safe side is omitted. The result starts with a short 'Before you press play/read' refresher, then expands into the story so far, characters, established threads, world details when useful, and a clean re-entry cue.",
+    overview: "Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.",
     howToUse: [
-      "Choose the kind of thing you're returning to and enter the exact title.",
-      "Give the most precise stopping point you can — season and episode, chapter, page, game, date, or another clear marker.",
-      "Add anything you remember, even if you're unsure; Bookmark can use it to orient without treating it as fact.",
-      "Read the short refresher first, then open the fuller sections only if you need them.",
-      "If Bookmark is not confident about a boundary detail, it should omit or qualify it rather than reconstruct the scene."
+      "Pick your media type: Show, Book, Game, or Sports",
+      "Enter the title and exactly where you stopped (episode, chapter, story point, or date)",
+      "Add what you remember — even vague recollections help calibrate the recap",
+      "Set your spoiler level: Strict (nothing after your point), Moderate (vague hints okay), or Open",
+      "Ask specific questions if something's nagging you ('Who was the guy with the scar?')"
     ],
     example: {
-      scenario: "You stopped Project Hail Mary around chapter 15 and remember that Grace had just begun communicating with the alien.",
-      action: "Enter the title, chapter/page area, and that memory fragment.",
-      result: "Bookmark recaps only what is established by that point, confirms the communication breakthrough as the re-entry point, refreshes the relevant characters and active threads, and avoids future-facing teasers."
+      scenario: "You stopped watching Succession after Season 2, Episode 7. You remember something about a shareholder meeting and Kendall trying to take over, but the details are fuzzy. Your friends keep referencing it and you want to catch up without restarting.",
+      action: "Select Show, enter 'Succession' and 'Season 2, Episode 7', add what you remember, set spoiler level to Strict.",
+      result: "Bookmark delivers a present-tense recap of the power struggle up to that point, a character-by-character refresher (who's allied with whom, what each person wants), active plot threads with their unresolved tensions, the exact last major scene to trigger your memory, and an honest 'worth continuing?' take. Zero information from after S2E7."
     },
     tips: [
-      "The more precise your stopping point, the safer the recap can be.",
-      "Memory fragments help even when they are fuzzy; Bookmark should use them as clues, not as proof.",
-      "For books, page numbers vary by edition, so chapter plus a remembered event is safer than page number alone.",
-      "For spoiler-sensitive details near the boundary, omission is better than a confident guess.",
-      "Active threads should describe only what is already established, not hint at what the story will do with them next."
+      "The 'What do you remember?' field dramatically improves accuracy — even wrong memories help calibrate",
+      "Sports mode's must-watch games with '🔒 Watch blind' tags let you catch up on storylines while preserving big moments",
+      "Conversation-ready talking points (sports mode) are designed to hold up in real fan discussions",
+      "Confidence indicators tell you when the model is less certain about exact episode-level details — useful for older or obscure titles",
+      "Use the 'specific questions' field for things like 'Did they make any trades?' or 'Is that character dead?' — answers respect your spoiler level"
     ]
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "DecoderRing",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2574,7 +2570,6 @@ export const tools = [
     when: "A message arrived and the words don't match the feeling.",
     give: "The exact message and where it came from.",
     get: "What the message could mean, how loosely to hold that, and three ways you could reply.",
-    edge: "It separates plausible readings from certainty, so an ambiguous message doesn't automatically become the worst interpretation.",
   },
   seoDescription: "Paste a confusing or passive-aggressive message and see what it might mean, what's worth noticing, and 3 ready-to-send replies. Free, no signup.",
   seoTitle: "Text Message Subtext Decoder",
@@ -2656,7 +2651,7 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "MiseEnPlace",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2699,15 +2694,14 @@ export const tools = [
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "GhostWriter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Someone asked you for a reference and the deadline is close.",
     give: "Their name, your relationship, what they're applying for, and what you know about them.",
-    get: "A draft letter built from the evidence you provide, ready for you to review and personalize.",
-    edge: "It builds from what you actually know about the person rather than filling a recommendation with generic praise.",
+    get: "A finished letter with specific evidence, in a voice that sounds like you wrote it carefully.",
   },
   // FAQ — rendered in the guide aside (ToolPageWrapper) and the prerendered
   // static page (+ FAQPage JSON-LD). Part of the 2026-07 focus-tools enrichment.
@@ -2771,15 +2765,15 @@ export const tools = [
     get: "Captions that sound like a person rather than a brand account.",
     edge: "It looks at the actual photo, so the caption is about what's in it.",
   },
-  seoDescription: "Turn any photo into 3 scroll-stopping social media captions with smart hashtags, alt text, and per-platform versions. Free caption generator, no signup.",
+  seoDescription: "Share a photo or describe it, choose where you are posting and the tone you want, and get several caption options shaped for the moment and platform. Free, no signup.",
   seoTitle: "Social Media Caption Generator",
   title: "Caption Magic",
-  tagline: "Turn any photo into engaging social media captions",
+  tagline: "Find the words that fit the photo.",
   tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'brand voice', 'alt text'],
   icon: "📸",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
-  description: "A good photo doesn't always come with the right words. Share the image — or describe it — then tell us where you're posting and the tone you want. Caption Magic gives you several captions to choose from, shaped for the moment and the platform.",
+  description: "A good photo doesn’t always come with the right words. Share the image — or describe it — then tell us where you’re posting and the tone you want. Caption Magic gives you several captions to choose from, shaped for the moment and the platform.",
   guide: {
     overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
 
@@ -2862,7 +2856,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "BatchFlow",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -2903,7 +2897,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       "Use 'Compare' (Sprint vs Marathon) when you're unsure how hard to push — it shows two different pacing strategies for the same tasks",
       "Add even vague time estimates ('~30 min') to the task detail field — it makes batch durations much more accurate",
       "The 'Weekly Rhythm' feature is worth setting up once — it gives you a repeatable weekly batching pattern for recurring tasks",
-      "If the same tasks keep getting deferred across sessions, use the '⚠️ Stuck tasks' analysis to look for patterns and possible fixes",
+      "If the same tasks keep getting deferred across sessions, the '⚠️ Stuck tasks' analysis will diagnose why and suggest a fix",
       "After 3+ sessions, 'Insights' shows your actual batching patterns — which modes you favor, your real completion rate, and where you lose the most time"
     ]
   }
@@ -3024,7 +3018,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     }
 },
 {
-  modified: "2026-08-22",
+  modified: "2026-03-10",
   id: "ArgueSmarter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3059,11 +3053,11 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       result: "Prep gave you the 'but what about our culture' question you hadn't prepared for, plus a landmine to avoid ('don't mention competitor layoffs'). Debate scorecard: 7/10, blind spot on junior employee development. Audience Verdict: you were slightly more persuasive but lost them during the cost analysis. Argument Map shows you built wide but not deep — lots of claims, thin evidence. Rematch available targeting those exact weaknesses."
     },
     tips: [
-      "Devil's Advocate Prep can be useful before a meeting, presentation, or difficult conversation when you want to hear the strongest objections in advance",
-      "Try Socratic format when you want questions rather than a counter-argument; it can expose assumptions you haven't had to state explicitly",
+      "Devil's Advocate Prep before any important meeting, presentation, or difficult conversation — it's the highest-ROI mode",
+      "Try Socratic format at least once — being questioned without the AI asserting anything forces you to examine your own assumptions in a way nothing else does",
       "Source Check your own claims, not just the AI's — discovering your own weak evidence mid-debate is better than discovering it in the real conversation",
-      "The Fallacy Gym is useful for short practice sessions; increase the difficulty when the patterns start feeling obvious",
-      "Use Rematch when you want to revisit the same topic and test whether the weak spots from the previous round still hold"
+      "The Fallacy Gym streak is addictive and genuinely useful — try 5 minutes a day at increasing difficulty",
+      "Rematch is where real growth happens — same topic, but the AI remembers your blind spots and specifically targets them"
     ],
     pitfalls: [
       "The AI argues its assigned position forcefully — that's the point, not a bug. The goal is to strengthen your thinking, not to 'win'",
@@ -3266,7 +3260,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "HistoryToday",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3324,7 +3318,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "BragSheetBuilder",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3401,7 +3395,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "LayoverMaximizer",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3565,7 +3559,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "NameStorm",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3573,7 +3567,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     when: "You need a name and the good ones feel taken.",
     give: "What needs naming, and the energy you want.",
     get: "Twenty-five to thirty-five names across styles, with the reasoning behind each.",
-    edge: "It explores several naming directions at once, so you can react to distinct territories instead of a pile of near-duplicates.",
   },
   seoDescription: "Generate dozens of brandable names for your business, product, pet, or band in seconds. Free namer with pronunciation guides and live domain checks.",
   seoTitle: "Business & Brand Name Generator",
@@ -3666,7 +3659,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 // Changes: modified date, description trimmed, tags 6→9, duplicate tips removed, pitfalls added
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "DifficultTalkCoach",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3730,7 +3723,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "ComplaintEscalationWriter",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -3764,13 +3757,13 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   headerColor: "#c0d8b8",
   description: "When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.",
   guide: {
-    overview: "Complaint Escalation Writer helps you turn a stalled consumer complaint into a staged escalation plan. It organizes the facts, identifies possible sources of leverage and consumer-protection rules to verify, and drafts progressively firmer messages and complaint language. Start with the lowest appropriate step and escalate only when needed; verify legal, regulatory, and filing details before relying on them.",
+    overview: "Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.",
     
     howToUse: [
       "Name the company and select its industry (or let the tool auto-detect)",
       "Describe what happened in detail — dates, amounts, what was promised vs. delivered, names of reps",
       "Note previous resolution attempts, desired outcome, amount at stake, and what documentation you have",
-      "Review the Situation Assessment for possible leverage, uncertainties, and rules worth verifying before you escalate",
+      "Review the Situation Assessment to understand your legal position and likelihood of success",
       "Check the Evidence Checklist and gather documentation before sending anything",
       "Start with step 1 — copy the letter and send it today",
       "If there is no answer, step 2 is the regulatory complaint — and only if you need it",
@@ -3786,15 +3779,15 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     tips: [
       "The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers",
       "Gather your evidence before you send step 1 — the checklist tells you exactly what to collect",
-      "When the tool identifies potentially relevant laws or rules, verify them for your jurisdiction before relying on them in a letter",
-      "A regulatory complaint can create a formal record and may carry response requirements; verify the regulator and any applicable deadlines for your situation",
+      "The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights",
+      "The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines",
       "There is no need to jump ahead — each step leaves a record that makes the next one easier"
     ]
   }
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "PlainTalk",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4010,15 +4003,14 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "SixDegreesOfMe",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Idle curiosity about how your life fits together.",
     give: "Two things from your life. A profile makes every chain richer.",
-    get: "A possible chain connecting them, link by link.",
-    edge: "It looks for an interesting path through your own context rather than claiming there is one objectively correct connection.",
+    get: "The chain connecting them, link by link.",
   },
   seoDescription: "Find the hidden chain linking any two parts of your life — your degree and your career, your fear and your favorite food. Free, and surprisingly personal.",
   seoTitle: "Find Hidden Connections Between Anything",
@@ -4063,55 +4055,60 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-10",
   id: "BrainRoulette",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "You want to fall down a rabbit hole worth the time.",
-    give: "Pick two or more interests and choose how deep you want to go — or leave the mix to Surprise.",
-    get: "An unexpected connection between the interests, plus follow-up paths if you want to keep going.",
-    edge: "The surprising claim is checked after generation, and 'How solid is this?' shows where the connection is strong, uncertain, or overstated.",
+    give: "Two or more interests, and how deep you want to go.",
+    get: "A rabbit hole at the intersection of them.",
+    edge: "It works the overlap between your interests rather than serving one at a time, so what comes back isn't findable by searching either.",
   },
   seoDescription: "Spin up surprising rabbit holes at the intersection of your interests, with claims checked and follow-up paths to explore. Free, no signup.",
   seoTitle: "Random Rabbit Hole & Curiosity Generator",
   title: 'Brain Roulette',
   tagline: "Follow your curiosity somewhere unexpected.",
-  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'discovery', 'interests', 'spin', 'education'],
+  tags: ['random', 'interesting', 'curious', 'learn', 'discover', 'bored', 'fun', 'trivia', 'facts', 'knowledge', 'rabbit hole', 'explore', 'learning', 'curiosity', 'deep dive', 'debate', 'digest', 'daily', 'discovery', 'interests', 'spin', 'mind expanding', 'education'],
   icon: '🎲',
   categories: ['Diversions'],
   headerColor: "#b8dcd8",
   description: "Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.",
   guide: {
-    overview: "Brain Roulette looks for an unexpected connection between interests that do not usually sit next to each other. Pick two or more interests, choose how deep you want to go, and spin — or use Surprise for a random mix. The discovery stays lively rather than academic, but factual claims are checked afterward. Open 'How solid is this?' to see whether the central connection held up, needed qualification, or was overstated, along with the evidence used to check it.",
+    overview: "Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.",
+
     howToUse: [
-      "Pick two or more interests from the grid — unrelated choices usually make the best intersections.",
-      "Choose your depth: Quick Hit, Short Rabbit Hole, or Deep Dive.",
-      "Choose how technical you want the explanation to feel, then hit Spin — or use Surprise for a random mix.",
-      "Open 'How solid is this?' when you want to see how the central claim held up to checking.",
-      "Use Go Deeper or Spin From This when one part of the discovery gives you a better question."
+      "STEP 1: Pick 2 or more interests from the grid — the more you pick, the wilder the connections",
+      "STEP 2: Choose your depth — Quick Hit (2-3 sentences), Short Rabbit Hole (a paragraph with a twist), or Deep Dive (multi-section exploration)",
+      "STEP 3: Hit Spin! Or use Surprise Me to go completely random",
+      "STEP 4: Found something fascinating? Hit 'Go Deeper' to explore follow-up threads",
+      "STEP 5: Save your favorites to build a personal collection of mind-blowing connections"
     ],
     example: {
-      scenario: "You select History, Food & Cooking, and Language & Words, then choose a deep dive.",
-      action: "Hit Spin.",
-      result: "Brain Roulette finds a connection between food vocabulary and language borrowing, then checks the claim. If the generated thesis stretches the evidence, 'How solid is this?' says so, preserves the parts that are supported, and shows the sources used to verify them."
+      scenario: "You have History and Food selected, depth set to 'Short Rabbit Hole'",
+      action: "Hit Spin",
+      result: "You get a fascinating piece about how Roman gladiators were mostly vegetarian — nicknamed 'barley men' — and how their high-carb diet was deliberately designed to build a fat layer that protected them from surface wounds in the arena. The AI connects this to modern sports nutrition debates. Three 'Go Deeper' threads let you explore gladiator training diets, the economics of arena food vendors, or why we got gladiator diets completely wrong in movies."
     },
     tips: [
-      "Pick interests that seem unrelated — that is where the strongest surprise usually comes from.",
-      "Use Surprise when you want the tool to choose the mix for you.",
-      "The rabbit hole can stay playful even when the evidence check qualifies part of it.",
-      "Go Deeper is most useful when one sentence makes you ask a better question than the original spin.",
-      "If a claim is marked overstated, treat the correction as part of the discovery rather than as a failure."
+      "Pick interests that seem unrelated — that's where the best connections hide",
+      "Use 'Surprise Me' when your usual interests feel stale — the wildcard might reveal a new obsession",
+      "The 'Go Deeper' threads are where the real magic happens — they often lead to even better discoveries",
+      "Share snippets with friends — these make great conversation starters",
+      "Your spin streak tracks consecutive sessions — see how long you can keep it going",
+      "The AI remembers what you've already seen and won't repeat topics"
     ],
     pitfalls: [
-      "A plausible-sounding connection is not automatically a real one; use the evidence check when factual grounding matters.",
-      "The title may be playful, but the checked explanation should not claim more than the evidence supports.",
-      "Randomness means some intersections will be more interesting than others — spin again when one does not land."
+      "Selecting just one interest gives decent results, but 2-3 interests create much better cross-connections",
+      "If you get a dud, just spin again — the randomness means occasional misses",
+      "Deep Dive mode takes a bit longer to generate but is worth the wait",
+      "This tool is deliberately addictive — set a timer if you need to!"
     ]
   },
   crossRefs: ['BeliefStressTest', 'SixDegreesOfMe', 'DecisionCoach'],
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "FinalWish",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4155,45 +4152,46 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-08",
   id: "BikeMedic",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Something's wrong with your bike and you need to know where to start.",
-    give: "What you notice, or answers to a few diagnostic questions about the bike and component.",
-    get: "The leading possibilities, the checks that separate them, and safe next steps — with manufacturer specifications where they can be verified.",
-    edge: "It searches component documentation for exact technical facts without treating those facts as proof of the diagnosis.",
+    when: "Something's wrong with the bike and the shop is closed.",
+    give: "The symptom, or answers to a few diagnostic questions.",
+    get: "The likely cause and a step-by-step fix with visual demos.",
   },
   seoDescription: "Troubleshoot common bike problems with safe checks, verified component specifications, step-by-step guidance, and clear advice on when not to ride or when to use a bike shop.",
   seoTitle: "Bike Repair & Troubleshooting Diagnoser",
   title: "Bike Medic",
   tagline: "Figure out what's wrong with your bike — and what to do next.",
-  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
+  tags: ['bike', 'bicycle', 'repair', 'maintenance', 'cycling', 'fix', 'mechanic', 'flat', 'tire', 'brakes', 'shifting', 'gears', 'derailleur', 'chain', 'wheel', 'spoke', 'noise', 'trailside', 'DIY'],
   icon: "🚲",
   categories: ['The Grind'],
   headerColor: "#d4dde8",
   crossRefs: ['BuyWise', 'DecisionCoach'],
   description: "Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.",
   guide: {
-    overview: "Bike Medic helps you troubleshoot common bicycle problems without pretending a symptom proves one cause. It starts with safe checks, narrows the plausible candidates, and uses component-specific documentation to make technical instructions more exact when manufacturer specifications can be verified. Safety-relevant procedures, torque values, compounds, limits, and setup details should come from that verified technical block; if a needed figure cannot be verified, Bike Medic tells you what to identify or where to look before proceeding.",
-    howToUse: [
-      "Choose the problem area or describe what you notice.",
-      "Answer the diagnostic questions so Bike Medic can narrow the plausible causes without jumping to a conclusion.",
-      "Follow the checks in order; each one should help separate possibilities rather than simply label the problem.",
-      "Use verified manufacturer specifications when the repair calls for torque, setup limits, compounds, or other component-specific details.",
-      "Stop and use a bike shop whenever the guide says not to ride, the component cannot be identified, damage is visible, or the result remains uncertain."
-    ],
-    example: {
-      scenario: "Your bike skips under load in one or two gears.",
-      action: "Describe when the skipping happens and answer the shifting and drivetrain questions.",
-      result: "Bike Medic treats cable tension, hanger alignment, chain wear, cassette wear, and setup issues as possibilities, gives checks that distinguish them, and only recommends replacement after the relevant condition is actually established."
-    },
-    tips: [
-      "Describe exactly when the symptom happens — under load, in one gear, after a crash, only when wet, or all the time.",
-      "Your bike profile can eliminate irrelevant branches and make component-specific research more accurate.",
-      "A technical specification can make a repair instruction exact; it does not prove what caused the symptom.",
-      "If a repair depends on a torque value, retaining compound, compatibility rule, or service limit that is not verified, stop and confirm it before proceeding."
-    ]
-  }
+      overview: "Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.",
+      howToUse: [
+        "Select the problem category or describe your symptom in the AI analyzer to get routed to the right fix",
+        "Answer diagnostic questions to narrow down the exact cause — your bike profile auto-skips known answers",
+        "Follow the step-by-step fix with animated visual guide and check off steps as you complete them",
+        "If the fix doesn't resolve it, tap 'Still broken' for AI-powered deeper diagnosis that accounts for what you already tried",
+        "Use Quick Checks mode for pre-ride, post-crash, after-rain, long-storage, or before-tour checklists"
+      ],
+      example: {
+        scenario: "Your rear disc brake makes a constant scraping noise while riding",
+        action: "Select 'Brake Problems' → 'Disc brakes' → 'Rubbing' → Follow the caliper centering steps with animated demo",
+        result: "Step-by-step caliper alignment with play/pause animation. If it still rubs, hit 'Still broken' and the AI suggests checking for a bent rotor, warped caliper mount, or contaminated pads."
+      },
+      tips: [
+        "Set up your Bike Profile via the gear icon to auto-skip questions about brake type, shifting system, and tire setup",
+        "The static troubleshooting tree works without AI — great for trailside or offline use",
+        "Use Quick Checks before long rides or after crashes to catch problems before they strand you",
+        "Every fix includes a Parts & Shopping List with real part names, examples, and price ranges"
+      ]
+    }
 },
 
 {
@@ -4315,18 +4313,18 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "A message landed badly and you want to reply now, which is the worst time to.",
     give: "The message you received and your relationship to the sender.",
-    get: "What's actually going on emotionally, several response strategies, and drafts of each.",
+    get: "A calmer read of the message, several response strategies, and drafts you can adapt.",
     edge: "It gives you validate, boundary and de-escalate versions side by side, so you choose the register deliberately instead of by mood.",
   },
-  seoDescription: "Got a tense text? Before you fire back, get de-escalating response options, emotional analysis, and what NOT to say. Free — dodge the regrettable reply.",
+  seoDescription: "Got a tense message? Slow down the reply, see several ways to respond, and get drafts for setting a boundary, de-escalating, or moving the conversation forward.",
   seoTitle: "Tense Text Response Helper & De-escalator",
   title: "Conflict Coach",
-  tagline: "Stop, breathe, and craft the right response",
+  tagline: "Respond to the message — not the heat of the moment.",
   tags: ['text', 'argument', 'fight', 'respond', 'message', 'conflict', 'communication', 'de-escalate', 'anger', 'manipulation', 'gaslighting', 'passive aggressive', 'relationship', 'boundaries', 'texting'],
   icon: "📱",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
-  description: "Received a tense message? Don't respond reactively. Get de-escalating response suggestions, emotional analysis, and thoughtful strategies. Prevents regrettable texts.",
+  description: "A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.",
   guide: {
     overview: "The Conflict Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.",
     
@@ -4540,7 +4538,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "FakeReviewDetective",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4752,7 +4750,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "2026-03-11",
   id: "DoctorVisitTranslator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4884,7 +4882,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "LeaseTrapDetector",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -4954,12 +4952,12 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     
     pitfalls: [
       "Don't skip location - 'New York City, NY' has VERY different tenant laws than 'Albany, NY'. Be specific with city AND state.",
-      "A standard form is not a guarantee that every clause fits your jurisdiction or situation; read the lease and verify any serious flags before signing.",
-      "Review the lease before signing when you can; it is usually easier to question or negotiate language before you are committed.",
-      "Treat yellow flags as questions to clarify, especially when fees, responsibilities, or timelines are vague.",
+      "Don't assume 'standard lease' is safe - many 'standard' leases include illegal or exploitative clauses. Always analyze.",
+      "Don't sign first, analyze later - run lease through tool BEFORE signing. After signature, you're legally bound even to illegal clauses (until you fight in court).",
+      "Yellow flags aren't 'probably fine' - questionable clauses need clarification. Vague language always benefits landlord, never tenant.",
       "Green flags don't mean entire lease is safe - a lease can have good protections AND predatory clauses. Review everything.",
-      "If either the landlord or the tool makes a legal claim, verify it against an authoritative source for your jurisdiction before relying on it.",
-      "Use the negotiation scripts as starting points, and distinguish between a clause you dislike and one that a qualified or authoritative source confirms is unlawful or unenforceable.",
+      "Don't trust 'this is required by law' from landlord - if tool says something is illegal, it's illegal. Landlords lie or are ignorant of law.",
+      "Negotiation scripts aren't optional suggestions - if tool says clause is illegal, you have RIGHT to demand removal. Be firm.",
       "Don't ignore missing protections - if lease is silent on landlord's responsibilities (repairs, habitability, entry notice), you're vulnerable.",
       "Unusual fees won't 'sort themselves out' - if charged $500 for 'administrative fee', negotiate NOW or you'll pay it.",
       "Don't use tool as substitute for lawyer on complex commercial leases - this tool is built for residential rentals. Complex commercial needs attorney review."
@@ -5235,7 +5233,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "BillRescue",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5365,7 +5363,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "Mend",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5483,7 +5481,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   }
 },
 {
-  modified: "2026-08-22",
+  modified: "2026-03-10",
   id: "DateNight",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5589,7 +5587,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "VirtualBodyDouble",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5657,7 +5655,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "WaitingModeLiberator",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -5699,9 +5697,9 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
     tips: [
       "'Start With Me' is the most important button. The gap between seeing the plan and doing the plan is where most tools fail — this one walks you across it.",
-      "The debrief is useful even when you skip the planned blocks because it records what actually happened for future sessions.",
-      "Use the energy level that feels accurate today; the plan is more useful when it reflects your actual capacity.",
-      "After several debriefs for the same kind of event, check Patterns to see whether the same timing or anxiety patterns keep recurring."
+      "Always do the debrief, even if you skip the blocks. The anxiety data compounds fast.",
+      "Be honest about energy. The tool adjusts. Lying to yourself gives you a plan you can't execute.",
+      "After 3+ debriefs for the same appointment type, check Patterns — the anxiety trend is eye-opening."
     ],
 
     pitfalls: [
@@ -5713,55 +5711,65 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "BrainDumpBuddy",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Your head is full and everything is blurring together.",
+    when: "Head full, everything blurring together.",
     give: "All of it, unsorted. Type, rapid-fire, or talk.",
-    get: "Your thoughts sorted by what they require, with one manageable next step.",
-    edge: "It does not turn every thought into a task — and it ends with one next action instead of another overwhelming list.",
+    get: "Sorted into buckets, with one clear next step.",
+    edge: "It ends with a single next action rather than a tidy list — the list is what you already had.",
   },
   seoDescription: "Dump everything on your mind and sort it into what needs action, what needs a decision, what can wait, and what requires nothing from you. Find one manageable next step.",
   seoTitle: "Brain Dump Organizer & To-Do Sorter",
   title: "Brain Dump Buddy",
   tagline: "Everything in your head → one clear next step",
-  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', 'to-do list', 'mental load'],
+  tags: ['brain dump', 'overwhelm', 'organize thoughts', 'clarity', 'tasks', 'next step', 'anxiety', 'racing thoughts', 'stressed', 'too much to do', 'prioritize', 'clear head', 'task sorting', 'worry', 'chaos', '3am thoughts', 'can\'t focus', 'voice input', 'emergency mode', 'to-do list', 'mental load', 'structure thoughts', 'productive'],
   icon: "🧠",
   categories: ['Me', 'Do It!'],
   headerColor: "#e0b8b8",
   description: "When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.",
   guide: {
-    overview: "Brain Dump Buddy takes an unstructured pile of thoughts and sorts each one by what it requires: action, a decision, communication, waiting, acknowledgment, someone else's responsibility, or nothing right now. Dates and deadlines remain what you actually supplied; suggested pacing is clearly labeled as a suggestion. The result gives you one manageable next step first, then lets you review, reclassify, defer, drop, or continue with the rest.",
+    overview: "Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.",
+
     howToUse: [
-      "Dump everything without organizing it first.",
-      "Use whatever input mode is easiest — normal typing, rapid-fire entry, or voice where available.",
-      "Review the one next step before worrying about the full sorted list.",
-      "Treat suggested timing as optional pacing unless you explicitly supplied a deadline.",
-      "Reclassify anything that does not fit and note progress when you want to continue from the updated list."
+      "Choose context (optional) — work overwhelm, anxiety spiral, 3am thoughts, etc.",
+      "Pick input mode: type, rapid-fire, or voice (just talk into your phone)",
+      "Dump everything. Don't organize. Stream of consciousness.",
+      "If barely functioning, toggle Emergency Mode for just 3 things.",
+      "AI sorts into 9 categories with overwhelm meter. Check off your Do First.",
+      "Use Power Tools: Shrink the List (challenge every item), Map to My Day (build a schedule), Compare to Last Dump (see what resolved)",
+      "Dig deeper on any worry with the 🔍 button — AI finds hidden tasks.",
+      "Disagree with a category? Reclassify any item with the arrow buttons.",
+      "Re-dump carries unchecked items forward. Pattern analysis after 3+ dumps."
     ],
+
     example: {
-      scenario: "Your head contains a work deadline, an unanswered text, dry cleaning, a possible trip, a license renewal, and several worries.",
-      action: "Paste or say all of it exactly as it comes to mind.",
-      result: "Brain Dump Buddy separates real tasks from decisions, communication, worries, and things that can wait, preserves the deadline you actually named, suggests pacing for the rest, and gives you one small first move."
+      scenario: "Sunday night brain spiral: dentist, work email, mom's birthday, overwhelmed, job offer decision, messy kitchen, groceries, electric bill, Sarah's text, no exercise...",
+      action: "Context: Life chaos. Free dump all of it.",
+      result: "Overwhelm meter: 22 thoughts → 6 real tasks. Shrink the List: 'Does the whole kitchen need cleaning? Wipe the counters — 3 minutes, 80% of the stress gone.' Map to My Day: 20-minute evening schedule with breaks. Worry Excavator on 'worried about job offer': hidden task found — 'Write a pro/con list for 10 minutes.' Dump Diff shows 3 items from last week resolved without noticing."
     },
+
     tips: [
-      "Do not pre-sort the dump; the messy version contains useful context.",
-      "A suggested 'Today' or 'This week' is pacing, not a deadline you somehow forgot.",
-      "Reclassify freely — the first sort is a practical interpretation, not a judgment about what a thought is.",
-      "If the result still feels like too much, focus only on the one next step and leave the rest collapsed.",
-      "Use the continuation flow after making progress rather than starting over from memory."
+      "Voice mode is best when your hands are shaking or thoughts are racing fastest.",
+      "Emergency mode isn't failure — it's the right tool for acute overwhelm.",
+      "Shrink the List after every dump. Most people's lists can lose 30-50% of items.",
+      "The inflation ratio in Patterns is the big insight: most brains inflate to-do lists by 3-5x.",
+      "Reclassify freely — the AI's first sort is a starting point, not gospel."
     ],
+
     pitfalls: [
-      "Do not treat every worry or feeling as a task that needs fixing.",
-      "Do not infer hard deadlines that the user did not state.",
-      "This is for sorting and choosing a next move, not for replacing a long-term task manager."
+      "Don't pre-organize your dump. Raw chaos is the point.",
+      "If Shrink the List drops something you disagree with, that's fine — it's a negotiation, not an order.",
+      "This doesn't replace a task manager. It's for the moment of overwhelm when you can't think straight."
     ]
   },
   crossRefs: [
-    { id: 'CrisisPrioritizer', reason: 'When the user needs immediate triage rather than a full sort' },
-    { id: 'VirtualBodyDouble', reason: 'Once the next step is clear and the user wants company while doing it' },
-    { id: 'WaitingModeLiberator', reason: 'When a later event or waiting state is what is freezing the day' },
-    { id: 'ChaosPilot', reason: 'For urgent situations where the user needs to choose what to do right now' },
+    { id: 'CrisisPrioritizer', reason: 'When you\'re completely overwhelmed — cuts to the 3 things that matter most right now' },
+    { id: 'VirtualBodyDouble', reason: 'Once you know what to do, need someone to work beside you and keep you on track' },
+    { id: 'WaitingModeLiberator', reason: 'When many worries are about things blocked waiting on others' },
+    { id: 'ChaosPilot', reason: 'For urgent situations where you need to decide what to do right now' },
   ]
 },
 
@@ -5826,10 +5834,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You need to get from the state you're in to the one you need.",
     give: "Where you are now and where you want to be.",
-    get: "A playlist that moves you there gradually, using tempo, complexity and familiarity.",
-    edge: "It transitions rather than jumping. Calm music doesn't work on an anxious brain until something bridges the gap.",
+    get: "A phased listening plan for moving from your current state toward the one you need.",
+    edge: "It treats changing state as a transition, with different sound profiles for the beginning, middle and sustained phase.",
   },
-  seoDescription: "Go from scattered to focused with a phased listening plan — what each phase should sound like, with search terms for your music service. Free, no signup.",
+  seoDescription: "Tell DeftBrain how you feel now and where you need to get. Get a phased listening plan with sound profiles and music-service search terms. Free, no signup.",
   seoTitle: "Focus Music & Mood Playlist Finder",
   title: "Brain State Deejay",
   tagline: "Music that moves you from where you are to where you need to be.",
@@ -5837,7 +5845,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🎧",
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we'll lay out a listening plan in phases — what each one should sound like, and search terms you can paste straight into your music service.",
+  description: "Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.",
   guide: {
     overview: "Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers sensory sensitivities like sudden sounds, vocal distraction, bass sensitivity, and need for predictable patterns.",
 
@@ -5978,7 +5986,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "MissingLink",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
@@ -6024,50 +6032,60 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "BuyWise",
+  // Preamble — the four questions a new visitor has, in order.
+  // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Something's in the cart and you're not sure.",
-    give: "What you're considering, the price you found, and what matters most to you.",
-    get: "A purchase recommendation, current facts checked on the web when available, the real ownership tradeoffs, and what to verify before paying.",
-    edge: "It combines current facts with a decision tailored to you — not just a product summary or a sticker-price check.",
+    give: "What you're buying. The price you've seen helps.",
+    get: "Whether the price is fair, buy now or wait, the true cost including consumables, and what actually goes wrong with it.",
+    edge: "Total cost of ownership, not sticker price — the cheap printer with expensive ink is the whole point.",
   },
   seoDescription: "Should you buy it? Check current facts, weigh the price and tradeoffs, compare alternatives, and see what to verify before you pay. Free, no signup.",
-  seoTitle: "Should I Buy It? Purchase Decision Helper",
+  seoTitle: "Should I Buy It? Purchase Research Tool",
   title: "Buy Wise",
   tagline: "Make the purchase with your eyes open.",
-  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'compare', 'budget', 'negotiate', 'deal', 'overpaying', 'warranty'],
+  tags: ['buy', 'purchase', 'worth it', 'price', 'research', 'shopping', 'impulse', 'regret', 'gift', 'compare', 'budget', 'negotiate', 'deal', 'overpaying'],
   icon: "💲",
   categories: ['Loot', 'Veer', 'Do It!'],
   headerColor: "#c0d8b8",
   description: "Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.",
   guide: {
-    overview: "Buy Wise helps you decide whether a purchase makes sense for you. It uses your priorities and the price you found, checks a small set of volatile facts on the web when available — such as current price, model status, warranty, availability, or known faults — and keeps those verified facts separate from its broader reasoning. It then weighs the tradeoffs, total cost of ownership, cheaper ways to get most of the benefit, possible regret points, and anything you should settle before paying. If a fact could not be verified today, it says so rather than filling the gap with a confident generalization.",
-    howToUse: [
-      "Enter the product or service you're considering and the price you found, if you have one.",
-      "Tell it what matters most to you — price, durability, features, convenience, quality, or something else.",
-      "Add context that could change the recommendation, such as how often you'll use it or what you're replacing.",
-      "Use comparison mode when you're choosing between two known options.",
-      "Read the recommendation first, then check the verified facts and the few things to confirm before paying."
-    ],
-    example: {
-      scenario: "You're comparing two robot vacuums around $400. You have hardwood floors, a dog, travel often, and care more about convenience than mopping.",
-      action: "Enter both models, the price you found, your priorities, and your household context.",
-      result: "Buy Wise checks current facts it can verify, separates those from its reasoning, tells you which option better fits your priorities, and flags the exact model, condition, dock, warranty, or return details that could change the decision."
-    },
-    tips: [
-      "A specific model number and the exact price you found make the research much more useful.",
-      "Tell it what would make you regret the purchase — maintenance, noise, subscriptions, size, setup, or something else.",
-      "Comparison mode is strongest when you name the priority that should break the tie.",
-      "Treat verified web facts as the current evidence and the recommendation as reasoning from those facts plus what you told it.",
-      "If Buy Wise says a volatile fact could not be verified today, confirm that point directly before paying."
-    ],
-    pitfalls: [
-      "A web check can fail or return incomplete evidence; Buy Wise should say when that happens.",
-      "Seller-specific terms such as return windows and warranty coverage still need to be confirmed on the exact listing.",
-      "A good market price can still be a bad purchase for your needs, and a higher price can still be justified by the right features or terms."
-    ]
-  }
+      overview: "BuyWise gives you everything you'd learn from an hour of research in seconds. Enter any product, and it tells you if the price is fair, whether to buy now or wait, the true total cost of ownership (including consumables and maintenance), cheaper alternatives that do 90% of the job, common buyer regrets, where to buy, and negotiation scripts when haggling is realistic. Comparison mode lets you evaluate two products side by side weighted by your priorities. The impulse check is an honest gut-check for purchases you're not sure about.",
+      
+      howToUse: [
+        "Enter what you're buying — specific model or general product type both work",
+        "Add the price you've seen (optional — helps with fair price analysis)",
+        "Select your currency and urgency (need it today vs can wait)",
+        "Pick what matters most to you (price, durability, features, quality, convenience)",
+        "Toggle 'impulse buy' if you're not sure you need it — gets you an honest evaluation",
+        "Use 'Compare with another product' to evaluate two options head-to-head",
+        "Add any context that matters ('I bake once a month', 'replacing a 5-year-old laptop')",
+        "Hit Research and review each section"
+      ],
+      
+      example: {
+        scenario: "You're looking at a KitchenAid stand mixer for $350. You bake occasionally and your priority is durability. You can wait.",
+        action: "Enter 'KitchenAid stand mixer', price $350, urgency 'Can wait', priority 'Durability', context 'I bake once a month'",
+        result: "Verdict: 'Good mixer, but overpaying — and you might not need it.' Fair Price: Typically $250-280 on sale, $350 is full retail. Timing: Wait for Amazon Prime Day or Black Friday for 25-30% off. TCO: $350 + $40 in attachments = $390 year 1. Cheaper Alternative: Hamilton Beach stand mixer ($80) handles everything except bread dough. Regret Predictor: 'People who bake occasionally use their stand mixer about 8 times in the first year. That's $44 per use at this price.' Impulse check not triggered but context note: 'You said you bake once a month. A $35 hand mixer handles that. Save the stand mixer for when you're baking weekly.'"
+      },
+      
+      tips: [
+        "The Total Cost of Ownership often reveals the real price — a cheap printer needs expensive ink",
+        "Impulse check mode is genuinely useful — it asks questions you're avoiding",
+        "Comparison mode works best when you specify your priority so it can weight the recommendation",
+        "The negotiation scripts only appear when haggling is realistic — cars, furniture, services, rent",
+        "Adding context ('replacing old one', 'gift', 'bake once a month') dramatically improves the advice",
+        "Timing advice includes sale calendars — waiting 3 weeks can save 30%"
+      ],
+      
+      pitfalls: [
+        "Prices are AI estimates from general market knowledge — always verify current prices",
+        "The tool can't check live inventory or current sales",
+        "Negotiation advice works best for big-ticket items where haggling is expected"
+      ]
+    }
 },
 {
   modified: "2026-03-24",
@@ -6176,7 +6194,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "2026-08-22",
+  modified: "",
   id: "RentersDepositSaver",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.

@@ -2177,9 +2177,11 @@ The rules, and the reason for each:
 - **`grid`, never `flex flex-wrap`.** A wrap row sizes every control to its own
   label, so "Yes" is a third the width of "Something else entirely" and the two
   are equally important. A grid gives them one width and one weight.
-- **`grid-cols-1 sm:grid-cols-2`** (or `sm:grid-cols-3` when labels are two or
-  three words). One column on a phone is the point: full-width rows are the
-  easiest thing there is to hit with a thumb.
+- **Column count follows label length, not control type.** `grid-cols-1
+  sm:grid-cols-2` for phrases; `grid-cols-2 sm:grid-cols-3` for single words.
+  Two short words side by side on a phone still clear 44px and waste less
+  vertical space than one word per row; a phrase needs the full width or it
+  wraps and the rows stop matching.
 - **`min-h-[44px]` and `p-3` at least.** The tap target has to exceed the text
   by a comfortable margin. 44px is the smallest target most people can hit
   reliably without looking, and a `px-3 py-1.5` pill around an `text-xs` label
@@ -2189,6 +2191,15 @@ The rules, and the reason for each:
 - **Room for a second line.** A card can carry a short description under the
   label; a pill cannot. If the choice needs explaining — and a primary choice
   usually does — that is where the explanation goes, not in a paragraph above.
+
+**Amended 2026-08-23.** The owner's pass over Caption Magic, Cold Open Craft
+and Brain State Deejay settled two things this rule had guessed at. Sizing is
+`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm` — a hair larger than the
+original spec and better under a thumb. And the grid is worth extending to
+secondary rows too where the labels are short: a genre palette in
+`grid-cols-2 sm:grid-cols-3` still reads as a palette while being properly
+tappable. The distinction below is about weight and column count, not about
+whether a control deserves a real target — everything does.
 
 **Not primary, and pills remain correct for these:** multi-select preferences
 and tags (genres, interests, sensitivities), filters over an existing result,

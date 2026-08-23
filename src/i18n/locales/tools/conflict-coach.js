@@ -5,7 +5,7 @@
 export const conflictCoach = {
   en: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Stop, breathe, and craft the right response",
+    cc_tagline: "Respond to the message — not the heat of the moment.",
     cc_history: "History",
     cc_warn_title: "Before you send that message — STOP.",
     cc_warn_body: "Includes cooling periods, manipulation detection, draft analysis, and goal clarification. Not a replacement for therapy. For abusive situations, seek professional help.",
@@ -156,7 +156,7 @@ export const conflictCoach = {
   },
   es: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Detente, respira y elabora la respuesta correcta",
+    cc_tagline: "Responde al mensaje — no al calor del momento.",
     cc_history: "Historial",
     cc_warn_title: "Antes de enviar ese mensaje — DETENTE.",
     cc_warn_body: "Incluye periodos de enfriamiento, detección de manipulación, análisis del borrador y aclaración de objetivos. No sustituye a la terapia. En situaciones de abuso, busca ayuda profesional.",
@@ -307,7 +307,7 @@ export const conflictCoach = {
   },
   zh: {
     cc_title: "Conflict Coach",
-    cc_tagline: "停一停，深呼吸，写出正确的回应",
+    cc_tagline: "回应消息本身，而不是当下的火气。",
     cc_history: "历史记录",
     cc_warn_title: "在你发出那条消息之前 —— 停下。",
     cc_warn_body: "包含冷静期、操控识别、草稿分析和目标厘清。不能替代心理治疗。遇到虐待情形，请寻求专业帮助。",
@@ -458,7 +458,7 @@ export const conflictCoach = {
   },
   hi: {
     cc_title: "Conflict Coach",
-    cc_tagline: "रुकें, सांस लें और सही जवाब तैयार करें",
+    cc_tagline: "संदेश का जवाब दें — उस पल के गुस्से का नहीं।",
     cc_history: "इतिहास",
     cc_warn_title: "वह संदेश भेजने से पहले — रुकें।",
     cc_warn_body: "इसमें ठंडा होने की अवधि, हेरफेर पहचान, ड्राफ़्ट विश्लेषण और लक्ष्य स्पष्टीकरण शामिल है। यह थेरेपी का विकल्प नहीं है। दुर्व्यवहार की स्थिति में पेशेवर मदद लें।",
@@ -609,7 +609,7 @@ export const conflictCoach = {
   },
   ar: {
     cc_title: "Conflict Coach",
-    cc_tagline: "توقّف، تنفّس، وصُغ الرد الصحيح",
+    cc_tagline: "ردّ على الرسالة — لا على انفعال اللحظة.",
     cc_history: "السجل",
     cc_warn_title: "قبل أن ترسل تلك الرسالة — توقّف.",
     cc_warn_body: "يشمل فترات تهدئة، وكشف التلاعب، وتحليل المسودة، وتوضيح الهدف. ليس بديلاً عن العلاج النفسي. في حالات الإساءة، اطلب مساعدة مهنية.",
@@ -760,7 +760,7 @@ export const conflictCoach = {
   },
   pt: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Pare, respire e elabore a resposta certa",
+    cc_tagline: "Responda à mensagem — não ao calor do momento.",
     cc_history: "Histórico",
     cc_warn_title: "Antes de enviar essa mensagem — PARE.",
     cc_warn_body: "Inclui períodos de resfriamento, detecção de manipulação, análise do rascunho e esclarecimento de objetivos. Não substitui a terapia. Em situações de abuso, procure ajuda profissional.",
@@ -911,7 +911,7 @@ export const conflictCoach = {
   },
   fr: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Arrêtez-vous, respirez et formulez la bonne réponse",
+    cc_tagline: "Répondez au message — pas à la tension du moment.",
     cc_history: "Historique",
     cc_warn_title: "Avant d'envoyer ce message — STOP.",
     cc_warn_body: "Inclut des temps d'apaisement, la détection de manipulation, l'analyse du brouillon et la clarification des objectifs. Ne remplace pas une thérapie. En cas de situation abusive, demandez une aide professionnelle.",
@@ -1062,7 +1062,7 @@ export const conflictCoach = {
   },
   de: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Innehalten, durchatmen und die richtige Antwort formulieren",
+    cc_tagline: "Antworte auf die Nachricht — nicht auf die Hitze des Moments.",
     cc_history: "Verlauf",
     cc_warn_title: "Bevor du diese Nachricht abschickst — STOPP.",
     cc_warn_body: "Enthält Abkühlphasen, Manipulationserkennung, Entwurfsanalyse und Zielklärung. Kein Ersatz für eine Therapie. Bei missbräuchlichen Situationen suche professionelle Hilfe.",
@@ -1213,7 +1213,7 @@ export const conflictCoach = {
   },
   ja: {
     cc_title: "Conflict Coach",
-    cc_tagline: "立ち止まり、深呼吸して、正しい返信を組み立てる",
+    cc_tagline: "その場の感情ではなく、メッセージそのものに返す。",
     cc_history: "履歴",
     cc_warn_title: "そのメッセージを送る前に —— ストップ。",
     cc_warn_body: "クールダウン期間、操作の検出、下書き分析、目標の明確化を含みます。セラピーの代わりにはなりません。虐待的な状況では専門家の助けを求めてください。",
@@ -1364,7 +1364,7 @@ export const conflictCoach = {
   },
   ko: {
     cc_title: "Conflict Coach",
-    cc_tagline: "멈추고, 숨을 고르고, 올바른 답장을 만드세요",
+    cc_tagline: "순간의 감정이 아니라 메시지에 답하세요.",
     cc_history: "기록",
     cc_warn_title: "그 메시지를 보내기 전에 — 멈추세요.",
     cc_warn_body: "냉각 기간, 조종 감지, 초안 분석, 목표 명확화가 포함됩니다. 치료를 대체하지 않습니다. 학대 상황에서는 전문가의 도움을 받으세요.",
@@ -1515,7 +1515,7 @@ export const conflictCoach = {
   },
   ru: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Остановитесь, выдохните и составьте правильный ответ",
+    cc_tagline: "Отвечайте на сообщение — а не на эмоции момента.",
     cc_history: "История",
     cc_warn_title: "Прежде чем отправить это сообщение — СТОП.",
     cc_warn_body: "Включает периоды охлаждения, выявление манипуляций, анализ черновика и прояснение целей. Не заменяет терапию. В ситуациях насилия обращайтесь за профессиональной помощью.",
@@ -1666,7 +1666,7 @@ export const conflictCoach = {
   },
   th: {
     cc_title: "Conflict Coach",
-    cc_tagline: "หยุด หายใจ แล้วเรียบเรียงคำตอบที่ถูกต้อง",
+    cc_tagline: "ตอบข้อความ — ไม่ใช่อารมณ์ร้อนในขณะนั้น",
     cc_history: "ประวัติ",
     cc_warn_title: "ก่อนจะส่งข้อความนั้น — หยุดก่อน",
     cc_warn_body: "รวมช่วงพักให้ใจเย็น การตรวจจับการบงการ การวิเคราะห์ร่าง และการทำให้เป้าหมายชัดเจน ไม่ใช่สิ่งทดแทนการบำบัด ในสถานการณ์ที่ถูกทำร้าย โปรดขอความช่วยเหลือจากผู้เชี่ยวชาญ",
@@ -1817,7 +1817,7 @@ export const conflictCoach = {
   },
   vi: {
     cc_title: "Conflict Coach",
-    cc_tagline: "Dừng lại, hít thở và soạn câu trả lời đúng đắn",
+    cc_tagline: "Trả lời tin nhắn — không phải cảm xúc nóng lúc đó.",
     cc_history: "Lịch sử",
     cc_warn_title: "Trước khi gửi tin nhắn đó — DỪNG LẠI.",
     cc_warn_body: "Bao gồm thời gian hạ nhiệt, phát hiện thao túng, phân tích bản nháp và làm rõ mục tiêu. Không thay thế cho trị liệu. Trong các tình huống bạo hành, hãy tìm sự trợ giúp chuyên nghiệp.",

@@ -4,7 +4,7 @@
 export const comebackCooker = {
   en: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "The perfect response you thought of 3 hours too late.",
+    cbc_tagline: "For the response that arrived three hours too late.",
     cbc_xref_pre_q: "Need to actually say something?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "gets the tone right when you actually have to send it.",
@@ -57,7 +57,7 @@ export const comebackCooker = {
   },
   es: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "La respuesta perfecta que se te ocurrió tres horas demasiado tarde.",
+    cbc_tagline: "Para esa respuesta que llegó tres horas demasiado tarde.",
     cbc_xref_pre_q: "¿Necesitas decir algo de verdad?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "acierta con el tono cuando de verdad tienes que enviarlo.",
@@ -110,7 +110,7 @@ export const comebackCooker = {
   },
   zh: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "那句完美的回应，你总是晚了三个小时才想到。",
+    cbc_tagline: "给那句晚了三个小时才想到的回应。",
     cbc_xref_pre_q: "需要真的说点什么吗？",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "在你真要发出去时帮你把语气拿捏到位。",
@@ -163,7 +163,7 @@ export const comebackCooker = {
   },
   hi: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "वह बेहतरीन जवाब जो आपको तीन घंटे देर से सूझा।",
+    cbc_tagline: "उस जवाब के लिए जो तीन घंटे देर से सूझा।",
     cbc_xref_pre_q: "सच में कुछ कहना है?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "जब आपको सचमुच भेजना हो तो सही लहजा पकड़ लेता है।",
@@ -216,7 +216,7 @@ export const comebackCooker = {
   },
   ar: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "الرد المثالي الذي خطر لك بعد فوات الأوان بثلاث ساعات.",
+    cbc_tagline: "للرد الذي خطر لك بعد فوات الأوان بثلاث ساعات.",
     cbc_xref_pre_q: "هل تحتاج أن تقول شيئاً فعلاً؟",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "يضبط النبرة بشكل صحيح حين يتعيّن عليك إرسالها فعلاً.",
@@ -269,7 +269,7 @@ export const comebackCooker = {
   },
   pt: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "A resposta perfeita que você pensou três horas tarde demais.",
+    cbc_tagline: "Para aquela resposta que chegou três horas tarde demais.",
     cbc_xref_pre_q: "Precisa realmente dizer algo?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "acerta o tom quando você de fato precisa enviar.",
@@ -322,7 +322,7 @@ export const comebackCooker = {
   },
   fr: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "La réplique parfaite qui vous vient trois heures trop tard.",
+    cbc_tagline: "Pour cette réplique qui vous vient trois heures trop tard.",
     cbc_xref_pre_q: "Besoin de vraiment dire quelque chose ?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "trouve le bon ton quand vous devez vraiment l'envoyer.",
@@ -375,7 +375,7 @@ export const comebackCooker = {
   },
   de: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "Die perfekte Antwort, die dir drei Stunden zu spät einfällt.",
+    cbc_tagline: "Für die Antwort, die dir drei Stunden zu spät einfiel.",
     cbc_xref_pre_q: "Musst du wirklich etwas sagen?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "trifft den richtigen Ton, wenn du es wirklich abschicken musst.",
@@ -428,7 +428,7 @@ export const comebackCooker = {
   },
   ja: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "3時間遅れで思いつく、あの完璧な切り返し。",
+    cbc_tagline: "3時間遅れで思いついた、あの返しのために。",
     cbc_xref_pre_q: "実際に何か言う必要がありますか？",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "本当に送らないといけないとき、トーンをちょうどよく整えます。",
@@ -481,7 +481,7 @@ export const comebackCooker = {
   },
   ko: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "세 시간이나 늦게 떠오른 완벽한 한 마디.",
+    cbc_tagline: "세 시간 늦게 떠오른 그 한마디를 위해.",
     cbc_xref_pre_q: "정말로 무언가 말해야 하나요?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "실제로 보내야 할 때 어조를 딱 맞게 잡아 줍니다.",
@@ -534,7 +534,7 @@ export const comebackCooker = {
   },
   ru: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "Идеальный ответ, который пришёл вам в голову на три часа позже.",
+    cbc_tagline: "Для ответа, который пришёл в голову на три часа позже.",
     cbc_xref_pre_q: "Нужно действительно что-то сказать?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "подбирает верный тон, когда сообщение и правда нужно отправить.",
@@ -587,7 +587,7 @@ export const comebackCooker = {
   },
   th: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "คำตอบที่สมบูรณ์แบบที่คุณนึกออกช้าไปสามชั่วโมง",
+    cbc_tagline: "สำหรับคำตอบที่นึกออกช้าไปสามชั่วโมง",
     cbc_xref_pre_q: "ต้องพูดอะไรออกไปจริง ๆ ไหม?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "ช่วยจับโทนให้พอดีเมื่อคุณต้องส่งออกไปจริง ๆ",
@@ -640,7 +640,7 @@ export const comebackCooker = {
   },
   vi: {
     cbc_title: "Comeback Cooker",
-    cbc_tagline: "Câu đáp trả hoàn hảo bạn nghĩ ra muộn ba tiếng đồng hồ.",
+    cbc_tagline: "Cho câu đáp bạn nghĩ ra muộn ba tiếng.",
     cbc_xref_pre_q: "Cần thực sự nói điều gì đó?",
     cbc_velvethammer: "Velvet Hammer",
     cbc_xref_pre_post: "chỉnh đúng giọng điệu khi bạn thật sự phải gửi đi.",
