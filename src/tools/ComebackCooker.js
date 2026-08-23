@@ -324,6 +324,7 @@ const ComebackCooker = ({ tool }) => {
 
           <button title={t('cmd_enter')}
           onClick={handleSubmit}
+          data-print-keep
           disabled={loading || !situation.trim()}
           className={`relative w-full ${(!situation.trim()) ? c.btnIdle : c.btnPrimary} py-3 rounded-xl font-semibold text-sm min-h-[48px] disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2`}
           >
@@ -341,10 +342,16 @@ const ComebackCooker = ({ tool }) => {
       </div>
 
       {/* ── HISTORY ── */}
+      {/* Collapsed: secondary to the thing they came to do. */}
       {sessionHistory.length > 0 && !results && (
-        <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('cbc_recent')}</h3>
-          <div className="space-y-1.5">
+        <details className={`group ${c.card} rounded-xl border ${c.border} p-4`}>
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
+              🕐 {t('cbc_recent')}
+              <Caret groupOpen className="ms-auto" />
+            </div>
+          </summary>
+          <div className="space-y-1.5 mt-3">
             {sessionHistory.map(entry => (
               <button
                 key={entry.id}
@@ -358,7 +365,7 @@ const ComebackCooker = ({ tool }) => {
               </button>
             ))}
           </div>
-        </div>
+        </details>
       )}
 
       {/* ════════════════════════════════════════════════════════

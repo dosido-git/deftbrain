@@ -120,7 +120,19 @@ export const PRINT_CSS = `
            noise on paper; a disabled primary CTA is what tells a reader where the
            page was going, and hiding it made a printed form look like it led
            nowhere. Opt out with data-print-keep. */
-        [data-print-section] button:disabled:not([data-print-keep]) { display: none !important; }
+        /* ...but never the primary action. A disabled secondary control is
+           noise on paper; a disabled SUBMIT is the whole point of the page the
+           visitor just printed, and it is disabled precisely because the form
+           is empty, which is the state a blank form is printed in. This is
+           what actually hid the submit button, through two rounds of me fixing
+           the wrong thing — the colour rules I chased were real bugs, but they
+           were not this one.
+
+           data-print-keep is the explicit opt-out and four tools use it. The
+           rest forget, which makes forgetting the default. Full-width is the
+           house convention for a primary action (PF-37), so it carries the
+           exemption without every tool having to remember. */
+        [data-print-section] button:disabled:not([data-print-keep]):not([class*="w-full"]) { display: none !important; }
         /* The branding line is 29px tall and lives at the very end of the
            document, which is exactly the position an engine will drop when the
            last page break lands on top of it. Keeping it whole, and off the

@@ -268,6 +268,7 @@ const ColdOpenCraft = ({ tool }) => {
           {/* Submit */}
           <button title={t('cmd_enter')}
           onClick={generate}
+          data-print-keep
           disabled={loading || !who.trim() || !why.trim()}
           className={`relative w-full ${(!who.trim() || !why.trim()) ? c.btnIdle : c.btnPrimary} disabled:cursor-not-allowed font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 min-h-[48px] transition-colors`}
           >
