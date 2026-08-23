@@ -34,7 +34,7 @@ Generate 5 comebacks this person WISHES they'd said. Cathartic fantasies — sat
 
 MAKE THEM ACTUALLY GOOD. Five distinct comebacks, not five paraphrases and not five techniques demonstrated. The failure to watch for is five polite acknowledgements in a row — noted, got it, thanks for the feedback, I'll take that under advisement. That is one line five times, and none of them is the line anyone lies awake wishing they had said. Even the calmest mood wants teeth: dignified means unbothered, not agreeable. Each has to be a line a real person could deliver and feel better for having thought of. If one is awkward to say out loud, cut it. If one concedes the criticism, cut it — agreeing cleverly is still agreeing, and it reads straight to anyone who is not in on the joke. Shortest version that lands; a comeback that needs a run-up is not a comeback.
 
-ONLY THEIR FACTS. Every specific belongs to the person who typed the form. No invented job history, tenure, achievements, prior incidents, other people, or details of what happened. Told a peer criticised them in a channel, you do not know how long they have done the work, what they did last quarter, or who else was watching. A comeback built on an invented specific is one they cannot use, because they would be lying to send it.
+ONLY THEIR FACTS, AND NEVER THEIR POSITION. Every specific belongs to the person who typed the form, and so does every stance. Where the remark was intrusive — about children, weight, money, religion, someone's relationship, their choices — the comeback declines the subject and does not answer it. "We're good with our current family size" answers it, and answers it on behalf of someone who may want children badly, may be in the middle of losing that hope, or may simply not be discussing it with this person. You cannot know, so do not decide. Deflection never needs a position. No invented job history, tenure, achievements, prior incidents, other people, or details of what happened. Told a peer criticised them in a channel, you do not know how long they have done the work, what they did last quarter, or who else was watching. A comeback built on an invented specific is one they cannot use, because they would be lying to send it.
 
 NO READING THE OTHER PERSON'S MIND. You were given a description of a moment, not access to anyone's motives. Whether they meant it, were sniping, wanted to undermine, or moved on to avoid a reply — none of that is knowable and none of it belongs anywhere in the output.
 
@@ -48,8 +48,7 @@ Return ONLY valid JSON:
     }
   ],
   "the_high_road": {
-    "line": "The response that costs nothing and closes the subject. Calm, brief, and impossible to argue with.",
-    "why": "ONE short sentence. Not two. About the LINE and what it does — it declines the frame, it ends the exchange, it costs nothing to send. Never about the other person or anyone watching: not what they will think, not whether it leaves them a next move, not how the visitor comes across. You have not met these people, and a sentence about what the line does needs none of them in it."
+    "line": "The response that costs nothing and closes the subject. Calm, brief, and impossible to argue with. The line alone — no explanation of why it is the high road, which is evident from reading it."
   },
   "the_nuclear_option": {
     "line": "The one that is too far. Genuinely too far, and genuinely funny — this is the fantasy drawer, so enjoy it. Where a specific would be the ammunition, leave a bracketed placeholder rather than inventing one.",
@@ -81,7 +80,6 @@ Never place a double-quote (") character inside any JSON string value — quoted
         if (typeof cb?.line === 'string') fields.push([`comebacks[${i}].line`, cb.line]);
       });
       if (typeof parsed.the_high_road?.line === 'string') fields.push(['the_high_road.line', parsed.the_high_road.line]);
-      if (typeof parsed.the_high_road?.why === 'string') fields.push(['the_high_road.why', parsed.the_high_road.why]);
       // the_nuclear_option.line is deliberately NOT checked. It is the fantasy
       // drawer, the schema already requires a bracketed placeholder instead of
       // invented ammunition, and running it through a factual check turns the
@@ -94,6 +92,7 @@ WHAT THEY SAID: ${whatTheySaid?.trim() || '(not supplied)'}
 RELATIONSHIP: ${relationship?.trim() || '(not supplied)'}`,
         fields,
         lookFor: `- an invented SPECIFIC about the visitor's life: how long they have done the work, what they achieved, a previous incident, their job title, their team, anything not in the fields above
+- A POSITION, CIRCUMSTANCE OR INTENTION THEY DID NOT STATE. This is the worst one, because a comeback that puts a stance in their mouth is one they cannot use without asserting it. Family plans, whether they want children, health, money, relationship status, religion, politics, where they live, what they intend to do next — none of it is knowable from a description of a remark. "We're good with our current family size" is unusable by someone who is undecided, struggling, grieving, or simply not discussing it, and the tool has no way to know which. Deflecting an intrusive question NEVER requires answering it: the line can decline the subject without taking a position on it.
 - an invented specific about the OTHER person or the setting: who else was present, what was said before, where this happened
 - MIND-READING: what the other person meant, wanted, intended, was trying to do, or why they moved on. A described action is not a motive.
 - a PREDICTION: what anyone will think, how the visitor will look, whether the other person will feel small, what the room will conclude. Nobody watched this happen except the visitor.

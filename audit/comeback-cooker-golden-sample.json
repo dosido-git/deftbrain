@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "comeback-cooker",
-    "tag": "comebackcooker-v2",
+    "tag": "comebackcooker-v3",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. Switched from local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 9 — one sentence annotations stripped from primary output (comeback line/technique/delivery_note + nuclear/high-road lines) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Guard on top-level comebacks[] array. Re-locked 2026-08-23 (v2): the output was explaining the social dynamics instead of handing over five good lines. situation_read is GONE — it invented motive (\"ghosted the conversation\") and consequence (\"you would look defensive\") from an input that said only that the peer moved on. technique and why_it_works are gone from each comeback: naming the device is the trick explained next to the trick. the_high_road.why_its_devastating became why — one sentence about the LINE, no predictions about what anyone watching concludes. The nuclear warning is one light line (\"Funny to imagine, better left imagined\") rather than a lecture about burning relationships. delivery_note is now optional and usually null. Added the shared supplied-facts check (backend/lib/factCheck.js) over the comeback lines and the high road — comebacks were inventing the visitor's own history (\"my next eight years of doing this\"). the_nuclear_option.line is deliberately EXEMPT from that check: it is the fantasy drawer, the schema already requires a bracketed placeholder instead of invented ammunition, and checking it turns the one line allowed to be too far into the tamest thing on the page. Adopted PF-39 v2 at this lock.",
-    "baseline": "comebackcooker-v2",
+    "note": "Structural regression golden. Switched from local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 9 — one sentence annotations stripped from primary output (comeback line/technique/delivery_note + nuclear/high-road lines) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Guard on top-level comebacks[] array. Re-locked 2026-08-23 (v2): the output was explaining the social dynamics instead of handing over five good lines. situation_read is GONE — it invented motive (\"ghosted the conversation\") and consequence (\"you would look defensive\") from an input that said only that the peer moved on. technique and why_it_works are gone from each comeback: naming the device is the trick explained next to the trick. the_high_road.why_its_devastating became why — one sentence about the LINE, no predictions about what anyone watching concludes. The nuclear warning is one light line (\"Funny to imagine, better left imagined\") rather than a lecture about burning relationships. delivery_note is now optional and usually null. Added the shared supplied-facts check (backend/lib/factCheck.js) over the comeback lines and the high road — comebacks were inventing the visitor's own history (\"my next eight years of doing this\"). the_nuclear_option.line is deliberately EXEMPT from that check: it is the fantasy drawer, the schema already requires a bracketed placeholder instead of invented ammunition, and checking it turns the one line allowed to be too far into the tamest thing on the page. Adopted PF-39 v2 at this lock. Re-locked 2026-08-23 (v3): the_high_road.why removed — the line explains itself. And the sharpest invention this tool can make now has its own rule in both the generator and the checker: a POSITION the visitor never took. Asked about grandchildren, it answered \"we are good with our current family size\" on behalf of someone who may want children badly, may be losing that hope, or may simply not be discussing it. Deflecting an intrusive question never requires answering it.",
+    "baseline": "comebackcooker-v3",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -24,33 +24,32 @@
       "output": {
         "comebacks": [
           {
-            "line": "Interesting — I actually sent you that idea [when/how you communicated it]. Want me to forward it?",
+            "line": "Interesting—I pitched that [when you pitched it]. Must've made an impression.",
             "delivery_note": null
           },
           {
-            "line": "You know what, that's fair. I'll start putting my name on the drafts I send you.",
-            "delivery_note": "Delivered so pleasantly it takes a second to land."
+            "line": "Last week? I shared it with you and the team [when you shared it].",
+            "delivery_note": "Flat. Not a question."
           },
           {
-            "line": "That was the idea I pitched to you [timeframe]. But I'm glad it landed with the boss.",
+            "line": "You came up with the approach to my approach. That's something.",
             "delivery_note": null
           },
           {
-            "line": "I appreciate the confidence in the approach. I'll make sure the documentation reflects who developed it.",
-            "delivery_note": null
+            "line": "I appreciate you building on it. Though I should say upfront—I'm the one who brought it to the team first.",
+            "delivery_note": "Quiet. To the boss, not the coworker."
           },
           {
-            "line": "That's the one I walked you through, yeah. Good instincts recognizing it was solid.",
-            "delivery_note": "Said with genuine cheer, as if complimenting their taste."
+            "line": "That's funny. I have documentation if anyone wants to see how it actually landed.",
+            "delivery_note": "Delivered like you're already moving on to something else."
           }
         ],
         "the_high_road": {
-          "line": "I'll follow up with you and [boss] on the timeline so there's no confusion going forward.",
-          "why": "It names the problem without accusing anyone and moves straight to solving it — nothing to defend, nothing to argue about."
+          "line": "I actually brought this to the team, so I appreciate you helping push it forward."
         },
         "the_nuclear_option": {
-          "line": "That's wild because [the original timestamp/medium where you presented it] begs to differ.",
-          "warning": "Satisfying to imagine. Probably better left there."
+          "line": "Yeah, and I came up with it [even earlier], but thanks for the co-authoring experience.",
+          "warning": "Enjoy it. Do not send it. Boss already heard what matters."
         }
       }
     },
@@ -70,33 +69,32 @@
       "output": {
         "comebacks": [
           {
-            "line": "Interessant – ich bin mir sicher, dass ich diese Idee [zeitpunkt] entwickelt habe.",
-            "delivery_note": "Ruhig, als würde man eine Tatsache feststellen, die jedem im Raum gerade eingefallen ist."
-          },
-          {
-            "line": "Das freut mich, dass dir der Ansatz so gut gefällt.",
+            "line": "Interessant — ich erinnere mich noch, wie du es mir [wann?] gezeigt hast und mir gesagt hast, du wolltest Feedback haben.",
             "delivery_note": null
           },
           {
-            "line": "Letzte Woche? Ich habe das Konzept [wann] skizziert – vielleicht verwechselst du das mit meinem Input.",
+            "line": "Ah ja, letzte Woche. Ich hatte den Ansatz vorher schon präsentiert.",
+            "delivery_note": "Perfectly level tone. Do not smile."
+          },
+          {
+            "line": "Das ist cool — ich freue mich immer, wenn gute Ideen vorankommen.",
             "delivery_note": null
           },
           {
-            "line": "Du hast recht, es war letzte Woche – nachdem ich es dir vorgestellt habe.",
-            "delivery_note": "Mit einem ruhigen Nicken, als würde man dem Chef einen kleinen Gedankenfehler helfen zu korrigieren."
+            "line": "Stimmt. Ich hatte allerdings den gleichen Ansatz schon vorher vorgestellt.",
+            "delivery_note": null
           },
           {
-            "line": "Dann freut mich, dass die Idee direkt so gut bei dir angekommen ist.",
-            "delivery_note": "Tonlos freundlich – so neutral, dass jeder hört, dass hier etwas nicht stimmt."
+            "line": "Danke, dass du dich an die Timeline erinnerst. Das hilft dem Chef.",
+            "delivery_note": "Unbothered. Might even nod slightly toward the boss."
           }
         ],
         "the_high_road": {
-          "line": "Danke der Klarstellung – ich hätte die Eigenart meiner eigenen Idee fast übersehen.",
-          "why": "Es benennt die Absurdität direkt, ohne Vorwürfe zu machen, und bleibt dabei sachlich."
+          "line": "Freut mich, dass du das Potenzial darin erkannt hast. Das ist genau die Art von Initiative, auf die es ankommt."
         },
         "the_nuclear_option": {
-          "line": "Beeindruckend, wie schnell du von der Erklärung zur vollständigen Urheberschaft übergegangen bist – das sollte man timen.",
-          "warning": "Zu direkt, zu sichtbar aggressiv – aber manchmal braucht man das, um sich besser zu fühlen."
+          "line": "Ja, und nächste Woche entwickelst du wahrscheinlich mein Mittagessen.",
+          "warning": "Funny in your head. Ashes in reality."
         }
       }
     }

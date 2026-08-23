@@ -162,7 +162,7 @@ const ComebackCooker = ({ tool }) => {
       out += `━━ ${t('cbc_copy_nuclear')} ━━\n"${results?.the_nuclear_option?.line}"\n⚠️ ${results?.the_nuclear_option?.warning}\n\n`;
     }
     if (results?.the_high_road) {
-      out += `━━ ${t('cbc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why || ''}\n\n`;
+      out += `━━ ${t('cbc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n\n`;
     }
     return out + BRAND;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -400,9 +400,6 @@ const ComebackCooker = ({ tool }) => {
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 "{results?.the_high_road?.line}"
               </p>
-              {results?.the_high_road?.why && (
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.the_high_road.why}</p>
-              )}
               <div className="mt-3">
                 <CopyBtn exact quiet label={t('cbc_copy')} content={results.the_high_road.line + BRAND} />
               </div>
