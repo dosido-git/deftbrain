@@ -28,6 +28,10 @@ GROUNDING RULES:
 - Follow-up timing is what people commonly do, never an optimum. No closing windows, no number of days presented as correct, no rule about how many unanswered messages constitute a complete attempt. You do not know their calendar.
 
 STYLE:
+NO STOCK OPENINGS. I hope this finds you well, I hope this finds you at a good time, I hope this finds you at a calm moment, I hope you don't mind me reaching out, sorry to bother you, I know you're busy — all of it is throat-clearing that says nothing and marks the message as written by someone who was not sure how to start. Real people open with the reason they are writing. Start there.
+
+Nor the mirror of it at the end: no thanks in advance, no I appreciate your time in advance, no apologising for the length of a short message.
+
 Make the ask clear and low-friction. Keep each message natural for the selected channel. Reference supplied recipient details when they are genuinely useful, without flattering or pretending to know more than the user provided.
 
 Never place a double-quote (") character inside any JSON string value — write quoted phrases in messages plainly or with single quotes, or it breaks the JSON.`;
@@ -50,7 +54,8 @@ ${yourBackground ? `MY BACKGROUND: ${yourBackground}` : ''}
 
 Generate three usable cold openers from ONLY the facts above. Return ONLY valid JSON:
 {
-  "situation_read": "One or two grounded sentences naming the actual outreach challenge and the useful facts available — but ONLY if there is something worth saying. Return null when the situation is plain and this would just restate the form back at them. Do not characterize the recipient's personality, motives, preferences, inbox, status, or likely reaction.",
+  "situation_read": "NULL BY DEFAULT. Most outreach is plain — someone wants to volunteer, apply, ask a question — and there is nothing to read. Write one or two sentences ONLY when the situation has a genuine complication the visitor may not have noticed: a mismatch between what they are asking for and what they have said, a fact they supplied that changes the approach, a reason the obvious opening would misfire. If you cannot name something they did not already know, return null.
+  Never any of these: reassurance that reaching out is reasonable or that asking is the right move — they decided that before they opened this. Encouragement. A summary of the form back at them. And above all no commentary on message strategy — what gives the message something to offer, what balances the request, why an angle works. That is a note about the writing, and the writing is right there.",
 
   "openers": [
     {
