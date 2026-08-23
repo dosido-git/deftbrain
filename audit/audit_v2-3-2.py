@@ -980,7 +980,7 @@ for name, fpath in tools:
     # suggestion to go elsewhere first interrupts a visitor who is not looking
     # for one. Their post-result cross-refs are untouched and still enforced
     # below, so each still points onward once there is an outcome to point from.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach')
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

@@ -2779,7 +2779,7 @@ export const tools = [
   icon: "📸",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
-  description: "Turn any photo into engaging social media captions with AI vision. Upload or paste an image, pick your platform and tone, and get 3 distinct caption options with smart hashtags (categorized by reach), character counts, alt text, and engagement tips. Refine any caption with one tap, adapt your winner to every platform at once, remix the best parts of multiple captions, and build a personal brand voice profile that gets smarter over time. Supports Instagram, LinkedIn, Facebook, Twitter/X, TikTok, and Threads.",
+  description: "A good photo doesn't always come with the right words. Share the image — or describe it — then tell us where you're posting and the tone you want. Caption Magic gives you several captions to choose from, shaped for the moment and the platform.",
   guide: {
     overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
 

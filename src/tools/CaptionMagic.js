@@ -454,13 +454,16 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Reusable Pills
   // ══════════════════════════════════════════
-  const renderPills = (options, value, setter, multi = false) => (
-    <div className="flex flex-wrap gap-1.5">
+  // PF-37 — platform, tone and length each change what comes out, so each is a
+  // card in a grid rather than a pill sized to its own word.
+  const renderCards = (options, value, setter, cols = 2, multi = false) => (
+    <div className={`grid grid-cols-1 sm:grid-cols-${cols} gap-2`}>
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
         return (
           <button key={opt.value} onClick={() => setter(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
+            className={`p-3 min-h-[44px] rounded-xl border-2 text-start text-sm font-medium transition-all ${
+              active ? c.pillActive : `${c.card} ${c.border} hover:border-gray-400`}`}>
             {active && <span className="me-1">✓</span>}
             {opt.label ?? t(opt.labelKey)}
           </button>
@@ -468,6 +471,7 @@ const CaptionMagic = ({ tool }) => {
       })}
     </div>
   );
+
 
   // ══════════════════════════════════════════
   // RENDER: Header
@@ -530,19 +534,19 @@ const CaptionMagic = ({ tool }) => {
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📱 {t('cm_platform')}</label>
-        {renderPills(PLATFORMS, platform, setPlatform)}
+        {renderCards(PLATFORMS, platform, setPlatform, 3)}
         <p className={`text-xs ${c.textMuted} mt-2`}>{t('cm_char_limit', { limit: PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString() })}</p>
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎭 {t('cm_tone')}</label>
         <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_pick_up_to_3')}</p>
-        {renderPills(TONES, selectedTones, toggleTone, true)}
+        {renderCards(TONES, selectedTones, toggleTone, 2, true)}
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 {t('cm_caption_length')}</label>
-        {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
+        {renderCards(LENGTH_OPTIONS, captionLength, setCaptionLength, 3)}
       </div>
 
       {/* Brand Voice Toggle (#1) */}
@@ -970,12 +974,6 @@ const CaptionMagic = ({ tool }) => {
         </div>
       </div>
       {!results && renderInputForm()}
-      {!results && (
-        <p className={`text-xs text-center ${c.textMuted}`}>
-          {t('cm_xref_next')}{' '}
-          <a href="/VelvetHammer" className={linkStyle}>✉️ {t('cm_xref_velvet')}</a> {t('cm_xref_velvet_tail')}
-        </p>
-      )}
       {results && renderResults()}
       {results && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
