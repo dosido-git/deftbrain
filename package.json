@@ -38,6 +38,7 @@
     "lint": "eslint \"src/**/*.{js,jsx}\" \"backend/**/*.js\"",
     "audit": "eslint \"src/**/*.{js,jsx}\" \"backend/**/*.js\" --max-warnings=0",
     "check:syntax": "node scripts/check-syntax.js",
+    "check:epistemics": "node scripts/epistemics-audit.js",
     "check:golden": "node scripts/check-golden.js",
     "check:golden:all": "node scripts/check-golden.js all",
     "prepare": "husky || true",

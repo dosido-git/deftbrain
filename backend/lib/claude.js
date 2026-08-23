@@ -3,6 +3,7 @@
 
 const Anthropic = require('@anthropic-ai/sdk');
 const { MODELS, ALL_MODELS } = require('./models');
+const { withEpistemics } = require('./epistemics');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -16,6 +17,17 @@ const anthropic = new Anthropic({
   // owns retry policy; keep just one fast SDK retry for transient socket drops.
   maxRetries: 1,
 });
+
+// Every model call in the product passes through here. See lib/epistemics.js.
+// options.epistemicLabel identifies the tool for the (deliberately tiny)
+// exemption list; absent, the rules always apply, which is the safe default.
+const _rawMessagesCreate = anthropic.messages.create.bind(anthropic.messages);
+anthropic.messages.create = function (params, ...rest) {
+  if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
+  const label = params.epistemicLabel;
+  const { epistemicLabel, ...clean } = params;
+  return _rawMessagesCreate({ ...clean, system: withEpistemics(clean.system, label) }, ...rest);
+};
 
 // ──────────────────────────────────────────────────────────────────────
 // Current-date injection (global).
@@ -294,6 +306,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
         // handful of tools need this (SafeWalk, DriveHome) — omitted entirely
         // when absent so every other caller's request shape is unchanged.
         ...(promptOrRequest.tools ? { tools: promptOrRequest.tools } : {}),
+        epistemicLabel: label,
       }
     : {
         // Simple string mode: wrap in messages array. options.system/options.model

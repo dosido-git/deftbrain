@@ -23,6 +23,17 @@ node scripts/localization-audit.js
 # preamble — or half a preamble — renders perfectly and says nothing. Exactly the
 # blind spot in audit/OPPORTUNITIES.md: the capability exists and nothing reaches
 # it. `edge` stays optional and is reported as a TODO, never a failure.
+node scripts/epistemics-audit.js
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "The DeftBrain epistemic contract must reach every model call."
+  echo "It is applied by wrapping anthropic.messages.create in backend/lib/claude.js,"
+  echo "which is why routes calling create() directly are still covered. A route that"
+  echo "builds its own Anthropic client escapes it — import { anthropic } from lib/claude."
+  echo ""
+  exit 1
+fi
+
 node scripts/primer-audit.js
 
 # Gate 7 — sitemap lastmod state. generate-sitemap.js content-hashes each URL so

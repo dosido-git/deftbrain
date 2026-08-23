@@ -2215,3 +2215,49 @@ primary from secondary would fire on all of them, and a rule everyone learns to
 ignore is worse than no rule. Convert on contact — when a tool is being worked
 on for any reason, its primary selections come with it.
 
+
+
+### PF-38 · The epistemic contract reaches every model call
+
+`backend/lib/epistemics.js` holds `DEFTBRAIN_EPISTEMIC_RULES` — one canonical
+statement of what may be presented as known. Eight rules plus two principles:
+no invented facts, no mind-reading, no borrowed certainty, no invented
+probabilities or population claims, inference stays visibly inference, advice
+should survive uncertainty, never manufacture evidence to improve an answer,
+and research changes what is known rather than how confident to sound. Then:
+**uncertainty propagates downstream**, and **imagination is exempt about itself
+only** — invent freely inside something the visitor asked you to imagine, never
+about the real person or their real situation.
+
+**It is applied by wrapping the client, not the helper.** `lib/claude.js`
+wraps `anthropic.messages.create` once at construction:
+
+```js
+const _rawMessagesCreate = anthropic.messages.create.bind(anthropic.messages);
+anthropic.messages.create = function (params, ...rest) { … };
+```
+
+This matters more than it looks. Wrapping `callClaudeWithRetry` would have been
+the obvious choice and would have missed eleven routes that still call
+`create()` directly — including one of Bike Medic's two diagnostic paths, a
+tool whose certainty rules had just been rewritten. Wrapping the client catches
+those, and catches whatever gets written next by someone who has never opened
+`epistemics.js`. A rule that depends on each author remembering to include it
+is a convention; this is a contract.
+
+**Exemptions are by tool label and deliberately tiny.** `callClaudeWithRetry`
+passes its `label` through as `epistemicLabel`, which the wrapper strips before
+the request leaves. Only `wrong-answers-only` and `the-alibi` are exempt: their
+entire premise is presenting invention as fact, and the declaration is where
+their honesty lives. Any addition to that list is a promise that the tool's own
+framing does the work instead.
+
+**Gate 7 (`npm run check:epistemics`)** fails if `lib/claude.js` stops wrapping,
+or if any route constructs its own `Anthropic` client — the one remaining way to
+obtain a model call that never passes the wrapper.
+
+**What the constant cannot do.** Uncertainty propagation is stated here but has
+to be *built* per tool: Caption Magic's `not_sure_about`, Bookmark's verified
+chronology, Buy Wise's `verified_facts`. A global sentence tells the model to
+respect its own caveats; only a field makes the caveat exist in the first place.
+
