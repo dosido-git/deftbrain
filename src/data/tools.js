@@ -1128,9 +1128,9 @@ export const tools = [
   primer: {
     when: "You need to message a stranger and not sound like spam.",
     give: "Who they are, and what you want from the connection.",
-    get: "Three openers at different boldness levels, why each approach may work, and a practical follow-up plan.",
+    get: "Three ready-to-send messages that open differently, and a follow-up for when nobody replies.",
   },
-  seoDescription: "Need to contact someone you do not know? Get three first-message openers at different boldness levels, plus a follow-up plan and what to avoid. Free, no signup.",
+  seoDescription: "Need to contact someone you do not know? Get three ready-to-send first messages that open differently, plus a follow-up for when nobody replies. Free, no signup.",
   seoTitle: "Cold Outreach Message & First-DM Writer",
   title: "Cold Open Craft",
   tagline: "Make the first message easier to send — and easier to answer.",
@@ -1138,15 +1138,15 @@ export const tools = [
   icon: "📬",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#d4dde8",
-  description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you several ways to begin, from cautious to bold, plus a sensible follow-up if they don’t reply.",
+  description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.",
   guide: {
-    overview: "ColdOpenCraft is for anyone who needs to reach out to a stranger and doesn't want to sound like spam. It generates three openers at different boldness levels, each with the psychology explained, estimated response rates, and guidance on when to use which version. Includes a follow-up plan with timing, a backup message, and the 'power move' nuclear option.",
+    overview: "Cold Open Craft is for anyone who has to message a stranger and doesn't want to sound like spam. Tell it who you're writing to and why, and add anything you know about them or want them to know about you — one relevant fact does more for the message than a paragraph of background. You get three ready-to-send messages that genuinely differ: what they lead with, how much they ask for, how they open. No risk scores and no explanation of why each one works, because you can read three messages and pick one. It will not invent a shared connection, a credential you didn't mention, or a scenario that didn't happen — everything about either person traces to what you typed. There's also a follow-up message for when nobody replies, with timing framed as what people commonly do rather than a rule.",
     howToUse: [
       "Describe who you're reaching out to and their role/context",
       "Explain why — what you want from this connection",
       "Pick the channel (email, LinkedIn, DM, text, in-person)",
       "Add what you know about them for much more specific openers",
-      "Choose your boldness level preference",
+      "Pick the channel — the message is written for how people actually write there",
       "Pick your favorite opener and copy it"
     ],
     example: {
@@ -1158,7 +1158,7 @@ export const tools = [
       "The 'what you know about them' field is crucial — specificity is what separates you from spam",
       "Read the 'what NOT to say' section before sending — it's tailored to your exact situation",
       "The follow-up plan includes when to give up — that's important too",
-      "For high-stakes outreach, try all three boldness levels and sleep on it"
+      "For high-stakes outreach, copy the one you like and sleep on it before sending"
     ]
   }
 },

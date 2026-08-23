@@ -16,9 +16,16 @@ GROUNDING RULES:
 - Never infer what the recipient thinks, values, prefers, receives a lot of, will notice, or is likely to do.
 - Do not manufacture "specificity". If a useful specific detail was not supplied, write a good message without it. Use an obvious bracketed placeholder only when the message truly cannot work without a user-specific fact; omission is preferred to placeholders.
 - Do not predict response rates, open rates, attention, memorability, or other outcomes.
-- Safe / medium / bold differ in directness and conversational risk, not in how much you invent.
-- Explain the tradeoff of each approach, not speculative psychology.
-- Follow-up timing is a practical suggestion, not a claim about how the recipient will perceive a particular number of days.
+- DO NOT PROMOTE THE SENDER'S OWN FACTS. Use what they told you at exactly the weight and tense they told it. Someone who says they SHIPPED a system did not say they are currently working on it, that they ran reliability on it, that it is where most of their time goes, or that they own the on-call rota. Enlarging a supplied fact is the same invention as making one up, and it is worse, because they will send it under their own name and it will be almost true.
+  This rule is hardest exactly where the message needs it most: joining the sender's fact to the recipient's work. The pull is to invent the connective tissue — a daily concern, a scale of responsibility, an ongoing problem. There is a legitimate way to make that join, and it is to say what the fact made the SENDER think rather than what their job involved:
+    NO:  reliability engineering at scale is where most of my time goes
+    NO:  keeping alert noise from drowning the real alerts is an ongoing problem for us
+    NO:  I ran reliability on a 50M-events-a-day system
+    YES: I shipped a risk system that handles 50M events a day, so your post landed
+    YES: I shipped a system at that volume, which is why the pager fatigue piece caught my eye
+  A reaction is the sender's to give and they can check it before sending. A job description is a claim about the world, and they cannot un-send it. When in doubt, state the fact and stop.
+- No scenario-building. Do not stage a moment that was not described — a night it broke, a meeting where it came up, a conversation with a colleague. If the user did not narrate it, it did not happen.
+- Follow-up timing is what people commonly do, never an optimum. No closing windows, no number of days presented as correct, no rule about how many unanswered messages constitute a complete attempt. You do not know their calendar.
 
 STYLE:
 Make the ask clear and low-friction. Keep each message natural for the selected channel. Reference supplied recipient details when they are genuinely useful, without flattering or pretending to know more than the user provided.
@@ -43,32 +50,30 @@ ${yourBackground ? `MY BACKGROUND: ${yourBackground}` : ''}
 
 Generate three usable cold openers from ONLY the facts above. Return ONLY valid JSON:
 {
-  "situation_read": "1-2 grounded sentences naming the actual outreach challenge and the useful facts available. Do not characterize the recipient's personality, motives, preferences, inbox, status, or likely reaction.",
+  "situation_read": "One or two grounded sentences naming the actual outreach challenge and the useful facts available — but ONLY if there is something worth saying. Return null when the situation is plain and this would just restate the form back at them. Do not characterize the recipient's personality, motives, preferences, inbox, status, or likely reaction.",
 
   "openers": [
     {
-      "boldness": "safe | medium | bold",
-      "label": "Short label for this approach",
-      "message": "Exact sendable message. Use supplied facts only. Do not invent specifics. Avoid placeholders unless a genuinely necessary fact is missing; if it can simply be omitted, omit it.",
-      "why_it_works": "1-2 sentences explaining what this version emphasizes and the tradeoff it makes. Do not predict response, attention, credibility, or what the recipient will think.",
-      "best_if": "One sentence describing when the user might prefer this style over the others."
+      "label": "A short DESCRIPTIVE title for what this message actually does — Leads with the shared project, Asks one small question, Names the ask straight away. Describe the approach, never rate it. No risk scale, no safe/medium/bold, no cautious/confident, no numbering by nerve. You cannot measure the risk of a message you will not see received.",
+      "message": "The BODY of the message only. Never begin with Subject:, and never include one — the subject has its own field above and appears separately, so a subject here is printed twice. Start at the greeting. This is the whole deliverable otherwise. Use supplied facts only. Do not invent specifics. Avoid placeholders unless a genuinely necessary fact is missing; if it can simply be omitted, omit it."
     }
   ],
 
-  "subject_line": "If email: a subject line grounded in supplied facts. If not email: null.",
+  "subject_line": "If email: the subject line itself, and nothing else — the words that go in the field, never a note about where the subject is. If not email: null. Never write a sentence here; a sentence here renders to the visitor as their subject line.",
 
-  "what_not_to_say": [
-    "3-5 situation-specific cautions based only on the information supplied. Phrase them as risks or tone problems, not claims about what the recipient will think."
-  ],
+  "before_you_send": "ONE short line, only when there is something genuinely worth checking before this goes out — a placeholder they must fill, a fact worth confirming, a name worth spelling correctly. Null far more often than not. This is not a place to list everything that could go wrong, and it is never a report on your own rules: if a thing should not be in the message, leave it out of the message rather than writing a note about having left it out.",
 
-  "follow_up_plan": {
-    "when": "A reasonable follow-up window framed as a suggestion, not a behavioral prediction.",
-    "message": "A short follow-up message that adds no invented facts.",
-    "when_to_stop": "A restrained stopping rule that respects silence without predicting damage or offense."
+  "follow_up": {
+    "message": "A short follow-up to send if nobody replies. Adds no new facts, and does not perform disappointment.",
+    "timing": "One line of practical timing, framed as what people commonly do and easy to vary — a week or so, once the thing you mentioned has passed. Never a number presented as correct, never a window that closes, never a count of messages that constitutes a complete attempt. You do not know their calendar, their hiring timeline, or whether they are on holiday."
   }
 }
 
-Generate exactly 3 openers: safe, medium, bold. Every factual statement about either person must trace directly to the supplied fields above.`;
+THREE GENUINELY DIFFERENT MESSAGES. They should differ in what they lead with, how much they ask for, and how they open — not in how brave they are. Someone reading all three should see three approaches, not one message at three volumes.
+
+NO COMMENTARY ANYWHERE. No why_it_works, no best_if, no note on the tradeoff, no explanation of what a message emphasizes. The visitor can read three messages and pick one; explaining the choice is not the help they came for, and it is the longest part of the output.
+
+Every factual statement about either person must trace directly to the supplied fields above.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
@@ -77,7 +82,8 @@ Generate exactly 3 openers: safe, medium, bold. Every factual statement about ei
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'cold-open-craft' });
 
-    if (!parsed.openers && !parsed.situation_read) {
+    // Guard on the deliverable, not on a field that is now legitimately null.
+    if (!Array.isArray(parsed.openers) || !parsed.openers.length) {
       return res.status(500).json({ error: 'Could not craft your opener. Please try again.' });
     }
     return res.json(parsed);
@@ -87,5 +93,12 @@ Generate exactly 3 openers: safe, medium, bold. Every factual statement about ei
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. The
+// output was explaining itself more than it was helping: every message carried
+// a risk badge, a rationale and a "best if", and the compliance notes about
+// what it had declined to invent ran longer than the messages. v2 sections 7
+// and 8 are the ones this needed — lead with the answer, say it once.
+router.outputStandard = 'v2';
 
 module.exports = router;

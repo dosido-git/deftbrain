@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "cold-open-craft",
-    "tag": "coldopencraft-v1",
+    "tag": "coldopencraft-v3",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. 7 annotations stripped (— one sentence ×5, — 2-4 sentences ×2) that were glued onto primary copy-paste output (opener message/subject_line/follow_up.message/power_move/label) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Already on callClaudeWithRetry (no robustness gap). Guard: !openers && !situation_read (top-level). Re-locked 2026-08-23 (v2): power_move and response_rate removed. The power move proposed publishing a public rebuttal and tagging the recipient before contacting them — an escalation nobody asked for. response_rate predicted a stranger's behaviour nobody measured. boldness (safe/medium/bold) stays: it describes the message rather than the reply.",
-    "baseline": "coldopencraft-v2",
+    "note": "Structural regression golden. 7 annotations stripped (— one sentence ×5, — 2-4 sentences ×2) that were glued onto primary copy-paste output (opener message/subject_line/follow_up.message/power_move/label) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Already on callClaudeWithRetry (no robustness gap). Guard: !openers && !situation_read (top-level). Re-locked 2026-08-23 (v2): power_move and response_rate removed. The power move proposed publishing a public rebuttal and tagging the recipient before contacting them — an escalation nobody asked for. response_rate predicted a stranger's behaviour nobody measured. boldness (safe/medium/bold) stays: it describes the message rather than the reply. Re-locked 2026-08-23 (v3): the output was explaining itself more than helping. boldness (safe/medium/bold), why_it_works and best_if are gone from each opener — a risk badge is a measurement of a message nobody has seen received, and the commentary ran longer than the deliverable. what_not_to_say (3-5 cautions) collapsed to a single optional before_you_send line, because most of that list was the model reporting its own epistemic hygiene back to the visitor. follow_up_plan {when,message,when_to_stop} became follow_up {message,timing}: the stopping rule and the closing-window language asserted things about the recipient's calendar that nothing established. situation_read is now nullable and usually null. subject_line must contain the subject and nothing else — it was coming back as \"Included inside each message above.\", which renders to the visitor AS their subject line, with the real subject duplicated inside all three bodies. Prompt also carries a reaction-vs-role rule: \"I shipped X, so your post landed\" is the sender's own reaction and is fine; \"reliability at that scale is where most of my time goes\" is a job claim nobody supplied. Adopted PF-39 v2 at this lock.",
+    "baseline": "coldopencraft-v3",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -24,42 +24,26 @@
         "userRegion": "US"
       },
       "output": {
-        "situation_read": "You have one strong, relevant hook — you led a payments migration, and she wrote publicly about scaling payments infrastructure — which gives you a genuine point of contact rather than a cold approach from nowhere. The difficulty is that 'I read your post and I have relevant experience' is a pattern she has likely seen before, so the execution has to be specific enough to feel like it came from someone who actually read the work, not someone who scanned the headline.",
+        "situation_read": null,
         "openers": [
           {
-            "boldness": "safe",
-            "label": "The Practitioner's Note",
-            "message": "Hi [Name],\n\nYour post on scaling payments infrastructure caught my attention — specifically [the point that stuck with you, in your own words]. I've spent the last eight years in backend engineering, and the last chunk of that leading a payments migration, so I read it less as an article and more as a familiar situation described clearly.\n\nI'm at a point where I'm actively looking for a senior backend role, and [company name] has been on my shortlist for a while. I'd love to hear how the team is thinking about what's next on the infrastructure side — even a 20-minute call would be worth the ask.\n\nThanks for the writing. It's the kind of thing that travels because it's earned.",
-            "why_it_works": "This version leads with the post as a genuine entry point, uses a placeholder so the sender is forced to supply an actual observation rather than a vague compliment, and closes with a low-friction ask. It does not perform enthusiasm; it reads as one practitioner reaching out to another.",
-            "best_if": "You want to minimize the chance of the message feeling presumptuous, or if you are less certain about your read on her communication style."
+            "label": "Leads with her post, names the shared domain, makes the ask",
+            "message": "Hi [Name],\n\nYour post on scaling payments infrastructure caught my attention — I've spent the last eight years in backend engineering, most recently leading a payments migration, so it resonated.\n\nI'd love to learn more about your team and whether there might be a fit for a senior backend role. Would you be open to a short conversation?"
           },
           {
-            "boldness": "medium",
-            "label": "The Shared Scar",
-            "message": "Hi [Name],\n\nI read your piece on scaling payments infrastructure and [the specific part that resonated — be exact here]. I've led a payments migration myself, and [one honest, concrete thing you ran into that connects to what she wrote — a tradeoff you faced, a failure mode you hit, something specific]. Your framing of it made me want to compare notes.\n\nI'm also actively looking for a senior backend role, and [company name] is at the top of my list — I'd be direct about that rather than bury it. If there's any appetite for a conversation, I'd keep it short and come prepared. Either way, the post is doing useful work.",
-            "why_it_works": "This version pairs the professional hook with one real detail from the sender's own migration experience, which shifts the dynamic from fan-to-author toward peer-to-peer. It also names the job-seeking intent upfront rather than easing into it, which removes a layer of pretense.",
-            "best_if": "You have a concrete, specific moment from your own migration that genuinely connects to something in her post — if that detail is vague, revert to the safe version."
+            "label": "Opens with the shared work before surfacing the interest",
+            "message": "Hi [Name],\n\nI came across your piece on scaling payments infrastructure and wanted to reach out. I led a payments migration as part of eight years in backend engineering, and the problems you wrote about are ones I've worked through directly.\n\nI admire what your team is building and wanted to ask whether you're open to talking about senior backend opportunities."
           },
           {
-            "boldness": "bold",
-            "label": "The Direct Open",
-            "message": "Hi [Name],\n\nI'll be upfront: I'm a senior backend engineer with eight years in the field and a payments migration under my belt, and I'm looking for my next role. [Company name] is the first name on my list, not the fifth.\n\nI found your post on scaling payments infrastructure through [where you found it], and [the specific point that connected to something in your own work — one sentence, concrete]. That's what made me reach out to you directly rather than going through a job listing.\n\nIf you have 15 minutes and any open bandwidth on the backend team, I'd make it worth the time. If the timing is off, I understand — the post alone was worth the cold message.",
-            "why_it_works": "This version puts the ask in the first sentence and frames the post as the reason for the direct approach rather than the main event. It treats her time as finite and doesn't disguise the sender's intent, which is a different posture than most inbound messages take.",
-            "best_if": "You are comfortable with a message that reads as confident rather than deferential, and you have a genuinely specific observation from her post to anchor the middle paragraph — without that anchor, the directness has nothing to stand on."
+            "label": "Names the ask in the first line",
+            "message": "Hi [Name],\n\nI'm a backend engineer with eight years of experience, including leading a payments migration, and I'm interested in exploring a senior role on your team.\n\nYour writing on payments infrastructure is part of what drew me to reach out — it's clear your team is working on problems I find genuinely interesting. Happy to share more about my background if it's useful."
           }
         ],
         "subject_line": null,
-        "what_not_to_say": [
-          "Do not describe her post as 'inspiring' or 'really resonated with me' without saying what specifically — vague praise signals you skimmed it.",
-          "Do not mention her mentorship work as a reason you reached out unless you are a woman in tech she might mentor — invoking it otherwise reads as name-dropping a credential rather than a real connection.",
-          "Do not claim a scale or outcome from your migration — transaction volume, uptime numbers, team size — unless you supplied it here, because invented specifics are the fastest way to lose credibility if she asks a follow-up.",
-          "Do not apologize for cold outreach at the top of the message — it front-loads awkwardness and signals low confidence before you have said anything substantive.",
-          "Do not close with 'I'd love to pick your brain' — it is overused, it undersells what you are offering, and it frames the exchange as entirely one-directional."
-        ],
-        "follow_up_plan": {
-          "when": "If there is no response, one follow-up after roughly seven to ten days is a reasonable interval — long enough not to feel impatient, short enough that the original message is probably still visible in her inbox.",
-          "message": "Hi [Name], just surfacing this in case it got buried. No pressure either way — I know inbound on LinkedIn can stack up. I'm still genuinely interested in [company name] and happy to make any conversation worth the time. If it's not the right moment, I understand.",
-          "when_to_stop": "After one follow-up with no response, move on. Two unanswered messages is a clear signal; a third becomes pressure, which is the opposite of what you want this person to associate with your name."
+        "before_you_send": "Confirm the spelling of her name before sending.",
+        "follow_up": {
+          "message": "Hi [Name], just following up on my note from last week in case it got buried. Still very interested in your team — happy to share more about my background if that's helpful.",
+          "timing": "A week or so after the first message is a common interval; adjust if you know she's at a conference or just announced something that would make the timing awkward."
         }
       }
     },
@@ -79,42 +63,26 @@
         "userRegion": "DE"
       },
       "output": {
-        "situation_read": "Du möchtest eine VP of Engineering kalt ansprechen, um eine Senior-Backend-Stelle auszuloten – das ist eine Jobsuche, verkleidet als Netzwerkkontakt, und die Empfängerin weiß das wahrscheinlich sofort. Du hast einen konkreten Anknüpfungspunkt: ihren Blogbeitrag über Zahlungsinfrastruktur-Skalierung. Das ist ein echter Hebel – aber du hast mir nicht mitgeteilt, was der Beitrag tatsächlich argumentiert, und deshalb bleibt jede Nachricht mit Platzhaltern, die du selbst füllen musst.",
+        "situation_read": null,
         "openers": [
           {
-            "boldness": "safe",
-            "label": "Der echte Leser",
-            "message": "Hi [Name],\n\nIch bin über deinen Beitrag zur Skalierung von Zahlungsinfrastruktur gestolpert – konkret [der Punkt, der mich überrascht oder weitergebracht hat]. Das hat bei mir direkt etwas ausgelöst, weil ich in den letzten acht Jahren Backend-Entwicklung selbst immer wieder an ähnliche Stellen gestoßen bin, zuletzt bei [kurze, ehrliche Beschreibung deines relevantesten Kontexts].\n\nIch schaue mich gerade aktiv nach einem Senior-Backend-Role um und [Unternehmensname] ist eines der wenigen Teams, bei denen ich das Thema Zahlungsinfrastruktur auf diesem Niveau wiedererkenne. Wärst du offen für ein kurzes Gespräch – 20 Minuten – um zu hören, ob das für dich relevant sein könnte?\n\nViele Grüße,\n[Dein Name]",
-            "why_it_works": "Diese Version stellt den Blogbeitrag in den Mittelpunkt und verknüpft ihn direkt mit deiner eigenen Erfahrung, ohne Behauptungen über den Inhalt aufzustellen, die du nicht belegen kannst. Die Bitte ist konkret und zeitlich begrenzt, ohne aufdringlich zu klingen.",
-            "best_if": "Du möchtest kein Risiko eingehen und dir ist es wichtig, professionell und klar zu wirken – ohne zu viel Persönlichkeit zu zeigen."
+            "label": "Nennt den Blogbeitrag und fragt nach einer Perspektive",
+            "message": "Hallo [Name],\n\nIhr Beitrag über die Skalierung von Zahlungsinfrastruktur hat mich zum Nachdenken gebracht – besonders [konkreter Punkt aus dem Artikel, der Sie beschäftigt hat]. Ich arbeite seit acht Jahren im Backend-Bereich, zuletzt mit Schwerpunkt auf Zahlungssystemen, und die Fragen, die Sie dort aufwerfen, sind genau die, die mich gerade umtreiben.\n\nIch wäre sehr interessiert zu hören, wie Sie heute auf das Thema schauen – und ob es bei [Unternehmensname] aktuell Bedarf im Senior-Backend-Bereich gibt.\n\nMit freundlichen Grüßen,\n[Ihr Name]"
           },
           {
-            "boldness": "medium",
-            "label": "Die direkte Verbindung",
-            "message": "Hi [Name],\n\nDein Beitrag über Zahlungsinfrastruktur-Skalierung hat mich länger beschäftigt als die meisten Dinge, die ich in letzter Zeit gelesen habe – vor allem [der Punkt oder die These, die dich wirklich beschäftigt hat]. Ich habe acht Jahre Backend-Erfahrung, davon einen guten Teil in [deinem relevantesten Bereich], und erkenne in dem, was ihr bei [Unternehmensname] macht, einige der Fragen, die mich gerade antreiben.\n\nIch suche aktiv nach meinem nächsten Schritt und bin direkt: Ich würde gerne wissen, ob bei euch etwas in Richtung Senior Backend entsteht oder entstehen könnte. Kein langer Prozess meinerseits – einfach ein offenes Gespräch, ob das überhaupt passt.\n\nLohnt sich das für dich?\n\n[Dein Name]",
-            "why_it_works": "Diese Version benennt die Absicht früher und deutlicher als die sichere Variante, bleibt aber respektvoll im Ton. Die Abschlussfrage übergibt die Entscheidung klar an die Empfängerin, ohne Druck aufzubauen.",
-            "best_if": "Du bist komfortabel damit, deine Jobsuche offen zu benennen, und willst keine Zeit mit Umwegen verlieren."
+            "label": "Stellt die Erfahrung voran und macht den Wunsch direkt klar",
+            "message": "Hallo [Name],\n\nIch bin Backend-Entwickler mit acht Jahren Erfahrung und schaue mich gezielt nach einer Senior-Stelle um – [Unternehmensname] steht dabei ganz oben auf meiner Liste.\n\nIhren Beitrag über Zahlungsinfrastruktur-Skalierung habe ich gelesen und finde den Ansatz, den Sie dort beschreiben, überzeugend. Gibt es derzeit eine passende Stelle in Ihrem Team, oder wäre ein kurzes Gespräch über mögliche Optionen für Sie denkbar?\n\nMit freundlichen Grüßen,\n[Ihr Name]"
           },
           {
-            "boldness": "bold",
-            "label": "Der umgekehrte Pitch",
-            "message": "Hi [Name],\n\nNormaler LinkedIn-Kontakt: 'Ich bewundere eure Arbeit, lass uns vernetzen.' Das spare ich uns.\n\nIch habe deinen Beitrag zur Zahlungsinfrastruktur gelesen – [der spezifische Gedanke, der bei dir hängengeblieben ist]. Ich baue seit acht Jahren Backend-Systeme, unter anderem [dein relevantester Kontext in einem Halbsatz], und die Fragen, die du dort stellst, decken sich ziemlich direkt mit dem, woran ich gearbeitet habe.\n\nIch suche eine Senior-Backend-Stelle und [Unternehmensname] steht ganz oben auf meiner Liste – nicht als Standardantwort, sondern weil [ein echter, spezifischer Grund, der sich aus dem Beitrag oder dem Unternehmen ergibt].\n\nFalls bei euch gerade etwas entsteht oder du einfach neugierig bist: Ich bin für 20 Minuten zu haben.\n\n[Dein Name]",
-            "why_it_works": "Diese Version bricht die Form des typischen LinkedIn-Erstkontakts explizit auf und setzt damit einen anderen Rahmen. Sie ist selbstbewusst ohne arrogant zu sein – aber sie funktioniert nur, wenn die Platzhalter mit echten, präzisen Inhalten gefüllt werden.",
-            "best_if": "Du vermutest, dass die Empfängerin viele Standardnachrichten bekommt, und bist bereit, mit einem etwas schärferen Ton aufzufallen – vorausgesetzt, du hast konkrete Inhalte, um die Platzhalter zu füllen."
+            "label": "Stellt eine konkrete Frage zum Blogbeitrag ohne sofortigen Stellenwunsch",
+            "message": "Hallo [Name],\n\nIch habe Ihren Beitrag über die Skalierung von Zahlungsinfrastruktur gelesen – er wurde in meinem Netzwerk viel geteilt, und ich verstehe warum. Eine Frage ist bei mir hängen geblieben: [Ihre konkrete Frage zum Artikel].\n\nIch stelle die Frage nicht ohne Hintergedanken: Ich bin seit acht Jahren im Backend tätig und interessiere mich für [Unternehmensname] als möglichen nächsten Schritt. Aber die Frage interessiert mich wirklich.\n\nMit freundlichen Grüßen,\n[Ihr Name]"
           }
         ],
         "subject_line": null,
-        "what_not_to_say": [
-          "Nicht behaupten, du hast den Blogbeitrag 'mehrmals gelesen' oder er hat dich 'inspiriert', ohne zu sagen, was genau – das klingt wie eine Floskel, die jeder schreiben kann, ohne den Text zu kennen.",
-          "Nicht schreiben 'Ich würde gerne von euch lernen' oder ähnliche Formulierungen, die dich kleiner machen als nötig – du bewirbst dich um eine Senior-Stelle, nicht um ein Praktikum.",
-          "Nicht mehr als eine Bitte pro Nachricht stellen – kein 'Können wir uns vernetzen, und vielleicht auch kurz telefonieren, und ich schicke dir meinen Lebenslauf?' Das verwässert den nächsten Schritt.",
-          "Nicht behaupten, das Unternehmen oder das Produkt 'genau zu kennen', wenn du es nur von außen siehst – Fintech-VPs erkennen Oberflächlichkeit schnell.",
-          "Nicht mit Gehalt, Verfügbarkeit oder konkreten Konditionen anfangen – das gehört in ein Gespräch, nicht in eine Erstnachricht an jemanden, der dich nicht kennt."
-        ],
-        "follow_up_plan": {
-          "when": "Warte etwa 7 bis 10 Tage nach der ersten Nachricht, bevor du nachfasst. Das ist ein vertretbares Intervall, das weder ungeduldig wirkt noch so lang, dass der Kontext verloren geht.",
-          "message": "Hi [Name],\n\nkurze Nachfrage zu meiner Nachricht von letzter Woche – falls das gerade kein guter Zeitpunkt ist, kein Problem. Falls du offen für ein kurzes Gespräch bist, bin ich weiterhin dabei.\n\n[Dein Name]",
-          "when_to_stop": "Nach einer zweiten Nachricht ohne Antwort. Zwei Kontaktversuche sind nachdrücklich, drei wirken aufdringlich – besonders auf LinkedIn, wo Nachrichten kaum zu übersehen sind."
+        "before_you_send": "Die Platzhalter für den konkreten Punkt oder die Frage aus dem Blogbeitrag müssen vor dem Absenden gefüllt werden – das ist das Herzstück jeder dieser Nachrichten.",
+        "follow_up": {
+          "message": "Hallo [Name],\n\nich wollte kurz nachfragen, ob meine Nachricht angekommen ist. Ich bin weiterhin an [Unternehmensname] interessiert und freue mich, wenn Sie kurz antworten können.\n\nMit freundlichen Grüßen,\n[Ihr Name]",
+          "timing": "Eine Woche oder etwas länger nach der ersten Nachricht ist üblich – je nachdem, was gerade bei Ihnen oder im Unternehmen ansteht."
         }
       }
     }

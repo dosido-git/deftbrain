@@ -1,4 +1,5 @@
 import Caret from '../components/Caret';
+import { CopyBtn } from '../components/ActionButtons';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -56,10 +57,6 @@ const ColdOpenCraft = ({ tool }) => {
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
-
-  const linkStyle = isDark
-    ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
-    : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // ── Persisted state ──
 
@@ -139,24 +136,18 @@ const ColdOpenCraft = ({ tool }) => {
     if (r.situation_read) text += `\n${r.situation_read}\n`;
     if (r.subject_line) text += `\n${t('coc_copy_subject')} ${r.subject_line}\n`;
     if (r.openers?.length) {
-      r.openers.forEach(o => {
-        text += `\n--- ${o.label} [${o.boldness}] ---\n${o.message}\n`;
-        if (o.why_it_works) text += `${t('coc_copy_why')} ${o.why_it_works}\n`;
-      });
+      r.openers.forEach(o => { text += `\n--- ${o.label} ---\n${o.message}\n`; });
     }
-    if (r.what_not_to_say?.length) {
-      text += `\n${t('coc_copy_donotsay')}\n${r.what_not_to_say.map(x => `• ${x}`).join('\n')}\n`;
-    }
-    if (r.follow_up_plan) {
-      text += `\n${t('coc_copy_followup')}\n${t('coc_copy_wait')} ${r.follow_up_plan.when}\n${r.follow_up_plan.message}\n${t('coc_copy_stopwhen')} ${r.follow_up_plan.when_to_stop}`;
+    if (r.before_you_send) text += `\n${t('coc_before_send')} ${r.before_you_send}\n`;
+    if (r.follow_up?.message) {
+      text += `\n${t('coc_copy_followup')}\n${r.follow_up.message}\n`;
+      if (r.follow_up.timing) text += `${r.follow_up.timing}\n`;
     }
     return text + BRAND;
   }, [results, who, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Cold Open Craft');
 
-  const boldnessEmoji  = (b) => b === 'safe' ? '🛡️' : b === 'bold' ? '🔥' : '⚖️';
-  const boldnessColor  = (b) => b === 'safe' ? c.success : b === 'bold' ? c.warning : c.warning;
 
   const r = results;
 
@@ -343,92 +334,53 @@ const ColdOpenCraft = ({ tool }) => {
             </div>
           )}
 
-          {/* Openers */}
+          {/* Openers. Three messages, a descriptive title, a copy button.
+              The badge, the rationale and the "best if" were three lines of
+              commentary on top of every one-line deliverable. */}
           {r.openers?.length > 0 && (
             <div className="space-y-3">
               {r.openers.map((opener, idx) => (
-                <div key={idx} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h4 className={`text-sm font-bold ${c.text}`}>{boldnessEmoji(opener.boldness)} {opener.label}</h4>
-                        <div className="flex gap-1.5 mt-1">
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${boldnessColor(opener.boldness)}`}>
-                            {opener.boldness}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* The message */}
-                    <div className={`${c.cardAlt} rounded-lg p-4 mb-3`}>
-                      <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}>{opener.message}</p>
-                    </div>
-
-                    {opener.why_it_works && (
-                      <p className={`text-xs ${c.textSecondary} mb-1`}>
-                        <span className="font-bold">{t('coc_why_works')}</span> {opener.why_it_works}
-                      </p>
-                    )}
-                    {opener.best_if && (
-                      <p className={`text-xs ${c.textMuteded} italic`}>{t('coc_best_if')} {opener.best_if}</p>
-                    )}
+                <div key={idx} className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                  <h4 className={`text-sm font-bold ${c.text} mb-2`}>{opener.label}</h4>
+                  <div className={`${c.cardAlt} rounded-lg p-4`}>
+                    <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}>{opener.message}</p>
+                  </div>
+                  <div className="mt-3">
+                    <CopyBtn exact quiet label={t('coc_copy')}
+                      content={[r.subject_line ? `${t('coc_subject_line')} ${r.subject_line}` : '', opener.message].filter(Boolean).join('\n\n') + BRAND} />
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* What not to say */}
-          {r.what_not_to_say?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.text} mb-2`}>🚫 {t('coc_not_to_say')}</p>
-              <div className="space-y-1.5">
-                {r.what_not_to_say.map((item, i) => (
-                  <p key={i} className={`text-xs ${c.textSecondary} leading-relaxed`}>• {item}</p>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Follow-up plan */}
-          {r.follow_up_plan && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-bold ${c.text} mb-3`}>📅 {t('coc_followup_plan')}</p>
-              <div className="space-y-3">
-                <div>
-                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('coc_when_followup')}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when}</p>
-                </div>
-                {r.follow_up_plan.message && (
-                  <div className={`${c.cardAlt} rounded-lg p-3`}>
-                    <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('coc_followup_msg')}</p>
-                    <p className={`text-xs ${c.text}`}>{r.follow_up_plan.message}</p>
-                  </div>
-                )}
-                <div>
-                  <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('coc_when_stop')}</p>
-                  <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when_to_stop}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Cross-refs — post-result */}
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 space-y-2`}>
-            <p className={`text-xs ${c.textMuteded} text-center`}>
-              {t('coc_xref2_pre')}{' '}
-              <a href="/VelvetHammer" className={linkStyle}>{t('coc_velvethammer')}</a>{' '}
-              {t('coc_xref2_post')}
-            </p>
-            {(r.openers?.some(o => o.boldness === 'bold') || yourBackground) && (
-              <p className={`text-xs ${c.textMuteded} text-center`}>
-                {t('coc_xref3_pre')}{' '}
-                <a href="/BragSheetBuilder" className={linkStyle}>{t('coc_bragsheet')}</a>{' '}
-                {t('coc_xref3_post')}
+          {/* One line, and only when there is something worth checking. */}
+          {r.before_you_send && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+              <p className={`text-xs ${c.textSecondary}`}>
+                <span className="font-bold">{t('coc_before_send')}</span> {r.before_you_send}
               </p>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Follow-up: a message they can send, and timing that does not
+              pretend to know their recipient's calendar. */}
+          {r.follow_up?.message && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+              <h4 className={`text-sm font-bold ${c.text} mb-2`}>{t('coc_followup_plan')}</h4>
+              <div className={`${c.cardAlt} rounded-lg p-4`}>
+                <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}>{r.follow_up.message}</p>
+              </div>
+              {r.follow_up.timing && (
+                <p className={`text-xs ${c.textMuteded} mt-2`}>{r.follow_up.timing}</p>
+              )}
+              <div className="mt-3">
+                <CopyBtn exact quiet label={t('coc_copy')} content={r.follow_up.message + BRAND} />
+              </div>
+            </div>
+          )}
+
+
 
           {/* AI disclaimer */}
           <p className={`text-xs text-center ${c.textMuteded}`}>
