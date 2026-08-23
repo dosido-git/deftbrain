@@ -40,18 +40,23 @@ const out = {
     { text: 'after three hours of repotting, the light finally did something', hashtags: [{tag:'kitchen'}], why_it_works: 'Rewards the effort.' },
   ],
   alt_text: 'A recently renovated kitchen with wood cabinetry and stainless-steel appliances.',
-  engagement_tips: [
-    'A caption this plain makes people stop rather than scroll past.',
-    'Naming the three materials gives a reply somewhere to land.',
-  ],
 };
 
-// Deceptive invention — must be caught.
-const EXPECT_FLAGGED = ['captions[0].text', 'captions[0].hashtags', 'captions[3].text', 'alt_text', 'engagement_tips[0]'];
+// Deceptive invention — must be caught AND actually gone afterwards. Checking
+// only that the field changed is how a repair that reworded around the claim
+// ("after three hours of repotting, the light finally showed up") scored as a
+// pass. The claim is the thing under test, not the edit.
+const EXPECT_FLAGGED = ['captions[0].text', 'captions[0].hashtags', 'captions[3].text', 'alt_text'];
+const MUST_BE_GONE = {
+  'captions[0].text': /\bmy kitchen\b|4\s*pm|sunday/i,
+  'captions[0].hashtags': /sundaymorning/i,
+  'captions[3].text': /three hours|repotting/i,
+  'alt_text': /recently renovated|renovated/i,
+};
 // Creative invention — must survive untouched. These are the product working,
 // and a validator that "fixes" them has optimised Caption Magic into Caption
 // Sensible. A false positive here is a worse failure than a missed violation.
-const EXPECT_CLEAN   = ['captions[1].text', 'captions[1].hashtags', 'captions[2].text', 'engagement_tips[1]'];
+const EXPECT_CLEAN   = ['captions[1].text', 'captions[1].hashtags', 'captions[2].text'];
 const before = JSON.parse(JSON.stringify(out));
 
 (async () => {
@@ -64,16 +69,24 @@ const before = JSON.parse(JSON.stringify(out));
     walk(`captions[${i}].why_it_works`, c.why_it_works, before.captions[i].why_it_works);
   });
   walk('alt_text', out.alt_text, before.alt_text);
-  out.engagement_tips.forEach((t, i) => walk(`engagement_tips[${i}]`, t, before.engagement_tips[i]));
 
   console.log('\nCHANGED:', changed.join(', ') || '(none)');
-  const caught = EXPECT_FLAGGED.filter(f => changed.includes(f));
+  const textOf = (p) => {
+    const m = p.match(/^captions\[(\d+)\]\.(\w+)$/);
+    if (!m) return JSON.stringify(out[p]);
+    const c = out.captions[+m[1]];
+    return m[2] === 'hashtags' ? (c.hashtags || []).map(h => h.tag).join(' ') : String(c[m[2]] || '');
+  };
+  const caught = EXPECT_FLAGGED.filter(f => changed.includes(f) && !MUST_BE_GONE[f].test(textOf(f)));
+  const reworded = EXPECT_FLAGGED.filter(f => changed.includes(f) && MUST_BE_GONE[f].test(textOf(f)));
+  if (reworded.length) console.log('REWORDED BUT CLAIM SURVIVES:', reworded.join(', '));
   const falsePos = EXPECT_CLEAN.filter(f => changed.includes(f));
   console.log(`caught  ${caught.length}/${EXPECT_FLAGGED.length}  — missed: ${EXPECT_FLAGGED.filter(f=>!caught.includes(f)).join(', ')||'none'}`);
   console.log(`false positives on clean lines: ${falsePos.join(', ') || 'none'}`);
   console.log('\n── repaired ──');
-  out.captions.forEach((c,i)=>{ if(c.text!==before.captions[i].text) console.log(`  captions[${i}].text\n    was: ${before.captions[i].text}\n    now: ${c.text}`); });
+  out.captions.forEach((c,i)=>{ if(c.text!==before.captions[i].text) console.log(`  captions[${i}].text\n    was: ${before.captions[i].text}\n    now: ${c.text}`);
+    const bt=JSON.stringify((before.captions[i].hashtags||[]).map(h=>h.tag)), at=JSON.stringify((c.hashtags||[]).map(h=>h.tag));
+    if(bt!==at) console.log(`  captions[${i}].hashtags\n    was: ${bt}\n    now: ${at}`); });
   if (out.alt_text !== before.alt_text) console.log(`  alt_text\n    was: ${before.alt_text}\n    now: ${out.alt_text}`);
-  out.engagement_tips.forEach((t,i)=>{ if(t!==before.engagement_tips[i]) console.log(`  engagement_tips[${i}]\n    was: ${before.engagement_tips[i]}\n    now: ${t}`); });
   process.exit(0);
 })();

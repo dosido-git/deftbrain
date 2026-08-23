@@ -2761,33 +2761,33 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "The photo's ready and the caption isn't.",
-    give: "The image, or a description. Your platform and tone.",
-    get: "Captions that sound like a person rather than a brand account.",
-    edge: "It looks at the actual photo, so the caption is about what's in it.",
+    give: "The image, and anything it can't show — who's in it, what was happening, the joke behind it.",
+    get: "Six captions, from the plain one to one that goes somewhere strange. Then ask for funnier, drier or weirder.",
+    edge: "It won't invent a backstory for your photo, and it won't play it safe with the joke either.",
   },
-  seoDescription: "Share a photo or describe it, choose where you are posting and the tone you want, and get several caption options shaped for the moment and platform. Free, no signup.",
+  seoDescription: "Share a photo or describe it, tell us anything the picture cannot, and get six captions across the range — plain, warm, clever, dry, playful and one that goes somewhere else entirely. Free, no signup.",
   seoTitle: "Social Media Caption Generator",
   title: "Caption Magic",
   tagline: "Find the words that fit the photo.",
-  tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'brand voice', 'alt text'],
+  tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'funny captions', 'alt text'],
   icon: "📸",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
-  description: "A good photo doesn’t always come with the right words. Share the image — or describe it — then tell us where you’re posting and the tone you want. Caption Magic gives you several captions to choose from, shaped for the moment and the platform.",
+  description: "A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.",
   guide: {
-    overview: "Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.",
+    overview: "Caption Magic looks at your actual photo and writes captions that sound like a person rather than a brand account. Upload an image (drag-and-drop, paste, or just describe it), and — this is the part that matters most — tell it anything the picture cannot show: who is in it, what was happening, the joke only you know. That one sentence is worth more than everything the tool can see. You get six captions spanning a deliberate range, from the plain one you would post without thinking to a wild card that goes somewhere nobody expects. No explanations underneath them; you can tell whether you like a joke. Then play: ask for funnier, more unhinged, warmer, drier, or six completely different ones, and on any caption you like, ask for more like it, a shorter cut, or a punchier version. Also gives you alt text and per-platform adaptations.",
 
     howToUse: [
       "Upload, drag-and-drop, or paste an image — or describe what's in the photo if you don't have one handy",
       "Select your platform (Instagram, LinkedIn, Facebook, Twitter/X, TikTok, Threads) — character limits adjust automatically",
-      "Choose 1-3 tones and a caption length (short/medium/long), optionally add context about the moment",
+      "Tell it what the photo can't show you — who's in it, what was happening, the joke behind it. This is the single biggest thing you can do for the captions",
       "Generate captions, then refine with one-tap: Less try-hard, More engaging, Shorter, Longer, or Professional",
       "Use 'Adapt to all platforms' to instantly get versions for every network, or 'Remix' to blend your favorites"
     ],
 
     example: {
       scenario: "You took a photo of your coffee mug on your desk with your laptop in the background — the millionth 'working from home' photo.",
-      action: "Upload the image, select Instagram, choose 'funny' and 'casual' tones with 'short' length, then generate captions.",
+      action: "Upload the image, select Instagram and a short length, add 'my sister, who insists this hat was my idea', then generate.",
       result: "You get 3 options with smart hashtags color-coded by category (🔥 trending, 🎯 niche, 🏷️ branded). One caption is perfect for Instagram, so you tap 'Adapt to all platforms' and instantly get versions for LinkedIn, Twitter, TikTok, Threads, and Facebook — each one native to its platform. You mark the witty option as 'This one won' to build your audience insights over time."
     },
 
@@ -2795,7 +2795,7 @@ export const tools = [
       "Mix tones for variety — combining 'funny' with 'reflective' often yields the most authentic-feeling options",
       "After 3+ generations, your Brand Voice profile unlocks — toggle it on to auto-apply your preferred style",
       "Use 'Adapt to all platforms' to cross-post efficiently — each version is rewritten for its platform, not just trimmed",
-      "The Remix feature is great for combining the opening of one caption with the tone of another",
+      "If none of the six land, don't rewrite the form — tap Funnier or Surprise me and read six more",
       "Mark winners with '📊 This one won' to build audience insights that improve your future captions"
     ],
 
@@ -2803,7 +2803,7 @@ export const tools = [
       "Don't select too many tones at once — stick to 2-3 for focused quality rather than scattered results",
       "Watch character counts: red means you're over the platform limit (especially Twitter's 280)",
       "Image upload works best with clear, well-lit photos — very dark or blurry images may produce generic captions",
-      "The Remix feature needs at least 2 captions selected — it blends, not just picks one"
+      "Six captions is a lot to read — skim for the one that makes you smile rather than judging each in turn"
     ]
   }
 },

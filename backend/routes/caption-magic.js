@@ -127,12 +127,30 @@ function setByPath(obj, path, value) {
   obj[key][i][sub] = value; return true;
 }
 
+// char_count is a consumed hero stat — code-compute it (the model understated
+// all three counts in the audit). And asking for funnier captions produced
+// funnier hashtags — "make it make sense", "jellyfish energy" — where a space
+// means it is not a hashtag on any platform that has them. Both are mechanical
+// properties of a string rather than judgements worth model attention.
+function normaliseCaptions(out) {
+  if (!Array.isArray(out?.captions)) return;
+  out.captions.forEach(c => {
+    if (c && typeof c.text === 'string') c.char_count = c.text.length;
+    if (!Array.isArray(c?.hashtags)) return;
+    c.hashtags = c.hashtags
+      .map(h => (typeof h === 'object' ? h?.tag : h))
+      .map(tag => String(tag || '').replace(/^#+/, '').replace(/[\s_]+/g, '').trim())
+      .filter(Boolean)
+      .map(tag => ({ tag }));
+  });
+}
+
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Generate captions
 // ════════════════════════════════════════════
 router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
-    const { imageBase64, imageDescription, platform, tones, context, captionLength, userLanguage } = req.body;
+    const { imageBase64, imageDescription, platform, context, avoidMention, captionLength, userLanguage } = req.body;
 
     if (!imageBase64 && !imageDescription) {
       return res.status(400).json({ error: 'Provide an image or image description' });
@@ -140,7 +158,6 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
 
     const platformName = platform || 'instagram';
     const charLimit = PLATFORM_LIMITS[platformName] || 2200;
-    const toneList = Array.isArray(tones) && tones.length > 0 ? tones.join(', ') : 'casual & authentic';
     const lengthPref = captionLength || 'medium';
     const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
@@ -213,17 +230,18 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 You cannot see the picture. Everything you know about it is below. That is deliberate — write from it and the captions will be true.
 
 ${renderEnvelope(envelope)}
-${context ? `\nThe person also said: ${context} — this is supplied fact, use it freely.` : ''}
+${context ? `\nWHAT THEY TOLD US ABOUT THIS PHOTO: ${context}
+This is established fact and it is the best material you have — better than anything you can see. A photograph shows you a hat; only they can tell you it was a bad purchase their wife has not stopped mentioning. Use it. Nothing here needs hedging, and captions that use it will beat captions that do not.` : ''}
+${avoidMention ? `\nWHAT THEY ASKED FOR: ${avoidMention}
+Follow this. If it names something to leave out, leave it out of all six.` : ''}
 
 ${platformName === 'none'
   ? `NO PLATFORM: they have not said where this is going — a photo book, a message, a print, somewhere with no conventions of its own. Write captions that stand on their own: no platform-shaped length, no hashtag-bait phrasing, no calls to action about following or commenting. Hashtags are still fine as suggestions, since they may add them later, but nothing in the caption itself should assume a feed.`
   : `PLATFORM: ${platformName} (character limit: ${charLimit})`}
-TONE: ${toneList}
 LENGTH PREFERENCE: ${lengthPref} (short = 1-2 lines, medium = 2-4 lines, long = 4-8 lines)
 
 RULES:
 - Write like a real person posting to their own feed, not a copywriter
-- Match the tone precisely: "funny" = actually funny, "minimal" = just a few words
 - For ${platformName}, respect the ${charLimit} character limit
 - Each caption should feel distinctly different, not just rephrased
 - If platform is Twitter/X, keep it tight and punchy
@@ -249,33 +267,27 @@ For HASHTAGS: tags that genuinely fit this post. Do not label any of them trendi
 
 The voice-versus-fact line applies to tags too, and it cuts finely. A tag stating a fact the picture cannot support is a claim in one word: #sundaymorning assigns a day nobody established, #handmade assigns an author, #vintage assigns an age. A tag that is obviously part of the joke is not: #morningsomewhere claims nothing, because no one reads it as a timestamp. Play in tags where the play reads as play. Never write the leading # — the interface adds it.
 
-Create 3 caption variations, each with a different approach.
+SIX CAPTIONS, IN THIS ORDER, EACH A DIFFERENT REGISTER:
+
+1. STRAIGHTFORWARD — says the thing plainly, no angle. The one you use when you just want to post.
+2. WARM — affectionate about whatever is in the picture.
+3. CLEVER — a turn of phrase, a double meaning, something that lands on the second read.
+4. DRY — flat, understated, funnier for not trying.
+5. PLAYFUL — silly, loose, an obvious grin behind it.
+6. WILD CARD — go somewhere nobody expects. An absurd premise, a tiny drama between the objects, a voice that has no business being here. This one is allowed to be too much. If all six could have come from the same writer in the same mood, the sixth has failed.
+
+These are instructions to you, not labels for the visitor — the register never appears in the output. Do not write six versions of one joke.
 
 OUTPUT (JSON only):
 {
   "captions": [
     {
-      "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "The caption.",
+      "text": "The caption. Nothing else — no explanation, no note about what it does, no reason it works.",
       "hashtags": [{ "tag": "hashtag1" }, { "tag": "hashtag2" }, { "tag": "hashtag3" }],
-      "char_count": 150,
-      "why_it_works": "1-sentence explanation of the approach",
-      "best_for": "when this version works best"
+      "char_count": 150
     }
   ],
-  "alt_text": "Descriptive accessibility text, built from OBSERVED. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less.",
-  "engagement_tips": [
-    "A creative suggestion about the post itself, phrased as what it offers rather than what it will achieve. No performance claims of any kind — not about the algorithm or reach, and not about people either.
-      NO:  Questions in captions get more replies
-      YES: A question can give people an easy way into the conversation
-      No frequency words — often, usually, tend to, most people. They smuggle an unmeasured population claim back in under a softer verb.
-      THE TEST IS THE SUBJECT OF YOUR SENTENCE. It must be the caption, the post or the thing in it — never people, readers, your audience or they. The moment an audience becomes the subject you are reporting behaviour you never observed.
-      And no comparison of outcomes, whatever the subject: goes further, does better, works best, gets more. A sentence can pass the subject test and still rank two results nobody measured.
-      YES: thinking out loud on the page leaves room for a reply; a finished description does not
-      Worked pairs for shape only — write your own.",
-    "A second, on the same terms."
-  ],
-  "avoid": ["thing to avoid 1", "thing to avoid 2"]
+  "alt_text": "Descriptive accessibility text, built from OBSERVED. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less."
 }
 
 ${NO_QUOTE_RULE}
@@ -300,25 +312,13 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
       console.error('CaptionMagic validation skipped:', err.message);
     }
 
-    // char_count is a consumed hero stat — code-compute it (model understated
-    // all three counts in the audit).
-    out.captions.forEach(c => { if (c && typeof c.text === 'string') c.char_count = c.text.length; });
+    normaliseCaptions(out);
 
-    // Asking for funnier captions produced funnier hashtags — "make it make
-    // sense", "jellyfish energy" — and a hashtag with a space in it is not a
-    // hashtag on any platform that has them. Closed up in code because it is a
-    // mechanical property of the string, not a judgement the model should be
-    // spending attention on.
-    out.captions.forEach(c => {
-      if (!Array.isArray(c?.hashtags)) return;
-      c.hashtags = c.hashtags
-        .map(h => (typeof h === 'object' ? h?.tag : h))
-        .map(tag => String(tag || '').replace(/^#+/, '').replace(/[\s_]+/g, '').trim())
-        .filter(Boolean)
-        .map(tag => ({ tag }));
-    });
-
-    res.json({ ...out, observed: envelope.observed, uncertain: envelope.uncertain });
+    // The whole envelope travels back. "Six more" and the nudges have to stay
+    // grounded in the same observation, and re-reading the image on every nudge
+    // would cost a vision call and could drift — the visitor would be playing
+    // with a photo the tool kept re-interpreting underneath them.
+    res.json({ ...out, envelope });
 
   } catch (error) {
     console.error('CaptionMagic error:', error);
@@ -333,15 +333,11 @@ function checkableFields(out) {
   const fields = [];
   (out.captions || []).forEach((c, i) => {
     if (typeof c?.text === 'string') fields.push([`captions[${i}].text`, c.text]);
-    if (typeof c?.why_it_works === 'string') fields.push([`captions[${i}].why_it_works`, c.why_it_works]);
     if (Array.isArray(c?.hashtags) && c.hashtags.length) {
       fields.push([`captions[${i}].hashtags`, c.hashtags.map(h => (typeof h === 'object' ? h?.tag : h)).filter(Boolean).join(', ')]);
     }
   });
   if (typeof out.alt_text === 'string') fields.push(['alt_text', out.alt_text]);
-  (out.engagement_tips || []).forEach((t, i) => {
-    if (typeof t === 'string') fields.push([`engagement_tips[${i}]`, t]);
-  });
   return fields;
 }
 
@@ -375,7 +371,16 @@ Worked pairs, because this line is the whole job:
   FINE: me wondering what any of this has to do with anything
         (caption voice; requiring proof the poster wondered it would be absurd)
   FINE: #morningsomewhere
-        (obviously a joke; claims no timestamp)
+        (the "it's five o'clock somewhere" construction — somewhere is the word
+         that voids the claim. It says explicitly that it is NOT asserting when
+         this was. A tag naming a time is only a violation when it names THIS
+         time: #sundaymorning does, #morningsomewhere refuses to.)
+
+A hashtag is checked one at a time, never as a set. The list is flagged only for
+the specific tags that assert something, and a clean tag beside a dirty one is
+not evidence against it: #kitchen, #morningsomewhere is a violation of neither.
+Flagging the whole list because one tag looked borderline costs the visitor
+every other tag with it.
   FINE: some kind of resin, maybe
         (visibly preserves an UNCERTAIN detail)
   FINE: this little guy really said 'i'm not like other spheres'
@@ -394,14 +399,7 @@ The register is not the test. A joke can carry a fact, and a flat sentence can c
   VIOLATION: after three hours of repotting this thing
   VIOLATION: she had no idea I was taking this
 
-The engagement_tips and why_it_works fields are different in kind. They are analysis, not caption voice, and they get no creative licence: a claim there about what viewers will do, feel, notice or how they will respond is unsupported however it is phrased, because nobody observed the audience.
-
-But a statement about what a caption OFFERS is a description of the writing, not a prediction about people, and is fine:
-
-  FINE: gives a reply somewhere to land
-  FINE: leaves room for a question
-  VIOLATION: makes people stop rather than scroll past
-  VIOLATION: viewers will feel like they discovered something
+alt_text is different in kind. It is a description for someone who cannot see the picture, not caption voice, and it gets no creative licence at all: no jokes, no personification, no invented detail. A screen-reader user has no way to see past a wrong word.
 
 WHEN UNCERTAIN, PRESERVE CREATIVITY. The purpose of this check is to prevent misleading fabrication, not to make captions descriptive. A flagged line gets rewritten, so a wrong flag costs the visitor a joke — flag only where an invented detail could genuinely mislead someone about the real circumstances behind the photograph. Silence is the right answer far more often than not.
 
@@ -453,11 +451,13 @@ ${renderEnvelope(envelope)}
 ${supplied}
 Rewrite each line below so it keeps its voice, tone, length and joke, and drops only the misleading claim. Do not make it cautious, do not add a hedge where the fix is simply to cut three words, and do not replace a specific image with a vague one, and above all do not make it more literal — a line that has lost its joke has not been repaired, it has been damaged. The fix for "my kitchen at 4pm on a sunday" is not "a kitchen": the claim was the possessive and the timestamp, so the invention worth keeping is whatever made the line worth reading. Invent something else in its place if you need to. The line should read as though the claim was never there — not as though it was removed.
 
+Check your replacement before you return it: the unsupported claim must be absent, not softened and not paraphrased. "After three hours of repotting, the light finally did something" repaired to "after three hours of repotting, the light finally showed up" has changed nothing that mattered — the three hours of repotting was the invention, and it is still there. Delete the claim; keep the line.
+
 ${violations.map((v, i) => `${i}. [${v.field}]
    current: ${getByPath(out, v.field)}
    unsupported: ${v.proposition}${v.why ? ` (${v.why})` : ''}`).join('\n\n')}
 
-Where the item is an engagement tip or a why_it_works line, the replacement is analysis rather than caption voice: say what the caption offers, never what people will do with it. "Gives a reply somewhere to land" is a replacement; "makes people stop scrolling" is the same violation in new words, and so is anything about what a reader will notice, feel or do instead.
+Where the item is alt_text, the replacement is a plain description for someone who cannot see the picture — no joke, no voice, nothing invented.
 
 Return one replacement per numbered item, keyed by its number.
 ${violations.some(v => v.field.endsWith('.hashtags')) ? 'For a hashtags item, return a comma-separated list of tags with no leading #.\n' : ''}
@@ -479,8 +479,18 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     const v = violations[Number(fix?.n)];
     if (!v || typeof fix.value !== 'string' || !fix.value.trim()) return;
     if (v.field.endsWith('.hashtags')) {
-      const tags = fix.value.split(',').map(s => s.trim().replace(/^#+/, '')).filter(Boolean);
-      if (tags.length) setByPath(out, v.field, tags.map(tag => ({ tag })));
+      // A tag list is repaired per tag, not wholesale. Asked to fix a list
+      // containing one bad tag, the model rewrites all of them — which is how
+      // #morningsomewhere, a joke that claims nothing, kept dying next to
+      // #sundaymorning, which claims a day. Keep every tag the violation did
+      // not actually name, and take the model's replacements for the rest.
+      const accused = String(v.proposition || '').toLowerCase();
+      const kept = (getByPath(out, v.field) || [])
+        .map(h => (typeof h === 'object' ? h?.tag : h))
+        .filter(tag => tag && !accused.includes(String(tag).toLowerCase()));
+      const added = fix.value.split(',').map(x => x.trim().replace(/^#+/, '')).filter(Boolean);
+      const merged = [...new Set([...kept, ...added])];
+      if (merged.length) setByPath(out, v.field, merged.map(tag => ({ tag })));
       return;
     }
     setByPath(out, v.field, fix.value.trim());
@@ -497,14 +507,12 @@ router.post('/caption-magic/revise', rateLimit(), async (req, res) => {
 
     const charLimit = PLATFORM_LIMITS[platform] || 2200;
     const directionMap = {
-      'less_tryhard': 'Make this sound less try-hard and more naturally authentic. Remove anything forced or overly polished. Keep it real.',
-      'more_engaging': 'Make this more engaging and attention-grabbing. Add a hook or question that makes people want to respond.',
-      'shorter': `Make this significantly shorter and punchier. Get to the point. Max ${Math.min(charLimit, 280)} characters.`,
-      'longer': 'Expand this with more detail, storytelling, or personality. Add depth without padding.',
-      'more_professional': 'Make this more polished and professional while keeping it human. Good for LinkedIn or work contexts.',
+      'more_like_this': 'They liked this one. Write another with the same voice, rhythm and kind of joke, about the same picture — a sibling, not a rephrasing. If the original personifies something, personify something else. If it is dry, stay dry. Do not reuse its best phrase.',
+      'shorter': `Cut it down. Same joke, fewer words — find the shortest version that still lands, and delete the setup if the punchline can carry itself. Max ${Math.min(charLimit, 280)} characters.`,
+      'punch_up': 'Make it funnier. Sharpen the joke, commit harder to whatever premise it already has, or take the odd detail further than it currently goes. Same length, more nerve. If it was merely accurate, it needs an angle now.',
     };
 
-    const instruction = directionMap[direction] || directionMap['less_tryhard'];
+    const instruction = directionMap[direction] || directionMap['punch_up'];
     const basePrompt = `${instruction}
 
 ORIGINAL CAPTION:
@@ -514,9 +522,7 @@ PLATFORM: ${platform || 'instagram'} (limit: ${charLimit} chars)
 
 Return ONLY a JSON object:
 {
-  "revised_text": "the revised caption",
-  "char_count": 123,
-  "what_changed": "1-sentence summary of the revision"
+  "revised_text": "the revised caption, and nothing else — no note about what you changed"
 }
 
 ${NO_QUOTE_RULE}
@@ -608,73 +614,93 @@ CRITICAL: Return ONLY valid JSON.`;
 });
 
 // ════════════════════════════════════════════
-// REMIX ENDPOINT: Blend parts of captions (#6)
+// MORE ENDPOINT: six more, or six in a different direction
 // ════════════════════════════════════════════
-router.post('/caption-magic/remix', rateLimit(), async (req, res) => {
-  try {
-    const { captions, remixInstructions, platform, userLanguage } = req.body;
+// Replaces Remix. Remix asked the visitor to select captions, type merge
+// instructions and press a button — analysis, dressed as play. This is one tap:
+// funnier, weirder, warmer, drier, surprise me, or just six more. The envelope
+// comes back from the client so the new six are grounded in the same reading of
+// the photograph rather than a fresh one.
+const NUDGES = {
+  funnier:  'Go harder on the jokes. Every one of the six should be trying to land a laugh, and at least two should be genuinely silly.',
+  unhinged: 'Go off the rails. Absurd premises, objects with agendas, wildly disproportionate reactions, a voice that has clearly lost the plot. Commit — a timid unhinged caption is just a strange one.',
+  warmer:   'Warmer and more affectionate. Fondness for whatever is in this picture, without turning sentimental or greeting-card.',
+  drier:    'Drier. Flat delivery, understatement, the joke left entirely unremarked. Nothing may explain itself and nothing may wink.',
+  surprise: 'Take an angle nobody would predict from this photograph. Not the obvious read, not the second-most obvious one. Six captions that make someone say where did that come from.',
+};
 
-    if (!Array.isArray(captions) || captions.length < 2) {
-      return res.status(400).json({ error: 'Need at least 2 captions to remix' });
+router.post('/caption-magic/more', rateLimit(), async (req, res) => {
+  try {
+    const { envelope, previous, nudge, platform, context, avoidMention, captionLength, userLanguage } = req.body;
+
+    if (!envelope || !Array.isArray(envelope.observed)) {
+      return res.status(400).json({ error: 'Missing what the photo showed. Generate captions first.' });
     }
 
-    const charLimit = PLATFORM_LIMITS[platform] || 2200;
+    const platformName = platform || 'instagram';
+    const charLimit = PLATFORM_LIMITS[platformName] || 2200;
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
+    const env = {
+      observed: envelope.observed,
+      uncertain: Array.isArray(envelope.uncertain) ? envelope.uncertain : [],
+      prohibited_inferences: Array.isArray(envelope.prohibited_inferences) && envelope.prohibited_inferences.length
+        ? envelope.prohibited_inferences
+        : [...NEVER_INFERABLE],
+    };
 
-    const captionList = captions.map((cap, i) =>
-      `OPTION ${i + 1} (${cap.tone || 'unknown tone'}):\n"${cap.text}"\nHashtags: ${(cap.hashtags || []).map(h => typeof h === 'object' ? h.tag : h).join(', ')}`
-    ).join('\n\n');
+    const already = Array.isArray(previous) && previous.length
+      ? `\nALREADY WRITTEN — do not repeat these, and do not rephrase them either:\n${previous.map(t => `- ${t}`).join('\n')}\n`
+      : '';
 
-    const basePrompt = `You are a social media caption specialist. The user has generated multiple caption options and wants you to blend them into a perfect hybrid.
+    const morePrompt = `You are writing captions for a photograph you cannot see. Everything you know about it is below.
 
-${captionList}
+${renderEnvelope(env)}
+${context ? `\nWHAT THEY TOLD US ABOUT THIS PHOTO: ${context}\nEstablished fact, and the best material you have. Use it.` : ''}
+${avoidMention ? `\nWHAT THEY ASKED FOR: ${avoidMention}\nFollow this.` : ''}
+${already}
+${nudge && NUDGES[nudge] ? `THE DIRECTION THEY ASKED FOR:\n${NUDGES[nudge]}\n\nThis is the whole point of the request — if the six do not clearly read as ${nudge}, they have failed, and playing it safe is the only way to get this wrong.` : 'Six more, spanning the same range: straightforward, warm, clever, dry, playful, and one wild card that goes somewhere nobody expects.'}
 
-USER'S REMIX INSTRUCTIONS: ${remixInstructions || 'Combine the best elements of each into one great caption'}
+${platformName === 'none' ? 'NO PLATFORM: captions that stand on their own, with nothing that assumes a feed.' : `PLATFORM: ${platformName} (character limit: ${charLimit})`}
+LENGTH PREFERENCE: ${captionLength || 'medium'} (short = 1-2 lines, medium = 2-4 lines, long = 4-8 lines)
 
-PLATFORM: ${platform || 'instagram'} (limit: ${charLimit} chars)
-
-RULES:
-- Create a single remixed caption that blends the requested elements
-- It should feel cohesive, not frankensteined
-- Stay within the platform's character limit
-- Pick the best hashtags from across all options, respecting platform norms
+Write like a real person posting to their own feed. No explanation of any caption, ever — no note about what it does, no reason it works, no label.
 
 OUTPUT (JSON only):
 {
-  "remixed_caption": {
-    "tone": "the blended tone",
-    "text": "the remixed caption",
-    "hashtags": [
-      { "tag": "hashtag1" },
-      { "tag": "hashtag2" }
-    ],
-    "char_count": 150,
-    "remix_explanation": "what was taken from each option and why it works together"
-  }
+  "captions": [
+    { "text": "the caption", "hashtags": [{ "tag": "tag1" }, { "tag": "tag2" }], "char_count": 120 }
+  ]
 }
 
+Exactly six.
+
 ${NO_QUOTE_RULE}
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-CRITICAL: Return ONLY valid JSON.`;
-
-    const parsed = await callClaudeWithRetry({
+    const out = await callClaudeWithRetry({
       model: MODELS.FAST,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'CaptionMagicRemix' });
-    res.json(parsed);
+      max_tokens: 3500,
+      messages: [{ role: 'user', content: withLanguage(morePrompt, userLanguage) + locale }],
+    }, { label: 'CaptionMagicMore' });
 
+    if (!Array.isArray(out.captions)) {
+      return res.status(500).json({ error: 'Could not write more captions. Please try again.' });
+    }
+
+    try {
+      await enforceEnvelope(out, env, { userLanguage, locale, context });
+    } catch (err) {
+      console.error('CaptionMagic validation skipped:', err.message);
+    }
+    normaliseCaptions(out);
+
+    res.json(out);
   } catch (error) {
-    console.error('CaptionMagic remix error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    console.error('CaptionMagicMore error:', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
-// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. PF-38
-// binds truth and v2 binds usefulness, both by instruction. This tool needed a
-// third thing: enforcement after generation. See the evidence envelope above —
-// prose asking the model to respect its own uncertainty list failed four times
-// running, so the generator no longer receives the image and a separate
-// adversarial pass checks the draft against the envelope before it renders.
 router.outputStandard = 'v2';
 
 // Exposed for the enforcement test: the validator is the one part of this file

@@ -645,11 +645,23 @@ for name, fpath in tools:
         fails.append(f'S1.4h: inline <CopyBtn content={{{_fname}()}}> — whole-output copy must go through useRegisterActions')
     # ── PF-22: Inline <CopyBtn> in JSX ──────────────────────────────────────
     # All copy actions must go through useRegisterActions (ActionBar handles it).
-    # No inline <CopyBtn> is permitted in any tool. No exceptions.
+    #
+    # ONE NAMED EXEMPTION, and it is named rather than inferred so that adding
+    # to it is a decision someone makes on purpose. A tool whose output is a
+    # LIST OF ALTERNATIVES — six captions, of which the visitor wants one — has
+    # a per-item copy as its terminal action, and a single global "copy
+    # everything" does not serve it. That is a different shape from the lone
+    # inline CopyBtn duplicating the global one, which is what this rule was
+    # written against and what the ContextCollapse carve-out was removed for.
+    # The global registration is still required, and S1.4h still forbids an
+    # inline whole-output copy, so both routes stay closed.
+    PF22_PER_ITEM_COPY = {'CaptionMagic'}
     _import_section_end = 0
     for _imp_m in re.finditer(r'^import\s', content, re.MULTILINE):
         _import_section_end = _imp_m.end()
     _copybn_in_body = len(re.findall(r'<CopyBtn', content[_import_section_end:]))
+    if _copybn_in_body > 0 and os.path.splitext(os.path.basename(path))[0] in PF22_PER_ITEM_COPY:
+        _copybn_in_body = 0
     if _copybn_in_body > 0:
         fails.append(
             f'PF-22: {_copybn_in_body} inline <CopyBtn> in JSX — '

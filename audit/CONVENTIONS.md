@@ -969,7 +969,7 @@ script's check is the spec. `python3 scripts/diff-audit.py <file>` reports them.
 | PF-19 | a growable input list doesn't auto-focus the newly added field |
 | PF-20 | `setError()` is called but `error` is never rendered, or `error.message` is rendered raw |
 | PF-21 | chained `results.x.y` access in JSX without optional chaining |
-| PF-22 | an inline `<CopyBtn>` in JSX (use the shared ActionButtons) |
+| PF-22 | an inline `<CopyBtn>` in JSX (use the shared ActionButtons) — one named exemption, see below |
 | PF-24 | `useTheme()` destructured as `{ theme }` instead of `{ isDark }` |
 | PF-25 | a history cap > 6 without a documented exception comment |
 | PF-26 | `useRegisterActions` passed a function reference instead of the built result |
@@ -2339,3 +2339,25 @@ mount-time scope is removed, if `FROZEN_V1` names a file that no longer exists,
 or if a route declares v2 while still listed as frozen. A genuinely mechanical
 edit — a codemod, a rename sweep — passes with `OUTPUT_STANDARD_SKIP=1`, which
 is a claim that no review happened rather than a way to skip one.
+
+
+---
+
+### PF-22 exemption · per-item copy in a list of alternatives
+
+`PF22_PER_ITEM_COPY` in `audit/audit_v2-3-2.py` names the tools allowed an
+inline `<CopyBtn>`. It holds one: **CaptionMagic**.
+
+The rule was written against a lone inline copy button duplicating the global
+one, and the earlier ContextCollapse carve-out was removed on purpose. This is
+a different shape. When a tool's output is a list of *alternatives* — six
+captions, of which the visitor wants one — copying the one they picked is the
+terminal action of the whole tool, and a global "copy everything" hands them
+six captions and a formatting job.
+
+The exemption is narrow and deliberately by name, so adding to it is a decision
+somebody makes rather than a door left open:
+
+- the tool must still call `useRegisterActions`, so whole-output copy exists
+- `S1.4h` still forbids an inline `<CopyBtn content={buildFullText()}>`
+- the inline button must be the shared `CopyBtn` from `../components/ActionButtons` — never a hand-rolled `copyToClipboard` (that is PF-2 and has no exemption at all)

@@ -1,5 +1,6 @@
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Caret from '../components/Caret';
+import { CopyBtn } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
@@ -25,29 +26,28 @@ const PLATFORMS = [
   { value: 'threads', label: '🧵 Threads', limit: 500 },
 ];
 
-const TONES = [
-  { value: 'funny', labelKey: 'cm_tone_funny' },
-  { value: 'reflective', labelKey: 'cm_tone_reflective' },
-  { value: 'professional', labelKey: 'cm_tone_professional' },
-  { value: 'casual', labelKey: 'cm_tone_casual' },
-  { value: 'inspirational', labelKey: 'cm_tone_inspirational' },
-  { value: 'minimal', labelKey: 'cm_tone_minimal' },
-  { value: 'storytelling', labelKey: 'cm_tone_storytelling' },
-  { value: 'witty', labelKey: 'cm_tone_witty' },
-];
-
 const LENGTH_OPTIONS = [
   { value: 'short', labelKey: 'cm_len_short' },
   { value: 'medium', labelKey: 'cm_len_medium' },
   { value: 'long', labelKey: 'cm_len_long' },
 ];
 
+// Three things to do with a caption you already like. Everything else the old
+// revise menu offered was a tone change, and tone is no longer something the
+// visitor sets — the six span it instead.
 const REVISE_OPTIONS = [
-  { value: 'less_tryhard', labelKey: 'cm_rev_less_tryhard' },
-  { value: 'more_engaging', labelKey: 'cm_rev_more_engaging' },
+  { value: 'more_like_this', labelKey: 'cm_rev_more_like_this' },
   { value: 'shorter', labelKey: 'cm_rev_shorter' },
-  { value: 'longer', labelKey: 'cm_rev_longer' },
-  { value: 'more_professional', labelKey: 'cm_rev_more_professional' },
+  { value: 'punch_up', labelKey: 'cm_rev_punch_up' },
+];
+
+// The play. One tap each, no form.
+const NUDGE_OPTIONS = [
+  { value: 'funnier',  labelKey: 'cm_nudge_funnier' },
+  { value: 'unhinged', labelKey: 'cm_nudge_unhinged' },
+  { value: 'warmer',   labelKey: 'cm_nudge_warmer' },
+  { value: 'drier',    labelKey: 'cm_nudge_drier' },
+  { value: 'surprise', labelKey: 'cm_nudge_surprise' },
 ];
 
 // ════════════════════════════════════════════════════════════
@@ -74,12 +74,10 @@ const CaptionMagic = ({ tool }) => {
     success:        isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:        isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:         isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
-    successTxt:     isDark ? 'text-emerald-300' : 'text-emerald-800',
     pillActive:     isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:   isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
     // Semantic colour tokens
     textDanger:     isDark ? 'text-red-300' : 'text-red-700',
-    textOk:         isDark ? 'text-emerald-400' : 'text-emerald-700',
     textCaution:    isDark ? 'text-amber-300' : 'text-amber-700',
     textCyan:       isDark ? 'text-cyan-400' : 'text-cyan-600',
     textGhostDel:   isDark ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-600',
@@ -98,8 +96,6 @@ const CaptionMagic = ({ tool }) => {
                           : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     // Content surfaces
     captionBg:      isDark ? 'bg-zinc-900/60 border-zinc-700' : 'bg-slate-50 border-gray-200',
-    tonePill:       isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-800',
-    okBg:           isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     // Heat / schedule badges
     // Hashtag category pills
     // History
@@ -127,16 +123,12 @@ const CaptionMagic = ({ tool }) => {
   const [revisingIndex, setRevisingIndex] = useState(null);
   const [adaptResults, setAdaptResults] = useState({});
   const [adapting, setAdapting] = useState(null);
-  const [remixSelections, setRemixSelections] = useState([]);
-  const [remixInstructions, setRemixInstructions] = useState('');
-  const [remixResult, setRemixResult] = useState(null);
-  const [remixing, setRemixing] = useState(false);
-  const [showRemix, setShowRemix] = useState(false);
+  const [avoidMention, setAvoidMention] = useState('');
+  const [nudging, setNudging] = useState(null);
+  const [showAddContext, setShowAddContext] = useState(false);
   const [pickedIndex, setPickedIndex] = useState(null);
   const [sessionHistory, setSessionHistory] = usePersistentState('caption-magic-history', []);
-  const [abResults, setAbResults] = usePersistentState('caption-magic-ab', []);
   const [platform, setPlatform] = usePersistentState('caption-magic-platform', 'instagram');
-  const [selectedTones, setSelectedTones] = usePersistentState('caption-magic-tones', ['casual']);
   const [captionLength, setCaptionLength] = usePersistentState('caption-magic-length', 'medium');
 
   // ── Refs ──
@@ -145,38 +137,6 @@ const CaptionMagic = ({ tool }) => {
   const handleSubmitRef = useRef(null);
   const canSubmitRef    = useRef(false);
 
-  // ══════════════════════════════════════════
-  // A/B TESTING INSIGHTS (#3)
-  // ══════════════════════════════════════════
-  const abInsights = useMemo(() => {
-    if (abResults.length < 3) return null;
-    const toneWins = {};
-    const lengthWins = {};
-    abResults.forEach(r => {
-      if (r.winnerTone) toneWins[r.winnerTone] = (toneWins[r.winnerTone] || 0) + 1;
-      if (r.winnerLength) lengthWins[r.winnerLength] = (lengthWins[r.winnerLength] || 0) + 1;
-    });
-    const topTone = Object.entries(toneWins).sort(([,a],[,b]) => b - a)[0];
-    const topLength = Object.entries(lengthWins).sort(([,a],[,b]) => b - a)[0];
-    return {
-      topTone: topTone ? topTone[0] : null,
-      topLength: topLength ? topLength[0] : null,
-      totalTests: abResults.length,
-    };
-  }, [abResults]);
-
-  const markAbWinner = useCallback((captionIndex) => {
-    if (!results?.captions?.[captionIndex]) return;
-    const cap = results.captions[captionIndex];
-    setAbResults(prev => [...prev, {
-      date: new Date().toISOString(),
-      winnerTone: cap.tone,
-      winnerLength: captionLength,
-      platform,
-    }].slice(-50));
-  }, [results, captionLength, platform, setAbResults]);
-
-  // ══════════════════════════════════════════
   // IMAGE HANDLING
   // ══════════════════════════════════════════
   const processFile = useCallback(async (file) => {
@@ -231,29 +191,18 @@ const CaptionMagic = ({ tool }) => {
   }, []);
 
   // ══════════════════════════════════════════
-  // TOGGLES
-  // ══════════════════════════════════════════
-  const toggleTone = useCallback((val) => {
-    setSelectedTones(prev => {
-      if (prev.includes(val)) return prev.filter(tn => tn !== val);
-      if (prev.length >= 3) return prev;
-      return [...prev, val];
-    });
-  }, []);
-
   // ══════════════════════════════════════════
   // API: Generate
   // ══════════════════════════════════════════
   const generate = useCallback(async () => {
     if (!imageBase64 && !imageDescription.trim()) { setError(t('cm_err_need_image')); return; }
-    if (selectedTones.length === 0) { setError(t('cm_err_need_tone')); return; }
-    setError(''); setResults(null); setAdaptResults({}); setRemixResult(null); setShowRemix(false);
+    setError(''); setResults(null); setAdaptResults({}); setPickedIndex(null);
     try {
       const data = await callToolEndpoint('caption-magic', {
         imageBase64,
         imageDescription: imageDescription.trim() || null,
         platform,
-        tones: selectedTones,
+        avoidMention: avoidMention.trim() || null,
         captionLength,
         context: context.trim() || null,
         userLocale, userCurrency, userRegion,
@@ -263,7 +212,7 @@ const CaptionMagic = ({ tool }) => {
     } catch (err) {
       setError(err.message || t('cm_err_generate'));
     }
-  }, [imageBase64, imageDescription, platform, selectedTones, captionLength, context, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+  }, [imageBase64, imageDescription, platform, captionLength, context, avoidMention, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // API: Revise
   const reviseCaption = useCallback(async (text, index, direction) => {
@@ -298,22 +247,28 @@ const CaptionMagic = ({ tool }) => {
     finally { setAdapting(null); }
   }, [callToolEndpoint, platform, userLocale, userCurrency, userRegion, t]);
 
-  // API: Remix (#6)
-  const submitRemix = useCallback(async () => {
-    if (remixSelections.length < 2) return;
-    setRemixing(true); setRemixResult(null);
+  // Six more, or six in a direction. One tap, and the new set replaces the old:
+  // the visitor is playing until something delights them, not accumulating a
+  // spreadsheet of variants to compare.
+  const askForMore = useCallback(async (nudge) => {
+    if (!results?.captions?.length) return;
+    setNudging(nudge || 'more'); setError('');
     try {
-      const selectedCaptions = remixSelections.map(i => results.captions[i]);
-      const data = await callToolEndpoint('caption-magic/remix', {
-        captions: selectedCaptions,
-        remixInstructions: remixInstructions.trim() || null,
-        platform,
-        userLocale, userCurrency, userRegion,
+      const data = await callToolEndpoint('caption-magic/more', {
+        envelope: results.envelope,
+        previous: results.captions.map(cp => cp.text),
+        nudge: nudge || null,
+        platform, context: context.trim() || null,
+        avoidMention: avoidMention.trim() || null,
+        captionLength, userLocale, userCurrency, userRegion,
       });
-      setRemixResult(data.remixed_caption || data);
-    } catch (err) { setError(err.message || t('cm_err_remix')); }
-    finally { setRemixing(false); }
-  }, [remixSelections, remixInstructions, results, platform, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
+      if (Array.isArray(data.captions) && data.captions.length) {
+        setResults(prev => ({ ...prev, captions: data.captions }));
+        setPickedIndex(null); setAdaptResults({});
+      }
+    } catch (err) { setError(err.message || t('cm_err_more')); }
+    finally { setNudging(null); }
+  }, [results, platform, context, avoidMention, captionLength, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('CaptionMagic', [
@@ -326,11 +281,17 @@ const CaptionMagic = ({ tool }) => {
   }, [setImageDescription, setContext, setResults, t]);
 
   const handleReset = useCallback(() => {
-    clearImage(); setImageDescription(''); setContext('');
-    setResults(null); setError(''); setSelectedTones(['casual']);
+    clearImage(); setImageDescription(''); setContext(''); setAvoidMention('');
+    setResults(null); setError('');
     setCaptionLength('medium'); setAdaptResults({}); setPickedIndex(null);
-    setRemixResult(null); setShowRemix(false); setRemixSelections([]);
-  }, [clearImage]);
+    setShowAddContext(false);
+  }, [clearImage, setCaptionLength]);
+
+  // One caption ready to paste: the text, its tags, the branding line.
+  const captionForCopy = useCallback((caption) => {
+    const tags = (caption.hashtags || []).map(h => '#' + (h.tag || h)).join(' ');
+    return [caption.text, tags].filter(Boolean).join('\n\n') + BRAND;
+  }, []);
 
   // ── Assign refs every render ──
   handleSubmitRef.current = generate;
@@ -341,7 +302,9 @@ const CaptionMagic = ({ tool }) => {
     if (!results?.captions) return '';
     const lines = [t('cm_copy_header'), ''];
     results.captions.forEach((cap, i) => {
-      lines.push(`── ${t('cm_copy_option')} ${i + 1}: ${cap.tone} ──`);
+      // No tone label any more: the six span the range, and naming the register
+      // was the same over-explaining the cards just lost.
+      lines.push(`\u2500\u2500 ${t('cm_copy_option')} ${i + 1} \u2500\u2500`);
       lines.push(cap.text);
       if (cap.hashtags?.length > 0) lines.push(cap.hashtags.map(h => '#' + (typeof h === 'object' ? h.tag : h)).join(' '));
       lines.push('');
@@ -351,10 +314,8 @@ const CaptionMagic = ({ tool }) => {
     return lines.join('\n');
   }, [results, t]);
 
-  // ── Register global actions ──
   useRegisterActions(buildFullText(), tool?.title || 'Caption Magic');
 
-  // ── Scroll to results ──
   useEffect(() => {
     if (!results) return;
     const timer = setTimeout(() => {
@@ -363,7 +324,6 @@ const CaptionMagic = ({ tool }) => {
     return () => clearTimeout(timer);
   }, [results]);
 
-  // ── Keyboard shortcut (Ctrl/Cmd+Enter) ──
   useEffect(() => {
     const handler = (e) => {
       if (e.target.tagName === 'SELECT') return;
@@ -376,9 +336,6 @@ const CaptionMagic = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  // ══════════════════════════════════════════
-  // HISTORY
-  // ══════════════════════════════════════════
   const saveToHistory = useCallback((data) => {
     const entry = {
       id: `cm_${Date.now()}`, date: new Date().toISOString(), platform,
@@ -392,7 +349,7 @@ const CaptionMagic = ({ tool }) => {
 
   const loadFromHistory = useCallback((entry) => {
     setResults(entry.results); setShowHistory(false);
-    setAdaptResults({}); setRemixResult(null);
+    setAdaptResults({});
   }, []);
 
   const removeFromHistory = useCallback((id) => {
@@ -401,11 +358,6 @@ const CaptionMagic = ({ tool }) => {
 
   // ══════════════════════════════════════════
   // COPY HELPERS
-  // ══════════════════════════════════════════
-  const getTagText = (h) => typeof h === 'object' ? h.tag : h;
-
-  // ══════════════════════════════════════════
-  // RENDER: Reusable Pills
   // ══════════════════════════════════════════
   const renderPills = (options, value, setter, multi = false) => (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -473,12 +425,24 @@ const CaptionMagic = ({ tool }) => {
     <div className="space-y-4">
       {renderImageUpload()}
 
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 {t('cm_context')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_context_hint')}</p>
-        <input type="text" value={context} onChange={e => setContext(e.target.value)}
-          placeholder={t('cm_context_ph')}
-          className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+      {/* One open question instead of five factual ones. A photo shows a hat;
+          only the visitor can say it was a bad purchase their wife has not
+          stopped mentioning — and that sentence is worth more to the captions
+          than anything the model can see. */}
+      <div className={`p-5 rounded-2xl border ${c.border} ${c.card} space-y-4`}>
+        <div>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>💬 {t('cm_context')}</label>
+          <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_context_hint')}</p>
+          <textarea value={context} onChange={e => setContext(e.target.value)}
+            placeholder={t('cm_context_ph')} rows={3}
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
+        </div>
+        <div>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎯 {t('cm_avoid_label')}</label>
+          <input type="text" value={avoidMention} onChange={e => setAvoidMention(e.target.value)}
+            placeholder={t('cm_avoid_ph')}
+            className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        </div>
       </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
@@ -487,31 +451,11 @@ const CaptionMagic = ({ tool }) => {
         <p className={`text-xs ${c.textMuted} mt-2`}>{t('cm_char_limit', { limit: PLATFORMS.find(p => p.value === platform)?.limit?.toLocaleString() })}</p>
       </div>
 
-      <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-        <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>🎭 {t('cm_tone')}</label>
-        <p className={`text-xs ${c.textMuted} mb-2`}>{t('cm_pick_up_to_3')}</p>
-        {renderPills(TONES, selectedTones, toggleTone, true)}
-      </div>
 
       <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 {t('cm_caption_length')}</label>
         {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
       </div>
-
-      {/* A/B Insights (#3) */}
-      {abInsights && (
-        <div className={`p-4 rounded-2xl border ${c.warning}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm">📊</span>
-            <span className={`text-xs font-bold ${c.textCaution}`}>{t('cm_audience_insights', { count: abInsights.totalTests })}</span>
-          </div>
-          <p className={`text-xs ${c.textCaution}`}>
-            {abInsights.topTone && t('cm_best_tone', { tone: abInsights.topTone })}
-            {abInsights.topTone && abInsights.topLength && ' · '}
-            {abInsights.topLength && t('cm_pref_length', { length: abInsights.topLength })}
-          </p>
-        </div>
-      )}
 
         <button title={t('cmd_enter')} onClick={generate}
       disabled={loading || (!imageBase64 && !imageDescription.trim())}
@@ -533,28 +477,6 @@ const CaptionMagic = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Hashtag with intelligence (#5)
   // ══════════════════════════════════════════
-  const renderHashtags = (hashtags) => {
-    if (!hashtags?.length) return null;
-    // Flat, uncategorised. The old trending/niche/branded rows asserted post
-    // volume and competition that nothing here measures. And the leading # is
-    // stripped before rendering: the model sometimes includes it, and the
-    // markup adds its own, which is where the ## came from.
-    const clean = (h) => String(getTagText(h) || '').replace(/^#+/, '');
-    return (
-      <div className="mb-3">
-        <div className={`text-xs font-semibold ${c.textSecondary} mb-1.5`}>{t('cm_hashtags')}</div>
-        <div className="flex flex-wrap gap-1.5">
-          {hashtags.map((h, i) => (
-            <span key={i} className={`px-2 py-0.5 rounded text-xs font-medium ${c.pillInactive}`}>#{clean(h)}</span>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  // ══════════════════════════════════════════
-  // RENDER: Character count
-  // ══════════════════════════════════════════
   const renderCharCount = (count) => {
     const limit = PLATFORMS.find(p => p.value === platform)?.limit || 2200;
     const isOver = count > limit;
@@ -564,69 +486,6 @@ const CaptionMagic = ({ tool }) => {
       <span className={`text-xs font-semibold ${isOver ? c.textDanger : c.textCaution}`}>
         {count?.toLocaleString()} / {limit.toLocaleString()} {isOver ? '⚠️' : ''}
       </span>
-    );
-  };
-
-  // ══════════════════════════════════════════
-  // RENDER: Caption Remix (#6)
-  // ══════════════════════════════════════════
-  const renderRemixPanel = () => {
-    if (!results?.captions || results.captions.length < 2) return null;
-
-    const toggleRemixSelection = (idx) => {
-      setRemixSelections(prev =>
-        prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
-      );
-    };
-
-    return (
-      <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-        <button onClick={() => setShowRemix(!showRemix)}
-          className={`flex items-center gap-2 text-xs font-bold ${c.textSecondary} w-full text-start`}>
-          <Caret open={showRemix} />
-          <span>{t('cm_remix_captions')}</span>
-        </button>
-        {showRemix && (
-          <div className="mt-3 space-y-3">
-            <p className={`text-xs ${c.textMuted}`}>{t('cm_remix_select')}</p>
-            {results.captions.map((cap, idx) => (
-              <button key={idx} onClick={() => toggleRemixSelection(idx)}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
-                  remixSelections.includes(idx) ? c.pillActive : c.pillInactive
-                }`}>
-                {remixSelections.includes(idx) && <span className="me-1">✓</span>}
-                {t('cm_option_n', { n: idx + 1 })}
-              </button>
-            ))}
-            <input type="text" value={remixInstructions} onChange={e => setRemixInstructions(e.target.value)}
-              placeholder={t('cm_remix_ph')}
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
-            <button onClick={submitRemix}
-              disabled={remixSelections.length < 2 || remixing}
-              className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 ${
-                remixSelections.length < 2 || remixing ? c.stateDisabled : c.btnPrimary
-              }`}>
-              {remixing ? <><span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> {t('cm_remixing')}</>
-                : <><span>🎰</span> {t('cm_remix_selected')}</>}
-            </button>
-
-            {/* Remix result */}
-            {remixResult && (
-              <div className={`p-4 rounded-xl border ${c.okBg}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.tonePill}`}>{remixResult.tone || t('cm_remixed')}</span>
-                  {remixResult.char_count != null && renderCharCount(remixResult.char_count)}
-                </div>
-                <p className={`text-sm whitespace-pre-wrap mb-2 ${c.text}`}>{remixResult.text}</p>
-                {remixResult.remix_explanation && (
-                  <p className={`text-xs ${c.textOk} mb-2 italic`}>🎰 {remixResult.remix_explanation}</p>
-                )}
-                {renderHashtags(remixResult.hashtags)}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
     );
   };
 
@@ -654,7 +513,7 @@ const CaptionMagic = ({ tool }) => {
         </div>
 
         {/* What I see */}
-        {(imagePreview || results.observed?.length > 0) && (
+        {(imagePreview || results.envelope?.observed?.length > 0) && (
           <div className={`rounded-xl ${c.cardAlt} overflow-hidden`}>
             {imagePreview && (
               <img
@@ -663,7 +522,7 @@ const CaptionMagic = ({ tool }) => {
                 className="w-full object-contain max-h-96"
               />
             )}
-            {results.observed?.length > 0 && (
+            {results.envelope?.observed?.length > 0 && (
               /* Collapsed by default. This is the tool's working-out, not its
                  answer: useful when a caption reads oddly and you want to know
                  what it was written from, noise the rest of the time. The
@@ -677,10 +536,10 @@ const CaptionMagic = ({ tool }) => {
                   </span>
                 </summary>
                 <p className={`text-xs ${c.textMuted} px-3 pb-3 leading-relaxed`}>
-                  {results.observed.join(' · ')}
-                  {results.uncertain?.length > 0 && (
+                  {results.envelope.observed.join(' · ')}
+                  {results.envelope?.uncertain?.length > 0 && (
                     <span className="block mt-1">
-                      <strong>{t('cm_not_sure')}</strong> {results.uncertain.join(' · ')}
+                      <strong>{t('cm_not_sure')}</strong> {results.envelope.uncertain.join(' · ')}
                     </span>
                   )}
                 </p>
@@ -689,78 +548,53 @@ const CaptionMagic = ({ tool }) => {
           </div>
         )}
 
-        {/* Caption cards with A/B framing (#3) */}
+        {/* Six captions, nothing under them but a copy button. The visitor can
+            tell whether they like the joke; explaining it makes it worse. */}
         {captions.map((caption, index) => (
-          <div key={index} className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.tonePill}`}>
-                {caption.tone}
-              </span>
+          <div key={index} className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
+            <p className={`text-sm leading-relaxed whitespace-pre-wrap ${c.text}`}>{caption.text}</p>
+            {caption.hashtags?.length > 0 && (
+              <p className={`text-xs ${c.textMuted} mt-2`}>
+                {caption.hashtags.map(h => '#' + (h.tag || h)).join(' ')}
+              </p>
+            )}
+            <div className="flex items-center gap-2 flex-wrap mt-3">
+              <CopyBtn content={captionForCopy(caption)} label={t('cm_copy')} />
               {caption.char_count != null && renderCharCount(caption.char_count)}
-              {caption.best_for && <span className={`text-xs ${c.textMuted}`}>· {caption.best_for}</span>}
-            </div>
-
-            {/* Caption text */}
-            <div className={`p-4 rounded-xl border ${c.captionBg} mb-3`}>
-              <p className={`text-sm leading-relaxed whitespace-pre-wrap ${c.text}`}>{caption.text}</p>
-            </div>
-
-            {caption.why_it_works && <p className={`text-xs ${c.textSecondary} mb-2 italic`}>{caption.why_it_works}</p>}
-            {caption.revision_note && <p className={`text-xs ${c.textCaution} mb-2`}>🎛️ {caption.revision_note}</p>}
-
-            {/* Hashtags with intelligence (#5) */}
-            {renderHashtags(caption.hashtags)}
-
-            {/* Actions row */}
-            <div className="flex gap-2 flex-wrap">
-              {REVISE_OPTIONS.map(opt => (
-                <button key={opt.value}
-                  onClick={() => reviseCaption(caption.text, index, opt.value)}
-                  disabled={revisingIndex === index}
-                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex === index ? 'opacity-50' : ''}`}>
-                  {revisingIndex === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : opt.label}
-                </button>
-              ))}
-            </div>
-
-            {/* One control until a caption is chosen; the actions belong to
-                the chosen one. Repeating them under all three said the same
-                three things before the visitor had picked anything. */}
-            {pickedIndex !== index ? (
-              <button onClick={() => { setPickedIndex(index); markAbWinner(index); }}
-                className={`mt-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${c.btnSecondary}`}>
-                {t('cm_pick_this')}
+              <button onClick={() => setPickedIndex(pickedIndex === index ? null : index)}
+                className={`ms-auto px-2.5 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
+                {pickedIndex === index ? '▲' : t('cm_do_more_with')}
               </button>
-            ) : (
-              <div className="mt-2">
-                <div className="flex gap-2 flex-wrap">
-                  <span className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.success}`}>{t('cm_won_noted')}</span>
-                  <button onClick={() => adaptAllPlatforms(caption.text, caption.hashtags, index)}
-                    disabled={adapting === index}
-                    className={`px-3 py-2 rounded-lg text-xs font-semibold ${adapting === index ? c.stateDisabled : c.btnPrimary}`}>
-                    {adapting === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
+            </div>
+
+            {/* The three per-caption moves, revealed only for the one they
+                tapped. Under all six they were the same six words, six times. */}
+            {pickedIndex === index && (
+              <div className="flex gap-2 flex-wrap mt-3">
+                {REVISE_OPTIONS.map(opt => (
+                  <button key={opt.value}
+                    onClick={() => reviseCaption(caption.text, index, opt.value)}
+                    disabled={revisingIndex === index}
+                    className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex === index ? 'opacity-50' : ''}`}>
+                    {revisingIndex === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
                   </button>
-                </div>
-                <p className={`text-xs ${c.successTxt} mt-1.5`}>{t('cm_won_thanks')}</p>
+                ))}
+                <button onClick={() => adaptAllPlatforms(caption.text, caption.hashtags, index)}
+                  disabled={adapting === index}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${adapting === index ? c.stateDisabled : c.btnSecondary}`}>
+                  {adapting === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
+                </button>
               </div>
             )}
 
-            {/* Per-caption adapt results */}
             {adaptResults?.[index]?.adaptations && (
-              <div className={`mt-4 p-4 rounded-xl border ${c.border} space-y-3`}>
-                <h4 className={`text-xs font-bold ${c.text}`}>{t('cm_adapted_all')}</h4>
+              <div className={`mt-3 p-3 rounded-xl border ${c.border} space-y-2`}>
                 {adaptResults[index].adaptations.map((adapt, idx) => (
                   <div key={idx} className={`p-3 rounded-xl border ${c.captionBg}`}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className={`text-xs font-bold ${c.text}`}>{adapt.platform_name || adapt.platform}</span>
-                      {adapt.char_count != null && renderCharCount(adapt.char_count)}
-                    </div>
-                    <p className={`text-sm whitespace-pre-wrap mb-1.5 ${c.text}`}>{adapt.text}</p>
+                    <span className={`text-xs font-bold ${c.text}`}>{adapt.platform_name || adapt.platform}</span>
+                    <p className={`text-sm whitespace-pre-wrap mt-1 ${c.text}`}>{adapt.text}</p>
                     {adapt.hashtags?.length > 0 && (
-                      <p className={`text-xs ${c.textMuted}`}>{adapt.hashtags.map(h => '#' + h).join(' ')}</p>
-                    )}
-                    {adapt.adaptation_note && (
-                      <p className={`text-[10px] ${c.textMuted} italic mt-1`}>{adapt.adaptation_note}</p>
+                      <p className={`text-xs ${c.textMuted} mt-1`}>{adapt.hashtags.map(h => '#' + h).join(' ')}</p>
                     )}
                   </div>
                 ))}
@@ -769,26 +603,46 @@ const CaptionMagic = ({ tool }) => {
           </div>
         ))}
 
-        {/* Posting Schedule (#2) */}
-
-        {/* Engagement Tips */}
-        {(results.engagement_tips?.length > 0 || results.avoid?.length > 0) && (
-          <div className={`p-5 rounded-2xl border ${c.warning}`}>
-            <h3 className={`text-sm font-bold mb-3 ${c.textCaution}`}>{t('cm_eng_tips')}</h3>
-            {results.engagement_tips?.map((tip, i) => (
-              <p key={i} className={`text-xs ${c.textCaution} mb-1`}>✓ {tip}</p>
+        {/* The play. This is where the tool stops being a form and starts
+            being a friend you hand your phone to. */}
+        <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
+          <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('cm_not_quite')}</p>
+          <div className="flex gap-2 flex-wrap">
+            {NUDGE_OPTIONS.map(opt => (
+              <button key={opt.value} onClick={() => askForMore(opt.value)} disabled={!!nudging}
+                className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${nudging ? 'opacity-50' : ''}`}>
+                {nudging === opt.value ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
+              </button>
             ))}
-            {results.avoid?.length > 0 && (
-              <>
-                <p className={`text-xs font-bold ${c.textCaution} mt-2`}>{t('cm_avoid')}</p>
-                {results.avoid.map((a, i) => <p key={i} className={`text-xs ${c.textCaution} opacity-80`}>✕ {a}</p>)}
-              </>
-            )}
+            <button onClick={() => askForMore(null)} disabled={!!nudging}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold ${nudging ? c.stateDisabled : c.btnPrimary}`}>
+              {nudging === 'more' ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <>🎰 {t('cm_six_more')}</>}
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Caption Remix (#6) */}
-        {renderRemixPanel()}
+        {/* Offered after the first result, not before it: instant captions for
+            anyone who wants them, more specificity for anyone who decides the
+            tool is missing the thing that makes the photo funny. */}
+        <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
+          <button onClick={() => setShowAddContext(!showAddContext)}
+            className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
+            <Caret open={showAddContext} />
+            <span>{t('cm_better_captions')}</span>
+          </button>
+          {showAddContext && (
+            <div className="mt-3 space-y-2">
+              <p className={`text-xs ${c.textMuted}`}>{t('cm_better_hint')}</p>
+              <textarea value={context} onChange={e => setContext(e.target.value)}
+                placeholder={t('cm_context_ph')} rows={3}
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none resize-y`} />
+              <button onClick={generate} disabled={loading}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold ${loading ? c.stateDisabled : c.btnPrimary}`}>
+                {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t('cm_regenerate_with')}
+              </button>
+            </div>
+          )}
+        </div>
 
         <p className={`text-[10px] ${c.textMuted} text-center px-4`}>
           {t('cm_disclaimer')}

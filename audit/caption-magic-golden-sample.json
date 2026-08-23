@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "caption-magic",
-    "tag": "captionmagic-v4",
+    "tag": "captionmagic-v5",
     "locked": "2026-07-11",
-    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert. Re-locked 2026-08-23 (v3): not_sure_about is now empty for any request with no image, enforced in code. Uncertainty here comes from looking; a typed description contains only facts the person supplied, and listing one as uncertain then blocked the fact they gave us. This case is description-only, so an empty array is the correct output rather than a regression. Re-locked 2026-08-23 (v4): the main endpoint is now four stages, not one — observe (vision, image) → generate (NO IMAGE) → validate (NO IMAGE, adversarial) → repair only the fields that failed. image_read and not_sure_about are gone, replaced by observed[] and uncertain[]; prohibited_inferences is envelope scaffolding and is stripped before the response. The reason for the rewrite is that not_sure_about was prose: the model wrote an accurate list and contradicted it in the next field, through four prompt rewrites. Withholding the image from stage 2 is what makes it a mechanism rather than another instruction. Stage 3 logs PASS/FAIL on every call because a validator that has stopped working returns the same empty list as one that found nothing — scripts/caption-magic-envelope-test.js plants known violations to tell those apart, and is run BY HAND (two live calls), never in the hook. Validation is fail-open: it wraps a working answer and must never be able to drop it.",
-    "baseline": "captionmagic-v4",
+    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert. Re-locked 2026-08-23 (v3): not_sure_about is now empty for any request with no image, enforced in code. Uncertainty here comes from looking; a typed description contains only facts the person supplied, and listing one as uncertain then blocked the fact they gave us. This case is description-only, so an empty array is the correct output rather than a regression. Re-locked 2026-08-23 (v4): the main endpoint is now four stages, not one — observe (vision, image) → generate (NO IMAGE) → validate (NO IMAGE, adversarial) → repair only the fields that failed. image_read and not_sure_about are gone, replaced by observed[] and uncertain[]; prohibited_inferences is envelope scaffolding and is stripped before the response. The reason for the rewrite is that not_sure_about was prose: the model wrote an accurate list and contradicted it in the next field, through four prompt rewrites. Withholding the image from stage 2 is what makes it a mechanism rather than another instruction. Stage 3 logs PASS/FAIL on every call because a validator that has stopped working returns the same empty list as one that found nothing — scripts/caption-magic-envelope-test.js plants known violations to tell those apart, and is run BY HAND (two live calls), never in the hook. Validation is fail-open: it wraps a working answer and must never be able to drop it. Re-locked 2026-08-23 (v5): the tool was over-explaining its work instead of doing its job. why_it_works, best_for, tone labels, engagement_tips, avoid, posting schedule and the A/B panel are all gone — the visitor can tell whether they like a joke, and explaining one makes it worse. Three captions became six across a deliberate range (straightforward → warm → clever → dry → playful → wild card), given as generation instructions and never shown as labels. Tone is no longer a control: the six span it. Remix is replaced by /caption-magic/more (funnier / unhinged / warmer / drier / surprise / six more), which takes the envelope back from the client so the new six stay grounded in the same reading of the photograph rather than a fresh vision call. observed/uncertain moved under `envelope` because the whole envelope now round-trips. revise directions are more_like_this / shorter / punch_up. The old remix-de case is replaced by more-de.",
+    "baseline": "captionmagic-v5",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -14,10 +14,6 @@
       "input": {
         "imageDescription": "A cozy coffee shop corner with a latte and an open notebook, morning light",
         "platform": "instagram",
-        "tones": [
-          "casual",
-          "witty"
-        ],
         "context": "launching my freelance writing business",
         "captionLength": "medium",
         "userLanguage": "en",
@@ -28,77 +24,114 @@
       "output": {
         "captions": [
           {
-            "tone": "Witty, matter-of-fact",
-            "text": "coffee and a blank page walk into a corner. three hours later, one of them is a business. not sure which one's winning yet",
+            "text": "launching my freelance writing business. here's to mornings that belong to me now.",
             "hashtags": [
               {
-                "tag": "freelancewriting"
+                "tag": "freelancewriter"
               },
               {
                 "tag": "writersofinstagram"
               },
               {
-                "tag": "coffeeandwork"
-              }
-            ],
-            "char_count": 122,
-            "why_it_works": "Uses humor and personification to acknowledge the messy reality of launching without claiming confidence or victory",
-            "best_for": "Readers who appreciate self-aware, slightly irreverent takes on new business launches"
-          },
-          {
-            "tone": "Casual, reflective",
-            "text": "launching my freelance writing business from a corner with a latte and notebook. feels right — like the world's smallest soft opening before the actual thing starts",
-            "hashtags": [
-              {
-                "tag": "writerlife"
-              },
-              {
-                "tag": "freelancer"
-              },
-              {
                 "tag": "newbusiness"
               }
             ],
-            "char_count": 164,
-            "why_it_works": "Finds meaning in the particular moment without overstating it; the familiar setting becomes part of the story",
-            "best_for": "People who connect with process and place, who like seeing the human moment behind a milestone"
+            "char_count": 82
           },
           {
-            "tone": "Straightforward, open",
-            "text": "this is where it starts: notebooks, coffee, and the decision to stop thinking about writing as something i do on the side. launching my freelance writing business today 📝",
+            "text": "there's something about a blank page and a good coffee that makes you believe you can actually do this. launching my freelance writing business today, and the notebook doesn't know it yet but it's about to get very full.",
             "hashtags": [
               {
-                "tag": "entrepreneurship"
+                "tag": "freelancelife"
               },
               {
                 "tag": "writingcommunity"
               },
               {
+                "tag": "coffeeandwriting"
+              }
+            ],
+            "char_count": 220
+          },
+          {
+            "text": "officially trading my corporate email for a latte and whatever happens next. launching my freelance writing business and yes, i brought my own notebook.",
+            "hashtags": [
+              {
+                "tag": "freelancer"
+              },
+              {
+                "tag": "writerslife"
+              },
+              {
+                "tag": "independentwriter"
+              }
+            ],
+            "char_count": 152
+          },
+          {
+            "text": "launching my freelance writing business. the notebook is ready. the latte is hot. my bank account is concerned but optimistic.",
+            "hashtags": [
+              {
+                "tag": "freelancewriting"
+              },
+              {
+                "tag": "writersofig"
+              },
+              {
                 "tag": "smallbusiness"
               }
             ],
-            "char_count": 171,
-            "why_it_works": "Direct statement of fact with a clear demarcation — not overthinking the moment, just marking that something shifted",
-            "best_for": "Sharing with people who know you, or want a clean, unpretentious version of the news"
+            "char_count": 126
+          },
+          {
+            "text": "POV: you are a coffee shop corner that is about to witness the birth of a freelance writing empire (or at least a business email that gets checked before noon). launching my business with nothing but this notebook and unwavering confidence that coffee solves everything.",
+            "hashtags": [
+              {
+                "tag": "entrepreneurlife"
+              },
+              {
+                "tag": "writersofinstagram"
+              },
+              {
+                "tag": "coffeeaddict"
+              }
+            ],
+            "char_count": 270
+          },
+          {
+            "text": "the notebook is convinced this is a coffee date. the latte knows better. it has opinions about what is about to happen here. launching my freelance writing business and both my beverages are fully prepared for this responsibility.",
+            "hashtags": [
+              {
+                "tag": "freelancewriter"
+              },
+              {
+                "tag": "writingbusiness"
+              },
+              {
+                "tag": "coffeeislifesupport"
+              }
+            ],
+            "char_count": 230
           }
         ],
-        "alt_text": "A notebook open on a table next to a latte, morning light coming through a window in a coffee shop corner.",
-        "engagement_tips": [
-          "A caption that thinks out loud — 'not sure which one's winning yet' or 'before the actual thing starts' — invites readers to land on a genuine question rather than a finished pronouncement.",
-          "The specific detail (the place, the notebook and coffee) gives people something concrete to ask about or relate to, rather than abstract well-wishing about the launch itself."
-        ],
-        "avoid": [
-          "Invented feelings: 'nervous,' 'excited,' 'scared,' 'proud' — nothing about what launching feels like",
-          "Borrowed certainty: 'this will change everything,' 'living my dream,' 'so grateful' — claims you cannot verify from the image",
-          "Audience predictions: 'you'll love this,' 'people will want to know,' 'everyone starts somewhere' — observations of behavior you did not witness",
-          "Origin stories: 'built this myself,' 'my favorite spot,' claims about the coffee shop or equipment",
-          "Unseeable details: the date the photo was taken, whether this moment happened today or weeks ago, the time of day beyond 'morning light'"
-        ],
-        "observed": [
-          "A cozy coffee shop corner with a latte and an open notebook, morning light",
-          "launching my freelance writing business"
-        ],
-        "uncertain": []
+        "alt_text": "A notebook lies open on a wooden table beside a latte in a white cup, bathed in morning light from a nearby window.",
+        "envelope": {
+          "observed": [
+            "A cozy coffee shop corner with a latte and an open notebook, morning light",
+            "launching my freelance writing business"
+          ],
+          "uncertain": [],
+          "prohibited_inferences": [
+            "who anyone pictured is, and how they are related to each other or to the poster",
+            "whose things these are — whether the poster owns, made, found or bought anything pictured",
+            "where this is, beyond what is actually legible in the frame",
+            "when it happened — date, day, time of day, season, or how recently",
+            "what happened before or after: what someone had just finished doing, or was about to do",
+            "the history, provenance, price, age or condition of anything pictured",
+            "what a real person actually felt or thought, reported as fact",
+            "what viewers will do, feel, notice or how they will respond to the post"
+          ]
+        }
       }
     },
     {
@@ -239,142 +272,135 @@
       }
     },
     {
-      "name": "remix-de",
-      "endpoint": "/api/caption-magic/remix",
+      "name": "more-de",
+      "endpoint": "/api/caption-magic/more",
       "input": {
-        "captions": [
-          {
-            "tone": "Witzig und selbstironisch",
-            "text": "Mein neues Büro hat keine Heizkosten, aber dafür die beste Espresso-Machine der Stadt ☕ Der Start ins Freiberufler-Leben sieht so aus: Latte, Notizbuch und die Hoffnung, dass der WLAN-Code nicht vor Ende des Monats geändert wird.",
-            "hashtags": [
-              {
-                "tag": "#FreiberuflerLeben",
-                "category": "niche"
-              },
-              {
-                "tag": "#SchreiberIn",
-                "category": "niche"
-              },
-              {
-                "tag": "#CaféArbeit",
-                "category": "niche"
-              },
-              {
-                "tag": "#MorgenroutineReal",
-                "category": "trending"
-              },
-              {
-                "tag": "#MeinSchreibbusiness",
-                "category": "branded"
-              }
-            ],
-            "char_count": 198,
-            "why_it_works": "Die Selbstironie über die Realität des Freiberufler-Starts wirkt authentisch und relatable, während der Humor die Nervosität nimmt.",
-            "best_for": "Wenn du deine Community einbeziehen möchtest und zeigen, dass du die Challenges kennst – schafft Vertrauen und Nähe."
-          },
-          {
-            "tone": "Reflektiv und motivierend",
-            "text": "Tag 1 des Freiberufler-Abenteuers. Ein Café, ein leeres Notizbuch und diese komische Mischung aus Aufregung und Panik. Aber hey – genau hier soll's losgehen. Mal schauen, was ich bis zum nächsten Latte geschafft habe 📝✨",
-            "hashtags": [
-              {
-                "tag": "#FreiberuflerStart",
-                "category": "niche"
-              },
-              {
-                "tag": "#SchreiberIn",
-                "category": "niche"
-              },
-              {
-                "tag": "#UnternehmerIn",
-                "category": "trending"
-              },
-              {
-                "tag": "#NeuerAnfang",
-                "category": "trending"
-              },
-              {
-                "tag": "#MeinFreiberuflerJournal",
-                "category": "branded"
-              }
-            ],
-            "char_count": 176,
-            "why_it_works": "Der nachdenklichere Ton spricht Menschen an, die selbst einen Jobwechsel erwägen oder ein Geschäft starten – es fühlt sich ehrlich und ermutigend an.",
-            "best_for": "Wenn du eine inspirationale, aber nicht zu glatte Message senden möchtest – zieht die richtige Zielgruppe an."
-          },
-          {
-            "tone": "Locker und direkt",
-            "text": "Offizielle Ankündigung: Ich mache jetzt mein eigenes Ding als Schreiberin 🖊️ Falls ihr Text braucht – hier bin ich. Falls ich nach 10 Minuten keinen Kaffee habe – achtet bitte nicht auf meine Antwort-Zeiten 😅",
-            "hashtags": [
-              {
-                "tag": "#Schreiberin",
-                "category": "niche"
-              },
-              {
-                "tag": "#Copywriting",
-                "category": "niche"
-              },
-              {
-                "tag": "#Texterin",
-                "category": "niche"
-              },
-              {
-                "tag": "#JetztGehtsMir",
-                "category": "trending"
-              },
-              {
-                "tag": "#MeineFreiberuflerReise",
-                "category": "branded"
-              }
-            ],
-            "char_count": 184,
-            "why_it_works": "Kurz, prägnant und mit Call-to-Action – wer dich braucht, weiß jetzt, dass du verfügbar bist, und dein Humor macht dich sympathisch.",
-            "best_for": "Wenn du schnell und unkompliziert deine Dienstleistung anbieten möchtest – direkter und weniger ausschweifend."
-          }
+        "envelope": {
+          "observed": [
+            "A cozy coffee shop corner with a latte and an open notebook, morning light",
+            "launching my freelance writing business"
+          ],
+          "uncertain": [],
+          "prohibited_inferences": [
+            "who anyone pictured is, and how they are related to each other or to the poster",
+            "whose things these are — whether the poster owns, made, found or bought anything pictured",
+            "where this is, beyond what is actually legible in the frame",
+            "when it happened — date, day, time of day, season, or how recently",
+            "what happened before or after: what someone had just finished doing, or was about to do",
+            "the history, provenance, price, age or condition of anything pictured",
+            "what a real person actually felt or thought, reported as fact",
+            "what viewers will do, feel, notice or how they will respond to the post"
+          ]
+        },
+        "previous": [
+          "launching my freelance writing business. here's to mornings that belong to me now.",
+          "there's something about a blank page and a good coffee that makes you believe you can actually do this. launching my freelance writing business today, and the notebook doesn't know it yet but it's about to get very full.",
+          "officially trading my corporate email for a latte and whatever happens next. launching my freelance writing business and yes, i brought my own notebook.",
+          "launching my freelance writing business. the notebook is ready. the latte is hot. my bank account is concerned but optimistic.",
+          "POV: you are a coffee shop corner that is about to witness the birth of a freelance writing empire (or at least a business email that gets checked before noon). launching my business with nothing but this notebook and unwavering confidence that coffee solves everything.",
+          "the notebook is convinced this is a coffee date. the latte knows better. it has opinions about what is about to happen here. launching my freelance writing business and both my beverages are fully prepared for this responsibility."
         ],
-        "remixInstructions": "Kombiniere den Humor der ersten mit der Wärme der zweiten",
+        "nudge": "drier",
         "platform": "instagram",
+        "captionLength": "medium",
         "userLanguage": "de",
         "userLocale": "de-DE",
         "userCurrency": "EUR",
         "userRegion": "DE"
       },
       "output": {
-        "remixed_caption": {
-          "tone": "Humorvoll-warmherzig mit Selbstironie und echtem Enthusiasmus",
-          "text": "Tag 1 des Freiberufler-Abenteuers: Ein Café, ein leeres Notizbuch und diese perfekte Mischung aus Aufregung, Panik und starkem Espresso ☕ Mein neues Büro hat keine Heizkosten, aber die beste Espresso-Machine der Stadt – und genau hier soll's losgehen. Mal schauen, was ich bis zum nächsten Latte geschafft habe. (Spoiler: Falls ihr Text braucht – hier bin ich. Falls ich nach 10 Minuten keinen Kaffee habe – bitte ich um Verständnis für meine Antwort-Zeiten 😅) 📝✨",
-          "hashtags": [
-            {
-              "tag": "#FreiberuflerLeben",
-              "category": "niche"
-            },
-            {
-              "tag": "#SchreiberIn",
-              "category": "niche"
-            },
-            {
-              "tag": "#NeuerAnfang",
-              "category": "motivational"
-            },
-            {
-              "tag": "#CaféArbeit",
-              "category": "lifestyle"
-            },
-            {
-              "tag": "#MeinFreiberuflerJournal",
-              "category": "personal"
-            },
-            {
-              "tag": "#Texterin",
-              "category": "professional"
-            },
-            {
-              "tag": "#UnternehmerIn",
-              "category": "professional"
-            }
-          ],
-          "char_count": 487,
-          "remix_explanation": "Kombiniert den humorvollen, selbstironischen Ton von Option 1 (WLAN-Code, keine Heizkosten, Kaffee-Abhängigkeit) mit der warmen, authentischen Aufregung von Option 2 (Tag 1, leeres Notizbuch, diese ehrliche Gefühlsmischung). Option 3 liefert die direkte Ankündigung und das professionelle Element (Schreiberin/Text-Services). Das Ergebnis fühlt sich organisch an – nicht zusammengestückelt – weil die Kaffee-Metapher beide Töne verbindet und die Erzählung chronologisch von der inneren Gefühlswelt zur praktischen Ankündigung fließt."
-        }
+        "captions": [
+          {
+            "text": "Ich starte ein Freelance-Schreibgeschäft. Das Notizbuch weiß noch nichts davon.",
+            "hashtags": [
+              {
+                "tag": "freelancewriter"
+              },
+              {
+                "tag": "writersofinstagram"
+              },
+              {
+                "tag": "coffeeshop"
+              }
+            ],
+            "char_count": 79
+          },
+          {
+            "text": "Das Notizbuch ist leer. Der Kaffee wird kalt. Ich habe einen Plan, der wahrscheinlich nicht funktioniert.",
+            "hashtags": [
+              {
+                "tag": "freelancing"
+              },
+              {
+                "tag": "writingcommunity"
+              },
+              {
+                "tag": "newbusiness"
+              }
+            ],
+            "char_count": 105
+          },
+          {
+            "text": "Irgendwann werde ich verstehen, dass ein Notizbuch und Kaffee nicht ausreichen. Aber jetzt noch nicht.",
+            "hashtags": [
+              {
+                "tag": "freelancelife"
+              },
+              {
+                "tag": "writerlife"
+              },
+              {
+                "tag": "startupmorning"
+              }
+            ],
+            "char_count": 102
+          },
+          {
+            "text": "Das ist der Moment, in dem ich so tue, als würde ich wissen, was kommt. Ich wollte ein Foto davon machen.",
+            "hashtags": [
+              {
+                "tag": "freelancewriter"
+              },
+              {
+                "tag": "entrepreneurship"
+              },
+              {
+                "tag": "coffeeandbusiness"
+              }
+            ],
+            "char_count": 105
+          },
+          {
+            "text": "Alle werden mir später erzählen, dass dies der Anfang war — und ich werde so tun, als hätte ich es die ganze Zeit gewusst.",
+            "hashtags": [
+              {
+                "tag": "freelancing"
+              },
+              {
+                "tag": "writerslife"
+              },
+              {
+                "tag": "businesslaunch"
+              }
+            ],
+            "char_count": 122
+          },
+          {
+            "text": "Das Notizbuch wird bald sehr voll sein. Der Kaffee wird bald sehr kalt sein.",
+            "hashtags": [
+              {
+                "tag": "freelancewriter"
+              },
+              {
+                "tag": "writinglife"
+              },
+              {
+                "tag": "newbusiness"
+              }
+            ],
+            "char_count": 76
+          }
+        ]
       }
     }
   ]
