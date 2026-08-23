@@ -139,7 +139,13 @@ function normaliseCaptions(out) {
     if (!Array.isArray(c?.hashtags)) return;
     c.hashtags = c.hashtags
       .map(h => (typeof h === 'object' ? h?.tag : h))
-      .map(tag => String(tag || '').replace(/^#+/, '').replace(/[\s_]+/g, '').trim())
+      .map(tag => String(tag || '').replace(/^#+/, '').trim())
+      // Two or three words close up into something readable — summer night
+      // becomes #summernight. Four or more does not: "come what may it" came
+      // back as #comewaitmayit, which is not a word in any language. Drop
+      // those rather than ship the mash.
+      .filter(tag => tag && tag.split(/[\s_]+/).filter(Boolean).length <= 3)
+      .map(tag => tag.replace(/[\s_]+/g, ''))
       .filter(Boolean)
       .map(tag => ({ tag }));
   });
@@ -267,27 +273,36 @@ For HASHTAGS: tags that genuinely fit this post. Do not label any of them trendi
 
 The voice-versus-fact line applies to tags too, and it cuts finely. A tag stating a fact the picture cannot support is a claim in one word: #sundaymorning assigns a day nobody established, #handmade assigns an author, #vintage assigns an age. A tag that is obviously part of the joke is not: #morningsomewhere claims nothing, because no one reads it as a timestamp. Play in tags where the play reads as play. Never write the leading # — the interface adds it.
 
-FIRST, BEFORE ANY OF THE COMEDY BELOW, WRITE CAPTION 1.
+SIX CAPTIONS, AND THEY ARE NOT ALL JOKES.
 
-Caption 1 is the plain one: what someone posts when they just want to post. No
-joke, no angle, no wink, no clever turn. It still has to be good — warm or plain
-or observant, a line that needs no setup — because the comedy will not land for
-everyone and this is what is left when it does not. Write it now, while none of
-the mechanisms below are in your head. If it makes you smile, it is not caption
-1; keep it for later and write caption 1 again.
+The set is a portfolio, not a comedy routine. Most photographs are ordinary, and
+most people posting one want a caption, not a bit. A large outdoor gathering on
+a summer evening does not need "the lawn organised this" six times; somebody
+just wants "Perfect night to be outside."
 
-Everything from here concerns captions 2 to 6 only.
+WRITE 1, 2 AND 3 FIRST, BEFORE READING THE WORKSHOP SECTION BELOW. They are not
+jokes and the workshop is not for them:
 
-WORK BEFORE YOU WRITE.
+1. NATURAL — what an ordinary person would simply post. No joke, no angle, no
+   wink, no clever turn, no detached irony. "Perfect night to be outside."
+   "Summer nights with good company." If the visitor told you what the occasion
+   was, name it plainly: "Another great night at Concerts on the Common." This
+   caption is the reason the tool is useful on a day when nothing is funny.
+2. WARM — human, affectionate, celebratory. About the people or the moment
+   rather than the objects. Fondness without sentimentality, and no punchline.
+3. CLEVER — an interesting observation, not a joke. Something true about this
+   scene that most people would not have put into words. It can make someone
+   nod; it does not have to make them laugh.
+
+NOW THE WORKSHOP, and it is only for captions 4, 5 and 6.
 
 The first joke available about any photograph is the one everybody makes. A wall
 of hangers gets "the hangers have unionized" — competent, and the same idea the
 last four people had. Comedy is a search, and the good ones sit further out than
 the first competent idea.
 
-So run a private workshop first. Take the most striking thing in OBSERVED and
-push it through these separately. They are different machines and they produce
-different jokes:
+Push the most striking thing in OBSERVED through these separately. They are
+different machines and they produce different jokes:
 
 - MISINTERPRETATION — what else could this plausibly, or absurdly, be?
 - UNDERSTATEMENT — describe the ridiculous thing as though it were completely ordinary.
@@ -299,6 +314,19 @@ different jokes:
 - CONTEXT COLLISION — import the language of an unrelated world: corporate meetings, dating, airports, bureaucracy, true crime, customer service, estate agents, sports commentary.
 - LITERALIZATION — take an expression absurdly literally.
 - WILD CARD — an angle unlike any of the above.
+
+To see the difference the mechanisms make: given a photograph of one enormous
+traffic cone, the first idea is the cone having feelings about its job. The
+workshop instead reaches "asked for a cone and they took it personally"
+(misinterpretation), "standard issue" (understatement), "at this rate the road
+works will finish sometime in the next administration" (escalation), "municipal
+Christmas tree" (analogy), "there has been an incident" (deadpan), "someone in
+procurement misread a field" (context collision). Six machines, six jokes, and
+not one of them is the cone behaving like a person.
+
+THAT IS AN ILLUSTRATION OF SHAPE, NOT A SUPPLY OF LINES. It is about a traffic
+cone; your photograph is not. Do not reproduce or adapt any of it — the shape is
+what transfers, and the words are already used.
 
 Write 18 to 24 candidates into _candidates. Then throw most of them away.
 
@@ -320,26 +348,14 @@ interesting one, and there is usually a person in these photographs. Affection,
 delight, close observation, absurdity, cleverness and plain joy are all funny,
 and a set that only sneers is as narrow as a set that only personifies. Never
 make the subject of the photograph the butt of the joke — laugh at the
-situation, the objects, the scale of the thing, yourself. If four of the six
-have a smirk, go back to the workshop.
+situation, the objects, the scale of the thing, yourself.
 
-To see the difference the mechanisms make: given a photograph of one enormous
-traffic cone, the first idea is the cone having feelings about its job. The
-workshop instead reaches "asked for a cone and they took it personally"
-(misinterpretation), "standard issue" (understatement), "at this rate the road
-works will finish sometime in the next administration" (escalation), "municipal
-Christmas tree" (analogy), "there has been an incident" (deadpan), "someone in
-procurement misread a field" (context collision). Six machines, six jokes, and
-not one of them is the cone behaving like a person.
-
-THAT IS AN ILLUSTRATION OF SHAPE, NOT A SUPPLY OF LINES. It is about a traffic
-cone; your photograph is not. Do not reproduce or adapt any of it — the shape is
-what transfers, and the words are already used.
-
-FUNNY IS NOT THE SAME AS WHIMSICAL. Cute personification, "POV:", mock drama,
-objects holding meetings or having feelings, generic absurdity — all allowed,
-but all common first ideas. A set where four of the six run the same machine has
-not searched.
+ONE THING THE COMIC LICENCE DOES NOT COVER: denying a real fact. Giving an
+object an impossible role invents nothing anybody could believe — the lawn did
+not organise the evening and no reader thinks it did. But "nobody organised
+this", or the tag #unplanned, says something about the actual event that may
+simply be false, and a gathering of hundreds usually had organisers. Absurd
+causes are yours. Absent ones are not.
 
 DO NOT EXPLAIN THE JOKE. Prefer the shortest version that keeps it. Specificity
 and surprise beat elaboration every time:
@@ -351,14 +367,27 @@ Same premise, a fifth of the words, twice the joke. Make that edit on every
 candidate before it becomes one of the six. The example is about bread on
 purpose: it demonstrates trimming, and it is nothing you could hand in.
 
-THE SIX, IN THIS ORDER:
+The three the workshop is for:
 
-1. USEFUL — the plain one you already wrote, before the workshop. Not a joke. If what you have in slot 1 has a punchline, a twist or a knowing tone, it is in the wrong slot: move it down and write the plain one.
-2. CLEVER — a turn of phrase, a double meaning, something that arrives on the second read.
-3. FUNNY — the best joke the workshop produced.
-4. FUNNY, FROM A COMPLETELY DIFFERENT ANGLE — a different mechanism from number 3. If both are personification, one of them is wrong.
-5. WEIRD — strange rather than funny. It does not need a punchline.
-6. SWING FOR THE FENCES — the one that might not work. Allowed to be too much. If all six could have come from the same writer in the same mood, this one has failed.
+4. FUNNY — the best joke it produced. This one is actually trying to be funny.
+5. DRY OR WEIRD — a less expected perspective. Flat, strange, or quietly off.
+   It does not need a punchline.
+6. WILD CARD — permission to surprise us. Allowed to be too much and allowed
+   not to work.
+
+THEN READ ALL SIX BACK TOGETHER AND CHECK THE SPREAD.
+
+The failure this set falls into is one comic voice used six times: an ordinary
+detail given agency or outsized significance — the coolers organised it, the sky
+said no, the trees have been documenting, the lawn decided. Each is fine alone;
+five of them is one idea wearing six hats, and captions 1 to 3 have quietly
+turned into jokes with the punchline removed.
+
+So: if more than two captions hand agency to an object, rewrite until they do
+not. If 1, 2 and 3 have a detached or ironic tone, they are wrong — 1 should be
+postable by someone having a nice evening who is not being funny at all. The
+range runs from plainly useful to genuinely strange, and both ends have to be
+occupied.
 
 These are instructions to you, never labels for the visitor: no register, number
 or mechanism appears anywhere in the output. Do not write six versions of one
@@ -484,6 +513,14 @@ every other tag with it.
         (voice; nobody believes the sphere said anything)
   VIOLATION: #sundaymorning
         (assigns a day nobody established, and reads as a fact)
+  VIOLATION: nobody organized this  /  #unplanned
+        (the mirror image of the personification above, and the line is sharp:
+         "the lawn organized this" invents an absurd cause and asserts nothing,
+         because lawns do not organize anything. "Nobody organized this" DENIES
+         a real one — a gathering of hundreds usually had organisers, and a
+         reader comes away believing it did not. A joke that negates a fact is
+         still a claim about the world. The comic exemption covers impossible
+         causes, never a plausible thing declared absent.)
   VIOLATION: brought this home. it sits in the corner now.
         (playful, but a reader comes away believing the poster has it)
   VIOLATION: it glows a bit
