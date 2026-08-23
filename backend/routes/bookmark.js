@@ -3,6 +3,69 @@ const router = express.Router();
 const { withLanguage, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
+
+// ════════════════════════════════════════════
+// GROUNDING — where the stopping point actually falls
+// ════════════════════════════════════════════
+// Every other grounded tool here uses search to be more certain. This one uses
+// it to be more silent. What recall is worst at is not the events but their
+// ORDER, and an accurate fact from the next episode is still a spoiler — the
+// one failure this tool exists to prevent. So the search establishes the
+// boundary rather than the content: what had definitely happened by the point
+// they stopped, and what had not yet.
+//
+// The asymmetry runs the opposite way to the rest of the codebase. Elsewhere,
+// unverified means say it is unverified. Here it means leave it out: a caveat
+// does not un-spoil anything, and a thin recap costs a moment of remembering.
+const CHRONOLOGY_TTL_MS = 90 * 24 * 60 * 60 * 1000; // a published plot does not move
+const COLD_WAIT_MS = 20000;
+
+function chronologyFacts({ title, stoppedAt, mediaType }) {
+  const t = String(title || '').trim();
+  const at = String(stoppedAt || '').trim();
+  if (t.length < 2 || at.length < 1) return Promise.resolve('');
+  return groundedFacts({
+    cacheKey: `bookmark:${normalizeKeyPart(mediaType || 'show')}:${normalizeKeyPart(t.slice(0, 70))}:${normalizeKeyPart(at.slice(0, 40))}`,
+    label: 'bookmark-chronology',
+    ttlMs: CHRONOLOGY_TTL_MS,
+    coldWaitMs: COLD_WAIT_MS,
+    maxTokens: 3000,
+    system: 'You establish where a specific point falls in a published work, using episode guides, chapter listings, official synopses and encyclopaedic references. You are being used to PREVENT spoilers, so err relentlessly toward the earlier reading: when you cannot place something with certainty, leave it out rather than guessing. Report only what you can confirm from a page. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Establish the chronology of "${t.slice(0, 200)}" (${mediaType || 'show'}) up to and including this exact stopping point: "${at.slice(0, 120)}".
+
+You are drawing a line, not writing a recap. What is needed is which developments are on the reader's side of it and which are not.
+
+Confirm from sources:
+(1) what the stopping point corresponds to — its place in the sequence, and what happens in that instalment itself;
+(2) the major developments that have DEFINITELY occurred at or before it;
+(3) the developments that come AFTER it and must therefore never be mentioned — naming these is what makes the boundary usable;
+(4) anything you could not place with confidence on one side or the other.
+
+A development you cannot place goes in (4), never in (2). Being wrong in (2) spoils the thing this reader came here to protect.
+
+Return ONLY valid JSON:
+{ "position": "What this stopping point is, in the work's own terms. Empty string if you could not establish it.",
+  "before": ["A development confirmed to have happened at or before the stopping point"],
+  "after": ["A development confirmed to come after it — for exclusion, never for retelling"],
+  "unplaced": ["Something you could not place with confidence on either side"],
+  "source": "The domain you checked against. Empty string if none." }`,
+    render: (clean) => {
+      if (!clean || (!clean.position && !Array.isArray(clean.before))) return '';
+      const list = (a) => (Array.isArray(a) && a.length ? a.map(x => `  - ${x}`).join('\n') : '  (none established)');
+      return `\n\nVERIFIED CHRONOLOGY, CHECKED TODAY${clean.source ? ` against ${clean.source}` : ''} — this is the boundary, and it OVERRIDES your own recollection of this title wherever the two differ.
+STOPPING POINT: ${clean.position || 'could not be established'}
+CONFIRMED AT OR BEFORE IT — safe to use:
+${list(clean.before)}
+CONFIRMED AFTER IT — these are spoilers. Do not mention, hint at, foreshadow, or let any of them shape how you describe what came before:
+${list(clean.after)}
+COULD NOT BE PLACED — treat every one of these as if it were after. Do not use them:
+${list(clean.unplaced)}
+
+Where this block and your memory disagree, the block wins. Where the block is silent about something, your memory has not been checked and the conservatism rule applies in full: leave it out.`;
+    },
+  });
+}
 
 // ════════════════════════════════════════════
 // MAIN ENDPOINT: Spoiler-free recap
@@ -33,6 +96,7 @@ router.post('/bookmark', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const SPOILER_CONSERVATISM = `WHEN IN DOUBT, LEAVE IT OUT. This is the rule that outranks every other instruction here, including completeness, vividness and length.
 Episode and chapter boundaries are exactly the thing recall is worst at. If you cannot place a detail with certainty on the correct side of their stopping point, do not include it — not as a hint, not softened, not hedged. A recap that is slightly thin costs them a moment of remembering. A recap that is slightly early costs them the thing they came here to protect. Those are not the same size of mistake, so never split the difference.
 Prefer what they told you they remember over what you recall about the title: their own words are dated evidence of where they actually are.
+If a VERIFIED CHRONOLOGY block appears at the end of this prompt, it is the boundary and it overrides your recollection wherever they differ. It does NOT license you to reach further: it tells you where the wall is, and everything the rule above says about doubt still applies to everything the block does not cover. A checked list of what came after exists so you can avoid those things, never so you can allude to them.
 Say plainly when something is beyond what you can place — 'that thread is still open where you stopped' or 'I would rather not guess at the exact scene' is a good answer. Filling the gap confidently is the only bad one.`;
 
     const mediaPrompts = {
@@ -250,7 +314,8 @@ Generate a catch-up guide. For sports, "spoilers" means outcomes of specific gam
 }`,
     };
 
-    const prompt = mediaPrompts[mediaType] || mediaPrompts.show;
+    const chronology = await chronologyFacts({ title, stoppedAt, mediaType }).catch(() => '');
+    const prompt = (mediaPrompts[mediaType] || mediaPrompts.show) + chronology;
 
     const systemPrompt = `Media return guide. Give people exactly the context they need to pick up where they left off — show, book, game, or sports — without spoiling anything ahead.
 
