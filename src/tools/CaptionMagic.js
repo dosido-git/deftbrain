@@ -664,14 +664,27 @@ const CaptionMagic = ({ tool }) => {
               />
             )}
             {results.observed?.length > 0 && (
-              <p className={`text-xs ${c.textMuted} p-3 leading-relaxed`}>
-                <strong>{t('cm_what_i_see')}</strong> {results.observed.join(' · ')}
-                {results.uncertain?.length > 0 && (
-                  <span className={`block mt-1 ${c.textMuted}`}>
-                    <strong>{t('cm_not_sure')}</strong> {results.uncertain.join(' · ')}
+              /* Collapsed by default. This is the tool's working-out, not its
+                 answer: useful when a caption reads oddly and you want to know
+                 what it was written from, noise the rest of the time. The
+                 captions are what the visitor came for and should be the first
+                 thing under the photo. */
+              <details className="group">
+                <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden px-3 py-2 text-xs ${c.textMuted}`}>
+                  <span className="flex items-center gap-2">
+                    <strong>{t('cm_what_i_see').replace(/[:：]\s*$/, '')}</strong>
+                    <Caret groupOpen className="ms-auto" />
                   </span>
-                )}
-              </p>
+                </summary>
+                <p className={`text-xs ${c.textMuted} px-3 pb-3 leading-relaxed`}>
+                  {results.observed.join(' · ')}
+                  {results.uncertain?.length > 0 && (
+                    <span className="block mt-1">
+                      <strong>{t('cm_not_sure')}</strong> {results.uncertain.join(' · ')}
+                    </span>
+                  )}
+                </p>
+              </details>
             )}
           </div>
         )}
