@@ -91,19 +91,29 @@ const EXAMPLES = [
 
 // One click from any empirical claim, folded by default. The caveat must not
 // outrank the discovery on the page, but it must be there.
-const HowSolid = ({ data, c, t }) => {
+const HowSolid = ({ data, verified, c, t }) => {
   const [open, setOpen] = useState(false);
-  if (!data || !data.note) return null;
+  if (!data && !verified) return null;
+  if (!verified && !data?.note) return null;
   return (
     <div className="mt-3">
       <button type="button" onClick={() => setOpen(!open)}
         className={`inline-flex items-center gap-1.5 text-xs ${c.textMuted} hover:underline`}>
         <Caret open={open} /> {t('bro_how_solid')}
+        {verified?.status ? <span className={`font-semibold ${c.textSecondary}`}>· {t('bro_checked')}</span> : null}
       </button>
       {open && (
-        <p className={`text-xs ${c.textSecondary} mt-1.5 leading-relaxed`}>
-          {data.level ? <span className="font-semibold">{data.level} — </span> : null}{data.note}
-        </p>
+        <div className={`text-xs ${c.textSecondary} mt-1.5 leading-relaxed space-y-1.5`}>
+          {verified ? (
+            <>
+              <p><span className="font-semibold">{verified.status}</span>{verified.gap ? ` — ${verified.gap}` : ''}</p>
+              {verified.finding && <p>{verified.finding}</p>}
+              {verified.source && <p className={c.textMuted}>{t('bro_checked_against')} {verified.source}</p>}
+            </>
+          ) : (
+            <p>{data.level ? <span className="font-semibold">{data.level} — </span> : null}{data.note}</p>
+          )}
+        </div>
       )}
     </div>
   );
@@ -254,6 +264,10 @@ const BrainRoulette = ({ tool }) => {
   // v3: Digest
   const [digest, setDigest] = useState(null);
 
+  // Keyed by claim title. Absent = not checked yet or nothing came back;
+  // HowSolid falls back to the self-assessed how_solid in that case.
+  const [verifications, setVerifications] = useState({});
+
   // v3: Flashback
   const [flashbackCard, setFlashbackCard] = useState(null);
   const [flashbackFlipped, setFlashbackFlipped] = useState(false);
@@ -386,6 +400,17 @@ const BrainRoulette = ({ tool }) => {
   // ══════════════════════════════════════════
   // SPIN (v2 — unchanged)
   // ══════════════════════════════════════════
+  // Fired after a result renders, never awaited by it. A failure here is
+  // silent by design: the rabbit hole is already on screen and the tool's
+  // own how_solid still shows.
+  const verifyClaim = useCallback(async (title, claim) => {
+    if (!title || !claim || claim.length < 20) return;
+    try {
+      const data = await callToolEndpoint('brain-roulette/verify', { title, claim });
+      if (data?.verification) setVerifications(prev => ({ ...prev, [title]: data.verification }));
+    } catch { /* unverified is the old behaviour, not an error worth showing */ }
+  }, [callToolEndpoint]);
+
   const handleSpin = async (isSurprise = false) => {
     if (!canSpin) return;
     setError(''); setResult(null); setDeeperResults(null); setChainResults([]); setExtractedConcepts(null);
@@ -399,6 +424,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel,
       });
       setResult(parsed);
+      verifyClaim(parsed.title, parsed.hook);
       setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
       setCustomTopic(''); bumpDailySpins();
       setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
@@ -431,6 +457,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel,
       }).then(parsed => {
         setResult(parsed);
+      verifyClaim(parsed.title, parsed.hook);
         setSeenTopics(prev => [parsed.topic_tag, ...prev].slice(0, 6));
         bumpDailySpins();
         setSessionHistory(prev => [{ ...parsed, preview: parsed.title?.slice(0, 40) ?? '', spunAt: new Date().toISOString(), interests: activeInterestLabels, depth, audienceLevel }, ...prev].slice(0, 6)); // Exception: preview slice(0,40) is string truncation; actual history cap is 6
@@ -449,6 +476,7 @@ const BrainRoulette = ({ tool }) => {
         audienceLevel,
       });
       setDeeperResults({ ...parsed, _clickedLabel: thread.label }); bumpDailySpins();
+      verifyClaim(parsed.title, parsed.content);
     } catch { setError(t('bro_err_deeper')); }
   };
 
@@ -821,7 +849,7 @@ const BrainRoulette = ({ tool }) => {
               <p className={`text-xs font-bold ${c.textMuted} mb-1`}>{t('bro_journey_step_label', { n: js.step_number })}</p>
               <h4 className={`text-base font-bold ${c.text} mb-2`}>{js.title}</h4>
               <p className={`text-sm leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{js.content}</p>
-              <HowSolid data={js.how_solid} c={c} t={t} />
+              <HowSolid data={js.how_solid} verified={verifications[js.title]} c={c} t={t} />
               {js.mind_blown && <div className={`mt-3 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {js.mind_blown}</p></div>}
               {js.concepts?.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-3">
@@ -928,7 +956,7 @@ const BrainRoulette = ({ tool }) => {
               <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: 1 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{deeperResults.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{deeperResults.content}</p>
-              <HowSolid data={deeperResults.how_solid} c={c} t={t} />
+              <HowSolid data={deeperResults.how_solid} verified={verifications[deeperResults.title]} c={c} t={t} />
               {deeperResults.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {deeperResults.mind_blown}</p></div>}
             </div>
           </div>
@@ -944,7 +972,7 @@ const BrainRoulette = ({ tool }) => {
               <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('bro_depth_n', { n: idx + 2 })}</span>
               <h3 className={`text-lg font-bold mb-3 ${c.text}`}>{cr.title}</h3>
               <p className={`leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{cr.content}</p>
-              <HowSolid data={cr.how_solid} c={c} t={t} />
+              <HowSolid data={cr.how_solid} verified={verifications[cr.title]} c={c} t={t} />
               {cr.mind_blown && <div className={`mt-4 p-3 border rounded-lg ${c.warning}`}><p className={`text-sm font-semibold`}>🤯 {cr.mind_blown}</p></div>}
             </div>
           </div>
@@ -1345,7 +1373,7 @@ const BrainRoulette = ({ tool }) => {
               </div>
               <div className="px-6 py-5">
                 <p className={`text-base leading-relaxed whitespace-pre-line ${c.textSecondary}`}>{result.hook}</p>
-                <HowSolid data={result.how_solid} c={c} t={t} />
+                <HowSolid data={result.how_solid} verified={verifications[result.title]} c={c} t={t} />
               </div>
               <div className={`px-6 py-4 border-t flex flex-wrap items-center justify-between gap-2 ${c.resultBorder}`}>
                 <div className="flex items-center gap-2">

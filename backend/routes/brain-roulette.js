@@ -6,11 +6,14 @@ const router = express.Router();
 const CERTAINTY_RULE = `CERTAINTY IS PART OF THE CLAIM. A rabbit hole is worth having only if it is true in the way you imply it is true. Astonishing findings are disproportionately the ones that are preliminary, contested, or drawn from one small study — so the more delightful a claim is, the more carefully you must mark where it actually stands.
 Match the language to the evidence: an established finding can be stated plainly; a contested one says so in the same breath; a single study is described as a single study; a pattern you are extending by analogy is offered as a resemblance and never as a result. Do not smooth these into one confident voice.
 The tell to avoid: a real phenomenon named as though it were a measured, agreed-upon thing, then extended to three other populations as if the extension were also measured. If the extension is your idea rather than a finding, say so — that is more interesting, not less.
+THE CONNECTION HAS TO BE REAL, NOT MERELY GOOD. The whole appeal here is the unexpected link between two things, which is exactly why it is the thing most easily faked: a bridge that SOUNDS load-bearing is as satisfying to read as one that is, and only one of them is true. Do not build the bridge stronger than it is for the sake of the payoff. If the two things are connected by a documented finding, say which finding and who produced it, in enough detail that a curious reader could go and look. If they are connected only by resemblance — a shared shape, a suggestive metaphor, a pattern you noticed — that is genuinely interesting and you may say it, but say that is what it is. What you must never do is dress a resemblance in the clothes of a result. A rabbit hole that collapses when someone checks it costs the reader more than they gained.
+
 This does not mean hedging everything. Hedged prose is dull and this tool is not dull. State solid things solidly. Just do not spend certainty you do not have.`;
 
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
 // Rate limiting handled globally in server.js
 
@@ -514,6 +517,57 @@ Return ONLY valid JSON.`, userLanguage);
   } catch (error) {
     console.error('Brain Roulette digest error:', error);
     res.status(500).json({ error: "Can't generate digest. Try again!" });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// POST /brain-roulette/verify — check the claim AFTER it is written
+// ════════════════════════════════════════════════════════════
+// Every other grounded tool here searches before it generates, because it
+// knows the subject in advance. This one does not: the topic space is the
+// whole world and the model picks the rabbit hole as it writes, so there is
+// nothing to look up until there is a claim to look up.
+//
+// So it runs the other way round, and asynchronously. The spin returns and
+// renders at full speed — the delight is the product and a verification wait
+// would flatten it — and the frontend calls this straight afterwards to fill
+// in "How solid is this?" with something checked rather than self-assessed.
+// Cached on the claim, so a repeat of a popular rabbit hole is instant.
+router.post('/brain-roulette/verify', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { title, claim } = req.body;
+    const text = String(claim || '').trim();
+    if (text.length < 20) return res.json({ verification: null });
+
+    const block = await groundedFacts({
+      cacheKey: `roulette:${normalizeKeyPart(text.slice(0, 120))}`,
+      label: 'brain-roulette-verify',
+      ttlMs: 30 * 24 * 60 * 60 * 1000,
+      coldWaitMs: 45000,
+      maxTokens: 2000,
+      system: 'You check whether a striking claim is actually supported. Search for the primary research or the authoritative reference behind it. Prefer journals, university and museum pages, and established reference works over popular science write-ups, which routinely overstate their sources. Report what the literature actually says, including when it says less than the claim does. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+      userPrompt: `Check this claim with web_search. It comes from a piece written to be surprising, so the specific risk is a real finding stretched past what it supports, or a resemblance presented as a result.
+
+CLAIM${title ? ` (from a piece titled: ${String(title).slice(0, 120)})` : ''}:
+${text.slice(0, 1200)}
+
+Establish: does a real finding or documented fact underlie this, and does it say what the claim says it says? Name the actual finding — who established it, roughly when, and what it actually showed. If the claim goes further than its source, say exactly where it overreaches. If nothing underlies it, say that.
+
+Return ONLY valid JSON:
+{ "status": "Exactly one of these and nothing else: supported, overstated, disputed, unsupported, not found",
+  "finding": "The actual finding or fact, named accurately — who, roughly when, what it showed. Empty string if there is none.",
+  "gap": "Where the claim goes beyond what the source supports, in one sentence. Empty string if it does not.",
+  "source": "The domain you checked it against. Empty string if none." }`,
+      render: (clean) => ({ block: clean && clean.status ? 'ok' : '', data: clean && clean.status ? clean : null }),
+    }).catch(() => '');
+
+    const data = block ? stripCites(groundedData(`roulette:${normalizeKeyPart(text.slice(0, 120))}`)) : null;
+    return res.json({ verification: data || null });
+  } catch (error) {
+    console.error('[brain-roulette/verify] error:', error);
+    // Never an error the reader sees: an unverified rabbit hole is the old
+    // behaviour, and the self-assessed how_solid still renders.
+    return res.json({ verification: null });
   }
 });
 

@@ -4,6 +4,8 @@
 // Emoji in label/tab values is intentional — keep it inside the string.
 export const brainRoulette = {
   en: {
+    bro_checked: "checked",
+    bro_checked_against: "Checked against:",
     bro_ex_topic_solid: "how tree rings recorded a volcanic eruption on the other side of the world",
     bro_ex_topic_speculative: "whether a city has something like a metabolism",
     bro_how_solid: "How solid is this?",
@@ -174,6 +176,8 @@ export const brainRoulette = {
     bro_export_connects: "**Connects:** {{connections}}",
   },
   es: {
+    bro_checked: "verificado",
+    bro_checked_against: "Verificado con:",
     bro_ex_topic_solid: "cómo los anillos de los árboles registraron una erupción volcánica al otro lado del mundo",
     bro_ex_topic_speculative: "si una ciudad tiene algo parecido a un metabolismo",
     bro_how_solid: "¿Qué tan sólido es esto?",
@@ -344,6 +348,8 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   zh: {
+    bro_checked: "已核实",
+    bro_checked_against: "核实来源：",
     bro_ex_topic_solid: "树木年轮如何记录下地球另一端的一次火山喷发",
     bro_ex_topic_speculative: "城市是否也有类似新陈代谢的东西",
     bro_how_solid: "这个结论有多可靠？",
@@ -514,6 +520,8 @@ export const brainRoulette = {
     bro_export_connects: "**关联：** {{connections}}",
   },
   hi: {
+    bro_checked: "जाँचा गया",
+    bro_checked_against: "किसके सामने जाँचा:",
     bro_ex_topic_solid: "पेड़ों के छल्लों ने दुनिया के दूसरे छोर पर हुए ज्वालामुखी विस्फोट को कैसे दर्ज किया",
     bro_ex_topic_speculative: "क्या किसी शहर में भी चयापचय जैसा कुछ होता है",
     bro_how_solid: "यह कितना पक्का है?",
@@ -684,6 +692,8 @@ export const brainRoulette = {
     bro_export_connects: "**जोड़ता है:** {{connections}}",
   },
   ar: {
+    bro_checked: "تم التحقق",
+    bro_checked_against: "تم التحقق مقابل:",
     bro_ex_topic_solid: "كيف سجّلت حلقات الأشجار ثوران بركان في الجهة الأخرى من العالم",
     bro_ex_topic_speculative: "هل للمدينة شيء يشبه الأيض",
     bro_how_solid: "ما مدى رسوخ هذا؟",
@@ -854,6 +864,8 @@ export const brainRoulette = {
     bro_export_connects: "**يربط:** {{connections}}",
   },
   pt: {
+    bro_checked: "verificado",
+    bro_checked_against: "Verificado com:",
     bro_ex_topic_solid: "como os anéis das árvores registraram uma erupção vulcânica do outro lado do mundo",
     bro_ex_topic_speculative: "se uma cidade tem algo parecido com um metabolismo",
     bro_how_solid: "Quão sólido é isso?",
@@ -1024,6 +1036,8 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   fr: {
+    bro_checked: "vérifié",
+    bro_checked_against: "Vérifié auprès de :",
     bro_ex_topic_solid: "comment les cernes des arbres ont enregistré une éruption volcanique à l'autre bout du monde",
     bro_ex_topic_speculative: "si une ville possède quelque chose comme un métabolisme",
     bro_how_solid: "Est-ce solidement établi ?",
@@ -1194,6 +1208,8 @@ export const brainRoulette = {
     bro_export_connects: "**Relie :** {{connections}}",
   },
   de: {
+    bro_checked: "geprüft",
+    bro_checked_against: "Geprüft gegen:",
     bro_ex_topic_solid: "wie Baumringe einen Vulkanausbruch auf der anderen Seite der Welt aufgezeichnet haben",
     bro_ex_topic_speculative: "ob eine Stadt so etwas wie einen Stoffwechsel hat",
     bro_how_solid: "Wie gesichert ist das?",
@@ -1364,6 +1380,8 @@ export const brainRoulette = {
     bro_export_connects: "**Verbindet:** {{connections}}",
   },
   ja: {
+    bro_checked: "確認済み",
+    bro_checked_against: "照合先：",
     bro_ex_topic_solid: "地球の裏側で起きた火山噴火を、木の年輪はどう記録したのか",
     bro_ex_topic_speculative: "都市にも代謝のようなものがあるのか",
     bro_how_solid: "これはどれくらい確かな話？",
@@ -1534,6 +1552,8 @@ export const brainRoulette = {
     bro_export_connects: "**つながり：** {{connections}}",
   },
   ko: {
+    bro_checked: "확인됨",
+    bro_checked_against: "확인한 출처:",
     bro_ex_topic_solid: "나무의 나이테가 지구 반대편의 화산 폭발을 어떻게 기록했는가",
     bro_ex_topic_speculative: "도시에도 신진대사 같은 것이 있을까",
     bro_how_solid: "이건 얼마나 확실한가요?",
@@ -1704,6 +1724,8 @@ export const brainRoulette = {
     bro_export_connects: "**연결:** {{connections}}",
   },
   ru: {
+    bro_checked: "проверено",
+    bro_checked_against: "Сверено с:",
     bro_ex_topic_solid: "как годичные кольца деревьев записали извержение вулкана на другом конце света",
     bro_ex_topic_speculative: "есть ли у города что-то вроде обмена веществ",
     bro_how_solid: "Насколько это надёжно?",
@@ -1874,6 +1896,8 @@ export const brainRoulette = {
     bro_export_connects: "**Связывает:** {{connections}}",
   },
   th: {
+    bro_checked: "ตรวจแล้ว",
+    bro_checked_against: "ตรวจกับ:",
     bro_ex_topic_solid: "วงปีของต้นไม้บันทึกการปะทุของภูเขาไฟอีกซีกโลกไว้ได้อย่างไร",
     bro_ex_topic_speculative: "เมืองมีอะไรบางอย่างที่คล้ายกับระบบเผาผลาญหรือไม่",
     bro_how_solid: "เรื่องนี้หนักแน่นแค่ไหน?",
@@ -2044,6 +2068,8 @@ export const brainRoulette = {
     bro_export_connects: "**เชื่อมโยง:** {{connections}}",
   },
   vi: {
+    bro_checked: "đã kiểm chứng",
+    bro_checked_against: "Đối chiếu với:",
     bro_ex_topic_solid: "vòng gỗ của cây đã ghi lại một vụ phun trào núi lửa ở nửa kia thế giới như thế nào",
     bro_ex_topic_speculative: "liệu một thành phố có thứ gì đó giống như quá trình trao đổi chất hay không",
     bro_how_solid: "Điều này chắc chắn đến đâu?",
