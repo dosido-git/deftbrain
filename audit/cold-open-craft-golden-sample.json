@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "cold-open-craft",
-    "tag": "coldopencraft-v3",
+    "tag": "coldopencraft-v4",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. 7 annotations stripped (— one sentence ×5, — 2-4 sentences ×2) that were glued onto primary copy-paste output (opener message/subject_line/follow_up.message/power_move/label) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Already on callClaudeWithRetry (no robustness gap). Guard: !openers && !situation_read (top-level). Re-locked 2026-08-23 (v2): power_move and response_rate removed. The power move proposed publishing a public rebuttal and tagging the recipient before contacting them — an escalation nobody asked for. response_rate predicted a stranger's behaviour nobody measured. boldness (safe/medium/bold) stays: it describes the message rather than the reply. Re-locked 2026-08-23 (v3): the output was explaining itself more than helping. boldness (safe/medium/bold), why_it_works and best_if are gone from each opener — a risk badge is a measurement of a message nobody has seen received, and the commentary ran longer than the deliverable. what_not_to_say (3-5 cautions) collapsed to a single optional before_you_send line, because most of that list was the model reporting its own epistemic hygiene back to the visitor. follow_up_plan {when,message,when_to_stop} became follow_up {message,timing}: the stopping rule and the closing-window language asserted things about the recipient's calendar that nothing established. situation_read is now nullable and usually null. subject_line must contain the subject and nothing else — it was coming back as \"Included inside each message above.\", which renders to the visitor AS their subject line, with the real subject duplicated inside all three bodies. Prompt also carries a reaction-vs-role rule: \"I shipped X, so your post landed\" is the sender's own reaction and is fine; \"reliability at that scale is where most of my time goes\" is a job claim nobody supplied. Adopted PF-39 v2 at this lock.",
-    "baseline": "coldopencraft-v3",
+    "note": "Structural regression golden. 7 annotations stripped (— one sentence ×5, — 2-4 sentences ×2) that were glued onto primary copy-paste output (opener message/subject_line/follow_up.message/power_move/label) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. Already on callClaudeWithRetry (no robustness gap). Guard: !openers && !situation_read (top-level). Re-locked 2026-08-23 (v2): power_move and response_rate removed. The power move proposed publishing a public rebuttal and tagging the recipient before contacting them — an escalation nobody asked for. response_rate predicted a stranger's behaviour nobody measured. boldness (safe/medium/bold) stays: it describes the message rather than the reply. Re-locked 2026-08-23 (v3): the output was explaining itself more than helping. boldness (safe/medium/bold), why_it_works and best_if are gone from each opener — a risk badge is a measurement of a message nobody has seen received, and the commentary ran longer than the deliverable. what_not_to_say (3-5 cautions) collapsed to a single optional before_you_send line, because most of that list was the model reporting its own epistemic hygiene back to the visitor. follow_up_plan {when,message,when_to_stop} became follow_up {message,timing}: the stopping rule and the closing-window language asserted things about the recipient's calendar that nothing established. situation_read is now nullable and usually null. subject_line must contain the subject and nothing else — it was coming back as \"Included inside each message above.\", which renders to the visitor AS their subject line, with the real subject duplicated inside all three bodies. Prompt also carries a reaction-vs-role rule: \"I shipped X, so your post landed\" is the sender's own reaction and is fine; \"reliability at that scale is where most of my time goes\" is a job claim nobody supplied. Adopted PF-39 v2 at this lock. Re-locked 2026-08-23 (v4): added enforceSuppliedFacts — an adversarial second pass that checks every first-person claim in the drafts against the four form fields, then repairs only the offending messages. The prompt alone had failed three reviews running: a job role invented from a shipped project, then an opinion (\"the most concrete thing I have read\"), an action (\"I sent it to my team the day it went up\") and a motive (\"made Stripe feel like the right fit\"). The form fields ARE the envelope here, so no assembly is needed. Fail-open, verdict logged on every call. Also: an opinion SWAPPED for the supplied one counts as invention (\"thoughtful\" is not \"stuck with me\"), and follow_up.timing may no longer say what people commonly do.",
+    "baseline": "coldopencraft-v4",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -27,23 +27,23 @@
         "situation_read": null,
         "openers": [
           {
-            "label": "Leads with her post, names the shared domain, makes the ask",
-            "message": "Hi [Name],\n\nYour post on scaling payments infrastructure caught my attention — I've spent the last eight years in backend engineering, most recently leading a payments migration, so it resonated.\n\nI'd love to learn more about your team and whether there might be a fit for a senior backend role. Would you be open to a short conversation?"
+            "label": "Names the ask straight away, anchors on shared domain",
+            "message": "Hi [Name],\n\nI came across your post on scaling payments infrastructure and thought it was worth reaching out directly. I have eight years of backend experience and recently led a payments migration, so the subject is close to home.\n\nI am interested in senior backend roles and would love to know if there is anything open on your team. Happy to share more about my background if useful."
           },
           {
-            "label": "Opens with the shared work before surfacing the interest",
-            "message": "Hi [Name],\n\nI came across your piece on scaling payments infrastructure and wanted to reach out. I led a payments migration as part of eight years in backend engineering, and the problems you wrote about are ones I've worked through directly.\n\nI admire what your team is building and wanted to ask whether you're open to talking about senior backend opportunities."
+            "label": "Leads with the blog post, then makes the ask",
+            "message": "Hi [Name],\n\nI read your post on scaling payments infrastructure and thought it was thoughtful. It prompted me to look into the team more closely.\n\nI have spent eight years in backend engineering and recently led a payments migration. If you have senior backend openings, I would be glad to be considered — or if you could point me toward the right person, that would be helpful too."
           },
           {
-            "label": "Names the ask in the first line",
-            "message": "Hi [Name],\n\nI'm a backend engineer with eight years of experience, including leading a payments migration, and I'm interested in exploring a senior role on your team.\n\nYour writing on payments infrastructure is part of what drew me to reach out — it's clear your team is working on problems I find genuinely interesting. Happy to share more about my background if it's useful."
+            "label": "Opens with background, asks for a short conversation",
+            "message": "Hi [Name],\n\nI am a backend engineer with eight years of experience, including leading a payments migration. I read your post on scaling payments infrastructure and am interested in exploring whether there might be a senior backend role that fits.\n\nWould you be open to a brief conversation? No pressure if the timing is off."
           }
         ],
         "subject_line": null,
-        "before_you_send": "Confirm the spelling of her name before sending.",
+        "before_you_send": "Confirm her name is spelled correctly before sending.",
         "follow_up": {
-          "message": "Hi [Name], just following up on my note from last week in case it got buried. Still very interested in your team — happy to share more about my background if that's helpful.",
-          "timing": "A week or so after the first message is a common interval; adjust if you know she's at a conference or just announced something that would make the timing awkward."
+          "message": "Hi [Name],\n\nJust following up on my previous message in case it got buried. Happy to share more about my background whenever it suits you.",
+          "timing": "Give the first message some room before sending this; adjust if you have a specific deadline in mind."
         }
       }
     },
@@ -66,23 +66,23 @@
         "situation_read": null,
         "openers": [
           {
-            "label": "Nennt den Blogbeitrag und fragt nach einer Perspektive",
-            "message": "Hallo [Name],\n\nIhr Beitrag über die Skalierung von Zahlungsinfrastruktur hat mich zum Nachdenken gebracht – besonders [konkreter Punkt aus dem Artikel, der Sie beschäftigt hat]. Ich arbeite seit acht Jahren im Backend-Bereich, zuletzt mit Schwerpunkt auf Zahlungssystemen, und die Fragen, die Sie dort aufwerfen, sind genau die, die mich gerade umtreiben.\n\nIch wäre sehr interessiert zu hören, wie Sie heute auf das Thema schauen – und ob es bei [Unternehmensname] aktuell Bedarf im Senior-Backend-Bereich gibt.\n\nMit freundlichen Grüßen,\n[Ihr Name]"
+            "label": "Nennt das Anliegen direkt",
+            "message": "Hallo [Name],\n\nich bin Backend-Entwicklerin mit 8 Jahren Erfahrung und interessiere mich für eine Senior-Stelle in Ihrem Team. Ich habe Ihren Beitrag über die Skalierung von Zahlungsinfrastruktur gelesen – das war der Anlass, mich direkt bei Ihnen zu melden.\n\nGibt es bei [Unternehmen] aktuell Bedarf auf dieser Ebene, oder können Sie mir sagen, wo ich am besten schauen soll?\n\nViele Grüße\n[Ihr Name]"
           },
           {
-            "label": "Stellt die Erfahrung voran und macht den Wunsch direkt klar",
-            "message": "Hallo [Name],\n\nIch bin Backend-Entwickler mit acht Jahren Erfahrung und schaue mich gezielt nach einer Senior-Stelle um – [Unternehmensname] steht dabei ganz oben auf meiner Liste.\n\nIhren Beitrag über Zahlungsinfrastruktur-Skalierung habe ich gelesen und finde den Ansatz, den Sie dort beschreiben, überzeugend. Gibt es derzeit eine passende Stelle in Ihrem Team, oder wäre ein kurzes Gespräch über mögliche Optionen für Sie denkbar?\n\nMit freundlichen Grüßen,\n[Ihr Name]"
+            "label": "Steigt mit dem Blogbeitrag ein, bevor das Anliegen kommt",
+            "message": "Hallo [Name],\n\nIch habe Ihren Beitrag über die Skalierung von Zahlungsinfrastruktur gelesen – er hat mir gut gefallen.\n\nIch arbeite seit 8 Jahren im Backend-Bereich und schaue mich nach einem nächsten Schritt auf Senior-Ebene um. Wäre [Unternehmen] offen dafür, das kurz zu besprechen?\n\nViele Grüße\n[Ihr Name]"
           },
           {
-            "label": "Stellt eine konkrete Frage zum Blogbeitrag ohne sofortigen Stellenwunsch",
-            "message": "Hallo [Name],\n\nIch habe Ihren Beitrag über die Skalierung von Zahlungsinfrastruktur gelesen – er wurde in meinem Netzwerk viel geteilt, und ich verstehe warum. Eine Frage ist bei mir hängen geblieben: [Ihre konkrete Frage zum Artikel].\n\nIch stelle die Frage nicht ohne Hintergedanken: Ich bin seit acht Jahren im Backend tätig und interessiere mich für [Unternehmensname] als möglichen nächsten Schritt. Aber die Frage interessiert mich wirklich.\n\nMit freundlichen Grüßen,\n[Ihr Name]"
+            "label": "Stellt eine konkrete Frage statt einer breiten Anfrage",
+            "message": "Hallo [Name],\n\nich bin Backend-Entwicklerin mit 8 Jahren Erfahrung und interessiere mich für [Unternehmen]. Haben Sie Senior-Backend-Stellen, die nicht öffentlich ausgeschrieben sind, oder lohnt es sich, die Karriereseite im Blick zu behalten?\n\nViele Grüße\n[Ihr Name]"
           }
         ],
         "subject_line": null,
-        "before_you_send": "Die Platzhalter für den konkreten Punkt oder die Frage aus dem Blogbeitrag müssen vor dem Absenden gefüllt werden – das ist das Herzstück jeder dieser Nachrichten.",
+        "before_you_send": "Platzhalter [Name], [Unternehmen] und [Ihr Name] vor dem Absenden ersetzen.",
         "follow_up": {
-          "message": "Hallo [Name],\n\nich wollte kurz nachfragen, ob meine Nachricht angekommen ist. Ich bin weiterhin an [Unternehmensname] interessiert und freue mich, wenn Sie kurz antworten können.\n\nMit freundlichen Grüßen,\n[Ihr Name]",
-          "timing": "Eine Woche oder etwas länger nach der ersten Nachricht ist üblich – je nachdem, was gerade bei Ihnen oder im Unternehmen ansteht."
+          "message": "Hallo [Name],\n\nIch interessiere mich für Senior-Backend-Positionen in Ihrem Team. Hätten Sie Zeit für ein kurzes Gespräch?\n\nViele Grüße\n[Ihr Name]",
+          "timing": "Der ersten Nachricht etwas Luft lassen, bevor diese geht."
         }
       }
     }
