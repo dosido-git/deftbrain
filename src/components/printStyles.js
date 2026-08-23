@@ -19,6 +19,30 @@ export const PRINT_CSS = `
       @media print {
         /* Hide chrome */
         [data-print-hide] { display: none !important; }
+        /* Buttons print as outlines, not as white text on nothing.
+           Browsers drop background fills on paper unless asked otherwise, and
+           every primary action in the product is white text on a coloured
+           fill — so on paper the fill disappeared and the label went with it.
+           A printed Cold Open Craft form had no submit button at all, and the
+           same was true of every tool: the control was there, in white, on
+           white. Forcing the fill instead (print-color-adjust: exact) would
+           fix the contrast by spending a block of someone's ink, so these
+           become outlined buttons, which read correctly in both themes. */
+        /* button[class] rather than button: several tools set their idle state
+           with Tailwind's !important escape (!text-cyan-300), and a class with
+           !important beats an element selector with !important. The attribute
+           selector adds the specificity needed to win, without reaching for
+           anything uglier. */
+        button[class], [role="button"][class], button, [role="button"] {
+          background: transparent !important;
+          background-image: none !important;
+          color: #111 !important;
+          border: 1px solid #999 !important;
+          box-shadow: none !important;
+        }
+        /* The keyboard-shortcut chip is screen affordance — it tells you to
+           press Cmd+Enter, which paper cannot offer. */
+        button kbd { display: none !important; }
         /* Show print-only branding */
         [data-print-show-flex] { display: flex !important; }
         [data-print-show] { display: block !important; }

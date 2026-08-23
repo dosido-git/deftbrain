@@ -1,3 +1,4 @@
+import Caret from '../components/Caret';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
@@ -23,7 +24,6 @@ const ColdOpenCraft = ({ tool }) => {
     { value: 'twitter_dm',   label: t('coc_ch_twitter'),   emoji: '🐦' },
     { value: 'instagram_dm', label: t('coc_ch_instagram'), emoji: '📸' },
     { value: 'text',         label: t('coc_ch_text'),      emoji: '💬' },
-    { value: 'in_person',    label: t('coc_ch_inperson'),  emoji: '🤝' },
   ];
 
 
@@ -249,11 +249,14 @@ const ColdOpenCraft = ({ tool }) => {
             />
           </div>
 
-          {/* Your background */}
+          {/* What should they know about you — deliberately not "your
+              background", which invites a CV and gives the model far more
+              material than the opener can use well. */}
           <div>
-            <label className={`text-sm font-bold ${c.text} block mb-1.5`}>
+            <label className={`text-sm font-bold ${c.text} block mb-1`}>
               {t('coc_bg_label')} <span className={`font-normal ${c.textMuteded}`}>{t('coc_bg_note')}</span>
             </label>
+            <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('coc_bg_hint')}</p>
             <input
               type="text"
               value={yourBackground}
@@ -291,10 +294,17 @@ const ColdOpenCraft = ({ tool }) => {
       </div>
 
       {/* ── HISTORY ── */}
+      {/* Collapsed: it was the next major block under the form, competing with
+          the thing the visitor came to do. */}
       {sessionHistory.length > 0 && !results && (
-        <div className={`${c.card} rounded-xl border ${c.border} p-4`}>
-          <h3 className={`text-sm font-bold ${c.text} mb-3`}>🕐 {t('coc_recent')}</h3>
-          <div className="space-y-1.5">
+        <details className={`group ${c.card} rounded-xl border ${c.border} p-4`}>
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <div className={`flex items-center gap-2 text-sm font-bold ${c.text}`}>
+              🕐 {t('coc_recent')}
+              <Caret groupOpen className="ms-auto" />
+            </div>
+          </summary>
+          <div className="space-y-1.5 mt-3">
             {sessionHistory.map(entry => (
               <button
                 key={entry.id}
@@ -308,7 +318,7 @@ const ColdOpenCraft = ({ tool }) => {
               </button>
             ))}
           </div>
-        </div>
+        </details>
       )}
 
       {/* ════════════════════════════════════════════════════════
