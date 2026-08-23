@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { checkAgainstSupplied } = require('../lib/factCheck');
 const { rateLimit } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Razor-sharp wit specializing in the comeback someone SHOULD have said — the one they thought of three hours later. Clever, not cruel. Satisfying because it's smart, not mean. Each comeback uses a different technique: callback, reframe, deadpan, escalation, understatement. At least one should be so calm it's devastating. Never punch down. Reference the specific situation, not generic insults. This is cathartic fiction.`
+const PERSONALITY = `Razor-sharp wit specializing in the comeback someone SHOULD have said — the one they thought of three hours later. Clever, not cruel. Satisfying because it's smart, not mean. Each comeback lands differently. At least one so calm it barely raises its voice. Never punch down. Built from the specific situation the person described and nothing else — no invented history, no guesses at what anyone meant. This is cathartic fiction about a real moment, and the moment belongs to them.`
 
 router.post('/comeback-cooker', rateLimit(), async (req, res) => {
   try {
@@ -29,27 +30,30 @@ ${whatTheySaid?.trim() ? `\nWHAT THEY SAID: "${whatTheySaid.trim()}"` : ''}
 ${relationship?.trim() ? `RELATIONSHIP: ${relationship.trim()}` : ''}
 MOOD: ${moodMap[mood] || moodMap.witty}
 
-Generate 5 comebacks this person WISHES they'd said. Each should use a different technique and feel distinct. These are cathartic fantasies — satisfying, clever, and specific to the situation.
+Generate 5 comebacks this person WISHES they'd said. Cathartic fantasies — satisfying, clever, and specific to this situation.
+
+MAKE THEM ACTUALLY GOOD. Five distinct comebacks, not five paraphrases and not five techniques demonstrated. The failure to watch for is five polite acknowledgements in a row — noted, got it, thanks for the feedback, I'll take that under advisement. That is one line five times, and none of them is the line anyone lies awake wishing they had said. Even the calmest mood wants teeth: dignified means unbothered, not agreeable. Each has to be a line a real person could deliver and feel better for having thought of. If one is awkward to say out loud, cut it. If one concedes the criticism, cut it — agreeing cleverly is still agreeing, and it reads straight to anyone who is not in on the joke. Shortest version that lands; a comeback that needs a run-up is not a comeback.
+
+ONLY THEIR FACTS. Every specific belongs to the person who typed the form. No invented job history, tenure, achievements, prior incidents, other people, or details of what happened. Told a peer criticised them in a channel, you do not know how long they have done the work, what they did last quarter, or who else was watching. A comeback built on an invented specific is one they cannot use, because they would be lying to send it.
+
+NO READING THE OTHER PERSON'S MIND. You were given a description of a moment, not access to anyone's motives. Whether they meant it, were sniping, wanted to undermine, or moved on to avoid a reply — none of that is knowable and none of it belongs anywhere in the output.
 
 Return ONLY valid JSON:
 
 {
-  "situation_read": "1 sentence — your read on what made this moment sting",
   "comebacks": [
     {
-      "line": "The exact words they should have said — punchy, quotable, ready to deliver",
-      "technique": "Name the technique: callback, reframe, deadpan, rhetorical question, understatement, escalation, agreement-twist, compliment-bomb, exit line, etc.",
-      "why_it_works": "1 sentence — why this specific approach lands in this specific situation",
-      "delivery_note": "Brief stage direction — tone, pause, eye contact. How to sell it."
+      "line": "The exact words they should have said — punchy, quotable, ready to deliver. Nothing else: no technique name, no explanation of why it lands, no stage direction. Naming the device is the trick explained, and it makes the line smaller.",
+      "delivery_note": "OPTIONAL and usually null. One short stage direction only where the line genuinely needs it to work — a pause, a flat tone, walking away after. Null whenever the line carries itself."
     }
   ],
-  "the_nuclear_option": {
-    "line": "The one that's almost too far — the thing you'd only say if you truly didn't care about consequences",
-    "warning": "Why this one lives in the fantasy drawer"
-  },
   "the_high_road": {
-    "line": "The response that somehow makes you look amazing AND makes them feel small. Unbothered royalty energy.",
-    "why_its_devastating": "Why this calm response actually hurts more than any insult"
+    "line": "The response that costs nothing and closes the subject. Calm, brief, and impossible to argue with.",
+    "why": "ONE short sentence. Not two. About the LINE and what it does — it declines the frame, it ends the exchange, it costs nothing to send. Never about the other person or anyone watching: not what they will think, not whether it leaves them a next move, not how the visitor comes across. You have not met these people, and a sentence about what the line does needs none of them in it."
+  },
+  "the_nuclear_option": {
+    "line": "The one that is too far. Genuinely too far, and genuinely funny — this is the fantasy drawer, so enjoy it. Where a specific would be the ammunition, leave a bracketed placeholder rather than inventing one.",
+    "warning": "One light line, six words or so. Probably better enjoyed than sent. Not a lecture about burning relationships or being done with this person — they know what this is, that is why it is fun."
   }
 }
 
@@ -67,6 +71,41 @@ Never place a double-quote (") character inside any JSON string value — quoted
     if (!Array.isArray(parsed.comebacks) || !parsed.comebacks.length) {
       return res.status(500).json({ error: 'Could not cook up comebacks. Please try again.' });
     }
+
+    // A comeback built on an invented specific is one they cannot use: sending
+    // it would mean claiming something that is not true about their own life.
+    // Fail-open — a fantasy comeback is still better than an error.
+    try {
+      const fields = [];
+      parsed.comebacks.forEach((cb, i) => {
+        if (typeof cb?.line === 'string') fields.push([`comebacks[${i}].line`, cb.line]);
+      });
+      if (typeof parsed.the_high_road?.line === 'string') fields.push(['the_high_road.line', parsed.the_high_road.line]);
+      if (typeof parsed.the_high_road?.why === 'string') fields.push(['the_high_road.why', parsed.the_high_road.why]);
+      // the_nuclear_option.line is deliberately NOT checked. It is the fantasy
+      // drawer, the schema already requires a bracketed placeholder instead of
+      // invented ammunition, and running it through a factual check turns the
+      // one line allowed to be too far into the tamest thing on the page.
+
+      await checkAgainstSupplied(parsed, {
+        label: 'comeback-cooker',
+        supplied: `THE SITUATION: ${situation.trim()}
+WHAT THEY SAID: ${whatTheySaid?.trim() || '(not supplied)'}
+RELATIONSHIP: ${relationship?.trim() || '(not supplied)'}`,
+        fields,
+        lookFor: `- an invented SPECIFIC about the visitor's life: how long they have done the work, what they achieved, a previous incident, their job title, their team, anything not in the fields above
+- an invented specific about the OTHER person or the setting: who else was present, what was said before, where this happened
+- MIND-READING: what the other person meant, wanted, intended, was trying to do, or why they moved on. A described action is not a motive.
+- a PREDICTION: what anyone will think, how the visitor will look, whether the other person will feel small, what the room will conclude. Nobody watched this happen except the visitor.
+Exaggeration, absurdity and obvious fantasy are FINE — this tool writes the line someone wishes they had said, and a joke that claims nothing is not a violation. Flag only where a reader would take it as a fact about the real situation.`,
+        repairNote: `Keep the comeback funny and keep it sharp. These are meant to be satisfying, so a repaired line that has lost its edge has not been repaired. Where a specific was invented, either drop it or leave a bracketed placeholder the visitor can fill.`,
+        userLanguage,
+        locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      });
+    } catch (err) {
+      console.error('ComebackCooker supplied-facts check skipped:', err.message);
+    }
+
     res.json(parsed);
 
   } catch (error) {
@@ -74,5 +113,12 @@ Never place a double-quote (") character inside any JSON string value — quoted
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. The
+// output was explaining the social dynamics back to the visitor: a "read" that
+// invented motive and consequence, a technique label on every line, and a
+// paragraph predicting what everyone watching would conclude. What it owed them
+// was five good lines.
+router.outputStandard = 'v2';
 
 module.exports = router;

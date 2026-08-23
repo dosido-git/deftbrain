@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
+import { CopyBtn } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -24,19 +25,6 @@ const EXAMPLES = [
 },
 ];;
 
-const TECHNIQUE_EMOJIS = {
-  callback:              '🔁',
-  reframe:               '🔄',
-  deadpan:               '😐',
-  'rhetorical question': '❓',
-  understatement:        '🤏',
-  escalation:            '📈',
-  'agreement-twist':     '🔀',
-  'compliment-bomb':     '💐',
-  'exit line':           '🚪',
-  reversal:              '↩️',
-  silence:               '🤐',
-};
 
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
@@ -95,7 +83,6 @@ const ComebackCooker = ({ tool }) => {
   // ── State ──
   const [error,           setError]           = useState('');
   const [revealedNuclear, setRevealedNuclear] = useState(false);
-  const [expandedCards,   setExpandedCards]   = useState({});
   const [results,         setResults]         = useState(null);
 
   // ── Refs ──
@@ -116,7 +103,6 @@ const ComebackCooker = ({ tool }) => {
     setError('');
     setResults(null);
     setRevealedNuclear(false);
-    setExpandedCards({});
 
     try {
       const data = await callToolEndpoint('comeback-cooker', {
@@ -157,18 +143,8 @@ const ComebackCooker = ({ tool }) => {
     setResults(null);
     setError('');
     setRevealedNuclear(false);
-    setExpandedCards({});
   };
 
-  const toggleCard = (idx) => {
-    setExpandedCards(prev => ({ ...prev, [idx]: !prev[idx] }));
-  };
-
-  // ── Assign refs every render ──
-  handleSubmitRef.current = handleSubmit;
-  canSubmitRef.current = !loading && !!situation.trim();
-
-  // ── Build copy text ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const moodLabel = MOOD_OPTIONS.find(m => m.id === mood)?.label || mood;
@@ -176,18 +152,17 @@ const ComebackCooker = ({ tool }) => {
     out += `${t('cbc_copy_situation')} ${situation}\n`;
     if (whatTheySaid) out += `${t('cbc_copy_theysaid')} "${whatTheySaid}"\n`;
     out += `${t('cbc_copy_mood')} ${moodLabel}\n\n`;
-    if (results?.situation_read) out += `${t('cbc_copy_read')} ${results?.situation_read}\n\n`;
     out += `━━ ${t('cbc_copy_comebacks')} ━━\n\n`;
     (results?.comebacks || []).forEach((cb, i) => {
       out += `${i + 1}. "${cb.line}"\n`;
-      out += `   [${cb.technique}] ${cb.why_it_works}\n`;
-      out += `   🎬 ${cb.delivery_note}\n\n`;
+      if (cb.delivery_note) out += `   🎬 ${cb.delivery_note}\n`;
+      out += `\n`;
     });
     if (results?.the_nuclear_option) {
       out += `━━ ${t('cbc_copy_nuclear')} ━━\n"${results?.the_nuclear_option?.line}"\n⚠️ ${results?.the_nuclear_option?.warning}\n\n`;
     }
     if (results?.the_high_road) {
-      out += `━━ ${t('cbc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why_its_devastating}\n\n`;
+      out += `━━ ${t('cbc_copy_highroad')} ━━\n"${results?.the_high_road?.line}"\n${results?.the_high_road?.why || ''}\n\n`;
     }
     return out + BRAND;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -385,57 +360,33 @@ const ComebackCooker = ({ tool }) => {
             </button>
           </div>
 
-          {/* Situation read */}
-          {results?.situation_read && (
-            <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 text-center`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-1`}>{t('cbc_the_read')}</p>
-              <p className={`text-sm italic ${c.text}`}>{results?.situation_read}</p>
-            </div>
-          )}
-
           {/* Comebacks */}
           {results?.comebacks?.length > 0 && (
             <div className="space-y-3">
               <h3 className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} px-1`}>
                 {t('cbc_should_have_said')}
               </h3>
-              {results?.comebacks?.map((cb, i) => {
-                const isOpen = expandedCards[i];
-                const emoji = TECHNIQUE_EMOJIS[cb.technique?.toLowerCase()] || '💬';
-                return (
-                  <div key={i} className={`${c.card} border ${c.border} rounded-xl overflow-hidden`}>
-                    <button onClick={() => toggleCard(i)} className="w-full p-5 text-start">
-                      <div className="flex items-start gap-3">
-                        <span className={`text-lg font-bold ${c.textMuted} flex-shrink-0`}>{i + 1}.</span>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-base font-semibold ${c.text} leading-snug`}
-                             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                            "{cb.line}"
-                          </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-sm">{emoji}</span>
-                            <span className={`text-xs ${c.textMuted}`}>{cb.technique}</span>
-                          </div>
-                        </div>
-                        <Caret open={isOpen} className="flex-shrink-0" />
+              {results?.comebacks?.map((cb, i) => (
+                /* The line, and nothing else. The technique label and the
+                   why-it-works were the trick explained next to the trick. */
+                <div key={i} className={`${c.card} border ${c.border} rounded-xl p-5`}>
+                  <div className="flex items-start gap-3">
+                    <span className={`text-lg font-bold ${c.textMuted} flex-shrink-0`}>{i + 1}.</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-base font-semibold ${c.text} leading-snug`}
+                         style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                        "{cb.line}"
+                      </p>
+                      {cb.delivery_note && (
+                        <p className={`text-xs ${c.textMuted} italic mt-2`}>🎬 {cb.delivery_note}</p>
+                      )}
+                      <div className="mt-3">
+                        <CopyBtn exact quiet label={t('cbc_copy')} content={cb.line + BRAND} />
                       </div>
-                    </button>
-
-                    {isOpen && (
-                      <div className={`px-5 pb-5 space-y-3 border-t ${c.border} pt-3 ms-8`}>
-                        <div>
-                          <p className={`text-xs font-semibold ${c.textMuted} mb-1`}>{t('cbc_why_it_works')}</p>
-                          <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{cb.why_it_works}</p>
-                        </div>
-                        <div className={`${c.deliveryBg} rounded-xl p-3`}>
-                          <p className={`text-xs font-semibold ${c.deliveryText} mb-1`}>🎬 {t('cbc_delivery')}</p>
-                          <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{cb.delivery_note}</p>
-                        </div>
-                      </div>
-                    )}
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           )}
 
@@ -449,9 +400,12 @@ const ComebackCooker = ({ tool }) => {
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 "{results?.the_high_road?.line}"
               </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>
-                {results?.the_high_road?.why_its_devastating}
-              </p>
+              {results?.the_high_road?.why && (
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.the_high_road.why}</p>
+              )}
+              <div className="mt-3">
+                <CopyBtn exact quiet label={t('cbc_copy')} content={results.the_high_road.line + BRAND} />
+              </div>
             </div>
           )}
 
