@@ -105,7 +105,12 @@ Create 3 caption variations, each with a different approach.
 OUTPUT (JSON only):
 {
   "image_read": "What is CLEARLY visible, and nothing else. Name only what you could point at and be confident about — a bicycle, a person, an indoor room, a number written on the frame. Leave out anything you are inferring: what the setting is for, what the clothing is, what an object is used for, what someone is doing. Where a detail matters to the captions but you cannot be sure of it, say so in the same breath: a frame that may be on a stand or may be a stationary trainer. An uncertain detail stated flatly becomes a caption built on something that is not there. If the user described the image instead of uploading one, work from their words and add nothing to them.",
-  "not_sure_about": ["Anything you can see but cannot identify with confidence, and which would change a caption if you got it wrong. Empty array when the image is unambiguous. This is not hedging: it is the list of things the captions must not assert."],
+  "_propagation": "READ THIS BEFORE WRITING ANY FIELD BELOW not_sure_about. Whatever you put in not_sure_about becomes prohibited factual material for the WHOLE response — every caption, every why_it_works, every hashtag, the alt text and every engagement tip — unless the user supplied that same fact themselves in their own description, in which case it was never uncertain and does not belong in the list. There is no field where the doubt lapses.
+    It is prohibited in every grammatical disguise. Not only as a statement: not as an adjective (glowing), not as a verb (I built, just acquired), not as a noun compound (#resinart, #handmade), not as an implication (my new lamp), not smuggled into a rationale about why a caption works, and not as a hashtag, which is the surface people forget because it does not look like a sentence. A hashtag is a claim in one word.
+    The check is mechanical, so do it mechanically: for each item you wrote in not_sure_about, scan every string you are about to output and ask whether it could only be true if that doubt had been settled. If yes, cut it or rewrite around it. Uncertainty about a thing never blocks mentioning the thing — only asserting the part you could not see. The octopus may be described, joked about and hashtagged; whether it lights up and who made it may not.",
+  "not_sure_about": ["Anything you can see but cannot identify with confidence, and which would change a caption if you got it wrong. Empty array when the image is unambiguous.
+    A settled thing is simply ABSENT from this list. Do not list it with a note explaining that it is settled — that is narrating the instruction back instead of following it, and the entry still blocks the fact downstream. If the user told you they made it, who made it never appears here at all. Do not split hairs about a fact they gave you either: told it is a lamp that lights up purple, neither the lamp nor the light belongs here, however uncertain the mechanism is. Doubt what you are LOOKING at, never what you were TOLD.
+    This is not hedging either: it is the list of things every later field is forbidden to assert."],
   "captions": [
     {
       "tone": "the tone used (e.g., Witty, Casual, Reflective)",
@@ -166,6 +171,15 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     if (Array.isArray(parsed_json.captions)) {
       parsed_json.captions.forEach(c => { if (c && typeof c.caption === 'string') c.char_count = c.caption.length; });
     }
+    // Uncertainty here comes from LOOKING. With no image there is nothing being
+    // interpreted — every fact came from the person, and the prompt rule saying
+    // so did not hold: told "a lamp I made myself", the model still listed who
+    // made it as uncertain, which then blocks the fact they supplied. Enforced
+    // in code rather than asked for again.
+    if (!parsed) parsed_json.not_sure_about = [];
+    // The working field that makes the model read its own list before writing
+    // the rest. Never shown.
+    delete parsed_json._propagation;
     res.json(parsed_json);
 
   } catch (error) {

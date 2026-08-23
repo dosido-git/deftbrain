@@ -3,8 +3,8 @@
     "tool": "caption-magic",
     "tag": "captionmagic-v1",
     "locked": "2026-07-11",
-    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert.",
-    "baseline": "captionmagic-v2",
+    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert. Re-locked 2026-08-23 (v3): not_sure_about is now empty for any request with no image, enforced in code. Uncertainty here comes from looking; a typed description contains only facts the person supplied, and listing one as uncertain then blocked the fact they gave us. This case is description-only, so an empty array is the correct output rather than a regression.",
+    "baseline": "captionmagic-v3",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -26,95 +26,92 @@
         "userRegion": "US"
       },
       "output": {
-        "image_read": "A coffee cup containing what appears to be a latte with latte art, positioned on a surface next to an open notebook with visible pages. Morning light is coming in, creating shadows and illuminating the scene. The setting appears to be indoors in a corner space.",
-        "not_sure_about": [
-          "Whether this is actually a coffee shop or a home setup",
-          "The specific content written in the notebook",
-          "Whether the person in frame is the one starting the business or this is a styled shot"
-        ],
+        "image_read": "A coffee cup containing a light brown beverage, an open notebook with visible pages, and natural light coming from one direction into what appears to be an indoor corner space. The setup is arranged on a surface, likely a table.",
+        "not_sure_about": [],
         "captions": [
           {
-            "tone": "Witty and casual",
-            "text": "day one of pretending i know what i'm doing. the latte helps. the notebook makes it look official. we'll see how long this actually lasts 😅☕",
+            "tone": "Witty and self-aware",
+            "text": "officially launching my freelance writing career which so far has involved buying this notebook, taking a photo of it, and calling it market research 📝",
             "hashtags": [
-              {
-                "tag": "freelancelife"
-              },
-              {
-                "tag": "writerlife"
-              },
-              {
-                "tag": "newbusiness"
-              },
-              {
-                "tag": "coffeeandcreatives"
-              },
               {
                 "tag": "freelancewriter"
-              }
-            ],
-            "char_count": 128,
-            "why_it_works": "Self-aware humor about the gap between the aesthetic and reality—relatable to anyone starting something new",
-            "best_for": "Building rapport with people who appreciate honesty over hype"
-          },
-          {
-            "tone": "Casual and matter-of-fact",
-            "text": "officially made the jump. turns out all you need is a decent coffee, somewhere to write, and an unhealthy amount of faith in yourself. here we go 📝",
-            "hashtags": [
-              {
-                "tag": "launchday"
               },
-              {
-                "tag": "freelancing"
-              },
-              {
-                "tag": "writer"
-              },
-              {
-                "tag": "smallbusiness"
-              },
-              {
-                "tag": "amwriting"
-              }
-            ],
-            "char_count": 145,
-            "why_it_works": "Straightforward announcement with a touch of humor—marks the moment without overselling it",
-            "best_for": "People who follow you for updates and want to know what's new in your life"
-          },
-          {
-            "tone": "Reflective and light",
-            "text": "something about morning light, a blank page, and a really good latte just feels like the right way to start this. no plan, just coffee and words. let's see what happens",
-            "hashtags": [
               {
                 "tag": "writersofinstagram"
               },
               {
-                "tag": "freelancewriting"
-              },
-              {
-                "tag": "creativeentrepreneur"
+                "tag": "amwriting"
               },
               {
                 "tag": "writingcommunity"
               },
               {
-                "tag": "coffeeshop"
+                "tag": "freelancework"
               }
             ],
-            "char_count": 154,
-            "why_it_works": "Focuses on the feeling and vibe rather than the announcement itself—invites people into the experience",
-            "best_for": "Creating a contemplative tone that resonates with other creative people"
+            "char_count": 168,
+            "why_it_works": "Self-deprecating humor that acknowledges the gap between setup and execution—real people laugh at their own process, not just celebrate it",
+            "best_for": "Building connection with other writers and establishing a relatable, unpretentious brand voice"
+          },
+          {
+            "tone": "Casual and matter-of-fact",
+            "text": "new chapter (literally, look at the notebook). here we go 📖☕",
+            "hashtags": [
+              {
+                "tag": "freelancewriter"
+              },
+              {
+                "tag": "newbeginnings"
+              },
+              {
+                "tag": "writerslife"
+              },
+              {
+                "tag": "amwriting"
+              },
+              {
+                "tag": "creativeentrepreneur"
+              }
+            ],
+            "char_count": 63,
+            "why_it_works": "Minimal and punchy—the visual joke lands without overselling it, which suits the tone of someone genuinely starting something rather than performing it",
+            "best_for": "When you want to keep it simple and let the image do the heavy lifting"
+          },
+          {
+            "tone": "Reflective and genuine",
+            "text": "turning the thought-spiral into actual words. if you've been thinking about starting something, this is me doing it badly at first, which apparently is how it works 🤍",
+            "hashtags": [
+              {
+                "tag": "freelancework"
+              },
+              {
+                "tag": "writerscommunity"
+              },
+              {
+                "tag": "creativebusiness"
+              },
+              {
+                "tag": "amwriting"
+              },
+              {
+                "tag": "startuplife"
+              }
+            ],
+            "char_count": 172,
+            "why_it_works": "Speaks to the actual emotional experience of starting—vulnerability and permission-giving instead of polish, which invites resonance over envy",
+            "best_for": "Attracting an audience that values honesty and wants to see the real messy beginning, not the highlight reel"
           }
         ],
-        "alt_text": "A latte with latte art sits next to an open notebook on a table in morning light, in what appears to be a coffee shop corner",
+        "alt_text": "A coffee cup with light brown beverage sits next to an open notebook on a table, with natural light illuminating the corner workspace.",
         "engagement_tips": [
-          "Leave the specifics of your business for the comments if people ask—the caption sets the mood and lets the image do the work",
-          "A caption like this naturally invites 'so what kind of writing do you do?' or 'how are you feeling about it?'—those are good conversation starters, so respond to them genuinely"
+          "A casual parenthetical comment gives followers an easy way to riff on the joke—room for them to add their own version of what they pretended counted as productivity",
+          "Admitting this is rough-draft energy (not polished yet) creates space for people to share where they are in their own process rather than just cheering from the sidelines"
         ],
         "avoid": [
-          "Overexplaining your business model or services in the caption—people asked to be added to your email list in their DMs, not in a caption",
-          "Motivational-poster language ('living my best life,' 'following my dreams') that sounds unlike how you actually talk",
-          "Claims about this being a 'sign' or 'the universe' aligning—stick to what you can see and feel"
+          "Claiming this is your first day or making timeline promises you haven't verified",
+          "Describing the coffee or space in ways that assume details you cannot see clearly",
+          "Generic motivational language like 'dreams' or 'finally taking the leap' without grounding it in something real",
+          "Hashtags implying this is a product launch or that you've already succeeded"
         ]
       }
     },
