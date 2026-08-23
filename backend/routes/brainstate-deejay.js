@@ -66,8 +66,9 @@ OUTPUT (JSON only):
     {
       "phase": "Transition In — 2-4 words",
       "duration": "10-15 min",
-      "bpm_range": "60-80 BPM",
-      "characteristics": "tempo, style, why — one sentence",
+      "tempo_feel": "How the tempo should FEEL, in words: gentle, moderate, steady and driving, near-static. This is the instruction. — 1-3 words",
+      "tempo_hint": "ONLY a rough BPM band and nothing else, in the form: around 70-85 BPM. No commentary, no caveat, no explanation of what it is for — the interface already frames it. It exists as something to type into a search box, never as the correct tempo for this person.",
+      "characteristics": "What this phase should sound like and what to notice while it plays. Describe the music and the experience — never a mechanism inside the listener. No 'your brain can ride the momentum', no 'so your body has something to latch onto', no talk of what neurons, attention systems or the nervous system are doing. You are describing sound, not physiology. — one sentence",
       "genre_suggestions": ["genres that work"],
       "example_artists": ["Two or three artists whose catalogue sits in this sound, as reference points for the search rather than a prescription. Only artists you are certain both exist and fit — one that contradicts the characteristics above undermines the phase."],
       "search_recipe": "The sound to look for, written as terms someone can paste into a music service: instrumentation, texture, tempo band, and the exclusions that matter — for example warm instrumental lo-fi, soft drums, 70-85 BPM, no vocals. This is this phase's deliverable, not a track list."
@@ -75,8 +76,9 @@ OUTPUT (JSON only):
     {
       "phase": "Main State — 2-4 words",
       "duration": "30-60 min",
-      "bpm_range": "90-110 BPM",
-      "characteristics": "what makes this effective — one sentence",
+      "tempo_feel": "How the tempo should FEEL, in words. The instruction. — 1-3 words",
+      "tempo_hint": "ONLY a rough BPM band and nothing else, in the form: around 90-105 BPM. No commentary and no caveat.",
+      "characteristics": "What this phase should sound like and what to notice. Describe the music, never a mechanism inside the listener — nothing about what their brain or body is doing with it. — one sentence",
       "genre_suggestions": ["genres"],
       "example_artists": ["artists"],
       "search_recipe": "The sound to look for, as pasteable search terms: instrumentation, texture, tempo band, exclusions. Not a track list."
@@ -84,8 +86,9 @@ OUTPUT (JSON only):
     {
       "phase": "Maintenance — 2-4 words",
       "duration": "ongoing",
-      "bpm_range": "80-100 BPM",
-      "characteristics": "sustaining properties — one sentence",
+      "tempo_feel": "How the tempo should FEEL, in words. The instruction. — 1-3 words",
+      "tempo_hint": "ONLY a rough BPM band and nothing else, in the form: around 90-105 BPM. No commentary and no caveat.",
+      "characteristics": "What this phase should sound like and what to notice. The music, not the physiology. — one sentence",
       "genre_suggestions": ["genres"],
       "search_recipe": "The sound to look for, as pasteable search terms: instrumentation, texture, tempo band, exclusions. Not a track list."
     }
@@ -112,7 +115,7 @@ OUTPUT (JSON only):
       "when": "What tells them it is this one — one sentence"
     }
   ],
-  "why_this_may_help": "Why this PROGRESSION may help, in plain language and without borrowing scientific authority. Describe what the music is doing — starting near where their energy already is so the change is not abrupt, then shifting tempo, rhythm and complexity toward the destination sound — and say music affects people differently, so it is a starting point to adjust. Never cite research, neural oscillations, entrainment, frequency bands or any named effect: nothing was retrieved, and a specific mechanism stated confidently is this tool sounding most authoritative exactly where it knows least. If you mention a tempo change, get its direction right and keep it consistent with the phase bpm_ranges. — 2-3 sentences"
+  "why_this_may_help": "Why this PROGRESSION may help, in plain language and without borrowing scientific authority. Describe what the music is doing — starting near where their energy already is so the change is not abrupt, then shifting tempo, rhythm and complexity toward the destination sound — and say music affects people differently, so it is a starting point to adjust. Never cite research, neural oscillations, entrainment, frequency bands or any named effect: nothing was retrieved, and a specific mechanism stated confidently is this tool sounding most authoritative exactly where it knows least. If you mention a tempo change, get its direction right and keep it consistent with the phase tempo_hints. — 2-3 sentences"
 }
 
 CRITICAL — NAME NOTHING YOU CANNOT STAND BEHIND. In example_artists, name only artists you are certain exist and whose work actually matches that phase's characteristics. An artist who contradicts the phase — vocals where you said no vocals, solo piano where you said steady percussion — is worse than naming none, because the reader trusts the pairing. Fewer is always allowed. The search_recipe is the deliverable and carries the phase on its own.

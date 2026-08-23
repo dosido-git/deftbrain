@@ -83,13 +83,6 @@ const SENSITIVITY_OPTIONS = [
   { value: 'repetition_soothing', label: '♻️ Repetition is soothing', labelKey: 'bsd_sens_repetition_soothing' },
 ];
 
-const ADJUSTMENT_OPTIONS = [
-  { value: 'too_stimulating',  label: '📉 Too stimulating / intense', labelKey: 'bsd_adj_too_stimulating' },
-  { value: 'not_enough',       label: '📈 Not enough energy / too boring', labelKey: 'bsd_adj_not_enough' },
-  { value: 'wrong_genre',      label: '🎵 Wrong genre / style', labelKey: 'bsd_adj_wrong_genre' },
-  { value: 'tempo_off',        label: '🥁 Tempo feels off', labelKey: 'bsd_adj_tempo_off' },
-];
-
 // ════════════════════════════════════════════════════════════
 // HELPERS (outside component for stability)
 // ════════════════════════════════════════════════════════════
@@ -191,12 +184,14 @@ const BrainStateDeejay = ({ tool }) => {
   const [showSensitivities, setShowSensitivities] = useState(false);
   const [showInputs, setShowInputs] = useState(true);
   const [error, setError] = useState('');
-  const [showAdjust, setShowAdjust] = useState(false);
   const [adjustFeedback, setAdjustFeedback] = useState('');
   const [adjusting, setAdjusting] = useState(false);
   const [rated, setRated] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [showWhy, setShowWhy] = useState(false);
+  // Set by the first service a visitor actually clicks — never asked for.
+  const [preferredService, setPreferredService] = usePersistentState('brainstate-deejay-service', '');
+  const [showAllServices, setShowAllServices] = useState(false);
 
   // ── Refs ──
   const resultsRef = useRef(null);
@@ -327,7 +322,7 @@ const BrainStateDeejay = ({ tool }) => {
     ];
     (results.playlist || []).forEach(phase => {
       lines.push(`── ${phase.phase} (${phase.duration || ''}) ──`);
-      if (phase.bpm_range) lines.push(`${t('bsd_copy_bpm')} ${phase.bpm_range}`);
+      if (phase.tempo_feel) lines.push(`${t('bsd_copy_bpm')} ${phase.tempo_feel}${phase.tempo_hint ? ` (${phase.tempo_hint})` : ''}`);
       lines.push(phase.characteristics || '');
       if (phase.genre_suggestions) lines.push(`${t('bsd_copy_genres')} ${phase.genre_suggestions.join(', ')}`);
       if (phase.example_artists) lines.push(`${t('bsd_copy_artists')} ${phase.example_artists.join(', ')}`);
@@ -369,7 +364,6 @@ const BrainStateDeejay = ({ tool }) => {
     setResults(entry.results);
     setShowInputs(false);
     setShowHistory(false);
-    setShowAdjust(false);
     setAdjustFeedback('');
     stopSession();
     setRated(false);
@@ -380,7 +374,7 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   const generate = useCallback(async () => {
     if (!currentState || !desiredState) return;
-    setError(''); setResults(null); setShowAdjust(false); setAdjustFeedback('');
+    setError(''); setResults(null); setAdjustFeedback('');
     stopSession(); setRated(false);
     try {
       const res = await callToolEndpoint('brainstate-deejay', {
@@ -420,14 +414,14 @@ const BrainStateDeejay = ({ tool }) => {
     setShowInputs(true);
     setResults(null);
     setError('');
-    setShowAdjust(false);
     setAdjustFeedback('');
     stopSession();
     setRated(false);
   }, [stopSession]);
 
-  const submitAdjustment = useCallback(async () => {
-    if (!adjustFeedback || !results) return;
+  const submitAdjustment = useCallback(async (directFeedback) => {
+    const feedback = typeof directFeedback === 'string' && directFeedback ? directFeedback : adjustFeedback;
+    if (!feedback || !results) return;
     setError(''); setAdjusting(true);
     try {
       const st = results.state_transition || {};
@@ -440,10 +434,9 @@ const BrainStateDeejay = ({ tool }) => {
           musicTaste.trim()
         ].filter(Boolean).join('. '),
         sensitivities: sensitivities.map(s => getLabelFor(SENSITIVITY_OPTIONS, s)),
-        feedback: adjustFeedback,
+        feedback,
       });
       setResults(res);
-      setShowAdjust(false);
       setAdjustFeedback('');
       stopSession(); setRated(false);
       saveToHistory(res, st.from || '', `${st.to || ''} (adjusted)`);
@@ -659,9 +652,10 @@ const BrainStateDeejay = ({ tool }) => {
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <h3 className={`text-sm font-bold ${c.text}`}>🎵 {phase.phase}</h3>
               <div className="flex items-center gap-2">
-                {phase.bpm_range && (
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.bpmBadge}`}>
-                    {phase.bpm_range}
+                {phase.tempo_feel && (
+                  <span title={phase.tempo_hint || undefined}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.bpmBadge}`}>
+                    {phase.tempo_feel}
                   </span>
                 )}
                 {phase.duration && <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${c.cardAlt} ${c.textMuted}`}>{phase.duration}</span>}
@@ -706,13 +700,23 @@ const BrainStateDeejay = ({ tool }) => {
                 been built there, which it never was. */}
             {phase.search_recipe && (
               <div>
-                <div className="flex flex-wrap gap-2">
-                  {MUSIC_PROVIDERS.map(prov => (
+                <div className="flex flex-wrap items-center gap-2">
+                  {(preferredService && !showAllServices
+                    ? MUSIC_PROVIDERS.filter(p => p.value === preferredService)
+                    : MUSIC_PROVIDERS
+                  ).map(prov => (
                     <a key={prov.value} href={prov.makeUrl(phase.search_recipe)} target="_blank" rel="noopener noreferrer"
+                      onClick={() => setPreferredService(prov.value)}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${c.spotifyBg} ${c.spotifyText} hover:opacity-80 transition-opacity`}>
                       <span>{prov.emoji}</span> {t('bsd_search_provider', { provider: prov.label })}
                     </a>
                   ))}
+                  {preferredService && !showAllServices && (
+                    <button onClick={() => setShowAllServices(true)}
+                      className={`text-[11px] ${c.textMuted} hover:underline`}>
+                      {t('bsd_other_services')}
+                    </button>
+                  )}
                 </div>
                 <p className={`text-[10px] ${c.textMuted} mt-1.5`}>{t('bsd_search_note')}</p>
               </div>
@@ -744,7 +748,12 @@ const BrainStateDeejay = ({ tool }) => {
                 <div key={idx} className={`p-3 rounded-xl border ${c.cardAlt}`}>
                   <div className={`text-xs font-bold mb-1 ${c.text}`}>{alt.name}</div>
                   <p className={`text-xs ${c.textSecondary}`}><strong>{t('bsd_alt_change')}</strong> {alt.change}</p>
-                  <p className={`text-xs ${c.textMuted}`}><strong>{t('bsd_alt_when')}</strong> {alt.when}</p>
+                  <p className={`text-xs ${c.textMuted} mb-2`}><strong>{t('bsd_alt_when')}</strong> {alt.when}</p>
+                  <button onClick={() => submitAdjustment(alt.name)}
+                    disabled={adjusting}
+                    className={`text-xs font-semibold ${linkStyle} disabled:opacity-40`}>
+                    {adjusting ? t('bsd_adjusting') : t('bsd_redo_for_this')}
+                  </button>
                 </div>
               ))}
             </div>
@@ -765,8 +774,6 @@ const BrainStateDeejay = ({ tool }) => {
           </div>
         )}
 
-        {/* Adjustment Panel */}
-        {renderAdjustPanel()}
 
         {/* Rate & Actions */}
         <div className="space-y-3">
@@ -806,45 +813,6 @@ const BrainStateDeejay = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER: Adjustment Panel
   // ══════════════════════════════════════════
-  const renderAdjustPanel = () => (
-    <div className={`p-4 rounded-2xl border ${c.warning}`}>
-      <button onClick={() => setShowAdjust(!showAdjust)}
-        className={`flex items-center gap-2 text-xs font-bold  w-full text-start`}>
-        <Caret open={showAdjust} />
-        <span>{t('bsd_adjust_toggle')}</span>
-      </button>
-      {showAdjust && (
-        <div className="mt-3 space-y-3">
-          <p className={`text-xs ${c.textMuted}`}>{t('bsd_adjust_hint')}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {ADJUSTMENT_OPTIONS.map(opt => (
-              <button key={opt.value}
-                onClick={() => setAdjustFeedback(opt.label.replace(/^[^\s]+\s/, ''))}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                  adjustFeedback === opt.label.replace(/^[^\s]+\s/, '') ? c.pillActive : c.pillInactive
-                }`}>
-                {t(opt.labelKey)}
-              </button>
-            ))}
-          </div>
-          <label htmlFor="bsd-adjust" className="sr-only">{t('bsd_adjust_describe_label')}</label>
-          <input id="bsd-adjust" type="text" value={adjustFeedback} onChange={e => setAdjustFeedback(e.target.value)}
-            placeholder={t('bsd_adjust_ph')}
-            className={`w-full px-4 py-2.5 rounded-xl border text-base ${c.input} outline-none`} />
-          <button onClick={submitAdjustment}
-            disabled={!adjustFeedback || adjusting}
-            className={`disabled:opacity-40 w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${c.btnPrimary}`}>
-            {adjusting ? (
-              <><span className="animate-spin inline-block">{tool?.icon ?? '🎧'}</span> {t('bsd_adjusting')}</>
-            ) : (
-              <><span>🎛️</span> {t('bsd_adjust_btn')}</>
-            )}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-
   // ══════════════════════════════════════════
   // RENDER: Error
   // ══════════════════════════════════════════

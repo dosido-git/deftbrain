@@ -4,6 +4,8 @@
 // Tidal, SoundCloud, Name That Feeling, Spiral Stopper) stay as-is across languages.
 export const brainStateDeejay = {
   en: {
+    bsd_other_services: "other services",
+    bsd_redo_for_this: "Redo the plan for this →",
     bsd_search_for: "Search for",
     bsd_search_provider: "Search {{provider}}",
     bsd_search_note: "Opens a search using this phase's sound profile.",
@@ -168,6 +170,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Headphones:",
   },
   es: {
+    bsd_other_services: "otros servicios",
+    bsd_redo_for_this: "Rehacer el plan por esto →",
     bsd_search_for: "Busca",
     bsd_search_provider: "Buscar en {{provider}}",
     bsd_search_note: "Abre una búsqueda con el perfil sonoro de esta fase.",
@@ -314,6 +318,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Auriculares:",
   },
   zh: {
+    bsd_other_services: "其他平台",
+    bsd_redo_for_this: "针对这一点重做计划 →",
     bsd_search_for: "搜索关键词",
     bsd_search_provider: "在 {{provider}} 搜索",
     bsd_search_note: "将以本阶段的声音特征打开一次搜索。",
@@ -460,6 +466,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "耳机：",
   },
   hi: {
+    bsd_other_services: "अन्य सेवाएँ",
+    bsd_redo_for_this: "इसके लिए योजना दोबारा बनाएँ →",
     bsd_search_for: "यह खोजें",
     bsd_search_provider: "{{provider}} पर खोजें",
     bsd_search_note: "इस चरण की ध्वनि प्रोफ़ाइल से एक खोज खुलती है।",
@@ -606,6 +614,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "हेडफ़ोन:",
   },
   ar: {
+    bsd_other_services: "خدمات أخرى",
+    bsd_redo_for_this: "أعد بناء الخطة لهذا →",
     bsd_search_for: "ابحث عن",
     bsd_search_provider: "ابحث في {{provider}}",
     bsd_search_note: "يفتح بحثًا باستخدام السمات الصوتية لهذه المرحلة.",
@@ -752,6 +762,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "سماعات الرأس:",
   },
   pt: {
+    bsd_other_services: "outros serviços",
+    bsd_redo_for_this: "Refazer o plano por isto →",
     bsd_search_for: "Procure por",
     bsd_search_provider: "Buscar no {{provider}}",
     bsd_search_note: "Abre uma busca com o perfil sonoro desta fase.",
@@ -898,6 +910,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Fones:",
   },
   fr: {
+    bsd_other_services: "autres services",
+    bsd_redo_for_this: "Refaire le plan pour cela →",
     bsd_search_for: "Cherchez",
     bsd_search_provider: "Chercher sur {{provider}}",
     bsd_search_note: "Ouvre une recherche avec le profil sonore de cette phase.",
@@ -1044,6 +1058,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Casque :",
   },
   de: {
+    bsd_other_services: "andere Dienste",
+    bsd_redo_for_this: "Plan dafür neu erstellen →",
     bsd_search_for: "Suchen nach",
     bsd_search_provider: "Auf {{provider}} suchen",
     bsd_search_note: "Öffnet eine Suche mit dem Klangprofil dieser Phase.",
@@ -1190,6 +1206,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Kopfhörer:",
   },
   ja: {
+    bsd_other_services: "他のサービス",
+    bsd_redo_for_this: "これに合わせて作り直す →",
     bsd_search_for: "検索ワード",
     bsd_search_provider: "{{provider}} で検索",
     bsd_search_note: "このフェーズの音の特徴で検索を開きます。",
@@ -1336,6 +1354,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "ヘッドホン：",
   },
   ko: {
+    bsd_other_services: "다른 서비스",
+    bsd_redo_for_this: "이 경우에 맞게 다시 만들기 →",
     bsd_search_for: "검색어",
     bsd_search_provider: "{{provider}}에서 검색",
     bsd_search_note: "이 단계의 사운드 프로필로 검색을 엽니다.",
@@ -1482,6 +1502,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "헤드폰:",
   },
   ru: {
+    bsd_other_services: "другие сервисы",
+    bsd_redo_for_this: "Пересобрать план под это →",
     bsd_search_for: "Искать",
     bsd_search_provider: "Искать в {{provider}}",
     bsd_search_note: "Откроет поиск по звуковому профилю этого этапа.",
@@ -1628,6 +1650,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "Наушники:",
   },
   th: {
+    bsd_other_services: "บริการอื่น",
+    bsd_redo_for_this: "ทำแผนใหม่สำหรับข้อนี้ →",
     bsd_search_for: "ค้นหา",
     bsd_search_provider: "ค้นใน {{provider}}",
     bsd_search_note: "เปิดการค้นหาด้วยโปรไฟล์เสียงของช่วงนี้",
@@ -1774,6 +1798,8 @@ export const brainStateDeejay = {
     bsd_copy_headphones: "หูฟัง:",
   },
   vi: {
+    bsd_other_services: "dịch vụ khác",
+    bsd_redo_for_this: "Làm lại kế hoạch cho điều này →",
     bsd_search_for: "Tìm",
     bsd_search_provider: "Tìm trên {{provider}}",
     bsd_search_note: "Mở tìm kiếm bằng hồ sơ âm thanh của giai đoạn này.",
