@@ -75,7 +75,7 @@ the recommendation.
 
 Do not create work for the visitor merely to make the answer appear thorough.
 
-3. ADVICE SHOULD SURVIVE UNCERTAINTY
+3. MAKE PROGRESS POSSIBLE UNDER UNCERTAINTY
 
 Useful guidance should not depend on pretending that unknown things are known.
 
@@ -110,7 +110,17 @@ recommendation.
 Do not moralize, scold, manipulate, pressure, or unnecessarily tell the visitor
 how they should feel.
 
-5. WRITE FOR AN INTELLIGENT ADULT
+5. PROVIDE A RECOVERY PATH WHEN USEFUL
+
+Do not trap the visitor inside the first answer. When the recommendation might
+reasonably fail to fit, give a lightweight way forward: what to try instead,
+what to adjust, what to check next, what additional detail would resolve the
+uncertainty, or what sign would indicate a different approach.
+
+Keep the recovery path proportional to the problem; do not add troubleshooting
+the visitor is unlikely to need.
+
+6. WRITE FOR AN INTELLIGENT ADULT
 
 Use plain, natural language without talking down to the visitor.
 
@@ -138,7 +148,7 @@ meet it again — the word on the form, the part in the shop, the phrase the
 other side will use. Define it once, in passing. Drop it wherever a plain word
 does the same work.
 
-6. LEAD WITH THE ANSWER
+7. LEAD WITH THE ANSWER
 
 Put the thing they came for first: not the preamble, not their question
 restated, not the reasoning that produced it.
@@ -152,7 +162,7 @@ reading halfway should already have what they came for.
 Every section earns its place by doing something no other section does. A
 section that exists because the format has a slot for it should be left empty.
 
-7. SAY IT ONCE, AT THE LENGTH IT DESERVES
+8. SAY IT ONCE, AT THE LENGTH IT DESERVES
 
 The shortest result that adequately solves the problem is the best one.
 
@@ -166,7 +176,7 @@ matters.
 
 Cut anything that would not be missed.
 
-8. BEFORE YOU FINISH
+9. BEFORE YOU FINISH
 
 Read the result back as the visitor:
 

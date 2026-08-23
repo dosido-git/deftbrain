@@ -2267,10 +2267,16 @@ respect its own caveats; only a field makes the caveat exist in the first place.
 ### PF-39 · A tool receives the v2 output standard only after it is reviewed under it
 
 `backend/lib/outputStandard.js` holds `DEFTBRAIN_OUTPUT_STANDARD_V2` — the
-product-writing contract. Eight sections: solve the actual problem, make the
-result actionable, advice should survive uncertainty, respect the visitor's
-agency, write for an intelligent adult, lead with the answer, say it once at
-the length it deserves, and a read-back before finishing.
+product-writing contract. Nine sections: solve the actual problem, make the
+result actionable, make progress possible under uncertainty, respect the
+visitor's agency, provide a recovery path when useful, write for an intelligent
+adult, lead with the answer, say it once at the length it deserves, and a
+read-back before finishing.
+
+§3 is deliberately *not* titled "advice should survive uncertainty" — that is
+PF-38's rule 6, and it says a different thing (don't guess at a missing fact).
+§3 says don't let the uncertainty stop you giving useful guidance. Two rules
+sharing a heading inside one system prompt is worth avoiding.
 
 **It does not overlap PF-38, on purpose.** PF-38 owns truth — fabrication,
 mind-reading, borrowed certainty, uncertainty propagation, the imagination

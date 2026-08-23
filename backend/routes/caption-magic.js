@@ -104,7 +104,7 @@ Create 3 caption variations, each with a different approach.
 
 OUTPUT (JSON only):
 {
-  "image_read": "What is CLEARLY visible, and nothing else. Name only what you could point at and be confident about — a bicycle, a person, an indoor room, a number written on the frame. Leave out anything you are inferring: what the setting is for, what the clothing is, what an object is used for, what someone is doing. Where a detail matters to the captions but you cannot be sure of it, say so in the same breath: a frame that may be on a stand or may be a stationary trainer. An uncertain detail stated flatly becomes a caption built on something that is not there. If the user described the image instead of uploading one, work from their words and add nothing to them.",
+  "image_read": "What is CLEARLY visible, and nothing else. Name only what you could point at and be confident about — a bicycle, a person, an indoor room, a number written on the frame. Leave out anything you are inferring: what the setting is for, what the clothing is, what an object is used for, what someone is doing — and any appearance word that is really a claim about its cause. Bright is visible; glowing is an assertion that the object is the light source, and a photograph cannot show you that. Lit, backlit, translucent, wet, warm, heavy, old and handmade are the same trap: they name a cause for what you can see. Describe the surface, not what is producing it. This field is written before the rest, so anything wrong here is repeated by every field after it. Where a detail matters to the captions but you cannot be sure of it, say so in the same breath: a frame that may be on a stand or may be a stationary trainer. An uncertain detail stated flatly becomes a caption built on something that is not there. If the user described the image instead of uploading one, work from their words and add nothing to them.",
   "_propagation": "READ THIS BEFORE WRITING ANY FIELD BELOW not_sure_about. Whatever you put in not_sure_about becomes prohibited factual material for the WHOLE response — every caption, every why_it_works, every hashtag, the alt text and every engagement tip — unless the user supplied that same fact themselves in their own description, in which case it was never uncertain and does not belong in the list. There is no field where the doubt lapses.
     It is prohibited in every grammatical disguise. Not only as a statement: not as an adjective (glowing), not as a verb (I built, just acquired), not as a noun compound (#resinart, #handmade), not as an implication (my new lamp), not smuggled into a rationale about why a caption works, and not as a hashtag, which is the surface people forget because it does not look like a sentence. A hashtag is a claim in one word.
     The check is mechanical, so do it mechanically: for each item you wrote in not_sure_about, scan every string you are about to output and ask whether it could only be true if that doubt had been settled. If yes, cut it or rewrite around it. Uncertainty about a thing never blocks mentioning the thing — only asserting the part you could not see. The octopus may be described, joked about and hashtagged; whether it lights up and who made it may not.",
@@ -114,12 +114,13 @@ OUTPUT (JSON only):
   "captions": [
     {
       "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "The caption. Before writing each one, read your own not_sure_about list back and check every word against it — the leak is never the noun, it is the adjective or the verb that only works if one of those doubts had been resolved. If you wrote that you cannot tell whether it lights up, then glowing is out; if you cannot tell whether it was handmade, then so I built this is out, and so is any word implying you made it. Write the caption from what is in image_read alone and it will be fine.
+      "text": "The caption. Before writing each one, read your own not_sure_about list back and check every word against it — the leak is never the noun, it is the adjective or the verb that only works if one of those doubts had been resolved. If you wrote that you cannot tell whether it lights up, then glowing is out; if you cannot tell whether it was handmade, then so I built this is out, and so is any word implying you made it, found it, bought it, or that it is yours to keep. Followed me home and it's staying are the same invented history in a friendlier voice. Write the caption from what is in image_read alone and it will be fine.
         NO:  a glowing purple head watching over my desk   (lighting was listed as uncertain)
         NO:  so I built an octopus                          (authorship was listed as uncertain)
         YES: a purple octopus head, watching over my desk
         YES: this octopus has taken up residence on my desk
         These are worked pairs to show the shape, not lines to reuse — write your own.
+        Authorship and ownership never wait for not_sure_about. An image cannot show you who made a thing, who owns it, where it came from or what it cost, so unless the visitor's own words say they made it, own it, found it or bought it, no caption may say or imply that they did — whether or not it appears in the list. The list is built from looking, and none of this is visible, so it will often be missing from it.
         Separately: a detail you CAN see does not license a claim about what it MEANS. A number written on a photo establishes that someone measured it, never that the number is correct, ideal or recommended — a caption calling 130 degrees the magic angle has invented the meaning and attached it to the observation. Describe, joke, react; do not conclude.",
       "hashtags": [
         { "tag": "hashtag1" },
@@ -131,7 +132,7 @@ OUTPUT (JSON only):
       "best_for": "when this version works best"
     }
   ],
-  "alt_text": "descriptive accessibility text for the image",
+  "alt_text": "Descriptive accessibility text. Bound by not_sure_about exactly as the captions are: describe what is visible, assert nothing you listed as uncertain. This is the field the rule is most often lost in, because describing feels safer than claiming — but a screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word. Glowing, handmade, antique, expensive are conclusions, not descriptions.",
   "engagement_tips": [
     "A creative suggestion about the post itself, phrased as what it offers rather than what it will achieve. No performance claims of any kind — not about the algorithm or reach, and not about people either. 'Questions in captions get more replies' and 'people respond better to X' are population findings nobody measured, and they are the same borrowed authority as an algorithm claim wearing softer clothes.
       NO:  Questions in captions get more replies
@@ -143,6 +144,9 @@ OUTPUT (JSON only):
       THE TEST IS THE SUBJECT OF YOUR SENTENCE. It must be the caption, the post or the object
       in it — never people, readers, your audience or they. The moment an audience becomes the
       subject you are reporting their behaviour, and you have not observed any of it.
+      And no comparison of outcomes, whatever the subject: goes further, does better,
+      works best, gets more. A sentence can pass the subject test and still rank two
+      results nobody measured.
       NO:  people respond to a voice that sounds like thinking out loud
       NO:  a conversational tone invites more comments than a polished description
       YES: thinking out loud on the page leaves room for a reply; a finished description does not
@@ -369,5 +373,12 @@ CRITICAL: Return ONLY valid JSON.`;
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. The
+// tool's own failure was epistemic — an ambiguous image became first-person
+// history — and PF-38 plus the not_sure_about propagation contract already
+// bind that. v2 is here for the other half: whether the captions stay usable
+// once the invented specifics are gone.
+router.outputStandard = 'v2';
 
 module.exports = router;
