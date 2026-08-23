@@ -340,7 +340,10 @@ const BrainRoulette = ({ tool }) => {
     selectedInterests.map(id => { const found = allInterests.find(i => i.id === id); return found ? intLabel(found) : null; }).filter(Boolean),
     [selectedInterests, allInterests, intLabel]);
 
-  const toggleInterest = (id) => setSelectedInterests(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  const toggleInterest = (id) => {
+    setCustomTopic('');
+    setSelectedInterests(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
 
   const addCustomInterest = () => {
     const trimmed = newInterestInput.trim();
@@ -1245,15 +1248,6 @@ const BrainRoulette = ({ tool }) => {
 
       {activeTab === 'spin' && (
         <>
-          {/* Custom topic */}
-          <div className={`mb-5 p-4 rounded-2xl border ${c.border} ${c.card}`}>
-            <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2`}>{t('bro_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('bro_optional')}</span></label>
-            <input type="text" value={customTopic} onChange={e => setCustomTopic(e.target.value)} placeholder={t('bro_custom_topic_ph')}
-              onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
-              className={`flex-1 px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
-            {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
-          </div>
-
           {/* Interests */}
           <div className="mb-5">
             <div className="mb-3"><h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('bro_your_interests')}</h3><p className={`text-xs ${c.textMuted}`}>{t('bro_pick_2plus')}</p></div>
@@ -1280,6 +1274,22 @@ const BrainRoulette = ({ tool }) => {
               ) : (
                 <button onClick={() => setShowAddInterest(true)} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold ${c.pillInactive} border-2 border-dashed ${c.border}`}>{t('bro_add_your_own')}</button>
               )}
+            </div>
+
+            {/* Spin on a topic — the alternative to the interests above, and
+                placed after them because that is the order the backend resolves
+                them in. Interests win, so showing the losing input first meant a
+                visitor could fill both and have their topic silently dropped.
+                Choosing one now clears the other, which is what "or" has to
+                mean. */}
+            <div className={`mb-4 p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
+              <label className={`text-sm font-bold ${c.text} mb-2 block flex items-center gap-2 flex-wrap`}>{t('bro_spin_on_topic')} <span className={`font-normal text-xs ${c.textMuted}`}>{t('bro_instead_interests')}</span></label>
+              <input type="text" value={customTopic}
+                onChange={e => { setCustomTopic(e.target.value); if (e.target.value.trim() && selectedInterests.length) setSelectedInterests([]); }}
+                placeholder={t('bro_custom_topic_ph')}
+                onKeyDown={e => { if (e.key === 'Enter' && customTopic.trim()) handleSpin(false); }}
+                className={`w-full px-3 py-2.5 rounded-lg border text-base ${c.input} outline-none`} />
+              {customTopic.trim() && <button onClick={() => handleSpin(false)} disabled={!canSpin} className={`mt-2 px-4 py-2.5 rounded-lg text-sm font-bold ${canSpin ? c.btnPrimary : c.btnDis}`}>🎲</button>}
             </div>
 
             {/* Audience + Depth */}

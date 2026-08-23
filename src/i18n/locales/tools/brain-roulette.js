@@ -4,6 +4,7 @@
 // Emoji in label/tab values is intentional — keep it inside the string.
 export const brainRoulette = {
   en: {
+    bro_instead_interests: "instead of your interests",
     bro_checked: "checked",
     bro_checked_against: "Checked against:",
     bro_ex_topic_solid: "how tree rings recorded a volcanic eruption on the other side of the world",
@@ -176,6 +177,7 @@ export const brainRoulette = {
     bro_export_connects: "**Connects:** {{connections}}",
   },
   es: {
+    bro_instead_interests: "en lugar de tus intereses",
     bro_checked: "verificado",
     bro_checked_against: "Verificado con:",
     bro_ex_topic_solid: "cómo los anillos de los árboles registraron una erupción volcánica al otro lado del mundo",
@@ -348,6 +350,7 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   zh: {
+    bro_instead_interests: "（代替上面的兴趣）",
     bro_checked: "已核实",
     bro_checked_against: "核实来源：",
     bro_ex_topic_solid: "树木年轮如何记录下地球另一端的一次火山喷发",
@@ -520,6 +523,7 @@ export const brainRoulette = {
     bro_export_connects: "**关联：** {{connections}}",
   },
   hi: {
+    bro_instead_interests: "अपनी रुचियों के बजाय",
     bro_checked: "जाँचा गया",
     bro_checked_against: "किसके सामने जाँचा:",
     bro_ex_topic_solid: "पेड़ों के छल्लों ने दुनिया के दूसरे छोर पर हुए ज्वालामुखी विस्फोट को कैसे दर्ज किया",
@@ -692,6 +696,7 @@ export const brainRoulette = {
     bro_export_connects: "**जोड़ता है:** {{connections}}",
   },
   ar: {
+    bro_instead_interests: "بدلًا من اهتماماتك",
     bro_checked: "تم التحقق",
     bro_checked_against: "تم التحقق مقابل:",
     bro_ex_topic_solid: "كيف سجّلت حلقات الأشجار ثوران بركان في الجهة الأخرى من العالم",
@@ -864,6 +869,7 @@ export const brainRoulette = {
     bro_export_connects: "**يربط:** {{connections}}",
   },
   pt: {
+    bro_instead_interests: "em vez dos seus interesses",
     bro_checked: "verificado",
     bro_checked_against: "Verificado com:",
     bro_ex_topic_solid: "como os anéis das árvores registraram uma erupção vulcânica do outro lado do mundo",
@@ -1036,6 +1042,7 @@ export const brainRoulette = {
     bro_export_connects: "**Conecta:** {{connections}}",
   },
   fr: {
+    bro_instead_interests: "à la place de vos centres d'intérêt",
     bro_checked: "vérifié",
     bro_checked_against: "Vérifié auprès de :",
     bro_ex_topic_solid: "comment les cernes des arbres ont enregistré une éruption volcanique à l'autre bout du monde",
@@ -1208,6 +1215,7 @@ export const brainRoulette = {
     bro_export_connects: "**Relie :** {{connections}}",
   },
   de: {
+    bro_instead_interests: "statt Ihrer Interessen",
     bro_checked: "geprüft",
     bro_checked_against: "Geprüft gegen:",
     bro_ex_topic_solid: "wie Baumringe einen Vulkanausbruch auf der anderen Seite der Welt aufgezeichnet haben",
@@ -1380,6 +1388,7 @@ export const brainRoulette = {
     bro_export_connects: "**Verbindet:** {{connections}}",
   },
   ja: {
+    bro_instead_interests: "上の興味の代わりに",
     bro_checked: "確認済み",
     bro_checked_against: "照合先：",
     bro_ex_topic_solid: "地球の裏側で起きた火山噴火を、木の年輪はどう記録したのか",
@@ -1552,6 +1561,7 @@ export const brainRoulette = {
     bro_export_connects: "**つながり：** {{connections}}",
   },
   ko: {
+    bro_instead_interests: "위의 관심사 대신",
     bro_checked: "확인됨",
     bro_checked_against: "확인한 출처:",
     bro_ex_topic_solid: "나무의 나이테가 지구 반대편의 화산 폭발을 어떻게 기록했는가",
@@ -1724,6 +1734,7 @@ export const brainRoulette = {
     bro_export_connects: "**연결:** {{connections}}",
   },
   ru: {
+    bro_instead_interests: "вместо ваших интересов",
     bro_checked: "проверено",
     bro_checked_against: "Сверено с:",
     bro_ex_topic_solid: "как годичные кольца деревьев записали извержение вулкана на другом конце света",
@@ -1896,6 +1907,7 @@ export const brainRoulette = {
     bro_export_connects: "**Связывает:** {{connections}}",
   },
   th: {
+    bro_instead_interests: "แทนความสนใจด้านบน",
     bro_checked: "ตรวจแล้ว",
     bro_checked_against: "ตรวจกับ:",
     bro_ex_topic_solid: "วงปีของต้นไม้บันทึกการปะทุของภูเขาไฟอีกซีกโลกไว้ได้อย่างไร",
@@ -2068,6 +2080,7 @@ export const brainRoulette = {
     bro_export_connects: "**เชื่อมโยง:** {{connections}}",
   },
   vi: {
+    bro_instead_interests: "thay cho các mối quan tâm ở trên",
     bro_checked: "đã kiểm chứng",
     bro_checked_against: "Đối chiếu với:",
     bro_ex_topic_solid: "vòng gỗ của cây đã ghi lại một vụ phun trào núi lửa ở nửa kia thế giới như thế nào",
