@@ -120,7 +120,6 @@ const CaptionMagic = ({ tool }) => {
   const [imageBase64, setImageBase64] = useState(null);
   const [imageDescription, setImageDescription] = useState('');
   const [context, setContext] = useState('');
-  const [useBrandVoice, setUseBrandVoice] = useState(false);
   const [compressing, setCompressing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [results, setResults] = useState(null);
@@ -135,7 +134,6 @@ const CaptionMagic = ({ tool }) => {
   const [showRemix, setShowRemix] = useState(false);
   const [pickedIndex, setPickedIndex] = useState(null);
   const [sessionHistory, setSessionHistory] = usePersistentState('caption-magic-history', []);
-  const [brandProfile, setBrandProfile] = usePersistentState('caption-magic-brand', { generations: 0, toneFreq: {}, lengthFreq: {}, platformFreq: {} });
   const [abResults, setAbResults] = usePersistentState('caption-magic-ab', []);
   const [platform, setPlatform] = usePersistentState('caption-magic-platform', 'instagram');
   const [selectedTones, setSelectedTones] = usePersistentState('caption-magic-tones', ['casual']);
@@ -146,36 +144,6 @@ const CaptionMagic = ({ tool }) => {
   const resultsRef      = useRef(null);
   const handleSubmitRef = useRef(null);
   const canSubmitRef    = useRef(false);
-
-  // ══════════════════════════════════════════
-  // BRAND VOICE MEMORY (#1)
-  // ══════════════════════════════════════════
-  const brandReady = brandProfile.generations >= 3;
-
-  const brandVoiceSummary = useMemo(() => {
-    if (!brandReady) return '';
-    const topTones = Object.entries(brandProfile.toneFreq || {})
-      .sort(([,a], [,b]) => b - a).slice(0, 3).map(([tn]) => tn);
-    const topLength = Object.entries(brandProfile.lengthFreq || {})
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'medium';
-    return `Preferred tones: ${topTones.join(', ')}. Preferred length: ${topLength}.`;
-  }, [brandProfile, brandReady]);
-
-  const updateBrandProfile = useCallback((tones, length, plat) => {
-    setBrandProfile(prev => {
-      const next = { ...prev, generations: (prev.generations || 0) + 1 };
-      const tf = { ...(prev.toneFreq || {}) };
-      tones.forEach(tn => { tf[tn] = (tf[tn] || 0) + 1; });
-      next.toneFreq = tf;
-      const lf = { ...(prev.lengthFreq || {}) };
-      lf[length] = (lf[length] || 0) + 1;
-      next.lengthFreq = lf;
-      const pf = { ...(prev.platformFreq || {}) };
-      pf[plat] = (pf[plat] || 0) + 1;
-      next.platformFreq = pf;
-      return next;
-    });
-  }, [setBrandProfile]);
 
   // ══════════════════════════════════════════
   // A/B TESTING INSIGHTS (#3)
@@ -288,16 +256,14 @@ const CaptionMagic = ({ tool }) => {
         tones: selectedTones,
         captionLength,
         context: context.trim() || null,
-        brandVoice: useBrandVoice && brandReady ? brandVoiceSummary : null,
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
-      updateBrandProfile(selectedTones, captionLength, platform);
       saveToHistory(data);
     } catch (err) {
       setError(err.message || t('cm_err_generate'));
     }
-  }, [imageBase64, imageDescription, platform, selectedTones, captionLength, context, useBrandVoice, brandReady, brandVoiceSummary, callToolEndpoint, updateBrandProfile, userLocale, userCurrency, userRegion, t]);
+  }, [imageBase64, imageDescription, platform, selectedTones, captionLength, context, callToolEndpoint, userLocale, userCurrency, userRegion, t]);
 
   // API: Revise
   const reviseCaption = useCallback(async (text, index, direction) => {
@@ -356,9 +322,8 @@ const CaptionMagic = ({ tool }) => {
     ]);
     setImageDescription(t(ex.desc));
     setContext(t(ex.ctx));
-    setUseBrandVoice(false);
     setResults(null);
-  }, [setImageDescription, setContext, setUseBrandVoice, setResults, t]);
+  }, [setImageDescription, setContext, setResults, t]);
 
   const handleReset = useCallback(() => {
     clearImage(); setImageDescription(''); setContext('');
@@ -532,25 +497,6 @@ const CaptionMagic = ({ tool }) => {
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>📏 {t('cm_caption_length')}</label>
         {renderPills(LENGTH_OPTIONS, captionLength, setCaptionLength)}
       </div>
-
-      {/* Brand Voice Toggle (#1) */}
-      {brandReady && (
-        <div className={`p-4 rounded-2xl border ${c.okBg}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">🎙️</span>
-              <div>
-                <span className={`text-xs font-bold ${c.textOk}`}>{t('cm_your_voice')}</span>
-                <p className={`text-xs ${c.textOk} opacity-80`}>{brandVoiceSummary}</p>
-              </div>
-            </div>
-            <button onClick={() => setUseBrandVoice(!useBrandVoice)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold ${useBrandVoice ? c.btnPrimary : c.btnSecondary}`}>
-              {useBrandVoice ? t('cm_voice_on') : t('cm_voice_use')}
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* A/B Insights (#3) */}
       {abInsights && (

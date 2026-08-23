@@ -45,7 +45,7 @@ const PLATFORM_NAMES = {
 // ════════════════════════════════════════════
 router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
-    const { imageBase64, imageDescription, platform, tones, context, captionLength, brandVoice, userLanguage } = req.body;
+    const { imageBase64, imageDescription, platform, tones, context, captionLength, userLanguage } = req.body;
 
     if (!imageBase64 && !imageDescription) {
       return res.status(400).json({ error: 'Provide an image or image description' });
@@ -71,17 +71,12 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
       });
     }
 
-    // Brand voice context
-    const brandCtx = brandVoice
-      ? `\nBRAND VOICE: The user's established writing style preferences: ${brandVoice}. Match this voice while still varying each caption's approach.`
-      : '';
 
     const basePrompt = `You are a social media caption specialist who writes captions that sound like a real person, not a brand.
 
 ${parsed ? 'Look at this image carefully and use what you see to craft captions.' : ''}
 ${imageDescription ? `IMAGE DESCRIPTION: ${imageDescription}` : ''}
 ${context ? `CONTEXT: ${context}` : ''}
-${brandCtx}
 
 ${platformName === 'none'
   ? `NO PLATFORM: they have not said where this is going — a photo book, a message, a print, somewhere with no conventions of its own. Write captions that stand on their own: no platform-shaped length, no hashtag-bait phrasing, no calls to action about following or commenting. Hashtags are still fine as suggestions, since they may add them later, but nothing in the caption itself should assume a feed.`
