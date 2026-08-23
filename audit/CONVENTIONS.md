@@ -2261,3 +2261,75 @@ to be *built* per tool: Caption Magic's `not_sure_about`, Bookmark's verified
 chronology, Buy Wise's `verified_facts`. A global sentence tells the model to
 respect its own caveats; only a field makes the caveat exist in the first place.
 
+
+---
+
+### PF-39 · A tool receives the v2 output standard only after it is reviewed under it
+
+`backend/lib/outputStandard.js` holds `DEFTBRAIN_OUTPUT_STANDARD_V2` — the
+product-writing contract. Eight sections: solve the actual problem, make the
+result actionable, advice should survive uncertainty, respect the visitor's
+agency, write for an intelligent adult, lead with the answer, say it once at
+the length it deserves, and a read-back before finishing.
+
+**It does not overlap PF-38, on purpose.** PF-38 owns truth — fabrication,
+mind-reading, borrowed certainty, uncertainty propagation, the imagination
+boundary — and is universal and unconditional. PF-39 owns everything else about
+a good answer. Two global instructions competing over the same territory is how
+a contract stops being read. Nothing in v2 restates an epistemic rule.
+
+**The operational sentence:**
+
+> A tool receives `DEFTBRAIN_OUTPUT_STANDARD_V2` only after it has been reviewed
+> under that standard. All newly reviewed tools adopt v2; previously approved
+> tools convert on contact.
+
+The forty-eight tools in `FROZEN_V1` were rewritten and approved one at a time
+under the standards that existed when each was reviewed. Marking them v2
+wholesale would claim conformance to a contract they were never tested against
+and would change behaviour underneath goldens that already passed — the worst
+of both. They are frozen: no behavioural change, no new regression burden. A
+tool leaves the list by being read against the standard, at which point it
+declares v2 and its slug is deleted from `FROZEN_V1`. Convert on contact,
+exactly like PF-37.
+
+**Declared per module, not per call.** One line, next to the export:
+
+```js
+router.outputStandard = 'v2';
+module.exports = router;
+```
+
+`backend/routes/index.js` reads that off each module at mount time and puts it
+in request scope through an `AsyncLocalStorage`; `lib/claude.js` reads it back
+inside the same wrapper that applies PF-38. Every model call under the request
+inherits it — the `callClaudeWithRetry` path, the nine routes that still call
+`create()` directly, and anything written later by someone who never opened
+this file.
+
+**Why not the per-call label.** PF-38's exemption list keys off
+`epistemicLabel`, and reusing it here was the obvious move. It does not work:
+the labels are free-form and inconsistent (`BatchFlowAB`, `bike-medic/route`,
+`belief-stress-test:tests`, `BDS-Emergency`, `AlternatePath`), one tool owns up
+to twenty-five of them, and nine routes pass no label at all. A contract that
+has to be repeated at twenty-five call sites gets forgotten at one of them —
+which is the exact failure this standard exists to prevent.
+
+The layering, outermost first in the assembled system prompt:
+
+```
+PF-38 epistemic contract     ← every call, unconditional, stable cache prefix
+DEFTBRAIN_OUTPUT_STANDARD_V2 ← routes that declared it
+CURRENT DATE                 ← every call
+tool's own prompt
+```
+
+**Gate 9 (`scripts/output-standard-audit.js`)** fails a push when a route file
+outside `FROZEN_V1` is touched without declaring a standard. That is the whole
+point: opening a tool is when the question should be asked, and this project
+has twice reviewed a tool carefully and shipped it missing a standard adopted
+weeks earlier, with nothing to say so. It also fails if the wrapper or the
+mount-time scope is removed, if `FROZEN_V1` names a file that no longer exists,
+or if a route declares v2 while still listed as frozen. A genuinely mechanical
+edit — a codemod, a rename sweep — passes with `OUTPUT_STANDARD_SKIP=1`, which
+is a claim that no review happened rather than a way to skip one.

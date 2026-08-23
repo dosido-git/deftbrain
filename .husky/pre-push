@@ -61,3 +61,10 @@ node scripts/generate-guides-sitemap.js --check
 # for three weeks and nothing said so, because a client-side alias looks like a
 # working redirect when you click it yourself. Source-only, no build needed.
 node scripts/check-renames.js
+
+# Gate 9 — output standard (PF-39). A tool reviewed from now on declares the
+# standard it was reviewed under; the 48 approved tools stay frozen and silent
+# until someone opens one. Twice already this project has reviewed a tool
+# carefully and shipped it missing a standard adopted weeks earlier, because
+# nothing could say so. Mechanical sweeps pass with OUTPUT_STANDARD_SKIP=1.
+node scripts/output-standard-audit.js

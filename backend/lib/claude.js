@@ -4,6 +4,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { MODELS, ALL_MODELS } = require('./models');
 const { withEpistemics } = require('./epistemics');
+const { withOutputStandard } = require('./outputStandard');
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -26,7 +27,11 @@ anthropic.messages.create = function (params, ...rest) {
   if (!params || typeof params !== 'object') return _rawMessagesCreate(params, ...rest);
   const label = params.epistemicLabel;
   const { epistemicLabel, ...clean } = params;
-  return _rawMessagesCreate({ ...clean, system: withEpistemics(clean.system, label) }, ...rest);
+  // Two layers, outermost last: the epistemic contract is universal and sits on
+  // top as the stable cacheable prefix; the v2 output standard sits under it and
+  // applies only to routes that declared it. See lib/outputStandard.js.
+  const system = withEpistemics(withOutputStandard(clean.system), label);
+  return _rawMessagesCreate({ ...clean, system }, ...rest);
 };
 
 // ──────────────────────────────────────────────────────────────────────
