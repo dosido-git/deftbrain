@@ -36,6 +36,9 @@ function useButtonStyles() {
     success: isDark
       ? 'bg-green-900/40 text-green-300'
       : 'bg-green-100 text-green-700',
+    // The quiet variant has no fill, so its confirmation has to come from the
+    // text colour rather than the background.
+    successText: isDark ? 'text-green-300' : 'text-green-700',
   };
 }
 
@@ -51,7 +54,20 @@ const btnClass = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-
  *   label    — button text (default: "Copy")
  *   onCopied — optional callback after successful copy
  */
-export const CopyBtn = ({ content, label, onCopied, title }) => {
+/**
+ * `exact` — copy the `content` prop verbatim, skipping the DOM scrape.
+ *
+ * The scrape exists because a tool's hand-written buildFullText() is usually a
+ * subset of what is on screen, and for a whole-result copy the screen is the
+ * better source. For a PER-ITEM copy it is the wrong source entirely: the
+ * results container carries data-copy-results, so a copy button sitting inside
+ * one of six caption cards was returning all six. Pass `exact` whenever the
+ * button copies one item out of a list.
+ *
+ * `quiet` — render as a small text action rather than a filled button, for
+ * places where the content is the point and the control should recede.
+ */
+export const CopyBtn = ({ content, label, onCopied, title, exact = false, quiet = false }) => {
   const [copied, setCopied] = useState(false);
   const s = useButtonStyles();
   const { t } = useTranslation();
@@ -64,9 +80,10 @@ export const CopyBtn = ({ content, label, onCopied, title }) => {
   // null whenever it is not confident, and then this behaves exactly as it
   // did before, so no tool can regress.
   const resolveContent = useCallback(() => {
+    if (exact) return content;
     const fromDom = serializeResults(title || 'DeftBrain');
     return COPY_HEADER + (fromDom || content);
-  }, [content, title]);
+  }, [content, title, exact]);
 
   const handleCopy = useCallback(async () => {
     const wrappedContent = resolveContent();
@@ -95,6 +112,16 @@ export const CopyBtn = ({ content, label, onCopied, title }) => {
       }
     }
   }, [resolveContent, onCopied]);
+
+  if (quiet) {
+    return (
+      <button onClick={handleCopy}
+        className={`flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-100 ${copied ? s.successText : 'opacity-70'}`}>
+        <span>{copied ? '✅' : '📋'}</span>
+        {copied ? t('copied') : (label || t('copy'))}
+      </button>
+    );
+  }
 
   return (
     <button onClick={handleCopy} className={`${btnClass} ${copied ? s.success : s.base}`}>

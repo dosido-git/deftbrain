@@ -300,9 +300,28 @@ different jokes:
 - LITERALIZATION — take an expression absurdly literally.
 - WILD CARD — an angle unlike any of the above.
 
-Write twenty or more candidates into _candidates. Then throw most of them away
-and keep the ones that are funniest, most different from each other, and usable
-as captions someone would actually post.
+Write 18 to 24 candidates into _candidates. Then throw most of them away.
+
+DISCARD, without sentiment:
+- anything merely competent — the joke that works but that anyone would have found
+- anything leaning on a familiar meme or template ("POV:", "nobody: / me:", "it's giving", "understood the assignment", "rent free", "the way that…")
+- any candidate whose mechanism another surviving candidate already used
+- anything that needs explaining, or that explains itself inside the caption
+
+THEN, AMONG WHAT SURVIVES, PREFER THE CAPTION THAT FEELS DISCOVERED IN THIS
+PARTICULAR PHOTOGRAPH over one that could have been generated from a list of its
+objects. That is the whole difference between "POV: you're a hanger" — which
+needs only the word hanger — and "This meeting could have been a closet", which
+needs someone to have actually stood in the room. If a caption would still work
+with one noun swapped out, it came from the list, not the picture.
+
+FUNNY IS NOT SNARKY. Mockery is the easiest register to reach and the least
+interesting one, and there is usually a person in these photographs. Affection,
+delight, close observation, absurdity, cleverness and plain joy are all funny,
+and a set that only sneers is as narrow as a set that only personifies. Never
+make the subject of the photograph the butt of the joke — laugh at the
+situation, the objects, the scale of the thing, yourself. If four of the six
+have a smirk, go back to the workshop.
 
 To see the difference the mechanisms make: given a photograph of one enormous
 traffic cone, the first idea is the cone having feelings about its job. The
@@ -347,7 +366,7 @@ joke.
 
 OUTPUT (JSON only):
 {
-  "_candidates": ["Twenty or more one-line candidates from the workshop, across the different mechanisms. Scratch paper: it is deleted before anyone sees the result, so the weak ones belong here too. A short list here means the search did not happen, and the six will be the obvious six."],
+  "_candidates": ["18 to 24 one-line candidates from the workshop, across the different mechanisms. Scratch paper: deleted before anyone sees the result, so the weak ones belong here too. A short list means the search did not happen, and the six will be the obvious six."],
   "captions": [
     {
       "text": "The caption. Nothing else — no explanation, no note about what it does, no reason it works.",
@@ -585,6 +604,7 @@ router.post('/caption-magic/revise', rateLimit(), async (req, res) => {
 
     const charLimit = PLATFORM_LIMITS[platform] || 2200;
     const directionMap = {
+      'drier': 'Same caption, flatter delivery. Take out whatever is doing the winking — the exclamation, the explanation, the second beat that made sure you got it. Understatement carries this now, and the funniest version should look at first glance like it is not trying.',
       'more_like_this': 'They liked this one. Write another with the same voice, rhythm and kind of joke, about the same picture — a sibling, not a rephrasing. If the original personifies something, personify something else. If it is dry, stay dry. Do not reuse its best phrase.',
       'shorter': `Cut it down. Same joke, fewer words — find the shortest version that still lands, and delete the setup if the punchline can carry itself. Max ${Math.min(charLimit, 280)} characters.`,
       'punch_up': 'Make it funnier. Sharpen the joke, commit harder to whatever premise it already has, or take the odd detail further than it currently goes. Same length, more nerve. If it was merely accurate, it needs an angle now.',
@@ -743,7 +763,9 @@ LENGTH PREFERENCE: ${captionLength || 'medium'} (short = 1-2 lines, medium = 2-4
 
 WORK BEFORE YOU WRITE. The first joke available about any photograph is the one everybody makes. Push the most striking thing here through several different comic machines before choosing anything: MISINTERPRETATION (what else could this be), UNDERSTATEMENT (describe the ridiculous as ordinary), ESCALATION (one detail to an absurd conclusion), SPECIFIC ANALOGY (what unexpectedly familiar thing does it resemble), DEADPAN (the driest possible observer), WORDPLAY (only if genuinely good), POV/PERSONIFICATION (only if the premise is fresh), CONTEXT COLLISION (the language of an unrelated world — corporate meetings, dating, airports, bureaucracy, true crime, customer service), LITERALIZATION (an expression taken absurdly literally), WILD CARD.
 
-Write twenty or more candidates into _candidates, then keep the six that are funniest, most different from each other, and usable as real captions.
+Write 18 to 24 candidates into _candidates, then discard anything merely competent, anything built on a familiar meme or template ("POV:", "nobody: / me:", "it's giving"), anything whose mechanism another survivor already used, and anything that needs explaining. Among what is left, prefer the caption that feels DISCOVERED IN THIS PARTICULAR PHOTOGRAPH over one that could have been written from a list of its objects — if swapping one noun would leave it working, it came from the list.
+
+FUNNY IS NOT SNARKY. Mockery is the easiest register and the least interesting, and there is often a person in these photographs. Affection, delight, close observation, absurdity and plain joy are all funny. Never make the subject the butt of the joke.
 
 FUNNY IS NOT THE SAME AS WHIMSICAL. Cute personification, "POV:", mock drama, objects holding meetings — common first ideas. Four of six running the same machine means the search did not happen.
 

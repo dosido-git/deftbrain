@@ -36,9 +36,10 @@ const LENGTH_OPTIONS = [
 // revise menu offered was a tone change, and tone is no longer something the
 // visitor sets — the six span it instead.
 const REVISE_OPTIONS = [
-  { value: 'more_like_this', labelKey: 'cm_rev_more_like_this' },
+  { value: 'punch_up', labelKey: 'cm_nudge_funnier' },
+  { value: 'drier', labelKey: 'cm_nudge_drier' },
   { value: 'shorter', labelKey: 'cm_rev_shorter' },
-  { value: 'punch_up', labelKey: 'cm_rev_punch_up' },
+  { value: 'more_like_this', labelKey: 'cm_rev_more_like_this' },
 ];
 
 // The play. One tap each, no form.
@@ -61,6 +62,7 @@ const CaptionMagic = ({ tool }) => {
   const c = {
     card:           isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:        isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
+    cardPicked:     isDark ? 'border-cyan-500' : 'border-cyan-500',
     input:          isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100 placeholder-zinc-400 focus:border-cyan-500 focus:ring-cyan-500/20' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-cyan-500 focus:ring-cyan-100',
     text:           isDark ? 'text-zinc-50' : 'text-gray-900',
     textSecondary:  isDark ? 'text-zinc-300' : 'text-gray-600',
@@ -548,47 +550,27 @@ const CaptionMagic = ({ tool }) => {
           </div>
         )}
 
-        {/* Six captions, nothing under them but a copy button. The visitor can
-            tell whether they like the joke; explaining it makes it worse. */}
+        {/* The caption is the point. Everything else recedes until the
+            visitor shows interest by tapping one. */}
         {captions.map((caption, index) => (
-          <div key={index} className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
+          <div key={index}
+            onClick={() => setPickedIndex(pickedIndex === index ? null : index)}
+            className={`p-4 rounded-2xl border cursor-pointer transition-colors ${c.card} ${pickedIndex === index ? c.cardPicked : c.border}`}>
             <p className={`text-sm leading-relaxed whitespace-pre-wrap ${c.text}`}>{caption.text}</p>
             {caption.hashtags?.length > 0 && (
-              <p className={`text-xs ${c.textMuted} mt-2`}>
+              <p className={`text-xs ${c.textMuted} mt-1.5`}>
                 {caption.hashtags.map(h => '#' + (h.tag || h)).join(' ')}
               </p>
             )}
-            <div className="flex items-center gap-2 flex-wrap mt-3">
-              <CopyBtn content={captionForCopy(caption)} label={t('cm_copy')} />
+            <div className="flex items-center gap-3 mt-3" onClick={e => e.stopPropagation()}>
+              {/* exact: this copies ONE caption. Without it the shared button
+                  scrapes the results region, which is all six. */}
+              <CopyBtn exact quiet content={captionForCopy(caption)} label={t('cm_copy')} />
               {caption.char_count != null && renderCharCount(caption.char_count)}
-              <button onClick={() => setPickedIndex(pickedIndex === index ? null : index)}
-                className={`ms-auto px-2.5 py-1.5 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>
-                {pickedIndex === index ? '▲' : t('cm_do_more_with')}
-              </button>
             </div>
 
-            {/* The three per-caption moves, revealed only for the one they
-                tapped. Under all six they were the same six words, six times. */}
-            {pickedIndex === index && (
-              <div className="flex gap-2 flex-wrap mt-3">
-                {REVISE_OPTIONS.map(opt => (
-                  <button key={opt.value}
-                    onClick={() => reviseCaption(caption.text, index, opt.value)}
-                    disabled={revisingIndex === index}
-                    className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex === index ? 'opacity-50' : ''}`}>
-                    {revisingIndex === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
-                  </button>
-                ))}
-                <button onClick={() => adaptAllPlatforms(caption.text, caption.hashtags, index)}
-                  disabled={adapting === index}
-                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${adapting === index ? c.stateDisabled : c.btnSecondary}`}>
-                  {adapting === index ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
-                </button>
-              </div>
-            )}
-
             {adaptResults?.[index]?.adaptations && (
-              <div className={`mt-3 p-3 rounded-xl border ${c.border} space-y-2`}>
+              <div className={`mt-3 p-3 rounded-xl border ${c.border} space-y-2`} onClick={e => e.stopPropagation()}>
                 {adaptResults[index].adaptations.map((adapt, idx) => (
                   <div key={idx} className={`p-3 rounded-xl border ${c.captionBg}`}>
                     <span className={`text-xs font-bold ${c.text}`}>{adapt.platform_name || adapt.platform}</span>
@@ -603,21 +585,49 @@ const CaptionMagic = ({ tool }) => {
           </div>
         ))}
 
-        {/* The play. This is where the tool stops being a form and starts
-            being a friend you hand your phone to. */}
+        {/* One control panel, not six. With nothing chosen it changes the whole
+            batch; with a caption chosen it works on that one. Two questions a
+            visitor actually has — "none of these" and "this one's close" — and
+            the same row answers both. */}
         <div className={`p-4 rounded-2xl border ${c.border} ${c.cardAlt}`}>
-          <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('cm_not_quite')}</p>
+          <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>
+            {pickedIndex !== null ? t('cm_like_this_one') : t('cm_not_quite')}
+          </p>
           <div className="flex gap-2 flex-wrap">
-            {NUDGE_OPTIONS.map(opt => (
-              <button key={opt.value} onClick={() => askForMore(opt.value)} disabled={!!nudging}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${nudging ? 'opacity-50' : ''}`}>
-                {nudging === opt.value ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
-              </button>
-            ))}
-            <button onClick={() => askForMore(null)} disabled={!!nudging}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold ${nudging ? c.stateDisabled : c.btnPrimary}`}>
-              {nudging === 'more' ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <>🎰 {t('cm_six_more')}</>}
-            </button>
+            {pickedIndex !== null ? (
+              <>
+                {REVISE_OPTIONS.map(opt => (
+                  <button key={opt.value}
+                    onClick={() => reviseCaption(captions[pickedIndex].text, pickedIndex, opt.value)}
+                    disabled={revisingIndex !== null}
+                    className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${revisingIndex !== null ? 'opacity-50' : ''}`}>
+                    {revisingIndex === pickedIndex ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
+                  </button>
+                ))}
+                <button onClick={() => adaptAllPlatforms(captions[pickedIndex].text, captions[pickedIndex].hashtags, pickedIndex)}
+                  disabled={adapting !== null}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${adapting !== null ? c.stateDisabled : c.btnSecondary}`}>
+                  {adapting === pickedIndex ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <><span>🌐</span> {t('cm_adapt_all')}</>}
+                </button>
+                <button onClick={() => setPickedIndex(null)}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} opacity-70`}>
+                  {t('cm_deselect')}
+                </button>
+              </>
+            ) : (
+              <>
+                {NUDGE_OPTIONS.map(opt => (
+                  <button key={opt.value} onClick={() => askForMore(opt.value)} disabled={!!nudging}
+                    className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary} ${nudging ? 'opacity-50' : ''}`}>
+                    {nudging === opt.value ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : t(opt.labelKey)}
+                  </button>
+                ))}
+                <button onClick={() => askForMore(null)} disabled={!!nudging}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${nudging ? c.stateDisabled : c.btnPrimary}`}>
+                  {nudging === 'more' ? <span className="animate-spin inline-block">{tool?.icon ?? '📸'}</span> : <>🎰 {t('cm_six_more')}</>}
+                </button>
+              </>
+            )}
           </div>
         </div>
 
