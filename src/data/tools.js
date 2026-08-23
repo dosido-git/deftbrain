@@ -1920,7 +1920,7 @@ export const tools = [
   icon: "🍳",
   categories: ['Humans', 'Discourse', 'Diversions'],
   headerColor: "#e0b8b8",
-  description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and the kind of response you wish you’d had. Comeback Cooker gives you several ways you could have answered — and helps separate the satisfying comeback from the one actually worth sending.",
+  description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.",
   guide: {
     overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
     howToUse: [

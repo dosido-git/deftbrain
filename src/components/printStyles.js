@@ -159,13 +159,21 @@ export const PRINT_CSS = `
         [data-print-section] .text-zinc-200,
         [data-print-section] .text-zinc-300 { color: #18181b !important; }
         [data-print-section] .text-zinc-400 { color: #52525b !important; }
-        /* ...except where white text is still correct. A saturated button
-           (bg-red-600, bg-emerald-600) keeps its colour on paper — the Print
-           button's output keeps those too — so inking its label would put dark
-           text on a dark fill. Only zinc backgrounds were whitened above, so
-           anything carrying a non-zinc bg- class is exempt. Must follow the
-           rule it overrides. */
-        [data-print-section] [class*="bg-"]:not([class*="bg-zinc"]):not([class*="bg-white"]).text-white {
+        /* ...except where white text is still correct: a saturated badge or
+           pill that keeps its fill on paper would get dark text on a dark
+           background. Only zinc backgrounds were whitened above, so anything
+           carrying a non-zinc bg- class is exempt. Must follow the rule it
+           overrides.
+
+           BUTTONS ARE NOT EXEMPT, and this pairing is what made the submit
+           button invisible on paper. The rule above turns a button's fill
+           transparent; this one was still painting its label white, for a fill
+           that is no longer there. It was broken before that too: nothing in
+           this stylesheet sets print-color-adjust, so browsers were already
+           dropping the fill by default while this rule kept the label white.
+           White on white, on every tool, for as long as both rules have
+           existed. */
+        [data-print-section] [class*="bg-"]:not([class*="bg-zinc"]):not([class*="bg-white"]).text-white:not(button):not([role="button"]) {
           color: #ffffff !important;
         }
         /* Accent text picked for a dark card. On white these land at 1.7–2.8:1
