@@ -97,14 +97,19 @@ OUTPUT (JSON only):
   },
   "alternative_playlists": [
     {
-      "name": "If you need MORE stimulation — 3-6 words",
-      "change": "what to adjust — one sentence",
-      "when": "when to use this — one sentence"
+      "name": "Too sleepy? — the symptom, 2-5 words, phrased as what they would notice",
+      "change": "The one adjustment to make — add a clearer beat, a little more energy. Concrete and short. — one sentence",
+      "when": "What tells them it is this one — one sentence"
     },
     {
-      "name": "If this is TOO stimulating — 3-6 words",
-      "change": "what to adjust — one sentence",
-      "when": "when to use this — one sentence"
+      "name": "Too distracting? — the symptom, 2-5 words",
+      "change": "The one adjustment — less percussion and melody, further toward ambient. — one sentence",
+      "when": "What tells them it is this one — one sentence"
+    },
+    {
+      "name": "Still restless after ten minutes? — the symptom, 2-6 words",
+      "change": "Say plainly not to force it, and to try a different starting sound instead. Music does not work the same way for everyone and this plan is a starting point, not a diagnosis. — one sentence",
+      "when": "What tells them it is this one — one sentence"
     }
   ],
   "why_this_may_help": "Why this PROGRESSION may help, in plain language and without borrowing scientific authority. Describe what the music is doing — starting near where their energy already is so the change is not abrupt, then shifting tempo, rhythm and complexity toward the destination sound — and say music affects people differently, so it is a starting point to adjust. Never cite research, neural oscillations, entrainment, frequency bands or any named effect: nothing was retrieved, and a specific mechanism stated confidently is this tool sounding most authoritative exactly where it knows least. If you mention a tempo change, get its direction right and keep it consistent with the phase bpm_ranges. — 2-3 sentences"

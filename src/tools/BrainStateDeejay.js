@@ -153,9 +153,6 @@ const BrainStateDeejay = ({ tool }) => {
     heroBg:        isDark ? 'bg-gradient-to-r from-zinc-800 to-cyan-900' : 'bg-gradient-to-r from-cyan-700 to-sky-600',
     heroText:      'text-white',
     heroSub:       isDark ? 'text-cyan-200' : 'text-cyan-100',
-    phaseBg:       isDark ? 'bg-cyan-900/15 border-cyan-700/30' : 'bg-cyan-50/50 border-cyan-200/50',
-    phaseTitle:    isDark ? 'text-cyan-300' : 'text-cyan-700',
-    phaseText:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     genrePill:     isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 text-cyan-700',
     bpmBadge:      isDark ? 'bg-amber-900/20 text-amber-300' : 'bg-amber-50 text-amber-700',
     spotifyBg:     isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-200',
@@ -199,6 +196,7 @@ const BrainStateDeejay = ({ tool }) => {
   const [adjusting, setAdjusting] = useState(false);
   const [rated, setRated] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [showWhy, setShowWhy] = useState(false);
 
   // ── Refs ──
   const resultsRef = useRef(null);
@@ -209,7 +207,6 @@ const BrainStateDeejay = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('brainstate-deejay-history', []);
   const [winningCombos, setWinningCombos] = usePersistentState('brainstate-deejay-wins', []);
   const [results, setResults] = usePersistentState('brainstate-deejay-results', null);
-  const [provider, setProvider] = usePersistentState('brainstate-deejay-provider', 'spotify');
 
   // ══════════════════════════════════════════
   // COLLABORATIVE SHARE: decode on mount (#6)
@@ -629,7 +626,6 @@ const BrainStateDeejay = ({ tool }) => {
   const renderResults = () => {
     if (!results) return null;
     const st = results.state_transition || {};
-    const strategy = results.playlist_strategy || {};
     const phases = results.playlist || [];
     const audio = results.audio_settings || {};
     const alts = results.alternative_playlists || [];
@@ -653,42 +649,9 @@ const BrainStateDeejay = ({ tool }) => {
           {st.task && <p className={`text-sm ${c.heroSub}`}>{t('bsd_for', { task: st.task })}</p>}
         </div>
 
-        <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>
-            {t('bsd_provider')}
-          </label>
-          <div className="flex flex-wrap gap-1.5">
-            {MUSIC_PROVIDERS.map(p => (
-              <button key={p.value} onClick={() => setProvider(p.value)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${provider === p.value ? c.pillActive : c.pillInactive}`}>
-                {provider === p.value && <span className="me-1">✓</span>}
-                <span>{p.emoji}</span> {p.label}
-              </button>
-            ))}
-          </div>
-          <p className={`text-xs ${c.textMuted} mt-2`}>{t('bsd_provider_hint')}</p>
-        </div>
-
-        {/* Listening Session + Breathing */}
-
-        {/* Timeline */}
+        {/* The arc leads: changing mental state is a transition, and this is
+            the picture of it. Everything below is the detail of each step. */}
         {phases.length > 1 && renderTimeline(phases)}
-
-        {/* Strategy */}
-        {strategy.approach && (
-          <div className={`p-5 rounded-2xl border ${c.border} ${c.card}`}>
-            <h3 className={`text-sm font-bold mb-2 ${c.text}`}>🎶 {strategy.approach}</h3>
-            <p className={`text-sm ${c.textSecondary} mb-3`}>{strategy.why}</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {['phase_1', 'phase_2', 'phase_3'].map((key, i) => strategy[key] && (
-                <div key={key} className={`p-3 rounded-xl border ${c.phaseBg}`}>
-                  <div className={`text-xs font-bold mb-1 ${c.phaseTitle}`}>{t('bsd_phase_n', { count: i + 1 })}</div>
-                  <p className={`text-xs ${c.phaseText}`}>{strategy[key]}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Playlist Phases */}
         {phases.map((phase, idx) => (
@@ -788,11 +751,17 @@ const BrainStateDeejay = ({ tool }) => {
           </div>
         )}
 
-        {/* Science */}
+        {/* Why this may help — folded. It is the reasoning behind the plan,
+            not part of using it, and putting reasoning above the thing it
+            explains is how a page gets long. */}
         {results.why_this_may_help && (
           <div className={`p-5 rounded-2xl border ${c.cardAlt}`}>
-            <h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('bsd_science_title')}</h3>
-            <p className={`text-sm ${c.textSecondary}`}>{results.why_this_may_help}</p>
+            <button type="button" onClick={() => setShowWhy(!showWhy)}
+              className="flex items-center gap-2 w-full text-start">
+              <Caret open={showWhy} />
+              <span className={`text-sm font-bold ${c.text}`}>{t('bsd_science_title')}</span>
+            </button>
+            {showWhy && <p className={`text-sm ${c.textSecondary} mt-2`}>{results.why_this_may_help}</p>}
           </div>
         )}
 
