@@ -4,6 +4,9 @@
 // are invariant brand literals kept in the component, not as catalog keys.
 export const captionMagic = {
   en: {
+    cm_pick_this: "Pick this one",
+    cm_not_sure: "Not sure about:",
+    cm_platform_none: "✍️ No platform",
     cm_ex2_desc: "Me in a hard hat standing in front of the shop unit on handover day. Empty, bare concrete, one bare bulb. I look exhausted and I am grinning.",
     cm_ex2_context: "First business. Announcing it to people who have watched me talk about this for four years. I want it to sound proud without sounding like a brand.",
     cm_title: "Caption Magic",
@@ -118,6 +121,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Alt text:",
   },
   es: {
+    cm_pick_this: "Elegir esta",
+    cm_not_sure: "No estoy seguro de:",
+    cm_platform_none: "✍️ Sin plataforma",
     cm_ex2_desc: "Yo con casco delante del local el día de la entrega de llaves. Vacío, hormigón desnudo, una sola bombilla. Se me ve agotada y estoy sonriendo de oreja a oreja.",
     cm_ex2_context: "Mi primer negocio. Se lo anuncio a gente que lleva cuatro años oyéndome hablar de esto. Quiero que suene orgulloso sin sonar a marca.",
     cm_title: "Caption Magic",
@@ -217,6 +223,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Texto alternativo:",
   },
   zh: {
+    cm_pick_this: "选这条",
+    cm_not_sure: "不太确定：",
+    cm_platform_none: "✍️ 不指定平台",
     cm_ex2_desc: "交房那天，我戴着安全帽站在店铺门口。里面空空荡荡，水泥地裸露着，只有一只灯泡。我看起来很累，却笑得很开心。",
     cm_ex2_context: "我的第一家店。要发给那些听我念叨了四年的人看。我想让它听起来是骄傲的，但别像在做品牌宣传。",
     cm_title: "Caption Magic",
@@ -316,6 +325,9 @@ export const captionMagic = {
     cm_copy_alt_text: "替代文本：",
   },
   hi: {
+    cm_pick_this: "यही चुनें",
+    cm_not_sure: "इनके बारे में पक्का नहीं:",
+    cm_platform_none: "✍️ कोई प्लेटफ़ॉर्म नहीं",
     cm_ex2_desc: "चाबी मिलने वाले दिन हेलमेट पहने दुकान के सामने खड़ी मैं। अंदर खाली, नंगा फ़र्श, एक ही बल्ब। थकी हुई दिख रही हूँ और मुस्कुरा रही हूँ।",
     cm_ex2_context: "मेरा पहला कारोबार। यह उन लोगों को बता रही हूँ जो चार साल से मुझे इसकी बात करते सुन रहे हैं। मैं चाहती हूँ कि इसमें गर्व झलके, पर ब्रांड जैसा न लगे।",
     cm_title: "Caption Magic",
@@ -415,6 +427,9 @@ export const captionMagic = {
     cm_copy_alt_text: "वैकल्पिक टेक्स्ट:",
   },
   ar: {
+    cm_pick_this: "اختر هذه",
+    cm_not_sure: "غير متأكد من:",
+    cm_platform_none: "✍️ بلا منصة",
     cm_ex2_desc: "أنا بخوذة العمل أمام المحل يوم تسلّمه. فارغ، أرضية إسمنتية عارية، ومصباح واحد. أبدو منهكة وأنا أبتسم ابتسامة عريضة.",
     cm_ex2_context: "أول مشروع لي. أعلنه لأشخاص سمعوني أتحدث عنه أربع سنوات. أريده أن يبدو فخوراً دون أن يبدو كإعلان علامة تجارية.",
     cm_title: "Caption Magic",
@@ -514,6 +529,9 @@ export const captionMagic = {
     cm_copy_alt_text: "نص بديل:",
   },
   pt: {
+    cm_pick_this: "Escolher esta",
+    cm_not_sure: "Não tenho certeza sobre:",
+    cm_platform_none: "✍️ Sem plataforma",
     cm_ex2_desc: "Eu de capacete em frente à loja no dia da entrega das chaves. Vazia, betão à vista, uma única lâmpada. Pareço exausta e estou a sorrir de orelha a orelha.",
     cm_ex2_context: "O meu primeiro negócio. Vou anunciá-lo a pessoas que me ouvem falar disto há quatro anos. Quero que soe orgulhoso sem soar a marca.",
     cm_title: "Caption Magic",
@@ -613,6 +631,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Texto alternativo:",
   },
   fr: {
+    cm_pick_this: "Choisir celle-ci",
+    cm_not_sure: "Pas certain de :",
+    cm_platform_none: "✍️ Sans plateforme",
     cm_ex2_desc: "Moi avec un casque de chantier devant le local, le jour de la remise des clés. Vide, béton brut, une seule ampoule. J'ai l'air épuisée et je souris jusqu'aux oreilles.",
     cm_ex2_context: "Ma première affaire. Je l'annonce à des gens qui m'entendent en parler depuis quatre ans. Je veux que ça sonne fier, sans sonner marque.",
     cm_title: "Caption Magic",
@@ -712,6 +733,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Texte alternatif :",
   },
   de: {
+    cm_pick_this: "Diese wählen",
+    cm_not_sure: "Nicht sicher bei:",
+    cm_platform_none: "✍️ Keine Plattform",
     cm_ex2_desc: "Ich mit Bauhelm vor dem Ladenlokal am Tag der Übergabe. Leer, roher Beton, eine einzige Glühbirne. Ich sehe erschöpft aus und strahle.",
     cm_ex2_context: "Mein erstes eigenes Geschäft. Ich verkünde es Leuten, die mich vier Jahre davon reden gehört haben. Es soll stolz klingen, nicht nach Marke.",
     cm_title: "Caption Magic",
@@ -811,6 +835,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Alt-Text:",
   },
   ja: {
+    cm_pick_this: "これにする",
+    cm_not_sure: "確信が持てない点：",
+    cm_platform_none: "✍️ プラットフォーム指定なし",
     cm_ex2_desc: "引き渡しの日、ヘルメットをかぶって店舗の前に立つ私。中は空っぽ、むき出しのコンクリート、裸電球がひとつ。疲れきった顔で、思いきり笑っています。",
     cm_ex2_context: "初めての自分の店。四年間この話を聞かされてきた人たちに向けての投稿です。誇らしさは出したいけれど、宣伝くさくはしたくない。",
     cm_title: "Caption Magic",
@@ -910,6 +937,9 @@ export const captionMagic = {
     cm_copy_alt_text: "代替テキスト：",
   },
   ko: {
+    cm_pick_this: "이걸로 선택",
+    cm_not_sure: "확실하지 않은 것:",
+    cm_platform_none: "✍️ 플랫폼 없음",
     cm_ex2_desc: "인수받는 날, 안전모를 쓰고 가게 앞에 선 나. 텅 빈 공간, 맨 콘크리트 바닥, 전구 하나. 지쳐 보이는데 활짝 웃고 있습니다.",
     cm_ex2_context: "제 첫 사업입니다. 4년 동안 이 얘기를 들어온 사람들에게 알리는 글이에요. 자랑스럽게, 그렇지만 광고처럼은 아니게 쓰고 싶습니다.",
     cm_title: "Caption Magic",
@@ -1009,6 +1039,9 @@ export const captionMagic = {
     cm_copy_alt_text: "대체 텍스트:",
   },
   ru: {
+    cm_pick_this: "Выбрать эту",
+    cm_not_sure: "Не уверен насчёт:",
+    cm_platform_none: "✍️ Без платформы",
     cm_ex2_desc: "Я в строительной каске перед помещением в день передачи ключей. Пусто, голый бетон, одна лампочка. Вид измотанный, и я улыбаюсь во весь рот.",
     cm_ex2_context: "Мой первый бизнес. Объявляю людям, которые четыре года слушали, как я об этом говорю. Хочу, чтобы звучало гордо, но не как реклама бренда.",
     cm_title: "Caption Magic",
@@ -1108,6 +1141,9 @@ export const captionMagic = {
     cm_copy_alt_text: "Альт-текст:",
   },
   th: {
+    cm_pick_this: "เลือกอันนี้",
+    cm_not_sure: "ไม่แน่ใจเรื่อง:",
+    cm_platform_none: "✍️ ไม่ระบุแพลตฟอร์ม",
     cm_ex2_desc: "ฉันสวมหมวกนิรภัยยืนอยู่หน้าร้านในวันรับมอบ ข้างในว่างเปล่า พื้นปูนเปลือย มีหลอดไฟดวงเดียว หน้าตาเหนื่อยมากแต่ยิ้มกว้าง",
     cm_ex2_context: "ธุรกิจแรกของฉัน จะประกาศให้คนที่ฟังฉันพูดเรื่องนี้มาสี่ปีได้รู้ อยากให้ฟังดูภูมิใจ แต่ไม่อยากให้เหมือนโฆษณาแบรนด์",
     cm_title: "Caption Magic",
@@ -1207,6 +1243,9 @@ export const captionMagic = {
     cm_copy_alt_text: "ข้อความแทนภาพ:",
   },
   vi: {
+    cm_pick_this: "Chọn cái này",
+    cm_not_sure: "Chưa chắc về:",
+    cm_platform_none: "✍️ Không nền tảng",
     cm_ex2_desc: "Tôi đội mũ bảo hộ đứng trước mặt bằng vào ngày nhận bàn giao. Bên trong trống trơn, nền bê tông thô, một bóng đèn. Trông tôi kiệt sức và đang cười rất tươi.",
     cm_ex2_context: "Cửa hàng đầu tiên của tôi. Thông báo với những người đã nghe tôi nói về nó suốt bốn năm. Tôi muốn nghe tự hào mà không giống quảng cáo thương hiệu.",
     cm_title: "Caption Magic",

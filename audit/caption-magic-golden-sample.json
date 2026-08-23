@@ -3,7 +3,9 @@
     "tool": "caption-magic",
     "tag": "captionmagic-v1",
     "locked": "2026-07-11",
-    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count)."
+    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert.",
+    "baseline": "captionmagic-v2",
+    "captured": "2026-08-23"
   },
   "cases": [
     {
@@ -24,132 +26,95 @@
         "userRegion": "US"
       },
       "output": {
-        "image_read": "A warm coffee shop corner bathed in morning sunlight, featuring a latte and an open notebook on a table, suggesting a workspace or moment of creative work",
+        "image_read": "A coffee cup containing what appears to be a latte with latte art, positioned on a surface next to an open notebook with visible pages. Morning light is coming in, creating shadows and illuminating the scene. The setting appears to be indoors in a corner space.",
+        "not_sure_about": [
+          "Whether this is actually a coffee shop or a home setup",
+          "The specific content written in the notebook",
+          "Whether the person in frame is the one starting the business or this is a styled shot"
+        ],
         "captions": [
           {
-            "tone": "Witty and Self-Aware",
-            "text": "officially a freelance writer now which means i'm either gonna change the world or just become really good at reordering my coffee setup for aesthetic reasons. honestly both sound fine ☕️📝",
+            "tone": "Witty and casual",
+            "text": "day one of pretending i know what i'm doing. the latte helps. the notebook makes it look official. we'll see how long this actually lasts 😅☕",
             "hashtags": [
               {
-                "tag": "freelancewriter",
-                "category": "niche"
+                "tag": "freelancelife"
               },
               {
-                "tag": "writerlife",
-                "category": "niche"
+                "tag": "writerlife"
               },
               {
-                "tag": "writersofinstagram",
-                "category": "trending"
+                "tag": "newbusiness"
               },
               {
-                "tag": "coffeeandcreatives",
-                "category": "niche"
+                "tag": "coffeeandcreatives"
               },
               {
-                "tag": "freelancinglife",
-                "category": "trending"
-              },
-              {
-                "tag": "amwriting",
-                "category": "niche"
+                "tag": "freelancewriter"
               }
             ],
-            "char_count": 178,
-            "why_it_works": "Disarms the 'big announcement' energy with self-deprecating humor while still celebrating the milestone—feels authentic and relatable rather than corporate.",
-            "best_for": "When you want to announce something without sounding like you're announcing something; appeals to creative audiences who get the joke."
+            "char_count": 128,
+            "why_it_works": "Self-aware humor about the gap between the aesthetic and reality—relatable to anyone starting something new",
+            "best_for": "Building rapport with people who appreciate honesty over hype"
           },
           {
-            "tone": "Reflective but Light",
-            "text": "day one of being my own boss and i'm already letting myself have an unreasonably long coffee break. this is either going to be the best decision i've ever made or a cautionary tale. let's find out 🤞",
+            "tone": "Casual and matter-of-fact",
+            "text": "officially made the jump. turns out all you need is a decent coffee, somewhere to write, and an unhealthy amount of faith in yourself. here we go 📝",
             "hashtags": [
               {
-                "tag": "freelancelife",
-                "category": "trending"
+                "tag": "launchday"
               },
               {
-                "tag": "entrepreneurship",
-                "category": "trending"
+                "tag": "freelancing"
               },
               {
-                "tag": "writingcommunity",
-                "category": "niche"
+                "tag": "writer"
               },
               {
-                "tag": "solopreneurs",
-                "category": "niche"
+                "tag": "smallbusiness"
               },
               {
-                "tag": "newbeginnings",
-                "category": "trending"
-              },
-              {
-                "tag": "creativeentrepreneur",
-                "category": "niche"
+                "tag": "amwriting"
               }
             ],
-            "char_count": 200,
-            "why_it_works": "Honest and slightly vulnerable without being dramatic—shows genuine excitement and relatability about the leap, which resonates with people considering similar moves.",
-            "best_for": "Building community with other freelancers and entrepreneurs; invites conversation and connection rather than just celebration."
+            "char_count": 145,
+            "why_it_works": "Straightforward announcement with a touch of humor—marks the moment without overselling it",
+            "best_for": "People who follow you for updates and want to know what's new in your life"
           },
           {
-            "tone": "Casual and Matter-of-Fact",
-            "text": "launching my freelance writing business today and i'm approaching this the way i approach most things: with coffee, a notebook, and the hope that nobody notices i'm winging it",
+            "tone": "Reflective and light",
+            "text": "something about morning light, a blank page, and a really good latte just feels like the right way to start this. no plan, just coffee and words. let's see what happens",
             "hashtags": [
               {
-                "tag": "freelancer",
-                "category": "trending"
+                "tag": "writersofinstagram"
               },
               {
-                "tag": "contentwriter",
-                "category": "niche"
+                "tag": "freelancewriting"
               },
               {
-                "tag": "smallbusiness",
-                "category": "trending"
+                "tag": "creativeentrepreneur"
               },
               {
-                "tag": "writingservices",
-                "category": "niche"
+                "tag": "writingcommunity"
               },
               {
-                "tag": "independentwriter",
-                "category": "niche"
-              },
-              {
-                "tag": "creativeprofessional",
-                "category": "niche"
+                "tag": "coffeeshop"
               }
             ],
-            "char_count": 193,
-            "why_it_works": "Plays it cool and honest without over-explaining; the humor comes from admitting the universal truth that everyone wings it, making it shareable and memorable.",
-            "best_for": "Reaching potential clients who value authenticity and humor over polished branding; also great for building trust through relatability."
+            "char_count": 154,
+            "why_it_works": "Focuses on the feeling and vibe rather than the announcement itself—invites people into the experience",
+            "best_for": "Creating a contemplative tone that resonates with other creative people"
           }
         ],
-        "alt_text": "A morning coffee shop scene with warm natural light streaming across a table containing a white ceramic mug with latte art and an open blank notebook with a pen, suggesting a creative workspace or writing session",
-        "posting_schedule": {
-          "best_days": [
-            "Tuesday",
-            "Wednesday",
-            "Thursday"
-          ],
-          "best_hours": [
-            "8am-10am",
-            "12pm-1pm"
-          ],
-          "why": "Morning hours align with the cozy coffee shop aesthetic and when people are actively job searching, considering freelance work, or scrolling during breaks; weekday midweek posts hit better engagement than weekends for career/business content."
-        },
+        "alt_text": "A latte with latte art sits next to an open notebook on a table in morning light, in what appears to be a coffee shop corner",
         "engagement_tips": [
-          "Reply to early comments with casual, conversational responses—don't be formal or brand-like even in replies",
-          "Ask a genuine question in the caption to spark conversation about people's own freelance journeys or coffee orders",
-          "Pin one of the top comments to keep the conversation visible and show you're active",
-          "Consider sharing this to your Stories 24 hours later with a 'still launching' sticker for second-wave engagement"
+          "Leave the specifics of your business for the comments if people ask—the caption sets the mood and lets the image do the work",
+          "A caption like this naturally invites 'so what kind of writing do you do?' or 'how are you feeling about it?'—those are good conversation starters, so respond to them genuinely"
         ],
         "avoid": [
-          "Overusing motivational quotes or hustle-culture language that contradicts the casual tone",
-          "Tagging unrelated large accounts for reach—stick to relevant writing and freelance communities",
-          "Making it sound like a job posting or formal announcement; keep the personal energy",
-          "Using too many emojis that feel forced or corporate (stick to 1-3 max and make them feel natural)"
+          "Overexplaining your business model or services in the caption—people asked to be added to your email list in their DMs, not in a caption",
+          "Motivational-poster language ('living my best life,' 'following my dreams') that sounds unlike how you actually talk",
+          "Claims about this being a 'sign' or 'the universe' aligning—stick to what you can see and feel"
         ]
       }
     },

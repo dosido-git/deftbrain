@@ -83,7 +83,9 @@ ${imageDescription ? `IMAGE DESCRIPTION: ${imageDescription}` : ''}
 ${context ? `CONTEXT: ${context}` : ''}
 ${brandCtx}
 
-PLATFORM: ${platformName} (character limit: ${charLimit})
+${platformName === 'none'
+  ? `NO PLATFORM: they have not said where this is going — a photo book, a message, a print, somewhere with no conventions of its own. Write captions that stand on their own: no platform-shaped length, no hashtag-bait phrasing, no calls to action about following or commenting. Hashtags are still fine as suggestions, since they may add them later, but nothing in the caption itself should assume a feed.`
+  : `PLATFORM: ${platformName} (character limit: ${charLimit})`}
 TONE: ${toneList}
 LENGTH PREFERENCE: ${lengthPref} (short = 1-2 lines, medium = 2-4 lines, long = 4-8 lines)
 
@@ -96,24 +98,22 @@ RULES:
 - If platform is LinkedIn, be slightly more polished but never corporate-speak
 - Include emojis naturally where they fit the tone, don't force them
 
-For HASHTAGS, categorize each one:
-- "trending" = high volume (100k+ posts), broad reach, high competition
-- "niche" = lower volume but higher engagement rate, specific audience
-- "branded" = unique/personal tags the user could own
+For HASHTAGS: suggest tags that genuinely describe this post. Do not label any of them trending, high-volume or high-competition — you cannot see what is trending, nobody counted the posts, and a tag presented as trending is a measurement claim. Mix broad and specific naturally and leave it at that. Never write the leading # — the interface adds it.
 
 Create 3 caption variations, each with a different approach.
 
 OUTPUT (JSON only):
 {
-  "image_read": "brief description of what you see in the image (or what was described)",
+  "image_read": "What is CLEARLY visible, and nothing else. Name only what you could point at and be confident about — a bicycle, a person, an indoor room, a number written on the frame. Leave out anything you are inferring: what the setting is for, what the clothing is, what an object is used for, what someone is doing. Where a detail matters to the captions but you cannot be sure of it, say so in the same breath: a frame that may be on a stand or may be a stationary trainer. An uncertain detail stated flatly becomes a caption built on something that is not there. If the user described the image instead of uploading one, work from their words and add nothing to them.",
+  "not_sure_about": ["Anything you can see but cannot identify with confidence, and which would change a caption if you got it wrong. Empty array when the image is unambiguous. This is not hedging: it is the list of things the captions must not assert."],
   "captions": [
     {
       "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "the full caption text",
+      "text": "The caption. It may refer to anything in image_read, and to nothing in not_sure_about. Critically: a detail you can see does not license a claim about what it MEANS. A number written on a photo establishes that someone measured it, never that the number is correct, ideal or recommended — a caption calling 130 degrees the magic angle has invented the meaning and attached it to the observation. Describe, joke, react; do not conclude.",
       "hashtags": [
-        { "tag": "hashtag1", "category": "trending" },
-        { "tag": "hashtag2", "category": "niche" },
-        { "tag": "hashtag3", "category": "branded" }
+        { "tag": "hashtag1" },
+        { "tag": "hashtag2" },
+        { "tag": "hashtag3" }
       ],
       "char_count": 150,
       "why_it_works": "1-sentence explanation of the approach",
@@ -121,14 +121,9 @@ OUTPUT (JSON only):
     }
   ],
   "alt_text": "descriptive accessibility text for the image",
-  "posting_schedule": {
-    "best_days": ["Tuesday", "Thursday"],
-    "best_hours": ["12pm-1pm", "6pm-8pm"],
-    "why": "brief explanation of timing strategy for this content type"
-  },
   "engagement_tips": [
-    "tip 1 specific to this content",
-    "tip 2 specific to this platform"
+    "Something the person can do that is about the post itself — what to put in the first line, what to leave for the comments, what the caption sets up. Never a claim about the platform's algorithm, reach, timing or ranking: nothing here retrieves any of that, and 'respond within the first hour to boost algorithmic reach' is a measurement nobody took.",
+    "A second, on the same terms."
   ],
   "avoid": ["thing to avoid 1", "thing to avoid 2"]
 }
@@ -317,8 +312,8 @@ OUTPUT (JSON only):
     "tone": "the blended tone",
     "text": "the remixed caption",
     "hashtags": [
-      { "tag": "hashtag1", "category": "trending" },
-      { "tag": "hashtag2", "category": "niche" }
+      { "tag": "hashtag1" },
+      { "tag": "hashtag2" }
     ],
     "char_count": 150,
     "remix_explanation": "what was taken from each option and why it works together"
