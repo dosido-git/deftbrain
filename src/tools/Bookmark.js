@@ -212,7 +212,6 @@ const Bookmark = ({ tool }) => {
       results?.answers?.forEach(a => { lines.push('  ' + t('bk_question_prefix', { question: a.question })); lines.push('  ' + a.answer); });
       lines.push('');
     }
-    if (results?.worth_continuing) lines.push(t('bk_worth_continuing'), results?.worth_continuing, '');
     const reentry = results?.reading_tip || results['re-entry_tip'];
     if (reentry) lines.push(t('bk_getting_back_in'), reentry, '');
     lines.push(BRAND);
@@ -455,7 +454,7 @@ const Bookmark = ({ tool }) => {
                 <div key={idx} className={'p-4 rounded-xl border ' + c.border + ' ' + c.threadCard}>
                   <p className={'text-sm font-bold ' + c.text + ' mb-1'}>{th.thread}</p>
                   <p className={'text-xs ' + c.textSecondary}>{th.status}</p>
-                  {th.tension && <p className={'text-xs ' + c.tipFg + ' mt-1 italic'}>❓ {th.tension}</p>}
+                  {th.how_it_got_here && <p className={'text-xs ' + c.textMuted + ' mt-1'}>{th.how_it_got_here}</p>}
                 </div>
               ))}
             </div>
@@ -554,14 +553,6 @@ const Bookmark = ({ tool }) => {
               ))}
             </div>
           </Section>
-        )}
-
-        {/* Worth continuing */}
-        {results?.worth_continuing && (
-          <div className={'p-4 rounded-xl border ' + c.tip}>
-            <p className={'text-xs font-bold ' + c.tipFg + ' mb-1'}>{t('bk_worth_continuing')}</p>
-            <p className={'text-sm ' + c.tipFg}>{results?.worth_continuing}</p>
-          </div>
         )}
 
         {/* Re-entry tips */}

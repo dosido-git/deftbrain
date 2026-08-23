@@ -5,7 +5,7 @@
     "model": "claude-sonnet-4-6",
     "baseline": "post-02bfefa (audit-kit fix pass)",
     "how_to_regress": "npm run check:golden bookmark  (dev backend up)",
-    "note": "sports = max-schema variant (max_tokens 5000); confidence/spoiler_level enums must stay clean."
+    "note": "sports = max-schema variant (max_tokens 5000); confidence/spoiler_level enums must stay clean. NOTE (2026-08-22): the recap is now gated on a chronology web-search that is cached per title+stopping-point. A cold cache legitimately produces a thinner recap — roster_changes and similar come back empty — so this case can fail on the first run after a restart and pass on the second. That is the gate working, not a regression; re-run before investigating."
   },
   "cases": [
     {

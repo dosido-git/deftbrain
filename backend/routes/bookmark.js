@@ -19,7 +19,11 @@ const { groundedFacts, normalizeKeyPart } = require('../lib/groundedFacts');
 // unverified means say it is unverified. Here it means leave it out: a caveat
 // does not un-spoil anything, and a thin recap costs a moment of remembering.
 const CHRONOLOGY_TTL_MS = 90 * 24 * 60 * 60 * 1000; // a published plot does not move
-const COLD_WAIT_MS = 20000;
+// Longer than the other grounded tools allow. Everywhere else a cold miss
+// means a slightly weaker answer; here the gate means a cold miss produces a
+// deliberately thin recap, and a reader waiting on a spoiler-safe catch-up
+// would rather wait than be handed less than the tool can verify.
+const COLD_WAIT_MS = 30000;
 
 function chronologyFacts({ title, stoppedAt, mediaType }) {
   const t = String(title || '').trim();
@@ -33,6 +37,7 @@ function chronologyFacts({ title, stoppedAt, mediaType }) {
     maxTokens: 3000,
     system: 'You establish where a specific point falls in a published work, using episode guides, chapter listings, official synopses and encyclopaedic references. You are being used to PREVENT spoilers, so err relentlessly toward the earlier reading: when you cannot place something with certainty, leave it out rather than guessing. Report only what you can confirm from a page. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
     userPrompt: `Establish the chronology of "${t.slice(0, 200)}" (${mediaType || 'show'}) up to and including this exact stopping point: "${at.slice(0, 120)}".
+${mediaType === 'sports' ? `This is a SPORTS season, so the boundary sits somewhere different. What spoils a sports catch-up is the RESULT of a game someone may still want to watch — not the surrounding facts. So treat standings as of the stopping point, trades, signings, injuries, coaching changes and storylines up to that date as things to establish and report in "before". Put game and series outcomes that fall after the stopping point in "after". Roster moves dated before the stopping point are not spoilers and belong in "before".` : `This is a narrative work. The boundary is the plot: what the audience has and has not been shown.`}
 
 You are drawing a line, not writing a recap. What is needed is which developments are on the reader's side of it and which are not.
 
@@ -96,7 +101,14 @@ router.post('/bookmark', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const SPOILER_CONSERVATISM = `WHEN IN DOUBT, LEAVE IT OUT. This is the rule that outranks every other instruction here, including completeness, vividness and length.
 Episode and chapter boundaries are exactly the thing recall is worst at. If you cannot place a detail with certainty on the correct side of their stopping point, do not include it — not as a hint, not softened, not hedged. A recap that is slightly thin costs them a moment of remembering. A recap that is slightly early costs them the thing they came here to protect. Those are not the same size of mistake, so never split the difference.
 Prefer what they told you they remember over what you recall about the title: their own words are dated evidence of where they actually are.
-If a VERIFIED CHRONOLOGY block appears at the end of this prompt, it is the boundary and it overrides your recollection wherever they differ. It does NOT license you to reach further: it tells you where the wall is, and everything the rule above says about doubt still applies to everything the block does not cover. A checked list of what came after exists so you can avoid those things, never so you can allude to them.
+WHAT MAY GO IN THE RECAP, AND NOTHING ELSE MAY:
+(a) what the VERIFIED CHRONOLOGY block below confirms happened at or before the stopping point, and
+(b) what the reader themselves told you they remember.
+That is the entire permitted set. Your own recollection of this title is not a third source. If a development is not in (a) or (b), it does not appear — not as background, not as context, not as a passing clause inside a sentence about something else. You will feel the recap is thinner than you could make it. That is the correct outcome: everything you would add to thicken it is unchecked, and unchecked is how an event from later arrives wearing the clothes of an event from earlier.
+When the block is missing or empty, (b) is all you have. Say plainly that you could not verify the timeline for this title and stopping point, work only from what they remember, and keep every field short. Do not compensate.
+The list of what comes AFTER exists so you can avoid those things. Never mention them, never hint, never let them shape how you characterise what came before — describing an earlier event in terms that only make sense once you know a later one is the same leak in a quieter voice.
+
+NOTHING FORWARD-FACING, ANYWHERE. No unresolved questions, no "watch for", no "whether X will", no "this is building toward", no "the tension is". A viewer who reads this must not learn what to pay attention to next — that narrows the next episode before they have seen it, which is a spoiler even when no outcome is revealed. Every field is past tense and stops at the line.
 Say plainly when something is beyond what you can place — 'that thread is still open where you stopped' or 'I would rather not guess at the exact scene' is a good answer. Filling the gap confidently is the only bad one.`;
 
     const mediaPrompts = {
@@ -136,7 +148,7 @@ Return ONLY valid JSON:
     {
       "thread": "Name of the plot thread. Nothing else.",
       "status": "Where this thread stands at the stopping point — one sentence",
-      "tension": "What the unresolved question is — one sentence"
+      "how_it_got_here": "How this thread reached that state, in the past tense and entirely from what has already happened. Never what it is building toward, never a question about what happens next, never anything phrased as 'whether' or 'if'. A viewer must not be able to read this and know what to watch for. — one sentence"
     }
   ],
 
@@ -144,7 +156,6 @@ Return ONLY valid JSON:
 
   "where_you_left_off": "The last major scene or moment, to trigger their memory — but ONLY if you can place it with certainty at or before their stopping point. Prefer what they said they remember. null if you are not sure which scene is the last one they saw; a wrong guess here is the spoiler this tool exists to prevent. — 1-2 sentences or null",
 
-  "worth_continuing": "Without spoilers, a honest take on whether the show maintains quality from this point (vague: 'the next stretch is widely considered the show's peak' or 'it gets uneven but has great moments') — one sentence",
 
   "answers": [
     {
@@ -188,7 +199,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
     {
       "thread": "Plot thread or thematic element. Nothing else.",
       "status": "Where it stands — one sentence",
-      "tension": "The unresolved question — one sentence"
+      "how_it_got_here": "How this thread reached that state, in the past tense and only from what has already happened. Never what it builds toward, never a 'whether' or 'if'. — one sentence"
     }
   ],
 
@@ -198,7 +209,6 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "where_you_left_off": "The last major moment, to trigger memory — ONLY if you can place it with certainty at or before their stopping point. Prefer what they said they remember. null if unsure. — one sentence or null",
 
-  "worth_continuing": "Honest, spoiler-free take on whether the book rewards finishing — one sentence",
 
   "reading_tip": "Practical suggestion: 'You might want to re-read the last chapter to get back in the flow' or 'You can jump right back in' — one sentence",
 
@@ -245,7 +255,7 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
     {
       "thread": "Story or side quest thread. Nothing else.",
       "status": "Where it stands — one sentence",
-      "tension": "Unresolved question — one sentence"
+      "how_it_got_here": "How this got to that state, past tense only, never what it builds toward. — one sentence"
     }
   ],
 
@@ -253,7 +263,6 @@ Generate a spoiler-safe recap. Return ONLY valid JSON:
 
   "where_you_left_off": "The last moment, to trigger memory — ONLY if you can place it with certainty at or before their stopping point. null if unsure. — one sentence or null",
 
-  "worth_continuing": "Spoiler-free take on whether finishing is rewarding — one sentence",
 
   "re-entry_tip": "Practical: 'Lower the difficulty for the first hour to re-learn controls' or 'Check your quest log, there were a lot of active side quests'",
 
