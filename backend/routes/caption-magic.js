@@ -40,8 +40,90 @@ const PLATFORM_NAMES = {
 };
 
 // ════════════════════════════════════════════
+// EVIDENCE ENVELOPE
+// ════════════════════════════════════════════
+// not_sure_about was prose, and prose is advisory: the model produced an
+// accurate list and then contradicted it three sentences later, repeatedly and
+// across four prompt rewrites. The fix is not another sentence asking it to
+// mean the list. It is to stop the generator being able to see anything the
+// list does not cover.
+//
+//   image → envelope → generation (NO IMAGE) → validation (NO IMAGE) → render
+//
+// Stage 2 and stage 3 never receive the picture. That is the whole mechanism.
+// A generator that cannot see the scene cannot invent a detail from it, and a
+// validator that cannot see the scene cannot quietly agree with a claim by
+// looking at the image and finding it plausible — it has only the envelope to
+// check against, which is exactly the comparison we want made.
+
+// Model-generated lists keep omitting the things that are not visible, because
+// the model builds them by looking. Authorship kept falling out of
+// not_sure_about for exactly this reason. These are supplied by code so they
+// cannot be forgotten; the observer adds scene-specific ones on top.
+const NEVER_INFERABLE = [
+  'ownership — whether the poster owns, made, found, bought or built anything pictured',
+  'when the photo was taken — date, day, time of day, season, or how recently',
+  'who took the photo, or where the poster was standing',
+  'whether anyone uses, lives in, works in or has ever visited the pictured place',
+  'the age, condition, price, brand or history of anything pictured',
+  'what the poster or anyone else feels, thinks, intends or has been through',
+  'what viewers will do, feel, notice or how they will respond to the post',
+];
+
+function renderEnvelope(env) {
+  const list = (a) => (Array.isArray(a) && a.length ? a.map(x => `- ${x}`).join('\n') : '- (none)');
+  return `EVIDENCE ENVELOPE
+
+OBSERVED:
+${list(env.observed)}
+
+UNCERTAIN:
+${list(env.uncertain)}
+
+PROHIBITED INFERENCES:
+${list(env.prohibited_inferences)}
+
+Write creatively using OBSERVED facts.
+
+You may use UNCERTAIN details only if the wording visibly preserves the uncertainty.
+
+Do not introduce a factual proposition about the pictured scene, the poster, or circumstances unless it is supported by OBSERVED or independently supplied by the user.
+
+PROHIBITED INFERENCES may not appear as facts anywhere in captions, rationales, hashtags, engagement tips, or other generated fields.
+
+Creativity must come from language, tone, juxtaposition, humour, rhythm and selection — not invented circumstances. An envelope is not a reason to be dull: everything in OBSERVED is yours to play with, and the funniest line about a thing is rarely a claim about where it came from.`;
+}
+
+// Targeted repair addresses one field. Paths are a closed vocabulary the
+// validator is given verbatim, so this parser only ever sees shapes it knows.
+function getByPath(obj, path) {
+  const m = String(path).match(/^([a-z_]+)(?:\[(\d+)\])?(?:\.([a-z_]+))?$/);
+  if (!m) return undefined;
+  const [, key, idx, sub] = m;
+  let cur = obj[key];
+  if (idx !== undefined) cur = Array.isArray(cur) ? cur[Number(idx)] : undefined;
+  if (sub) cur = cur && typeof cur === 'object' ? cur[sub] : undefined;
+  return cur;
+}
+
+function setByPath(obj, path, value) {
+  const m = String(path).match(/^([a-z_]+)(?:\[(\d+)\])?(?:\.([a-z_]+))?$/);
+  if (!m) return false;
+  const [, key, idx, sub] = m;
+  if (idx === undefined) {
+    if (!(key in obj)) return false;
+    obj[key] = value; return true;
+  }
+  if (!Array.isArray(obj[key])) return false;
+  const i = Number(idx);
+  if (i < 0 || i >= obj[key].length) return false;
+  if (!sub) { obj[key][i] = value; return true; }
+  if (!obj[key][i] || typeof obj[key][i] !== 'object') return false;
+  obj[key][i][sub] = value; return true;
+}
+
+// ════════════════════════════════════════════
 // MAIN ENDPOINT: Generate captions
-// (updated with hashtag intelligence #5)
 // ════════════════════════════════════════════
 router.post('/caption-magic', rateLimit(), async (req, res) => {
   try {
@@ -55,28 +137,78 @@ router.post('/caption-magic', rateLimit(), async (req, res) => {
     const charLimit = PLATFORM_LIMITS[platformName] || 2200;
     const toneList = Array.isArray(tones) && tones.length > 0 ? tones.join(', ') : 'casual & authentic';
     const lengthPref = captionLength || 'medium';
+    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
 
-    // Build content blocks for Claude
-    const contentBlocks = [];
-
-    // Vision block
     const parsed = parseDataUrl(imageBase64);
     if (imageBase64 && !parsed && !imageDescription) {
       return res.status(400).json({ error: "That image didn't upload correctly — try re-uploading it." });
     }
+
+    // ── STAGE 1 — OBSERVE ─────────────────────────────────────────────
+    let envelope;
     if (parsed) {
-      contentBlocks.push({
-        type: 'image',
-        source: { type: 'base64', media_type: parsed.media_type, data: parsed.data },
-      });
+      const observePrompt = `You are looking at an image for a captioning tool. You are not writing captions. Your only job is to say what is in the picture and what is not knowable from it.
+
+${imageDescription ? `The person also described it: ${imageDescription}` : ''}
+${context ? `And gave this context: ${context}` : ''}
+Anything the person told you is established fact. It belongs in observed, never in uncertain — you cannot doubt what you were told, only what you are looking at.
+
+OBSERVED is what you could point at: objects, materials, colours, counts, setting, text you can read. Short noun phrases, not sentences. Nothing about cause, purpose, history or feeling.
+
+The test is whether the word names a CAUSE for what you can see. "Bright highlight on the upper surface" is observed; "glowing" is not, because it says the object is producing the light, and a flat picture cannot show you that. The same applies in every language and to every word of that kind in it — lit, wet, warm, heavy, old, handmade, expensive, used. Whether something emits light, what it is made of, how old it is and whether anyone has touched it are never observable from a photograph. If it matters, put the QUESTION in uncertain; never put the answer in observed.
+
+This field is the tool's ground truth. Everything after it is written by someone who cannot see the picture and must take this list as fact, so a cause smuggled in here is not corrected later — it becomes true.
+
+UNCERTAIN is what you can see but cannot identify, where getting it wrong would change a caption. Short noun phrases naming the open question — "countertop material", "whether the sphere emits light" — not sentences about your confidence. Empty array if the image is unambiguous.
+
+PROHIBITED_INFERENCES is what this particular picture invites someone to assume and cannot support. Add only what is specific to this scene; the general ones are already handled.
+
+OUTPUT (JSON only):
+{
+  "observed": ["short noun phrase", "short noun phrase"],
+  "uncertain": ["short noun phrase naming the open question"],
+  "prohibited_inferences": ["scene-specific assumption this image invites but cannot support"]
+}
+
+${NO_QUOTE_RULE}
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
+
+      const obs = await callClaudeWithRetry({
+        model: MODELS.FAST,
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: parsed.media_type, data: parsed.data } },
+          { type: 'text', text: withLanguage(observePrompt, userLanguage) + locale },
+        ] }],
+      }, { label: 'CaptionMagicObserve' });
+
+      if (!Array.isArray(obs.observed)) {
+        return res.status(500).json({ error: 'Could not read the image. Please try again.' });
+      }
+      envelope = {
+        observed: obs.observed,
+        uncertain: Array.isArray(obs.uncertain) ? obs.uncertain : [],
+        prohibited_inferences: [...NEVER_INFERABLE, ...(Array.isArray(obs.prohibited_inferences) ? obs.prohibited_inferences : [])],
+      };
+    } else {
+      // No image: nothing is being interpreted. Every fact came from the person,
+      // so it is all observed and nothing is uncertain — asking a model to
+      // re-derive that produced the old bug where a fact the visitor supplied
+      // got listed as doubtful and then blocked downstream.
+      envelope = {
+        observed: [imageDescription, context].filter(Boolean),
+        uncertain: [],
+        prohibited_inferences: [...NEVER_INFERABLE],
+      };
     }
 
+    // ── STAGE 2 — GENERATE (no image) ─────────────────────────────────
+    const genPrompt = `You are a social media caption specialist who writes captions that sound like a real person, not a brand.
 
-    const basePrompt = `You are a social media caption specialist who writes captions that sound like a real person, not a brand.
+You cannot see the picture. Everything you know about it is below. That is deliberate — write from it and the captions will be true.
 
-${parsed ? 'Look at this image carefully and use what you see to craft captions.' : ''}
-${imageDescription ? `IMAGE DESCRIPTION: ${imageDescription}` : ''}
-${context ? `CONTEXT: ${context}` : ''}
+${renderEnvelope(envelope)}
+${context ? `\nThe person also said: ${context} — this is supplied fact, use it freely.` : ''}
 
 ${platformName === 'none'
   ? `NO PLATFORM: they have not said where this is going — a photo book, a message, a print, somewhere with no conventions of its own. Write captions that stand on their own: no platform-shaped length, no hashtag-bait phrasing, no calls to action about following or commenting. Hashtags are still fine as suggestions, since they may add them later, but nothing in the caption itself should assume a feed.`
@@ -93,57 +225,30 @@ RULES:
 - If platform is LinkedIn, be slightly more polished but never corporate-speak
 - Include emojis naturally where they fit the tone, don't force them
 
-For HASHTAGS: suggest tags that genuinely describe this post. Do not label any of them trending, high-volume or high-competition — you cannot see what is trending, nobody counted the posts, and a tag presented as trending is a measurement claim. Mix broad and specific naturally and leave it at that. Never write the leading # — the interface adds it.
+For HASHTAGS: suggest tags that genuinely describe this post, drawn from OBSERVED. Do not label any of them trending, high-volume or high-competition — you cannot see what is trending, nobody counted the posts, and a tag presented as trending is a measurement claim. A hashtag is a claim in one word, so #handmade and #vintage are prohibited inferences wearing a shorter coat. Never write the leading # — the interface adds it.
 
 Create 3 caption variations, each with a different approach.
 
 OUTPUT (JSON only):
 {
-  "image_read": "What is CLEARLY visible, and nothing else. Name only what you could point at and be confident about — a bicycle, a person, an indoor room, a number written on the frame. Leave out anything you are inferring: what the setting is for, what the clothing is, what an object is used for, what someone is doing — and any appearance word that is really a claim about its cause. Bright is visible; glowing is an assertion that the object is the light source, and a photograph cannot show you that. Lit, backlit, translucent, wet, warm, heavy, old and handmade are the same trap: they name a cause for what you can see. Describe the surface, not what is producing it. This field is written before the rest, so anything wrong here is repeated by every field after it. Where a detail matters to the captions but you cannot be sure of it, say so in the same breath: a frame that may be on a stand or may be a stationary trainer. An uncertain detail stated flatly becomes a caption built on something that is not there. If the user described the image instead of uploading one, work from their words and add nothing to them.",
-  "_propagation": "READ THIS BEFORE WRITING ANY FIELD BELOW not_sure_about. Whatever you put in not_sure_about becomes prohibited factual material for the WHOLE response — every caption, every why_it_works, every hashtag, the alt text and every engagement tip — unless the user supplied that same fact themselves in their own description, in which case it was never uncertain and does not belong in the list. There is no field where the doubt lapses.
-    It is prohibited in every grammatical disguise. Not only as a statement: not as an adjective (glowing), not as a verb (I built, just acquired), not as a noun compound (#resinart, #handmade), not as an implication (my new lamp), not smuggled into a rationale about why a caption works, and not as a hashtag, which is the surface people forget because it does not look like a sentence. A hashtag is a claim in one word.
-    The check is mechanical, so do it mechanically: for each item you wrote in not_sure_about, scan every string you are about to output and ask whether it could only be true if that doubt had been settled. If yes, cut it or rewrite around it. Uncertainty about a thing never blocks mentioning the thing — only asserting the part you could not see. The octopus may be described, joked about and hashtagged; whether it lights up and who made it may not.",
-  "not_sure_about": ["Anything you can see but cannot identify with confidence, and which would change a caption if you got it wrong. Empty array when the image is unambiguous.
-    A settled thing is simply ABSENT from this list. Do not list it with a note explaining that it is settled — that is narrating the instruction back instead of following it, and the entry still blocks the fact downstream. If the user told you they made it, who made it never appears here at all. Do not split hairs about a fact they gave you either: told it is a lamp that lights up purple, neither the lamp nor the light belongs here, however uncertain the mechanism is. Doubt what you are LOOKING at, never what you were TOLD.
-    This is not hedging either: it is the list of things every later field is forbidden to assert."],
   "captions": [
     {
       "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "The caption. Before writing each one, read your own not_sure_about list back and check every word against it — the leak is never the noun, it is the adjective or the verb that only works if one of those doubts had been resolved. If you wrote that you cannot tell whether it lights up, then glowing is out; if you cannot tell whether it was handmade, then so I built this is out, and so is any word implying you made it, found it, bought it, or that it is yours to keep. Followed me home and it's staying are the same invented history in a friendlier voice. Write the caption from what is in image_read alone and it will be fine.
-        NO:  a glowing purple head watching over my desk   (lighting was listed as uncertain)
-        NO:  so I built an octopus                          (authorship was listed as uncertain)
-        YES: a purple octopus head, watching over my desk
-        YES: this octopus has taken up residence on my desk
-        These are worked pairs to show the shape, not lines to reuse — write your own.
-        Authorship and ownership never wait for not_sure_about. An image cannot show you who made a thing, who owns it, where it came from or what it cost, so unless the visitor's own words say they made it, own it, found it or bought it, no caption may say or imply that they did — whether or not it appears in the list. The list is built from looking, and none of this is visible, so it will often be missing from it.
-        Separately: a detail you CAN see does not license a claim about what it MEANS. A number written on a photo establishes that someone measured it, never that the number is correct, ideal or recommended — a caption calling 130 degrees the magic angle has invented the meaning and attached it to the observation. Describe, joke, react; do not conclude.",
-      "hashtags": [
-        { "tag": "hashtag1" },
-        { "tag": "hashtag2" },
-        { "tag": "hashtag3" }
-      ],
+      "text": "The caption.",
+      "hashtags": [{ "tag": "hashtag1" }, { "tag": "hashtag2" }, { "tag": "hashtag3" }],
       "char_count": 150,
       "why_it_works": "1-sentence explanation of the approach",
       "best_for": "when this version works best"
     }
   ],
-  "alt_text": "Descriptive accessibility text. Bound by not_sure_about exactly as the captions are: describe what is visible, assert nothing you listed as uncertain. This is the field the rule is most often lost in, because describing feels safer than claiming — but a screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word. Glowing, handmade, antique, expensive are conclusions, not descriptions.",
+  "alt_text": "Descriptive accessibility text, built from OBSERVED. A screen-reader user gets this INSTEAD of the picture and has no way to see past a wrong word, so it carries the envelope more strictly than anything else here, not less.",
   "engagement_tips": [
-    "A creative suggestion about the post itself, phrased as what it offers rather than what it will achieve. No performance claims of any kind — not about the algorithm or reach, and not about people either. 'Questions in captions get more replies' and 'people respond better to X' are population findings nobody measured, and they are the same borrowed authority as an algorithm claim wearing softer clothes.
+    "A creative suggestion about the post itself, phrased as what it offers rather than what it will achieve. No performance claims of any kind — not about the algorithm or reach, and not about people either.
       NO:  Questions in captions get more replies
       YES: A question can give people an easy way into the conversation
-      NO:  People respond better to authenticity than to polish
-      YES: A casual observation fits this tone better than a generic call to action
-      No frequency words either — often, usually, tend to, most people. They smuggle the same
-      unmeasured population claim back in under a softer verb.
-      THE TEST IS THE SUBJECT OF YOUR SENTENCE. It must be the caption, the post or the object
-      in it — never people, readers, your audience or they. The moment an audience becomes the
-      subject you are reporting their behaviour, and you have not observed any of it.
-      And no comparison of outcomes, whatever the subject: goes further, does better,
-      works best, gets more. A sentence can pass the subject test and still rank two
-      results nobody measured.
-      NO:  people respond to a voice that sounds like thinking out loud
-      NO:  a conversational tone invites more comments than a polished description
+      No frequency words — often, usually, tend to, most people. They smuggle an unmeasured population claim back in under a softer verb.
+      THE TEST IS THE SUBJECT OF YOUR SENTENCE. It must be the caption, the post or the thing in it — never people, readers, your audience or they. The moment an audience becomes the subject you are reporting behaviour you never observed.
+      And no comparison of outcomes, whatever the subject: goes further, does better, works best, gets more. A sentence can pass the subject test and still rank two results nobody measured.
       YES: thinking out loud on the page leaves room for a reply; a finished description does not
       Worked pairs for shape only — write your own.",
     "A second, on the same terms."
@@ -152,40 +257,170 @@ OUTPUT (JSON only):
 }
 
 ${NO_QUOTE_RULE}
-
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-    contentBlocks.push({ type: 'text', text: withLanguage(basePrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) });
-
-    const parsed_json = await callClaudeWithRetry({
+    const out = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 4000,
-      messages: [{ role: 'user', content: contentBlocks }],
-    }, { label: 'CaptionMagic' });
-    if (!parsed_json.captions && !parsed_json.image_read) {
+      messages: [{ role: 'user', content: withLanguage(genPrompt, userLanguage) + locale }],
+    }, { label: 'CaptionMagicGenerate' });
+
+    if (!Array.isArray(out.captions)) {
       return res.status(500).json({ error: 'Could not generate captions. Please try again.' });
     }
+
+    // ── STAGE 3/4 — VALIDATE, THEN REPAIR WHAT FAILED ─────────────────
+    // Fail-open throughout. This is a safety net over a working answer, and a
+    // net that can drop the answer is worse than no net.
+    try {
+      await enforceEnvelope(out, envelope, { userLanguage, locale, context });
+    } catch (err) {
+      console.error('CaptionMagic validation skipped:', err.message);
+    }
+
     // char_count is a consumed hero stat — code-compute it (model understated
     // all three counts in the audit).
-    if (Array.isArray(parsed_json.captions)) {
-      parsed_json.captions.forEach(c => { if (c && typeof c.caption === 'string') c.char_count = c.caption.length; });
-    }
-    // Uncertainty here comes from LOOKING. With no image there is nothing being
-    // interpreted — every fact came from the person, and the prompt rule saying
-    // so did not hold: told "a lamp I made myself", the model still listed who
-    // made it as uncertain, which then blocks the fact they supplied. Enforced
-    // in code rather than asked for again.
-    if (!parsed) parsed_json.not_sure_about = [];
-    // The working field that makes the model read its own list before writing
-    // the rest. Never shown.
-    delete parsed_json._propagation;
-    res.json(parsed_json);
+    out.captions.forEach(c => { if (c && typeof c.text === 'string') c.char_count = c.text.length; });
+
+    res.json({ ...out, observed: envelope.observed, uncertain: envelope.uncertain });
 
   } catch (error) {
     console.error('CaptionMagic error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+// Every generated string the visitor will see, addressed by a path the
+// validator is handed verbatim. Enumerated in code so the validator cannot
+// invent a field name and the repair cannot write to one that does not exist.
+function checkableFields(out) {
+  const fields = [];
+  (out.captions || []).forEach((c, i) => {
+    if (typeof c?.text === 'string') fields.push([`captions[${i}].text`, c.text]);
+    if (typeof c?.why_it_works === 'string') fields.push([`captions[${i}].why_it_works`, c.why_it_works]);
+    if (Array.isArray(c?.hashtags) && c.hashtags.length) {
+      fields.push([`captions[${i}].hashtags`, c.hashtags.map(h => (typeof h === 'object' ? h?.tag : h)).filter(Boolean).join(', ')]);
+    }
+  });
+  if (typeof out.alt_text === 'string') fields.push(['alt_text', out.alt_text]);
+  (out.engagement_tips || []).forEach((t, i) => {
+    if (typeof t === 'string') fields.push([`engagement_tips[${i}]`, t]);
+  });
+  return fields;
+}
+
+// Stage 3 and 4. Adversarial by construction: this call is never asked to
+// write a caption, only to find propositions the envelope does not support.
+// The distinction matters — a model asked to improve its own output rates it
+// as fine, and asking the generator to check itself is the instruction we have
+// already watched fail four times.
+async function enforceEnvelope(out, envelope, { userLanguage, locale, context }) {
+  const fields = checkableFields(out);
+  if (!fields.length) return;
+
+  const proposed = fields.map(([path, value]) => `${path}: ${value}`).join('\n');
+  const supplied = context ? `\nUSER-PROVIDED FACTS (established, always supported):\n${context}\n` : '';
+
+  const validatePrompt = `You are checking a draft for unsupported claims. You are not writing or improving it.
+
+${renderEnvelope(envelope)}
+${supplied}
+PROPOSED OUTPUT:
+${proposed}
+
+For each factual proposition in the proposed output about the image, poster, circumstances, history, time, actions, feelings, ownership, use, or condition — and equally about anyone who will see the post, what they will do, feel, notice or how they will respond:
+
+Is it supported by OBSERVED or USER-PROVIDED facts?
+
+Audience claims are the ones most often missed here, because they are not about the picture and so do not feel like claims about it. Nobody observed the audience either. "Makes people stop rather than scroll past", "viewers will feel like they discovered something", "gets more comments" are all unsupported propositions, whatever the sentence's subject.
+
+Also check whether anything in UNCERTAIN or PROHIBITED INFERENCES has been converted into fact.
+
+A proposition can hide in an adjective, a verb, a possessive or a hashtag — "my new lamp" claims ownership and novelty, "glowing" claims a light source, "#handmade" claims authorship, "when nobody's using it" claims current use, "rather than scroll past" claims viewer behaviour. Wording that visibly preserves an UNCERTAIN detail is fine: "some kind of resin, maybe" is supported, "resin" is not.
+
+Do not flag figurative language that asserts nothing — a joke, a mood, an address to the reader, a description of the picture in playful words. Nor a statement about what a caption OFFERS, which is a description of the writing rather than a prediction: "gives a reply somewhere to land" and "leaves room for a question" claim nothing about anyone. It becomes a violation when it says what people will actually do.
+
+Flag only where a reader would come away believing something the envelope does not support.
+
+Return PASS or FAIL. If FAIL, identify the offending output fields and the unsupported propositions. Do not rewrite them.
+
+OUTPUT (JSON only):
+{
+  "verdict": "PASS or FAIL",
+  "violations": [
+    { "field": "exact identifier from the proposed output", "proposition": "the unsupported claim, quoted from the field", "why": "which envelope rule it breaks, in a few words" }
+  ]
+}
+
+verdict and field are machine identifiers, not prose. Write verdict as the English word PASS or FAIL whatever language the rest of this is in, and copy field character-for-character from the list above — captions[0].text stays captions[0].text. Code compares both literally; a translated one matches nothing and the check is silently lost. proposition and why are prose and may be in any language, since nobody reads them.
+
+${NO_QUOTE_RULE}
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
+
+  // withLanguage applies here like every other call, with verdict and field
+  // pinned to English inside the prompt. Leaving it off would have been the
+  // other way to protect the enum, but it also puts a German draft in front of
+  // an English-reasoning check, and S7.4 exists because that kind of local
+  // exception is how a route quietly stops speaking the visitor's language.
+  const check = await callClaudeWithRetry({
+    model: MODELS.FAST,
+    max_tokens: 2000,
+    messages: [{ role: 'user', content: withLanguage(validatePrompt, userLanguage) }],
+  }, { label: 'CaptionMagicValidate' });
+
+  // One repair per field. The validator sometimes reports two propositions in
+  // the same line, and the second replacement would silently overwrite the
+  // first — repairing the original text twice rather than the fixed text once.
+  const seen = new Set();
+  const violations = (Array.isArray(check?.violations) ? check.violations : [])
+    .filter(v => v && typeof v.field === 'string' && getByPath(out, v.field) !== undefined)
+    .filter(v => !seen.has(v.field) && seen.add(v.field));
+
+  // Logged on every call, not only on failure. A validator that silently stops
+  // working looks exactly like a validator finding nothing wrong, and this
+  // project has already shipped one audit that passed because it crashed.
+  console.log(`[caption-magic] envelope check: ${String(check?.verdict).toUpperCase() === 'FAIL' ? 'FAIL' : 'PASS'} (${violations.length} violation(s)${violations.length ? ': ' + violations.map(v => v.field).join(', ') : ''})`);
+
+  if (String(check?.verdict).toUpperCase() !== 'FAIL' || !violations.length) return;
+
+  // ── STAGE 4 — repair only what failed ───────────────────────────────
+  const repairPrompt = `You are repairing specific lines of a social caption draft that made claims the evidence does not support. Everything else has been accepted and is not your concern.
+
+${renderEnvelope(envelope)}
+${supplied}
+Rewrite each line below so it keeps its voice, tone, length and joke, and drops only the unsupported claim. Do not make it cautious, do not add a hedge where the fix is simply to cut three words, and do not replace a specific image with a vague one. The line should read as though the claim was never there — not as though it was removed.
+
+${violations.map((v, i) => `${i}. [${v.field}]
+   current: ${getByPath(out, v.field)}
+   unsupported: ${v.proposition}${v.why ? ` (${v.why})` : ''}`).join('\n\n')}
+
+Return one replacement per numbered item, keyed by its number.
+${violations.some(v => v.field.endsWith('.hashtags')) ? 'For a hashtags item, return a comma-separated list of tags with no leading #.\n' : ''}
+OUTPUT (JSON only):
+{ "fixes": [ { "n": 0, "value": "the rewritten line" } ] }
+
+${NO_QUOTE_RULE}
+CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
+
+  const repair = await callClaudeWithRetry({
+    model: MODELS.FAST,
+    max_tokens: 2500,
+    messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
+  }, { label: 'CaptionMagicRepair' });
+
+  // Keyed by number, not by path: withLanguage translates JSON string values,
+  // and a translated field path addresses nothing.
+  (Array.isArray(repair?.fixes) ? repair.fixes : []).forEach(fix => {
+    const v = violations[Number(fix?.n)];
+    if (!v || typeof fix.value !== 'string' || !fix.value.trim()) return;
+    if (v.field.endsWith('.hashtags')) {
+      const tags = fix.value.split(',').map(s => s.trim().replace(/^#+/, '')).filter(Boolean);
+      if (tags.length) setByPath(out, v.field, tags.map(tag => ({ tag })));
+      return;
+    }
+    setByPath(out, v.field, fix.value.trim());
+  });
+}
 
 // ════════════════════════════════════════════
 // REVISE ENDPOINT: Refine a caption
@@ -369,11 +604,18 @@ CRITICAL: Return ONLY valid JSON.`;
   }
 });
 
-// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. The
-// tool's own failure was epistemic — an ambiguous image became first-person
-// history — and PF-38 plus the not_sure_about propagation contract already
-// bind that. v2 is here for the other half: whether the captions stay usable
-// once the invented specifics are gone.
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23. PF-38
+// binds truth and v2 binds usefulness, both by instruction. This tool needed a
+// third thing: enforcement after generation. See the evidence envelope above —
+// prose asking the model to respect its own uncertainty list failed four times
+// running, so the generator no longer receives the image and a separate
+// adversarial pass checks the draft against the envelope before it renders.
 router.outputStandard = 'v2';
+
+// Exposed for the enforcement test: the validator is the one part of this file
+// whose failure mode is silence, so it has to be callable without a live image
+// and a full generation in front of it.
+router._enforceEnvelope = enforceEnvelope;
+router._renderEnvelope = renderEnvelope;
 
 module.exports = router;

@@ -654,7 +654,7 @@ const CaptionMagic = ({ tool }) => {
         </div>
 
         {/* What I see */}
-        {(imagePreview || results.image_read) && (
+        {(imagePreview || results.observed?.length > 0) && (
           <div className={`rounded-xl ${c.cardAlt} overflow-hidden`}>
             {imagePreview && (
               <img
@@ -663,12 +663,12 @@ const CaptionMagic = ({ tool }) => {
                 className="w-full object-contain max-h-96"
               />
             )}
-            {results.image_read && (
+            {results.observed?.length > 0 && (
               <p className={`text-xs ${c.textMuted} p-3 leading-relaxed`}>
-                <strong>{t('cm_what_i_see')}</strong> {results.image_read}
-                {results.not_sure_about?.length > 0 && (
+                <strong>{t('cm_what_i_see')}</strong> {results.observed.join(' · ')}
+                {results.uncertain?.length > 0 && (
                   <span className={`block mt-1 ${c.textMuted}`}>
-                    <strong>{t('cm_not_sure')}</strong> {results.not_sure_about.join('; ')}
+                    <strong>{t('cm_not_sure')}</strong> {results.uncertain.join(' · ')}
                   </span>
                 )}
               </p>

@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "caption-magic",
-    "tag": "captionmagic-v1",
+    "tag": "captionmagic-v4",
     "locked": "2026-07-11",
-    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert. Re-locked 2026-08-23 (v3): not_sure_about is now empty for any request with no image, enforced in code. Uncertainty here comes from looking; a typed description contains only facts the person supplied, and listing one as uncertain then blocked the fact they gave us. This case is description-only, so an empty array is the correct output rather than a regression.",
-    "baseline": "captionmagic-v3",
+    "note": "Structural regression golden. All 4 endpoints switched from a local 529-only withRetry to callClaudeWithRetry (parse-retry + truncation fail-fast). 21 annotation leaks stripped from primary output (caption text/tone, hashtag.tag, platform_name badge) — check:golden checks STRUCTURE not content, eyeball wording after prompt edits. adapt max_tokens 2000->3000 (adaptations scale with target count). Re-locked 2026-08-23 (v2): posting_schedule removed and hashtag categories dropped. Best-posting-times named days, hours and a rationale nothing retrieved, and a hashtag labelled trending is a claim about post volume nobody counted. not_sure_about is new — the list of visual details the captions are forbidden to assert. Re-locked 2026-08-23 (v3): not_sure_about is now empty for any request with no image, enforced in code. Uncertainty here comes from looking; a typed description contains only facts the person supplied, and listing one as uncertain then blocked the fact they gave us. This case is description-only, so an empty array is the correct output rather than a regression. Re-locked 2026-08-23 (v4): the main endpoint is now four stages, not one — observe (vision, image) → generate (NO IMAGE) → validate (NO IMAGE, adversarial) → repair only the fields that failed. image_read and not_sure_about are gone, replaced by observed[] and uncertain[]; prohibited_inferences is envelope scaffolding and is stripped before the response. The reason for the rewrite is that not_sure_about was prose: the model wrote an accurate list and contradicted it in the next field, through four prompt rewrites. Withholding the image from stage 2 is what makes it a mechanism rather than another instruction. Stage 3 logs PASS/FAIL on every call because a validator that has stopped working returns the same empty list as one that found nothing — scripts/caption-magic-envelope-test.js plants known violations to tell those apart, and is run BY HAND (two live calls), never in the hook. Validation is fail-open: it wraps a working answer and must never be able to drop it.",
+    "baseline": "captionmagic-v4",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -26,93 +26,79 @@
         "userRegion": "US"
       },
       "output": {
-        "image_read": "A coffee cup containing a light brown beverage, an open notebook with visible pages, and natural light coming from one direction into what appears to be an indoor corner space. The setup is arranged on a surface, likely a table.",
-        "not_sure_about": [],
         "captions": [
           {
-            "tone": "Witty and self-aware",
-            "text": "officially launching my freelance writing career which so far has involved buying this notebook, taking a photo of it, and calling it market research 📝",
+            "tone": "Witty, matter-of-fact",
+            "text": "coffee and a blank page walk into a corner. three hours later, one of them is a business. not sure which one's winning yet",
             "hashtags": [
               {
-                "tag": "freelancewriter"
+                "tag": "freelancewriting"
               },
               {
                 "tag": "writersofinstagram"
               },
               {
-                "tag": "amwriting"
+                "tag": "coffeeandwork"
+              }
+            ],
+            "char_count": 122,
+            "why_it_works": "Uses humor and personification to acknowledge the messy reality of launching without claiming confidence or victory",
+            "best_for": "Readers who appreciate self-aware, slightly irreverent takes on new business launches"
+          },
+          {
+            "tone": "Casual, reflective",
+            "text": "launching my freelance writing business from a corner with a latte and notebook. feels right — like the world's smallest soft opening before the actual thing starts",
+            "hashtags": [
+              {
+                "tag": "writerlife"
+              },
+              {
+                "tag": "freelancer"
+              },
+              {
+                "tag": "newbusiness"
+              }
+            ],
+            "char_count": 164,
+            "why_it_works": "Finds meaning in the particular moment without overstating it; the familiar setting becomes part of the story",
+            "best_for": "People who connect with process and place, who like seeing the human moment behind a milestone"
+          },
+          {
+            "tone": "Straightforward, open",
+            "text": "this is where it starts: notebooks, coffee, and the decision to stop thinking about writing as something i do on the side. launching my freelance writing business today 📝",
+            "hashtags": [
+              {
+                "tag": "entrepreneurship"
               },
               {
                 "tag": "writingcommunity"
               },
               {
-                "tag": "freelancework"
+                "tag": "smallbusiness"
               }
             ],
-            "char_count": 168,
-            "why_it_works": "Self-deprecating humor that acknowledges the gap between setup and execution—real people laugh at their own process, not just celebrate it",
-            "best_for": "Building connection with other writers and establishing a relatable, unpretentious brand voice"
-          },
-          {
-            "tone": "Casual and matter-of-fact",
-            "text": "new chapter (literally, look at the notebook). here we go 📖☕",
-            "hashtags": [
-              {
-                "tag": "freelancewriter"
-              },
-              {
-                "tag": "newbeginnings"
-              },
-              {
-                "tag": "writerslife"
-              },
-              {
-                "tag": "amwriting"
-              },
-              {
-                "tag": "creativeentrepreneur"
-              }
-            ],
-            "char_count": 63,
-            "why_it_works": "Minimal and punchy—the visual joke lands without overselling it, which suits the tone of someone genuinely starting something rather than performing it",
-            "best_for": "When you want to keep it simple and let the image do the heavy lifting"
-          },
-          {
-            "tone": "Reflective and genuine",
-            "text": "turning the thought-spiral into actual words. if you've been thinking about starting something, this is me doing it badly at first, which apparently is how it works 🤍",
-            "hashtags": [
-              {
-                "tag": "freelancework"
-              },
-              {
-                "tag": "writerscommunity"
-              },
-              {
-                "tag": "creativebusiness"
-              },
-              {
-                "tag": "amwriting"
-              },
-              {
-                "tag": "startuplife"
-              }
-            ],
-            "char_count": 172,
-            "why_it_works": "Speaks to the actual emotional experience of starting—vulnerability and permission-giving instead of polish, which invites resonance over envy",
-            "best_for": "Attracting an audience that values honesty and wants to see the real messy beginning, not the highlight reel"
+            "char_count": 171,
+            "why_it_works": "Direct statement of fact with a clear demarcation — not overthinking the moment, just marking that something shifted",
+            "best_for": "Sharing with people who know you, or want a clean, unpretentious version of the news"
           }
         ],
-        "alt_text": "A coffee cup with light brown beverage sits next to an open notebook on a table, with natural light illuminating the corner workspace.",
+        "alt_text": "A notebook open on a table next to a latte, morning light coming through a window in a coffee shop corner.",
         "engagement_tips": [
-          "A casual parenthetical comment gives followers an easy way to riff on the joke—room for them to add their own version of what they pretended counted as productivity",
-          "Admitting this is rough-draft energy (not polished yet) creates space for people to share where they are in their own process rather than just cheering from the sidelines"
+          "A caption that thinks out loud — 'not sure which one's winning yet' or 'before the actual thing starts' — invites readers to land on a genuine question rather than a finished pronouncement.",
+          "The specific detail (the place, the notebook and coffee) gives people something concrete to ask about or relate to, rather than abstract well-wishing about the launch itself."
         ],
         "avoid": [
-          "Claiming this is your first day or making timeline promises you haven't verified",
-          "Describing the coffee or space in ways that assume details you cannot see clearly",
-          "Generic motivational language like 'dreams' or 'finally taking the leap' without grounding it in something real",
-          "Hashtags implying this is a product launch or that you've already succeeded"
-        ]
+          "Invented feelings: 'nervous,' 'excited,' 'scared,' 'proud' — nothing about what launching feels like",
+          "Borrowed certainty: 'this will change everything,' 'living my dream,' 'so grateful' — claims you cannot verify from the image",
+          "Audience predictions: 'you'll love this,' 'people will want to know,' 'everyone starts somewhere' — observations of behavior you did not witness",
+          "Origin stories: 'built this myself,' 'my favorite spot,' claims about the coffee shop or equipment",
+          "Unseeable details: the date the photo was taken, whether this moment happened today or weeks ago, the time of day beyond 'morning light'"
+        ],
+        "observed": [
+          "A cozy coffee shop corner with a latte and an open notebook, morning light",
+          "launching my freelance writing business"
+        ],
+        "uncertain": []
       }
     },
     {
