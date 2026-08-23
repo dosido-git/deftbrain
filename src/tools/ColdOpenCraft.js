@@ -150,7 +150,6 @@ const ColdOpenCraft = ({ tool }) => {
     if (r.follow_up_plan) {
       text += `\n${t('coc_copy_followup')}\n${t('coc_copy_wait')} ${r.follow_up_plan.when}\n${r.follow_up_plan.message}\n${t('coc_copy_stopwhen')} ${r.follow_up_plan.when_to_stop}`;
     }
-    if (r.power_move) text += `\n\n${t('coc_copy_powermove')}\n${r.power_move}`;
     return text + BRAND;
   }, [results, who, t]);
 
@@ -158,7 +157,6 @@ const ColdOpenCraft = ({ tool }) => {
 
   const boldnessEmoji  = (b) => b === 'safe' ? '🛡️' : b === 'bold' ? '🔥' : '⚖️';
   const boldnessColor  = (b) => b === 'safe' ? c.success : b === 'bold' ? c.warning : c.warning;
-  const responseColor  = (rv) => rv === 'high' ? c.success : rv === 'low' ? c.danger : c.warning;
 
   const r = results;
 
@@ -348,11 +346,6 @@ const ColdOpenCraft = ({ tool }) => {
                           <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${boldnessColor(opener.boldness)}`}>
                             {opener.boldness}
                           </span>
-                          {opener.response_rate && (
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${responseColor(opener.response_rate)}`}>
-                              {opener.response_rate} {t('coc_response_rate')}
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -407,17 +400,6 @@ const ColdOpenCraft = ({ tool }) => {
                   <p className={`text-[10px] font-bold ${c.textMuteded} mb-0.5`}>{t('coc_when_stop')}</p>
                   <p className={`text-xs ${c.textSecondary}`}>{r.follow_up_plan.when_to_stop}</p>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* Power move */}
-          {r.power_move && (
-            <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
-              <span className="flex-shrink-0 mt-0.5">⚡</span>
-              <div>
-                <p className="text-xs font-bold mb-1">{t('coc_power_move')}</p>
-                <p className="text-sm leading-relaxed">{r.power_move}</p>
               </div>
             </div>
           )}
