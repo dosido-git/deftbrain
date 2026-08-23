@@ -109,7 +109,13 @@ OUTPUT (JSON only):
   "captions": [
     {
       "tone": "the tone used (e.g., Witty, Casual, Reflective)",
-      "text": "The caption. It may refer to anything in image_read, and to nothing in not_sure_about. Critically: a detail you can see does not license a claim about what it MEANS. A number written on a photo establishes that someone measured it, never that the number is correct, ideal or recommended — a caption calling 130 degrees the magic angle has invented the meaning and attached it to the observation. Describe, joke, react; do not conclude.",
+      "text": "The caption. Before writing each one, read your own not_sure_about list back and check every word against it — the leak is never the noun, it is the adjective or the verb that only works if one of those doubts had been resolved. If you wrote that you cannot tell whether it lights up, then glowing is out; if you cannot tell whether it was handmade, then so I built this is out, and so is any word implying you made it. Write the caption from what is in image_read alone and it will be fine.
+        NO:  a glowing purple head watching over my desk   (lighting was listed as uncertain)
+        NO:  so I built an octopus                          (authorship was listed as uncertain)
+        YES: a purple octopus head, watching over my desk
+        YES: this octopus has taken up residence on my desk
+        These are worked pairs to show the shape, not lines to reuse — write your own.
+        Separately: a detail you CAN see does not license a claim about what it MEANS. A number written on a photo establishes that someone measured it, never that the number is correct, ideal or recommended — a caption calling 130 degrees the magic angle has invented the meaning and attached it to the observation. Describe, joke, react; do not conclude.",
       "hashtags": [
         { "tag": "hashtag1" },
         { "tag": "hashtag2" },
@@ -122,7 +128,20 @@ OUTPUT (JSON only):
   ],
   "alt_text": "descriptive accessibility text for the image",
   "engagement_tips": [
-    "Something the person can do that is about the post itself — what to put in the first line, what to leave for the comments, what the caption sets up. Never a claim about the platform's algorithm, reach, timing or ranking: nothing here retrieves any of that, and 'respond within the first hour to boost algorithmic reach' is a measurement nobody took.",
+    "A creative suggestion about the post itself, phrased as what it offers rather than what it will achieve. No performance claims of any kind — not about the algorithm or reach, and not about people either. 'Questions in captions get more replies' and 'people respond better to X' are population findings nobody measured, and they are the same borrowed authority as an algorithm claim wearing softer clothes.
+      NO:  Questions in captions get more replies
+      YES: A question can give people an easy way into the conversation
+      NO:  People respond better to authenticity than to polish
+      YES: A casual observation fits this tone better than a generic call to action
+      No frequency words either — often, usually, tend to, most people. They smuggle the same
+      unmeasured population claim back in under a softer verb.
+      THE TEST IS THE SUBJECT OF YOUR SENTENCE. It must be the caption, the post or the object
+      in it — never people, readers, your audience or they. The moment an audience becomes the
+      subject you are reporting their behaviour, and you have not observed any of it.
+      NO:  people respond to a voice that sounds like thinking out loud
+      NO:  a conversational tone invites more comments than a polished description
+      YES: thinking out loud on the page leaves room for a reply; a finished description does not
+      Worked pairs for shape only — write your own.",
     "A second, on the same terms."
   ],
   "avoid": ["thing to avoid 1", "thing to avoid 2"]
