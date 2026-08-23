@@ -1672,6 +1672,19 @@ const BikeMedic = ({ tool }) => {
           <span className={`text-xs font-bold ${c.textMuteded} uppercase me-1 self-center`}>{t('bmd_tools_label')}</span>
           {data.tools_needed.map((tn, i) => <span key={i} className={`text-xs ${c.tag} px-2 py-1 rounded-lg font-medium`}>{tn}</span>)}
         </div>)}
+        {data.verified_specs?.length > 0 && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mb-4`}>
+            <p className={`text-xs font-bold ${c.textMuteded} uppercase mb-2`}>{t('bmd_specs_title')}</p>
+            <ul className="space-y-2">
+              {data.verified_specs.map((f, i) => (
+                <li key={i} className={`text-xs ${c.textSecondary}`}>
+                  <span>{f.detail}</span>
+                  {f.source && <span className={`block ${c.textMuteded} mt-0.5`}>{t('bmd_specs_source')} {f.source}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {data.pro_tip && (<div className={`${c.warning} border-2 rounded-xl p-4 mb-4`}><p className="text-sm"><span className="font-black text-xs uppercase block mb-1">{t('bmd_pro_tip_label')}</span>{data.pro_tip}</p></div>)}
         {data.parts_cost && (<p className={`text-xs ${c.textSecondary} mb-3`}>{t('bmd_parts_cost_estimate', { val: data.parts_cost })}</p>)}
         {data.next_steps?.length > 0 && (<div className="mb-4"><h4 className={`font-bold ${c.text} text-sm mb-2`}>{t('bmd_next_steps')}</h4><ol className="space-y-1">

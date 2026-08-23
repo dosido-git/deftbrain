@@ -3,6 +3,7 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, cleanJsonResponse, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { groundedFacts, groundedData, normalizeKeyPart, stripCites } = require('../lib/groundedFacts');
 
 // ════════════════════════════════════════════════════════════
 // BIKE MEDIC V2 — Backend Route
@@ -11,6 +12,84 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 // ════════════════════════════════════════════════════════════
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or part names plainly or with single quotes, or it breaks the JSON.';
+
+// ════════════════════════════════════════════════════════════
+// GROUNDING — mechanical facts, never diagnosis
+// ════════════════════════════════════════════════════════════
+// What the model remembers about torque values, service limits and
+// compatibility is exactly the knowledge that is model-specific, revised by
+// manufacturers, and dangerous to approximate. This looks those up.
+//
+// It deliberately does NOT search the rider's symptom. A page saying a worn
+// cassette can cause skipping is a fact about cassettes; it is not evidence
+// about this bike. Searching the symptom would produce a confident cause with
+// a citation attached, which is the failure this tool has spent every previous
+// pass removing. Facts in, diagnosis still reasoned, checks still required.
+//
+// Keyed on component area plus bike setup rather than on the symptom text, so
+// the cache actually hits: a few dozen combinations serve everyone, and the
+// free-text description never enters the key.
+const COLD_WAIT_MS = 25000;
+const SPEC_TTL_MS = 30 * 24 * 60 * 60 * 1000; // torque figures and standards move slowly
+
+// Maps a free-text symptom onto the component area whose specifications matter.
+const TOPIC_PATTERNS = [
+  ['pedals',      /\bpedal|cleat|clipless|crank|bottom bracket|\bbb\b/i],
+  ['brakes',      /\bbrake|rotor|caliper|pad|lever|bleed|squeal|stopping\b/i],
+  ['drivetrain',  /\bshift|derailleur|gear|cassette|chain|skip|chainring\b/i],
+  ['wheels',      /\bwheel|spoke|hub|rim|axle|true|wobble|bearing\b/i],
+  ['tires',       /\btire|tyre|tube|tubeless|puncture|flat|sealant|bead|pressure|psi\b/i],
+  ['steering',    /\bheadset|steer|handlebar|stem|fork\b/i],
+  ['suspension',  /\bsuspension|shock|damper|sag|travel\b/i],
+];
+function topicFor(text) {
+  const t = String(text || '');
+  for (const [name, re] of TOPIC_PATTERNS) if (re.test(t)) return name;
+  return 'general';
+}
+
+function bikeMedicSetup(bikeProfile) {
+  const p = bikeProfile || {};
+  return [p.bikeType, p.brakeType, p.shiftType, p.tireSetup].filter(Boolean).join(' ') || 'unspecified';
+}
+
+function bikeMedicFactsKey({ symptom, bikeProfile }) {
+  return `bikemedic:${normalizeKeyPart(topicFor(symptom))}:${normalizeKeyPart(bikeMedicSetup(bikeProfile).slice(0, 60))}`;
+}
+
+function bikeMedicFacts({ symptom, bikeProfile }) {
+  const topic = topicFor(symptom);
+  const setup = bikeMedicSetup(bikeProfile);
+  return groundedFacts({
+    cacheKey: bikeMedicFactsKey({ symptom, bikeProfile }),
+    label: 'bike-medic-facts',
+    ttlMs: SPEC_TTL_MS,
+    coldWaitMs: COLD_WAIT_MS,
+    maxTokens: 2500,
+    system: 'You verify bicycle technical specifications with web search. Prefer manufacturer documentation above everything — Shimano tech documents, SRAM service manuals, the component maker\'s own site — then established technical references such as Park Tool. Do not use forums, marketplace listings or general blogs. Report only figures and procedures you actually saw published, with the range where a range is published. Skip anything you cannot confirm; an empty array is a correct answer. Return ONLY valid JSON. Never place a double-quote (") character inside any JSON string value.',
+    userPrompt: `Verify with web_search the published technical facts a home mechanic would need when working on the ${topic} of a bicycle described as: ${setup}.
+
+Look for, and report ONLY what you can see published:
+(1) manufacturer torque specifications for the fasteners involved, with units;
+(2) service limits and wear thresholds that decide replace-or-keep;
+(3) compatibility rules or standards that decide whether a part fits;
+(4) manufacturer-documented procedures with a specific required order or tool;
+(5) any published recall, service bulletin or manufacturer-acknowledged defect for this kind of component.
+
+These are FACTS ABOUT COMPONENTS, not about any particular bike's problem. Do not search for or report what causes any symptom.
+
+Return ONLY valid JSON:
+{ "verified": [{ "kind": "torque | service limit | compatibility | procedure | bulletin", "detail": "The published fact, one sentence, with its figure and units", "source": "The domain you saw it on" }] }`,
+    render: (clean) => ({ block: renderSpecBlock(clean.verified), data: clean.verified }),
+  });
+}
+
+function renderSpecBlock(verified) {
+  if (!Array.isArray(verified) || !verified.length) return '';
+  return `\n\nPUBLISHED SPECIFICATIONS, CHECKED TODAY — these came from manufacturer or technical documentation and you may state them plainly with their source:\n` +
+    verified.map(f => `- [${f.kind}] ${f.detail} (source: ${f.source})`).join('\n') +
+    `\n\nWhat these are NOT: evidence about this rider's bike. They tell you what a fastener should be torqued to and when a part is worn out — they do not tell you what is wrong here. A published fact that worn cassettes can cause skipping does not make this skipping a worn cassette. Use them to make your checks exact and your instructions correct; the diagnosis is still a candidate the rider has to confirm.`;
+}
 
 const MECHANIC_PERSONA = `Expert bicycle mechanic — diagnostic first, prescriptive second. Identify what's wrong before recommending what to do.
 
@@ -203,6 +282,11 @@ Return ONLY valid JSON:
       });
     }
 
+    // Published specs for the component area in question. Empty is fine and
+    // common; the missing-specification rule below covers that case.
+    const specsKey = bikeMedicFactsKey({ symptom, bikeProfile });
+    const specs = await bikeMedicFacts({ symptom, bikeProfile }).catch(() => '');
+
     let prompt;
     const bikeContext = bikeProfile
       ? `RIDER'S BIKE: ${bikeProfile.bikeType || 'unknown'} with ${bikeProfile.brakeType || 'unknown'} brakes, ${bikeProfile.shiftType || 'unknown'} shifting, ${bikeProfile.tireSetup || 'unknown'} tires`
@@ -231,6 +315,10 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 - Should they go to a shop for this?
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
+${specs}
+
+WHERE A SPECIFICATION IS MISSING, SAY IT IS MISSING. If there is no checked figure above for a torque value, a service limit or a compatibility rule this repair actually turns on, do not supply one from memory and do not round to something plausible. Name the figure you could not verify, say where it lives — the component maker's own documentation, or the marking on the part itself — and where the fastener is safety-relevant, say a shop can set it. An improvised torque figure on a part that holds a rider to a moving bicycle is the worst thing this tool can print.
 
 A SYMPTOM SUGGESTS; IT DOES NOT PROVE. Never write a symptom and a cause as an equation or a certainty — no "clicking under load = loose bottom bracket", no "that noise means the hub", no "#1 cause", no share-of-cases figure. Several things produce the same noise, the same play and the same bad shift, which is the entire reason this tool exists.
 Write it as a candidate plus the check that would settle it: "clicking under load points first at the pedals — back one out and retighten it, and if the click survives that, move to the crank." Now the rider can tell which it is instead of taking your word.
@@ -269,6 +357,10 @@ ${bikeContext}${photoNote}
 Diagnose the most likely cause and provide a clear, step-by-step fix. Start with the most common/probable cause, not the most dramatic one.
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
+
+${specs}
+
+WHERE A SPECIFICATION IS MISSING, SAY IT IS MISSING. If there is no checked figure above for a torque value, a service limit or a compatibility rule this repair actually turns on, do not supply one from memory and do not round to something plausible. Name the figure you could not verify, say where it lives — the component maker's own documentation, or the marking on the part itself — and where the fastener is safety-relevant, say a shop can set it. An improvised torque figure on a part that holds a rider to a moving bicycle is the worst thing this tool can print.
 
 A SYMPTOM SUGGESTS; IT DOES NOT PROVE. Never write a symptom and a cause as an equation or a certainty — no "clicking under load = loose bottom bracket", no "that noise means the hub", no "#1 cause", no share-of-cases figure. Several things produce the same noise, the same play and the same bad shift, which is the entire reason this tool exists.
 Write it as a candidate plus the check that would settle it: "clicking under load points first at the pedals — back one out and retighten it, and if the click survives that, move to the crank." Now the rider can tell which it is instead of taking your word.
@@ -335,6 +427,8 @@ Return ONLY valid JSON. No markdown, no explanation outside the JSON.`, req.body
     if (!parsed.diagnosis && !parsed.title && !parsed.tasks) {
       return res.status(500).json({ error: 'Could not generate bike advice. Please try again.' });
     }
+    // Only what this answer actually saw, stripped where it leaves the server.
+    parsed.verified_specs = specs ? (stripCites(groundedData(specsKey)) || null) : null;
     res.json(parsed);
 
   } catch (error) {

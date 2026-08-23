@@ -13,6 +13,8 @@
 // labels are keyed under bmd_inv_*.
 export const bikeMedic = {
   en: {
+    bmd_specs_title: "📄 From the manufacturer's documentation",
+    bmd_specs_source: "Source:",
     bmd_stop_pedal: "Don't ride with a pedal that moves in the crank arm. Every turn you take on it works the threads, and thread damage is what turns a five-minute job into a new crank arm.",
     bmd_fix_pedal_loose_step_8: "If it will not seat, will not stay tight, or the crank arm was the loose part, stop riding it and use a bike shop.",
     bmd_stop_label: "Before you ride",
@@ -1462,6 +1464,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Hookless rims have strict tire lists from manufacturer. Wrong tire = safety hazard.",
   },
   es: {
+    bmd_specs_title: "📄 De la documentación del fabricante",
+    bmd_specs_source: "Fuente:",
     bmd_stop_pedal: "No ruedes con un pedal que se mueve en la biela. Cada pedalada trabaja la rosca, y una rosca dañada convierte un arreglo de cinco minutos en una biela nueva.",
     bmd_fix_pedal_loose_step_8: "Si no asienta, no se mantiene apretado, o lo flojo era la biela, no ruedes y acude a un taller.",
     bmd_stop_label: "Antes de montar",
@@ -2779,6 +2783,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Las llantas hookless tienen listas estrictas de cubiertas del fabricante. Cubierta equivocada = riesgo de seguridad.",
   },
   pt: {
+    bmd_specs_title: "📄 Da documentação do fabricante",
+    bmd_specs_source: "Fonte:",
     bmd_stop_pedal: "Não pedale com um pedal que se mexe no pedivela. Cada volta trabalha a rosca, e rosca danificada transforma um serviço de cinco minutos num pedivela novo.",
     bmd_fix_pedal_loose_step_8: "Se não assentar, não ficar apertado, ou se o solto era o pedivela, pare de pedalar e procure uma oficina.",
     bmd_stop_label: "Antes de pedalar",
@@ -4096,6 +4102,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Aros hookless têm listas estritas de pneus do fabricante. Pneu errado = risco de segurança.",
   },
   fr: {
+    bmd_specs_title: "📄 D'après la documentation du fabricant",
+    bmd_specs_source: "Source :",
     bmd_stop_pedal: "Ne roulez pas avec une pédale qui bouge dans la manivelle. Chaque tour travaille le filetage, et un filetage abîmé transforme cinq minutes de travail en une manivelle neuve.",
     bmd_fix_pedal_loose_step_8: "Si elle ne s'assoit pas, ne reste pas serrée, ou si c'était la manivelle qui bougeait, ne roulez plus et passez par un atelier.",
     bmd_stop_label: "Avant de repartir",
@@ -5413,6 +5421,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Les jantes hookless ont des listes de pneus strictes du fabricant. Mauvais pneu = danger de sécurité.",
   },
   de: {
+    bmd_specs_title: "📄 Aus der Herstellerdokumentation",
+    bmd_specs_source: "Quelle:",
     bmd_stop_pedal: "Fahren Sie nicht mit einem Pedal, das sich im Kurbelarm bewegt. Jede Umdrehung arbeitet am Gewinde, und ein beschädigtes Gewinde macht aus fünf Minuten Arbeit einen neuen Kurbelarm.",
     bmd_fix_pedal_loose_step_8: "Wenn es nicht sitzt, nicht fest bleibt, oder der Kurbelarm das Lose war: nicht weiterfahren, sondern in die Werkstatt.",
     bmd_stop_label: "Bevor Sie losfahren",
@@ -6730,6 +6740,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Hookless-Felgen haben strenge Reifenlisten vom Hersteller. Falscher Reifen = Sicherheitsrisiko.",
   },
   vi: {
+    bmd_specs_title: "📄 Từ tài liệu của nhà sản xuất",
+    bmd_specs_source: "Nguồn:",
     bmd_stop_pedal: "Đừng đạp khi bàn đạp còn lỏng trong tay dên. Mỗi vòng quay đều mài vào ren, và ren hỏng sẽ biến việc năm phút thành thay cả tay dên.",
     bmd_fix_pedal_loose_step_8: "Nếu bàn đạp không vào khít, siết rồi vẫn lỏng, hoặc thứ lỏng chính là tay dên, hãy ngừng đạp và ra tiệm.",
     bmd_stop_label: "Trước khi đạp tiếp",
@@ -8047,6 +8059,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "Vành hookless có danh sách lốp nghiêm ngặt từ nhà sản xuất. Lốp sai = nguy cơ an toàn.",
   },
   zh: {
+    bmd_specs_title: "📄 来自厂商技术文档",
+    bmd_specs_source: "来源：",
     bmd_stop_pedal: "脚踏在曲柄里晃动时不要骑行。每踩一圈都在磨螺纹，而螺纹一旦损坏，五分钟的小活就变成换一支曲柄。",
     bmd_fix_pedal_loose_step_8: "如果装不到位、拧紧后又松，或松动的其实是曲柄，就不要再骑，交给车店。",
     bmd_stop_label: "骑行前请先确认",
@@ -9364,6 +9378,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "无钩轮圈有厂商严格的外胎清单。用错外胎 = 安全隐患。",
   },
   hi: {
+    bmd_specs_title: "📄 निर्माता के दस्तावेज़ से",
+    bmd_specs_source: "स्रोत:",
     bmd_stop_pedal: "अगर पैडल क्रैंक में हिल रहा है तो साइकिल न चलाएँ। हर चक्कर चूड़ियों को घिसता है, और चूड़ी खराब हो जाए तो पाँच मिनट का काम नई क्रैंक आर्म बन जाता है।",
     bmd_fix_pedal_loose_step_8: "अगर पैडल बैठे नहीं, कसा न रहे, या ढीली चीज़ क्रैंक आर्म ही थी — तो चलाना बंद करें और दुकान पर जाएँ।",
     bmd_stop_label: "चलाने से पहले",
@@ -10809,6 +10825,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "हुकलेस रिम की निर्माता से सख्त टायर सूची होती है। गलत टायर = सुरक्षा जोखिम।",
   },
   ar: {
+    bmd_specs_title: "📄 من وثائق الشركة المصنّعة",
+    bmd_specs_source: "المصدر:",
     bmd_stop_pedal: "لا تركب ودوّاسة تتحرك داخل الذراع. كل دورة تعمل على الأسنان، وتلف الأسنان يحوّل عملاً من خمس دقائق إلى ذراع جديدة.",
     bmd_fix_pedal_loose_step_8: "إن لم تستقر، أو لم تبقَ مربوطة، أو كان المرتخي هو الذراع نفسها، فتوقف عن الركوب واذهب إلى الورشة.",
     bmd_stop_label: "قبل أن تركب",
@@ -12254,6 +12272,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "الحواف بلا خطّاف لها قوائم إطارات صارمة من الصانع. إطار خاطئ = خطر سلامة.",
   },
   ja: {
+    bmd_specs_title: "📄 メーカーの技術資料より",
+    bmd_specs_source: "出典：",
     bmd_stop_pedal: "ペダルがクランクの中で動く状態では乗らないでください。ひと漕ぎごとにネジ山が削られ、ネジ山が傷めば5分の作業がクランク交換に変わります。",
     bmd_fix_pedal_loose_step_8: "きちんと収まらない、締めても緩む、あるいは緩んでいたのがクランクだった場合は、乗らずに自転車店へ。",
     bmd_stop_label: "走り出す前に",
@@ -13699,6 +13719,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "フックレスリムにはメーカーの厳格なタイヤリストがあります。間違ったタイヤ = 安全上の危険。",
   },
   ko: {
+    bmd_specs_title: "📄 제조사 문서에서",
+    bmd_specs_source: "출처:",
     bmd_stop_pedal: "페달이 크랭크 안에서 움직이는 상태로는 타지 마세요. 한 바퀴 돌 때마다 나사산이 깎이고, 나사산이 상하면 5분짜리 작업이 크랭크 교체로 바뀝니다.",
     bmd_fix_pedal_loose_step_8: "제대로 안 들어가거나, 조여도 다시 풀리거나, 헐거운 게 크랭크암이었다면 타지 말고 자전거 가게로 가세요.",
     bmd_stop_label: "타기 전에",
@@ -15144,6 +15166,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "후크리스 림은 제조사의 엄격한 타이어 목록이 있습니다. 잘못된 타이어 = 안전 위험.",
   },
   ru: {
+    bmd_specs_title: "📄 Из документации производителя",
+    bmd_specs_source: "Источник:",
     bmd_stop_pedal: "Не ездите с педалью, которая шевелится в шатуне. Каждый оборот работает по резьбе, а испорченная резьба превращает пятиминутное дело в новый шатун.",
     bmd_fix_pedal_loose_step_8: "Если педаль не садится, не держит затяжку, или разболтался сам шатун — не ездите и обратитесь в мастерскую.",
     bmd_stop_label: "Прежде чем ехать",
@@ -16589,6 +16613,8 @@ export const bikeMedic = {
     bmd_fix_tire_blowoff_tip: "У бескрюковых ободов строгие списки шин от производителя. Неправильная шина = угроза безопасности.",
   },
   th: {
+    bmd_specs_title: "📄 จากเอกสารของผู้ผลิต",
+    bmd_specs_source: "แหล่งที่มา:",
     bmd_stop_pedal: "อย่าปั่นทั้งที่บันไดขยับอยู่ในขาจาน ทุกรอบที่ปั่นคือการกัดเกลียว และเกลียวที่เสียจะเปลี่ยนงานห้านาทีให้กลายเป็นขาจานอันใหม่",
     bmd_fix_pedal_loose_step_8: "ถ้าบันไดไม่เข้าที่ ขันแล้วยังหลวม หรือสิ่งที่หลวมคือขาจานเอง ให้หยุดปั่นแล้วเข้าร้าน",
     bmd_stop_label: "ก่อนออกปั่น",
