@@ -61,12 +61,13 @@ const PLATFORM_NAMES = {
 // not_sure_about for exactly this reason. These are supplied by code so they
 // cannot be forgotten; the observer adds scene-specific ones on top.
 const NEVER_INFERABLE = [
-  'ownership — whether the poster owns, made, found, bought or built anything pictured',
-  'when the photo was taken — date, day, time of day, season, or how recently',
-  'who took the photo, or where the poster was standing',
-  'whether anyone uses, lives in, works in or has ever visited the pictured place',
-  'the age, condition, price, brand or history of anything pictured',
-  'what the poster or anyone else feels, thinks, intends or has been through',
+  'who anyone pictured is, and how they are related to each other or to the poster',
+  'whose things these are — whether the poster owns, made, found or bought anything pictured',
+  'where this is, beyond what is actually legible in the frame',
+  'when it happened — date, day, time of day, season, or how recently',
+  'what happened before or after: what someone had just finished doing, or was about to do',
+  'the history, provenance, price, age or condition of anything pictured',
+  'what a real person actually felt or thought, reported as fact',
   'what viewers will do, feel, notice or how they will respond to the post',
 ];
 
@@ -83,15 +84,19 @@ ${list(env.uncertain)}
 PROHIBITED INFERENCES:
 ${list(env.prohibited_inferences)}
 
-Write creatively using OBSERVED facts.
+OBSERVED is your raw material. Play with it freely — that is what it is for.
 
-You may use UNCERTAIN details only if the wording visibly preserves the uncertainty.
+UNCERTAIN is what the picture cannot settle. Write about these things all you like; just don't state the answer as fact.
 
-Do not introduce a factual proposition about the pictured scene, the poster, or circumstances unless it is supported by OBSERVED or independently supplied by the user.
+PROHIBITED INFERENCES are concrete claims about the real situation behind the photo that the photo cannot establish.
 
-PROHIBITED INFERENCES may not appear as facts anywhere in captions, rationales, hashtags, engagement tips, or other generated fields.
+THE LINE IS BETWEEN INVENTING A VOICE AND INVENTING A FACT.
 
-Creativity must come from language, tone, juxtaposition, humour, rhythm and selection — not invented circumstances. An envelope is not a reason to be dull: everything in OBSERVED is yours to play with, and the funniest line about a thing is rarely a claim about where it came from.`;
+Invent freely: jokes, absurdity, metaphor, personification, attitude, rhetorical exaggeration, an imagined inner monologue, an unexpected angle on what is in frame. "The cactus remains neutral. The cup knows nothing." invents nothing about the world — nobody reads it as a report on a cactus's mental state. "Me wondering what any of this has to do with anything" is caption voice, not testimony. Neither is a violation and neither should be softened.
+
+Do not invent: who these people are, how they are related, whose things these are, where this is, when it happened, what happened just before or after. "My grandmother gave me this cactus", "first morning in our new apartment", "after three hours of repotting this thing", "she had no idea I was taking this" — each of these would be read as true, and each would be false.
+
+The test is what a reasonable reader comes away believing. If they would believe something untrue about the real situation, it is a violation. If they would only come away smiling, it is the product working.`;
 }
 
 // Targeted repair addresses one field. Paths are a closed vocabulary the
@@ -225,7 +230,24 @@ RULES:
 - If platform is LinkedIn, be slightly more polished but never corporate-speak
 - Include emojis naturally where they fit the tone, don't force them
 
-For HASHTAGS: suggest tags that genuinely describe this post, drawn from OBSERVED. Do not label any of them trending, high-volume or high-competition — you cannot see what is trending, nobody counted the posts, and a tag presented as trending is a measurement claim. A hashtag is a claim in one word, so #handmade and #vintage are prohibited inferences wearing a shorter coat. Never write the leading # — the interface adds it.
+FUN IS A REQUIREMENT, NOT A PERMISSION.
+
+This tool exists to make someone smile and hand them a line they would not have
+arrived at on their own. A caption that describes the photograph accurately and
+does nothing else has failed, however true it is.
+
+At least ONE of the three must take a real creative swing: an absurd premise, a
+personification, a joke that runs away with a detail, a voice with an attitude,
+a line that surprises. Not a competent description with a wink at the end. The
+peculiar specifics in OBSERVED are the funniest thing you have — the odd object,
+the wrong scale, the thing nobody would put next to the other thing. Use them.
+
+The envelope is not a reason to be careful. It rules out inventing the
+backstory. It rules out nothing about how strange the caption may be.
+
+For HASHTAGS: tags that genuinely fit this post. Do not label any of them trending, high-volume or high-competition — you cannot see what is trending, nobody counted the posts, and a tag presented as trending is a measurement claim.
+
+The voice-versus-fact line applies to tags too, and it cuts finely. A tag stating a fact the picture cannot support is a claim in one word: #sundaymorning assigns a day nobody established, #handmade assigns an author, #vintage assigns an age. A tag that is obviously part of the joke is not: #morningsomewhere claims nothing, because no one reads it as a timestamp. Play in tags where the play reads as play. Never write the leading # — the interface adds it.
 
 Create 3 caption variations, each with a different approach.
 
@@ -282,6 +304,20 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     // all three counts in the audit).
     out.captions.forEach(c => { if (c && typeof c.text === 'string') c.char_count = c.text.length; });
 
+    // Asking for funnier captions produced funnier hashtags — "make it make
+    // sense", "jellyfish energy" — and a hashtag with a space in it is not a
+    // hashtag on any platform that has them. Closed up in code because it is a
+    // mechanical property of the string, not a judgement the model should be
+    // spending attention on.
+    out.captions.forEach(c => {
+      if (!Array.isArray(c?.hashtags)) return;
+      c.hashtags = c.hashtags
+        .map(h => (typeof h === 'object' ? h?.tag : h))
+        .map(tag => String(tag || '').replace(/^#+/, '').replace(/[\s_]+/g, '').trim())
+        .filter(Boolean)
+        .map(tag => ({ tag }));
+    });
+
     res.json({ ...out, observed: envelope.observed, uncertain: envelope.uncertain });
 
   } catch (error) {
@@ -321,34 +357,61 @@ async function enforceEnvelope(out, envelope, { userLanguage, locale, context })
   const proposed = fields.map(([path, value]) => `${path}: ${value}`).join('\n');
   const supplied = context ? `\nUSER-PROVIDED FACTS (established, always supported):\n${context}\n` : '';
 
-  const validatePrompt = `You are checking a draft for unsupported claims. You are not writing or improving it.
+  const validatePrompt = `Caption Magic is a creative-writing tool. You are checking a draft for MISLEADING invention, which is a much narrower thing than untrue invention. You are not writing or improving the draft, and you are not making it more literal.
 
 ${renderEnvelope(envelope)}
 ${supplied}
 PROPOSED OUTPUT:
 ${proposed}
 
-For each factual proposition in the proposed output about the image, poster, circumstances, history, time, actions, feelings, ownership, use, or condition — and equally about anyone who will see the post, what they will do, feel, notice or how they will respond:
+Captions and their hashtags may freely use humour, imagination, metaphor, personification, attitude, rhetorical exaggeration and an invented caption voice. Do not reject creative language merely because the image does not literally establish it.
 
-Is it supported by OBSERVED or USER-PROVIDED facts?
+Reject invention only where a reasonable reader could take it as a concrete claim about the real photograph or its circumstances — identity, relationships, ownership, location, date or time, history, events, activities, provenance, condition, or other consequential facts the visitor did not supply and the image does not establish.
 
-Audience claims are the ones most often missed here, because they are not about the picture and so do not feel like claims about it. Nobody observed the audience either. "Makes people stop rather than scroll past", "viewers will feel like they discovered something", "gets more comments" are all unsupported propositions, whatever the sentence's subject.
+Worked pairs, because this line is the whole job:
 
-Also check whether anything in UNCERTAIN or PROHIBITED INFERENCES has been converted into fact.
+  FINE: the cactus remains neutral. the cup knows nothing.
+        (personification; nobody reads it as a report on a cactus)
+  FINE: me wondering what any of this has to do with anything
+        (caption voice; requiring proof the poster wondered it would be absurd)
+  FINE: #morningsomewhere
+        (obviously a joke; claims no timestamp)
+  FINE: some kind of resin, maybe
+        (visibly preserves an UNCERTAIN detail)
+  FINE: this little guy really said 'i'm not like other spheres'
+        (voice; nobody believes the sphere said anything)
+  VIOLATION: #sundaymorning
+        (assigns a day nobody established, and reads as a fact)
+  VIOLATION: brought this home. it sits in the corner now.
+        (playful, but a reader comes away believing the poster has it)
+  VIOLATION: it glows a bit
+        (whether it emits light is in UNCERTAIN; a light register does not
+         make it less of an answer)
 
-A proposition can hide in an adjective, a verb, a possessive or a hashtag — "my new lamp" claims ownership and novelty, "glowing" claims a light source, "#handmade" claims authorship, "when nobody's using it" claims current use, "rather than scroll past" claims viewer behaviour. Wording that visibly preserves an UNCERTAIN detail is fine: "some kind of resin, maybe" is supported, "resin" is not.
+The register is not the test. A joke can carry a fact, and a flat sentence can carry none. "Brought this home" is warm and casual and still tells the reader something about the world that may be false; "the cup knows nothing" is a straight declarative sentence about a cup and tells them nothing at all. Ask only what they would believe afterwards.
+  VIOLATION: my grandmother gave me this cactus
+  VIOLATION: first morning in our new apartment
+  VIOLATION: after three hours of repotting this thing
+  VIOLATION: she had no idea I was taking this
 
-Do not flag figurative language that asserts nothing — a joke, a mood, an address to the reader, a description of the picture in playful words. Nor a statement about what a caption OFFERS, which is a description of the writing rather than a prediction: "gives a reply somewhere to land" and "leaves room for a question" claim nothing about anyone. It becomes a violation when it says what people will actually do.
+The engagement_tips and why_it_works fields are different in kind. They are analysis, not caption voice, and they get no creative licence: a claim there about what viewers will do, feel, notice or how they will respond is unsupported however it is phrased, because nobody observed the audience.
 
-Flag only where a reader would come away believing something the envelope does not support.
+But a statement about what a caption OFFERS is a description of the writing, not a prediction about people, and is fine:
 
-Return PASS or FAIL. If FAIL, identify the offending output fields and the unsupported propositions. Do not rewrite them.
+  FINE: gives a reply somewhere to land
+  FINE: leaves room for a question
+  VIOLATION: makes people stop rather than scroll past
+  VIOLATION: viewers will feel like they discovered something
+
+WHEN UNCERTAIN, PRESERVE CREATIVITY. The purpose of this check is to prevent misleading fabrication, not to make captions descriptive. A flagged line gets rewritten, so a wrong flag costs the visitor a joke — flag only where an invented detail could genuinely mislead someone about the real circumstances behind the photograph. Silence is the right answer far more often than not.
+
+Return PASS or FAIL. If FAIL, identify the offending fields and the misleading propositions. Do not rewrite them.
 
 OUTPUT (JSON only):
 {
   "verdict": "PASS or FAIL",
   "violations": [
-    { "field": "exact identifier from the proposed output", "proposition": "the unsupported claim, quoted from the field", "why": "which envelope rule it breaks, in a few words" }
+    { "field": "exact identifier from the proposed output", "proposition": "the misleading claim, quoted from the field", "why": "what a reader would wrongly believe, in a few words" }
   ]
 }
 
@@ -388,11 +451,13 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
 ${renderEnvelope(envelope)}
 ${supplied}
-Rewrite each line below so it keeps its voice, tone, length and joke, and drops only the unsupported claim. Do not make it cautious, do not add a hedge where the fix is simply to cut three words, and do not replace a specific image with a vague one. The line should read as though the claim was never there — not as though it was removed.
+Rewrite each line below so it keeps its voice, tone, length and joke, and drops only the misleading claim. Do not make it cautious, do not add a hedge where the fix is simply to cut three words, and do not replace a specific image with a vague one, and above all do not make it more literal — a line that has lost its joke has not been repaired, it has been damaged. The fix for "my kitchen at 4pm on a sunday" is not "a kitchen": the claim was the possessive and the timestamp, so the invention worth keeping is whatever made the line worth reading. Invent something else in its place if you need to. The line should read as though the claim was never there — not as though it was removed.
 
 ${violations.map((v, i) => `${i}. [${v.field}]
    current: ${getByPath(out, v.field)}
    unsupported: ${v.proposition}${v.why ? ` (${v.why})` : ''}`).join('\n\n')}
+
+Where the item is an engagement tip or a why_it_works line, the replacement is analysis rather than caption voice: say what the caption offers, never what people will do with it. "Gives a reply somewhere to land" is a replacement; "makes people stop scrolling" is the same violation in new words, and so is anything about what a reader will notice, feel or do instead.
 
 Return one replacement per numbered item, keyed by its number.
 ${violations.some(v => v.field.endsWith('.hashtags')) ? 'For a hashtags item, return a comma-separated list of tags with no leading #.\n' : ''}

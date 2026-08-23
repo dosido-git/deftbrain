@@ -30,9 +30,14 @@ const envelope = {
 
 const out = {
   captions: [
-    { text: 'my kitchen at 4pm on a sunday. wood, steel, light.',                      hashtags: [{tag:'kitchen'},{tag:'newbuild'}], why_it_works: 'Grounds it in a specific moment.' },
-    { text: 'the quiet of a kitchen when nobody’s using it',                       hashtags: [{tag:'kitchen'}],                  why_it_works: 'Calm framing.' },
-    { text: 'wood, steel, and two windows doing the heavy lifting',                     hashtags: [{tag:'kitchen'},{tag:'interiors'}], why_it_works: 'Names what is in the frame.' },
+    // must be flagged: ownership + a timestamp nobody established
+    { text: 'my kitchen at 4pm on a sunday. wood, steel, light.', hashtags: [{tag:'kitchen'},{tag:'sundaymorning'}], why_it_works: 'Grounds it in a specific moment.' },
+    // must SURVIVE: personification and an absurd premise, inventing no fact
+    { text: 'the cabinetry and i have reached an understanding. the appliances remain neutral. the windows know nothing.', hashtags: [{tag:'kitchen'},{tag:'morningsomewhere'}], why_it_works: 'Anthropomorphises the room.' },
+    // must SURVIVE: caption voice, first person, provable of nobody
+    { text: 'me wondering what any of this has to do with anything', hashtags: [{tag:'interiors'}], why_it_works: 'Reads as a passing thought.' },
+    // must be flagged: invented backstory
+    { text: 'after three hours of repotting, the light finally did something', hashtags: [{tag:'kitchen'}], why_it_works: 'Rewards the effort.' },
   ],
   alt_text: 'A recently renovated kitchen with wood cabinetry and stainless-steel appliances.',
   engagement_tips: [
@@ -41,8 +46,12 @@ const out = {
   ],
 };
 
-const EXPECT_FLAGGED = ['captions[0].text', 'captions[1].text', 'alt_text', 'engagement_tips[0]'];
-const EXPECT_CLEAN   = ['captions[2].text', 'engagement_tips[1]'];
+// Deceptive invention — must be caught.
+const EXPECT_FLAGGED = ['captions[0].text', 'captions[0].hashtags', 'captions[3].text', 'alt_text', 'engagement_tips[0]'];
+// Creative invention — must survive untouched. These are the product working,
+// and a validator that "fixes" them has optimised Caption Magic into Caption
+// Sensible. A false positive here is a worse failure than a missed violation.
+const EXPECT_CLEAN   = ['captions[1].text', 'captions[1].hashtags', 'captions[2].text', 'engagement_tips[1]'];
 const before = JSON.parse(JSON.stringify(out));
 
 (async () => {
