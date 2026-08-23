@@ -232,6 +232,10 @@ IMPORTANT: The obvious fix has been tried. Think about LESS COMMON causes:
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
 
+A SYMPTOM SUGGESTS; IT DOES NOT PROVE. Never write a symptom and a cause as an equation or a certainty — no "clicking under load = loose bottom bracket", no "that noise means the hub", no "#1 cause", no share-of-cases figure. Several things produce the same noise, the same play and the same bad shift, which is the entire reason this tool exists.
+Write it as a candidate plus the check that would settle it: "clicking under load points first at the pedals — back one out and retighten it, and if the click survives that, move to the crank." Now the rider can tell which it is instead of taking your word.
+An equation is only honest AFTER a check establishes it. "Twelve links measuring over 12 and an eighth inches means the chain is worn" is fine, because something was measured. "Weak braking means cable stretch" is not, because nothing was.
+
 SEQUENCE, AND WHY IT IS THIS ORDER: what they are seeing, then what is safe to check, then what is likely causing it, then whether this bike is safe to ride right now, then how to fix it, then when to stop and use a shop. The stop-riding decision comes BEFORE the repair steps, always — a rider who should not be riding needs to know that before they read a procedure, not in a note underneath one.
 When the problem touches brakes, wheels, spokes, hubs, axles, the headset, the crank or a tire that is not seated, ride_safe is false unless you have a specific reason otherwise, and the explanation opens by saying so. These parts do not degrade politely; they fail at once.
 A shop is a good answer, not a failure of this tool. Say plainly when a job is past a home fix, and describe difficulty honestly rather than encouragingly.
@@ -242,7 +246,7 @@ Return ONLY valid JSON:
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentences explaining why the first fix didn't work and what the real issue likely is",
-  "likely_causes": ["Most probable deeper cause", "Second possibility", "Third possibility"],
+  "likely_causes": ["The deeper candidate to check first, and the check that would confirm or rule it out", "Second candidate, with its check", "Third candidate, with its check"],
   "fix_steps": ["Step 1 with specific detail", "Step 2 etc."],
   "tools_needed": ["Specific tools with sizes"],
   "difficulty": "easy | moderate | advanced | shop-only",
@@ -266,6 +270,10 @@ Diagnose the most likely cause and provide a clear, step-by-step fix. Start with
 
 ACCURACY RULES: Never assert model-specific component standards (bottom-bracket type/threading, pedal thread direction, torque specs) from memory as fact — state the common standard, note it varies by bike, and tell the rider how to verify. (Reference facts you MAY state: on virtually all bikes the LEFT pedal is reverse-threaded, the right is normal; English/BSA bottom brackets have a reverse-threaded drive-side cup. Chain-wear replacement thresholds: 0.5% for 11/12-speed chains, 0.75% for 10-speed and below.)
 
+A SYMPTOM SUGGESTS; IT DOES NOT PROVE. Never write a symptom and a cause as an equation or a certainty — no "clicking under load = loose bottom bracket", no "that noise means the hub", no "#1 cause", no share-of-cases figure. Several things produce the same noise, the same play and the same bad shift, which is the entire reason this tool exists.
+Write it as a candidate plus the check that would settle it: "clicking under load points first at the pedals — back one out and retighten it, and if the click survives that, move to the crank." Now the rider can tell which it is instead of taking your word.
+An equation is only honest AFTER a check establishes it. "Twelve links measuring over 12 and an eighth inches means the chain is worn" is fine, because something was measured. "Weak braking means cable stretch" is not, because nothing was.
+
 SEQUENCE, AND WHY IT IS THIS ORDER: what they are seeing, then what is safe to check, then what is likely causing it, then whether this bike is safe to ride right now, then how to fix it, then when to stop and use a shop. The stop-riding decision comes BEFORE the repair steps, always — a rider who should not be riding needs to know that before they read a procedure, not in a note underneath one.
 When the problem touches brakes, wheels, spokes, hubs, axles, the headset, the crank or a tire that is not seated, ride_safe is false unless you have a specific reason otherwise, and the explanation opens by saying so. These parts do not degrade politely; they fail at once.
 A shop is a good answer, not a failure of this tool. Say plainly when a job is past a home fix, and describe difficulty honestly rather than encouragingly.
@@ -276,7 +284,7 @@ Return ONLY valid JSON:
   "severity": "low | moderate | critical",
   "ride_safe": true/false,
   "explanation": "2-3 sentence plain-English explanation of what's happening mechanically",
-  "likely_causes": ["Most probable cause (60%+ of cases)", "Second most likely", "Third possibility"],
+  "likely_causes": ["The candidate to check first, and the check that would confirm or rule it out", "Second candidate, with its check", "Third candidate, with its check"],
   "fix_steps": ["Step 1 with specific detail and tool sizes", "Step 2", "Step 3", "Final verification"],
   "tools_needed": ["Specific tool with size"],
   "difficulty": "easy | moderate | advanced | shop-only",
