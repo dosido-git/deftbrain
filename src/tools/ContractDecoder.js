@@ -115,6 +115,9 @@ function ContractDecoder({ tool }) {
   const [contractType, setContractType] = useState('other');
   const [focusAreas, setFocusAreas]     = useState([]);
   const [contractText, setContractText] = useState('');
+  const [pdfBase64, setPdfBase64]       = useState(null);
+  const [fileName, setFileName]         = useState('');
+  const fileInputRef                    = useRef(null);
   const [context, setContext]           = useState('');
   const [jurisdiction, setJurisdiction] = useState('');
   const [results, setResults]           = usePersistentState('contractdecoder-results', null);
@@ -125,12 +128,42 @@ function ContractDecoder({ tool }) {
   const handleAnalyzeRef = useRef(null);
   const canSubmitRef     = useRef(false);
 
-  const canSubmit = contractText.trim().length >= 100;
+  const canSubmit = contractText.trim().length >= 100 || !!pdfBase64;
+
+  // A contract arrives as a PDF far more often than as pasted text, and the
+  // model reads PDFs natively — so a PDF goes to the API as a document block
+  // rather than being scraped here. Extracting text from a PDF in the browser
+  // was tried in PlainTalk and produced mojibake that passed a length check,
+  // which is worse than refusing the file.
+  const handleFile = async (file) => {
+    if (!file) return;
+    setError('');
+    if (file.size > 10 * 1024 * 1024) { setError(t('cd_err_too_large')); return; }
+    if (file.type === 'application/pdf') {
+      const reader = new FileReader();
+      reader.onerror = () => setError(t('cd_err_read'));
+      reader.onload = (ev) => { setPdfBase64(ev.target.result); setFileName(file.name); setContractText(''); };
+      reader.readAsDataURL(file);
+      return;
+    }
+    try {
+      const text = await file.text();
+      setPdfBase64(null); setFileName(file.name); setContractText(text);
+    } catch { setError(t('cd_err_read')); }
+  };
+
+  const removeFile = () => {
+    setPdfBase64(null); setFileName(''); setError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
 
   const handleReset = useCallback(() => {
     setResults(null);
     setError('');
     setContractText('');
+    setPdfBase64(null); setFileName('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setContext('');
     setJurisdiction('');
     setFocusAreas([]);
@@ -161,6 +194,7 @@ function ContractDecoder({ tool }) {
     try {
       const parsed = await callToolEndpoint('contract-decoder/stream', {
         contractText,
+        pdfBase64,
         contractType,
         focusAreas,
         context,
@@ -180,7 +214,7 @@ function ContractDecoder({ tool }) {
     } catch (err) {
       setError(err.message || t('cd_error'));
     }
-  }, [canSubmit, loading, contractText, contractType, focusAreas, context, jurisdiction, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, contractText, pdfBase64, contractType, focusAreas, context, jurisdiction, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleAnalyzeRef.current = handleAnalyze;
   canSubmitRef.current     = canSubmit;
@@ -252,7 +286,7 @@ function ContractDecoder({ tool }) {
           )}
         </div>
         {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-        {(results || context.trim() || jurisdiction.trim() || contractText.trim() || focusAreas.length) ? (
+        {(results || context.trim() || jurisdiction.trim() || contractText.trim() || pdfBase64 || focusAreas.length) ? (
           <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
             ↺ {t('cd_new_contract')}
           </button>
@@ -311,14 +345,33 @@ function ContractDecoder({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cd_text_label')} <span className={c.required}>*</span>
         </label>
-        <textarea
+
+        {pdfBase64 ? (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 flex items-center gap-3 mb-2`}>
+            <span className="text-lg">📄</span>
+            <span className={`text-sm ${c.text} truncate flex-1`}>{fileName}</span>
+            <button onClick={removeFile} className={`text-xs ${linkStyle} flex-shrink-0`}>{t('cd_remove_file')}</button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 mb-2">
+            <button type="button" onClick={() => fileInputRef.current?.click()}
+              className={`${c.btnSecondary} px-3 py-2 rounded-xl text-xs font-semibold`}>
+              📎 {t('cd_upload')}
+            </button>
+            <span className={`text-xs ${c.textMuted}`}>{t('cd_upload_hint')}</span>
+            <input type="file" ref={fileInputRef} accept=".pdf,.txt,.md,.rtf,.html" className="hidden"
+              onChange={e => handleFile(e.target.files?.[0])} />
+          </div>
+        )}
+
+        {!pdfBase64 && <textarea
           value={contractText}
           onChange={e => setContractText(e.target.value)}
           placeholder={t('cd_text_ph')}
           rows={10}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
-        />
-        {contractText.length > 0 && contractText.length < 100 && (
+        />}
+        {!pdfBase64 && contractText.length > 0 && contractText.length < 100 && (
           <p className={`text-xs ${c.textMuted} mt-1`}>{t('cd_text_short')}</p>
         )}
       </div>

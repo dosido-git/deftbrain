@@ -113,6 +113,7 @@ function validateOutput(value) {
 router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const {
     contractText,
+    pdfBase64,
     contractType,
     focusAreas,
     context,
@@ -123,8 +124,9 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     userRegion,
   } = req.body;
 
-  if (!contractText?.trim() || contractText.trim().length < 100) {
-    return res.status(400).json({ error: 'Please provide more contract text for a useful analysis.' });
+  const hasPdf = typeof pdfBase64 === 'string' && pdfBase64.length > 100;
+  if (!hasPdf && (!contractText?.trim() || contractText.trim().length < 100)) {
+    return res.status(400).json({ error: 'Paste the contract text or upload the file.' });
   }
 
   const typeName = CONTRACT_TYPE_LABELS[contractType] ?? 'Contract';
@@ -138,7 +140,22 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     ? `\nVisitor context: ${context.trim()}`
     : '';
 
-  const documentBlock = `${contextLine}${focusList}${jurisdictionLine}\n\nContract text:\n---\n${contractText.trim()}\n---`;
+  // A PDF goes to the model as a document block; it reads them natively, and
+  // browser-side text extraction produces mojibake that passes a length check.
+  const documentBlock = hasPdf
+    ? `${contextLine}${focusList}${jurisdictionLine}\n\nThe contract is the attached PDF. Read the whole document. Quote from it exactly as it appears.`
+    : `${contextLine}${focusList}${jurisdictionLine}\n\nContract text:\n---\n${contractText.trim()}\n---`;
+
+  const pdfBlocks = hasPdf
+    ? [{
+        type: 'document',
+        source: {
+          type: 'base64',
+          media_type: 'application/pdf',
+          data: pdfBase64.slice(pdfBase64.indexOf(',') + 1),
+        },
+      }]
+    : [];
 
   const firstPassPrompt = `Read this ${typeName} and produce a grounded first-pass explanation for the signer.
 
@@ -184,7 +201,7 @@ Rules:
       model: MODELS.SMART,
       max_tokens: 6000,
       system: withLanguage(SYSTEM_BASE, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: firstPassPrompt }],
+      messages: [{ role: 'user', content: [...pdfBlocks, { type: 'text', text: firstPassPrompt }] }],
     }, { label: 'contract-decoder-v2-first-pass' });
 
     const first = normalizeDraft(firstRaw);
@@ -265,6 +282,7 @@ STATED JURISDICTION: ${jurisdiction?.trim() || '(not supplied — do not infer o
 VISITOR CONTEXT: ${context?.trim() || '(not supplied)'}
 ${verifiedLawBlock ? `VERIFIED CURRENT LAW:\n${verifiedLawBlock}` : 'NO LAW WAS VERIFIED — any legal conclusion is unsupported.'}
 
+${hasPdf ? 'THE CONTRACT WAS SUPPLIED AS A PDF, which the generator read directly. You cannot see it, so do not flag a quote as unsupported — a quote is verbatim contract text by construction. Judge only the claims made ABOUT the quoted language.' : ''}
 THE CONTRACT TEXT ITSELF IS THE OTHER SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
         promise: 'Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.',
         guard: router.outputGuard,

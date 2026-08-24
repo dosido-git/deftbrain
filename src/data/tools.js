@@ -288,12 +288,12 @@ export const tools = [
   seoDescription: "Paste any contract and get a free, plain-English breakdown of every clause that matters, flagged by risk, with negotiation asks and a before-you-sign checklist.",
   seoTitle: "Contract Review & Red-Flag Clause Checker",
   title: "Contract Decoder",
-  tagline: "Paste any contract — know exactly what you're signing",
+  tagline: "Understand what you're agreeing to before you sign.",
   tags: ['contract', 'legal', 'NDA', 'employment', 'lease', 'terms', 'clause', 'sign', 'agreement', 'IP', 'non-compete', 'liability', 'negotiate', 'review', 'rights', 'fine print', 'freelance', 'SaaS'],
   icon: "📋",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Paste any contract and get a plain-English breakdown of every clause that matters — flagged by risk level, with specific negotiation asks and a before-you-sign checklist.",
+  description: "Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.",
   guide: {
     overview: "Most people sign contracts without understanding what they're agreeing to. ContractDecoder reads any contract — employment agreement, NDA, freelance deal, SaaS terms, lease, service agreement — and flags every clause worth knowing about, ordered by risk. For each clause you get plain-English explanation, the exact contract language, why it matters, what to do about it, and a specific negotiation ask. It also surfaces missing protections that are standard for your contract type but absent from yours.",
 
@@ -1134,31 +1134,30 @@ export const tools = [
   seoTitle: "Cold Outreach Message & First-DM Writer",
   title: "Cold Open Craft",
   tagline: "Make the first message easier to send — and easier to answer.",
-  tags: ['cold email', 'first message', 'reach out', 'introduction', 'outreach', 'networking', 'linkedin', 'dm', 'twitter', 'instagram', 'pitch', 'mentor', 'collaboration', 'job', 'stranger', 'follow up', 'cold outreach'],
+  tags: ["cold email", "cold outreach", "first message", "outreach message", "networking message", "linkedin message", "dm", "introduction", "reach out", "follow up", "mentor", "collaboration", "job outreach", "professional networking", "stranger", "email"],
   icon: "📬",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#d4dde8",
   description: "Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.",
   guide: {
-    overview: "Cold Open Craft is for anyone who has to message a stranger and doesn't want to sound like spam. Tell it who you're writing to and why, and add anything you know about them or want them to know about you — one relevant fact does more for the message than a paragraph of background. You get three ready-to-send messages that genuinely differ: what they lead with, how much they ask for, how they open. No risk scores and no explanation of why each one works, because you can read three messages and pick one. It will not invent a shared connection, a credential you didn't mention, or a scenario that didn't happen — everything about either person traces to what you typed. There's also a follow-up message for when nobody replies, with timing framed as what people commonly do rather than a rule.",
+    overview: "Cold Open Craft helps when you need to contact someone you do not know well and the first sentence is the hardest part. Tell it who you are contacting, why you are reaching out, the channel, and any real connection points you have. It returns three complete messages that open differently while staying grounded in what you actually supplied, plus a simple follow-up if the first message gets no reply.",
     howToUse: [
-      "Describe who you're reaching out to and their role/context",
-      "Explain why — what you want from this connection",
-      "Pick the channel (email, LinkedIn, DM, text, in-person)",
-      "Add what you know about them for much more specific openers",
-      "Pick the channel — the message is written for how people actually write there",
-      "Pick your favorite opener and copy it"
+      "Say who you are reaching out to and why you want to contact them",
+      "Choose the channel: email, LinkedIn, Twitter/X DM, Instagram DM, or text",
+      "Add any specific facts you genuinely know about the person that could make the opener more natural",
+      "Add the part of your own background that is relevant to this outreach",
+      "Compare the three ready-to-send approaches, choose the one that sounds most like you, and personalize it before sending"
     ],
     example: {
-      scenario: "You want to pitch your startup to a podcast host for a guest appearance.",
-      action: "Enter who (podcast host), why (guest pitch), channel (email), what you know about them.",
-      result: "Three openers: a safe professional pitch, a balanced one that leads with a specific episode reference, and a bold one that opens with a contrarian take on their recent topic. Plus subject line, follow-up timing, and what NOT to say."
+      scenario: "You want to contact a hiring manager who posted a role, and you have relevant experience plus one piece of their public work you genuinely follow.",
+      action: "Enter the role, why you are reaching out, the channel, the public connection point, and the relevant part of your background.",
+      result: "Cold Open Craft gives you three grounded messages that lead differently — for example with the role, the shared topic, or your relevant background — plus a brief follow-up you can use later if needed."
     },
     tips: [
-      "The 'what you know about them' field is crucial — specificity is what separates you from spam",
-      "Read the 'what NOT to say' section before sending — it's tailored to your exact situation",
-      "The follow-up plan includes when to give up — that's important too",
-      "For high-stakes outreach, copy the one you like and sleep on it before sending"
+      "Specific real details make outreach feel more natural; invented familiarity does the opposite",
+      "Include only the parts of your background that help explain why this connection makes sense",
+      "Choose the version whose voice you could plausibly use yourself, not simply the most polished one",
+      "Before sending, check names, titles, links, dates, and any other detail that would be awkward to get wrong"
     ]
   }
 },
@@ -1916,30 +1915,30 @@ export const tools = [
   seoTitle: "Comeback Generator: Perfect Clapbacks",
   title: "Comeback Cooker",
   tagline: "For the response that arrived three hours too late.",
-  tags: ['comeback', 'response', 'argument', 'regret', 'witty', 'what to say', 'rehearse', 'roast', 'cathartic', 'insult', 'bully', 'revenge', 'conflict', 'clap back', 'petty'],
+  tags: ["comeback", "comeback ideas", "what to say", "witty response", "clever response", "clapback", "awkward comment", "intrusive question", "replay conversation", "cathartic", "petty", "dignified response", "high road", "sharp response", "roast", "regret"],
   icon: "🍳",
   categories: ['Humans', 'Discourse', 'Diversions'],
   headerColor: "#e0b8b8",
   description: "Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.",
   guide: {
-    overview: "Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.",
+    overview: "Comeback Cooker is for the remark that keeps replaying after the moment has passed. Describe what happened, quote the exact words if you remember them, say who the person is to you, and choose a mood: Surgical, Witty, Petty, or Dignified. It gives you five comeback ideas, a High Road option, and an intentionally over-the-top Nuclear Option kept in the fantasy drawer so the tool can be satisfying as well as useful.",
     howToUse: [
-      "Describe what happened — the more specific, the better the comebacks",
-      "Optionally include exactly what they said (exact words help a lot)",
-      "Pick your comeback mood: Surgical, Witty, Petty, or Dignified",
-      "Read the 5 comebacks — tap each for delivery notes",
-      "Check the high road option and dare to reveal the nuclear option"
+      "Describe what happened",
+      "Add the exact words if you remember them and the relationship if it changes what would land",
+      "Choose Surgical, Witty, Petty, or Dignified",
+      "Read the five comeback ideas and the High Road option",
+      "Reveal the Nuclear Option only when you want the cathartic version that is better enjoyed than sent"
     ],
     example: {
-      scenario: "Your coworker took credit for your idea in a meeting, saying 'I was actually the one who suggested that approach.'",
-      action: "Describe the situation, quote what they said, select 'Surgical' mood.",
-      result: "Five precision comebacks using different techniques — deadpan, reframe, rhetorical question — each with delivery notes. Plus a devastating high road response and a nuclear option labeled 'fantasy drawer only.'"
+      scenario: "At a family gathering, an in-law makes the same intrusive comment they have made before.",
+      action: "Quote the comment, identify the relationship, and choose Witty or Surgical.",
+      result: "You get five different comeback ideas grounded in the comment, a short High Road response that may be more usable in real life, and an optional fantasy-drawer line that is allowed to go much further for comic relief."
     },
     tips: [
-      "Exact quotes from the other person produce much sharper comebacks",
-      "Try the same situation with different moods — Surgical and Petty hit very differently",
-      "The delivery notes matter as much as the words themselves",
-      "The high road option often hits harder than any clever insult"
+      "Exact quotes give the tool more to play with than a general description of the insult",
+      "Try the same situation in another mood if the first batch is too sharp or too tame",
+      "Treat the High Road as a separate option, not a moral judgment about the funnier lines",
+      "Comebacks can invent attitude and comic voice; they should not invent facts about your life to make the line work"
     ]
   }
 },
@@ -2769,41 +2768,30 @@ export const tools = [
   seoTitle: "Social Media Caption Generator",
   title: "Caption Magic",
   tagline: "Find the words that fit the photo.",
-  tags: ['caption', 'social media', 'photo', 'instagram', 'linkedin', 'twitter', 'tiktok', 'facebook', 'threads', 'hashtag', 'post', 'content', 'funny captions', 'alt text'],
+  tags: ["caption", "photo caption", "image caption", "caption ideas", "social media", "instagram", "linkedin", "twitter", "tiktok", "facebook", "threads", "funny caption", "clever caption", "playful caption", "dry humor", "hashtags", "alt text", "photo context"],
   icon: "📸",
   categories: ['Pursuits', 'Discourse'],
   headerColor: "#ccdfc4",
   description: "A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.",
   guide: {
-    overview: "Caption Magic looks at your actual photo and writes captions that sound like a person rather than a brand account. Upload an image (drag-and-drop, paste, or just describe it), and — this is the part that matters most — tell it anything the picture cannot show: who is in it, what was happening, the joke only you know. That one sentence is worth more than everything the tool can see. You get six captions spanning a deliberate range, from the plain one you would post without thinking to a wild card that goes somewhere nobody expects. No explanations underneath them; you can tell whether you like a joke. Then play: ask for funnier, more unhinged, warmer, drier, or six completely different ones, and on any caption you like, ask for more like it, a shorter cut, or a punchier version. Also gives you alt text and per-platform adaptations.",
-
+    overview: "Caption Magic turns a photo into a small set of caption ideas without making you explain the picture back to yourself. Upload an image or describe it, then add anything the image cannot know — who is there, what was happening, an inside joke, or something to avoid. You get six captions with real range, from straightforward to warm, clever, funny, dry, or unexpectedly strange. From there you can ask for funnier, warmer, drier, more unhinged, a surprise, or six more, and refine a caption you like.",
     howToUse: [
-      "Upload, drag-and-drop, or paste an image — or describe what's in the photo if you don't have one handy",
-      "Select your platform (Instagram, LinkedIn, Facebook, Twitter/X, TikTok, Threads) — character limits adjust automatically",
-      "Tell it what the photo can't show you — who's in it, what was happening, the joke behind it. This is the single biggest thing you can do for the captions",
-      "Generate captions, then refine with one-tap: Less try-hard, More engaging, Shorter, Longer, or Professional",
-      "Use 'Adapt to all platforms' to instantly get versions for every network, or 'Remix' to blend your favorites"
+      "Upload, paste, or describe the photo",
+      "Add optional context the image cannot show, especially relationships, backstory, or an inside joke that would make the caption better",
+      "Say if there is anything the captions should avoid mentioning",
+      "Choose the platform and preferred caption length",
+      "Pick from six captions, then ask for a different direction or refine one you like"
     ],
-
     example: {
-      scenario: "You took a photo of your coffee mug on your desk with your laptop in the background — the millionth 'working from home' photo.",
-      action: "Upload the image, select Instagram and a short length, add 'my sister, who insists this hat was my idea', then generate.",
-      result: "You get 3 options with smart hashtags color-coded by category (🔥 trending, 🎯 niche, 🏷️ branded). One caption is perfect for Instagram, so you tap 'Adapt to all platforms' and instantly get versions for LinkedIn, Twitter, TikTok, Threads, and Facebook — each one native to its platform. You mark the witty option as 'This one won' to build your audience insights over time."
+      scenario: "You have a photo from a family gathering where one person's expression is funny, but the picture alone cannot show the running joke behind it.",
+      action: "Upload the photo and add one sentence explaining the relationship and the joke.",
+      result: "Caption Magic returns six different caption ideas rather than six rewrites of the same joke. You can copy one immediately, ask for a funnier or drier batch, or work further on a caption that is close."
     },
-
     tips: [
-      "Mix tones for variety — combining 'funny' with 'reflective' often yields the most authentic-feeling options",
-      "After 3+ generations, your Brand Voice profile unlocks — toggle it on to auto-apply your preferred style",
-      "Use 'Adapt to all platforms' to cross-post efficiently — each version is rewritten for its platform, not just trimmed",
-      "If none of the six land, don't rewrite the form — tap Funnier or Surprise me and read six more",
-      "Mark winners with '📊 This one won' to build audience insights that improve your future captions"
-    ],
-
-    pitfalls: [
-      "Don't select too many tones at once — stick to 2-3 for focused quality rather than scattered results",
-      "Watch character counts: red means you're over the platform limit (especially Twitter's 280)",
-      "Image upload works best with clear, well-lit photos — very dark or blurry images may produce generic captions",
-      "Six captions is a lot to read — skim for the one that makes you smile rather than judging each in turn"
+      "A short piece of real context often gives the captions more personality than adding more style instructions",
+      "If the first six all feel too similar, use Surprise me or Six more rather than over-editing the form",
+      "Use Funnier, Warmer, Drier, or More unhinged when you know the direction you want",
+      "The playful captions may invent a comic voice or metaphor, but concrete backstory about real people should come from you"
     ]
   }
 },
@@ -4311,77 +4299,40 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A message landed badly and you want to reply now, which is the worst time to.",
-    give: "The message you received and your relationship to the sender.",
-    get: "A calmer read of the message, several response strategies, and drafts you can adapt.",
-    edge: "It gives you validate, boundary and de-escalate versions side by side, so you choose the register deliberately instead of by mood.",
+    when: "A tense message landed and you want help choosing what to say back.",
+    give: "The message, your relationship to the sender, and what you want your response to accomplish.",
+    get: "A brief grounded read and four ready-to-send responses that pursue your goal in different ways.",
+    edge: "It stays with what the message actually says instead of diagnosing the sender, then gives you several usable ways to respond.",
   },
   seoDescription: "Got a tense message? Slow down the reply, see several ways to respond, and get drafts for setting a boundary, de-escalating, or moving the conversation forward.",
   seoTitle: "Tense Text Response Helper & De-escalator",
   title: "Conflict Coach",
   tagline: "Respond to the message — not the heat of the moment.",
-  tags: ['text', 'argument', 'fight', 'respond', 'message', 'conflict', 'communication', 'de-escalate', 'anger', 'manipulation', 'gaslighting', 'passive aggressive', 'relationship', 'boundaries', 'texting'],
+  tags: ["tense text", "difficult message", "conflict", "respond to text", "message response", "communication", "de-escalate", "boundary", "set a boundary", "relationship conflict", "texting", "passive aggressive text", "sarcastic message", "acknowledge without agreeing", "step away", "move conversation off text"],
   icon: "🧯",
   categories: ['Humans', 'Discourse'],
   headerColor: "#e0b8b8",
   description: "A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.",
   guide: {
-    overview: "The Conflict Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.",
-    
+    overview: "Conflict Coach helps you answer a specific tense message without turning a few words into a diagnosis of the person who sent them. Paste the message, identify your relationship, and choose what you want your response to accomplish. The tool briefly points out wording that materially affects how the message can be answered, then gives you four complete, ready-to-send strategies that pursue your selected goal in different ways.",
     howToUse: [
-      "Paste the tense/upsetting message you received",
-      "Select your relationship to the sender (Partner, Family, Friend, etc.)",
-      "Check how you're feeling right now (Angry, Hurt, Defensive, etc.)",
-      "Select what you want to achieve (Resolve, Set boundary, Disengage, etc.)",
-      "Optional: Show what you're tempted to say (we'll analyze why not to send it)",
-      "Click 'Help Me Respond Thoughtfully'",
-      "Get emotional temperature reading of their message",
-      "Review 3-5 different response strategies with pros/cons",
-      "See reflection questions before sending",
-      "Copy the response that feels right",
-      "Optional: Start 20-minute cooling-off timer",
-      "Get repair strategy for reconnecting later"
+      "Choose your relationship to the sender",
+      "Paste the message you received, or add earlier messages if the current one needs context",
+      "Optionally paste the response you are tempted to send so you can compare it with calmer alternatives",
+      "Choose one goal: fix the problem, set a limit, step away, acknowledge without agreeing, or take the conversation off text",
+      "Compare four ready-to-send responses, adjust the tone if needed, and use Follow-up Coaching if the person replies"
     ],
-    
     example: {
-      scenario: "Your partner texts: 'I can't believe you did that again. You never think about how your actions affect me. This is exactly why we have problems. I'm so sick of this.' You're feeling defensive and hurt.",
-      action: "Paste message, select 'Partner', check 'Defensive' and 'Hurt', select 'Validate without conceding' and 'Set a boundary', click analyze",
-      result: "Get analysis showing HIGH emotional temperature, anger/hurt detected, triggers identified ('never', 'exactly why'). Receive 4 response options: 1) Validate: 'I hear that you're really upset. I want to understand. Can we talk when we're both calmer?' 2) Boundary: 'I'm willing to talk about this, but not when we're attacking each other.' 3) Disengage: 'I need time to process this. Let's talk tomorrow.' 4) Schedule: 'This feels too big for text. Can we talk in person tonight?' Plus warnings about NOT saying 'You're overreacting' or 'That's not true', cooling-off time recommendation, and repair strategy for later."
+      scenario: "Your partner sends a short message that can be read as sarcastic but does not state a clear concern or request.",
+      action: "Paste the exact message, select Partner, and choose Set a limit.",
+      result: "Conflict Coach notes the specific wording and ambiguity without assigning a hidden motive, then gives four complete responses that set a limit in different ways — for example asking for directness, naming what you need from the exchange, or keeping the reply short and firm."
     },
-    
     tips: [
-      "Use the 'What I want to say' field - writing it out helps process emotions",
-      "Read ALL response strategies before choosing - different approaches for different goals",
-      "Pay attention to the 'risks' section - no response is perfect",
-      "Start the cooling-off timer if you're feeling reactive",
-      "Check 'What NOT to say' section before sending anything",
-      "Copy the response but read it again before sending - make sure it feels authentic",
-      "If emotional temperature is HIGH, wait before responding",
-      "Remember: Goal is to respond thoughtfully, not to 'win'",
-      "Save drafted responses in your notes app to review later",
-      "Use repair strategies after conflict cools down"
-    ],
-    
-    pitfalls: [
-      "Don't send a response while still in high emotional state",
-      "Don't ignore the 'risks' section - be prepared for reactions",
-      "Don't use suggested responses verbatim if they don't feel authentic to you",
-      "Don't skip the cooling-off period if recommended",
-      "Don't keep responding if they escalate further",
-      "Don't use this to 'win' arguments - use it to de-escalate",
-      "Don't forget: Sometimes the best response is no response (temporarily)",
-      "This isn't a replacement for therapy or professional conflict resolution"
-    ],
-    
-    quickReference: {
-      "Emotional Temperature": "High = attacking, Medium = frustrated, Low = calm",
-      "Validate Strategy": "Acknowledge emotion without accepting blame",
-      "Boundary Strategy": "Draw line without escalating",
-      "Disengage Strategy": "Exit gracefully without ghosting",
-      "Cooling Off": "20 min to 24 hours depending on temperature",
-      "What NOT to Say": "Avoid 'always/never', 'calm down', defensiveness",
-      "Escalation Response": "Set boundary then STOP responding"
-    }
+      "Use the exact message rather than paraphrasing when possible; wording is often what changes the response",
+      "Pick the outcome you actually want before choosing a tone",
+      "A good strategy should be sendable as written and should not depend on guessing what the other person feels or intends",
+      "If the reply changes the situation, use Follow-up Coaching with what they actually said rather than predicting the next move"
+    ]
   }
 },
 
@@ -5838,43 +5789,33 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     edge: "It treats changing state as a transition, with different sound profiles for the beginning, middle and sustained phase.",
   },
   seoDescription: "Tell DeftBrain how you feel now and where you need to get. Get a phased listening plan with sound profiles and music-service search terms. Free, no signup.",
-  seoTitle: "Focus Music & Mood Playlist Finder",
+  seoTitle: "Focus Music & Mood Listening Plan",
   title: "Brain State Deejay",
   tagline: "Music that moves you from where you are to where you need to be.",
-  tags: ['music', 'playlist', 'focus', 'mood', 'brain', 'concentration', 'songs', 'study', 'calm', 'energy', 'anxiety', 'stress', 'relaxation', 'productivity', 'ambient', 'lofi', 'spotify', 'bpm', 'tempo', 'headphones', 'transition', 'work', 'meditation', 'flow state'],
+  tags: ["music", "focus music", "mood music", "listening plan", "study music", "work music", "calm music", "energy", "unwind", "winding down", "ambient", "lofi", "instrumental", "concentration", "creative work", "brain fog", "restless", "scattered", "overwhelmed", "music search"],
   icon: "🎧",
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
   description: "Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.",
   guide: {
-    overview: "Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers sensory sensitivities like sudden sounds, vocal distraction, bass sensitivity, and need for predictable patterns.",
-
+    overview: "Brain State Deejay helps you use music as a transition between how you feel now and the state you want to move toward. It builds a phased listening plan, describes what each phase should sound like, and gives you search terms you can open in common music services. The plan can reflect your task, genre preferences, and listening sensitivities without pretending there is one scientifically correct soundtrack for a mental state.",
     howToUse: [
-      "Select your current state (anxious, scattered, low energy, overwhelmed, foggy)",
-      "Select your desired state (focused, calm, energized, creative, grounded)",
-      "Optionally add task context and music preferences",
-      "Expand Listening Sensitivities to flag sounds or patterns that don't work for you",
-      "Get a 3-phase playlist strategy with specific genres, artists, and Spotify search terms"
+      "Choose your current state and the state you want to move toward",
+      "Optionally add the task you are doing, such as writing, studying, exercise, chores, or unwinding",
+      "Add genres you tend to like and any listening sensitivities that matter to you",
+      "Use the phased listening plan as a starting point rather than a prescription",
+      "Open a phase's search in your preferred music service, then adjust if the sound feels too sleepy, busy, intense, or distracting"
     ],
-
     example: {
-      scenario: "You're scattered and can't focus on writing a report. You need auditory stimulation but lyrics pull your attention away.",
-      action: "Select 'Scattered/Unfocused' → 'Focused', add 'Writing report', check 'Vocals are distracting'.",
-      result: "3-phase playlist: (1) Familiar upbeat instrumentals (10 min) to build momentum, (2) Lo-fi or post-rock at 90-95 BPM (60 min) for sustained focus, (3) Minimal ambient (30 min) to maintain flow without effort. Includes Spotify search terms and alternatives if the energy level is off."
+      scenario: "You feel scattered but need to settle into an hour of writing, and vocals tend to pull your attention away.",
+      action: "Choose Scattered / Unfocused → Focused, add Writing, and mark vocals as distracting.",
+      result: "Brain State Deejay lays out a progression from an easier-entry sound toward steadier instrumental focus and then a simpler sustained phase. Each phase includes a sound profile and music-service search terms, plus easy adjustments if the plan feels too stimulating or too flat."
     },
-
     tips: [
-      "Start the playlist BEFORE starting work — music helps prime your brain for the transition",
-      "Let the phases play through in order; don't shuffle, the progression is intentional",
-      "Use the 'Not quite right?' panel to adjust without starting over",
-      "If you find yourself noticing the music, that's a signal to switch to a lower-complexity phase",
-      "Headphones help isolate you from competing sounds and strengthen the focus cue"
-    ],
-
-    pitfalls: [
-      "Don't use unfamiliar music for deep work — processing new songs competes with your thinking",
-      "Don't use lyrical music for verbal tasks like writing or reading — language processing interferes",
-      "Don't ignore 'too much/too little stimulation' signals — the Adjust panel can fix this quickly"
+      "Treat the first plan as a starting point; your own response to the music matters more than the label on a phase",
+      "If a phase is distracting, simplify it rather than forcing yourself through it",
+      "If the plan is making you sleepy when you need energy, try a clearer beat or a little more movement",
+      "Remember what works for a particular state and task so future plans can start closer to your preferences"
     ]
   }
 },
