@@ -1,3 +1,4 @@
+import Caret from '../components/Caret';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -38,27 +39,7 @@ function ContractDecoder({ tool }) {
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
-  const CONTRACT_TYPES = [
-    { id: 'employment',   label: t('cd_type_employment'),   icon: '💼' },
-    { id: 'freelance',    label: t('cd_type_freelance'),    icon: '🤝' },
-    { id: 'lease',        label: t('cd_type_lease'),        icon: '🏠' },
-    { id: 'saas',         label: t('cd_type_saas'),         icon: '💻' },
-    { id: 'service',      label: t('cd_type_service'),      icon: '🔧' },
-    { id: 'purchase',     label: t('cd_type_purchase'),     icon: '🛒' },
-    { id: 'partnership',  label: t('cd_type_partnership'),  icon: '🤜' },
-    { id: 'other',        label: t('cd_type_other'),        icon: '📄' },
-  ];
 
-  const FOCUS_AREAS = [
-    { id: 'exit',        label: t('cd_focus_exit') },
-    { id: 'liability',   label: t('cd_focus_liability') },
-    { id: 'ip',          label: t('cd_focus_ip') },
-    { id: 'autorenewal', label: t('cd_focus_autorenewal') },
-    { id: 'payment',     label: t('cd_focus_payment') },
-    { id: 'noncompete',  label: t('cd_focus_noncompete') },
-    { id: 'privacy',     label: t('cd_focus_privacy') },
-    { id: 'dispute',     label: t('cd_focus_dispute') },
-  ];
 
   const EXAMPLES = [
     { contractType: 'freelance', focusAreas: ['ip', 'exit', 'payment'],
@@ -99,10 +80,6 @@ function ContractDecoder({ tool }) {
                           : 'bg-red-50 border-red-200 text-red-800',
     infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'
                           : 'bg-sky-50 border-sky-200 text-sky-800',
-    pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200'
-                          : 'border-cyan-600 bg-cyan-100 text-cyan-900',
-    pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
-                          : 'border-gray-300 text-gray-500 hover:border-gray-400',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
@@ -112,8 +89,6 @@ function ContractDecoder({ tool }) {
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
-  const [contractType, setContractType] = useState('other');
-  const [focusAreas, setFocusAreas]     = useState([]);
   const [contractText, setContractText] = useState('');
   const [pdfBase64, setPdfBase64]       = useState(null);
   const [fileName, setFileName]         = useState('');
@@ -166,14 +141,10 @@ function ContractDecoder({ tool }) {
     if (fileInputRef.current) fileInputRef.current.value = '';
     setContext('');
     setJurisdiction('');
-    setFocusAreas([]);
-    setContractType('other');
   }, [setResults]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('ContractDecoder', EXAMPLES);
-    setContractType(ex.contractType);
-    setFocusAreas(ex.focusAreas);
     setContext(ex.context);
     setJurisdiction(ex.jurisdiction || '');
     setContractText(ex.contractText);
@@ -181,10 +152,6 @@ function ContractDecoder({ tool }) {
     setError('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setResults]);
-
-  const toggleFocus = useCallback((id) => {
-    setFocusAreas(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
-  }, []);
 
   const handleAnalyze = useCallback(async () => {
     if (!canSubmit || loading) return;
@@ -195,8 +162,6 @@ function ContractDecoder({ tool }) {
       const parsed = await callToolEndpoint('contract-decoder/stream', {
         contractText,
         pdfBase64,
-        contractType,
-        focusAreas,
         context,
         jurisdiction,
         userLocale,
@@ -204,17 +169,21 @@ function ContractDecoder({ tool }) {
         userRegion,
       });
       // Do NOT embed the full contract text (can be huge) — preview + count only.
-      setResults({ ...parsed, contractType, context, jurisdiction, _input: { contractPreview: contractText.slice(0, 300), contractChars: contractText.length } });
+      setResults({ ...parsed, context, jurisdiction, _input: { contractPreview: contractText.slice(0, 300), contractChars: contractText.length } });
+      // An uploaded PDF leaves contractText empty, so this recorded a blank
+      // line for every file-based analysis — the entry appeared, with nothing
+      // in it. Name the file in that case.
       // PF-25 exception: 80 is a contract-text preview length, not a history cap.
       setSessionHistory(prev => [{
-        preview: contractText.slice(0, 80) + (contractText.length > 80 ? '…' : ''),
-        contractType,
+        preview: pdfBase64
+          ? (fileName || t('cd_uploaded_file'))
+          : contractText.slice(0, 80) + (contractText.length > 80 ? '…' : ''),
         ts: Date.now(),
       }, ...prev].slice(0, 8));
     } catch (err) {
       setError(err.message || t('cd_error'));
     }
-  }, [canSubmit, loading, contractText, pdfBase64, contractType, focusAreas, context, jurisdiction, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, contractText, pdfBase64, context, jurisdiction, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleAnalyzeRef.current = handleAnalyze;
   canSubmitRef.current     = canSubmit;
@@ -286,7 +255,7 @@ function ContractDecoder({ tool }) {
           )}
         </div>
         {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-        {(results || context.trim() || jurisdiction.trim() || contractText.trim() || pdfBase64 || focusAreas.length) ? (
+        {(results || context.trim() || jurisdiction.trim() || contractText.trim() || pdfBase64) ? (
           <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
             ↺ {t('cd_new_contract')}
           </button>
@@ -298,35 +267,6 @@ function ContractDecoder({ tool }) {
   const renderInput = () => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5 space-y-4`}>
       {renderHeaderRow()}
-
-      {/* Contract type */}
-      <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('cd_type_label')}</label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {CONTRACT_TYPES.map(ct => (
-            <button key={ct.id} type="button" onClick={() => setContractType(ct.id)}
-              aria-pressed={contractType === ct.id}
-              className={`min-h-[44px] p-3 rounded-xl border text-sm font-medium text-start transition-colors ${contractType === ct.id ? c.pillActive : c.pillInactive}`}>
-              <span className="me-2" aria-hidden="true">{ct.icon}</span>{ct.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Focus areas */}
-      <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>
-          {t('cd_focus_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('cd_focus_hint')}</span>
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {FOCUS_AREAS.map(fa => (
-            <button key={fa.id} onClick={() => toggleFocus(fa.id)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${focusAreas.includes(fa.id) ? c.pillActive : c.pillInactive}`}>
-              {fa.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Jurisdiction — contract location, never inferred from visitor locale */}
       <div>
@@ -389,6 +329,18 @@ function ContractDecoder({ tool }) {
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
+      {/* A long contract can take over two minutes. Without saying so the page
+          looks stuck, and someone reloads at ninety seconds and starts again. */}
+      {loading && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 flex items-start gap-3`}>
+          <span className="inline-block animate-spin flex-shrink-0">{tool?.icon ?? '📋'}</span>
+          <div>
+            <p className={`text-sm font-semibold ${c.text}`}>{t('cd_wait_title')}</p>
+            <p className={`text-xs ${c.textMuted} mt-0.5`}>{t('cd_wait_body')}</p>
+          </div>
+        </div>
+      )}
+
       <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={!canSubmit || loading}
         className={`relative w-full ${(!canSubmit) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
@@ -403,23 +355,25 @@ function ContractDecoder({ tool }) {
       </button>
 
       {sessionHistory.length > 0 && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>🕓 {t('cd_recent')}</p>
+        <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <div className={`flex items-center gap-2 text-xs font-bold ${c.textMuted} uppercase tracking-wide`}>
+              🕓 {t('cd_recent')}
+              <Caret groupOpen className="ms-auto" />
+            </div>
+          </summary>
+          <div className="flex justify-end mt-2">
             <button onClick={() => setSessionHistory([])} className={`text-xs ${c.textMuted}`}>{t('cd_clear')}</button>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-2 mt-1">
             {sessionHistory.map((h, i) => (
               <li key={i} className={`text-xs ${c.textSecondary} flex items-start gap-2`}>
                 <span className="flex-shrink-0">📋</span>
-                <span>
-                  <span className={`font-semibold ${c.textSecondary}`}>{CONTRACT_TYPES.find(ct => ct.id === h.contractType)?.label || t('cd_type_other')}</span>
-                  <span className={`block ${c.textMuted} mt-0.5`}>{h.preview}</span>
-                </span>
+                <span className={c.textMuted}>{h.preview}</span>
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       )}
     </div>
   );

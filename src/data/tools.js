@@ -281,12 +281,12 @@ export const tools = [
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Before you sign. Employment, NDA, freelance, SaaS terms, lease.",
-    give: "The contract text and its type. Optionally the areas you care about — IP, exit, liability, auto-renewal.",
-    get: "Every clause worth knowing, ordered by risk, in plain English, with what's standard and what isn't.",
-    edge: "It ranks by risk rather than reading top to bottom, so the buried clause surfaces first.",
+    give: "The contract — paste the text or upload the file. Optionally where it applies and anything about your situation.",
+    get: "The terms that matter most, each quoted and explained in ordinary words, with questions worth asking and things to check before you sign.",
+    edge: "It quotes the actual wording beside every explanation, and says what the document provides rather than what the law decides.",
   },
-  seoDescription: "Paste any contract and get a free, plain-English breakdown of every clause that matters, flagged by risk, with negotiation asks and a before-you-sign checklist.",
-  seoTitle: "Contract Review & Red-Flag Clause Checker",
+  seoDescription: "Paste a contract or upload the file and get a free, plain-English breakdown of the terms that matter, each quoted, with questions to ask and points you could negotiate.",
+  seoTitle: "Contract Review — Plain-English Clause Breakdown",
   title: "Contract Decoder",
   tagline: "Understand what you're agreeing to before you sign.",
   tags: ['contract', 'legal', 'NDA', 'employment', 'lease', 'terms', 'clause', 'sign', 'agreement', 'IP', 'non-compete', 'liability', 'negotiate', 'review', 'rights', 'fine print', 'freelance', 'SaaS'],

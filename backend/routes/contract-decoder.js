@@ -33,16 +33,6 @@ router.outputGuard = {
   ],
 };
 
-const CONTRACT_TYPE_LABELS = {
-  employment:  'Employment contract',
-  freelance:   'Freelance or NDA agreement',
-  lease:       'Lease / Rental agreement',
-  saas:        'SaaS / Terms of service',
-  service:     'Service agreement',
-  purchase:    'Purchase / Sale agreement',
-  partnership: 'Partnership agreement',
-  other:       'Contract',
-};
 
 const SYSTEM_BASE = `You are Contract Decoder, a DeftBrain tool that helps a signer understand a contract before signing.
 
@@ -150,8 +140,6 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
   const {
     contractText,
     pdfBase64,
-    contractType,
-    focusAreas,
     context,
     jurisdiction,
     userLanguage,
@@ -165,10 +153,11 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
     return res.status(400).json({ error: 'Paste the contract text or upload the file.' });
   }
 
-  const typeName = CONTRACT_TYPE_LABELS[contractType] ?? 'Contract';
-  const focusList = Array.isArray(focusAreas) && focusAreas.length
-    ? `\nThe visitor especially wants help understanding: ${focusAreas.join(', ')}.`
-    : '';
+  // The kind of agreement was a dropdown the visitor had to answer before the
+  // tool would read a document that says so on the first line, and the focus
+  // areas asked them to guess which clauses matter before reading it. Both are
+  // questions that made the form longer without making the answer better.
+  const focusList = '';
   const jurisdictionLine = jurisdiction?.trim()
     ? `\nStated contract jurisdiction/location: ${jurisdiction.trim()}. Do not infer anything more specific.`
     : `\nContract jurisdiction/location: not supplied. Do not substitute the visitor's locale or region.`;
@@ -193,7 +182,7 @@ router.post('/contract-decoder/stream', rateLimit(DEFAULT_LIMITS), async (req, r
       }]
     : [];
 
-  const firstPassPrompt = `Read this ${typeName} and produce a grounded first-pass explanation for the signer.
+  const firstPassPrompt = `Read this contract and produce a grounded first-pass explanation for the signer. Identify what kind of agreement it is from the document itself — do not ask and do not assume.
 
 ${documentBlock}
 
@@ -250,7 +239,7 @@ Rules:
     if (jurisdiction?.trim() && first.legal_questions.length) {
       const topics = first.legal_questions.map(q => q.topic).join('; ');
       const facts = await groundedFacts({
-        cacheKey: `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(contractType || 'general')}:${normalizeKeyPart(topics)}`,
+        cacheKey: `contract-law-v2:${normalizeKeyPart(jurisdiction)}:${normalizeKeyPart(topics)}`,
         label: 'contract-decoder-v2-targeted-law',
         userPrompt: `Verify only the following current legal questions for ${jurisdiction.trim()} as of today, because they were raised by terms actually present in a contract: ${first.legal_questions.map(q => `${q.topic} — ${q.why_relevant}`).join(' | ')}. Use authoritative government, statutory, regulatory, or court sources where available. Skip any proposition you cannot verify. Do not add unrelated contract-law rules.\n\nReturn ONLY valid JSON:\n{ "verified": [{ "topic": "topic", "rule": "narrow verified rule", "authority": "statute/regulation/case or official source", "effective": "effective date if material and known", "source": "source domain" }] }`,
         render: (cleanFacts) => {
@@ -322,7 +311,7 @@ Return ONLY valid JSON with this exact public shape:
       await runOutputGuard(final, {
         label: 'contract-decoder',
         fields,
-        supplied: `CONTRACT TYPE: ${typeName}
+        supplied: `CONTRACT TYPE: whatever the document itself shows it to be
 STATED JURISDICTION: ${jurisdiction?.trim() || '(not supplied — do not infer one)'}
 VISITOR CONTEXT: ${context?.trim() || '(not supplied)'}
 ${verifiedLawBlock ? `VERIFIED CURRENT LAW:\n${verifiedLawBlock}` : 'NO LAW WAS VERIFIED — any legal conclusion is unsupported.'}
