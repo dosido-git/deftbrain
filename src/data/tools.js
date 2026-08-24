@@ -293,7 +293,7 @@ export const tools = [
   icon: "📋",
   categories: ['Loot'],
   headerColor: "#c0d8b8",
-  description: "Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.",
+  description: "Paste a contract — or upload a file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.",
   guide: {
     overview: "Most people sign contracts without understanding what they're agreeing to. ContractDecoder reads any contract — employment agreement, NDA, freelance deal, SaaS terms, lease, service agreement — and flags every clause worth knowing about, ordered by risk. For each clause you get plain-English explanation, the exact contract language, why it matters, what to do about it, and a specific negotiation ask. It also surfaces missing protections that are standard for your contract type but absent from yours.",
 
