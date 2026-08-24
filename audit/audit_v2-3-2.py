@@ -850,7 +850,12 @@ for name, fpath in tools:
     # accept `journal.map`, so a tool whose history feature is named journal
     # failed a rule it satisfies. DateNight is one — it renders journal.map in
     # its History panel. Widening here only makes the two halves of S1.5 agree.
-    if not _skip_history and not re.search(r'(?:history|History|[A-Za-z]+Log|[A-Za-z]+log|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?|[Jj]ournal)\.(map|length)', content):
+    # `logs` added 2026-08-24, for the same reason [Jj]ournal was: the store
+    # check on line 793 accepts a persisted `logs` because it matches [Ll]og,
+    # and this render check did not, so a tool whose history IS a log of
+    # check-ins failed half a rule it satisfies. CrashPredictor renders
+    # logs.map. Widening here only makes the two halves agree.
+    if not _skip_history and not re.search(r'(?:history|History|[A-Za-z]*[Ll]ogs?|[A-Za-z]+Triages?|[A-Za-z]+Entries?|saved[A-Za-z]+|[A-Za-z]+Records?|[A-Za-z]+Items?|past[A-Za-z]+|[Aa]dventures?|[Jj]ournal)\.(map|length)', content):
         fails.append('S1.5: history not rendered in JSX')
 
     # S1.5: history cap — look for ].slice(0, N) pattern (array cap, not string slices inside)

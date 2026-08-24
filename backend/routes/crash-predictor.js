@@ -3,472 +3,304 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
-// ════════════════════════════════════════════════════════════
-// SHARED: Log processing helper
-// ════════════════════════════════════════════════════════════
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use single quotes or plain text inside JSON string values.';
+
+function activeKeys(obj = {}) {
+  return Object.keys(obj).filter(k => obj[k]);
+}
+
 function buildLogSummary(log, idx, total) {
-  const daysAgo = total - idx;
-  const activities = Object.keys(log.activities || {}).filter(k => log.activities[k]);
-  const symptoms = Object.keys(log.physicalSymptoms || {}).filter(k => log.physicalSymptoms[k]);
-  const warnings = Object.keys(log.warningSigns || {}).filter(k => log.warningSigns[k]);
-  const customWarnings = (log.customSymptoms || []).filter(s => s.active).map(s => s.label);
+  const physical = activeKeys(log.physicalSymptoms);
+  const noticed = [
+    ...activeKeys(log.warningSigns),
+    ...(log.customSymptoms || []).filter(s => s && s.active).map(s => s.label),
+  ];
 
-  return `Day ${daysAgo} (${log.date}):
-Energy: ${log.energy}/10
-Sleep: ${log.sleep}/10
-Stress: ${log.stress}/10
-Mood: ${log.mood || 'not tracked'}/10
-Activities: ${activities.join(', ') || 'none'}
-Physical: ${symptoms.join(', ') || 'none'}
-Warning signs: ${[...warnings, ...customWarnings].join(', ') || 'none'}
-Medications: ${log.medications || 'none'}
-Caffeine: ${log.caffeine || 0} servings
-Alcohol: ${log.alcohol || 0} drinks${log.menstrualPhase && log.menstrualPhase !== 'na' ? `\nMenstrual phase: ${log.menstrualPhase}` : ''}${log.notes ? `\nNotes: ${log.notes}` : ''}${log.biometrics?.hrv ? `\nHRV: ${log.biometrics.hrv}ms` : ''}${log.biometrics?.restingHR ? `\nResting HR: ${log.biometrics.restingHR} bpm` : ''}${log.biometrics?.sleepHours ? `\nSleep hours: ${log.biometrics.sleepHours}h` : ''}${log.biometrics?.steps ? `\nSteps: ${log.biometrics.steps}` : ''}${log.weather?.condition ? `\nWeather: ${log.weather.condition}` : ''}${log.weather?.barometricPressure ? `\nBarometric pressure: ${log.weather.barometricPressure} mb` : ''}`;
+  return `Check-in ${idx + 1} of ${total} (${log.date || 'date not supplied'})
+Energy: ${log.energy ?? 'not tracked'}/10
+Sleep: ${log.sleep ?? 'not tracked'}/10
+Stress: ${log.stress ?? 'not tracked'}/10
+Mood: ${log.mood ?? 'not tracked'}/10
+Activities: ${activeKeys(log.activities).join(', ') || 'none logged'}
+Physical signals: ${physical.join(', ') || 'none logged'}
+Other noticed signals: ${noticed.join(', ') || 'none logged'}
+Caffeine: ${log.caffeine ?? 0}
+Alcohol: ${log.alcohol ?? 0}
+Medication note: ${log.medications || 'none'}
+Menstrual/cycle note: ${log.menstrualPhase && log.menstrualPhase !== 'na' ? log.menstrualPhase : 'not tracked'}
+Biometrics: ${[
+    log.biometrics?.hrv ? `HRV ${log.biometrics.hrv}` : null,
+    log.biometrics?.restingHR ? `resting HR ${log.biometrics.restingHR}` : null,
+    log.biometrics?.sleepHours ? `sleep hours ${log.biometrics.sleepHours}` : null,
+    log.biometrics?.steps ? `steps ${log.biometrics.steps}` : null,
+  ].filter(Boolean).join(', ') || 'none logged'}
+Weather note: ${[
+    log.weather?.condition,
+    log.weather?.barometricPressure ? `pressure ${log.weather.barometricPressure}` : null,
+  ].filter(Boolean).join(', ') || 'none logged'}
+User marked a crash/hit-a-wall day: ${log.crashDay ? 'yes' : 'no'}
+Notes: ${log.notes || 'none'}`;
 }
 
-function buildContextBlocks(body) {
-  const { biometricData, medicationLog, menstrualCycle, weatherData, calendarContext, emergencyContacts } = body;
-  const blocks = [];
+const SYSTEM = `You help a person learn from their own repeated check-ins.
 
-  if (biometricData) blocks.push(`BIOMETRIC TRENDS:\nHRV baseline: ${biometricData.hrvBaseline || 'unknown'}\nRecent HRV trend: ${biometricData.hrvTrend || 'unknown'}\nSleep stage disruption: ${biometricData.sleepDisruption || 'unknown'}\nStep count deviation: ${biometricData.stepDeviation || 'unknown'}\nResting HR changes: ${biometricData.restingHRChange || 'unknown'}`);
+Your job is pattern noticing, not diagnosis and not prediction.
 
-  if (medicationLog?.length > 0) blocks.push(`MEDICATION LOG:\n${medicationLog.map(m => `${m.date}: ${m.medication} ${m.change || ''}`).join('\n')}`);
+EPISTEMIC RULES:
+1. Treat every check-in as user-reported data, not objective proof of a medical or psychological state.
+2. Never diagnose burnout, depression, anxiety, autonomic dysfunction, hormonal problems, medication effects, weather sensitivity, or any other condition.
+3. Never predict a crash, assign crash probability, estimate days until a crash, predict severity, or use green/yellow/orange/red risk levels.
+4. Never tell the user that the tool knows their state better than they do.
+5. Never assign universal meanings or danger thresholds to HRV, resting heart rate, steps, sleep, caffeine, alcohol, menstrual phase, weather, symptoms, or any other signal.
+6. You may compare a person's current entries with their own earlier entries.
+7. You may describe repeated co-occurrence only when the supplied logs support it. Say exactly how many observations support the pattern when practical.
+8. Correlation is not causation. Use language such as 'showed up together', 'coincided with', 'appeared in the same check-ins', or 'worth watching'. Do not say one signal caused another.
+9. If there are too few observations, say so. A possible pattern is more useful than fabricated certainty.
+10. If the user has marked crash/hit-a-wall days, you may compare the entries before those marked days with other periods. Do not redefine what a crash means.
+11. Recommendations should be small, reversible experiments that help the user learn more from future check-ins. Do not prescribe medical treatment, medication changes, sick leave, emergency protocols, or rigid recovery timelines.
+12. Do not infer motives, personality, coping style, masking, poor interoception, or an inability to assess oneself.
+13. Use only facts present in the logs. Do not invent work demands, family circumstances, diagnoses, routines, or symptoms.
+14. Lead with the most useful observation. Keep the report compact. Say each point once.
+15. ${NO_QUOTE_RULE}`;
 
-  if (menstrualCycle) blocks.push(`MENSTRUAL CYCLE DATA:\nCurrent phase: ${menstrualCycle.currentPhase || 'unknown'}\nDays until period: ${menstrualCycle.daysUntilPeriod || 'unknown'}\nPattern: ${menstrualCycle.pattern || 'unknown'}`);
-
-  if (weatherData) blocks.push(`WEATHER PATTERNS:\nRecent pressure changes: ${weatherData.pressureChanges || 'none noted'}\nSeasonal factors: ${weatherData.seasonalFactors || 'none'}`);
-
-  if (calendarContext) blocks.push(`UPCOMING COMMITMENTS:\n${calendarContext}`);
-
-  if (emergencyContacts?.length > 0) blocks.push(`EMERGENCY CONTACTS (for recovery protocol personalization):\n${emergencyContacts.map(c => `${c.name} (${c.relationship})`).join(', ')}`);
-
-  return blocks.join('\n\n');
+const ANALYZE_SCHEMA = `Return ONLY valid JSON in exactly this shape:
+{
+  "headline": "One grounded sentence describing the most useful recent observation. If evidence is thin, say that.",
+  "recent_changes": [
+    {
+      "signal": "short label",
+      "observation": "what changed, using only the supplied logs",
+      "evidence": "brief concrete support, preferably counts/dates or comparison with this user's recent entries"
+    }
+  ],
+  "patterns_worth_noticing": [
+    {
+      "pattern": "short label",
+      "observation": "what tended to show up together",
+      "evidence": "how many observations support it",
+      "confidence_note": "established in these logs | possible pattern | too little data"
+    }
+  ],
+  "not_enough_evidence_yet": [
+    "A tempting conclusion the data does not yet support, stated plainly"
+  ],
+  "compared_with_your_usual": [
+    {
+      "signal": "energy | sleep | stress | mood | another tracked signal",
+      "comparison": "short comparison with this user's own logged baseline; omit if there is not enough data"
+    }
+  ],
+  "small_experiment": {
+    "try": "one small, reversible change based on the user's own pattern",
+    "watch": "what to compare in the next several check-ins",
+    "why_this_one": "one sentence tying the experiment to the observed logs without claiming causation"
+  },
+  "your_own_clues": [
+    "recurring user-reported signals that actually appear in the logs"
+  ]
 }
 
-// ════════════════════════════════════════════════════════════
-// SHARED: Personality & analysis principles
-// ════════════════════════════════════════════════════════════
-const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted notes or phrases plainly or with single quotes, or it breaks the JSON.';
+ARRAY RULES:
+- recent_changes: 0-4 items
+- patterns_worth_noticing: 0-4 items
+- not_enough_evidence_yet: 0-3 items
+- compared_with_your_usual: 0-4 items
+- your_own_clues: 0-5 items
+- Empty arrays are allowed and preferred to invented content.
+- Do not add other keys.`;
 
-const PERSONALITY = `Burnout prediction and recovery specialist. Identify the early warning signs of cognitive and physical overload before the crash happens.
+const PATTERN_SCHEMA = `Return ONLY valid JSON in exactly this shape:
+{
+  "headline": "One sentence describing the strongest long-term pattern, or saying that no stable pattern is established yet.",
+  "recurring_patterns": [
+    {
+      "pattern": "short label",
+      "evidence": "specific support from the logs",
+      "limits": "what the logs cannot establish"
+    }
+  ],
+  "before_marked_crash_days": [
+    {
+      "observation": "a signal or combination that appeared before user-marked crash days",
+      "evidence": "how often it appeared before marked crash days versus other periods"
+    }
+  ],
+  "day_or_week_patterns": [
+    {
+      "observation": "a repeated calendar pattern supported by the logs",
+      "evidence": "specific support"
+    }
+  ],
+  "things_that_did_not_repeat": [
+    "signals that appeared but did not form a stable pattern"
+  ],
+  "next_learning_step": {
+    "track": "one thing worth continuing or adding",
+    "reason": "why it would help distinguish between plausible interpretations"
+  }
+}
 
-Be specific about patterns, not generic about rest. Give the intervention that actually prevents the crash, not just permission to slow down.
+RULES:
+- Never manufacture a pattern because the endpoint is called patterns.
+- before_marked_crash_days must be empty if the user has not marked crash days.
+- Do not add other keys.`;
 
-${NO_QUOTE_RULE}`;
+// callClaudeWithRetry already strips fences, repairs the JSON and parses it —
+// see lib/claude.js. It returns an OBJECT, so a second JSON.parse here received
+// "[object Object]" and threw on every single call.
+//
+// Its signature is (promptOrRequest, options) — two arguments. `label` and
+// `max_tokens` live in that options object, and `max_tokens` is snake_case:
+// passing `maxTokens` silently left these schemas on the 2500 default, which
+// is where a bounded 4200-token output would have truncated.
+async function callStructured({ prompt, system, userLanguage, userLocale, label }) {
+  const localizedSystem = withLanguage(system, userLanguage) + withLocaleContext(userLocale);
+  // Full-request form, not simple-string. S7.12: the string form has silently
+  // dropped model/system/label before, and this route needs all three.
+  return callClaudeWithRetry({
+    model: MODELS.SMART,
+    max_tokens: 4200,
+    system: localizedSystem,
+    messages: [{ role: 'user', content: prompt }],
+  }, { label });
+}
 
-const ANALYSIS_PRINCIPLES = `ANALYSIS PRINCIPLES:
+// Everything the visitor actually recorded, as the guard's source of truth.
+// A check-in tool's whole failure mode is a day, a number or a note that was
+// never logged reappearing as a finding.
+function suppliedFrom(logs) {
+  return `THE CHECK-INS THE VISITOR RECORDED (${logs.length} in total) — nothing else about them is known:
+${logs.map((l, i) => `${i + 1}. ${JSON.stringify(l)}`).join('\n')}
 
-1. BIOMETRIC INTEGRATION:
-- HRV <40ms = high crash risk (poor recovery, high stress)
-- HRV declining trend = early warning (drops before subjective fatigue)
-- Resting HR elevated 10+ bpm = autonomic stress
-- Step count drop >30% = activity avoidance (crash sign)
-- If no biometrics: note what tracking would reveal and recommend it
+There is no other source. A date, a score, an activity or a note that is not in this list was invented. Correlation between two logged fields is not a cause, and a handful of check-ins is not a rate, a percentage or a prediction about a future day.`;
+}
 
-2. SUBSTANCE CORRELATION:
-- Caffeine >4 servings = likely masking fatigue + disrupting sleep
-- Alcohol even 2-3 drinks = sleep quality destruction
-- New medication within 2 weeks = consider side effects
-- Correlate substance intake with next-day energy/sleep scores
+async function guardResult(result, { logs, label, promise, userLanguage, userLocale }) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(result, '');
+  await runOutputGuard(result, {
+    label,
+    fields,
+    supplied: suppliedFrom(logs),
+    promise,
+    guard: router.outputGuard,
+    userLanguage,
+    locale: withLocaleContext(userLocale),
+  });
+}
 
-3. MENSTRUAL CYCLE:
-- Luteal phase (days 15-28) = energy naturally lower
-- 5-7 days pre-period = highest crash risk if already depleted
-- Cycle-optimize: demanding tasks in follicular, rest in luteal
-
-4. WEATHER SENSITIVITY:
-- Barometric pressure drops >5mb = headache/fatigue trigger for some
-- Seasonal pattern (low energy Nov-Feb) = possible seasonal factor
-- Correlate reported weather with symptom patterns
-
-5. INTERVENTION ESCALATION:
-- GREEN: Baseline monitoring, preventive self-care
-- YELLOW: 1-2 indicators concerning, proactive reduction
-- ORANGE: 3+ indicators critical, urgent intervention
-- RED: Imminent crash or already crashed, crisis protocol
-
-6. RECOVERY PROTOCOLS:
-- Immediate: who to notify, what to say, when
-- Survival tasks only: sleep, eat, water, meds
-- Self-compassion: specific scripts for guilt/shame
-- Timeline: realistic expectations, no rushing
-- Relapse prevention: continue logging 4 weeks
-
-BE DIRECT. DON'T SOFTEN. They need to hear the truth because they may not be able to sense it themselves.
-
-Use all available data to increase prediction confidence. Correlate patterns across all data sources.`;
-
-// ════════════════════════════════════════════════════════════
-// POST /crash-predictor-analyze — Main risk assessment
-// ════════════════════════════════════════════════════════════
 router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { logs, userLanguage } = req.body;
-
-    if (!logs || logs.length < 3) {
-      return res.status(400).json({ error: 'Need at least 3 days of logs for pattern analysis' });
+    const { logs = [], userLanguage, userLocale } = req.body;
+    if (!Array.isArray(logs) || logs.length < 2) {
+      return res.status(400).json({ error: 'Add at least 2 check-ins before asking for a comparison.' });
     }
 
-    const logSummaries = logs.map((log, idx) => buildLogSummary(log, idx, logs.length)).join('\n\n');
-    const contextBlocks = buildContextBlocks(req.body);
+    const summaries = logs.slice(0, 60).map((log, i, arr) => buildLogSummary(log, i, arr.length)).join('\n\n');
+    const prompt = `CHECK-INS:\n${summaries}\n\n${ANALYZE_SCHEMA}`;
+    const result = await callStructured({
+      prompt,
+      system: SYSTEM,
+      userLanguage,
+      userLocale,
+      label: 'crash-predictor-v2-analyze',
+    });
 
-    const sharedHeader = `ANALYZE THESE LOGS (${logs.length} days):
-${logSummaries}
-
-${contextBlocks}`;
-
-    // Parallel-split: the original single mega-schema call (~15 sections at
-    // max_tokens 7500) ran 380s+ on realistic 7-day logs. Two disjoint-key
-    // calls sharing the same context roughly halve wall-clock; response shape
-    // is unchanged after the merge.
-    // Parallel-split: the original single mega-schema call (~15 sections at
-    // max_tokens 7500) ran 380s+ on realistic 7-day logs. Two disjoint-key calls
-    // brought that to 61s — still past the ~60s where Safari abandons the fetch,
-    // so the same two schemas are regrouped (programmatically, never re-typed)
-    // into four. Keys stay disjoint, so the merge still reproduces the original
-    // response shape exactly.
-    const prompt_signal = `${sharedHeader}
-
-Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be present — never omit trailing keys:
-
-{
-  "burnout_risk_assessment": {
-    "current_risk_level": "critical | high | moderate | low",
-    "risk_color": "red | orange | yellow | green",
-    "confidence": 95,
-    "days_until_likely_crash": 2,
-    "trajectory": "declining | stable | improving",
-    "crash_severity_predicted": "severe | moderate | mild"
-  },
-  "your_crash_pattern": {
-    "pattern_recognition": "Describe their SPECIFIC pattern with numbers — one sentence",
-    "identified_indicators": [
-      "Sleep drops below 5",
-      "Stress above 8 for 3+ days",
-      "No rest days for 10+ days"
-    ],
-    "current_status": {
-      "sleep": "critical | below threshold | at threshold | normal",
-      "stress": "critical | above threshold | at threshold | normal",
-      "energy": "critical | depleted | low | adequate",
-      "rest": "critical deficit | deficit | minimal | adequate",
-      "warning_signs": "critical | accumulating | stable | decreasing",
-      "biometrics": "concerning | watch | normal | not available"
-    }
-  },
-  "warning_signs_present": [
-    {
-      "sign": "Warning sign name. Nothing else.",
-      "your_typical_timeline": "appears X days before crash — one sentence",
-      "current_status": "present for X days — one sentence",
-      "urgency": "critical | high | moderate | watch",
-      "days_until_crash_if_persists": 3
-    }
-  ],
-  "intervention_escalation": {
-    "current_level": "red | orange | yellow | green",
-    "level_definitions": {
-      "green": "Preventive - Maintain current self-care, monitor trends — one sentence",
-      "yellow": "Proactive - Reduce non-essential commitments, increase rest — one sentence",
-      "orange": "Urgent - Cancel plans, significant rest needed, consider sick leave — one sentence",
-      "red": "CRISIS - Seek professional support, emergency contacts notified, survival mode only — one sentence"
-    },
-    "why_this_level": "Specific explanation of why this level was chosen based on their data — one sentence",
-    "escalation_triggers": "What would cause escalation to next level — one sentence",
-    "de_escalation_criteria": "What needs to happen to move down a level — one sentence"
-  }
-}
-
-Your response MUST contain ALL 4 top-level keys: burnout_risk_assessment, your_crash_pattern, warning_signs_present, intervention_escalation — and nothing else. The rest of the report is being written separately.
-
-${ANALYSIS_PRINCIPLES}
-
-SIZE LIMITS (keep the response bounded):
-- warning_signs_present: 2-4 items
-
-Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
-
-Return ONLY the JSON object.`;
-
-    const prompt_correlations = `${sharedHeader}
-
-Return ONLY this JSON structure (NO markdown). ALL EIGHT top-level keys MUST be present — never omit trailing keys:
-
-{
-  "biometric_analysis": {
-    "hrv_signal": "What their HRV data shows, or what HRV tracking would reveal if not logged — one sentence",
-    "resting_hr_signal": "Resting heart rate pattern and what it indicates — one sentence",
-    "sleep_data_signal": "What logged sleep hours show vs subjective sleep scores — one sentence",
-    "activity_signal": "Step count / activity pattern and what it indicates — one sentence",
-    "recommendation": "What biometric to start tracking or watch most closely — one sentence"
-  },
-  "medication_correlation": {
-    "caffeine_impact": "Analysis of caffeine intake patterns and correlation with sleep/energy — one sentence",
-    "alcohol_impact": "Analysis of alcohol intake and correlation with next-day metrics — one sentence",
-    "medication_notes": "Any medication changes noted and their potential impact on patterns — one sentence",
-    "substance_recommendation": "Specific actionable advice about caffeine/alcohol timing or amounts — one sentence"
-  },
-  "menstrual_cycle_correlation": {
-    "current_phase": "follicular | ovulation | luteal | menstrual | not tracked",
-    "energy_pattern": "How cycle phase affects their energy based on logged data — one sentence",
-    "crash_risk_adjustment": "How cycle phase modifies crash risk prediction — one sentence",
-    "cycle_optimized_interventions": "Specific advice for current phase — one sentence"
-  },
-  "weather_sensitivity_analysis": {
-    "barometric_pressure_correlation": "Correlation between weather and symptoms if data available — one sentence",
-    "seasonal_pattern": "Any seasonal energy patterns detected — one sentence",
-    "weather_triggered_crashes": "Weather-related crash patterns if any — one sentence",
-    "recommendation": "Actionable weather-related advice — one sentence"
-  }
-}
-
-Your response MUST contain ALL 4 top-level keys: biometric_analysis, medication_correlation, menstrual_cycle_correlation, weather_sensitivity_analysis — and nothing else. The rest of the report is being written separately.
-
-${ANALYSIS_PRINCIPLES}
-
-SIZE LIMITS (keep the response bounded):
-- warning_signs_present: 2-4 items
-
-Confidence must reflect data volume — with ≤7 days of logs, confidence ≤70 and days_until_likely_crash may be a range or null.
-
-Return ONLY the JSON object.`;
-
-    const prompt_prevent = `${sharedHeader}
-
-Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be present — never omit trailing keys:
-
-{
-  "preventive_interventions": [
-    {
-      "priority": "critical | urgent | high | medium | low",
-      "action": "Specific action to take — one sentence",
-      "why": "Why this matters based on their data — one sentence",
-      "how": "Concrete steps — one sentence",
-      "when": "Timing — one sentence",
-      "resistance_you_might_feel": "Common pushback and why to ignore it — one sentence",
-      "reframe": "Alternative way to think about this — one sentence"
-    }
-  ],
-  "capacity_reality_check": {
-    "your_current_capacity": "Percentage or description — one sentence",
-    "what_this_means": "Practical implications — one sentence",
-    "permission": "Permission statement to rest/reduce — one sentence",
-    "rest_day_scheduling": "When to schedule recovery — one sentence",
-    "future_crash_prevention": "Proactive planning advice — one sentence"
-  },
-  "poor_interoception_support": {
-    "objective_data": "Summary of their actual numbers vs what they might feel — one sentence",
-    "trust_the_data": "Direct statement about what the data shows — one sentence",
-    "for_doubters": "Challenge to their denial — one sentence"
-  }
-}
-
-Your response MUST contain ALL 3 top-level keys: preventive_interventions, capacity_reality_check, poor_interoception_support — and nothing else. The rest of the report is being written separately.
-
-${ANALYSIS_PRINCIPLES}
-
-SIZE LIMITS (keep the response bounded):
-- preventive_interventions: 3-5 items
-- recovery_protocol.who_to_notify: 1-3 items
-
-Ground every severity/likelihood judgment in the same logs so it stays consistent with the data.
-
-Return ONLY the JSON object.`;
-
-    const prompt_recover = `${sharedHeader}
-
-Return ONLY this JSON structure (NO markdown). ALL SIX top-level keys MUST be present — never omit trailing keys:
-
-{
-  "if_youre_already_crashed": {
-    "likelihood": "high | moderate | low",
-    "recognition": "Signs they might already be in burnout based on their data — one sentence",
-    "crash_severity": "severe | moderate | mild",
-    "immediate_actions": [
-      "Specific immediate action 1",
-      "Specific immediate action 2"
-    ],
-    "minimum_survival_tasks": [
-      "Drink water",
-      "Eat something simple",
-      "Sleep as much as body wants",
-      "Take prescribed medications"
-    ],
-    "recovery_timeline": "Realistic timeline based on severity — one sentence",
-    "recovery_stages": {
-      "stabilize": "Stage 1, first days: what recovery looks like and what to do — one sentence",
-      "rebuild": "Stage 2, following 1-2 weeks: what to reintroduce and how — one sentence",
-      "maintain": "Stage 3, beyond: how to protect the recovery and prevent relapse — one sentence"
-    },
-    "what_not_to_do": "Common mistakes to avoid during recovery — one sentence"
-  },
-  "recovery_protocol": {
-    "who_to_notify": [
-      {
-        "person": "Role or name if provided. Nothing else.",
-        "message": "Pre-written message they can copy — 2-4 sentences",
-        "when": "When to send — one sentence"
-      }
-    ],
-    "self_compassion_scripts": [
-      "Supportive self-talk script 1",
-      "Supportive self-talk script 2",
-      "Supportive self-talk script 3",
-      "Supportive self-talk script 4"
-    ],
-    "relapse_prevention": {
-      "warning_signs_of_relapse": "What to watch for after recovery — one sentence",
-      "how_to_catch_early": "Monitoring strategy — one sentence",
-      "if_relapse_starting": "Immediate action plan — one sentence"
-    }
-  },
-  "personalized_recovery_estimate": {
-    "if_you_act_now": "Best case scenario with immediate action — one sentence",
-    "if_you_wait_1_week": "What happens if they delay — one sentence",
-    "if_you_crash_completely": "Worst case scenario — one sentence",
-    "cost_benefit": "Clear math: days lost now vs days lost later — one sentence"
-  }
-}
-
-Your response MUST contain ALL 3 top-level keys: if_youre_already_crashed, recovery_protocol, personalized_recovery_estimate — and nothing else. The rest of the report is being written separately.
-
-${ANALYSIS_PRINCIPLES}
-
-SIZE LIMITS (keep the response bounded):
-- preventive_interventions: 3-5 items
-- recovery_protocol.who_to_notify: 1-3 items
-
-Ground every severity/likelihood judgment in the same logs so it stays consistent with the data.
-
-Return ONLY the JSON object.`;
-
-    const system = withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const parts = await Promise.all([prompt_signal, prompt_correlations, prompt_prevent, prompt_recover].map((prompt, i) =>
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3000,
-        system,
-        messages: [{ role: 'user', content: prompt }],
-      }, { label: `crash-predictor-${['signal', 'correlations', 'prevent', 'recover'][i]}` })));
-
-    // Top-level keys are disjoint across the four groups.
-    const parsed = Object.assign({}, ...parts);
-
-    if (!parsed.burnout_risk_assessment) {
-      throw new Error('Invalid response structure');
+    // Shape check before anything else touches it: the frontend maps over these
+    // arrays, so a malformed response ships as a render crash rather than an
+    // error anyone can act on.
+    if (!result?.headline || !Array.isArray(result.recent_changes)) {
+      console.error('Crash Predictor: unexpected analyze shape', Object.keys(result || {}));
+      return res.status(500).json({ error: 'Could not compare these check-ins.' });
     }
 
-    res.json(parsed);
+    // Fail-open: it wraps a working answer.
+    try {
+      await guardResult(result, {
+        logs: logs.slice(0, 60),
+        label: 'crash-predictor-analyze',
+        promise: 'Compare the check-ins the visitor recorded and show what changed between them.',
+        userLanguage, userLocale,
+      });
+    } catch (guardErr) {
+      console.error('[crash-predictor] v2 guard skipped:', guardErr.message);
+    }
 
+    res.json(result);
   } catch (error) {
-    console.error('Crash predictor analyze error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    console.error('Crash Predictor V2 analyze error:', error);
+    res.status(500).json({ error: 'Could not compare these check-ins.' });
   }
 });
 
-// ════════════════════════════════════════════════════════════
-// POST /crash-predictor-patterns — Long-term pattern detection (14+ days)
-// ════════════════════════════════════════════════════════════
 router.post('/crash-predictor-patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { logs, userLanguage } = req.body;
-
-    if (!logs || logs.length < 14) {
-      return res.status(400).json({ error: 'Need at least 14 days of logs for pattern detection' });
+    const { logs = [], userLanguage, userLocale } = req.body;
+    if (!Array.isArray(logs) || logs.length < 7) {
+      return res.status(400).json({ error: 'Keep checking in a little longer before looking for longer-term patterns.' });
     }
 
-    const logSummaries = logs.slice(0, 90).map((log) => {
-      const activities = Object.keys(log.activities || {}).filter(k => log.activities[k]);
-      const symptoms = Object.keys(log.physicalSymptoms || {}).filter(k => log.physicalSymptoms[k]);
-      const warnings = Object.keys(log.warningSigns || {}).filter(k => log.warningSigns[k]);
-      const customWarnings = (log.customSymptoms || []).filter(s => s.active).map(s => s.label);
-      const dayOfWeek = new Date(log.date).toLocaleDateString('en', { weekday: 'short' });
+    const summaries = logs.slice(0, 120).map((log, i, arr) => buildLogSummary(log, i, arr.length)).join('\n\n');
+    const prompt = `CHECK-INS:\n${summaries}\n\n${PATTERN_SCHEMA}`;
+    const result = await callStructured({
+      prompt,
+      system: SYSTEM,
+      userLanguage,
+      userLocale,
+      label: 'crash-predictor-v2-patterns',
+    });
 
-      return `${log.date} (${dayOfWeek}): E:${log.energy} S:${log.sleep} St:${log.stress} M:${log.mood || '?'} ` +
-        `Act:[${activities.join(',')}] Phys:[${symptoms.join(',')}] Warn:[${[...warnings, ...customWarnings].join(',')}] ` +
-        `Caff:${log.caffeine || 0} Alc:${log.alcohol || 0}${log.menstrualPhase && log.menstrualPhase !== 'na' ? ` Cycle:${log.menstrualPhase}` : ''}` +
-        `${log.notes ? ` Notes:"${log.notes.slice(0, 80)}"` : ''}`;
-    }).join('\n');
-
-    const userPrompt = `You are a data analyst specializing in personal health pattern recognition. Analyze these daily logs and identify RECURRING patterns, correlations, and cycles.
-
-LOGS (${logs.length} days):
-${logSummaries}
-
-Find patterns across these dimensions:
-1. Weekly patterns (which days are worst/best)
-2. Cyclical patterns (crash every N weeks, monthly patterns)
-3. Activity-consequence correlations (what activities precede crashes)
-4. Substance correlations (caffeine/alcohol timing → next-day impact)
-5. Cascade patterns (what sequence of events leads to crashes)
-6. Recovery patterns (what helps them bounce back fastest)
-
-OUTPUT LIMITS (CRITICAL — the response MUST be complete, valid JSON that closes):
-- patterns_found: report the 4-6 STRONGEST patterns only, never an exhaustive list. Every string one sentence.
-
-Return ONLY this JSON (NO markdown):
-
-{
-  "patterns_found": [
-    {
-      "pattern": "Clear, specific description of the pattern — one sentence",
-      "evidence": "Specific dates/numbers that prove it — one sentence",
-      "confidence": "high | medium | low",
-      "category": "weekly | cyclical | activity | substance | cascade | recovery",
-      "actionable_insight": "What they should do about this pattern — one sentence",
-      "icon": "emoji that represents this pattern (one emoji)"
-    }
-  ],
-  "weekly_heatmap": {
-    "monday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "tuesday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "wednesday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "thursday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "friday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "saturday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" },
-    "sunday": { "avg_energy": 5.2, "avg_stress": 6.1, "risk_level": "low | moderate | high" }
-  },
-  "crash_sequences": [
-    {
-      "trigger": "What starts the sequence — one sentence",
-      "sequence": ["Day 1: ...", "Day 2: ...", "Day 3: crash"],
-      "frequency": "How often this has happened (number)",
-      "early_warning_day": "Which day in the sequence to intervene — one sentence"
-    }
-  ],
-  "what_helps": [
-    {
-      "intervention": "What they did — one sentence",
-      "effect": "What happened to their metrics — one sentence",
-      "evidence": "Specific instances — one sentence"
-    }
-  ],
-  "biggest_risks": [
-    "The single most dangerous pattern, stated bluntly"
-  ],
-  "summary": "2-3 sentence overview of their most important patterns"
-}
-
-Be SPECIFIC with numbers and dates. Don't speculate — only report patterns supported by the data.`;
-
-    const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 5000,
-      system: withLanguage('You are a data analyst specializing in personal health pattern recognition. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }]
-    }, { label: 'crash-predictor-patterns' });
-
-    if (!parsed.patterns_found) {
-      throw new Error('Invalid response structure — missing patterns_found');
+    // Shape check before anything else touches it: the frontend maps over these
+    // arrays, so a malformed response ships as a render crash rather than an
+    // error anyone can act on.
+    if (!result?.headline || !Array.isArray(result.recurring_patterns)) {
+      console.error('Crash Predictor: unexpected patterns shape', Object.keys(result || {}));
+      return res.status(500).json({ error: 'Could not compare the longer-term pattern.' });
     }
 
-    res.json(parsed);
+    // Fail-open: it wraps a working answer.
+    try {
+      await guardResult(result, {
+        logs: logs.slice(0, 120),
+        label: 'crash-predictor-patterns',
+        promise: 'Show what repeats across the check-ins the visitor recorded over time.',
+        userLanguage, userLocale,
+      });
+    } catch (guardErr) {
+      console.error('[crash-predictor] v2 guard skipped:', guardErr.message);
+    }
 
+    res.json(result);
   } catch (error) {
-    console.error('Crash predictor patterns error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    console.error('Crash Predictor V2 patterns error:', error);
+    res.status(500).json({ error: 'Could not compare the longer-term pattern.' });
   }
 });
+
+// PF-39. The guard is a PROFILE, not a name — lib/outputGuard reads
+// guard.prohibit and guard.require, so a string here declares nothing and the
+// checker runs with no tool-specific terms at all.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'invented_log_entry',              // a day, number or note the visitor did not record
+    'causal_claim_from_correlation',   // "the poor sleep caused the crash"
+    'medical_or_diagnostic_language',
+    'unsupported_prediction',          // "you are heading for a crash on Thursday"
+    'false_precision',                 // a percentage or score over a handful of check-ins
+    'pattern_from_too_few_days',
+  ],
+  require: [
+    'traceable_to_logged_entries',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

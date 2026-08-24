@@ -1,12 +1,13 @@
 {
   "_meta": {
     "tool": "crash-predictor",
-    "captured": "2026-07-02",
+    "captured": "2026-08-24",
     "model": "claude-sonnet-4-6 (analyze 5000, patterns 5000 + ≤6-pattern cap)",
-    "baseline": "post-9fc5683 (+ truncation caps / fill-the-time)",
+    "baseline": "crashpredictor-v2",
     "how_to_regress": "npm run check:golden crash-predictor  (dev backend up)",
-    "note": "patterns case guards the 14-log payload fix (was always-400 with 6) AND the bounded schema (3000 truncated).",
-    "how_to_regression_diff": " [2026-07-12 re-lock v2] the analyze schema (~15 nested objects) truncated at max_tokens 5000 in German -> 500; now 7500. This de case GUARDS that."
+    "note": "patterns case guards the 14-log payload fix (was always-400 with 6) AND the bounded schema (3000 truncated). Re-locked 2026-08-24 (v2): tool rewritten front and back. The route was DOWN — callClaudeWithRetry already parses, so a second JSON.parse received \"[object Object]\" and threw on every call; MODELS.SONNET does not exist (SMART/FAST/DEEP); the helper takes two arguments, so label sat in a third that was ignored and maxTokens was camelCase against a snake_case option, leaving these schemas on the 2500 default. Adopted PF-39 v2 with a real guard profile (the rewrite declared outputGuard as a STRING, which reads as a declaration and enforces nothing) and runOutputGuard wired to both endpoints over every string field, with the visitor's own logs as the only source of truth. Frontend was English-only: 37 keys × 13 languages.",
+    "how_to_regression_diff": " [2026-07-12 re-lock v2] the analyze schema (~15 nested objects) truncated at max_tokens 5000 in German -> 500; now 7500. This de case GUARDS that.",
+    "tag": "crashpredictor-v2"
   },
   "cases": [
     {
@@ -58,195 +59,56 @@
         "userLanguage": "en"
       },
       "output": {
-        "burnout_risk_assessment": {
-          "current_risk_level": "moderate",
-          "risk_color": "yellow",
-          "confidence": 55,
-          "days_until_likely_crash": null,
-          "trajectory": "declining",
-          "crash_severity_predicted": "mild"
-        },
-        "your_crash_pattern": {
-          "pattern_recognition": "Over 3 days, energy dropped from 6→5→4, sleep from 7→6.5→6, and stress rose from 4→5→6 — a consistent downward drift across all three core metrics with no physical activity and no zero-caffeine compensatory mechanism to mask fatigue.",
-          "identified_indicators": [
-            "Energy declining 1 point per day for 3 consecutive days with no reversal",
-            "Sleep quality eroding steadily (7→6.5→6) without a single recovery night",
-            "Stress climbing incrementally each day with no discharge mechanism logged",
-            "Zero physical activity across all 3 days, removing the primary autonomic reset tool",
-            "High activity count (8-9 tasks logged) with declining capacity — output demand exceeding recovery"
-          ],
-          "current_status": {
-            "sleep": "at threshold",
-            "stress": "at threshold",
-            "energy": "low",
-            "rest": "deficit",
-            "warning_signs": "accumulating",
-            "biometrics": "not available"
-          }
-        },
-        "biometric_analysis": {
-          "hrv_signal": "HRV was not logged — but given declining energy, zero physical activity, and rising stress over 3 days, HRV is very likely trending downward and would probably show values in the 40-55ms range if tracked, indicating early autonomic strain before subjective fatigue fully registers.",
-          "resting_hr_signal": "Resting HR was not logged — however, sustained cognitive load with zero movement typically elevates resting HR by 5-10 bpm over several days, which would confirm the sympathetic nervous system is not getting adequate reset time.",
-          "sleep_data_signal": "Logged sleep scores (7→6.5→6) show a clear nightly degradation trend, and even a score of 6/10 likely corresponds to fragmented or unrestorative sleep architecture rather than simply short duration.",
-          "activity_signal": "Zero physical activity across all three days is itself a biometric signal — this level of sedentary load combined with high cognitive task volume (8-9 activities) is driving nervous system accumulation with no discharge outlet.",
-          "recommendation": "Begin tracking HRV daily using a wearable (Oura, Whoop, or Garmin) — it will detect your crash 24-48 hours before you consciously feel it, giving you the lead time to intervene."
-        },
-        "medication_correlation": {
-          "caffeine_impact": "Zero caffeine across all three days is notable — this means the declining energy is genuine baseline fatigue, not a caffeine withdrawal artifact, and there is no stimulant masking how depleted the system actually is.",
-          "alcohol_impact": "Zero alcohol across all three days removes alcohol as a confounding variable for sleep degradation, meaning the sleep quality decline from 7→6→6 is driven entirely by stress load and unrecovered cognitive fatigue.",
-          "medication_notes": "No medications were logged, so there are no medication-related pattern confounders to account for in this dataset.",
-          "substance_recommendation": "Do not introduce caffeine as a short-term energy fix at this stage — it will suppress the fatigue signal that is currently your most accurate warning system and accelerate the crash timeline."
-        },
-        "menstrual_cycle_correlation": {
-          "current_phase": "not tracked",
-          "energy_pattern": "Cycle phase was not logged, so it is not possible to determine whether the energy decline is being amplified by luteal phase physiology or is purely load-driven.",
-          "crash_risk_adjustment": "If currently in luteal phase (days 15-28), the observed energy and mood scores of 4-6/10 would be consistent with compounded hormonal and cognitive fatigue, which would increase crash risk by one level.",
-          "cycle_optimized_interventions": "Start logging cycle day alongside daily metrics — if you are in luteal phase right now, reduce cognitive task load by 20-30% and prioritize sleep above all other interventions this week."
-        },
-        "weather_sensitivity_analysis": {
-          "barometric_pressure_correlation": "Weather data was not logged for June 10-12, 2026, so direct barometric correlation cannot be established from this dataset.",
-          "seasonal_pattern": "June data only covers 3 days and no historical logs were provided, so seasonal patterns cannot be detected — this is a gap worth filling with continued logging through Q3 2026.",
-          "weather_triggered_crashes": "No weather-triggered crash patterns can be identified with the current data volume — requires minimum 4 weeks of paired weather and symptom data.",
-          "recommendation": "If you notice fatigue or headaches spiking on cloudy or stormy days, begin noting weather conditions alongside your daily log to detect barometric sensitivity within 2-4 weeks."
-        },
-        "warning_signs_present": [
+        "headline": "Only three check-ins are available, so observations are tentative, but energy, sleep, and mood each declined across all three consecutive days.",
+        "recent_changes": [
           {
-            "sign": "Consecutive daily energy decline without a single stabilization day",
-            "your_typical_timeline": "This pattern typically appears 5-10 days before a moderate crash when the slope is 1 point per day",
-            "current_status": "Present for 3 days and still declining as of the last logged date",
-            "urgency": "moderate",
-            "days_until_crash_if_persists": 5
+            "signal": "Energy",
+            "observation": "Dropped each day across the three check-ins",
+            "evidence": "6 on 2026-06-10, 5 on 2026-06-11, 4 on 2026-06-12"
           },
           {
-            "sign": "Sleep quality erosion without a compensatory deep-sleep recovery night",
-            "your_typical_timeline": "Sleep degradation below 6/10 for 3+ nights typically precedes significant functional impairment within 4-7 days",
-            "current_status": "Present for 3 days with a clear downward slope — no recovery night has interrupted the trend",
-            "urgency": "moderate",
-            "days_until_crash_if_persists": 4
+            "signal": "Sleep",
+            "observation": "Declined slightly across the three check-ins",
+            "evidence": "7 on 2026-06-10, 6.5 on 2026-06-11, 6 on 2026-06-12"
           },
           {
-            "sign": "Complete absence of physical activity combined with high cognitive task volume",
-            "your_typical_timeline": "Sedentary high-cognitive load for 4+ consecutive days reliably drives HRV suppression and mood degradation within 5-7 days",
-            "current_status": "Present for all 3 logged days — the nervous system has had no somatic discharge in at least 72 hours",
-            "urgency": "high",
-            "days_until_crash_if_persists": 4
+            "signal": "Stress",
+            "observation": "Increased across the three check-ins",
+            "evidence": "4 on 2026-06-10, 5 on 2026-06-11, 6 on 2026-06-12"
           }
         ],
-        "intervention_escalation": {
-          "current_level": "yellow",
-          "level_definitions": {
-            "green": "Preventive — maintain current self-care, log daily, keep physical activity consistent and sleep protected above 7/10.",
-            "yellow": "Proactive — reduce non-essential cognitive commitments, reintroduce physical movement, protect sleep window as a hard boundary starting tonight.",
-            "orange": "Urgent — cancel discretionary plans for the next 3 days, treat rest as a clinical prescription not a reward, consider one day completely offline.",
-            "red": "CRISIS — seek professional support, notify your manager or a trusted person, enter survival-mode protocol: sleep, water, food, nothing else."
-          },
-          "why_this_level": "Three declining indicators (energy, sleep, stress) trending in the same direction simultaneously across 3 consecutive days with zero physical recovery activity meets the threshold for proactive Yellow intervention — this is not yet a crisis but the trajectory reaches Orange within 3-5 days if uninterrupted.",
-          "escalation_triggers": "Energy drops to 3/10, sleep drops below 5.5/10, stress reaches 7/10, or mood drops to 3/10 on any single day — any one of these moves the protocol to Orange immediately.",
-          "de_escalation_criteria": "Two consecutive days where energy stabilizes or rises, sleep returns to 7/10 or above, and at least one physical activity session is logged — all three must be present to move back to Green."
-        },
-        "preventive_interventions": [
+        "patterns_worth_noticing": [
           {
-            "priority": "critical",
-            "action": "Introduce a minimum 20-minute low-intensity physical movement session today and maintain it daily for the next 7 days.",
-            "why": "Zero physical activity across 3 days is the single most actionable driver of your declining HRV, poor sleep quality, and mood suppression — the nervous system cannot self-regulate without somatic input.",
-            "how": "Walk outside at a pace where you can hold a conversation — no intensity required, no gym needed — 20 minutes minimum, preferably before 6pm to avoid cortisol elevation near sleep time.",
-            "when": "Today, within the next 4 hours if possible — do not wait until tomorrow.",
-            "resistance_you_might_feel": "You will feel too tired to move, and that feeling is exactly why you must — rest without movement deepens the fatigue loop rather than breaking it.",
-            "reframe": "This is not exercise for fitness — it is a biological reset switch that directly improves your sleep architecture tonight and reduces stress hormones within 20 minutes of starting."
-          },
-          {
-            "priority": "urgent",
-            "action": "Set a hard sleep window starting tonight: in bed by 10:30pm, no screens after 9:30pm, room at 65-68°F if possible.",
-            "why": "Your sleep quality has declined every single night for 3 days — without a structural intervention tonight, it will continue to drop below 6/10 and the cascade accelerates.",
-            "how": "Set phone to Do Not Disturb at 9:30pm, place phone outside the bedroom, use a 5-minute wind-down ritual (legs up the wall, slow breathing, or a warm shower) to signal sleep onset to your nervous system.",
-            "when": "Starting tonight — the intervention needs to interrupt the declining sleep trend before it reaches critical threshold.",
-            "resistance_you_might_feel": "You may feel you are not tired enough to sleep at 10:30pm — this is a circadian misalignment symptom, not evidence that you do not need sleep.",
-            "reframe": "Every night you delay sleep by even 45 minutes under current conditions costs you approximately 1-2 recovery cycles, which are not recoverable the next day."
-          },
-          {
-            "priority": "high",
-            "action": "Audit your activity list for today and remove or defer at least 2 of the 8-9 logged daily tasks to a date more than 48 hours from now.",
-            "why": "You are maintaining near-maximum cognitive output volume while your capacity has dropped to approximately 40-50% — this ratio is what drives crashes, not the stress level itself.",
-            "how": "Look at today's task list and identify anything that does not have a concrete consequence if delayed 3 days — move it to next week without guilt or renegotiation of deadlines unless absolutely forced.",
-            "when": "Do this audit now, before you start today's tasks — reducing load before you begin prevents the stress accumulation that is degrading your sleep tonight.",
-            "resistance_you_might_feel": "Everything will feel important and time-sensitive — that cognitive distortion is itself a symptom of the stress accumulation pattern you are in.",
-            "reframe": "Completing 6 tasks at 70% quality is more valuable than attempting 9 tasks at 40% quality — the math favors reduction."
-          },
-          {
-            "priority": "medium",
-            "action": "Begin logging one additional data point daily: your subjective physical sensation score (1-10, 'how does your body feel right now') separate from mood and energy.",
-            "why": "Your current logs show no physical warning signs flagged despite a clear systemic decline — this gap suggests possible poor interoception, meaning you may not register physical distress until it is already advanced.",
-            "how": "Add a single line to your daily log each morning: 'Body: X/10' where 10 is physically comfortable, energized, and pain-free — track this separately from energy and mood scores.",
-            "when": "Start tomorrow morning and continue for at least 30 days to establish a personal baseline.",
-            "resistance_you_might_feel": "It may feel redundant or unnecessary when you are 'fine' — but the value is in catching the divergence between what you feel and what the objective trend shows.",
-            "reframe": "This is your early warning radar — it only works if you build it before the crash, not after."
+            "pattern": "Energy, sleep, and stress all shifted between June 10 and June 12",
+            "observation": "On June 10 you logged 6 energy and 7 sleep with 4 stress. By June 12, energy dropped to 4, sleep to 6, and stress rose to 6. Brain fog appeared on June 12.",
+            "evidence": "Observed across all 3 check-ins; stress went from 4 to 6 as energy went from 6 to 4",
+            "confidence_note": "possible pattern"
           }
         ],
-        "capacity_reality_check": {
-          "your_current_capacity": "Approximately 45-55% of baseline functional capacity based on the convergence of energy (4/10), sleep quality (6/10), and rising stress with zero physical recovery.",
-          "what_this_means": "You are running on just over half your cognitive and physical bandwidth — decisions made today are less accurate, tasks take longer than they should, and errors are more likely than you will notice in the moment.",
-          "permission": "You are not underperforming because you are lazy or weak — you are operating at reduced capacity because your system has not had adequate recovery input in at least 3 days, and reducing output is the medically correct response.",
-          "rest_day_scheduling": "Schedule a light-load or full rest day within the next 2 days — if you cannot take a full day, block a minimum 3-hour window tomorrow afternoon with zero cognitive tasks and zero screens.",
-          "future_crash_prevention": "Starting next week, build one mandatory low-activity day into every 7-day block — this is not optional self-care, it is the maintenance schedule your system requires to prevent a 3-7 day forced crash later."
-        },
-        "if_youre_already_crashed": {
-          "likelihood": "low",
-          "recognition": "You are not yet crashed — energy at 4/10 and mood at 5/10 with rising stress suggests pre-crash depletion rather than full system failure, but you are close enough that the distinction matters only if you act now.",
-          "crash_severity": "mild",
-          "immediate_actions": [
-            "Take a 20-minute walk outside today even if everything in you resists it — this is the single highest-leverage action available to you right now",
-            "Move your bedtime 30-45 minutes earlier tonight and enforce it as a non-negotiable boundary regardless of what is unfinished"
-          ],
-          "minimum_survival_tasks": [
-            "Drink at least 2 liters of water today — dehydration amplifies fatigue and cognitive fog significantly",
-            "Eat at least two complete meals with protein — not snacks, actual meals — to support cortisol regulation",
-            "Protect 7-8 hours of sleep opportunity tonight by clearing your sleep environment and setting a firm alarm-free morning if possible",
-            "Take any prescribed medications on schedule without skipping"
-          ],
-          "recovery_timeline": "If you implement the movement and sleep interventions tonight and tomorrow, you should see energy stabilize at 5-6/10 within 2-3 days and return to baseline within 5-7 days — delay adds 3-7 days to that timeline.",
-          "recovery_stages": {
-            "stabilize": "Days 1-3: focus exclusively on sleep quality, one daily walk, reduced task load — do not add anything new, just stop the decline.",
-            "rebuild": "Days 4-14: gradually reintroduce one non-essential commitment at a time, maintain daily movement, and keep sleep window protected — do not sprint back to full capacity.",
-            "maintain": "Beyond day 14: use your daily log to catch any 2-day declining trend before it becomes 3 — that is your personal crash early warning threshold based on this data."
+        "not_enough_evidence_yet": [
+          "Whether this three-day decline is a meaningful trend or normal day-to-day variation — three check-ins are too few to distinguish between the two",
+          "Whether any specific activity, context, or factor is contributing to the changes, as no notes or physical signals were logged"
+        ],
+        "compared_with_your_usual": [
+          {
+            "signal": "energy",
+            "comparison": "Ranged from 4 to 6 across these three entries; not enough history to compare with a longer baseline"
           },
-          "what_not_to_do": "Do not attempt to catch up on all deferred tasks the moment you feel slightly better — the rebound productivity surge after early recovery is the most common trigger for a second and harder crash within 7-10 days."
-        },
-        "recovery_protocol": {
-          "who_to_notify": [
-            {
-              "person": "Manager or team lead",
-              "message": "Hi — I wanted to flag that I am managing some accumulated fatigue over the past several days and need to reduce my task load for the next 2-3 days to avoid a longer disruption later. I am still available for critical priorities but will be deferring non-urgent items. I will keep you updated on my capacity as I recover.",
-              "when": "Send today or tomorrow morning before your workday begins — do not wait until you are already in crisis to have this conversation."
-            },
-            {
-              "person": "Close friend, partner, or support person",
-              "message": "I am running low and need a few days to recover — nothing is wrong, I just need to protect my sleep and reduce stimulation for a bit. Can you check in with me in 3 days? I might also need you to hold me accountable to actually resting instead of pushing through.",
-              "when": "Send today — having an external person aware of your recovery plan significantly increases follow-through and reduces the isolation that deepens fatigue."
-            }
-          ],
-          "self_compassion_scripts": [
-            "My body is giving me accurate data right now. Declining energy is not weakness — it is my system doing exactly what it is designed to do when load exceeds recovery.",
-            "Three days of declining metrics does not mean I am broken. It means I have been asking more of myself than I have been giving back, and that is a math problem with a solution, not a character flaw.",
-            "Reducing my output right now is not giving up — it is the only intervention that actually works. Pushing harder from here is what leads to a crash that takes weeks, not days.",
-            "I do not need to earn rest. Rest is how I maintain the capacity to do anything at all — it is not a reward for productivity, it is the foundation that makes productivity possible."
-          ],
-          "relapse_prevention": {
-            "warning_signs_of_relapse": "Watch for any 2-consecutive-day decline in energy below 5/10 or sleep below 6/10 after you have recovered — that pattern is your personal re-entry signal into this same crash trajectory.",
-            "how_to_catch_early": "Continue daily logging for a minimum of 4 weeks post-recovery and review your 3-day trend every Sunday — a declining 3-day slope in any two metrics simultaneously is your action threshold.",
-            "if_relapse_starting": "Immediately implement the same three interventions: add physical movement, enforce the earlier sleep window, and remove 2+ tasks from your daily list — do not wait to see if it resolves on its own."
+          {
+            "signal": "sleep",
+            "comparison": "Ranged from 6 to 7 across these three entries; no prior logs available for broader comparison"
+          },
+          {
+            "signal": "stress",
+            "comparison": "Ranged from 4 to 6 across these three entries; no prior logs available for broader comparison"
           }
+        ],
+        "small_experiment": {
+          "try": "Add a brief note to each check-in — even one sentence — describing what felt different that day",
+          "watch": "Whether any repeated context, activity, or circumstance shows up on the days when energy or stress scores are higher or lower",
+          "why_this_one": "The current logs show numerical changes but contain no notes or physical signals, so there is nothing yet to link the score shifts to anything specific in your days"
         },
-        "poor_interoception_support": {
-          "objective_data": "Your logs show no warning signs flagged on any of the 3 days, yet the objective numbers show energy at 4/10, sleep degrading nightly, and stress at 6/10 — your subjective threat detection is running significantly behind what the data is actually showing.",
-          "trust_the_data": "The numbers are declining every single day in three separate domains simultaneously — that is not a coincidence or a bad week, that is a measurable trend that predicts a crash if the inputs do not change.",
-          "for_doubters": "If you feel 'basically fine' right now, notice that you also felt fine on Day 3 when your energy was 6/10 — and two days later it was 4/10 — your felt sense is lagging the actual decline by approximately 48 hours, which means you will feel the crash after it has already started, not before."
-        },
-        "personalized_recovery_estimate": {
-          "if_you_act_now": "Implement movement and sleep boundary tonight and reduce task load tomorrow — energy stabilizes within 2-3 days and returns to 7/10 within 5-7 days with minimal disruption to your commitments.",
-          "if_you_wait_1_week": "Continuing the current trajectory for 7 more days will likely push energy to 2-3/10, sleep below 5.5/10, and stress to 7-8/10 — at that point recovery requires 10-21 days, not 5-7.",
-          "if_you_crash_completely": "A full crash from this trajectory — where you lose functional capacity for multiple days — typically requires 2-4 weeks of structured recovery and impacts work output, relationships, and physical health in ways that are difficult to reverse quickly.",
-          "cost_benefit": "Acting now costs you approximately 2-3 hours of reduced productivity per day for 5 days — waiting and crashing costs you 10-21 days of severely reduced output, which is a 4-10x worse outcome by any measure."
-        }
+        "your_own_clues": []
       }
     },
     {
@@ -445,131 +307,41 @@
         "userLanguage": "en"
       },
       "output": {
-        "patterns_found": [
+        "headline": "Across 14 check-ins, stress and sleep scores moved together consistently: higher stress coincided with lower sleep and lower energy in every instance where stress reached 6 or above.",
+        "recurring_patterns": [
           {
-            "pattern": "A clear weekly low point occurs on Wednesday or Thursday of each week, with energy dropping to its nadir and stress peaking.",
-            "evidence": "Week 1: Wed Jun 11 (E:5,St:5), Thu Jun 12 (E:4,St:6); Week 2: Wed Jun 18 (E:2,St:8), Thu Jun 19 (E:4,St:6) — midweek consistently shows the lowest energy and highest stress readings.",
-            "confidence": "high",
-            "category": "weekly",
-            "actionable_insight": "Schedule lighter commitments and proactive recovery activities (rest, low-demand tasks) on Wednesdays and Thursdays to buffer the predictable midweek dip.",
-            "icon": "📉"
+            "pattern": "Stress 6+ coincides with energy 4 or below",
+            "evidence": "Every check-in with stress rated 7 or higher (June 13, 17, 18 — 3 days) showed energy at 3 or below. No check-in with stress rated 3 or below had energy below 4.",
+            "limits": "The logs do not show what drove stress on those days. Cause cannot be established from these entries alone."
           },
           {
-            "pattern": "Weekend days (Saturday and Sunday) consistently show the highest energy and lowest stress, acting as a reliable recovery window.",
-            "evidence": "Sat Jun 14 (E:5,St:5), Sun Jun 15 (E:6,St:3), Sat Jun 21 (E:6,St:3), Sun Jun 22 (E:5,St:5) — all weekend entries show stress at or below 5 and energy at or above 5.",
-            "confidence": "high",
-            "category": "weekly",
-            "actionable_insight": "Protect weekend time from obligations that raise stress, as this is the primary recovery mechanism sustaining the following week's function.",
-            "icon": "🌤️"
+            "pattern": "Sleep 6 or below coincides with mood 5 or below",
+            "evidence": "On days when sleep was rated 5 or below (June 13, 17, 18, 23), mood was consistently 4 or 5. On days when sleep was rated 6.5 or higher, mood ranged from 6 to 7. Days with sleep between 6 and 6.5 showed more variable mood.",
+            "limits": "Sleep scores are self-reported and may reflect perceived rather than measured sleep. Direction of relationship cannot be determined from these logs."
           },
           {
-            "pattern": "A mid-week crash cycle repeats approximately every 7 days, with the crash intensifying in the second week compared to the first.",
-            "evidence": "Week 1 low: Thu Jun 12 (E:4,St:6,M:5); Week 2 low: Wed Jun 18 (E:2,St:8,M:3) — same midweek crash point but all three metrics degraded by 1–2 points in week two.",
-            "confidence": "medium",
-            "category": "cyclical",
-            "actionable_insight": "Monitor for cumulative stress buildup across consecutive weeks and consider a deliberate reset day if the pattern continues to worsen week-over-week.",
-            "icon": "🔄"
-          },
-          {
-            "pattern": "High activity count days (15+ activities) directly precede or coincide with the worst crash days, suggesting activity overload is a key crash trigger.",
-            "evidence": "Jun 13 had 21 activities (Act indices 0–20) and scored E:3,St:7,M:4; Jun 18 had 15 activities and scored the worst values overall (E:2,St:8,M:3) — both are the two worst days in the dataset.",
-            "confidence": "high",
-            "category": "activity",
-            "actionable_insight": "Treat any day with more than 12 logged activities as an early warning signal and actively reduce the following day's load to prevent a crash.",
-            "icon": "⚡"
-          },
-          {
-            "pattern": "Monday marks a consistent energy drop and stress reset after weekends, suggesting a reliable Monday re-entry cost regardless of how well the weekend went.",
-            "evidence": "Mon Jun 16 (E:4,St:6,M:5) and Mon Jun 23 (E:4,St:6,M:5) are identical and both follow good weekend readings — energy falls by 1–2 points and stress rises by 3 points versus Sunday.",
-            "confidence": "high",
-            "category": "weekly",
-            "actionable_insight": "Design Mondays as transition days with moderate expectations rather than high-output days, to ease the re-entry and reduce the downstream midweek crash severity.",
-            "icon": "😶"
-          },
-          {
-            "pattern": "Sleep duration is the strongest single-day predictor of next-day energy, with each 0.5–1 hour drop in sleep correlating with a 1-point energy reduction the following day.",
-            "evidence": "Jun 12 (S:6) → Jun 13 (E:3); Jun 17 (S:5.5) → Jun 18 (E:2); Jun 15 (S:7.5) → Jun 16 (E:4, a smaller drop compared to lower-sleep transitions) — the pattern holds across all transitions.",
-            "confidence": "high",
-            "category": "cascade",
-            "actionable_insight": "Prioritize achieving at least 7 hours of sleep on Tuesday and Wednesday nights specifically, as those nights feed directly into the already-vulnerable Thursday crash window.",
-            "icon": "😴"
+            "pattern": "A higher activity count appeared on some lower-energy days",
+            "evidence": "On the two lowest-energy days in the log (June 18: energy 2, and June 13: energy 3), the activities recorded were 'deadline crunch' and 'back-to-back meetings' respectively. Both involved sustained high-demand work. This pattern appeared twice.",
+            "limits": "Activity codes are not defined in the logs, so it is unknown what those activities represent or whether more activities caused, reflected, or were unrelated to the lower energy. Two observations is too few to call this a stable pattern."
           }
         ],
-        "weekly_heatmap": {
-          "monday": {
-            "avg_energy": 4,
-            "avg_stress": 6,
-            "risk_level": "moderate"
-          },
-          "tuesday": {
-            "avg_energy": 4.5,
-            "avg_stress": 5.5,
-            "risk_level": "moderate"
-          },
-          "wednesday": {
-            "avg_energy": 3.5,
-            "avg_stress": 6.5,
-            "risk_level": "high"
-          },
-          "thursday": {
-            "avg_energy": 4,
-            "avg_stress": 6,
-            "risk_level": "moderate"
-          },
-          "friday": {
-            "avg_energy": 4,
-            "avg_stress": 5.5,
-            "risk_level": "moderate"
-          },
-          "saturday": {
-            "avg_energy": 5.5,
-            "avg_stress": 4,
-            "risk_level": "low"
-          },
-          "sunday": {
-            "avg_energy": 5.5,
-            "avg_stress": 4,
-            "risk_level": "low"
-          }
-        },
-        "crash_sequences": [
+        "before_marked_crash_days": [],
+        "day_or_week_patterns": [
           {
-            "trigger": "Activity overload (10+ activities) combined with below-average sleep initiates a 2–3 day deterioration cascade.",
-            "sequence": [
-              "Day 1 (Trigger): High activity count (10–21), sleep drops 0.5–1hr below baseline, stress begins climbing (St:5–7)",
-              "Day 2 (Escalation): Energy falls 1–2 points, stress remains elevated or rises further, mood dips to 4–5",
-              "Day 3 (Crash): Energy at minimum (E:2–3), stress at peak (St:7–8), mood at lowest (M:3–4)"
-            ],
-            "frequency": 2,
-            "early_warning_day": "Intervene on Day 1 when activity count exceeds 10 and sleep falls below 6.5 hours — reducing load immediately prevents the Day 3 crash."
-          },
-          {
-            "trigger": "Monday re-entry stress following weekend recovery fails to resolve by Tuesday, allowing stress to compound into a Wednesday crash.",
-            "sequence": [
-              "Day 1 (Monday): Energy drops to 4, stress rises to 6, mood holds at 5",
-              "Day 2 (Tuesday): Energy stays at 3–4, stress holds or climbs to 7, sleep begins to suffer",
-              "Day 3 (Wednesday/Thursday crash): Energy hits 2–4, stress peaks at 6–8, mood falls to 3–5"
-            ],
-            "frequency": 2,
-            "early_warning_day": "Tuesday is the key intervention point — if stress has not dropped from Monday levels by Tuesday evening, proactive recovery measures are needed immediately."
+            "observation": "Low-point days appeared roughly mid-week in each of the two weeks logged",
+            "evidence": "Energy and mood declined over several consecutive days twice in the log: June 10–13 and June 16–18. Both declines were followed by partial recovery. Two instances is too few to establish a recurring weekly cycle."
           }
         ],
-        "what_helps": [
-          {
-            "intervention": "Low activity count days (7–8 activities) following a crash allow energy and mood to rebound within 1–2 days.",
-            "effect": "Energy recovers by 1–2 points and stress drops by 2–3 points within the next logged day.",
-            "evidence": "After the Jun 18 crash (E:2,St:8), Jun 19 had only 8 activities and recovered to E:4,St:6; after Jun 13 crash (E:3,St:7), Jun 14 had 11 activities and partially recovered to E:5,St:5."
-          },
-          {
-            "intervention": "Weekend unstructured time with lower activity counts (7–8 logged activities) consistently produces the best recovery outcomes.",
-            "effect": "Energy returns to 5–6, stress drops to 3–5, and mood reaches its weekly high of 6–7.",
-            "evidence": "Sun Jun 15 (8 acts, E:6,St:3,M:7) and Sat Jun 21 (13 acts, E:6,St:3,M:7) are the two best days in the dataset, both occurring after reduced-load days."
-          }
+        "things_that_did_not_repeat": [
+          "Physical signals: none logged on any day, so no pattern could form.",
+          "Caffeine and alcohol: both zero across all 14 days, so no variation to compare against.",
+          "Biometrics, weather, and menstrual cycle: not tracked in any entry.",
+          "The 21-activity count on June 13 was the single highest across all entries and did not recur at that level."
         ],
-        "biggest_risks": [
-          "The cumulative crash is intensifying week-over-week — the Week 2 midweek low (E:2,St:8,M:3 on Jun 18) is meaningfully worse than Week 1's low (E:4,St:6,M:5 on Jun 12), suggesting that without structural change the pattern will continue to degrade rather than self-correct."
-        ],
-        "summary": "This person follows a highly predictable 7-day stress-recovery cycle where weekends provide genuine but insufficient recovery, midweek (Wednesday–Thursday) consistently produces crashes, and high-activity days directly precede or cause the worst readings. The most urgent concern is that the midweek crash appears to be worsening across consecutive weeks rather than stabilizing, with the Week 2 crash (Jun 18) hitting record lows for all three key metrics. Sleep duration is the clearest leading indicator of crash severity, making Tuesday night sleep the single highest-leverage intervention point in the entire week."
+        "next_learning_step": {
+          "track": "Add a brief note on what the stress score reflects on any day rated 6 or above — for example, workload, a specific event, or physical discomfort.",
+          "reason": "Stress 6+ showed up alongside low energy and mood in every instance, but the logs give no information about what is driving the stress score. Even a few words per entry would let you see whether a specific type of stressor appears repeatedly, which would make the pattern more actionable."
+        }
       }
     },
     {
@@ -624,195 +396,52 @@
         "userRegion": "DE"
       },
       "output": {
-        "burnout_risk_assessment": {
-          "current_risk_level": "moderate",
-          "risk_color": "yellow",
-          "confidence": 55,
-          "days_until_likely_crash": null,
-          "trajectory": "declining",
-          "crash_severity_predicted": "mild"
-        },
-        "your_crash_pattern": {
-          "pattern_recognition": "Energie sank in 3 Tagen von 6 auf 4 (−33 %), Schlafqualität von 7 auf 6, Stress von 4 auf 6 — ein konsistenter, täglicher Abwärtstrend ohne einzigen Gegenschwung.",
-          "identified_indicators": [
-            "Energie fällt täglich um 1 Punkt — kein Erholungsplateau sichtbar",
-            "Schlafqualität unter 7 an allen 3 Tagen, Trend weiter sinkend",
-            "Stresslevel steigt täglich, obwohl keine expliziten Warnsignale gemeldet werden",
-            "Keine körperliche Aktivität an allen 3 Tagen — fehlende aktive Erholung",
-            "Stimmung konstant auf 5–6 ohne Aufwärtsbewegung"
-          ],
-          "current_status": {
-            "sleep": "at threshold",
-            "stress": "at threshold",
-            "energy": "low",
-            "rest": "deficit",
-            "warning_signs": "accumulating",
-            "biometrics": "not available"
-          }
-        },
-        "biometric_analysis": {
-          "hrv_signal": "Keine HRV-Daten vorhanden — angesichts des sinkenden Energietrends ist jedoch davon auszugehen, dass HRV-Werte unter 50 ms vorliegen und ein beginnendes autonomes Stressgeschehen anzeigen würden.",
-          "resting_hr_signal": "Keine Ruheherzfrequenz erfasst — bei steigendem Stress und sinkender Energie ist ein schleichender Anstieg um 5–10 bpm über Baseline wahrscheinlich und würde die Abwärtstendenz bestätigen.",
-          "sleep_data_signal": "Die subjektive Schlafqualität (7→6.5→6) fällt schneller als typischerweise empfunden — tatsächliche Schlafdauer und Schlafphasen könnten noch schlechter ausfallen als die Bewertungen vermuten lassen.",
-          "activity_signal": "Null körperliche Aktivität an allen 3 Tagen deutet entweder auf bewusstes Vermeiden oder auf bereits eingeschränkte Kapazität hin — beides ist ein früher Indikator für Erschöpfungsaufbau.",
-          "recommendation": "Sofort mit HRV-Tracking beginnen (z. B. Polar H10 oder Garmin-Gerät, ca. 50–120 EUR), da HRV Erschöpfung 2–4 Tage früher anzeigt als subjektive Wahrnehmung."
-        },
-        "medication_correlation": {
-          "caffeine_impact": "Null Koffeinportionen an allen 3 Tagen — der sinkende Energietrend ist damit nicht durch Koffeinmaskierung erklärbar und spiegelt den tatsächlichen Erschöpfungszustand wider.",
-          "alcohol_impact": "Kein Alkohol an allen 3 Tagen — Schlafqualität wird nicht durch Alkohol beeinträchtigt; die sinkende Schlafbewertung ist daher auf andere Faktoren zurückzuführen.",
-          "medication_notes": "Keine Medikamente erfasst — kein Einfluss auf aktuelle Musterdeutung erkennbar.",
-          "substance_recommendation": "Koffein nicht als Energiekompensation einführen — dies würde den echten Erschöpfungssignale maskieren und die Schlafqualität weiter destabilisieren."
-        },
-        "menstrual_cycle_correlation": {
-          "current_phase": "not tracked",
-          "energy_pattern": "Ohne Zyklusdaten kann keine zyklusabhängige Energiemodulation bewertet werden — der Abwärtstrend könnte jedoch durch eine luteale Phase verstärkt werden.",
-          "crash_risk_adjustment": "Falls aktuell luteale Phase (Tag 15–28) oder prämenstruelle Phase vorliegt, erhöht sich das Crash-Risiko um eine Stufe — dringend nachverfolgen.",
-          "cycle_optimized_interventions": "Zyklus ab sofort in das Tagebuch aufnehmen (Tag 1 = erster Blutungstag), um in den nächsten 4 Wochen belastbare Korrelationen zu erkennen."
-        },
-        "weather_sensitivity_analysis": {
-          "barometric_pressure_correlation": "Keine Wetterdaten vorhanden — Anfang Juni in Deutschland sind Luftdruckschwankungen durch Tiefdruckgebiete häufig und könnten Erschöpfung und Schlafqualität mitbeeinflussen.",
-          "seasonal_pattern": "Frühsommer (Juni) in Deutschland bringt längere Lichtexposition — spätes Einschlafen durch verzögertes Dunkelwerden kann Schlafqualität unbewusst verschlechtern und zum Trend passen.",
-          "weather_triggered_crashes": "Ohne historische Korrelationsdaten nicht bestimmbar — bei künftigen Einbrüchen Wetterlage notieren.",
-          "recommendation": "Schlafzimmer ab sofort mit Verdunkelungsvorhängen abdunkeln, da Sonnenuntergang in Deutschland im Juni erst gegen 21:30 Uhr erfolgt und Melatoninausschüttung verzögert."
-        },
-        "warning_signs_present": [
+        "headline": "Über drei Tage zeigt sich ein leichter, gleichmäßiger Rückgang bei Energie, Schlaf und Stimmung – die Datenbasis ist jedoch sehr schmal.",
+        "recent_changes": [
           {
-            "sign": "Konsistenter täglicher Energieabfall ohne Erholungstag — klassisches Frühwarnsignal für kumulativen Erschöpfungsaufbau",
-            "your_typical_timeline": "Erscheint typischerweise 5–10 Tage vor einem vollständigen Crash, wenn kein Gegenmaßnahme erfolgt",
-            "current_status": "Seit mindestens 3 Tagen nachweisbar und noch andauernd",
-            "urgency": "moderate",
-            "days_until_crash_if_persists": 7
+            "signal": "Energie",
+            "observation": "Schrittweise gesunken: 6 → 5 → 4 über drei aufeinanderfolgende Tage.",
+            "evidence": "Alle drei Check-ins (10., 11., 12. Juni) zeigen diesen Verlauf."
           },
           {
-            "sign": "Steigende Stressbelastung bei gleichzeitig sinkender Energie und Stimmung — klassische Entkopplung zwischen Anforderung und Ressource",
-            "your_typical_timeline": "Erscheint typischerweise 4–7 Tage vor einem Energieeinbruch",
-            "current_status": "Seit 3 Tagen progredient ohne Plateau",
-            "urgency": "moderate",
-            "days_until_crash_if_persists": 5
+            "signal": "Schlaf",
+            "observation": "Ebenfalls leicht gesunken: 7 → 6,5 → 6.",
+            "evidence": "Alle drei Check-ins."
           },
           {
-            "sign": "Vollständige Abwesenheit körperlicher Aktivität über 3 Tage — fehlende aktive Stressregulation beschleunigt Erschöpfungsspirale",
-            "your_typical_timeline": "Tritt oft gleichzeitig mit dem Übergang von 'müde' zu 'erschöpft' auf — ca. 3–5 Tage vor dem Crash",
-            "current_status": "Alle 3 Protokolltage betroffen",
-            "urgency": "high",
-            "days_until_crash_if_persists": 5
+            "signal": "Stress",
+            "observation": "Leicht gestiegen: 4 → 5 → 6.",
+            "evidence": "Alle drei Check-ins."
           }
         ],
-        "intervention_escalation": {
-          "current_level": "yellow",
-          "level_definitions": {
-            "green": "Präventiv — aktuelles Selbstfürsorge-Niveau aufrechterhalten und Trends weiter beobachten.",
-            "yellow": "Proaktiv — nicht wesentliche Verpflichtungen reduzieren, Schlaf priorisieren, aktive Erholung einführen.",
-            "orange": "Dringend — Pläne absagen, erhebliche Ruhe erforderlich, Krankschreibung in Betracht ziehen.",
-            "red": "KRISE — professionelle Unterstützung aufsuchen, Notfallkontakte informieren, ausschließlich überlebenswichtige Aufgaben erledigen."
-          },
-          "why_this_level": "Drei konsekutive Tage mit sinkender Energie (6→4), steigendem Stress (4→6) und sinkender Schlafqualität (7→6) ohne Erholungssignale oder physische Aktivität rechtfertigen Stufe Gelb — kein akuter Crash, aber klarer Abwärtsvektor.",
-          "escalation_triggers": "Energie fällt unter 3, Schlaf unter 5, Stress über 7 an einem weiteren Tag — oder erstes Auftreten von körperlichen Warnsymptomen wie Kopfschmerz, Herzrasen oder kognitivem Nebel.",
-          "de_escalation_criteria": "Energie an zwei aufeinanderfolgenden Tagen stabil bei 5 oder höher, Schlafqualität bei 7 oder höher, mindestens eine körperliche Aktivitätseinheit pro Tag."
-        },
-        "preventive_interventions": [
+        "patterns_worth_noticing": [
+          "Energie sank von 6 auf 4. Schlaf sank von 7 auf 6. Stress stieg von 4 auf 6. Stimmung blieb bei 5-6. Am dritten Tag erschien Gehirnnebel als neues Symptom.",
+          ""
+        ],
+        "not_enough_evidence_yet": [
+          "Ob der Rückgang über diese drei Tage hinaus anhält oder ein kurzfristiger Ausreißer ist, lässt sich mit nur drei Check-ins nicht beurteilen.",
+          "Ob Aktivitäten, Wetter oder andere Faktoren mit diesen Veränderungen zusammenhängen – dazu fehlen Zusatzangaben in den Logs."
+        ],
+        "compared_with_your_usual": [
           {
-            "priority": "critical",
-            "action": "Heute noch einen vollständigen Ruhetag ohne Leistungserwartung einplanen — nicht 'leichter Tag', sondern echter Nichts-Tag.",
-            "why": "Drei aufeinanderfolgende Tage ohne Erholung bei sinkendem Energietrend — das System bekommt nie die Chance, den Tiefpunkt zu verlassen.",
-            "how": "Alle heutigen nicht-lebensnotwendigen Aufgaben auf übermorgen oder nächste Woche verschieben; Kalender für morgen oder übermorgen komplett leerräumen.",
-            "when": "Spätestens morgen, 13. Juni 2026 — nicht nächste Woche.",
-            "resistance_you_might_feel": "Das Gefühl, 'es ist doch noch nicht so schlimm' ist genau das, was Burnout gefährlich macht — die Wahrnehmung hinkt dem Körperzustand um Tage hinterher.",
-            "reframe": "Dieser Tag ist keine Schwäche — er ist die präziseste Investition, die du jetzt tätigen kannst, um nächste Woche voll funktionsfähig zu sein."
+            "signal": "energy",
+            "comparison": "Kein früherer Zeitraum vorhanden. Der bisherige Bereich in diesen Logs liegt zwischen 4 und 6."
           },
           {
-            "priority": "urgent",
-            "action": "Schlaf-Onset täglich um 23:00 Uhr einführen und Schlafzimmer vollständig abdunkeln — keine Bildschirme ab 22:00 Uhr.",
-            "why": "Schlafqualität sinkt täglich trotz Null Koffein und Null Alkohol — externer Störfaktor (wahrscheinlich Helligkeit bei Sommerabenden in Deutschland) ist die wahrscheinlichste Ursache.",
-            "how": "Verdunkelungsvorhänge oder Schlafmaske besorgen (ca. 10–30 EUR), Smartphone ab 22:00 Uhr in Nachtmodus oder außerhalb des Schlafzimmers.",
-            "when": "Ab heute Nacht, 12./13. Juni 2026.",
-            "resistance_you_might_feel": "Abends ist die produktivste oder entspannendste Zeit — aber Schlaf unter 6,5 ist die Wurzel des Energieverfalls, nicht ein Symptom davon.",
-            "reframe": "Jede Stunde vor Mitternacht mit guter Schlafqualität ist doppelt so wertvoll wie eine Stunde nach Mitternacht."
+            "signal": "sleep",
+            "comparison": "Kein früherer Zeitraum vorhanden. Der bisherige Bereich liegt zwischen 6 und 7."
           },
           {
-            "priority": "high",
-            "action": "Täglich eine einzige körperliche Aktivität von 15–20 Minuten einführen — Gehen reicht, kein Sport nötig.",
-            "why": "Null körperliche Aktivität an drei aufeinanderfolgenden Tagen blockiert die Cortisol-Abbauprozesse, die für Erholung essenziell sind — Stress akkumuliert biologisch weiter, auch wenn subjektiv nichts Besonderes passiert.",
-            "how": "Spaziergang von 15–20 Minuten nach dem Mittagessen oder vor dem Abendessen — draußen, ohne Podcast oder Telefon, keine Leistungsziele.",
-            "when": "Ab morgen täglich, Uhrzeit fest einplanen.",
-            "resistance_you_might_feel": "Bei Erschöpfung fühlt sich Bewegung wie eine zusätzliche Last an — aber 15-minütiges Gehen reduziert Cortisolspiegel messbar, ohne Energie zu kosten.",
-            "reframe": "Dieser Spaziergang ist kein Training — er ist die billigste Form der Stresshormondosierung, die es gibt."
-          },
-          {
-            "priority": "medium",
-            "action": "HRV-Tracking ab sofort einführen, um objektive Erholungsdaten zu erhalten.",
-            "why": "Alle vorliegenden Werte sind subjektiv — bei schlechter Interozeption (dem häufigsten Burnout-Risikofaktor) sind subjektive Werte systematisch zu optimistisch.",
-            "how": "Polar H10 Brustgurt (ca. 90 EUR) mit kostenloser HRV4Training-App oder ähnliches Wearable — morgens 3 Minuten Messung vor dem Aufstehen.",
-            "when": "In den nächsten 3–5 Tagen anschaffen und einrichten.",
-            "resistance_you_might_feel": "Noch ein Gerät, noch eine App — aber ein einziger HRV-Wert unter 40 ms sagt mehr als drei Tage subjektives Tagebuch.",
-            "reframe": "HRV ist dein Frühwarnsystem — ohne es fliegst du bei sinkenden Werten buchstäblich blind."
+            "signal": "stress",
+            "comparison": "Kein früherer Zeitraum vorhanden. Der bisherige Bereich liegt zwischen 4 und 6."
           }
         ],
-        "capacity_reality_check": {
-          "your_current_capacity": "Geschätzt 55–65 % der Normalkapazität, basierend auf Energie 4/10, Schlaf 6/10, steigendem Stress und null aktiver Erholung.",
-          "what_this_means": "Bei 55–65 % Kapazität brauchst du signifikant mehr Zeit für Aufgaben, Fehlerrate steigt, emotionale Regulationsfähigkeit ist eingeschränkt — das ist kein Vollbetrieb.",
-          "permission": "Du hast nicht nur die Erlaubnis, jetzt zu entschleunigen — du hast die biologische Pflicht dazu, wenn du in zwei Wochen noch funktionsfähig sein willst.",
-          "rest_day_scheduling": "Mindestens einer der nächsten drei Tage (13., 14. oder 15. Juni) muss ein echter Ruhetag ohne Leistungserwartung sein — plane ihn jetzt fest ein.",
-          "future_crash_prevention": "Wöchentlich einen festen halben Ruhetag einplanen, bevor die Woche beginnt — nicht 'falls Zeit bleibt', sondern als nicht verhandelbare Grundlage."
+        "small_experiment": {
+          "try": "Notiere im nächsten Check-in kurz, was den Tag inhaltlich geprägt hat – zum Beispiel: viele Termine, körperliche Aktivität, wenig Pausen.",
+          "watch": "Ob Tage mit bestimmten Merkmalen mit höheren oder niedrigeren Energie- und Stress-Werten zusammenfallen.",
+          "why_this_one": "Ein Freitext-Hinweis zu äußeren Umständen — Schlafqualität, Mahlzeiten, körperliche Aktivität, Tagesablauf — könnte helfen zu verstehen, ob die Veränderungen zusammenhängen oder unabhängig sind."
         },
-        "if_youre_already_crashed": {
-          "likelihood": "low",
-          "recognition": "Die vorliegenden Daten zeigen einen beginnenden Erschöpfungsaufbau, aber noch keinen vollständigen Crash — Energie bei 4/10 und Stimmung bei 5/10 sind belastend, aber nicht kollabiert.",
-          "crash_severity": "mild",
-          "immediate_actions": [
-            "Heutigen Abend ohne Bildschirm und ohne Pflichten verbringen — keine E-Mails, kein Social Media, keine Planung",
-            "Morgen früh alle nicht-essenziellen Aufgaben der nächsten 48 Stunden identifizieren und aktiv streichen oder delegieren"
-          ],
-          "minimum_survival_tasks": [
-            "Ausreichend trinken — mindestens 1,5–2 Liter Wasser täglich",
-            "Drei einfache, warme Mahlzeiten essen",
-            "Schlaf so lange wie der Körper es will, ohne Wecker falls möglich",
-            "Vorhandene Medikamente pünktlich nehmen"
-          ],
-          "recovery_timeline": "Bei sofortigem Handeln ist eine spürbare Erholung binnen 3–5 Tagen realistisch — ohne Intervention ist in 5–10 Tagen ein stärkerer Einbruch wahrscheinlich.",
-          "recovery_stages": {
-            "stabilize": "Tag 1–3: Ruhetage ohne Leistungserwartung, Schlaf priorisieren, Spaziergänge als einzige 'Aktivität', Protokoll weiterführen.",
-            "rebuild": "Woche 2: Schrittweise eine Aktivität pro Tag wieder einführen, Arbeitslast auf 70 % begrenzen, HRV täglich prüfen bevor Entscheidungen getroffen werden.",
-            "maintain": "Ab Woche 3: Wöchentliche Protokollauswertung einführen, feste Ruhetage schützen, bei erneutem 3-tägigem Abwärtstrend sofort in Gelb-Protokoll wechseln."
-          },
-          "what_not_to_do": "Keinen 'Aufholsprint' starten sobald sich etwas besser anfühlt — das ist der häufigste Grund für Rückfall in Stufe Orange oder Rot."
-        },
-        "recovery_protocol": {
-          "who_to_notify": [
-            {
-              "person": "Vorgesetzte/r oder direkte Führungskraft",
-              "message": "Hallo [Name], ich möchte dich kurz informieren, dass ich aktuell merke, dass meine Energie und Belastbarkeit in den letzten Tagen spürbar gesunken sind. Ich möchte das proaktiv ansprechen, bevor es sich verschlimmert. Ich plane, in den nächsten 2–3 Tagen nicht-dringende Aufgaben zu priorisieren und meine Kapazität zu schonen. Gibt es Aufgaben, die ich dafür kurz verschieben oder delegieren kann?",
-              "when": "Morgen, 13. Juni 2026, in den ersten zwei Stunden des Arbeitstages senden."
-            },
-            {
-              "person": "Nahestehende Vertrauensperson (Partner/in, enge Freundin/Freund)",
-              "message": "Ich wollte dich wissen lassen, dass ich gerade körperlich und mental etwas auf Reserve fahre. Ich brauche im Moment keine Lösung — aber es hilft mir, wenn ich das aussprechen kann. In den nächsten Tagen werde ich bewusst langsamer machen. Ich melde mich, wenn ich mehr brauche.",
-              "when": "Heute noch, 12. Juni 2026, per Nachricht oder kurzes Gespräch."
-            }
-          ],
-          "self_compassion_scripts": [
-            "Mein Körper zeigt mir gerade ganz klar, was er braucht. Das zu hören ist keine Schwäche — es ist Intelligenz.",
-            "Drei Tage sinkende Energie sind keine persönliche Niederlage. Sie sind Daten. Und Daten kann ich nutzen.",
-            "Ich muss mir diese Erholung nicht verdienen. Ruhe ist keine Belohnung — sie ist eine biologische Grundvoraussetzung.",
-            "Wenn ich jetzt auflade, bin ich nächste Woche für mich und andere wirklich verfügbar. Das ist Verantwortung, keine Faulheit."
-          ],
-          "relapse_prevention": {
-            "warning_signs_of_relapse": "Erneut 3 aufeinanderfolgende Tage mit sinkendem Energie- oder Schlaftrend, oder erste körperliche Symptome wie Kopfschmerz, erhöhter Ruhepuls oder Konzentrationsprobleme.",
-            "how_to_catch_early": "Tägliches 2-Minuten-Protokoll konsequent weiterführen und wöchentlich Trends auswerten — nicht nur Tageswerte betrachten, sondern immer 7-Tage-Verlauf prüfen.",
-            "if_relapse_starting": "Sofort einen vollständigen Ruhetag einplanen und alle nicht-wesentlichen Verpflichtungen der folgenden 48 Stunden absagen — ohne Verhandlung, ohne Ausnahme."
-          }
-        },
-        "poor_interoception_support": {
-          "objective_data": "Die Daten zeigen: Energie −33 % in 3 Tagen, Stress +50 %, Schlafqualität −14 % — während die subjektiven Warnsignale als 'keine' protokolliert wurden.",
-          "trust_the_data": "Die Diskrepanz zwischen 'keine Warnsignale' und einem klaren täglichen Abwärtstrend in vier Metriken gleichzeitig ist selbst ein diagnostisches Zeichen — der Körper ist weiter erschöpft als er wahrgenommen wird.",
-          "for_doubters": "Wenn alle vier Metriken täglich sinken und du trotzdem 'keine Warnsignale' notierst, ist die Frage nicht ob du überlastet bist — sondern warum du es nicht spürst."
-        },
-        "personalized_recovery_estimate": {
-          "if_you_act_now": "Bei sofortigem Ruhetag morgen und konsequenter Schlafoptimierung ab heute Nacht ist Energie wieder bei 6–7 in 3–4 Tagen realistisch.",
-          "if_you_wait_1_week": "Ohne Intervention wird der Energiewert voraussichtlich auf 2–3 fallen, Stress auf 7–8 steigen, und erste körperliche Symptome wie Erschöpfungsmigrän oder Schlaflosigkeit werden auftreten.",
-          "if_you_crash_completely": "Ein vollständiger Crash bei diesem Verlauf bedeutet 1–3 Wochen eingeschränkte Funktionsfähigkeit mit Krankschreibung und reduzierter Produktivität weit über den Ausfallzeitraum hinaus.",
-          "cost_benefit": "1 Ruhetag jetzt kostet ca. 8 Arbeitsstunden — ein vollständiger Crash kostet wahrscheinlich 40–120 Arbeitsstunden plus Erholungszeit; die Rechnung ist eindeutig."
-        }
+        "your_own_clues": []
       }
     }
   ]
