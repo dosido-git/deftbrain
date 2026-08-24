@@ -264,4 +264,23 @@ Every factual statement about either person must trace directly to the supplied 
 // and 8 are the ones this needed — lead with the answer, say it once.
 router.outputStandard = 'v2';
 
+// These messages go out under the visitor's own name, so the guard is about
+// what they will be taken to have claimed: an opinion they never expressed, an
+// action they never took, a role bigger than the one fact they gave.
+router.outputGuard = {
+  prohibit: [
+    'invented_personal_fact',
+    'opinion_not_expressed',
+    'action_not_reported',
+    'motive_not_given',
+    'role_enlargement',
+    'mind_reading',
+    'unsupported_timing_rule',
+  ],
+  require: [
+    'fulfills_tool_promise',
+    'actionable_output',
+  ],
+};
+
 module.exports = router;

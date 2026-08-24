@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
+const { runOutputGuard } = require('../lib/outputGuard');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted dialogue or phrases plainly or with single quotes, or it breaks the JSON.';
@@ -59,40 +60,39 @@ If tactics found, name them clearly with the exact phrase that triggered detecti
 
 ${userDraft ? `DRAFT ANALYSIS: "${userDraft}"\nDetect: angry tone, sarcasm, passive-aggression, generalizations (always/never), counter-accusations, dismissiveness, escalation signals.` : ''}
 
+YOU ARE READING A MESSAGE, NOT A PERSON. You have one message and whatever the
+visitor typed about it. You have not met the sender, you do not know what they
+meant, felt, needed or were trying to do, and a message is not enough to
+diagnose anybody. Quote what is on the page and stop there — "always" appears
+twice, the question is asked three times, the last line is a threat to leave.
+Those are observations, and they are what actually helps someone reply.
+
+So: no emotional temperature, no score of any kind, no primary emotion, no
+underlying need, no communication style, no named manipulation tactic, no
+diagnosis of the relationship, and nothing about how they will react to what
+the visitor sends. Every one of those is a determination about a stranger, and
+the visitor is the only person here who knows them.
+
 Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "message_analysis": {
-    "emotional_temperature": "high | medium | low",
-    "primary_emotion_detected": "...",
-    "triggers_identified": ["exact phrases"],
-    "communication_style": "attacking/passive-aggressive/direct/emotional/manipulative",
-    "underlying_need": "..."
+    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. Quotes only — no interpretation of what each one means about the sender."],
+    "whats_being_asked": "In one sentence, what the message actually asks for or objects to, in plain terms. If that is genuinely unclear from the words, say it is unclear — that is useful, and guessing is not."
   },
-  "manipulation_tactics": [
-    {
-      "tactic": "Name (e.g. Gaslighting, DARVO, Guilt-Tripping)",
-      "icon": "emoji",
-      "description": "What they're doing and why it's problematic",
-      "example_phrase": "Exact quote from their message",
-      "healthy_response": "How to counter this without escalating"
-    }
-  ],
   "goal_reality_check": {
-    "assessment": "...",
-    "will_this_message_achieve_it": true,
-    "alternative_approach": "..."
+    "assessment": "One or two sentences on whether what the VISITOR said they want is something a reply can achieve. About their goal and their message, never about the other person's likely response.",
+    "alternative_approach": "If a different approach would serve their stated goal better, one sentence. Null if not."
   },
   "draft_analysis": {
     "tone_flags": [{"flag": "...", "why_problematic": "..."}],
     "problematic_phrases": [{"phrase": "...", "issue": "...", "better_version": "..."}],
-    "escalation_risk": {"level": "low | medium | high | extreme", "why": "..."},
     "overall_assessment": "..."
   }
 }
 
 RULES:
-1. manipulation_tactics: ALWAYS analyze incoming message. Return [] only if genuinely no tactics detected. AT MOST 4.
-2. ${userDraft ? 'A draft was provided — analyze it BRUTALLY HONESTLY.' : 'No draft was provided — return draft_analysis with empty arrays and short strings saying no draft was submitted.'}
+1. draft_analysis covers the VISITOR'S OWN draft, which they wrote and gave you. Be direct about it — that is their text and they asked. It carries no risk score: "level: high" is a number attached to a guess.
+2. ${userDraft ? 'A draft was provided — be honest about it.' : 'No draft was provided — return draft_analysis with empty arrays and a short string saying so.'}
 3. Keep every string field to one or two sentences.`;
 
     // ── Part B: what to send, when, and what to avoid ──
@@ -126,7 +126,7 @@ Return ONLY valid JSON with EXACTLY these eight top-level keys:
   "channel_landmines": ["This needs a phone call", "Wait for face-to-face"],
   "if_they_continue_escalating": {"script": "...", "then_what": "..."},
   "repair_strategy_later": "...",
-  "cooling_recommendation": {"delay_time": "...", "why_delay": "..."}
+  "cooling_recommendation": {"delay_time": "How long to wait, in ordinary words rather than a figure: until you have eaten, before you reply tonight, tomorrow morning. Never a number of minutes — nobody measured that, and a precise figure is a rule invented to sound certain.", "why_delay": "One sentence, about the visitor and their draft. Not about how the other person will read a delay."}
 }
 
 RULES:
@@ -153,6 +153,35 @@ RULES:
       }, { label: 'conflict-coach:respond' }),
     ]);
     const parsed = { ...respondPart, ...readPart };
+
+    // V2 guard. Fail-open: it wraps a working answer and must never drop it.
+    try {
+      const fields = [];
+      const push = (path, v) => { if (typeof v === 'string' && v.trim()) fields.push([path, v]); };
+      push('message_analysis.whats_being_asked', parsed.message_analysis?.whats_being_asked);
+      push('goal_reality_check.assessment', parsed.goal_reality_check?.assessment);
+      push('goal_reality_check.alternative_approach', parsed.goal_reality_check?.alternative_approach);
+      push('draft_analysis.overall_assessment', parsed.draft_analysis?.overall_assessment);
+      push('cooling_recommendation.delay_time', parsed.cooling_recommendation?.delay_time);
+      push('cooling_recommendation.why_delay', parsed.cooling_recommendation?.why_delay);
+      (parsed.response_strategies || []).forEach((st, i) => push(`response_strategies[${i}].message`, st?.message));
+
+      await runOutputGuard(parsed, {
+        label: 'conflict-coach',
+        fields,
+        supplied: `THE MESSAGE THEY RECEIVED: ${receivedMessage || '(thread supplied instead)'}
+WHAT THEY ARE TEMPTED TO SEND: ${userDraft || '(not supplied)'}
+RELATIONSHIP: ${relationship || '(not supplied)'}${personLabel ? ` (${personLabel})` : ''}
+WHAT THEY WANT FROM IT: ${(goals || []).join(', ') || '(not supplied)'}`,
+        promise: 'Help someone reply to a tense message: what the message is actually asking, whether their goal is achievable by replying, an honest read of their own draft, and responses they can send.',
+        guard: router.outputGuard,
+        userLanguage,
+        locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      });
+    } catch (err) {
+      console.error('ConflictCoach v2 guard skipped:', err.message);
+    }
+
     res.json(parsed);
   } catch (error) {
     console.error('❌ Conflict Coach V3 error:', error.message);
@@ -177,12 +206,8 @@ router.post('/conflict-coach/followup', rateLimit(DEFAULT_LIMITS), async (req, r
     ctx.push(`Relationship: ${relationship || 'Unknown'}${personLabel ? ` (${personLabel})` : ''}`);
     ctx.push(`Original message: ${receivedMessage?.slice(0, 200) || 'Not provided'}`);
     if (actualGoal) ctx.push(`Goal: ${actualGoal}`);
-    if (originalAnalysis.message_analysis) {
-      ctx.push(`Temperature: ${originalAnalysis.message_analysis.emotional_temperature}`);
-      ctx.push(`Their emotion: ${originalAnalysis.message_analysis.primary_emotion_detected}`);
-    }
-    if (originalAnalysis.manipulation_tactics?.length) {
-      ctx.push(`Manipulation detected: ${originalAnalysis.manipulation_tactics.map(t => t.tactic).join(', ')}`);
+    if (originalAnalysis.message_analysis?.triggers_identified?.length) {
+      ctx.push(`Phrases that landed hardest: ${originalAnalysis.message_analysis.triggers_identified.join(' / ')}`);
     }
     if (originalAnalysis.response_strategies?.length) {
       ctx.push(`Strategies suggested: ${originalAnalysis.response_strategies.map(s => s.strategy).join(', ')}`);
@@ -266,5 +291,31 @@ ${NO_QUOTE_RULE}`;
     res.status(500).json({ error: 'Failed to adjust tone.' });
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-23.
+router.outputStandard = 'v2';
+
+// The failure modes that are local to this tool. It reads one message from
+// someone it has never met, and every construct below turned that into a
+// determination about a person: "Primary emotion: resentment", "Manipulation
+// Tactics Detected", "designed to make you feel guilty", "wait 20-30 minutes",
+// "they may interpret this as". The visitor is the only one here who knows the
+// sender, and they came for help replying, not a diagnosis of their sister.
+router.outputGuard = {
+  prohibit: [
+    'emotion_inference_as_fact',
+    'motive_inference_as_fact',
+    'need_inference_as_fact',
+    'manipulation_detection',
+    'psychological_label',
+    'temperature_score',
+    'unsupported_timing_rule',
+    'predicted_recipient_reaction',
+  ],
+  require: [
+    'fulfills_tool_promise',
+    'actionable_output',
+  ],
+};
 
 module.exports = router;

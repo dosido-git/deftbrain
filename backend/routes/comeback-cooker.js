@@ -119,4 +119,21 @@ Exaggeration, absurdity and obvious fantasy are FINE — this tool writes the li
 // was five good lines.
 router.outputStandard = 'v2';
 
+// Cathartic fiction, so exaggeration is fine and mind-reading is not. The
+// sharpest failure here is a POSITION: a comeback that answers an intrusive
+// question on the visitor's behalf is one they cannot send without asserting it.
+router.outputGuard = {
+  prohibit: [
+    'invented_personal_fact',
+    'position_not_taken',
+    'motive_inference_as_fact',
+    'unsupported_behavior_prediction',
+    'self_explanation',
+  ],
+  require: [
+    'fulfills_tool_promise',
+  ],
+  allow: ['exaggeration_for_effect'],
+};
+
 module.exports = router;

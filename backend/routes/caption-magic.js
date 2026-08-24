@@ -859,4 +859,25 @@ router.outputStandard = 'v2';
 router._enforceEnvelope = enforceEnvelope;
 router._renderEnvelope = renderEnvelope;
 
+// Caption Magic is a creative-writing tool, and its guard says so: invention is
+// the product here. What it may not do is let a caption be read as a fact about
+// the real photograph or the person who took it.
+router.outputGuard = {
+  prohibit: [
+    'invented_personal_fact',
+    'ownership_or_authorship_claim',
+    'date_time_or_place_claim',
+    'unsupported_behavior_prediction',
+    'uncertain_detail_asserted',
+  ],
+  require: [
+    'fulfills_tool_promise',
+    'creative_range_preserved',
+  ],
+  // Jokes, personification, absurdity and an invented caption voice are the
+  // deliverable. See the worked pairs in enforceEnvelope: "the cactus remains
+  // neutral" invents nothing anybody could believe.
+  allow: ['imaginative_caption_voice'],
+};
+
 module.exports = router;

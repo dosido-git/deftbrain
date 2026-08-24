@@ -46,8 +46,6 @@ const ConflictCoach = ({ tool }) => {
     required:      'text-red-500',
     // ─── Tool-specific semantic colors ───
     toast:             isDark ? 'bg-zinc-700 text-zinc-100 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
-    manipulation:      isDark ? 'bg-red-950/30 border-red-800' : 'bg-red-50 border-red-300',
-    manipulationInner: isDark ? 'bg-red-900/20' : 'bg-red-100/50',
     highlight:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
     draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
@@ -77,27 +75,6 @@ const ConflictCoach = ({ tool }) => {
     : 'text-cyan-700 hover:text-cyan-800 underline underline-offset-2';
 
   // Temperature color map
-  const tempColor = (temp) => {
-    switch (temp?.toLowerCase()) {
-      case 'high':   return isDark ? 'bg-red-900/30 border-red-700 text-red-300'         : 'bg-red-100 border-red-400 text-red-800';
-      case 'medium': return isDark ? 'bg-amber-900/30 border-amber-700 text-amber-300'   : 'bg-amber-100 border-amber-400 text-amber-800';
-      case 'low':    return isDark ? 'bg-emerald-900/30 border-emerald-700 text-emerald-300' : 'bg-emerald-100 border-emerald-400 text-emerald-800';
-      default: return c.highlight;
-    }
-  };
-  const tempEmoji = (temp) => ({ high: '🔥', medium: '⚠️', low: '✅' })[temp?.toLowerCase()] ?? '🌡️';
-
-  // Localized temperature label for display
-  const tempLabel = (temp) => {
-    switch (temp?.toLowerCase()) {
-      case 'high':   return t('cc_temp_high');
-      case 'medium': return t('cc_temp_medium');
-      case 'low':    return t('cc_temp_low');
-      default:       return temp || t('cc_temp_unknown');
-    }
-  };
-
-  // History temperature badge (dark-mode aware)
   const [emotionalState, setEmotionalState] = useState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
   const [goal,           setGoal]           = useState('');
   const [userDraft,      setUserDraft]      = useState('');
@@ -209,7 +186,7 @@ const ConflictCoach = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
-      if (data.message_analysis?.emotional_temperature === 'high' || emotionalState.angry || emotionalState.defensive) {
+      if (emotionalState.angry || emotionalState.defensive) {
         setMandatoryDelay(true);
         if (!delayActive) { setDelayEndTime(Date.now() + 600 * 1000); }
       }
@@ -285,13 +262,11 @@ const ConflictCoach = ({ tool }) => {
     if (!results) return '';
     const l = [`💬 ${t('cc_copy_header')}`, '═'.repeat(40)];
     if (results.message_analysis) {
-      l.push('', `🌡️ ${t('cc_copy_temperature')}: ${tempLabel(results.message_analysis.emotional_temperature)}`, `${t('cc_copy_emotion')}: ${results.message_analysis.primary_emotion_detected}`);
+      if (results.message_analysis.whats_being_asked) l.push('', results.message_analysis.whats_being_asked);
       if (results.message_analysis.triggers_identified?.length) l.push(`${t('cc_copy_triggers')}: ${results.message_analysis.triggers_identified.join('; ')}`);
-      if (results.message_analysis.underlying_need) l.push(`${t('cc_copy_need')}: ${results.message_analysis.underlying_need}`);
     }
-    if (results.manipulation_tactics?.length) { l.push('', `🎭 ${t('cc_copy_manipulation')}`); results.manipulation_tactics.forEach(mt => l.push(`  ⚠️ ${mt.tactic}: ${mt.description}`)); }
     if (results.goal_reality_check) { l.push('', `🎯 ${t('cc_copy_goalcheck')}`, results.goal_reality_check.assessment); if (results.goal_reality_check.alternative_approach) l.push(`${t('cc_copy_alternative')}: ${results.goal_reality_check.alternative_approach}`); }
-    if (results.draft_analysis) { l.push('', `🚨 ${t('cc_copy_draft')}`, results.draft_analysis.overall_assessment); if (results.draft_analysis.escalation_risk) l.push(`${t('cc_copy_escalation')}: ${results.draft_analysis.escalation_risk.level?.toUpperCase()} — ${results.draft_analysis.escalation_risk.why}`); }
+    if (results.draft_analysis) { l.push('', `🚨 ${t('cc_copy_draft')}`, results.draft_analysis.overall_assessment); }
     if (results.response_strategies?.length) { l.push('', `💡 ${t('cc_copy_strategies')}`); results.response_strategies.forEach((s, i) => { l.push(`\n  ${i + 1}. ${s.strategy} (${s.tone})`, `  "${s.response_text}"`, s.risks ? `  ${t('cc_copy_risk')}: ${s.risks}` : ''); }); }
     if (results.what_NOT_to_say?.length) { l.push('', `❌ ${t('cc_copy_landmines')}`); results.what_NOT_to_say.forEach(i => l.push(`  ❌ "${i.phrase}" — ${i.why_avoid}`)); }
     if (results.timing_landmines?.length) { l.push('', `⏰ ${t('cc_copy_timing')}`); results.timing_landmines.forEach(tl => l.push(`  ⏰ ${tl}`)); }
@@ -529,55 +504,14 @@ const ConflictCoach = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="space-y-4">
 
-          {/* Temperature */}
-          {results.message_analysis && (
-            <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6 text-center`}>
-              <div className="text-6xl mb-3">{tempEmoji(results.message_analysis.emotional_temperature)}</div>
-              <div className={`text-2xl font-black ${c.text} mb-1`}>{t('cc_temperature_label', { temp: tempLabel(results.message_analysis.emotional_temperature) })}</div>
-              <p className={`text-sm ${c.textSecondary}`}>{t('cc_primary')}: <strong>{results.message_analysis.primary_emotion_detected}</strong></p>
-              {results.message_analysis.underlying_need && <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cc_need')}: {results.message_analysis.underlying_need}</p>}
-            </div>
-          )}
-
-          {/* Manipulation Detector */}
-          {results.manipulation_tactics?.length > 0 && (
-            <div className={`${c.manipulation} border-2 rounded-xl p-6`}>
-              <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${c.text}`}><span>🎭</span> {t('cc_manip_title')}</h3>
-              <p className={`text-sm mb-4 ${c.textSecondary}`}>{t('cc_manip_intro')}</p>
-              <div className="space-y-3">
-                {results.manipulation_tactics.map((mt, i) => (
-                  <div key={i} className={`p-4 rounded-lg ${c.manipulationInner}`}>
-                    <div className="flex items-center gap-2 mb-1"><span className="text-lg">{mt.icon || '🚩'}</span><h4 className={`font-bold ${c.text}`}>{mt.tactic}</h4></div>
-                    <p className={`text-sm mb-2 ${c.textSecondary}`}>{mt.description}</p>
-                    {mt.example_phrase && <p className={`text-xs italic ${c.textMuteded}`}>{t('cc_manip_from')}: "{mt.example_phrase}"</p>}
-                    {mt.healthy_response && <p className={`text-sm mt-2 font-semibold ${c.text}`}>💡 {t('cc_manip_healthy')}: {mt.healthy_response}</p>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Goal Reality Check */}
-          {results.goal_reality_check && (
-            <div className={`${c.highlight} border-s-4 rounded-e-lg p-5`}>
-              <h3 className={`font-bold mb-2 ${c.text}`}>🎯 {t('cc_reality_title')}</h3>
-              {actualGoal && <p className={`text-sm mb-2 ${c.text}`}><strong>{t('cc_reality_youwant')}:</strong> "{actualGoal}"</p>}
-              <p className={`text-sm ${c.text}`}>{results.goal_reality_check.assessment}</p>
-              {results.goal_reality_check.will_this_message_achieve_it !== undefined && (
-                <div className={`p-3 rounded mt-2 border ${results.goal_reality_check.will_this_message_achieve_it ? c.success : c.danger}`}>
-                  <p className="text-sm font-bold">{results.goal_reality_check.will_this_message_achieve_it ? `✅ ${t('cc_reality_canhelp')}` : `❌ ${t('cc_reality_unlikely')}`}</p>
-                  {results.goal_reality_check.alternative_approach && <p className="text-sm mt-1"><strong>{t('cc_reality_better')}:</strong> {results.goal_reality_check.alternative_approach}</p>}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Triggers */}
           {results.message_analysis?.triggers_identified?.length > 0 && (
-            <div className={`${tempColor(results.message_analysis.emotional_temperature)} border-s-4 rounded-e-lg p-5`}>
-              <h3 className={`font-bold mb-3 ${c.text}`}>{tempEmoji(results.message_analysis.emotional_temperature)} {t('cc_triggers_title')}</h3>
+            <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
+              <h3 className={`font-bold mb-3 ${c.text}`}>{t('cc_triggers_title')}</h3>
               <ul className={`text-sm space-y-1 ${c.text}`}>{results.message_analysis.triggers_identified.map((trig, i) => <li key={i}>• "{trig}"</li>)}</ul>
-              {results.message_analysis.communication_style && <p className={`text-sm mt-2 ${c.textMuteded}`}>{t('cc_triggers_style')}: {results.message_analysis.communication_style}</p>}
+              {results.message_analysis.whats_being_asked && (
+                <p className={`text-sm mt-3 ${c.textSecondary}`}>{results.message_analysis.whats_being_asked}</p>
+              )}
             </div>
           )}
 
@@ -604,12 +538,6 @@ const ConflictCoach = ({ tool }) => {
                       {p.better_version && <p className={`text-xs ${c.success} mt-0.5`}>→ "{p.better_version}"</p>}
                     </div>
                   ))}
-                </div>
-              )}
-              {results.draft_analysis.escalation_risk && (
-                <div className={`p-3 rounded border ${results.draft_analysis.escalation_risk.level === 'high' || results.draft_analysis.escalation_risk.level === 'extreme' ? c.danger : c.warning}`}>
-                  <p className="text-sm font-bold">⚠️ {t('cc_escalation')}: {results.draft_analysis.escalation_risk.level?.toUpperCase()}</p>
-                  <p className="text-sm">{results.draft_analysis.escalation_risk.why}</p>
                 </div>
               )}
             </div>

@@ -53,6 +53,27 @@ for (const slug of onDisk) {
   }
 }
 
+// ── 3b. Declaring v2 is not the same as enforcing it ────────────────────
+// A route can carry the standard in its prompt and still ship whatever the
+// model returned. Every v2 route therefore declares an enforcement profile —
+// router.outputGuard — and calls the validator, or says out loud that it does
+// not need one. Without this, "reviewed under v2" means the prompt got longer.
+const DECLARES_GUARD = /(?:^|\n)\s*router\.outputGuard\s*=/;
+const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelope\s*\(|enforceSuppliedFacts\s*\(/;
+// Routes exempt from needing a guard, by name and with a reason. Empty today.
+const GUARD_EXEMPT = new Map([]);
+
+for (const slug of onDisk) {
+  const src = fs.readFileSync(path.join(ROUTES, `${slug}.js`), 'utf8');
+  if (!DECLARES_V2.test(src)) continue;
+  if (GUARD_EXEMPT.has(slug)) continue;
+  if (!CALLS_GUARD.test(src)) {
+    problems.push(`backend/routes/${slug}.js declares v2 but never runs a post-generation check — v2 would be an instruction nothing verifies.\n     Call runOutputGuard() from lib/outputGuard (or a tool-specific equivalent) before responding.`);
+  } else if (!DECLARES_GUARD.test(src)) {
+    problems.push(`backend/routes/${slug}.js runs a check but declares no router.outputGuard — the tool's own failure modes are the half the generic standard cannot know.\n     Add router.outputGuard = { prohibit: [...], require: [...] } beside the outputStandard declaration.`);
+  }
+}
+
 // ── 4. A v2 route's model calls must all be reachable by the contract ────
 // enterRouteStandard covers every call under the request, including direct
 // create() calls — but only if the call happens inside the request. A call at
@@ -106,4 +127,8 @@ if (problems.length) {
   process.exit(1);
 }
 const v2Count = [...onDisk].filter(s => DECLARES_V2.test(fs.readFileSync(path.join(ROUTES, `${s}.js`), 'utf8'))).length;
-console.log(`✅ output-standard-audit: ${FROZEN_V1.size} frozen, ${v2Count} on v2, ${changed.length} route(s) in scope.`);
+const guarded = [...onDisk].filter(sl => {
+  const src = fs.readFileSync(path.join(ROUTES, `${sl}.js`), 'utf8');
+  return DECLARES_V2.test(src) && DECLARES_GUARD.test(src);
+}).length;
+console.log(`✅ output-standard-audit: ${FROZEN_V1.size} frozen, ${v2Count} on v2 (${guarded} with an enforcement profile), ${changed.length} route(s) in scope.`);

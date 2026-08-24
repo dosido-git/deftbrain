@@ -2390,3 +2390,44 @@ several commits. This is the failure mode already recorded in CLAUDE.md ("a
 crashed audit looks like a clean audit"), reproduced by the person who wrote
 that line. When editing this script, always prove the rule you touched still
 FIRES — run it against a file that should fail, not only one that should pass.
+
+---
+
+### PF-39a · v2 is enforced after generation, not only requested before it
+
+Declaring v2 makes the prompt longer. It does not make the output conform. So
+every v2 route also runs a post-generation check and declares what its own
+failure modes are:
+
+```js
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: ['mind_reading', 'invented_personal_fact', 'false_precision'],
+  require:  ['fulfills_tool_promise', 'actionable_output'],
+  allow:    ['imaginative_caption_voice'],   // optional
+};
+```
+
+`backend/lib/outputGuard.js` runs the seven V2 checks plus the tool's own terms,
+returns typed violations (`invented_fact`, `mind_reading`,
+`unsupported_prediction`, `unnecessary_section`, `self_explanation`,
+`false_precision`, `promise_not_fulfilled`, or any guard term), and **rewrites
+only the flagged fields**. Regenerating the whole response to fix one line moves
+everything else with it, and that drift lands where nobody is looking.
+
+The runtime sequence:
+
+```
+PF-38 → V2 standard → tool prompt → generation → V2 guard + tool guard → repair flagged fields → render
+```
+
+**A guard must not contradict its own schema.** Conflict Coach's guard forbids
+emotion inference and temperature scores; its schema *required* `primary_emotion_detected`
+and `emotional_temperature`. Left alone, every response would fail and be
+repaired into an empty field. Prohibiting a field's entire purpose means
+deleting the field — the guard is what stops it coming back.
+
+**Gate 9** now fails a v2 route that runs no check (`runOutputGuard`,
+`checkAgainstSupplied`, `enforceEnvelope`, …) or declares no `outputGuard`.
+`GUARD_EXEMPT` in `scripts/output-standard-audit.js` takes named exceptions with
+reasons; it is empty.
