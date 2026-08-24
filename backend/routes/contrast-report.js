@@ -3,6 +3,7 @@ const router = express.Router();
 const { anthropic, callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
 const PERSONALITY = `Decision contrast analyst. Help people understand what they're actually choosing between by making both paths vivid and specific.
 
@@ -52,6 +53,12 @@ ZONE 3 — "what_to_notice", and "how_to_read". Back to Zone 1's standard. You m
 - Where the invention IS load-bearing, let the sentence show it is a guess — "maybe", "some version of", "if it goes the way these usually do". A reader who thinks "no, it would not be like that" has learned something real; a reader who cannot tell what you made up has not.
 - No verdicts. Never say which path is better, never predict an outcome, never tell them what they want.
 - TEXTURE IS FREE; INTERIOR LIFE IS NOT. Invent the ordinary as much as you need — weather, a commute, a kitchen, a queue, what is on the radio. Do not invent their motivations, values, fears, psychological tendencies, relationship dynamics, or how any of it turns out.
+- NOTHING INVENTED MAY BE PROMOTED. This is the one boundary the tool lives or dies on, and it has a direction: material flows INTO the stories, never out of them. Invent the plumber, the armchair, the delayed email, the rain — then leave them there. A detail you made up may not reappear as a conclusion, as one side of the tradeoff, or inside the question you leave them with. The test is a single question asked of every sentence in Zone 3: if the visitor said "that part is not true", would this sentence still stand? If it collapses, it was built on your fiction and it does not belong there.
+  NO:  the second path asks you to be alone with your work in a way the first never does   (you invented the solitude)
+  YES: you said you have two clients lined up and eight months of savings
+  NO:  what would it take for the quiet in that flat to stop feeling like relief?          (the flat, the quiet and the relief are all yours)
+  YES: if nothing about your current job got worse, would you still want to leave?
+- NEVER TELL THEM WHAT THE DECISION IS REALLY ABOUT. Not "this is really a question about identity", not "underneath the job it is about your marriage", not "the real choice is whether to keep waiting". They named their decision; they were there for it. Finding the deeper thing underneath is the single most tempting move this tool offers and it is always either obvious or wrong — and when it is wrong, it is wrong about someone's life, in a sentence that sounds wise. Illuminate the dilemma they named. Do not replace it with a better one.
 - THE ANALYSIS MAY NOT TREAT THE FICTION AS EVIDENCE. You just made these two days up. Nothing in them is a finding about this person, and how the writing went is a fact about writing, not about them. Never report which path was richer, easier, more alive or more fun to write — novelty is simply easier to dramatise than continuity, and saying so with "this is not an endorsement" attached is still a thumb on the scale.
 - Their reaction to the stories is the material. Your reaction to your own stories is not.
 - NEVER ATTRIBUTE A MOTIVE THEY DID NOT STATE. An uncertainty is not a motive. "I cannot tell whether I want this or whether I am just bored" is a person wondering; it is not a person fleeing.
@@ -87,7 +94,7 @@ Return ONLY valid JSON:
   "what_to_notice": {
     "the_tradeoff": "The tradeoff THEY described, in near enough their own words that they could point at each clause and find where it came from. NAME the specific things - good manager, predictable hours, two clients, eight months of savings - rather than gesturing at 'something real' or 'the thing you cannot name'. Do not add an inference to make it rounder: if they told you they have savings and clients lined up, the second path is not simply giving up security. 2-3 sentences.",
     "watch_your_reaction": "Point them at their own response, and stop there. Both reactions are useful: the corrections show where the sketch missed, the moments that pull them in show where to look more closely. Do NOT say what a lean-in reveals about what they want - a scene can pull because it is frightening or novel, not because it is wanted. 1-2 sentences.",
-    "a_question_to_sit_with": "One question that ILLUMINATES THE DILEMMA THEY ALREADY NAMED - do not out-clever them by finding a deeper one underneath it. The strongest version isolates a variable in their own uncertainty. If they said they cannot tell whether they want out or are just bored, ask: 'If nothing about your current job got worse, would you still want to leave?' That diagnoses nothing and could actually be answered. One sentence."
+    "a_question_to_sit_with": "One question that ILLUMINATES THE DILEMMA THEY ALREADY NAMED, built only from what they wrote — never from a detail you invented in the narratives - do not out-clever them by finding a deeper one underneath it. The strongest version isolates a variable in their own uncertainty. If they said they cannot tell whether they want out or are just bored, ask: 'If nothing about your current job got worse, would you still want to leave?' That diagnoses nothing and could actually be answered. One sentence."
   }
 }`;
 }
@@ -120,6 +127,46 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!parsed.path_a || !parsed.path_b) {
       return res.status(500).json({ error: 'Could not generate the contrast report. Please try again.' });
     }
+    // v2 guard, deliberately partial. The narratives are NOT in this list:
+    // they are imagined by design, and checking them would sand off the tool.
+    // Everything that draws a conclusion is checked, because the risk here is
+    // one direction only — a detail invented for a story reappearing as a
+    // finding about someone's life.
+    try {
+      const fields = [];
+      const push = (k, v) => { if (typeof v === 'string' && v.trim()) fields.push([k, v]); };
+      push('decision_framed', parsed.decision_framed);
+      push('how_to_read', parsed.how_to_read);
+      ['path_a', 'path_b'].forEach((k) => {
+        push(`${k}.a_moment_to_notice`, parsed[k]?.a_moment_to_notice);
+        push(`${k}.a_cost_to_imagine`, parsed[k]?.a_cost_to_imagine);
+      });
+      push('what_to_notice.the_tradeoff', parsed.what_to_notice?.the_tradeoff);
+      push('what_to_notice.watch_your_reaction', parsed.what_to_notice?.watch_your_reaction);
+      push('what_to_notice.a_question_to_sit_with', parsed.what_to_notice?.a_question_to_sit_with);
+
+      await runOutputGuard(parsed, {
+        label: 'contrast-report',
+        fields,
+        supplied: `PATH A: ${pathA}
+PATH B: ${pathB}
+WHAT MATTERS IN THIS DECISION (their words): ${aboutYou || '(not supplied)'}
+WHAT PULLS THEM TOWARD EACH PATH (their words): ${whatsHard || '(not supplied)'}
+TIMEFRAME: ${timeframe || '2 years'}
+
+THE TWO NARRATIVES IN THIS RESPONSE ARE FICTION, WRITTEN BY THE GENERATOR, AND THEY ARE NOT EVIDENCE. Do not treat a detail from them as supplied. The test for every field above: if the visitor said "that part is not true", would the sentence still stand? If it collapses, it was built on the fiction and it is a violation.
+
+An uncertainty they stated must stay open. A motive they did not state may not be attributed. And nothing may tell them what their decision is really about — they named it.`,
+        promise: 'Two vivid imagined days, one per path, and observations traceable to what the visitor actually wrote.',
+        guard: router.outputGuard,
+        requiredNonEmpty: ['decision_framed'],
+        userLanguage,
+        locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+      });
+    } catch (guardErr) {
+      console.error('[contrast-report] v2 guard skipped:', guardErr.message);
+    }
+
     res.json(parsed);
 
   } catch (error) {
@@ -187,5 +234,28 @@ router.post('/contrast-report/stream', rateLimit(DEFAULT_LIMITS), async (req, re
     res.end();
   }
 });
+
+// PF-39. Reviewed against DEFTBRAIN_OUTPUT_STANDARD_V2 on 2026-08-24, converted
+// on contact. This tool is the clearest case in the catalog for the guard being
+// SCOPED rather than global: the two narratives are invention on purpose and are
+// never checked, and everything around them is checked hard.
+router.outputStandard = 'v2';
+
+router.outputGuard = {
+  prohibit: [
+    'promoted_invented_detail',        // a made-up detail reappearing as a conclusion
+    'reframed_the_decision',           // "this is really about..."
+    'invented_motive_or_trait',
+    'resolved_a_stated_uncertainty',
+    'verdict_on_a_path',
+    'fiction_treated_as_evidence',
+  ],
+  require: [
+    'traceable_to_their_words',
+  ],
+  // The narratives. Invention is the deliverable there, and a guard that
+  // trimmed them would be removing the thing the visitor came for.
+  allow: ['imagined_day_in_the_life'],
+};
 
 module.exports = router;
