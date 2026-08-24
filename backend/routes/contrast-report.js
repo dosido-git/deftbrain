@@ -67,6 +67,7 @@ ZONE 3 — "what_to_notice", and "how_to_read". Back to Zone 1's standard. You m
 - DESCRIBE THE MEANINGFUL MOMENT; DO NOT EXPLAIN IT. When a line lands on something that might matter, stop at the fact. The reader decides whether it means anything, and telling them robs the moment of the only thing that made it worth writing.
   NO:  The work came from you, which means something.
   YES: The work came from you.
+- THE COST OF A PATH BELONGS IN THE DAY, NOT IN A NOTE UNDER IT. Let the Tuesday carry it — the third revision request, the empty afternoon, the message you do not send. Do not append a sentence explaining what the day showed; there is no field for that any more, and there is no field for it because pointing at your own invention and calling it a cost was the tool interpreting its own fiction.
 - Do not invent a consequence to make a cost land harder. "Harder to reverse", "calcifies", "a door quietly closing" are all predictions dressed as description. A cost can simply be the thing they already named, still there later.
   NO:  two years of competence without challenge calcifies into something harder to name, and harder to reverse
   YES: two more years of familiar, manageable work leaves the question you are asking now still waiting for you
@@ -81,15 +82,11 @@ Return ONLY valid JSON:
   "how_to_read": "One or two sentences, in your own words: these are not predictions, they are two plausible days built from THE FEW THINGS THEY SHARED - phrase it that way round, never 'almost nothing you told me', which is honest but reads as a complaint about their input - the texture is imagined, the tension at the centre is theirs, and the useful thing is what they react to, including the parts that feel wrong.",
   "path_a": {
     "label": "Short label for this path (3-5 words)",
-    "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost. End on a small, unresolved moment — but always complete the final sentence.",
-    "a_moment_to_notice": "One imagined moment from this day worth pausing on. Offered to be reacted to, not as proof of anything. One sentence.",
-    "a_cost_to_imagine": "One imagined cost of this path. You are imagining it, not reporting it - it has not happened, so hedge it visibly and do not invent a consequence to give it weight. One sentence."
+    "narrative": "200-300 word day-in-the-life narrative. Second person, present tense. A plausible Tuesday, ${tf} from now. Specific, sensory, honest — including both the good and the cost, carried by the day itself rather than named afterwards. End on a small, unresolved moment — but always complete the final sentence."
   },
   "path_b": {
     "label": "Short label for this path (3-5 words)",
-    "narrative": "200-300 word day-in-the-life narrative. Same rules. Different life. Equally vivid and honest.",
-    "a_moment_to_notice": "Same rules. One sentence.",
-    "a_cost_to_imagine": "Same rules. One sentence."
+    "narrative": "200-300 word day-in-the-life narrative. Same rules. Different life. Equally vivid and honest."
   },
   "what_to_notice": {
     "the_tradeoff": "The tradeoff THEY described, in near enough their own words that they could point at each clause and find where it came from. NAME the specific things - good manager, predictable hours, two clients, eight months of savings - rather than gesturing at 'something real' or 'the thing you cannot name'. Do not add an inference to make it rounder: if they told you they have savings and clients lined up, the second path is not simply giving up security. 2-3 sentences.",
@@ -127,7 +124,9 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (!parsed.path_a || !parsed.path_b) {
       return res.status(500).json({ error: 'Could not generate the contrast report. Please try again.' });
     }
-    // v2 guard, deliberately partial. The narratives are NOT in this list:
+    // v2 guard. Everything after the narratives is in this list, and the
+    // narratives are not — which is now the whole shape of the response, since
+    // the two per-path interpretation fields were removed.
     // they are imagined by design, and checking them would sand off the tool.
     // Everything that draws a conclusion is checked, because the risk here is
     // one direction only — a detail invented for a story reappearing as a
@@ -137,10 +136,6 @@ router.post('/contrast-report', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       const push = (k, v) => { if (typeof v === 'string' && v.trim()) fields.push([k, v]); };
       push('decision_framed', parsed.decision_framed);
       push('how_to_read', parsed.how_to_read);
-      ['path_a', 'path_b'].forEach((k) => {
-        push(`${k}.a_moment_to_notice`, parsed[k]?.a_moment_to_notice);
-        push(`${k}.a_cost_to_imagine`, parsed[k]?.a_cost_to_imagine);
-      });
       push('what_to_notice.the_tradeoff', parsed.what_to_notice?.the_tradeoff);
       push('what_to_notice.watch_your_reaction', parsed.what_to_notice?.watch_your_reaction);
       push('what_to_notice.a_question_to_sit_with', parsed.what_to_notice?.a_question_to_sit_with);
@@ -244,6 +239,7 @@ router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'promoted_invented_detail',        // a made-up detail reappearing as a conclusion
+    'interpreted_own_fiction',         // pointing at an invented moment and saying what it shows
     'reframed_the_decision',           // "this is really about..."
     'invented_motive_or_trait',
     'resolved_a_stated_uncertainty',

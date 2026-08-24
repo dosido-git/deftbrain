@@ -223,14 +223,10 @@ const WhichLife = ({ tool }) => {
     if (results?.path_a) {
       out += `━━ ${t('cr_path_caps')} A: ${results?.path_a?.label} ━━\n\n`;
       out += `${results?.path_a?.narrative?.trimEnd()}…\n\n`;
-      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_a?.a_moment_to_notice}\n`;
-      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_a?.a_cost_to_imagine}\n\n`;
     }
     if (results?.path_b) {
       out += `━━ ${t('cr_path_caps')} B: ${results?.path_b?.label} ━━\n\n`;
       out += `${results?.path_b?.narrative?.trimEnd()}…\n\n`;
-      out += `✦ ${t('cr_copy_best_moment')} ${results?.path_b?.a_moment_to_notice}\n`;
-      out += `✧ ${t('cr_copy_honest_cost')} ${results?.path_b?.a_cost_to_imagine}\n\n`;
     }
     if (results?.what_to_notice) {
       out += `━━ ${t('cr_copy_what_noticed')} ━━\n\n`;
@@ -303,24 +299,6 @@ const WhichLife = ({ tool }) => {
             style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
             {path.narrative?.trimEnd()}…
           </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {path.a_moment_to_notice && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${isA ? c.pathAAccent : c.pathBAccent} mb-2 flex items-center gap-1.5`}>
-                <span>✦</span> {t('cr_moment_notice')}
-              </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.a_moment_to_notice}</p>
-            </div>
-          )}
-          {path.a_cost_to_imagine && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuted} mb-2 flex items-center gap-1.5`}>
-                <span>✧</span> {t('cr_cost_imagine')}
-              </p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed italic`}>{path.a_cost_to_imagine}</p>
-            </div>
-          )}
         </div>
       </div>
     );
