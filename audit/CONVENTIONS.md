@@ -2361,3 +2361,32 @@ somebody makes rather than a door left open:
 - the tool must still call `useRegisterActions`, so whole-output copy exists
 - `S1.4h` still forbids an inline `<CopyBtn content={buildFullText()}>`
 - the inline button must be the shared `CopyBtn` from `../components/ActionButtons` — never a hand-rolled `copyToClipboard` (that is PF-2 and has no exemption at all)
+
+
+---
+
+### S5.5 / S1.1 exemption · tools that carry no cross-reference
+
+`NO_CROSSREF` in `audit/audit_v2-3-2.py` names tools that deliberately link to
+no other tool, and so need neither `linkStyle` nor a post-result link. It holds
+one: **ColdOpenCraft**, whose two tool promotions were removed on 2026-08-23 —
+"Cold Open Craft should finish its own job."
+
+S5.5 already had a *pre*-result exemption list holding ColdOpenCraft,
+ComebackCooker, ConflictCoach, CaptionMagic and ToolFinder. It had no
+*post*-result equivalent, which is the half that fired once the tool's last
+cross-ref went. `NO_CROSSREF` covers both ends plus the `linkStyle` symbol S1.1
+requires, since all three exist to serve the same feature.
+
+Also added to `PF22_PER_ITEM_COPY`: **ColdOpenCraft**. Three ready-to-send
+messages are a list of alternatives in the same sense as six captions, and
+copying the one you picked is the terminal action.
+
+**A warning worth keeping.** The PF-22 exemption shipped on 2026-08-23
+referencing a variable named `path`, which does not exist in that scope — the
+loop variable is `name`. Python raised `NameError`, the audit exited without
+reporting, and `diff-audit.py` printed "no regressions" for every file for
+several commits. This is the failure mode already recorded in CLAUDE.md ("a
+crashed audit looks like a clean audit"), reproduced by the person who wrote
+that line. When editing this script, always prove the rule you touched still
+FIRES — run it against a file that should fail, not only one that should pass.

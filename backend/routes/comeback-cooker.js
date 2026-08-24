@@ -43,8 +43,7 @@ Return ONLY valid JSON:
 {
   "comebacks": [
     {
-      "line": "The exact words they should have said — punchy, quotable, ready to deliver. Nothing else: no technique name, no explanation of why it lands, no stage direction. Naming the device is the trick explained, and it makes the line smaller.",
-      "delivery_note": "OPTIONAL and usually null. One short stage direction only where the line genuinely needs it to work — a pause, a flat tone, walking away after. Null whenever the line carries itself."
+      "line": "The exact words they should have said — punchy, quotable, ready to deliver. The line and nothing else: no technique name, no explanation of why it lands, no stage direction about tone or pauses. Anyone who has replayed this moment for three hours already knows how they would say it."
     }
   ],
   "the_high_road": {

@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Caret from '../components/Caret';
-import { CopyBtn } from '../components/ActionButtons';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { useRegisterActions } from '../components/ActionBarContext';
@@ -66,8 +65,6 @@ const ComebackCooker = ({ tool }) => {
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     pillActive:    isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-gray-300 text-gray-500 hover:border-gray-400',
-    deliveryBg:    isDark ? 'bg-zinc-700/40' : 'bg-slate-100',
-    deliveryText:  isDark ? 'text-zinc-400' : 'text-gray-500',
     highRoadBg:    isDark ? 'bg-emerald-900/20 border-emerald-700' : 'bg-emerald-50 border-emerald-300',
     highRoadText:  isDark ? 'text-emerald-400' : 'text-emerald-700',
     nuclearBg:     isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200',
@@ -155,7 +152,6 @@ const ComebackCooker = ({ tool }) => {
     out += `━━ ${t('cbc_copy_comebacks')} ━━\n\n`;
     (results?.comebacks || []).forEach((cb, i) => {
       out += `${i + 1}. "${cb.line}"\n`;
-      if (cb.delivery_note) out += `   🎬 ${cb.delivery_note}\n`;
       out += `\n`;
     });
     if (results?.the_nuclear_option) {
@@ -377,12 +373,6 @@ const ComebackCooker = ({ tool }) => {
                          style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                         "{cb.line}"
                       </p>
-                      {cb.delivery_note && (
-                        <p className={`text-xs ${c.textMuted} italic mt-2`}>🎬 {cb.delivery_note}</p>
-                      )}
-                      <div className="mt-3">
-                        <CopyBtn exact quiet label={t('cbc_copy')} content={cb.line + BRAND} />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -400,9 +390,6 @@ const ComebackCooker = ({ tool }) => {
                  style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                 "{results?.the_high_road?.line}"
               </p>
-              <div className="mt-3">
-                <CopyBtn exact quiet label={t('cbc_copy')} content={results.the_high_road.line + BRAND} />
-              </div>
             </div>
           )}
 
