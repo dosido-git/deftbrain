@@ -46,7 +46,6 @@ const ConflictCoach = ({ tool }) => {
     required:      'text-red-500',
     // ─── Tool-specific semantic colors ───
     toast:             isDark ? 'bg-zinc-700 text-zinc-100 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
-    highlight:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
     draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
     strategyHover:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
@@ -56,9 +55,6 @@ const ConflictCoach = ({ tool }) => {
     strategyText:      isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
     toneSlider:        isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
     toneAdjusted:      isDark ? 'bg-zinc-700/30' : 'bg-gray-50',
-    apologyBox:        isDark ? 'bg-cyan-900/20' : 'bg-cyan-50',
-    landminePhrase:    isDark ? 'bg-red-900/20' : 'bg-red-50',
-    escalationScript:  isDark ? 'bg-amber-900/10' : 'bg-amber-50',
     followupMe:        isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
     confirmModal:      isDark ? 'bg-zinc-700/50' : 'bg-gray-100',
     goalActive:        isDark ? 'border-cyan-500 bg-cyan-900/30 text-cyan-200' : 'border-cyan-600 bg-cyan-100 text-cyan-900',
@@ -80,7 +76,6 @@ const ConflictCoach = ({ tool }) => {
   const [userDraft,      setUserDraft]      = useState('');
   const [error,          setError]          = useState('');
   const [toast,          setToast]          = useState(null);
-  const [mandatoryDelay,        setMandatoryDelay]        = useState(false);
   const [delayEndTime,          setDelayEndTime]          = useState(null);
   const [now,                   setNow]                   = useState(Date.now);
   const [selectedResponse,      setSelectedResponse]      = useState(null);
@@ -187,17 +182,12 @@ const ConflictCoach = ({ tool }) => {
       });
       setResults(data);
       if (emotionalState.angry || emotionalState.defensive) {
-        setMandatoryDelay(true);
         if (!delayActive) { setDelayEndTime(Date.now() + 600 * 1000); }
       }
     } catch (err) { setError(err.message || t('cc_err_analysis')); }
   };
 
 
-  const handleCopyResponse = (text) => {
-    if (mandatoryDelay && delayActive) { showToast(t('cc_toast_wait_cooling')); return; }
-    setSelectedResponse(text); setShowConfirmSend(true);
-  };
   const handleConfirmCopy = async () => {
     if (!selectedResponse) return;
     try {
@@ -211,7 +201,6 @@ const ConflictCoach = ({ tool }) => {
     setEmotionalState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
     setGoal('');
     setUserDraft(''); setResults(null); setError('');
-    setMandatoryDelay(false); setDelayEndTime(null);
     setSelectedResponse(null); setActualGoal('');
     setShowConfirmSend(false);
     setThreadMessages([]); setFollowupHistory([]); setSelectedStrategyIdx(null); setAdjustedResponse(null);
@@ -267,9 +256,7 @@ const ConflictCoach = ({ tool }) => {
     }
     if (results.goal_reality_check) { l.push('', `🎯 ${t('cc_copy_goalcheck')}`, results.goal_reality_check.assessment); if (results.goal_reality_check.alternative_approach) l.push(`${t('cc_copy_alternative')}: ${results.goal_reality_check.alternative_approach}`); }
     if (results.draft_analysis) { l.push('', `🚨 ${t('cc_copy_draft')}`, results.draft_analysis.overall_assessment); }
-    if (results.response_strategies?.length) { l.push('', `💡 ${t('cc_copy_strategies')}`); results.response_strategies.forEach((s, i) => { l.push(`\n  ${i + 1}. ${s.strategy} (${s.tone})`, `  "${s.response_text}"`, s.risks ? `  ${t('cc_copy_risk')}: ${s.risks}` : ''); }); }
-    if (results.what_NOT_to_say?.length) { l.push('', `❌ ${t('cc_copy_landmines')}`); results.what_NOT_to_say.forEach(i => l.push(`  ❌ "${i.phrase}" — ${i.why_avoid}`)); }
-    if (results.timing_landmines?.length) { l.push('', `⏰ ${t('cc_copy_timing')}`); results.timing_landmines.forEach(tl => l.push(`  ⏰ ${tl}`)); }
+    if (results.response_strategies?.length) { l.push('', `💡 ${t('cc_copy_strategies')}`); results.response_strategies.forEach((s, i) => { l.push(`\n  ${i + 1}. ${s.strategy} (${s.tone})`, `  "${s.response_text}"`, ''); }); }
     if (followupHistory.length) { l.push('', `${t('cc_copy_followup')}:`); followupHistory.forEach(f => l.push(`  ${t('cc_copy_q')}: ${f.question}`, `  ${t('cc_copy_a')}: ${f.answer}`, '')); }
     return l.join('\n') + BRAND;
   }, [results, followupHistory]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -553,21 +540,13 @@ const ConflictCoach = ({ tool }) => {
               <div className={`space-y-4 ${c.text}`}>
                 {results.response_strategies.map((s, idx) => (
                   <div key={idx} className={`border-2 rounded-lg p-5 transition-colors ${delayActive ? 'opacity-50' : selectedStrategyIdx === idx ? c.strategySelected : c.strategyHover}`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className={`font-bold ${c.text}`}>{s.strategy}</h4>
-                        {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>{t('cc_tone')}: {s.tone}</span>}
-                      </div>
-                      <button onClick={() => handleCopyResponse(s.response_text)} disabled={delayActive}
-                        className={`${c.btnSecondary} px-3 py-1.5 rounded text-sm disabled:opacity-40`}>
-                        {delayActive ? '🔒' : '📋'} {t('copy')}
-                      </button>
+                    <div className="mb-2">
+                      <h4 className={`font-bold ${c.text}`}>{s.strategy}</h4>
+                      {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>{t('cc_tone')}: {s.tone}</span>}
                     </div>
                     <div className={`p-3 rounded ${c.strategyText} mb-2`}>
                       <p className={`${c.text} font-medium`}>"{s.response_text}"</p>
                     </div>
-                    {s.what_this_does && <p className={`text-sm ${c.textSecondary} mb-1`}><strong>{t('cc_effect')}:</strong> {s.what_this_does}</p>}
-                    {s.risks && <p className={`text-sm ${c.textMuteded}`}><strong>⚠️ {t('cc_risk')}:</strong> {s.risks}</p>}
 
                     {!delayActive && (
                       <div className="mt-3">
@@ -594,8 +573,6 @@ const ConflictCoach = ({ tool }) => {
                                   <p className={`text-sm ${c.text}`}>"{adjustedResponse.adjusted_text}"</p>
                                 </div>
                                 {adjustedResponse.tone_note && <p className={`text-xs mt-1 ${c.textMuteded}`}>{adjustedResponse.tone_note}</p>}
-                                <button onClick={() => handleCopyResponse(adjustedResponse.adjusted_text)}
-                                  className={`${c.btnSecondary} px-3 py-1 rounded text-xs mt-2`}>📋 {t('cc_copy_adjusted')}</button>
                               </div>
                             )}
                           </div>
@@ -605,70 +582,6 @@ const ConflictCoach = ({ tool }) => {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Apology Assessment */}
-          {results.apology_assessment && (
-            <div className={`${c.highlight} border-s-4 rounded-e-lg p-5`}>
-              <h3 className={`font-bold mb-2 ${c.text}`}>🙏 {t('cc_apology_title')}</h3>
-              <p className={`text-sm ${c.text}`}><strong>{results.apology_assessment.is_apology_appropriate ? t('cc_yes') : t('cc_no')}</strong> — {results.apology_assessment.reasoning}</p>
-              {results.apology_assessment.is_apology_appropriate && results.apology_assessment.suggested_apology && (
-                <div className={`p-3 rounded mt-2 ${c.apologyBox}`}>
-                  <p className={`text-sm ${c.text}`}>"{results.apology_assessment.suggested_apology}"</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Landmines */}
-          {(results.what_NOT_to_say?.length > 0 || results.timing_landmines?.length > 0 || results.channel_landmines?.length > 0) && (
-            <div className={`${c.danger} border-2 rounded-xl p-6`}>
-              <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${c.text}`}>💣 {t('cc_landmines_title')}</h3>
-              {results.what_NOT_to_say?.length > 0 && (
-                <div className="mb-4">
-                  <p className={`text-sm font-bold mb-2 ${c.text}`}>❌ {t('cc_landmines_phrases')}:</p>
-                  <div className="space-y-2">
-                    {results.what_NOT_to_say.map((it, i) => (
-                      <div key={i} className={`p-3 rounded ${c.landminePhrase}`}>
-                        <p className={`font-semibold text-sm ${c.text}`}>"{it.phrase}"</p>
-                        <p className={`text-sm ${c.textSecondary}`}>{it.why_avoid}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {results.timing_landmines?.length > 0 && (
-                <div className="mb-4">
-                  <p className={`text-sm font-bold mb-2 ${c.text}`}>⏰ {t('cc_landmines_timing')}:</p>
-                  <ul className="space-y-1">{results.timing_landmines.map((tl, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>⏰ {tl}</li>)}</ul>
-                </div>
-              )}
-              {results.channel_landmines?.length > 0 && (
-                <div>
-                  <p className={`text-sm font-bold mb-2 ${c.text}`}>📱 {t('cc_landmines_channel')}:</p>
-                  <ul className="space-y-1">{results.channel_landmines.map((ch, i) => <li key={i} className={`text-sm ${c.textSecondary}`}>📱 {ch}</li>)}</ul>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* If They Escalate */}
-          {results.if_they_continue_escalating && (
-            <div className={`${c.warning} border-s-4 rounded-e-lg p-5`}>
-              <h3 className={`font-bold mb-2 ${c.text}`}>⚠️ {t('cc_escalate_title')}</h3>
-              <div className={`p-3 rounded border-2 ${c.border} mb-2 ${c.escalationScript}`}>
-                <p className={`${c.text} font-medium`}>"{results.if_they_continue_escalating.script}"</p>
-              </div>
-              <p className={`text-sm font-bold ${c.text}`}>{results.if_they_continue_escalating.then_what}</p>
-            </div>
-          )}
-
-          {/* Repair Strategy */}
-          {results.repair_strategy_later && (
-            <div className={`${c.success} border-s-4 rounded-e-lg p-5`}>
-              <h3 className={`font-bold mb-1 ${c.text}`}>💚 {t('cc_repair_title')}</h3>
-              <p className={`text-sm ${c.text}`}>{results.repair_strategy_later}</p>
             </div>
           )}
 

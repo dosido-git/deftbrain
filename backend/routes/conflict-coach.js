@@ -76,7 +76,7 @@ the visitor is the only person here who knows them.
 Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "message_analysis": {
-    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. Quotes only — no interpretation of what each one means about the sender."],
+    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. A short note after a quote is allowed ONLY as a possibility about the WORDS — 'always' covers every past occasion, not just this one; 'forget it' closes the exchange. Never a determination about the sender, and never why they chose it. If a note would need the word because, cut it."],
     "whats_being_asked": "In one sentence, what the message actually asks for or objects to, in plain terms. If that is genuinely unclear from the words, say it is unclear — that is useful, and guessing is not."
   },
   "goal_reality_check": {
@@ -93,7 +93,7 @@ Return ONLY valid JSON with EXACTLY these four top-level keys:
 RULES:
 1. draft_analysis covers the VISITOR'S OWN draft, which they wrote and gave you. Be direct about it — that is their text and they asked. It carries no risk score: "level: high" is a number attached to a guess.
 2. ${userDraft ? 'A draft was provided — be honest about it.' : 'No draft was provided — return draft_analysis with empty arrays and a short string saying so.'}
-3. Keep every string field to one or two sentences.`;
+3. Keep every string field to one or two sentences.\n4. THREE OR FOUR response_strategies. Each one genuinely different in what it does, not the same reply at three volumes.`;
 
     // ── Part B: what to send, when, and what to avoid ──
     const respondPrompt = `${brief}
@@ -109,33 +109,20 @@ Return ONLY valid JSON with EXACTLY these eight top-level keys:
 {
   "response_strategies": [
     {
-      "strategy": "Name",
-      "response_text": "Actual message to send",
-      "tone": "calm/firm/compassionate",
-      "what_this_does": "...",
-      "risks": "..."
+      "strategy": "A short descriptive name for what this reply does — Names the specific thing, Asks what they actually want, Declines the frame. Describe it; do not rate it.",
+      "response_text": "The message to send, ready to paste. This is the deliverable and it is the whole entry: no note on what it achieves, no risk attached to it, no prediction of how it lands. You have not met the recipient.",
+      "tone": "calm/firm/compassionate"
     }
   ],
-  "apology_assessment": {
-    "is_apology_appropriate": true,
-    "reasoning": "...",
-    "suggested_apology": "..."
-  },
-  "what_NOT_to_say": [{"phrase": "...", "why_avoid": "..."}],
-  "timing_landmines": ["Don't respond while X", "Wait until Y"],
-  "channel_landmines": ["This needs a phone call", "Wait for face-to-face"],
-  "if_they_continue_escalating": {"script": "...", "then_what": "..."},
-  "repair_strategy_later": "...",
   "cooling_recommendation": {"delay_time": "How long to wait, in ordinary words rather than a figure: until you have eaten, before you reply tonight, tomorrow morning. Never a number of minutes — nobody measured that, and a precise figure is a rule invented to sound certain.", "why_delay": "One sentence, about the visitor and their draft. Not about how the other person will read a delay."}
 }
 
 RULES:
-1. High emotions = recommend mandatory delay
-2. Generate 3-4 response strategies, all de-escalating
-3. what_NOT_to_say: 3-4 specific phrases personalized to THIS conflict
-4. timing_landmines + channel_landmines: always include at least 1-2 each
-5. Protect the relationship over being "right"
-6. Keep every string field to one or two sentences, except response_text and suggested_apology which are the real messages.`;
+1. THREE OR FOUR response_strategies, each genuinely different in what it does — not the same reply at three volumes. They are the deliverable; everything else on this page is context for choosing between them.
+2. All de-escalating, and all sendable as written.
+3. Protect the relationship over being right.
+4. Keep every string to one or two sentences. response_text is the exception: it is the actual message.
+5. No prediction anywhere. Not what the reply will achieve, not how they will take it, not what it risks. You have one message from someone you have never met.`;
 
     const system = systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion);
     const [readPart, respondPart] = await Promise.all([
@@ -274,7 +261,7 @@ Tone target: ${toneLevel}/100 (${toneDescription})
 CRITICAL: Return ONLY valid JSON:
 {
   "adjusted_text": "The rewritten response",
-  "tone_note": "Brief note on what changed and why this tone level works/risks for this situation"
+  "tone_note": "One short line on what changed in the wording. Not what it will achieve."
 }
 
 ${NO_QUOTE_RULE}`;
