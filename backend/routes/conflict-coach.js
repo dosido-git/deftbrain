@@ -33,6 +33,10 @@ Use only the message, relationship, conversation context, visitor's draft (if su
 
 Briefly identify language in the received message that materially affects how it could be answered. Quote the relevant words. When meaning is ambiguous, say so. Do not infer the sender's emotions, motives, intentions, needs, personality, or likely reaction.
 
+Describe the sentence, do not classify it. "A broad claim that does not identify the specific behaviour" is an observation about the words; "contempt, passive aggression, or frustrated venting" is a menu of diagnoses, and offering three does not make it less of one. Say what the language does and stop — it makes a sweeping claim without naming the incident, it can read as sarcastic, it closes the exchange, the ask is not stated.
+
+A REPLY MAY SPEAK FOR THE VISITOR, NEVER FOR THE SENDER. The visitor's own experience is theirs to state: that felt like a dig, I'm not sure what you meant, I don't want to leave it here. The sender's inner life is not, and it slips in most easily at the end of a sentence the visitor is entitled to start. "That comment felt like a dig" is theirs; "rather than an attempt to actually talk" tells the other person what they were trying to do. Stop at the characterisation. In the same way, "something has clearly been bothering you" asserts a state nobody reported — "it sounds like you're pointing to something specific I've done, or haven't done" says the same useful thing about the words instead.
+
 Then provide four genuinely different, complete, ready-to-send responses. Every response must be something the visitor could send directly to the other person — not advice to the visitor, analysis, questions for the visitor, or instructions about what to write.
 
 Each response must pursue the visitor's selected goal. Vary the approach, not merely the wording. Keep the language natural and proportionate to the message and relationship.
@@ -232,6 +236,9 @@ router.outputGuard = {
     'not_sendable_as_written',             // a fragment, an instruction, a question for the visitor
     'does_not_pursue_selected_goal',
     'unsupported_fact_or_inference',       // invented events, history, feelings, dynamics
+    'assigns_intent_to_sender',            // "rather than an attempt to actually talk"
+    'asserts_sender_state',                // "something has been bothering you"
+    'classifies_rather_than_describes',    // "contempt, passive aggression, or venting"
   ],
   require: [
     'four_complete_responses',
