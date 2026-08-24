@@ -214,6 +214,7 @@ const ColdOpenCraft = ({ tool }) => {
               {CHANNELS.map(ch => (
                 <button
                   key={ch.value}
+                  aria-pressed={channel === ch.value}
                   onClick={() => setChannel(ch.value)}
                   className={`w-full px-3 py-2.5 rounded-xl text-sm font-bold border transition-colors min-h-[44px] ${
                     channel === ch.value ? c.pillActive : c.pillInactive

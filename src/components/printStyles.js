@@ -43,6 +43,22 @@ export const PRINT_CSS = `
         /* The keyboard-shortcut chip is screen affordance — it tells you to
            press Cmd+Enter, which paper cannot offer. */
         button kbd { display: none !important; }
+        /* A selected pill or card says which option the visitor chose ENTIRELY
+           through fill and border colour, and the rule above strips the fill
+           from every button. On paper all the choices then look identical, so
+           a printed form records the questions and loses every answer. Mark
+           the chosen one with ink instead of colour. Needs aria-pressed or
+           aria-checked on the control — which it wants anyway, since a screen
+           reader has the same problem for the same reason. */
+        [aria-pressed="true"], [aria-checked="true"], [aria-selected="true"] {
+          border: 2px solid #111 !important;
+          font-weight: 700 !important;
+        }
+        [aria-pressed="true"]::before, [aria-checked="true"]::before, [aria-selected="true"]::before {
+          content: "\\2713\\00a0";
+        }
+        /* Native checkboxes and radios do print their checked state, but the
+           unchecked ones then read as a list of empty boxes. Leave them. */
         /* Show print-only branding */
         [data-print-show-flex] { display: flex !important; }
         [data-print-show] { display: block !important; }

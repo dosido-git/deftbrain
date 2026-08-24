@@ -437,7 +437,7 @@ const ConflictCoach = ({ tool }) => {
                 ['validate',      t('cc_goal_validate')],
                 ['schedule_talk', t('cc_goal_schedule')],
               ].map(([key, label]) => (
-                <button key={key} type="button" onClick={() => setGoal(goal === key ? '' : key)}
+                <button key={key} type="button" aria-pressed={goal === key} onClick={() => setGoal(goal === key ? '' : key)}
                   className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm border-2 text-start transition-colors ${goal === key ? c.goalActive : c.goalInactive}`}>
                   {label}
                 </button>

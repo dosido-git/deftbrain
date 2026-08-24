@@ -366,7 +366,7 @@ const CaptionMagic = ({ tool }) => {
       {options.map(opt => {
         const active = multi ? value.includes(opt.value) : value === opt.value;
         return (
-          <button key={opt.value} onClick={() => setter(opt.value)}
+          <button key={opt.value} aria-pressed={active} onClick={() => setter(opt.value)}
             className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${active ? c.pillActive : c.pillInactive}`}>
             {active && <span className="me-1">✓</span>}
             {opt.label ?? t(opt.labelKey)}

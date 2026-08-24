@@ -20,7 +20,7 @@ const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, 
 2. Facts about the visitor or the situation that were invented, strengthened, or silently inferred.
 2b. A supplied fact CONTRADICTED or quietly swapped for a different one. Told the relationship is a partner, the output calls them a roommate; told the message came by text, it discusses a phone call. This is the most damaging kind, because the visitor knows it is wrong the moment they read it and stops trusting the rest. Check every noun that names a person, a place or a channel against what was typed.
 3. Predictions, rankings, timing rules, probabilities, scores, or population claims without support.
-4. Psychological, behavioural or interpersonal labels presented as determinations rather than possibilities.
+4. Psychological, behavioural or interpersonal labels presented as determinations rather than possibilities — including a NAME FOR AN ATTITUDE behind someone's words. Contempt, disdain, dismissiveness, passive aggression, defensiveness and hostility are verdicts on a person, not descriptions of a sentence, and hedging one does not fix it. Also any "likely meaning": you cannot know that literal words meant their opposite.
 5. Explanatory commentary that mainly explains the model's own work rather than helping the visitor.
 6. Sections that do not materially help complete the tool's promise.
 7. Output the tool promised that is missing.`;
@@ -129,7 +129,9 @@ ${vs.map(v => `- ${v.violation_type}: "${v.offending_text}"${v.reason ? ` — ${
 
 Preserve useful content and tone. Remove the identified violations and nothing else.
 
-Do not replace a violation with a milder version of itself — swapping "they are being manipulative" for "they may be being manipulative" keeps the determination and adds a hedge. Cut the claim. If removing it leaves the field shorter or plainer, that is correct, and if it leaves the field with nothing to say, return an empty string rather than filler.
+Do not replace a violation with a milder version of itself — swapping "they are being manipulative" for "they may be being manipulative" keeps the determination and adds a hedge. Cut the claim. If removing it leaves the field shorter or plainer, that is correct.
+
+WHERE THE FIELD IS A DELIVERABLE — a message to send, an option to choose — it must come back usable. Never empty, never a placeholder, never a note about why it was removed. If the violation was the whole idea, write a different one that does the same job without it: the visitor was promised this option and an empty box is not one.
 
 OUTPUT (JSON only):
 { "fixes": [ { "n": 0, "value": "the full rewritten field" } ] }
@@ -143,6 +145,11 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
   }, { label: `${label}-guard-repair` });
 
+  // Snapshot before writing: a repair that empties a promised deliverable is
+  // worse than the violation it removed, and the visitor is left with a blank
+  // option where the tool said there would be one.
+  const before = new Map(allByField.map(([field]) => [field, getByPath(draft, field)]));
+
   // Keyed by NUMBER: withLanguage translates JSON string values, and a
   // translated field path addresses nothing.
   (Array.isArray(repair?.fixes) ? repair.fixes : []).forEach(fix => {
@@ -150,6 +157,22 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
     if (!entry || typeof fix.value !== 'string') return;
     setByPath(draft, entry[0], fix.value.trim());
   });
+
+  // Structural completeness. A field the tool promised must still hold
+  // something usable; if the repair hollowed it out, keep what was there. A
+  // flawed reply the visitor can edit beats an empty box they cannot use.
+  const required = Array.isArray(opts.requiredNonEmpty) ? opts.requiredNonEmpty : [];
+  const restored = [];
+  for (const field of required) {
+    const now = getByPath(draft, field);
+    if (typeof now === 'string' && now.trim().length >= 2) continue;
+    if (!before.has(field)) continue;
+    const was = before.get(field);
+    if (typeof was === 'string' && was.trim()) { setByPath(draft, field, was); restored.push(field); }
+  }
+  if (restored.length) {
+    console.log(`[${label}] v2 guard: repair emptied ${restored.length} required field(s), restored: ${restored.join(', ')}`);
+  }
 
   return violations;
 }

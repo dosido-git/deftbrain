@@ -276,6 +276,7 @@ const ComebackCooker = ({ tool }) => {
               {MOOD_OPTIONS.map(m => (
                 <button
                   key={m.id}
+                  aria-pressed={mood === m.id}
                   onClick={() => setMood(m.id)}
                   className={`border rounded-xl px-2 py-2.5 text-center transition-colors ${mood === m.id ? c.pillActive : c.pillInactive}`}
                 >

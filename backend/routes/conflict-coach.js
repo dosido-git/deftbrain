@@ -90,7 +90,7 @@ without telling the other person about themselves.
 Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "message_analysis": {
-    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. A short note after a quote is allowed ONLY as a possibility about the WORDS, and phrased as one: CAN READ AS, MAY LAND AS, LEAVES LITTLE ROOM FOR. Not 'delivers a criticism' but 'can read as criticism'; not 'closes the exchange' but 'can read as closing the exchange'. The difference is whether you are describing the sentence or ruling on it. Never a determination about the sender, and never why they chose it. If a note would need the word because, cut it."],
+    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. A short note after a quote is allowed ONLY as a possibility about the WORDS, and phrased as one: CAN READ AS, MAY LAND AS, LEAVES LITTLE ROOM FOR. Not 'delivers a criticism' but 'can read as criticism'; not 'closes the exchange' but 'can read as closing the exchange'. The difference is whether you are describing the sentence or ruling on it. Never a 'likely meaning' — you cannot know that literal words mean their opposite. And never a name for an attitude behind them: contempt, disdain, passive aggression and dismissiveness are all verdicts on a person, and hedging one does not fix it. Never a determination about the sender, and never why they chose it. If a note would need the word because, cut it."],
     "whats_being_asked": "In one sentence, what the message actually asks for or objects to, in plain terms. If that is genuinely unclear from the words, say it is unclear — that is useful, and guessing is not."
   },
   "goal_reality_check": {
@@ -123,7 +123,7 @@ Return ONLY valid JSON with EXACTLY these eight top-level keys:
 {
   "response_strategies": [
     {
-      "strategy": "A short descriptive name for what this reply does — Names the specific thing, Asks what they actually want, Declines the frame. Describe it; do not rate it.",
+      "strategy": "A short descriptive name for what this reply DOES, drawn from the reply itself — Asks what they needed, Names the specific incident, Offers a time to talk. Not what it avoids and not what it implies about them: 'holds space without chasing' invents a chasing dynamic nobody described, and 'refuses to take the bait' calls their message bait. Describe your own sentence.",
       "response_text": "The message to send, ready to paste. This is the deliverable and it is the whole entry: no note on what it achieves, no risk attached to it, no prediction of how it lands. You have not met the recipient.",
       "tone": "calm/firm/compassionate"
     }
@@ -155,6 +155,15 @@ RULES:
     ]);
     const parsed = { ...respondPart, ...readPart };
 
+    // Seen once in testing: response_strategies came back as a STRING holding
+    // Python-style pseudo-JSON. The frontend maps over it, so that ships as a
+    // render crash rather than an error anyone can act on. Guard the shape of
+    // the deliverable before anything else touches it.
+    if (!Array.isArray(parsed.response_strategies) || !parsed.response_strategies.length) {
+      console.error('ConflictCoach: response_strategies not an array', typeof parsed.response_strategies);
+      return res.status(500).json({ error: 'Could not put together a response. Please try again.' });
+    }
+
     // V2 guard. Fail-open: it wraps a working answer and must never drop it.
     try {
       const fields = [];
@@ -179,6 +188,8 @@ RELATIONSHIP: ${relationship || '(not supplied)'}${personLabel ? ` (${personLabe
 WHAT THEY WANT FROM IT: ${(goals || []).join(', ') || '(not supplied)'}`,
         promise: 'Help someone reply to a tense message: what the message is actually asking, whether their goal is achievable by replying, an honest read of their own draft, and responses they can send.',
         guard: router.outputGuard,
+        // Every promised reply must survive repair as something sendable.
+        requiredNonEmpty: (parsed.response_strategies || []).map((_, i) => `response_strategies[${i}].response_text`),
         userLanguage,
         locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       });
@@ -308,6 +319,9 @@ router.outputStandard = 'v2';
 router.outputGuard = {
   prohibit: [
     'contradicted_supplied_fact',
+    'interpretation_as_fact',
+    'attitude_label',
+    'invented_relationship_dynamic',
     'emotion_inference_as_fact',
     'motive_inference_as_fact',
     'need_inference_as_fact',
