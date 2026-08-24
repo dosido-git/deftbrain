@@ -51,7 +51,6 @@ const ConflictCoach = ({ tool }) => {
     highlight:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
     historyPanel:      isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-white border-gray-200',
     historyItem:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
-    draftBox:          isDark ? 'border-red-800 bg-red-900/10' : 'border-red-300 bg-red-50',
     draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
     strategyHover:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
@@ -109,7 +108,7 @@ const ConflictCoach = ({ tool }) => {
 
   // ─── Session state (all useState before usePersistentState — PF-11/PF-14) ───
   const [emotionalState, setEmotionalState] = useState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
-  const [goals,          setGoals]          = useState({ resolve: false, boundary: false, disengage: false, validate: false, schedule_talk: false });
+  const [goal,           setGoal]           = useState('');
   const [userDraft,      setUserDraft]      = useState('');
   const [error,          setError]          = useState('');
   const [toast,          setToast]          = useState(null);
@@ -215,7 +214,7 @@ const ConflictCoach = ({ tool }) => {
       const data = await callToolEndpoint('conflict-coach', {
         receivedMessage: msg, relationship,
         emotionalState: Object.keys(emotionalState).filter(k => emotionalState[k]),
-        goals: Object.keys(goals).filter(k => goals[k]),
+        goals: goal ? [goal] : [],
         userDraft: userDraft.trim(), actualGoal: actualGoal.trim(),
         isThread: useThread, personLabel: personLabel.trim() || null,
         userLocale, userCurrency, userRegion,
@@ -229,7 +228,6 @@ const ConflictCoach = ({ tool }) => {
     } catch (err) { setError(err.message || t('cc_err_analysis')); }
   };
 
-  const handleGoalToggle    = (g) => setGoals(p => ({ ...p, [g]: !p[g] }));
 
   const handleCopyResponse = (text) => {
     if (mandatoryDelay && delayActive) { showToast(t('cc_toast_wait_cooling')); return; }
@@ -246,7 +244,7 @@ const ConflictCoach = ({ tool }) => {
   const handleReset = () => {
     setReceivedMessage(''); setRelationship('Friend');
     setEmotionalState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
-    setGoals({ resolve: false, boundary: false, disengage: false, validate: false, schedule_talk: false });
+    setGoal('');
     setUserDraft(''); setResults(null); setError('');
     setMandatoryDelay(false); setDelayEndTime(null);
     setSelectedResponse(null); setActualGoal('');
@@ -412,12 +410,6 @@ const ConflictCoach = ({ tool }) => {
           </div>
         </div>
 
-        {/* Warning notice */}
-        <div className={`${c.warning} border-s-4 rounded-e-lg p-4 mb-4`}>
-          <p className={`text-sm font-semibold ${c.text}`}>⚠️ {t('cc_warn_title')}</p>
-          <p className={`text-xs ${c.textSecondary} mt-1`}>{t('cc_warn_body')}</p>
-        </div>
-
         {/* History panel */}
         {showHistory && (
           <div className={`mb-5 p-4 rounded-lg border max-h-64 overflow-y-auto ${c.historyPanel}`}>
@@ -471,7 +463,7 @@ const ConflictCoach = ({ tool }) => {
           {/* Thread toggle */}
           <label className={`flex items-center gap-2 cursor-pointer text-sm ${c.text}`}>
             <input type="checkbox" checked={useThread} onChange={e => setUseThread(e.target.checked)} className="w-4 h-4" />
-            📜 {t('cc_thread_toggle')}
+            {t('cc_thread_toggle')}
           </label>
 
           {/* Thread builder OR single message */}
@@ -515,22 +507,23 @@ const ConflictCoach = ({ tool }) => {
             </div>
           )}
 
-          {/* Draft */}
-          <div className={`border-2 rounded-lg p-4 ${c.draftBox}`}>
-            <div className="flex items-center gap-2 mb-1">
-              <span>🛑</span>
-              <label className={`text-sm font-bold ${c.text}`}>{t('cc_draft_label')}</label>
-            </div>
+          {/* What they want to say. An ordinary optional field: the red box and
+              the stop sign made typing an honest answer feel like a confession. */}
+          <div>
+            <label className={`block text-sm font-medium ${c.text} mb-1`}>{t('cc_draft_label')}</label>
             <textarea value={userDraft} onChange={e => setUserDraft(e.target.value)}
               placeholder={t('cc_draft_ph')}
-              className={`w-full p-3 border rounded-lg ${c.input}`} rows={3} />
+              className={`w-full p-4 border rounded-lg ${c.input}`} rows={3} />
             <p className={`text-xs ${c.textMuteded} mt-1`}>{t('cc_draft_hint')}</p>
           </div>
 
           {/* Goals */}
           <div>
             <label className={`block text-sm font-medium ${c.text} mb-2`}>{t('cc_goal_label')}</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* PF-37: one choice, as cards. Five checkboxes invited picking
+                three goals at once, which is how a conversation gets away from
+                someone — the tool should ask what they actually want most. */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {[
                 ['resolve',       t('cc_goal_resolve')],
                 ['boundary',      t('cc_goal_boundary')],
@@ -538,10 +531,10 @@ const ConflictCoach = ({ tool }) => {
                 ['validate',      t('cc_goal_validate')],
                 ['schedule_talk', t('cc_goal_schedule')],
               ].map(([key, label]) => (
-                <label key={key} className={`p-2.5 rounded-lg border-2 cursor-pointer flex items-center gap-2 ${goals[key] ? c.goalActive : c.goalInactive}`}>
-                  <input type="checkbox" checked={goals[key]} onChange={() => handleGoalToggle(key)} className="w-4 h-4" />
-                  <span className={`text-sm ${c.text}`}>{label}</span>
-                </label>
+                <button key={key} type="button" onClick={() => setGoal(goal === key ? '' : key)}
+                  className={`w-full min-h-[44px] px-3 py-2.5 rounded-xl text-sm border-2 text-start transition-colors ${goal === key ? c.goalActive : c.goalInactive}`}>
+                  {label}
+                </button>
               ))}
             </div>
           </div>
@@ -570,7 +563,7 @@ const ConflictCoach = ({ tool }) => {
                   setPersonLabel('Alex');
                   setActualGoal('Reconnect without escalating');
                   setEmotionalState({ angry: false, hurt: true, defensive: true, frustrated: false, calm: false, confused: false });
-                  setGoals({ resolve: true, boundary: false, disengage: false, validate: true, schedule_talk: false });
+                  setGoal('');
                 }}
                 className={`text-xs font-medium ${c.accentTxt} underline underline-offset-2 min-h-[32px]`}
               >
