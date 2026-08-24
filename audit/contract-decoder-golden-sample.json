@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "contract-decoder",
-    "tag": "contractdecoder-v2",
+    "tag": "contractdecoder-v3",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. de-truncation-guard: a realistic 9-clause contract 500'd in German at max_tokens 4000 (missing_protections hit 9) → fixed with caps (clauses ≤10, missing_protections ≤6) + max_tokens 6000. Endpoint path is /contract-decoder/stream but uses callClaudeWithRetry (non-streaming). No annotations (uses <...> placeholders). Guard on overall_risk enum. Re-locked 2026-08-24 (v2): rewritten under PF-39 v2. overall_risk, red_flags_count, risk_level per clause and missing_protections are GONE — a risk rating is a judgement the document cannot establish, and \"missing protection\" declares an absence from what the reader expected rather than what the text says. New shape: summary, important_terms (heading/quote/plain_english/practical_effect/question_to_consider/possible_negotiation_ask), things_to_clarify, before_you_sign. Jurisdiction is now an explicit input and is never inferred from locale; grounded-facts law lookup runs ONLY when jurisdiction is supplied AND the first pass raised a legal question, replacing the old blanket pre-pass. Two calls became one plus an optional refinement, so the parallel split is gone; measured 42s EN, 65s DE, 94s AR with no truncation at 6000. Guard fires per call and repairs risk ratings and legal conclusions that survive the prompt.",
-    "baseline": "contractdecoder-v2",
+    "note": "Structural regression golden. de-truncation-guard: a realistic 9-clause contract 500'd in German at max_tokens 4000 (missing_protections hit 9) → fixed with caps (clauses ≤10, missing_protections ≤6) + max_tokens 6000. Endpoint path is /contract-decoder/stream but uses callClaudeWithRetry (non-streaming). No annotations (uses <...> placeholders). Guard on overall_risk enum. Re-locked 2026-08-24 (v2): rewritten under PF-39 v2. overall_risk, red_flags_count, risk_level per clause and missing_protections are GONE — a risk rating is a judgement the document cannot establish, and \"missing protection\" declares an absence from what the reader expected rather than what the text says. New shape: summary, important_terms (heading/quote/plain_english/practical_effect/question_to_consider/possible_negotiation_ask), things_to_clarify, before_you_sign. Jurisdiction is now an explicit input and is never inferred from locale; grounded-facts law lookup runs ONLY when jurisdiction is supplied AND the first pass raised a legal question, replacing the old blanket pre-pass. Two calls became one plus an optional refinement, so the parallel split is gone; measured 42s EN, 65s DE, 94s AR with no truncation at 6000. Guard fires per call and repairs risk ratings and legal conclusions that survive the prompt. Re-locked 2026-08-24 (v3): explanations now say what a clause PURPORTS to do rather than what the law results in — \"under the contract's wording, the work is the Company's from creation\" instead of \"you cannot reclaim your work\". Waivers are the sharpest case: a clause can purport to waive a right the applicable law does not permit to be waived, and the tool does not know which law applies. Illustrative scenarios prohibited. things_to_clarify must trace to language in THIS document, not what contracts of the kind often contain and not a prompt to consult a professional. Caps cut to 6 important_terms / 4 clarify / 4 before_you_sign, with a no-repetition rule across sections. And the guard is now given the quotes as evidence when the contract arrived as a PDF, plus a warning that its evidence is PARTIAL — without it, absence from the excerpts read as invention and it hollowed out every explanation.",
+    "baseline": "contractdecoder-v3",
     "captured": "2026-08-24"
   },
   "cases": [
@@ -26,80 +26,80 @@
         "userRegion": "US"
       },
       "output": {
-        "summary": "This agreement engages you as an independent contractor for software development. To understand which terms will most directly affect you, you need to review the actual contract for its provisions on intellectual property ownership, payment terms and timing, liability limits, non-compete restrictions, termination rights, and any modification clauses.",
+        "summary": "This agreement engages you as an independent contractor for software development. The most consequential terms are: the company takes ownership of everything you create, including work you bring into the project from before; payment can be withheld at the company's sole discretion and is not due for up to 90 days; your liability exposure is unlimited while the company's is capped at $100; and the company can change the contract terms unilaterally while you are working.",
         "important_terms": [
           {
             "heading": "IP Assignment — Including Pre-Existing Work",
             "quote": "All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company. Contractor irrevocably assigns all rights worldwide in perpetuity.",
-            "plain_english": "Everything you deliver belongs to the company permanently and worldwide—including tools, libraries, or code you wrote before this engagement, if you use them in the work.",
-            "practical_effect": "If you incorporate any of your own pre-existing code into deliverables, you would be assigning those materials to the company. You could lose the ability to reuse your own prior work in future projects.",
-            "question_to_consider": "Do you have any pre-existing code, tools, or libraries you plan to use or that might naturally appear in your work? If so, what happens to your ownership of those?",
-            "possible_negotiation_ask": "You could ask to add a carve-out: 'Pre-existing materials listed in Exhibit A remain Contractor's property; Company receives a non-exclusive license to use them solely as incorporated in the deliverables.'"
+            "plain_english": "Everything you produce under this agreement belongs to the company permanently, including any code, tools, or materials you created before this engagement if you incorporate them into the work.",
+            "practical_effect": "If you use any of your own existing code libraries, frameworks, or tools in the project, the agreement purports to transfer ownership of those to the company as well — not just the new work you create for them.",
+            "question_to_consider": "Which, if any, of your existing tools or code might you use in this project, and are you prepared to give up ownership of them?",
+            "possible_negotiation_ask": "You could ask to add a carve-out: 'Pre-existing materials listed in Exhibit A remain the property of Contractor; Company receives a license to use them solely within the deliverables.'"
           },
           {
-            "heading": "Payment — 90-Day Window and Discretionary Withholding",
+            "heading": "Payment Withheld at Company's Sole Discretion",
             "quote": "Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.",
-            "plain_english": "The company can take up to three months to pay any invoice, and can refuse to pay entirely if it decides it is not satisfied—with no definition of what 'satisfied' means or what process applies.",
-            "practical_effect": "You could complete work and wait 90 days, then receive nothing if the company invokes dissatisfaction, with no objective standard to dispute that judgment.",
-            "question_to_consider": "What does 'satisfied' mean in practice—who decides, by what criteria, and is there any dispute or review process?",
-            "possible_negotiation_ask": "You could propose: 'Payment terms reduced to net-30; withholding permitted only for specifically identified defects, with a written cure period of [X] days before payment may be withheld.'"
+            "plain_english": "The company has up to 90 days to pay after you invoice, and can choose to withhold payment entirely if it decides it is not satisfied — with no stated standard for what 'satisfied' means.",
+            "practical_effect": "Section 4 ties payment to the company's satisfaction, but the contract does not define what satisfies it, does not require the company to state dissatisfaction within any timeframe, and does not specify a process for resolving disagreement about whether work meets the standard.",
+            "question_to_consider": "What does 'satisfied' mean in practice — is there a defined acceptance process or completion criteria?",
+            "possible_negotiation_ask": "You could ask to replace the withholding clause with: 'Company may withhold payment only for work that fails to meet the written specifications, and must provide written notice of the specific deficiency within 14 days of invoice.'"
           },
           {
-            "heading": "Indemnification — Including Company's Own Negligence",
-            "quote": "Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.",
-            "plain_english": "You agree to cover the company's legal costs and losses from certain claims. The contract text would need to be reviewed to determine which claims are covered.",
-            "practical_effect": "If the company's own actions cause a third-party claim, you could still be required to pay the company's defense costs and any judgment against it.",
-            "question_to_consider": "Are there specific scenarios the company is concerned about, or is this language intended to be as broad as it reads?",
-            "possible_negotiation_ask": "You could ask to limit this to: 'Contractor indemnifies Company solely for claims directly caused by Contractor's own acts or omissions, and not for claims arising from Company's negligence or willful misconduct.'"
-          },
-          {
-            "heading": "Liability — Asymmetric Caps",
+            "heading": "Asymmetric Liability Cap",
             "quote": "Contractor's liability is unlimited. Company's liability is capped at $100.",
-            "plain_english": "The contract sets different liability limits for you and the company. You would need to see the specific numbers in the contract to understand your financial exposure.",
-            "practical_effect": "If the company causes you loss (fails to pay, misuses your work, terminates improperly), your legal remedy is capped at $100. Your own exposure faces no equivalent ceiling.",
-            "question_to_consider": "What is the value of the work you are doing, and what losses could you realistically face if a dispute arose?",
-            "possible_negotiation_ask": "You could propose mutual caps: 'Each party's liability to the other shall not exceed the total fees paid or payable under this agreement in the 12 months preceding the claim.'"
+            "plain_english": "If a claim arises, you can be held responsible for any amount. The company's maximum exposure to you is $100, regardless of what happens.",
+            "practical_effect": "Your liability to the company has no ceiling. The company's liability to you is capped at $100, which means the asymmetry is stark: you could owe far more than you could recover.",
+            "question_to_consider": "Does your professional liability or errors-and-omissions insurance cover unlimited exposure under a contract like this?",
+            "possible_negotiation_ask": "You could ask for mutual caps: 'Each party's liability shall be limited to the total fees paid or payable under this agreement in the three months preceding the claim.'"
           },
           {
-            "heading": "Non-Compete — Global, 24 Months",
-            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
-            "plain_english": "The contract includes a non-compete clause that restricts what work you can do after the engagement ends. The exact restrictions—duration, geographic scope, and types of work covered—need to be confirmed from the contract text.",
-            "practical_effect": "As a freelance developer, complying with this as written could prevent you from working in your field entirely for two years after this engagement ends.",
-            "question_to_consider": "What specific competitive concern is this intended to address—and would a narrower restriction (limited industry, geography, or client list) satisfy that concern?",
-            "possible_negotiation_ask": "You could ask to narrow this to: 'Contractor shall not directly solicit Company's existing clients for [6] months following termination,' or remove the clause if no specific competitive harm can be identified."
-          },
-          {
-            "heading": "Termination — Asymmetric Notice",
-            "quote": "Company may terminate immediately without cause or notice. Contractor must give 60 days notice.",
-            "plain_english": "The contract sets different notice requirements for the company and for you when ending the agreement. You would need to see the specific terms to know what applies to each party.",
-            "practical_effect": "You could be let go instantly with no payment obligation beyond what is already owed (subject to the withholding clause), while you are bound to continue working for 60 days if you want to leave.",
-            "question_to_consider": "If the company terminates immediately, what happens to work in progress and payment for it?",
-            "possible_negotiation_ask": "You could ask for: 'Company shall provide [14] days notice of termination without cause, or pay Contractor for [14] days of fees in lieu of notice.'"
+            "heading": "Indemnification Including Company's Own Negligence",
+            "quote": "Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.",
+            "plain_english": "You agree to cover the company's legal costs and losses from claims — including claims that arise from the company's own mistakes or wrongdoing.",
+            "practical_effect": "If the company does something negligent that leads to a third-party claim, this clause purports to make you financially responsible for defending and paying that claim.",
+            "question_to_consider": "Are you able to insure against indemnification obligations of this scope, including for another party's negligence?",
+            "possible_negotiation_ask": "You could ask to limit indemnification to claims arising directly from your own work: 'Contractor's indemnification obligation shall not apply to claims arising from Company's own acts, omissions, or negligence.'"
           },
           {
             "heading": "Unilateral Contract Modification",
             "quote": "Company may modify these terms at any time by posting an update; continued work constitutes acceptance.",
-            "plain_english": "The company can change the terms of this agreement whenever it wants. If you keep working after a change is posted, you are treated as having agreed to the new terms.",
-            "practical_effect": "Terms you agreed to today—including payment, IP, and liability—could be changed without your signature or direct notification. You may not know a change occurred unless you are monitoring for updates.",
-            "question_to_consider": "Where are updates posted, and will you receive direct notice (email, written notice) when a change is made?",
-            "possible_negotiation_ask": "You could ask to replace this with: 'Modifications require written agreement signed by both parties to be effective.'"
+            "plain_english": "The company can change the terms of this agreement while you are working under it. If you keep working after the change is posted, the contract treats that as your agreement to the new terms.",
+            "practical_effect": "The terms you are reviewing now may not be the terms that govern the work you do next month. Payment terms, IP provisions, or any other clause could change without your explicit consent.",
+            "question_to_consider": "Where are updates 'posted,' and how would you know when a change has been made?",
+            "possible_negotiation_ask": "You could ask that modifications require mutual written consent: 'No modification to this agreement is effective unless signed in writing by both parties.'"
           },
           {
-            "heading": "Arbitration and Waiver of Jury Trial and Class Action",
-            "quote": "Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
-            "plain_english": "Any dispute goes to arbitration rather than court, and you give up certain legal rights. The exact location and procedures need to be verified against the contract text.",
-            "practical_effect": "You would need to pursue any dispute (including unpaid invoices) individually, through arbitration, in a location that may be inconvenient or costly to reach.",
-            "question_to_consider": "What is the company's jurisdiction, who administers the arbitration, and who pays the arbitration fees?",
-            "possible_negotiation_ask": "You could ask to specify: 'Arbitration conducted by [named body] under its standard rules; costs shared equally; proceedings conducted remotely or in Contractor's location.'"
+            "heading": "24-Month Global Non-Compete",
+            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
+            "plain_english": "For two years after this engagement ends, the contract purports to prohibit you from doing software development work for any other company, anywhere.",
+            "practical_effect": "The non-compete prevents you from providing similar services to any business anywhere in the world for 24 months after this contract ends. For a freelance developer, the reach of this clause is unusually broad.",
+            "question_to_consider": "Is there a narrower restriction — specific competitors, a defined technology area, a geographic limit — that would address the company's actual concern without covering your entire livelihood?",
+            "possible_negotiation_ask": "You could propose limiting the scope: 'Contractor shall not provide services to [named direct competitors] for 6 months following termination, within [defined technology area].'"
           }
         ],
-        "things_to_clarify": "Before signing, ask the company to clarify: What intellectual property do you retain from work you did before this engagement? What happens to IP you create during the engagement? When and under what conditions must they pay you? What are the exact restrictions in the non-compete—how long, what geography, what types of work? Can either party terminate without cause and on what notice? Can the company unilaterally change the terms? If there is a dispute, where would arbitration take place and who pays for it?",
+        "things_to_clarify": [
+          {
+            "observation": "The payment clause allows the company to withhold payment 'at its sole discretion if not satisfied,' but the agreement contains no definition of satisfaction, no acceptance criteria, no timeline for the company to raise a dissatisfaction claim, and no process for resolving a dispute about it.",
+            "question": "What is the defined process for the company to raise a quality concern, and by what deadline must it do so after receiving work?"
+          },
+          {
+            "observation": "The modification clause says the company may update terms 'by posting an update' but does not specify where updates are posted, how you would be notified, or how much notice precedes a change taking effect.",
+            "question": "Where exactly are updates posted, and will you receive direct notice when terms change?"
+          },
+          {
+            "observation": "The termination clause allows the company to terminate immediately without cause or notice, but the agreement does not address what happens to work completed or in progress at the moment of termination — whether it is compensable, and under what conditions payment would be made for it.",
+            "question": "If the company terminates immediately, how is work completed up to that point compensated, and when?"
+          },
+          {
+            "observation": "Section 9 says disputes will be resolved by binding arbitration in 'Company's jurisdiction,' but the contract does not specify where that is. You cannot determine in advance what location or procedural rules would apply.",
+            "question": "What is the company's jurisdiction, and which arbitration body and rules govern the process?"
+          }
+        ],
         "before_you_sign": [
-          "List every piece of pre-existing code, tooling, or library you might use in this work. Ask explicitly whether the IP clause is intended to capture those materials, and if so, negotiate a written carve-out before signing.",
-          "Ask for the company's jurisdiction in writing. The non-compete's enforceability, the arbitration location, and the governing law all depend on it—and the contract does not supply it.",
-          "Ask for a statement of work or written deliverable criteria to be attached to this agreement, so that 'satisfied' in the payment clause has an objective reference point.",
-          "Confirm in writing where contract modifications will be posted and request that direct notice (email or written) be required before any modification takes effect.",
-          "Ask what arbitration body and rules apply, and whether arbitration fees are split or borne by one party—these details are not in the supplied text and affect the practical cost of pursuing any dispute."
+          "What specific work product does the company consider yours to own—does the IP assignment include code libraries and frameworks you wrote before this contract, or only code you write for this project?",
+          "What criteria will the company use to determine whether you have satisfied the requirement in Section 4, and how will you both document that satisfaction before payment is due?",
+          "Where is the company incorporated or principally located, and what law and arbitration rules would apply under Section 9?",
+          "How will you be notified of changes the company makes under Section 8, and how long after notice would you have to accept or reject the new terms?"
         ]
       }
     },
@@ -121,98 +121,77 @@
         "userRegion": "DE"
       },
       "output": {
-        "summary": "Dieser Vertrag regelt eine freiberufliche Softwareentwicklungstätigkeit für ein Unternehmen. Die auffälligsten Regelungen betreffen die Übertragung von Rechten an Arbeiten, die du erstellst, eine Haftungsasymmetrie zugunsten des Unternehmens und ein weltweites Wettbewerbsverbot über 24 Monate.",
+        "summary": "Dieser Vertrag beauftragt Sie als freiberuflichen Entwickler mit Softwareentwicklung für ein Startup. Die folgenreichsten Klauseln betreffen das geistige Eigentum (alle Arbeitsergebnisse, einschließlich vorbestehender Materialien, gehen vollständig an das Unternehmen über), die Zahlungsbedingungen (bis zu 90 Tage Zahlungsziel, mit einseitigem Einbehaltungsrecht) und eine Haftungsregelung, die Ihre Haftung unbegrenzt lässt, die des Unternehmens jedoch auf 100 US-Dollar deckelt.",
         "important_terms": [
           {
-            "heading": "Geistiges Eigentum – Übertragung einschließlich vorhandener Materialien",
+            "heading": "Geistiges Eigentum – einschließlich vorbestehender Materialien",
             "quote": "All work product, including any pre-existing materials incorporated therein, shall be the sole and exclusive property of Company. Contractor irrevocably assigns all rights worldwide in perpetuity.",
-            "plain_english": "Alles, was du im Rahmen des Vertrags erstellst, gehört dem Unternehmen – unwiderruflich und weltweit. Der Vertrag regelt auch, ob und unter welchen Bedingungen deine vorhandenen Materialien eingeschlossen sind.",
-            "practical_effect": "Bringst du eigene Bibliotheken, Frameworks oder Code-Bausteine mit, die du auch für andere Aufträge nutzt, kannst du diese nach Vertragsabschluss möglicherweise nicht mehr frei verwenden – das Unternehmen beansprucht die Rechte daran. Du verlierst auch die Möglichkeit, die Arbeitsergebnisse in deinem Portfolio zu zeigen oder weiterzuverwenden, ohne Erlaubnis einzuholen.",
-            "question_to_consider": "Welche meiner bestehenden Tools, Bibliotheken oder Code-Komponenten würde ich in diesen Auftrag einbringen – und will ich wirklich alle Rechte daran abgeben?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir klarstellen, dass vorhandene Materialien, die ich einbringe und ausdrücklich als solche kennzeichne, in meinem Eigentum verbleiben, und dem Unternehmen stattdessen eine Nutzungslizenz eingeräumt wird?'"
+            "plain_english": "Alles, was Sie im Rahmen dieses Vertrags erstellen, gehört dem Unternehmen – weltweit und für immer. Ausdrücklich eingeschlossen sind auch Materialien, die Sie bereits vor diesem Vertrag erstellt haben und die Sie in die Arbeit einfließen lassen.",
+            "practical_effect": "Wenn Sie eigene Bibliotheken, Frameworks oder Code-Bausteine einbringen, beansprucht der Vertrag dem Wortlaut nach auch diese für das Unternehmen. Sie können diese Materialien danach möglicherweise nicht mehr frei für andere Projekte nutzen.",
+            "question_to_consider": "Welche eigenen, vorbestehenden Materialien würden Sie in die Arbeit einbringen, und sind Sie bereit, diese abzutreten?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte ergänzen Sie eine Liste (Schedule) vorbestehender Materialien, die ausdrücklich von der Abtretung ausgenommen sind und mir als nicht-exklusive Lizenz verbleiben.'"
           },
           {
-            "heading": "Wettbewerbsverbot – weltweite Reichweite, 24 Monate",
-            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
-            "plain_english": "Nach Ende des Vertrags darfst du zwei Jahre lang weltweit keine vergleichbaren Dienstleistungen – also Softwareentwicklung – für irgendein anderes Unternehmen erbringen.",
-            "practical_effect": "Die Klausel untersagt dir für 24 Monate, als freiberuflicher Entwickler zu arbeiten. Der genaue Wortlaut der Klausel steht im Vertrag; was hier steht, ist das, was sie bei dir bewirkt.",
-            "question_to_consider": "Wie soll ich während dieser 24 Monate meinen Lebensunterhalt sichern, wenn diese Klausel greift?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir den Geltungsbereich auf direkte Wettbewerber des Unternehmens und eine bestimmte geografische Region begrenzen sowie die Laufzeit reduzieren?'"
-          },
-          {
-            "heading": "Zahlungsfrist und Einbehaltungsrecht",
+            "heading": "Zahlung – 90 Tage Frist und einseitiges Einbehaltungsrecht",
             "quote": "Company shall pay within 90 days of invoice. Company may withhold payment at its sole discretion if not satisfied.",
-            "plain_english": "Das Unternehmen kann sich bis zu 90 Tage Zeit lassen, eine Rechnung zu bezahlen. Zusätzlich kann es Zahlungen nach eigenem Ermessen einbehalten, wenn es mit der Leistung nicht zufrieden ist – ohne dass Kriterien für 'Zufriedenheit' definiert werden.",
-            "practical_effect": "Der Vertrag erlaubt es dem Unternehmen, Zahlungen einzubehalten. Es ist nicht klar, an welche Bedingungen dieses Recht geknüpft ist.",
-            "question_to_consider": "Nach welchen Kriterien beurteilt das Unternehmen, ob es 'zufrieden' ist, und gibt es ein Verfahren, um Streitigkeiten über abgelehnte Rechnungen zu klären?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir die Zahlungsfrist auf 30 Tage verkürzen und das Einbehaltungsrecht an ein klar definiertes, schriftliches Mängelverfahren mit Frist zur Nachbesserung knüpfen?'"
+            "plain_english": "Das Unternehmen hat bis zu 90 Tage Zeit, Ihre Rechnung zu bezahlen. Zusätzlich kann es die Zahlung nach eigenem Ermessen einbehalten, wenn es mit der Leistung nicht zufrieden ist – ohne dass der Vertrag definiert, was 'zufrieden' bedeutet oder welches Verfahren dabei gilt.",
+            "practical_effect": "Bereits geleistete Arbeit kann für bis zu 90 Tage unbezahlt bleiben. Da kein Maßstab für 'Zufriedenheit' festgelegt ist, lässt die Klausel dem Unternehmen dem Wortlaut nach unbegrenzten Spielraum, Zahlungen zu verweigern.",
+            "question_to_consider": "Nach welchem Maßstab wird 'Zufriedenheit' beurteilt, und gibt es ein Verfahren für Meinungsverschiedenheiten über die Qualität der Arbeit?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte verkürzen Sie die Zahlungsfrist auf 14 oder 30 Tage und ersetzen Sie das einseitige Einbehaltungsrecht durch ein definiertes Abnahmeverfahren mit konkreten Kriterien.'"
           },
           {
-            "heading": "Kündigungsrecht – stark asymmetrisch",
-            "quote": "Company may terminate immediately without cause or notice. Contractor must give 60 days notice.",
-            "plain_english": "Das Unternehmen kann den Vertrag jederzeit und ohne Angabe von Gründen sofort beenden. Du als Auftragnehmer musst hingegen 60 Tage im Voraus kündigen.",
-            "practical_effect": "Du kannst von einem Tag auf den nächsten ohne Einkommen dastehen, während du selbst auf lange Sicht gebunden bist. Was mit offenen Rechnungen bei einer sofortigen Kündigung durch das Unternehmen passiert, regelt der Vertrag nicht erkennbar.",
-            "question_to_consider": "Was passiert mit bereits erbrachten Leistungen und offenen Rechnungen, wenn das Unternehmen den Vertrag sofort und ohne Grund beendet?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir für beide Seiten eine gleichwertige Kündigungsfrist vereinbaren und sicherstellen, dass alle bis zum Kündigungsdatum erbrachten Leistungen vergütet werden?'"
+            "heading": "Wettbewerbsverbot – 24 Monate, weltweit",
+            "quote": "For 24 months after termination, Contractor shall not provide similar services to any business anywhere in the world.",
+            "plain_english": "Nach Vertragsende sollen Sie zwei Jahre lang weltweit keine ähnlichen Dienstleistungen für irgendein anderes Unternehmen erbringen dürfen.",
+            "practical_effect": "Der Wortlaut dieser Klausel würde Sie 24 Monate lang daran hindern, Softwareentwicklungsarbeit für andere Unternehmen zu leisten. Die Klausel definiert nicht, was 'ähnliche Dienstleistungen' bedeutet – das könnte eng oder sehr breit ausgelegt werden.",
+            "question_to_consider": "Wie definiert das Unternehmen 'ähnliche Dienstleistungen', und auf welche Tätigkeiten oder Branchen soll das Verbot tatsächlich beschränkt sein?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte beschränken Sie das Wettbewerbsverbot auf eine konkret benannte Liste direkter Wettbewerber des Unternehmens, auf einen kürzeren Zeitraum und auf das geografische Gebiet, in dem das Unternehmen tatsächlich tätig ist.'"
+          },
+          {
+            "heading": "Haftung – unbegrenzt für Sie, 100 USD für das Unternehmen",
+            "quote": "Contractor's liability is unlimited. Company's liability is capped at $100.",
+            "plain_english": "Für Schäden, die aus Ihrer Arbeit entstehen, haften Sie ohne Obergrenze. Das Unternehmen haftet Ihnen gegenüber für maximal 100 US-Dollar – unabhängig davon, wie hoch ein tatsächlicher Schaden wäre.",
+            "practical_effect": "Diese Klausel schreibt vor: Ihre Haftung ist unbegrenzt. Die Haftung des Unternehmens ist auf 100 EUR begrenzt. Das bedeutet ein stark asymmetrisches Risiko.",
+            "question_to_consider": "Gibt es eine Haftpflichtversicherung, die dieses Risiko abdecken könnte, und ist das Unternehmen bereit, Ihre Haftung auf einen realistischen Betrag zu begrenzen?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte begrenzen Sie meine Haftung auf die Summe der im Rahmen dieses Vertrags erhaltenen Vergütung und erhöhen Sie die Haftungsgrenze des Unternehmens entsprechend.'"
           },
           {
             "heading": "Freistellung – einschließlich eigener Fahrlässigkeit des Unternehmens",
             "quote": "Contractor shall indemnify Company against any and all claims, without limitation, including Company's own negligence.",
-            "plain_english": "Du musst das Unternehmen von sämtlichen Ansprüchen freistellen – ohne Obergrenze – und zwar auch dann, wenn das Unternehmen selbst durch eigene Fahrlässigkeit zu einem Schaden beigetragen hat.",
-            "practical_effect": "Du könntest für Schäden haftbar gemacht werden. Der Vertrag begrenzt diese Haftung nicht.",
-            "question_to_consider": "In welchen realistischen Szenarien könnte das Unternehmen Ansprüche gegen mich geltend machen, und welche Versicherung würde mich dagegen schützen?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir die Freistellungspflicht auf Ansprüche begrenzen, die unmittelbar auf meinen eigenen Fehler zurückzuführen sind, und Fälle ausschließen, in denen das Unternehmen selbst fahrlässig gehandelt hat?'"
+            "plain_english": "Sie verpflichten sich, das Unternehmen gegen sämtliche Ansprüche Dritter schadlos zu halten – ausdrücklich auch dann, wenn der Schaden durch die Fahrlässigkeit des Unternehmens selbst verursacht wurde.",
+            "practical_effect": "Der Wortlaut dieser Klausel würde Sie verpflichten, das Unternehmen gegen Ansprüche Dritter zu schützen – einschließlich Ansprüche, die aus dem eigenen Fehlverhalten des Unternehmens entstehen.",
+            "question_to_consider": "Warum soll die Freistellung auch Schäden umfassen, die das Unternehmen selbst verursacht hat?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte beschränken Sie die Freistellungspflicht auf Ansprüche, die unmittelbar durch meine eigene Pflichtverletzung verursacht wurden, und schließen Sie die Fahrlässigkeit des Unternehmens ausdrücklich aus.'"
           },
           {
-            "heading": "Haftungsgrenzen – stark asymmetrisch",
-            "quote": "Contractor's liability is unlimited. Company's liability is capped at $100.",
-            "plain_english": "Deine Haftung gegenüber dem Unternehmen ist unbegrenzt. Die Haftung des Unternehmens dir gegenüber ist auf 100 US-Dollar begrenzt.",
-            "practical_effect": "Du trägst das volle finanzielle Risiko bei Problemen, während das Unternehmen selbst bei erheblichen Versäumnissen – etwa Nichtzahlung oder Vertragsverletzung – kaum zur Verantwortung gezogen werden kann.",
-            "question_to_consider": "Wie soll ich mich gegen ein unbegrenztes Haftungsrisiko absichern, und deckt meine Berufshaftpflichtversicherung dieses Szenario ab?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir für beide Seiten eine Haftungsgrenze vereinbaren, die dem tatsächlichen Auftragswert entspricht?'"
-          },
-          {
-            "heading": "Vertragsänderungen durch einseitige Bekanntmachung",
+            "heading": "Vertragsänderung – einseitig durch das Unternehmen",
             "quote": "Company may modify these terms at any time by posting an update; continued work constitutes acceptance.",
-            "plain_english": "Das Unternehmen kann die Vertragsbedingungen jederzeit einseitig ändern. Wenn du nach einer solchen Änderung weiterarbeitest, gilt das als deine Zustimmung – auch ohne dass du ausdrücklich zugestimmt hast.",
-            "practical_effect": "Die Bedingungen, unter denen du arbeitest, könnten sich während des laufenden Projekts ohne dein aktives Einverständnis verändern. Du müsstest aktiv nachverfolgen, ob und wann Änderungen veröffentlicht werden.",
-            "question_to_consider": "Wo werden Änderungen veröffentlicht, und wie werde ich darüber informiert?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir vereinbaren, dass Vertragsänderungen nur mit schriftlicher Zustimmung beider Seiten wirksam werden?'"
-          },
-          {
-            "heading": "Streitbeilegung – Schiedsverfahren ohne Sammelklage",
-            "quote": "Disputes resolved by binding arbitration in Company's jurisdiction; Contractor waives class action and jury trial rights.",
-            "plain_english": "Alle Streitigkeiten werden durch ein verbindliches Schiedsverfahren am Sitz des Unternehmens entschieden. Du verzichtest auf das Recht, Klagen gemeinsam mit anderen zu erheben (Sammelklage) oder vor einem Geschworenengericht zu klagen.",
-            "practical_effect": "Du müsstest im Streitfall möglicherweise in einem anderen Land oder an einem anderen Ort verhandeln. Schiedsverfahren sind oft weniger transparent als Gerichtsverfahren, und die Kosten können erheblich sein. Der Verzicht auf Sammelklagen bedeutet, dass du auch bei systematischen Vertragsverletzungen allein vorgehen müsstest.",
-            "question_to_consider": "In welcher Stadt und welchem Land sitzt das Unternehmen, und welche Kosten würde ein Schiedsverfahren dort für mich bedeuten?",
-            "possible_negotiation_ask": "Eine mögliche Formulierung wäre: 'Könnten wir einen neutralen Schiedsort vereinbaren oder zumindest die Möglichkeit offenhalten, Online-Schiedsverfahren zu nutzen?'"
+            "plain_english": "Das Unternehmen kann die Vertragsbedingungen jederzeit einseitig ändern. Wenn Sie danach weiterarbeiten, gilt das als Zustimmung zu den neuen Bedingungen.",
+            "practical_effect": "Die Bedingungen, unter denen Sie begonnen haben zu arbeiten, könnten sich während des laufenden Projekts verändern, ohne dass Sie aktiv zustimmen oder den Vertrag neu verhandeln müssen.",
+            "question_to_consider": "Wie werden Änderungen bekannt gegeben, mit welcher Vorlaufzeit, und gibt es einen Mechanismus, mit dem Sie einer Änderung widersprechen können, ohne als vertragsbrüchig zu gelten?",
+            "possible_negotiation_ask": "Sie könnten vorschlagen: 'Bitte ergänzen Sie, dass Vertragsänderungen einer schriftlichen Zustimmung beider Parteien bedürfen und nicht einseitig durch Veröffentlichung wirksam werden.'"
           }
         ],
         "things_to_clarify": [
           {
-            "observation": "Der Vertrag nennt kein Honorar, keinen Stundensatz und keine Gesamtvergütung.",
-            "question": "Was genau ist meine vereinbarte Vergütung – Stundensatz, Tagessatz oder Festpreis – und wo ist das schriftlich festgehalten?"
+            "observation": "Klausel 4 erlaubt dem Unternehmen, Zahlungen 'nach eigenem Ermessen' einzubehalten, wenn es 'nicht zufrieden' ist. Der Vertrag legt weder fest, welche Kriterien für Zufriedenheit gelten, noch welches Verfahren anzuwenden ist, wenn das Unternehmen Leistungen beanstandet.",
+            "question": "Nach welchen konkreten, überprüfbaren Kriterien wird die Zufriedenheit beurteilt, und welches Verfahren gilt bei Unstimmigkeiten über die Qualität der erbrachten Leistung?"
           },
           {
-            "observation": "Die zu erbringenden Leistungen werden nur als 'software development services as directed by Company' beschrieben, ohne Umfang, Liefergegenstände oder Fristen.",
-            "question": "Gibt es eine Leistungsbeschreibung, ein Lastenheft oder einen Projektplan, der Teil des Vertrags werden soll?"
+            "observation": "Klausel 8 besagt, dass Änderungen durch 'Veröffentlichung eines Updates' wirksam werden, ohne anzugeben, wo diese Veröffentlichung erfolgt (z. B. per E-Mail, auf einer Website, in einem Portal) oder wie viel Vorlaufzeit Sie erhalten.",
+            "question": "Wo werden Änderungen veröffentlicht, und mit welcher Vorlaufzeit werden Sie informiert, bevor eine Änderung in Kraft tritt?"
           },
+          "Klausel 9 nennt 'Company's jurisdiction' als Schiedsort, ohne Land oder Stadt anzugeben. Fragen Sie nach dem genauen Ort, damit Sie wissen, wohin Sie im Streitfall reisen müssten.",
           {
-            "observation": "Das Einbehaltungsrecht bei Nichtzufriedenheit enthält kein Verfahren für Einwände oder Nachbesserung.",
-            "question": "Wie und in welchem Zeitraum teilt das Unternehmen mit, dass es nicht zufrieden ist, und welche Möglichkeit habe ich, nachzubessern, bevor eine Zahlung einbehalten wird?"
-          },
-          "Unter welcher Jurisdiktion fällt dieser Vertrag? Der Vertrag benennt dies nicht explizit – nur 'Company's jurisdiction', ohne dass konkret benannt wird, welches Land oder welcher Gerichtsstand gemeint ist.",
-          {
-            "observation": "Es ist unklar, was mit offenen Rechnungen und bereits abgeschlossenen Arbeiten passiert, wenn das Unternehmen den Vertrag sofort beendet.",
-            "question": "Sind alle bis zum Kündigungsdatum erbrachten Leistungen vergütungspflichtig, und in welcher Frist erfolgt dann die Zahlung?"
+            "observation": "Klausel 2 erfasst ausdrücklich 'pre-existing materials', ohne ein Verfahren vorzusehen, durch das Sie solche Materialien vor Vertragsbeginn identifizieren und ausnehmen können.",
+            "question": "Gibt es eine Möglichkeit, vor Arbeitsaufnahme eine schriftliche Liste vorbestehender Materialien zu vereinbaren, die von der Abtretung ausgenommen sind?"
           }
         ],
         "before_you_sign": [
-          "Stelle fest, welche deiner bestehenden Code-Bibliotheken, Frameworks oder Werkzeuge du in diesen Auftrag einbringen würdest – und kläre schriftlich, ob diese von der IP-Übertragung ausgenommen werden können.",
-          "Frage nach dem vollständigen Namen und Sitz des Unternehmens sowie dem anwendbaren Recht, bevor du unterschreibst – Klausel 9 nennt 'Company's jurisdiction', ohne diese zu definieren.",
-          "Lass dir Vergütung, Stundensatz oder Projektbudget schriftlich bestätigen, da der Vertrag selbst keine Zahlungsbeträge enthält.",
-          "Prüfe, ob dieser Vertrag mit deinen bestehenden Versicherungen vereinbar ist und ob die Haftungsbegrenzung ausreicht.",
-          "Frage, wo und wie Vertragsänderungen gemäß Klausel 8 veröffentlicht werden, und halte fest, wie du zeitnah davon erfahren würdest."
+          "Erstellen Sie vor Unterzeichnung eine vollständige Liste aller eigenen Bibliotheken, Frameworks und Codebestandteile, die Sie in die Arbeit einbringen würden – und klären Sie schriftlich, ob und wie diese von Klausel 2 ausgenommen werden können.",
+          "Klären Sie schriftlich, was das Unternehmen unter 'ähnliche Dienstleistungen' in Klausel 3 versteht, bevor Sie sich auf das 24-Monats-Wettbewerbsverbot einlassen. Fragen Sie auch nach dem genauen Schiedsort gemäß Klausel 9 – wo würde ein Streitfall tatsächlich verhandelt?",
+          "Klären Sie schriftlich, was unter 'ähnliche Dienstleistungen' in Klausel 3 zu verstehen ist, bevor Sie sich auf ein 24-monatiges weltweites Wettbewerbsverbot einlassen.",
+          "Klären Sie, ob das Unternehmen bereit ist, die unbegrenzte Haftung in Klausel 7 auf einen bestimmten Betrag zu begrenzen – idealerweise auf ein Vielfaches Ihres monatlichen Honorars oder auf eine Summe, die Ihre tatsächlichen Ausgaben nicht übersteigt."
         ]
       }
     }

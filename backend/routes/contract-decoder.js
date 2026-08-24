@@ -17,6 +17,9 @@ router.outputGuard = {
     'invented_contract_fact',
     'assumed_jurisdiction',
     'prescriptive_legal_advice',
+    'contract_language_stated_as_legal_result',
+    'invented_illustrative_scenario',
+    'generic_boilerplate_not_from_this_contract',
     'false_precision',
   ],
   require: [
@@ -46,9 +49,22 @@ Be definite about what the document actually says. Be careful about judgments th
 
 Do not rate the contract or a clause high/medium/low risk. Do not call a clause fair, unfair, standard, unusual, safe, dangerous, legal, illegal, valid, invalid, enforceable, or unenforceable unless current applicable law has been specifically verified and supports that statement.
 
+SAY WHAT THE CLAUSE PURPORTS TO DO, NOT WHAT THE LAW RESULTS IN. A contract is a document making assertions; whether those assertions hold is a question of law you have not verified. The difference is one phrase at the front of the sentence, and it is the whole difference:
+
+  NO:  you cannot reclaim your work or withhold delivery as leverage
+  YES: under the contract's wording, the work is the Company's from creation, so the agreement does not leave you delivery as leverage
+  NO:  you forfeit the right to that money entirely
+  YES: the clause states that unbilled work is not compensable
+  NO:  you give up any right to be credited as the author
+  YES: the clause purports to waive moral rights, including attribution
+
+Waivers, forfeitures and assignments are the clearest cases: a clause can purport to waive a right that the law where it applies does not permit to be waived, and you do not know which law applies. Explain the document. Let the signer ask a lawyer what it achieves.
+
 Do not assume jurisdiction from the visitor's locale, currency, IP region, or location. If contract jurisdiction is unknown, say so when jurisdiction would materially affect an explanation.
 
 Do not invent missing terms or declare that the contract lacks a protection merely because you would expect one. You may say that the supplied text does not appear to address a specific practical question.
+
+NO ILLUSTRATIVE SCENARIOS. Do not stage a situation the visitor did not describe — "if you complete a week of work and plan to invoice at the end of the week", "suppose the Company terminates in month three". The practical effect is stronger stated directly: work completed but not yet invoiced is expressly excluded from compensation. A hypothetical adds circumstances that are not theirs and buries the point inside them.
 
 Negotiation language is an option, not a command. Phrase it as one possible way to ask for a change.
 
@@ -68,7 +84,7 @@ function cleanList(value, max) {
 
 function normalizeDraft(value) {
   const terms = Array.isArray(value?.important_terms)
-    ? value.important_terms.slice(0, 8).map((term) => ({
+    ? value.important_terms.slice(0, 6).map((term) => ({
         heading: cleanString(term?.heading),
         quote: cleanString(term?.quote).slice(0, 300),
         plain_english: cleanString(term?.plain_english),
@@ -79,7 +95,7 @@ function normalizeDraft(value) {
     : [];
 
   const clarifications = Array.isArray(value?.things_to_clarify)
-    ? value.things_to_clarify.slice(0, 5).map((item) => ({
+    ? value.things_to_clarify.slice(0, 4).map((item) => ({
         observation: cleanString(item?.observation),
         question: cleanString(item?.question),
       })).filter(item => item.observation && item.question)
@@ -96,7 +112,7 @@ function normalizeDraft(value) {
     summary: cleanString(value?.summary),
     important_terms: terms,
     things_to_clarify: clarifications,
-    before_you_sign: cleanList(value?.before_you_sign, 5),
+    before_you_sign: cleanList(value?.before_you_sign, 4),
     legal_questions: legalQuestions,
   };
 }
@@ -176,7 +192,7 @@ Return ONLY valid JSON in this exact shape:
   ],
   "things_to_clarify": [
     {
-      "observation": "a practical question the supplied text does not appear to answer clearly",
+      "observation": "a practical question THIS contract raises and does not answer clearly — an undefined term, a right the text grants without saying how it is exercised, a duty with no stated limit. It must trace to language actually in the supplied document. Not what contracts of this kind sometimes contain, not what other clauses elsewhere often do, and not a prompt to consult an attorney or an accountant: generic legal caution is not an observation about this contract.",
       "question": "a concise question the signer could ask"
     }
   ],
@@ -190,7 +206,8 @@ Return ONLY valid JSON in this exact shape:
 }
 
 Rules:
-- Include at most 8 important_terms, 5 things_to_clarify, 5 before_you_sign items, and 5 legal_questions.
+- At most 6 important_terms — fewer is better. Reserve them for the terms with the largest practical consequence for the signer; a term that merely restates a routine obligation does not earn a quote, a translation, an effect, a question and a negotiation box. At most 4 things_to_clarify, 4 before_you_sign items, and 5 legal_questions.
+- Do not repeat a point across sections. If a term is covered in important_terms, before_you_sign should not restate it — it should say what to DO about it, or say nothing.
 - Every important term must quote language actually present in the supplied contract.
 - Do not create a legal_question merely because the contract type often raises that issue. Include one only when this document contains a term for which current law could materially change the explanation.
 - If jurisdiction is unknown, legal_questions may identify what would need verification, but do not state jurisdiction-specific law.
@@ -269,9 +286,17 @@ Return ONLY valid JSON with this exact public shape:
       final.important_terms.forEach((term, i) => {
         fields.push([`important_terms[${i}].plain_english`, term.plain_english]);
         fields.push([`important_terms[${i}].practical_effect`, term.practical_effect]);
+        // question_to_consider is visitor-facing text like any other, and it
+        // was the one field of the six not being checked — which is where the
+        // legal conclusions kept surfacing after the others were cleaned.
+        if (term.question_to_consider) fields.push([`important_terms[${i}].question_to_consider`, term.question_to_consider]);
+        fields.push([`important_terms[${i}].heading`, term.heading]);
         if (term.possible_negotiation_ask) fields.push([`important_terms[${i}].possible_negotiation_ask`, term.possible_negotiation_ask]);
       });
-      final.things_to_clarify.forEach((item, i) => fields.push([`things_to_clarify[${i}].observation`, item.observation]));
+      final.things_to_clarify.forEach((item, i) => {
+        fields.push([`things_to_clarify[${i}].observation`, item.observation]);
+        fields.push([`things_to_clarify[${i}].question`, item.question]);
+      });
       final.before_you_sign.forEach((item, i) => fields.push([`before_you_sign[${i}]`, item]));
 
       await runOutputGuard(final, {
@@ -282,8 +307,18 @@ STATED JURISDICTION: ${jurisdiction?.trim() || '(not supplied — do not infer o
 VISITOR CONTEXT: ${context?.trim() || '(not supplied)'}
 ${verifiedLawBlock ? `VERIFIED CURRENT LAW:\n${verifiedLawBlock}` : 'NO LAW WAS VERIFIED — any legal conclusion is unsupported.'}
 
-${hasPdf ? 'THE CONTRACT WAS SUPPLIED AS A PDF, which the generator read directly. You cannot see it, so do not flag a quote as unsupported — a quote is verbatim contract text by construction. Judge only the claims made ABOUT the quoted language.' : ''}
-THE CONTRACT TEXT ITSELF IS THE OTHER SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
+${hasPdf
+  ? `THE CONTRACT WAS SUPPLIED AS A PDF. You cannot see it — but the quotes below ARE the contract, verbatim, and they are your source of truth for everything else:\n${final.important_terms.map(term => `- "${term.quote}"`).join('\n')}\n\nYOUR EVIDENCE IS PARTIAL AND YOU MUST ACT ACCORDINGLY. Those quotes are a handful of excerpts from a longer document you cannot open, so absence from them proves nothing. Do not flag a statement as invented merely because you cannot confirm it — that test would fail every true sentence about the parts you were not shown.
+
+Flag only:
+- a statement that CONTRADICTS a quote above, or
+- a legal, enforceability, fairness, standardness or risk claim, which needs verified law rather than the document, or
+- an illustrative scenario, a prediction, or advice to consult a professional.
+
+For everything else about the contract's contents, assume the generator read the document and you did not.`
+  : `CONTRACT TEXT:\n${contractText.trim().slice(0, 12000)}`}
+
+THE CONTRACT TEXT ITSELF IS THE SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
         promise: 'Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.',
         guard: router.outputGuard,
         // The quote field is excluded on purpose: it is verbatim contract text,
