@@ -319,7 +319,7 @@ const ConflictCoach = ({ tool }) => {
             <div>
               {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
               <p className={`text-base ${c.textSecondary}`}>
-                <span className="me-2 text-lg">{tool?.icon ?? '📱'}</span>{tool?.tagline ?? t('cc_tagline')}
+                <span className="me-2 text-lg">{tool?.icon ?? '🧯'}</span>{tool?.tagline ?? t('cc_tagline')}
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
@@ -437,8 +437,8 @@ const ConflictCoach = ({ tool }) => {
             <button title={t('cmd_enter')} onClick={handleAnalyze} disabled={loading}
               className={`relative flex-1 ${c.btnPrimary} font-medium py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
               {loading
-                ? <><span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> {t('cc_analyzing')}</>
-                : <><span>{tool?.icon ?? '📱'}</span> {t('cc_analyze')}</>}
+                ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧯'}</span> {t('cc_analyzing')}</>
+                : <><span>{tool?.icon ?? '🧯'}</span> {t('cc_analyze')}</>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -521,7 +521,7 @@ const ConflictCoach = ({ tool }) => {
                             </div>
                             <button onClick={handleAdjustTone} disabled={toneLoading}
                               className={`${c.btnPrimary} px-4 py-2 rounded text-sm w-full disabled:opacity-40`}>
-                              {toneLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> : t('cc_regenerate', { level: toneLevel })}
+                              {toneLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧯'}</span> : t('cc_regenerate', { level: toneLevel })}
                             </button>
                             {adjustedResponse && (
                               <div className="mt-2">
@@ -568,7 +568,7 @@ const ConflictCoach = ({ tool }) => {
                 onKeyDown={e => { if (e.key === 'Enter') handleFollowup(); }} />
               <button onClick={handleFollowup} disabled={followupLoading || !followupQuestion.trim()}
                 className={`${c.btnPrimary} px-4 py-2 rounded-lg disabled:opacity-40`}>
-                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '📱'}</span> : '➤'}
+                {followupLoading ? <span className="animate-spin inline-block">{tool?.icon ?? '🧯'}</span> : '➤'}
               </button>
             </div>
           </div>
