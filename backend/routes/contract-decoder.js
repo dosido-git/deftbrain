@@ -49,7 +49,11 @@ Be definite about what the document actually says. Be careful about judgments th
 
 Do not rate the contract or a clause high/medium/low risk. Do not call a clause fair, unfair, standard, unusual, safe, dangerous, legal, illegal, valid, invalid, enforceable, or unenforceable unless current applicable law has been specifically verified and supports that statement.
 
-SAY WHAT THE CLAUSE PURPORTS TO DO, NOT WHAT THE LAW RESULTS IN. A contract is a document making assertions; whether those assertions hold is a question of law you have not verified. The difference is one phrase at the front of the sentence, and it is the whole difference:
+A CONTRACT ESTABLISHES WHAT IT SAYS. IT DOES NOT BY ITSELF ESTABLISH WHAT A PARTY CAN LEGALLY DO, CANNOT DO, SUE FOR, RECOVER, FORFEIT, ENFORCE, OR BE LIABLE FOR.
+
+That is the governing rule of this tool. Unless the legal consequence has been independently verified for the stated jurisdiction — and any verified law is supplied to you explicitly, so if you were given none then none was verified — describe it as the APPARENT EFFECT OF THE CONTRACT LANGUAGE rather than as a legal fact.
+
+The test is mechanical. Take any sentence you are about to write about what happens to the signer and ask: does this state a consequence in the world, or what the document says? If it states a consequence, it needs law you were given. If you were not given it, move the sentence back onto the page: what the clause provides, what it purports to do, what it appears to require. The difference is one phrase at the front, and it is the whole difference:
 
   NO:  you cannot reclaim your work or withhold delivery as leverage
   YES: under the contract's wording, the work is the Company's from creation, so the agreement does not leave you delivery as leverage
@@ -184,8 +188,8 @@ Return ONLY valid JSON in this exact shape:
     {
       "heading": "short descriptive heading",
       "quote": "exact excerpt from the supplied contract, maximum 300 characters",
-      "plain_english": "what the quoted language says in ordinary words",
-      "practical_effect": "the concrete consequence for the signer if this term applies as written",
+      "plain_english": "What the quoted language says, in ordinary words. A translation of the sentence, not a verdict on it: keep legal-consequence verbs out — barred, forbidden, liable, entitled, forfeited — and say what the clause provides."
+      "practical_effect": "What this means for the signer in practice IF THE TERM APPLIES AS WRITTEN — and it must not restate the clause, because plain_english directly above it already did. Restating is the failure mode: 'the clause states that all work product belongs to the Company' adds nothing to a reader who has just read that sentence in ordinary words. Say what it reaches into: a personal project built at the weekend falls inside this wording; an invoice sent in March is not payable until June; the restriction runs after the engagement ends, not only during it. Frame it as the apparent effect of the language — under this wording, as written, on its face — never as a legal outcome.",
       "question_to_consider": "a useful question the signer could ask about this term",
       "possible_negotiation_ask": "one optional, neutral way to ask for a change, or null"
     }
@@ -319,7 +323,11 @@ For everything else about the contract's contents, assume the generator read the
   : `CONTRACT TEXT:\n${contractText.trim().slice(0, 12000)}`}
 
 THE CONTRACT TEXT ITSELF IS THE SOURCE OF TRUTH. A term is supported when the quoted language says it; anything about fairness, standardness, enforceability or risk is NOT in the document and needs verified law, which is listed above or absent.`,
-        promise: 'Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.',
+        promise: `Explain what this contract says in ordinary language, name the terms that materially affect the signer, and give questions worth asking before signing.
+
+THE ONE RULE THAT DECIDES MOST OF THESE. A contract establishes what it SAYS. It does not by itself establish what a party can legally do, cannot do, sue for, recover, forfeit, enforce, or be liable for. Unless that consequence appears in the verified-law block above — and if there is no such block, nothing was verified — the text must describe it as the apparent effect of the contract language, not as a legal fact.
+
+So flag "you cannot withhold delivery", "you forfeit that payment", "they can sue you for it", "this is unenforceable", "you would be liable". Do not flag "under the contract's wording, the work is the Company's from creation", "the clause states that unbilled work is not compensable", "the agreement purports to waive moral rights" — those describe the document, which is what the document can support.`,
         guard: router.outputGuard,
         // The quote field is excluded on purpose: it is verbatim contract text,
         // and "unsupported" is not a thing a verbatim excerpt can be.
