@@ -2431,3 +2431,54 @@ deleting the field — the guard is what stops it coming back.
 `checkAgainstSupplied`, `enforceEnvelope`, …) or declares no `outputGuard`.
 `GUARD_EXEMPT` in `scripts/output-standard-audit.js` takes named exceptions with
 reasons; it is empty.
+
+---
+
+### PF-39b · Schema congruence
+
+> **The schema defines what the product is allowed to think about and present.
+> The guard prevents it from exceeding those boundaries.**
+
+A v2 tool's schema must not require the model to produce information that the
+output standard or its guard prohibits. Where a field's purpose inherently
+requires unsupported inference, prediction, diagnosis or fabrication, **remove
+or redesign the field** rather than asking validation to suppress its contents.
+
+Conflict Coach is the worked example. Its schema required
+`primary_emotion_detected`, `underlying_need`, `emotional_temperature`,
+`communication_style` and a `manipulation_tactics` array, and its guard forbids
+every one of them. No amount of prompting fixes that: the software was
+commissioning the hallucination. A validator would merely fight the product
+design after every generation, and "fighting" means emptying a field the
+frontend still renders.
+
+The replacement shows what a legitimate version looks like:
+
+| removed | replaced by | why it is legitimate |
+| --- | --- | --- |
+| `primary_emotion_detected`, `underlying_need` | `triggers_identified` — quoted phrases | observable evidence, not a reading of a person |
+| `communication_style`, `manipulation_tactics` | `whats_being_asked` — one line | grounded interpretation of the text |
+| `emotional_temperature`, `escalation_risk.level` | *(nothing)* | a score for a judgement nobody measured |
+| `delay_time: "20-30 minutes"` | `delay_time` in words | useful judgement without fake precision |
+
+**Gate 9 checks this mechanically where it can.** `SCHEMA_SMELLS` in
+`scripts/output-standard-audit.js` matches JSON key declarations in v2 routes
+against named shapes — `*_temperature`, `primary_emotion*`, `underlying_need`,
+`manipulation_*`, `likely_*`, `predicted_*`, `*_probability`, `*_score/_level`,
+`their_intent`. Keys only, never prose, so a comment explaining a removal does
+not re-flag it. `SCHEMA_CONGRUENCE_EXEMPT` takes named exceptions with reasons
+and is empty.
+
+**Where it is not mechanically detectable it is a required first-pass review
+item**, because a field can commission a guess without naming one —
+`"assessment"`, `"read"`, `"insight"` and `"what_they_want"` all can. So the
+review order for every remaining tool is:
+
+1. **Read the schema first.** Ask of each field: could this be answered from
+   what the visitor supplied and what is observable? If not, the field is the
+   bug.
+2. Then the prompt wording.
+3. Then the generated output.
+
+Conflict Coach demonstrated that the hallucination is not always the model's.
+Sometimes the software asked for it.

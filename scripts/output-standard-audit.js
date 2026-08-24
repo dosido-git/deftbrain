@@ -74,6 +74,50 @@ for (const slug of onDisk) {
   }
 }
 
+// ── 3c. Schema congruence ───────────────────────────────────────────────
+// A guard cannot save a schema that asks for the violation. Conflict Coach
+// REQUIRED primary_emotion_detected, underlying_need, emotional_temperature and
+// a manipulation_tactics array — the software was commissioning the
+// hallucination, and every response would have failed and been repaired into an
+// empty field the frontend still rendered.
+//
+// So: a v2 route's schema must not name a field whose purpose is unsupported
+// inference. Matched against JSON key declarations only ("field": ...), never
+// prose, so a comment explaining why a field was removed does not re-flag it.
+// Mechanical detection catches the named shapes; the rest is a first-pass
+// review item, because a field can commission a guess without saying so.
+const SCHEMA_SMELLS = [
+  [/^(?:.*_)?(?:emotional_)?temperature$/,                'a score for a feeling nobody measured'],
+  [/^(?:primary_)?emotion(?:_detected|s)?$/,              'names what another person feels'],
+  [/^underlying_(?:need|motive|reason|fear)$/,            'states a motive behind someone\u2019s words'],
+  [/^manipulation_(?:tactics|detected|score)$/,           'diagnoses intent from a message'],
+  [/^(?:communication_|personality_|attachment_)style$/,  'a psychological label as a determination'],
+  [/^(?:likely|predicted|expected)_/,                     'predicts behaviour nobody observed'],
+  [/_(?:probability|likelihood|odds)$/,                   'a number attached to a guess'],
+  [/^(?:risk|escalation|toxicity|compatibility)_(?:score|level|rating)$/, 'false precision on a judgement'],
+  [/^response_rate|_success_rate$/,                       'a population claim nobody counted'],
+  [/^(?:their|his|her|they)_(?:intent|intention|goal|feelings?)$/, 'attributes an inner state to a real person'],
+];
+// Named exceptions, with reasons. Empty — an exception here should be a
+// conspicuous decision, not a hole somebody fell into.
+const SCHEMA_CONGRUENCE_EXEMPT = new Map([]);
+
+for (const slug of onDisk) {
+  const src = fs.readFileSync(path.join(ROUTES, `${slug}.js`), 'utf8');
+  if (!DECLARES_V2.test(src) || SCHEMA_CONGRUENCE_EXEMPT.has(slug)) continue;
+  const keys = new Set([...src.matchAll(/"([a-z][a-z0-9_]{2,})"\s*:/g)].map(m => m[1]));
+  for (const key of keys) {
+    const hit = SCHEMA_SMELLS.find(([re]) => re.test(key));
+    if (hit) {
+      problems.push(
+        `backend/routes/${slug}.js schema declares "${key}" — ${hit[1]}.\n` +
+        `     A v2 guard cannot suppress a field whose whole purpose is the violation; it would empty it on every call.\n` +
+        `     Remove or redesign the field, or add it to SCHEMA_CONGRUENCE_EXEMPT with a reason.`
+      );
+    }
+  }
+}
+
 // ── 4. A v2 route's model calls must all be reachable by the contract ────
 // enterRouteStandard covers every call under the request, including direct
 // create() calls — but only if the call happens inside the request. A call at
