@@ -49,8 +49,6 @@ const ConflictCoach = ({ tool }) => {
     manipulation:      isDark ? 'bg-red-950/30 border-red-800' : 'bg-red-50 border-red-300',
     manipulationInner: isDark ? 'bg-red-900/20' : 'bg-red-100/50',
     highlight:         isDark ? 'bg-cyan-900/20 border-cyan-700' : 'bg-cyan-50 border-cyan-300',
-    historyPanel:      isDark ? 'bg-zinc-800/60 border-zinc-700' : 'bg-white border-gray-200',
-    historyItem:       isDark ? 'bg-zinc-700/50' : 'bg-gray-50',
     draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
     strategyHover:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
@@ -100,13 +98,6 @@ const ConflictCoach = ({ tool }) => {
   };
 
   // History temperature badge (dark-mode aware)
-  const histTempBadge = (temp) => {
-    if (temp === 'high')   return isDark ? 'bg-red-900/40 text-red-300'     : 'bg-red-100 text-red-700';
-    if (temp === 'medium') return isDark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700';
-    return isDark ? 'bg-emerald-900/40 text-emerald-300' : 'bg-emerald-100 text-emerald-700';
-  };
-
-  // ─── Session state (all useState before usePersistentState — PF-11/PF-14) ───
   const [emotionalState, setEmotionalState] = useState({ angry: false, hurt: false, defensive: false, frustrated: false, calm: false, confused: false });
   const [goal,           setGoal]           = useState('');
   const [userDraft,      setUserDraft]      = useState('');
@@ -128,7 +119,6 @@ const ConflictCoach = ({ tool }) => {
   const [toneLevel,             setToneLevel]             = useState(50);
   const [adjustedResponse,      setAdjustedResponse]      = useState(null);
   const [toneLoading,           setToneLoading]           = useState(false);
-  const [showHistory,           setShowHistory]           = useState(false);
 
   // ─── Refs ───
   const toastTimerRef  = useRef(null);
@@ -151,7 +141,6 @@ const ConflictCoach = ({ tool }) => {
   const [personLabel,     setPersonLabel]     = usePersistentState('cc-person', '');
   const [actualGoal,      setActualGoal]      = usePersistentState('cc-goal', '');
   const [results,         setResults]         = usePersistentState('cc-results', null);
-  const [conflictHistory, setConflictHistory] = usePersistentState('cc-history', []);
 
   // ─── Helpers ───
   const showToast = (msg, dur = 4000) => {
@@ -224,7 +213,6 @@ const ConflictCoach = ({ tool }) => {
         setMandatoryDelay(true);
         if (!delayActive) { setDelayEndTime(Date.now() + 600 * 1000); }
       }
-      handleSaveConflict(data);
     } catch (err) { setError(err.message || t('cc_err_analysis')); }
   };
 
@@ -293,34 +281,6 @@ const ConflictCoach = ({ tool }) => {
     setToneLoading(false);
   };
 
-  // ─── Conflict sessionHistory ───
-  const handleSaveConflict = (data) => {
-    const entry = {
-      id: Date.now().toString(), date: new Date().toISOString(),
-      person: personLabel.trim() || relationship, relationship,
-      topic: receivedMessage.trim().slice(0, 80),
-      preview: data?.message_analysis?.primary_emotion_detected || '',
-      temperature: data?.message_analysis?.emotional_temperature || 'unknown',
-      tactics: data?.manipulation_tactics?.map(mt => mt.tactic) || [],
-    };
-    setConflictHistory(p => [entry, ...p].slice(0, 6));
-  };
-
-  const detectPatterns = () => {
-    if (conflictHistory.length < 2) return null;
-    const person = personLabel.trim() || relationship;
-    const withPerson = conflictHistory.filter(e => e.person === person);
-    if (withPerson.length < 2) return null;
-    const thirtyDays = new Date(); thirtyDays.setDate(thirtyDays.getDate() - 30);
-    const recent = withPerson.filter(e => new Date(e.date) > thirtyDays);
-    if (recent.length < 2) return null;
-    const allTactics = recent.flatMap(e => e.tactics || []);
-    const tacticCounts = {}; allTactics.forEach(tac => { tacticCounts[tac] = (tacticCounts[tac] || 0) + 1; });
-    const repeatedTactics = Object.entries(tacticCounts).filter(([, ct]) => ct >= 2).map(([tac]) => tac);
-    return { count: recent.length, person, repeatedTactics, timeframe: t('cc_timeframe_30d') };
-  };
-
-  // ─── Build full text ───
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const l = [`💬 ${t('cc_copy_header')}`, '═'.repeat(40)];
@@ -369,8 +329,18 @@ const ConflictCoach = ({ tool }) => {
     return () => document.removeEventListener('keydown', handler);
   }, [loading]);
 
+  // The history is gone, but anyone who used this tool before today still has
+  // it on their device: who upset them, what was said, and the tactics the
+  // model scored those people with. Removing the feature does not remove the
+  // file, so clear it once on mount. Cheap, silent, and the only chance we get
+  // — after this release nothing else references the key.
+  useEffect(() => {
+    try { window.localStorage.removeItem('cc-history'); } catch { /* private mode */ }
+  }, []);
+
   const exampleMessage = t('cc_example_message');
   const hasContent = !!(results || receivedMessage.trim());
+
 
   // ═══════════════════════════════════════════════════════════════
   // RENDER
@@ -403,39 +373,13 @@ const ConflictCoach = ({ tool }) => {
                   ↺ {t('start_over')}
                 </button>
               )}
-              <button onClick={() => setShowHistory(!showHistory)} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}>
-                📋 {t('cc_history')}
-              </button>
             </div>
           </div>
         </div>
 
-        {/* History panel */}
-        {showHistory && (
-          <div className={`mb-5 p-4 rounded-lg border max-h-64 overflow-y-auto ${c.historyPanel}`}>
-            <h4 className={`font-bold mb-2 ${c.text}`}>📋 {t('cc_past_conflicts')}</h4>
-            {conflictHistory.length > 0 ? (
-              <div className="space-y-2">
-                {conflictHistory.map(e => (
-                  <div key={e.id} className={`flex items-center justify-between p-2 rounded ${c.historyItem}`}>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${histTempBadge(e.temperature)}`}>{tempLabel(e.temperature)}</span>
-                        <span className={`text-xs ${c.textMuteded}`}>{e.person} · {new Date(e.date).toLocaleDateString()}</span>
-                      </div>
-                      <p className={`text-sm truncate ${c.text}`}>{e.topic}</p>
-                      {e.tactics?.length > 0 && <p className={`text-xs ${c.textMuteded}`}>{t('cc_tactics_label')}: {e.tactics.join(', ')}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : <p className={`text-sm ${c.textMuteded}`}>{t('cc_no_history')}</p>}
-          </div>
-        )}
-
         <div className="space-y-5">
 
-          {/* Mandatory delay — below header so tool name always renders first */}
+        {/* Mandatory delay — below header so tool name always renders first */}
           {delayActive && (
             <div className={`${c.danger} border-4 rounded-xl p-6 text-center`}>
               <span className="text-6xl block mb-4">🔒</span>
@@ -584,19 +528,6 @@ const ConflictCoach = ({ tool }) => {
           ═══════════════════════════════════════════════════════ */}
       {results && (
         <div data-copy-results ref={resultsRef} className="space-y-4">
-
-          {/* Pattern Alert — shown inside results so tool title always appears first */}
-          {(() => {
-            const p = detectPatterns();
-            return p ? (
-              <div className={`${c.manipulation} border-2 rounded-xl p-5`}>
-                <h3 className={`font-bold mb-2 ${c.text}`}>🔗 {t('cc_pattern_title')}</h3>
-                <p className={`text-sm ${c.textSecondary}`}>{t('cc_pattern_logged_a')} <strong>{t('cc_pattern_conflicts', { count: p.count })}</strong> {t('cc_pattern_with')} <strong>{p.person}</strong> {t('cc_pattern_timeframe', { timeframe: p.timeframe })}</p>
-                {p.repeatedTactics.length > 0 && <p className={`text-sm mt-1 ${c.textSecondary}`}>{t('cc_pattern_recurring')}: <strong>{p.repeatedTactics.join(', ')}</strong>. {t('cc_pattern_not_incident')}</p>}
-                <p className={`text-xs mt-2 ${c.textMuted}`}>{t('cc_pattern_support')}</p>
-              </div>
-            ) : null;
-          })()}
 
           {/* Temperature */}
           {results.message_analysis && (

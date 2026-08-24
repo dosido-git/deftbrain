@@ -827,7 +827,12 @@ for name, fpath in tools:
     # RoastMe, 2026-08-19: the history was a list of the things a person had
     # asked to be mocked for. Keeping that is a worse idea the longer you look
     # at it.
-    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe'}
+    # ConflictCoach joined on 2026-08-23. Its history stored who upset you,
+    # what they said, and which "manipulation tactics" the model had scored
+    # them with, on a shared device — and fed a pattern alert reporting that
+    # someone had done it twice this month. A tool for the worst text you got
+    # this week should not be keeping a file on the sender.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 
