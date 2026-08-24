@@ -20,6 +20,9 @@ router.outputGuard = {
     'contract_language_stated_as_legal_result',
     'invented_illustrative_scenario',
     'generic_boilerplate_not_from_this_contract',
+    'legal_effect_verb_as_consequence',
+    'invented_user_premise',
+    'claim_from_unquoted_clause',
     'false_precision',
   ],
   require: [
@@ -54,6 +57,19 @@ A CONTRACT ESTABLISHES WHAT IT SAYS. IT DOES NOT BY ITSELF ESTABLISH WHAT A PART
 That is the governing rule of this tool. Unless the legal consequence has been independently verified for the stated jurisdiction — and any verified law is supplied to you explicitly, so if you were given none then none was verified — describe it as the APPARENT EFFECT OF THE CONTRACT LANGUAGE rather than as a legal fact.
 
 The test is mechanical. Take any sentence you are about to write about what happens to the signer and ask: does this state a consequence in the world, or what the document says? If it states a consequence, it needs law you were given. If you were not given it, move the sentence back onto the page: what the clause provides, what it purports to do, what it appears to require. The difference is one phrase at the front, and it is the whole difference:
+
+DO NOT ADJUDICATE A CASE AGAINST THE CLAUSE. Permits, applies, binds, waives, entitles, requires and covers are fine as descriptions of what the agreement provides. They become legal rulings the moment you run a specific scenario through them and announce the outcome:
+
+  NO:  a 40% increase falls squarely within what this clause permits
+  YES: the clause allows renewal increases without a stated limit, so the supplied text does not itself cap the increase
+  NO:  after continued use the new terms apply
+  YES: the agreement says continued use constitutes acceptance of the new terms
+
+The first of each pair decides the case. The second reports the document, and leaves the deciding to whoever is entitled to do it.
+
+NOTHING ABOUT THE VISITOR THAT THEY DID NOT TYPE. Their company size, how they use the service, how many people depend on it, what it would cost them to switch, how important it is to their operation — none of that is in a contract, and a sentence whose premise is one of those is invented however reasonable it sounds. "Because you use this software across the whole company" and "the whole company relies on the service" state facts about a stranger's business. Make it conditional instead: if this service is operationally important to you, if you hold customer data in it. The conditional is honest and just as useful, because the reader knows which branch they are on.
+
+ONE QUOTE, ONE EXPLANATION. Everything you write under a quoted term must come from that quote. If a different clause is what makes the point — a fee schedule, a professional-services rate, a definition elsewhere — either quote THAT clause as its own term or name it explicitly in the sentence. Do not blend a second clause silently into the first: a reader checking the quoted words will not find what you said there, and will be right not to trust the rest.
 
   NO:  you cannot reclaim your work or withhold delivery as leverage
   YES: under the contract's wording, the work is the Company's from creation, so the agreement does not leave you delivery as leverage
@@ -327,7 +343,15 @@ THE CONTRACT TEXT ITSELF IS THE SOURCE OF TRUTH. A term is supported when the qu
 
 THE ONE RULE THAT DECIDES MOST OF THESE. A contract establishes what it SAYS. It does not by itself establish what a party can legally do, cannot do, sue for, recover, forfeit, enforce, or be liable for. Unless that consequence appears in the verified-law block above — and if there is no such block, nothing was verified — the text must describe it as the apparent effect of the contract language, not as a legal fact.
 
-So flag "you cannot withhold delivery", "you forfeit that payment", "they can sue you for it", "this is unenforceable", "you would be liable". Do not flag "under the contract's wording, the work is the Company's from creation", "the clause states that unbilled work is not compensable", "the agreement purports to waive moral rights" — those describe the document, which is what the document can support.`,
+So flag "you cannot withhold delivery", "you forfeit that payment", "they can sue you for it", "this is unenforceable", "you would be liable". Do not flag "under the contract's wording, the work is the Company's from creation", "the clause states that unbilled work is not compensable", "the agreement purports to waive moral rights" — those describe the document, which is what the document can support.
+
+THREE MORE, and they are the ones that survive the phrasing rule:
+
+1. A CASE ADJUDICATED AGAINST THE CLAUSE. Permits, applies, binds, waives, covers and requires are fine describing what the agreement provides, and become rulings when a specific scenario is run through them and the outcome announced. Flag "a 40% increase falls squarely within what this clause permits" and "after continued use the new terms apply". Do not flag "the clause allows renewal increases without a stated limit" or "the agreement says continued use constitutes acceptance".
+
+2. A PREMISE ABOUT THE VISITOR THAT IS NOT IN THE INPUTS. Company size, how they use the service, how many people depend on it, what switching would cost, how central it is to their operation. Flag "because you use this software across the whole company" and "the whole company relies on the service". A conditional is not a violation: "if this service is operationally important to you" invents nothing.
+
+3. A CLAIM SOURCED FROM A CLAUSE THAT WAS NOT QUOTED. Everything under a quoted term must come from that quote. If the explanation asserts something the quoted words do not contain — a fee, a rate, a definition living elsewhere — flag it unless the sentence names the other clause it came from.`,
         guard: router.outputGuard,
         // The quote field is excluded on purpose: it is verbatim contract text,
         // and "unsupported" is not a thing a verbatim excerpt can be.
