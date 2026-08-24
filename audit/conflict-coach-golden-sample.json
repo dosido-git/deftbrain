@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "conflict-coach",
-    "tag": "conflictcoach-v3",
+    "tag": "conflictcoach-v4",
     "locked": "2026-07-12",
-    "note": "Structural regression golden. main-de-truncation-guard: the 12-section schema truncated at max_tokens 4000 in German → fixed with max_tokens 6000 + caps (response_strategies 3-4, what_NOT_to_say 3-4). 10 annotations stripped (glued onto response_text/tactic fields). PF-26 fixed. manipulation_tactics + draft_analysis.tone_flags/problematic_phrases neutralized to [] (interpretation-dependent). Re-locked 2026-08-23 (v2): adopted PF-39 v2 WITH an enforcement profile (router.outputGuard), and the schema lost everything the guard forbids — emotional_temperature, primary_emotion_detected, underlying_need, communication_style, the whole manipulation_tactics array, and draft_analysis.escalation_risk.level. A guard that fights its own schema on every call is not enforcement, it is a repair loop. message_analysis is now triggers_identified (quoted phrases only) plus whats_being_asked. cooling_recommendation.delay_time is words, not minutes. The follow-up endpoint no longer passes temperature/emotion/tactics as context. Guard verified firing live: 3 fields flagged and repaired on the first real input (predicted_recipient_reaction, emotion_inference_as_fact, unsupported_timing_rule). Re-locked 2026-08-23 (v3): second schema pass. what_this_does and risks removed from every strategy (an effect and a risk are both predictions about a stranger), and apology_assessment, what_NOT_to_say, timing_landmines, channel_landmines, if_they_continue_escalating and repair_strategy_later deleted whole — they were where the remaining mind-reading and unsupported prescriptions lived. Output is now a grounded read, 3-4 ready-to-send responses, and the follow-up Q&A. triggers_identified may carry a note about the WORDS as a possibility, never a determination about the sender. Both inline copy buttons removed.",
-    "baseline": "conflictcoach-v3",
+    "note": "Structural regression golden. main-de-truncation-guard: the 12-section schema truncated at max_tokens 4000 in German → fixed with max_tokens 6000 + caps (response_strategies 3-4, what_NOT_to_say 3-4). 10 annotations stripped (glued onto response_text/tactic fields). PF-26 fixed. manipulation_tactics + draft_analysis.tone_flags/problematic_phrases neutralized to [] (interpretation-dependent). Re-locked 2026-08-23 (v2): adopted PF-39 v2 WITH an enforcement profile (router.outputGuard), and the schema lost everything the guard forbids — emotional_temperature, primary_emotion_detected, underlying_need, communication_style, the whole manipulation_tactics array, and draft_analysis.escalation_risk.level. A guard that fights its own schema on every call is not enforcement, it is a repair loop. message_analysis is now triggers_identified (quoted phrases only) plus whats_being_asked. cooling_recommendation.delay_time is words, not minutes. The follow-up endpoint no longer passes temperature/emotion/tactics as context. Guard verified firing live: 3 fields flagged and repaired on the first real input (predicted_recipient_reaction, emotion_inference_as_fact, unsupported_timing_rule). Re-locked 2026-08-23 (v3): second schema pass. what_this_does and risks removed from every strategy (an effect and a risk are both predictions about a stranger), and apology_assessment, what_NOT_to_say, timing_landmines, channel_landmines, if_they_continue_escalating and repair_strategy_later deleted whole — they were where the remaining mind-reading and unsupported prescriptions lived. Output is now a grounded read, 3-4 ready-to-send responses, and the follow-up Q&A. triggers_identified may carry a note about the WORDS as a possibility, never a determination about the sender. Both inline copy buttons removed. Re-locked 2026-08-23 (v4): the guard was checking every field EXCEPT the replies — the wiring named response_strategies[i].message and the schema field is response_text, so getByPath returned undefined and every reply was filtered out before the check ran. Also added contradicted_supplied_fact to the V2 checks: told the relationship was Partner, the output called them a roommate, which is a swap rather than an invention and nothing was looking for it. Prompt now pins the supplied relationship word and requires replies to reflect what was SAID, never what is FELT.",
+    "baseline": "conflictcoach-v4",
     "captured": "2026-08-23"
   },
   "cases": [
@@ -34,71 +34,71 @@
       "output": {
         "response_strategies": [
           {
-            "strategy": "Acknowledges their feeling without accepting the guilt-trip frame",
-            "response_text": "I can hear that you felt like I wasn't prioritizing you tonight, and that matters to me. Can we talk when I'm with you so I can actually show up for this conversation the way it deserves?",
+            "strategy": "Acknowledges their feeling without accepting the framing",
+            "response_text": "I know I was late and I take that seriously. I want to talk about what is really going on. Can we sit down together?",
             "tone": "compassionate"
           },
           {
-            "strategy": "Owns the specific thing, holds the line on the larger accusation",
-            "response_text": "I'm sorry I was late — that was on me and I get why it stung. I do want to talk about the 'I'm not important to you' part, because I don't think that's the full picture and I'd like us to get there together.",
+            "strategy": "Names what you noticed and opens a door",
+            "response_text": "I was late and I get that that mattered to you. What else has been building up?",
             "tone": "calm"
           },
           {
-            "strategy": "Names the pattern gently and invites a reset",
-            "response_text": "I care about you and I don't want to do this over text where things get lost. Can we hit pause and talk tonight so neither of us is just firing back and forth?",
-            "tone": "calm"
+            "strategy": "Holds the boundary on guilt-tripping while staying warm",
+            "response_text": "I was late and I am sorry. I want us to figure out how to talk about this without things turning into an argument.",
+            "tone": "firm"
           },
           {
-            "strategy": "Reflects the hurt directly and asks what they actually need right now",
-            "response_text": "It sounds like tonight felt like more than just being late to you. What do you need from me right now — do you want space, or do you want to talk?",
-            "tone": "compassionate"
+            "strategy": "Buys time honestly instead of reacting",
+            "response_text": "I got your message and I do not want to reply in a way I will regret — I need a little time to collect myself and then I really want to talk this through with you.",
+            "tone": "calm"
           }
         ],
         "cooling_recommendation": {
-          "delay_time": "Before you send anything, give yourself enough time to step back from the immediate heat — not hours, just enough that the draft you're holding no longer feels urgent.",
-          "why_delay": "Your current draft leads with 'dramatic.' A brief pause gives you the chance to choose a response that serves what you said you want instead of what you feel like saying right now."
+          "delay_time": "Before you reply tonight — after you have had a moment away from the screen and the initial sting has settled",
+          "why_delay": "Your draft as written will likely escalate rather than de-escalate. Cooling down before you reply gives you a better chance at both goals."
         },
         "message_analysis": {
           "triggers_identified": [
-            "'You never listen to me' — 'never' covers every past occasion without exception, making this about a pattern rather than today's event alone.",
-            "'After everything I have done for you' — frames the relationship as a ledger where a debt is owed, putting you on the defensive before you can respond to the actual complaint.",
-            "'You cannot even show up on time' — 'even' positions punctuality as the bare minimum, implying you fail at the lowest possible bar.",
-            "'I guess I am just not important to you' — closes with a conclusion about your feelings stated as fact, leaving you to either accept it or argue against it."
+            "'You never listen to me' — 'never' is an absolute that can read as a blanket indictment rather than a specific complaint, leaving little room for any counterexample.",
+            "'After everything I have done for you' — can read as a ledger being opened: past actions framed as debts now being called in.",
+            "'You cannot even show up on time' — 'even' can read as layering contempt onto the lateness itself, as though it is the lowest possible bar.",
+            "'I guess I am just not important to you' — can read as a conclusion already reached, framed as resignation rather than a question, which leaves little room to offer a different interpretation."
           ],
-          "whats_being_asked": "The message objects to being kept waiting and asks, at least in its final line, for some form of reassurance that they matter to you — though it is not stated as a direct request."
+          "whats_being_asked": "The message objects to the lateness and asks, in effect, to be told that they matter — though it is framed as a conclusion rather than a direct request."
         },
         "goal_reality_check": {
-          "assessment": "A reply can acknowledge the impact of being late. Whether a single exchange resolves the underlying dynamic depends on what has happened before and what both of you are willing to do about it.",
-          "alternative_approach": "Separating the two goals — responding to this message in a way that is warm and direct, then naming the guilt-trip pattern in a calmer conversation later — gives each goal a better chance."
+          "assessment": "Your draft pushes back on the guilt-tripping, but it does not signal that you care. Showing care first gives your second goal a better chance of being heard.",
+          "alternative_approach": "One reply cannot fully address both what happened today and a larger pattern at the same time. You may have better luck handling what happened first, and returning to the bigger picture once this has cooled."
         },
         "draft_analysis": {
           "tone_flags": [
             {
               "flag": "Dismissiveness",
-              "why_problematic": "'Wow' and 'so dramatic' signal that their complaint is not worth taking seriously, which is likely to make them feel more unheard, not less."
+              "why_problematic": "'So dramatic' labels their reaction rather than addressing what they said, and is likely to make the original complaint feel more urgent, not less."
             },
             {
               "flag": "Minimizing",
-              "why_problematic": "'Literally 10 minutes late' treats the amount of time as the whole issue, when their message is about feeling deprioritized — those are different conversations."
+              "why_problematic": "'Literally 10 minutes late' treats the duration as the whole issue, when the message is about feeling unimportant — so the correction misses what is actually being objected to."
             },
             {
-              "flag": "Escalation",
-              "why_problematic": "The draft answers emotion with counter-argument, which tends to move the exchange away from resolution and toward a debate about whose framing is correct."
+              "flag": "Sarcasm signal",
+              "why_problematic": "'Wow' as an opener reads as eye-rolling before a word of substance has been exchanged, which can close the conversation before it starts."
             }
           ],
           "problematic_phrases": [
             {
               "phrase": "you are being so dramatic right now",
-              "issue": "Labeling their response 'dramatic' is dismissive and shifts focus from your lateness to their reaction, which gives them a second grievance to respond to.",
-              "better_version": "Drop entirely — address the lateness and the feeling directly instead."
+              "issue": "Tells them how they are behaving rather than responding to what they said — functionally the same move as their 'I guess I am just not important to you,' and escalates rather than interrupts that pattern.",
+              "better_version": "I hear that you felt let down."
             },
             {
               "phrase": "I was literally 10 minutes late",
-              "issue": "'Literally' and the specific number read as correcting their emotional response with facts, which rarely lands as intended when someone feels hurt.",
-              "better_version": "If you want to acknowledge the facts without dismissing them, something like 'I was late, and I know that frustrated you' names what happened without making the minutes the point."
+              "issue": "Argues the facts of the lateness when the stated grievance is about feeling prioritized — answering a question they did not ask.",
+              "better_version": "Being late wasn't nothing to me either — can we talk about this?"
             }
           ],
-          "overall_assessment": "This draft defends against the accusation rather than addressing what the message is asking for — reassurance that they matter. It does not move toward the outcome you said you want."
+          "overall_assessment": "This draft uses the word 'dramatic' to dismiss what they said, which trades their complaint for an argument about whether their feelings are valid. It does not open a door to the conversation you want."
         }
       }
     },
@@ -128,70 +128,71 @@
       "output": {
         "response_strategies": [
           {
-            "strategy": "Das Gefühl benennen, ohne den Vorwurf zu übernehmen",
-            "response_text": "Ich höre, dass du dich heute nicht an erste Stelle gesetzt gefühlt hast, und das tut mir leid. Kannst du mir sagen, was du dir gerade von mir wünschst?",
+            "strategy": "Gefühl anerkennen, ohne den Vorwurf zu übernehmen",
+            "response_text": "Ich höre, dass dir diese Beziehung nicht egal ist. Lass mich das richtig verstehen und darauf antworten — aber nicht jetzt per Nachricht.",
             "tone": "compassionate"
           },
           {
-            "strategy": "Verantwortung übernehmen für das Zuspätkommen, Grenze für den Rest setzen",
-            "response_text": "Ja, ich war zu spät, und das war nicht okay – das nehme ich ernst. Gleichzeitig möchte ich über das 'du hörst mir nie zu' sprechen, wenn wir beide etwas ruhiger sind.",
+            "strategy": "Eigene Perspektive benennen, ohne zu verteidigen",
+            "response_text": "Ich war zu spät. Ich möchte darüber sprechen, was das für dich bedeutet. Können wir das persönlich machen?",
             "tone": "calm"
           },
           {
-            "strategy": "Pause beantragen, ohne auszuweichen",
-            "response_text": "Ich merke, dass gerade viel hochkommt, bei dir und bei mir. Ich möchte das wirklich mit dir klären – darf ich dich in einer Stunde anrufen, wenn wir beide etwas durchgeatmet haben?",
+            "strategy": "Pause bitten, bevor Worte fallen, die bleiben",
+            "response_text": "Mir ist wichtig, wie ich antworte. Ich möchte das nicht aus dieser Situation heraus tun. Können wir später reden?",
             "tone": "calm"
           },
           {
-            "strategy": "Zuneigung zeigen und den Raum öffnen",
-            "response_text": "Du bist mir wichtig, und ich will nicht, dass du das bezweifelst. Ich bin bereit zuzuhören – magst du mir erzählen, was heute wirklich wehtut?",
+            "strategy": "Sorge direkt aussprechen, ohne auf den Vorwurf einzugehen",
+            "response_text": "",
             "tone": "compassionate"
           }
         ],
         "cooling_recommendation": {
-          "delay_time": "Warte ein wenig, bevor du antwortest.",
-          "why_delay": "Dein Entwurf würde das Gespräch von dem wegbewegen, was du eigentlich erreichen möchtest."
+          "delay_time": "Warte ein paar Stunden, bevor du antwortest — nicht sofort.",
+          "why_delay": "Eine Antwort, die aus Verteidigung kommt, wird das Gespräch nicht deeskalieren — eine kurze Pause gibt dir Raum, anders zu reagieren."
         },
         "message_analysis": {
           "triggers_identified": [
-            "'Du hörst mir nie zu' — 'nie' dehnt diesen Moment auf jede jemals geführte Unterhaltung aus.",
-            "'Nach allem, was ich für dich getan habe' — stellt vergangene Gefälligkeiten als Schuld gegenüber, die jetzt eingefordert wird.",
-            "'Ich schätze, ich bin dir einfach nicht wichtig' — die Aussage formuliert eine Schlussfolgerung als Tatsache, ohne sie zur Diskussion zu stellen."
+            "'Du hörst mir nie zu' — 'nie' lässt keinen Raum für Ausnahmen und kann als Verallgemeinerung gelesen werden, die jedes Gegenbeispiel im Voraus ausschließt.",
+            "'Nach allem, was ich für dich getan habe' — kann als Aufrechnung gelesen werden, bei der frühere Taten als Schulden gerahmt werden.",
+            "'kannst du nicht einmal pünktlich sein' — 'nicht einmal' kann als Abschwächung aller anderen Bemühungen gelesen werden.",
+            "'Ich schätze, ich bin dir einfach nicht wichtig' — kann als Schlussfolgerung gelesen werden, die eine Widerlegung schwer macht: Jede Antwort muss entweder zustimmen oder die gesamte Prämisse bestreiten."
           ],
-          "whats_being_asked": "Die Nachricht benennt zwei Beschwerden — nicht zugehört werden und zu spätes Kommen — und endet mit einer Feststellung über fehlende Wichtigkeit, ohne eine direkte Frage oder eine klare Bitte zu stellen."
+          "whats_being_asked": "Die Nachricht formuliert keine direkte Frage, kann aber als Einfordern einer Erklärung oder Bestätigung gelesen werden, dass die Person und ihre Zeit zählen."
         },
         "goal_reality_check": {
-          "assessment": "De-eskalation und gehört werden sind schwer in einer einzigen Nachricht zu erreichen — eine Nachricht kann Verständnis signalisieren oder eine Grenze ziehen, aber beides gleichzeitig wirkt schnell widersprüchlich.",
-          "alternative_approach": "Ein Gesprächsangebot statt einer Textantwort — zum Beispiel 'Können wir kurz telefonieren?' — könnte mehr Raum für beide Ziele schaffen als eine Nachricht, die beides lösen soll."
+          "assessment": "Das Ziel — gehört werden und die Situation klären — ist mit einer Antwort erreichbar, aber nur, wenn die Antwort beides trennt: erst anerkennen, was gesagt wurde, dann den eigenen Standpunkt setzen. Eine Antwort, die nur verteidigt, erreicht weder das eine noch das andere.",
+          "alternative_approach": "Eine Antwort, die zuerst das Konkrete anerkennt ('Du hast gesagt, du fühlst dich nicht gehört') und erst danach den eigenen Punkt setzt, trennt Anerkennung von Zustimmung — das schützt vor Schuldübernahme, ohne die andere Person abzuwimmeln."
         },
         "draft_analysis": {
           "tone_flags": [
             {
-              "flag": "Abwertung durch 'dramatisch'",
-              "why_problematic": "Das Wort wertet die Reaktion der Partnerin als übertrieben ab, bevor ihr Anliegen überhaupt anerkannt wurde — das macht eine Eskalation wahrscheinlicher, keine Deeskalation."
+              "flag": "Abwertend ('dramatisch')",
+              "why_problematic": "Das Wort bewertet die andere Person statt die Situation, was den Konflikt von dem Thema Pünktlichkeit wegverlagert und auf die Person selbst richtet."
             },
             {
-              "flag": "Sarkasmus durch 'Wow'",
-              "why_problematic": "'Wow' signalisiert Ungläubigkeit und Herablassung — es gibt keine Lesart dieses Wortes in diesem Kontext, die nicht provozierend wirkt."
+              "flag": "Verharmlosung ('buchstäblich 10 Minuten')",
+              "why_problematic": "'Buchstäblich' kann als Entwertung des Erlebten gelesen werden — es erklärt, warum die Reaktion unangemessen sei, bevor überhaupt gefragt wird, was dahintersteckt."
             },
             {
-              "flag": "Verharmlosung durch 'buchstäblich 10 Minuten'",
-              "why_problematic": "Die genaue Minutenzahl als Gegenargument zu präsentieren, beantwortet die eigentliche Aussage der Partnerin nicht und klingt wie Punktezählen."
+              "flag": "Sarkasmus ('Wow')",
+              "why_problematic": "Signalisiert Überlegenheit oder Unglaube, was eine Eskalation wahrscheinlicher macht als ein Gespräch."
             }
           ],
           "problematic_phrases": [
             {
               "phrase": "du bist gerade so dramatisch",
-              "issue": "Bewertet ihr Verhalten, statt auf den Inhalt einzugehen — klassisches Abtun, das Schuldgefühle nicht abbaut, sondern neue Fronten öffnet.",
-              "better_version": "Ich verstehe, dass dich das verletzt hat."
+              "issue": "Bewertet die Person direkt, nicht das Verhalten — das ist das, was die andere Person als 'nicht gehört werden' erleben wird.",
+              "better_version": "Ich verstehe, dass dich das wirklich getroffen hat."
             },
             {
               "phrase": "ich war buchstäblich 10 Minuten zu spät",
-              "issue": "Stellt die eigene Wahrnehmung des Ausmaßes als Maßstab auf, ohne zu hören, was das Zuspätkommen für sie bedeutet hat.",
-              "better_version": "Ich war zu spät — das war nicht okay, und ich nehme das ernst."
+              "issue": "Stellt die eigene Messung der Situation der Wahrnehmung der anderen Person gegenüber, ohne sie anzuhören.",
+              "better_version": "Ich war zu spät — das stimmt. Ich möchte verstehen, was das für dich bedeutet hat."
             }
           ],
-          "overall_assessment": "Der Entwurf verteidigt, wertet ab und minimiert — er löst keines der beiden erklärten Ziele ein und dürfte den Konflikt verlängern statt verkürzen."
+          "overall_assessment": "Dieser Entwurf verteidigt eine Tatsache (10 Minuten) gegen ein Gefühl (nicht wichtig sein) — das sind zwei verschiedene Gespräche, und das hier mischt sie auf eine Weise, die keins von beiden löst. Die Nachricht wird den Konflikt ausweiten, nicht schließen."
         }
       }
     }

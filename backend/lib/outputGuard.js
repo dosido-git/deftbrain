@@ -18,6 +18,7 @@ const { getByPath, setByPath, NO_QUOTE_RULE } = require('./factCheck');
 // The seven checks. Deliberately phrased as things to FIND, not as advice.
 const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, intentions, needs, likely reactions, or future behaviour that were not supplied or established.
 2. Facts about the visitor or the situation that were invented, strengthened, or silently inferred.
+2b. A supplied fact CONTRADICTED or quietly swapped for a different one. Told the relationship is a partner, the output calls them a roommate; told the message came by text, it discusses a phone call. This is the most damaging kind, because the visitor knows it is wrong the moment they read it and stops trusting the rest. Check every noun that names a person, a place or a channel against what was typed.
 3. Predictions, rankings, timing rules, probabilities, scores, or population claims without support.
 4. Psychological, behavioural or interpersonal labels presented as determinations rather than possibilities.
 5. Explanatory commentary that mainly explains the model's own work rather than helping the visitor.
@@ -26,8 +27,8 @@ const V2_CHECKS = `1. Claims about a real person's thoughts, feelings, motives, 
 
 // Named so a violation reads the same way in a log, a test and a guard.
 const VIOLATION_TYPES = [
-  'invented_fact', 'mind_reading', 'unsupported_prediction', 'unnecessary_section',
-  'self_explanation', 'false_precision', 'promise_not_fulfilled',
+  'invented_fact', 'contradicted_supplied_fact', 'mind_reading', 'unsupported_prediction',
+  'unnecessary_section', 'self_explanation', 'false_precision', 'promise_not_fulfilled',
 ];
 
 /**

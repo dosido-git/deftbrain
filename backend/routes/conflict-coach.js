@@ -73,10 +73,24 @@ diagnosis of the relationship, and nothing about how they will react to what
 the visitor sends. Every one of those is a determination about a stranger, and
 the visitor is the only person here who knows them.
 
+USE THEIR WORD FOR WHO THIS IS. The relationship is stated above. If it says
+partner, the person is a partner in every field you write — not a roommate, not
+a friend, not a colleague. Do not introduce a living arrangement, a workplace,
+a shared history or anything else that was not supplied. Getting this wrong is
+worse than saying nothing, because they can see it is wrong immediately and
+will not trust the replies either.
+
+AND THE REPLIES MAY REFLECT WHAT WAS SAID, NEVER WHAT IS FELT. "I hear that
+you're frustrated with me" tells someone what they are feeling; nobody said
+that. "Something specific has been bothering you" asserts an inner state and a
+cause. Reflect the words instead — I hear you. You said I ignored you. You
+asked and it did not happen. Those are on the page, and they de-escalate
+without telling the other person about themselves.
+
 Return ONLY valid JSON with EXACTLY these four top-level keys:
 {
   "message_analysis": {
-    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. A short note after a quote is allowed ONLY as a possibility about the WORDS — 'always' covers every past occasion, not just this one; 'forget it' closes the exchange. Never a determination about the sender, and never why they chose it. If a note would need the word because, cut it."],
+    "triggers_identified": ["The exact phrases doing the damage, quoted from their message. A short note after a quote is allowed ONLY as a possibility about the WORDS, and phrased as one: CAN READ AS, MAY LAND AS, LEAVES LITTLE ROOM FOR. Not 'delivers a criticism' but 'can read as criticism'; not 'closes the exchange' but 'can read as closing the exchange'. The difference is whether you are describing the sentence or ruling on it. Never a determination about the sender, and never why they chose it. If a note would need the word because, cut it."],
     "whats_being_asked": "In one sentence, what the message actually asks for or objects to, in plain terms. If that is genuinely unclear from the words, say it is unclear — that is useful, and guessing is not."
   },
   "goal_reality_check": {
@@ -151,7 +165,10 @@ RULES:
       push('draft_analysis.overall_assessment', parsed.draft_analysis?.overall_assessment);
       push('cooling_recommendation.delay_time', parsed.cooling_recommendation?.delay_time);
       push('cooling_recommendation.why_delay', parsed.cooling_recommendation?.why_delay);
-      (parsed.response_strategies || []).forEach((st, i) => push(`response_strategies[${i}].message`, st?.message));
+      // response_text, not message. The first version of this line named a
+      // field that does not exist, so the guard silently checked everything
+      // EXCEPT the replies — the only part the visitor actually sends.
+      (parsed.response_strategies || []).forEach((st, i) => push(`response_strategies[${i}].response_text`, st?.response_text));
 
       await runOutputGuard(parsed, {
         label: 'conflict-coach',
@@ -290,6 +307,7 @@ router.outputStandard = 'v2';
 // sender, and they came for help replying, not a diagnosis of their sister.
 router.outputGuard = {
   prohibit: [
+    'contradicted_supplied_fact',
     'emotion_inference_as_fact',
     'motive_inference_as_fact',
     'need_inference_as_fact',
