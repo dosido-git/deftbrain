@@ -46,7 +46,6 @@ const ConflictCoach = ({ tool }) => {
     required:      'text-red-500',
     // ─── Tool-specific semantic colors ───
     toast:             isDark ? 'bg-zinc-700 text-zinc-100 border border-zinc-600' : 'bg-white text-gray-900 border border-gray-200',
-    draftFlag:         isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     strategySelected:  isDark ? 'border-cyan-500 bg-cyan-900/20' : 'border-cyan-500 bg-cyan-50',
     strategyHover:     isDark ? 'border-zinc-600 hover:border-zinc-500' : 'border-gray-200 hover:border-gray-300',
     toneBadge:         isDark ? 'bg-zinc-700 text-zinc-300' : 'bg-gray-100 text-gray-600',
@@ -233,9 +232,9 @@ const ConflictCoach = ({ tool }) => {
 
   // ─── Tone adjustment ───
   const handleAdjustTone = async () => {
-    if (selectedStrategyIdx === null || !results?.response_strategies?.[selectedStrategyIdx]) return;
+    if (selectedStrategyIdx === null || !results?.strategies?.[selectedStrategyIdx]) return;
     setToneLoading(true);
-    const strategy = results.response_strategies[selectedStrategyIdx];
+    const strategy = results.strategies[selectedStrategyIdx];
     try {
       const data = await callToolEndpoint('conflict-coach/adjust-tone', {
         originalResponse: strategy.response_text, originalStrategy: strategy.strategy,
@@ -250,13 +249,8 @@ const ConflictCoach = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const l = [`💬 ${t('cc_copy_header')}`, '═'.repeat(40)];
-    if (results.message_analysis) {
-      if (results.message_analysis.whats_being_asked) l.push('', results.message_analysis.whats_being_asked);
-      if (results.message_analysis.triggers_identified?.length) l.push(`${t('cc_copy_triggers')}: ${results.message_analysis.triggers_identified.join('; ')}`);
-    }
-    if (results.goal_reality_check) { l.push('', `🎯 ${t('cc_copy_goalcheck')}`, results.goal_reality_check.assessment); if (results.goal_reality_check.alternative_approach) l.push(`${t('cc_copy_alternative')}: ${results.goal_reality_check.alternative_approach}`); }
-    if (results.draft_analysis) { l.push('', `🚨 ${t('cc_copy_draft')}`, results.draft_analysis.overall_assessment); }
-    if (results.response_strategies?.length) { l.push('', `💡 ${t('cc_copy_strategies')}`); results.response_strategies.forEach((s, i) => { l.push(`\n  ${i + 1}. ${s.strategy} (${s.tone})`, `  "${s.response_text}"`, ''); }); }
+    if (results.message_read) l.push('', results.message_read);
+    if (results.strategies?.length) { l.push('', `💡 ${t('cc_copy_strategies')}`); results.strategies.forEach((s, i) => { l.push(`\n  ${i + 1}. ${s.title} (${s.tone})`, `  "${s.response_text}"`, ''); }); }
     if (followupHistory.length) { l.push('', `${t('cc_copy_followup')}:`); followupHistory.forEach(f => l.push(`  ${t('cc_copy_q')}: ${f.question}`, `  ${t('cc_copy_a')}: ${f.answer}`, '')); }
     return l.join('\n') + BRAND;
   }, [results, followupHistory]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -348,12 +342,6 @@ const ConflictCoach = ({ tool }) => {
               <h3 className={`text-2xl font-bold mb-2 ${c.text}`}>{t('cc_cooling_title')}</h3>
               <div className={`text-5xl font-mono font-bold mb-3 ${c.text}`}>{formatTime(delaySeconds)}</div>
               <p className={`text-sm ${c.text}`}>{t('cc_cooling_body')}</p>
-              {results?.cooling_recommendation?.delay_time && (
-                <p className={`text-xs ${c.textSecondary} mt-2`}>{t('cc_cooling_suggested')}: {results.cooling_recommendation.delay_time}</p>
-              )}
-              {results?.cooling_recommendation?.why_delay && (
-                <p className={`text-xs ${c.textMuteded} mt-1`}>{results.cooling_recommendation.why_delay}</p>
-              )}
             </div>
           )}
 
@@ -491,57 +479,25 @@ const ConflictCoach = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="space-y-4">
 
-          {/* Triggers */}
-          {results.message_analysis?.triggers_identified?.length > 0 && (
+          {/* A line about the message, when there is one worth saying. */}
+          {results.message_read && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <h3 className={`font-bold mb-3 ${c.text}`}>{t('cc_triggers_title')}</h3>
-              <ul className={`text-sm space-y-1 ${c.text}`}>{results.message_analysis.triggers_identified.map((trig, i) => <li key={i}>• "{trig}"</li>)}</ul>
-              {results.message_analysis.whats_being_asked && (
-                <p className={`text-sm mt-3 ${c.textSecondary}`}>{results.message_analysis.whats_being_asked}</p>
-              )}
-            </div>
-          )}
-
-          {/* Draft Analysis */}
-          {results.draft_analysis && userDraft && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
-              <h3 className={`text-lg font-bold mb-3 ${c.text}`}>🚨 {t('cc_draftanalysis_title')}</h3>
-              <p className={`text-sm mb-3 ${c.textSecondary}`}>{results.draft_analysis.overall_assessment}</p>
-              {results.draft_analysis.tone_flags?.length > 0 && (
-                <div className="mb-3">
-                  <p className={`text-sm font-bold mb-2 ${c.text}`}>{t('cc_draftanalysis_toneflags')}:</p>
-                  {results.draft_analysis.tone_flags.map((f, i) => (
-                    <div key={i} className={`p-2 rounded mb-1 ${c.draftFlag}`}><p className="text-sm"><strong>{f.flag}</strong>: {f.why_problematic}</p></div>
-                  ))}
-                </div>
-              )}
-              {results.draft_analysis.problematic_phrases?.length > 0 && (
-                <div className="mb-3">
-                  <p className={`text-sm font-bold mb-2 ${c.text}`}>🔍 {t('cc_draftanalysis_problematic')}:</p>
-                  {results.draft_analysis.problematic_phrases.map((p, i) => (
-                    <div key={i} className={`p-2 rounded mb-1 ${c.draftFlag}`}>
-                      <p className="text-sm font-semibold">"{p.phrase}"</p>
-                      <p className={`text-xs ${c.textSecondary}`}>{p.issue}</p>
-                      {p.better_version && <p className={`text-xs ${c.success} mt-0.5`}>→ "{p.better_version}"</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.message_read}</p>
             </div>
           )}
 
           {/* Response Strategies + Tone Slider */}
-          {results.response_strategies?.length > 0 && (
+          {results.strategies?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-6`}>
               <h3 className={`text-lg font-bold ${c.text} mb-4 flex items-center gap-2`}>
                 {delayActive ? <span className={c.lockIcon}>🔒</span> : <span className={c.unlockIcon}>🔓</span>} {t('cc_strategies_title')}
                 {delayActive && <span className={`text-sm font-normal ${c.textMuteded}`}>({t('cc_locked')})</span>}
               </h3>
               <div className={`space-y-4 ${c.text}`}>
-                {results.response_strategies.map((s, idx) => (
+                {results.strategies.map((s, idx) => (
                   <div key={idx} className={`border-2 rounded-lg p-5 transition-colors ${delayActive ? 'opacity-50' : selectedStrategyIdx === idx ? c.strategySelected : c.strategyHover}`}>
                     <div className="mb-2">
-                      <h4 className={`font-bold ${c.text}`}>{s.strategy}</h4>
+                      <h4 className={`font-bold ${c.text}`}>{s.title}</h4>
                       {s.tone && <span className={`text-xs px-2 py-0.5 rounded ${c.toneBadge}`}>{t('cc_tone')}: {s.tone}</span>}
                     </div>
                     <div className={`p-3 rounded ${c.strategyText} mb-2`}>
@@ -620,9 +576,6 @@ const ConflictCoach = ({ tool }) => {
           {/* Cross-refs (post-result) */}
           <div className="text-center space-y-1">
             <p className={`text-xs ${c.textMuted}`}>{t('cc_xref_firm_q')} <a href="/VelvetHammer" className={linkStyle}>🔨 {t('cc_xref_velvethammer')}</a></p>
-            {results.message_analysis?.emotional_temperature === 'high' && (
-              <p className={`text-xs ${c.textMuted}`}>{t('cc_xref_spiral_q')} → <a href="/SpiralStopper" className={linkStyle}>🌀 {t('cc_xref_spiralstopper')}</a></p>
-            )}
           </div>
 
           {/* AI disclaimer */}
