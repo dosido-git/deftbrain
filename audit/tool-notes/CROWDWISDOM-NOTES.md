@@ -167,3 +167,46 @@ Live, against a verified PID: canonical cast 2/2, no instruction leak, no
 first-person past, no third-party claims, guard PASS 2/2, golden 2/2. First
 attempt at this verification ran against a stale process (started PID ≠
 listening PID) and was rerun.
+
+## The governing rule — 2026-08-25
+
+Owner's sentence, now the first thing both the writer and the checker read:
+
+> Each voice may argue vigorously from its assigned lens. Invented
+> circumstances, universal claims, inevitable outcomes and simulated lived
+> experience all fail.
+
+It replaces the accumulated list of prohibitions with one rule and four
+categories, and it opens with the *permission* rather than the ban — the
+previous framing led with what was forbidden, which is how a guard talks a
+creative tool into blandness. A voice may be opinionated, one-sided,
+uncomfortable and flatly contradicted by the voice beside it.
+
+The same sentence heads `PERSONALITY` and the guard's `supplied` block, so
+generation and validation work from one rule instead of two paraphrases that
+drift apart.
+
+**Two of the four had no rule at all.** Invented circumstances and simulated
+lived experience were already covered; universal claims and inevitable
+outcomes were not. Both now have a prompt rule with an explicit ceiling —
+*often*, *tends to*, *many people find* is as far as a lens may go — and a
+guard term: `universal_claim`, `inevitable_outcome`.
+
+They fire. On "Should I go back to school at 40?" the guard caught
+`universal_claim` on three fields and `inevitable_outcome` on a fourth, in a
+response where a regex sweep for the obvious phrasings found nothing — the
+softer forms are exactly what an adversarial reader is for and a pattern match
+is not.
+
+**Checked the repair does not flatten the voices**, which was the real risk.
+The repaired output still pushes: the Contrarian rejects the framing outright,
+the didn't-and-regretted lens argues that practical objections have workarounds
+while an unlived possibility has no remedy. The hedging sits precisely at the
+stated ceiling — "often takes five or more years", "tends to feel like forward
+motion", "many people find".
+
+(Also fixed an off-by-one of my own: the old block announced "Three things are
+violations" above four numbered items.)
+
+Live: 3/3 questions clean on all four categories with voices intact, golden
+2/2, against a verified PID.

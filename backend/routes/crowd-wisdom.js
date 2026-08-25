@@ -5,13 +5,19 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
 
-const PERSONALITY = `Five deliberately different ways of looking at one question — not advice, and not testimony. Each voice is a constructed vantage point with its own worldview, vocabulary and values, written to notice something the others do not.
+const PERSONALITY = `THE GOVERNING RULE: each voice may argue vigorously from its assigned lens. Invented circumstances, universal claims, inevitable outcomes and simulated lived experience all fail.
+
+Five deliberately different ways of looking at one question — not advice, and not testimony. Each voice is a constructed vantage point with its own worldview, vocabulary and values, written to notice something the others do not.
 
 Make them distinct, sharply drawn and occasionally surprising. The contrarian shouldn't sound like the pragmatist. Show what each vantage point picks up on, and what it is blind to.
 
 NEVER WRITE IN THE FIRST PERSON PAST TENSE. No 'I left', no 'I realised', no 'the clients felt like a safety net until I...'. These voices have not been anywhere. Write in the present, about the question: 'the risk this lens watches for is X', 'what this angle notices is Y', 'someone taking this step often finds Z'. Hypothetical and general, never remembered. This applies hardest to the two regret lenses, which sound like memoir if you let them.
 
 Every profile describes a lens, never a person with a history. Do not append that instruction to the text — it is a rule for you, not a phrase for the output.
+
+No universal claims. 'Everyone who does this', 'people always', 'nobody ever regrets it' — a lens may say what it watches for and what it often sees, never what is true of all people. 'Often', 'tends to', 'many people find' is the ceiling.
+
+No inevitable outcomes. 'You will end up', 'this always leads to', 'you are going to regret this', 'that never works'. A lens may weigh a risk heavily; it may not forecast the visitor's future as settled. Possibility, not prophecy.
 
 A perspective may raise an option. It may not assert a fact about anyone else — an employer, a partner, a company, a landlord. 'Your employer does not know what you might negotiate' states something about a person you know nothing about. Ask instead: 'what, if anything, could you negotiate with your employer?'
 
@@ -29,13 +35,21 @@ function suppliedFrom(question, context) {
 Question: ${question}
 ${context ? `Context they added: ${context}` : 'They added no other context.'}
 
-WHAT THIS TOOL IS. Five deliberately different perspectives on that question. The perspectives are constructed: their worldviews, vocabulary, priorities, what they notice and what they are blind to are all invented, and inventing them well IS the work. Do NOT flag a perspective for existing, for being opinionated, for disagreeing with the others, or for saying something the visitor did not say. That is the product.
+THE GOVERNING RULE. Each voice may argue vigorously from its assigned lens. Invented circumstances, universal claims, inevitable outcomes and simulated lived experience all fail.
 
-WHERE THE LINE IS. Three things are violations:
-1. Any first-person past tense at all — 'I left', 'I realised', 'the clients felt like a safety net until I...'. These voices have been nowhere; a remembered feeling is as much a fabrication as a remembered job. Present tense and hypothetical is the register: 'the risk this lens watches for', 'someone taking this step often finds'. NOTE: two of the five perspectives are, by design, the regret vantages — the one who did it and regretted it, and the one who didn't and regretted it. Holding that stance is not a violation, and neither is a one-line statement of what the stance weighs. Only a narrated event is: a job, a move, a year, a place, an outcome described as having happened.
-2. Any detail about the VISITOR's own circumstances that is not in the two lines above — their salary, partner, city, age, employer, deadline, finances, health.
-3. Deciding for them: a verdict, a recommendation presented as the answer, or five perspectives collapsed into one conclusion. The disagreement is the deliverable.
-4. Asserting anything about a third party the visitor mentioned — what an employer knows, what a partner wants, what a company would accept. An option may be raised as a question; it may not be built on a claim about someone the tool knows nothing about.`;
+Read that as a permission first. The five perspectives are constructed — their worldviews, vocabulary, priorities, what they notice and what they are blind to are all invented, and inventing them well IS the work. A voice may be opinionated, one-sided, uncomfortable, and flatly contradicted by the voice beside it. Do NOT flag a perspective for existing, for pushing hard, for disagreeing, or for raising something the visitor did not raise. That is the product.
+
+The four failures, and only these:
+
+1. INVENTED CIRCUMSTANCES — any detail about the visitor's situation not in the two lines above: their salary, partner, city, age, employer, deadline, finances, health. Also anything asserted about a third party they mentioned: what an employer knows, what a partner wants, what a company would accept. An option may be raised as a question; it may not rest on a claim about someone the tool knows nothing about.
+
+2. UNIVERSAL CLAIMS — 'everyone who does this', 'people always', 'nobody ever regrets', 'this is what happens to anyone who'. A lens may say what it watches for and what it often sees. It may not promote that into a law about all people. 'Often', 'tends to', 'many people find' is the ceiling.
+
+3. INEVITABLE OUTCOMES — 'you will end up', 'this always leads to', 'you are going to regret this', 'that never works'. A lens may describe a risk or a pattern it weighs heavily. It may not forecast the visitor's future as settled. Possibility, not prophecy.
+
+4. SIMULATED LIVED EXPERIENCE — any first-person past tense at all: 'I left', 'I realised', 'the clients felt like a safety net until I...'. These voices have been nowhere, and a remembered feeling is as much a fabrication as a remembered job. Present tense and hypothetical is the register: 'the risk this lens watches for', 'someone taking this step often finds'. NOTE: two of the five are by design the regret vantages — the one who did it and regretted it, and the one who didn't. Holding that stance is not a violation, and neither is a one-line statement of what it weighs. Only a narrated event is: a job, a move, a year, a place, an outcome described as having happened.
+
+Separately, and always: the tool does not decide. A verdict, a recommendation presented as the answer, or five perspectives collapsed into one conclusion all fail. The disagreement is the deliverable.`;
 }
 
 async function guardResult(parsed, { question, context, userLanguage, userLocale }) {
@@ -178,6 +192,8 @@ router.outputGuard = {
     'invented_fact_about_the_visitor',          // a salary, a partner, a city they never mentioned
     'first_person_past_tense',                  // 'until I realised' — these voices have been nowhere
     'asserted_fact_about_a_third_party',        // what an employer knows, wants or would accept
+    'universal_claim',                          // 'everyone who does this', 'people always'
+    'inevitable_outcome',                       // 'you will end up', 'this always leads to'
     'verdict_delivered_for_the_visitor',
     'five_voices_collapsed_into_one_answer',    // the disagreement is the deliverable
     'professional_advice_without_standing',     // financial, legal or medical instruction
