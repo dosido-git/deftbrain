@@ -665,16 +665,20 @@ const DecisionCoach = ({ tool }) => {
     const d = results?.decision_made_for_you || {};
     const steps = Array.isArray(results?.execution_instructions) ? results?.execution_instructions : [];
     const alts = d.alternatives_eliminated || [];
+    // STATE B: one fact could still reverse the call. Give the call, the
+    // reasoning and the question — and nothing that asserts the decision is
+    // settled. Steps, ruled-out and a closing line all do assert that.
+    const awaitingAnswer = !!results?.one_thing_that_could_change_this?.question;
     return (
       <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
           <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>
-            {results?.one_thing_that_could_change_this?.question ? t('dc_decision_provisional') : t('dc_your_decision')}
+            {awaitingAnswer ? t('dc_call_right_now') : t('dc_your_decision')}
           </div>
           <p className={`text-2xl font-bold ${c.decisionHighlight} mb-1`}>{d.choice}</p>
-          {results?.one_thing_that_could_change_this?.question && (
+          {awaitingAnswer && (
             <p className={`text-xs mb-3 ${c.textMuteded}`}>{t('dc_provisional_note')}</p>
           )}
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>{t('dc_why')}</strong> {d.why}</p>}
@@ -721,9 +725,9 @@ const DecisionCoach = ({ tool }) => {
             </dl>
           </div>
         )}
-        {renderSteps(steps)}
-        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
-        {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
+        {!awaitingAnswer && renderSteps(steps)}
+        {!awaitingAnswer && alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {!awaitingAnswer && results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
 
         {showRejectionPicker ? (
           <div className={`p-4 rounded-2xl border ${c.card}`}>

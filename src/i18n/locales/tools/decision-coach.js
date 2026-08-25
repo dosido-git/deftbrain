@@ -3,6 +3,7 @@
 // DeftBrain) stay as-is across languages.
 export const decisionCoach = {
   en: {
+    dc_call_right_now: "My call right now",
     dc_decision_provisional: "Your decision — for now",
     dc_provisional_note: "Provisional until you answer the question below.",
     dc_onefact_if_yes: "If it does",
@@ -244,6 +245,7 @@ export const decisionCoach = {
     dc_ex_extra: "I have chicken, rice, and frozen broccoli. Last three nights were pasta — want something different but not a project.",
   },
   es: {
+    dc_call_right_now: "Mi decisión por ahora",
     dc_decision_provisional: "Tu decisión — por ahora",
     dc_provisional_note: "Provisional hasta que respondas la pregunta de abajo.",
     dc_onefact_if_yes: "Si es que sí",
@@ -485,6 +487,7 @@ export const decisionCoach = {
     dc_ex_extra: "Tengo pollo, arroz y brócoli congelado. Las últimas tres noches fue pasta — quiero algo diferente pero que no sea un proyecto.",
   },
   zh: {
+    dc_call_right_now: "我现在的判断",
     dc_decision_provisional: "你的决定——暂定",
     dc_provisional_note: "在你回答下面的问题之前，这只是暂定。",
     dc_onefact_if_yes: "如果是",
@@ -726,6 +729,7 @@ export const decisionCoach = {
     dc_ex_extra: "我有鸡肉、米饭和冷冻西兰花。前三晚都是意面——想吃点不一样的，但又别太麻烦。",
   },
   hi: {
+    dc_call_right_now: "अभी मेरा फ़ैसला",
     dc_decision_provisional: "आपका फ़ैसला — फ़िलहाल",
     dc_provisional_note: "नीचे दिए सवाल का जवाब मिलने तक यह अस्थायी है।",
     dc_onefact_if_yes: "अगर हाँ",
@@ -967,6 +971,7 @@ export const decisionCoach = {
     dc_ex_extra: "मेरे पास चिकन, चावल और फ्रोज़न ब्रोकली है। पिछली तीन रातें पास्ता थीं — कुछ अलग चाहिए, पर ज़्यादा झंझट वाला नहीं।",
   },
   ar: {
+    dc_call_right_now: "قراري الآن",
     dc_decision_provisional: "قرارك — مبدئياً",
     dc_provisional_note: "مؤقّت إلى أن تجيب عن السؤال أدناه.",
     dc_onefact_if_yes: "إن كان كذلك",
@@ -1208,6 +1213,7 @@ export const decisionCoach = {
     dc_ex_extra: "لديّ دجاج وأرزّ وبروكلي مجمّد. الليالي الثلاث الماضية كانت معكرونة — أريد شيئاً مختلفاً لكن دون عناء كبير.",
   },
   pt: {
+    dc_call_right_now: "A minha decisão por agora",
     dc_decision_provisional: "A tua decisão — para já",
     dc_provisional_note: "Provisória até responderes à pergunta abaixo.",
     dc_onefact_if_yes: "Se sim",
@@ -1449,6 +1455,7 @@ export const decisionCoach = {
     dc_ex_extra: "Tenho frango, arroz e brócolis congelado. As últimas três noites foram massa — quero algo diferente, mas que não dê trabalho.",
   },
   fr: {
+    dc_call_right_now: "Mon choix pour l'instant",
     dc_decision_provisional: "Votre décision — pour l'instant",
     dc_provisional_note: "Provisoire tant que vous n'avez pas répondu à la question ci-dessous.",
     dc_onefact_if_yes: "Si oui",
@@ -1690,6 +1697,7 @@ export const decisionCoach = {
     dc_ex_extra: "J'ai du poulet, du riz et des brocolis surgelés. Les trois derniers soirs, c'était des pâtes — je veux quelque chose de différent, mais sans que ce soit une corvée.",
   },
   de: {
+    dc_call_right_now: "Meine Einschätzung jetzt",
     dc_decision_provisional: "Deine Entscheidung — vorerst",
     dc_provisional_note: "Vorläufig, bis du die Frage unten beantwortet hast.",
     dc_onefact_if_yes: "Wenn ja",
@@ -1931,6 +1939,7 @@ export const decisionCoach = {
     dc_ex_extra: "Ich habe Hähnchen, Reis und tiefgefrorenen Brokkoli. Die letzten drei Abende gab es Pasta — ich will etwas anderes, aber keine große Sache.",
   },
   ja: {
+    dc_call_right_now: "いまのところの私の判断",
     dc_decision_provisional: "いまのところの決定",
     dc_provisional_note: "下の質問に答えるまでは暫定です。",
     dc_onefact_if_yes: "そうなら",
@@ -2172,6 +2181,7 @@ export const decisionCoach = {
     dc_ex_extra: "鶏肉、ご飯、冷凍ブロッコリーがあります。ここ3晩はパスタ続き — 違うものがいいけど、手の込んだものは避けたい。",
   },
   ko: {
+    dc_call_right_now: "지금으로선 이렇게",
     dc_decision_provisional: "일단은 이 결정",
     dc_provisional_note: "아래 질문에 답하기 전까지는 잠정입니다.",
     dc_onefact_if_yes: "그렇다면",
@@ -2413,6 +2423,7 @@ export const decisionCoach = {
     dc_ex_extra: "닭고기, 밥, 냉동 브로콜리가 있어요. 지난 사흘 밤은 파스타였어요 — 뭔가 다른 게 좋지만 너무 손이 많이 가는 건 싫어요.",
   },
   ru: {
+    dc_call_right_now: "Моё решение на сейчас",
     dc_decision_provisional: "Ваше решение — пока что",
     dc_provisional_note: "Предварительно, пока вы не ответите на вопрос ниже.",
     dc_onefact_if_yes: "Если да",
@@ -2654,6 +2665,7 @@ export const decisionCoach = {
     dc_ex_extra: "У меня есть курица, рис и замороженная брокколи. Последние три вечера была паста — хочу чего-то другого, но без возни.",
   },
   th: {
+    dc_call_right_now: "ตอนนี้ฉันว่า",
     dc_decision_provisional: "การตัดสินใจของคุณ — ตอนนี้",
     dc_provisional_note: "ยังเป็นการชั่วคราวจนกว่าคุณจะตอบคำถามด้านล่าง",
     dc_onefact_if_yes: "ถ้าใช่",
@@ -2895,6 +2907,7 @@ export const decisionCoach = {
     dc_ex_extra: "ฉันมีไก่ ข้าว และบรอกโคลีแช่แข็ง สามคืนที่ผ่านมากินพาสต้า — อยากได้อะไรที่ต่างออกไปแต่ไม่ยุ่งยากเกินไป",
   },
   vi: {
+    dc_call_right_now: "Ý tôi lúc này",
     dc_decision_provisional: "Quyết định của bạn — tạm thời",
     dc_provisional_note: "Tạm thời cho đến khi bạn trả lời câu hỏi bên dưới.",
     dc_onefact_if_yes: "Nếu có",

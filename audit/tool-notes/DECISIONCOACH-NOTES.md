@@ -295,3 +295,44 @@ which is the documented second-wave-of-warnings trap.
 
 **"What I based this on" is standard**, as asked — it renders whenever there is
 a decision, since the question is required and always populates a row.
+
+## Two output states — 2026-08-25
+
+The birthday run repeated the laptop flaw: it said the answer could flip if
+this were her only celebration, then told the visitor to text her now and
+declared the decision made. Fixed as a state machine rather than another rule.
+
+**STATE A — decision is ready.** No missing fact could reasonably reverse the
+call. `one_thing_that_could_change_this` is null and the full output ships:
+choice, why, do this now, ruled out, no second-guessing.
+
+**STATE B — one fact could change the call.** Header reads **"My call right
+now"**, and the output is the call, the reasoning, and the question with an
+answer box. `execution_instructions`, `alternatives_eliminated` and
+`no_second_guessing` are all empty — steps, a ruled-out list and a closing line
+each assert the decision is settled, which is the contradiction. Answering
+re-runs the decision, which produces state A.
+
+**Enforced in code, not just asked for.** `enforceOutputState()` empties all
+three the moment a question is present and logs what it dropped, and the
+frontend suppresses the same three independently. A state that holds only when
+the model complies is not a state machine. Unit-tested both branches.
+
+`no_second_guessing` had to come out of `requiredNonEmpty` — it is legitimately
+empty in state B, and the guard's restore would have put back exactly what the
+state machine had just removed. Two mechanisms I added days apart, pulling in
+opposite directions.
+
+**The follow-up criterion**, tightened as specified: ask only when ONE specific,
+answerable missing fact could plausibly REVERSE the recommendation; one fact at
+a time, never two joined by "and"; and never a request to predict how another
+person will feel, which is not a fact and not a decision variable. The compound
+birthday question — only celebration AND would it matter to her lastingly — was
+both faults at once.
+
+Live: laptop → state B, single question, all three fields suppressed in the
+payload and on screen. Dinner and birthday → state A with full output; the
+birthday run no longer manufactures a question at all.
+
+Still open, and the owner's own next step: cases where a follow-up genuinely
+flips the answer have not been tested end to end.

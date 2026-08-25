@@ -44,6 +44,29 @@ WHAT FAILS — the one rule: an assumed resource, possession, ingredient, past b
 4. 'Future you will be pleased', 'you will not regret this' — a satisfaction that has not happened.`;
 }
 
+// STATE B means "I have not decided yet". Steps, ruled-out and a closing line
+// all assert that the decision is settled, so if the model returns them
+// alongside an open question it has contradicted itself. The question wins:
+// it is the thing that says the call could still reverse.
+function enforceOutputState(parsed) {
+  if (!parsed || typeof parsed !== 'object') return parsed;
+  const open = parsed.one_thing_that_could_change_this;
+  const hasQuestion = !!(open && typeof open === 'object' && String(open.question || '').trim());
+  if (!hasQuestion) {
+    parsed.one_thing_that_could_change_this = null;
+    return parsed;
+  }
+  const dropped = [];
+  if (Array.isArray(parsed.execution_instructions) && parsed.execution_instructions.length) dropped.push('execution_instructions');
+  if (Array.isArray(parsed.decision_made_for_you?.alternatives_eliminated) && parsed.decision_made_for_you.alternatives_eliminated.length) dropped.push('alternatives_eliminated');
+  if (String(parsed.no_second_guessing || '').trim()) dropped.push('no_second_guessing');
+  parsed.execution_instructions = [];
+  if (parsed.decision_made_for_you) parsed.decision_made_for_you.alternatives_eliminated = [];
+  parsed.no_second_guessing = '';
+  if (dropped.length) console.log(`[DecisionCoach1] state B with an open question — dropped ${dropped.join(', ')}`);
+  return parsed;
+}
+
 async function guardResult(parsed, body, label) {
   const fields = [];
   const walk = (val, path) => {
@@ -58,7 +81,9 @@ async function guardResult(parsed, body, label) {
     supplied: suppliedFrom(body),
     promise: 'One specific decision, briefly justified against the constraints the visitor gave, with concrete steps to start it now.',
     guard: router.outputGuard,
-    requiredNonEmpty: ['decision_made_for_you.choice', 'no_second_guessing'],
+    // no_second_guessing is deliberately empty in state B, so it cannot be
+    // required here — the restore would undo enforceOutputState.
+    requiredNonEmpty: ['decision_made_for_you.choice'],
     userLanguage: body.userLanguage,
     locale: withLocaleContext(body.userLocale, body.userCurrency, body.userRegion),
   });
@@ -108,12 +133,18 @@ YOUR APPROACH:
 2. Pick ONE SPECIFIC answer (not "pasta" but "spaghetti carbonara")
 3. Give 2-4 concrete execution steps (what to do RIGHT NOW)
 4. Explain why you eliminated alternatives
-4a. THE DECISION BOUNDARY. When one_thing_that_could_change_this is not null, the call is PROVISIONAL and three things follow, without exception:
-   (i) The 'choice' field carries the condition it rests on — 'Repair the laptop — assuming the battery is included in or does not substantially increase the quoted cost', not a bare 'Repair the laptop'.
-   (ii) The 'execution_instructions' STOP at the point of finding out. Steps may gather the fact — confirm the quote in writing, ask whether the battery is included, back up the machine — and the LAST step is to come back with the answer. They must not cross the boundary: no approving, no paying, no signing, no dropping it off, no cancelling, nothing committing or hard to undo while the answer that could reverse the call is still unknown. Telling someone to approve the repair in step 3 and asking whether the battery is included in the same breath is a contradiction, and the visitor is the one who pays for it.
-   (iii) if_answer_confirms and if_answer_changes_it say what happens either way, in a few words each, so the visitor knows what they are waiting to learn.
-   When there is no open question, leave the field null, keep 'choice' unqualified, and let the steps run all the way to done.
-4b. ASK ONLY WHAT COULD CHANGE THE ANSWER. Decide anyway — never withhold the call, never return a questionnaire. But if ONE missing fact could genuinely move you to a different answer, name it in one_thing_that_could_change_this. 'Should I renew my lease or move?' may hinge on the rent difference or the commute; 'should I go to the party tonight?' usually does not hinge on anything. Most decisions need no question at all — leave it null rather than manufacturing one, and never ask for something they already told you.
+4a. TWO OUTPUT STATES. There are exactly two, and you must pick one.
+
+   STATE A — DECISION IS READY. No missing fact could reasonably reverse your recommendation. Set one_thing_that_could_change_this to null and return the full output: choice, why, execution_instructions, alternatives_eliminated, no_second_guessing. This is the normal case.
+
+   STATE B — ONE FACT COULD CHANGE THE CALL. A single specific, answerable fact could plausibly REVERSE your recommendation. Then:
+     - choice is your call right now, stated plainly.
+     - why is your reasoning from what was supplied.
+     - one_thing_that_could_change_this holds the question, why_it_matters, if_answer_confirms and if_answer_changes_it.
+     - AND YOU STOP. execution_instructions MUST be an empty array []. alternatives_eliminated MUST be an empty array []. no_second_guessing MUST be an empty string "".
+   Telling someone to text their friend now, and in the same breath asking whether this is her only birthday, is a contradiction — the steps assume an answer you have just said you do not have. There is no closure to give until they answer, so give none.
+
+4b. WHEN TO ASK AT ALL. Ask a follow-up ONLY when one specific, answerable missing fact could plausibly REVERSE the recommendation. Ask ONE fact at a time — never two joined by 'and'. It must be something the visitor can look up or already knows, not something they would have to guess: 'Is this her only birthday celebration, with no realistic opportunity to celebrate together another time?' is answerable. 'Would missing it matter to her in a lasting way?' asks them to predict another person's feelings, which is not a decision variable and not a fact. If nothing meets that bar — and most of the time nothing does — set the field to null and return the full output. Never manufacture a question to look thorough, and never ask for something already supplied. 'Should I renew my lease or move?' may hinge on the rent difference or the commute; 'should I go to the party tonight?' usually does not hinge on anything. Most decisions need no question at all — leave it null rather than manufacturing one, and never ask for something they already told you.
 5. Add a "no second-guessing" message — emphatic and final, never a prediction about their future feelings
 
 TONE: Confident, warm, slightly playful. Like a friend who is great at decisions.
@@ -127,21 +158,21 @@ OUTPUT (JSON only):
   "decision_made_for_you": {
     "choice": "The ONE specific answer. If one_thing_that_could_change_this is NOT null, this MUST carry the condition it rests on, in the same sentence — 'Repair the laptop — assuming the battery is included in or does not substantially increase the quoted cost', never a bare 'Repair the laptop'. A provisional call that reads as final is the failure this field exists to avoid. When there is no open question, state it plainly with no hedge.",
     "why": "1-2 sentences why this is right",
-    "alternatives_eliminated": ["Alt 1 — why it lost", "Alt 2 — why it lost", "Alt 3 — why it lost"]
+    "alternatives_eliminated": [] when one_thing_that_could_change_this is set — otherwise ["Alt 1 — why it lost", "Alt 2 — why it lost", "Alt 3 — why it lost"]
   },
-  "execution_instructions": ["Step 1: ... — anything a step needs that was not supplied is named conditionally (if you have X), never assumed into their possession", "Step 2: ...", "Step 3: ..."],
+  "execution_instructions": [] when one_thing_that_could_change_this is set — otherwise ["Step 1: ... — anything a step needs that was not supplied is named conditionally (if you have X), never assumed into their possession", "Step 2: ...", "Step 3: ..."],
   "one_thing_that_could_change_this": {
-    "question": "the single missing fact that could move you to a different answer, as one plain question",
+    "question": "ONE specific, answerable missing fact that could plausibly reverse the call, as a single plain question. Never two questions joined by and. Never a request to predict how another person will feel.",
     "why_it_matters": "one sentence on how the answer would change the call",
     "if_answer_confirms": "The call stands: <the same decision, in a few words>",
     "if_answer_changes_it": "That changes the call: <the OTHER decision, in a few words>. This must name a DIFFERENT outcome from if_answer_confirms — if both branches end at the same answer, the question could not have changed anything and does not belong in this field at all. Set the whole object to null instead."
   } | null,
-  "no_second_guessing": "Emphatic, not predictive, and taking responsibility rather than claiming certainty. Close on the supplied constraints and point at the first action. Model: 'You are done deciding. Stir-fry tonight is the call. It fits the constraints you gave us. Go start the rice.' Never a claim about how they will feel later, and never a claim that the answer is objectively right."
+  "no_second_guessing": "" when one_thing_that_could_change_this is set — there is nothing to close until they answer. Otherwise: emphatic, not predictive, and taking responsibility rather than claiming certainty. Close on the supplied constraints and point at the first action. Model: 'You are done deciding. Stir-fry tonight is the call. It fits the constraints you gave us. Go start the rice.' Never a claim about how they will feel later, and never a claim that the answer is objectively right."
 }
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
-    const parsed = await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' });
+    const parsed = enforceOutputState(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
     res.json(await guardResult(parsed, req.body, 'DecisionCoach1'));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
