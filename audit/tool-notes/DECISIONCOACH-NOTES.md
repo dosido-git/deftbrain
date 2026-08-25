@@ -180,3 +180,30 @@ re-reviewed under v2.
 Golden 5/5. Note: after fixing a locale string post-`build:locales`, the page
 rendered raw key names until the bundle was rebuilt — the documented gotcha,
 hit again.
+
+## Four rotating examples — 2026-08-25
+
+Three added, and the rotation fixed on the way.
+
+**It was inert.** `EXAMPLES` held two entries that varied `category`,
+`constraints` and `capacity` — but `loadExample` always set the same two locale
+keys, so every click produced "What should I make for dinner tonight?" whatever
+the counter said. The second example had been written and translated into
+thirteen languages and was never visible. Each example now carries its own
+`qk`/`ck` text keys.
+
+| | Question | Kind |
+| --- | --- | --- |
+| 1 | What should I make for dinner tonight? | everyday (kept) |
+| 2 | Should I take on the extra project my manager offered? | work commitment |
+| 3 | Should I repair my laptop or replace it? | money / repair-or-replace |
+| 4 | Should I go to my friend's birthday dinner or stay home? | social, low capacity |
+
+Chosen to show the range now that the tool leads with the general case rather
+than with dinner, and each fills "What matters most?" too — the field the
+decision actually turns on. None duplicates the lease example in the
+placeholder, so a visitor who reads both sees five different kinds of decision.
+
+Verified the counter cycles (ex1 → ex2 → ex3 → ex4 → ex1, first four distinct)
+and then confirmed the same in the browser: four clicks gave four different
+questions and the fifth wrapped to dinner.
