@@ -517,3 +517,37 @@ Live: "what to work on first each morning" produced five genuinely different
 days. "which medication should I take each morning" declined — *"a medical
 decision that must not be pre-decided on a schedule … use your doctor's
 guidance or a pharmacist instead"* — with zero decisions.
+
+## History selection, pattern caching, and a literal "null" — 2026-08-25
+
+**Clear all history → checkboxes + Clear checked.** Same shape as Crash
+Predictor: a checkbox per row (outside the expand button, so ticking does not
+also open the record), the control appears only once something is ticked,
+singular and plural confirms, and the stored analysis is dropped afterwards
+because it described a history that no longer exists. One bad record can now be
+removed without discarding everything.
+
+**Look for patterns no longer calls the API every time.** The analysis is
+cached against a fingerprint of the exact decisions it was built from
+(`id:source` per row). Same fingerprint, same answer — so it is shown again
+rather than bought again. Any change to the history invalidates it, as does
+deleting rows.
+
+**The toggle and the cache were fighting.** Close analysis was implemented as
+`setPatternsResult(null)`, which threw the cached report away, so re-opening
+paid for it a second time — the exact thing the caching was meant to stop.
+Close now hides (`patternsOpen`) and the stored result survives. Verified in
+the browser's network log: close then re-open produced no new request, the
+count stayed at four POSTs.
+
+**"Pre-decide it produced 5 options but also null."** The model writes the
+*word* `"null"` into `decline_reason`, and a non-empty string is truthy, so the
+decline banner rendered under five perfectly good suggestions. Normalised
+server-side — `null`, `none`, `n/a`, `na`, `-`, `undefined` all become real
+`null` — rather than defending in the view, so every consumer benefits.
+Verified: dinner returns `null` with 5 decisions, the medication request
+returns a refusal with 0.
+
+Note: the first verification of that fix reported it still broken. The server
+on 3001 was an older process; restarting on current code showed it working.
+Third time this session that a stale server produced a false negative.

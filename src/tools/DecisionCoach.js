@@ -74,6 +74,7 @@ const DecisionCoach = ({ tool }) => {
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
     btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
                           : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
+    deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
     btnSecondary: isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-zinc-100 hover:bg-zinc-200 text-gray-700',
     success: isDark ? 'bg-green-900/20 border-green-700 text-green-200' : 'bg-green-50 border-green-300 text-green-800',
     warning: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
@@ -166,6 +167,8 @@ const DecisionCoach = ({ tool }) => {
   const [showRejectionPicker, setShowRejectionPicker] = useState(false);
   const [factAnswer, setFactAnswer] = useState('');
   const [batchCustom, setBatchCustom] = useState('');
+  const [checkedHist, setCheckedHist] = useState([]);
+  const [patternsOpen, setPatternsOpen] = useState(true);
 
   // ── Refs ──
   const timerRef = useRef(null);
@@ -179,6 +182,9 @@ const DecisionCoach = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('decision-coach-history', []);
   const [savedPreferences, setSavedPreferences] = usePersistentState('decision-coach-prefs', '');
   const [patternsResult, setPatternsResult] = usePersistentState('decision-coach-patterns', null);
+  // Which history the stored analysis was built from. Same fingerprint,
+  // same answer — so show it again rather than paying for it again.
+  const [patternsKey, setPatternsKey] = usePersistentState('decision-coach-patterns-key', '');
   const [learnedPreferences, setLearnedPreferences] = usePersistentState('decision-coach-learned', []);
   const [templates, setTemplates] = usePersistentState('decision-coach-templates', []);
 
@@ -384,10 +390,14 @@ const DecisionCoach = ({ tool }) => {
   };
 
   const handlePatterns = async () => {
-    if (patternCounts.user < 3) return; setPatternsLoading(true); setError('');
+    if (patternCounts.user < 3) return;
+    // Nothing about the history has changed, so neither would the analysis.
+    // Re-showing the stored one is the honest answer and costs nothing.
+    if (patternsResult && patternsKey === patternCounts.fingerprint) return;
+    setPatternsLoading(true); setError('');
     try {
       const res = await callToolEndpoint('decision-coach/patterns', { sessionHistory: sessionHistory.slice(0, 20).map(h => ({ question: h.question, choice: h.choice, category: h.category, source: h.source || 'user', constraints: h.constraints || [], capacity: h.capacity || '', rejections: h.rejections || 0, followUp: h.followUp || null, date: h.date })), locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
-      setPatternsResult(res);
+      setPatternsResult(res); setPatternsKey(patternCounts.fingerprint);
     } catch { setError(t('something_wrong')); } finally { setPatternsLoading(false); }
   };
 
@@ -886,6 +896,8 @@ const DecisionCoach = ({ tool }) => {
       quick,
       user: unique.length - quick,
       areas: new Set(unique.filter(h => h.source !== 'quick').map(h => h.category).filter(Boolean)).size,
+      // Identifies the exact set of decisions an analysis was built from.
+      fingerprint: unique.map(h => `${h.id}:${h.source || 'user'}`).join('|'),
     };
   }, [sessionHistory]);
 
@@ -912,10 +924,10 @@ const DecisionCoach = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded}`}>{t('dc_pat_need_more')}</p>
           </div>
         ) : (<>
-          <button onClick={() => (patternsResult ? setPatternsResult(null) : handlePatterns())} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
-            {patternsLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : patternsResult ? t('dc_pat_close') : t('dc_pat_cta')}
+          <button onClick={() => { if (patternsResult && patternsOpen) { setPatternsOpen(false); return; } setPatternsOpen(true); handlePatterns(); }} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
+            {patternsLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : (patternsResult && patternsOpen) ? t('dc_pat_close') : t('dc_pat_cta')}
           </button>
-          {patternsResult && (<div className="space-y-3">
+          {patternsResult && patternsOpen && (<div className="space-y-3">
             {!!patternsResult.tended_to_choose?.length && (
               <div className={`p-4 rounded-xl border ${c.patternCard}`}>
                 <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_pat_tended')}</p>
@@ -1011,6 +1023,14 @@ const DecisionCoach = ({ tool }) => {
           const hasFU = !!entry.followUp;
           return (
             <div key={entry.id} className={`rounded-xl border ${c.card} overflow-hidden`}>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="ms-3 h-5 w-5 shrink-0"
+                  checked={checkedHist.includes(entry.id)}
+                  onChange={() => setCheckedHist(prev => prev.includes(entry.id) ? prev.filter(x => x !== entry.id) : [...prev, entry.id])}
+                  aria-label={t('dc_select_row', { q: entry.question })}
+                />
               <button onClick={() => setExpandedHistId(isExp ? null : entry.id)} className={`w-full flex items-center gap-3 p-3 text-start ${c.card}`}>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-semibold ${c.text} truncate`}>{entry.question}</div>
@@ -1022,6 +1042,7 @@ const DecisionCoach = ({ tool }) => {
                 </div>
                 <Caret open={isExp} />
               </button>
+              </div>
               {isExp && (() => {
                 const r = entry.results || {};
                 const d = r.decision_made_for_you || {};
@@ -1106,7 +1127,19 @@ const DecisionCoach = ({ tool }) => {
             </div>
           );
         })}
-        {sessionHistory.length > 1 && <button onClick={() => { if (window.confirm(t('dc_clear_confirm'))) { setSessionHistory([]); setPatternsResult(null); } }} className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} py-1.5`}>{t('dc_clear_all')}</button>}
+        {checkedHist.length > 0 && (
+          <button
+            onClick={() => {
+              const ask = checkedHist.length === 1 ? t('dc_clear_checked_1') : t('dc_clear_checked_n', { n: checkedHist.length });
+              if (!window.confirm(ask)) return;
+              setSessionHistory(prev => prev.filter(h => !checkedHist.includes(h.id)));
+              setCheckedHist([]);
+              // The analysis described a history that no longer exists.
+              setPatternsResult(null); setPatternsKey('');
+            }}
+            className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} ${c.deleteHover} py-1.5 rounded-lg`}
+          >{t('dc_clear_checked')}</button>
+        )}
       </div>
     );
   };

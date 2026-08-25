@@ -534,7 +534,12 @@ OUTPUT (JSON only):
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
-    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach9' }));
+    const batch = await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoachBatch' });
+    // The model writes the WORD "null" into this field, and every such word is
+    // truthy in JS, so a decline banner rendered under five good suggestions.
+    const blank = v => !v || ['null', 'none', 'n/a', 'na', '-', 'undefined'].includes(String(v).trim().toLowerCase());
+    if (batch && blank(batch.decline_reason)) batch.decline_reason = null;
+    res.json(batch);
   } catch (e) { console.error('DecisionCoach batch:', e); res.status(500).json({ error: 'Batch decide failed' }); }
 });
 
