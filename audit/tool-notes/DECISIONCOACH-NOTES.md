@@ -207,3 +207,33 @@ placeholder, so a visitor who reads both sees five different kinds of decision.
 Verified the counter cycles (ex1 → ex2 → ex3 → ex4 → ex1, first four distinct)
 and then confirmed the same in the browser: four clicks gave four different
 questions and the fifth wrapped to dinner.
+
+## "What I based this on" — 2026-08-25
+
+A summary of the visitor's own input, under the decision.
+
+**Rendered from form state, not asked of the model.** Every other field in this
+output is generated and therefore guarded; this one can be guaranteed faithful
+because the frontend already holds the exact inputs. A model-written summary of
+what the visitor typed would be free to paraphrase, compress or drift — the
+failure class this tool has been chasing all week — and there is no reason to
+take that risk for text we already have verbatim.
+
+Shows only what is actually present: the question, what matters most, the
+constraint pills (translated labels), capacity, and anything already ruled out.
+Placed after the no-second-guessing card so the answer still leads, and
+appended to the copy-out so the basis travels with the decision.
+
+### A label collision worth knowing about
+
+The mode pill reads **"Decide for me"** and the primary button reads **"🎯
+Decide For Me"** — the same words, on the same screen, doing different things.
+Both are the owner's wording from the spec, so they are left as they are, but
+the collision is real: clicking the pill calls `setResults(null)` and silently
+clears the answer, which reads as the button having done nothing. It cost
+several attempts here before I noticed my own selector was hitting the pill and
+not the button. Worth differentiating if it confuses a visitor the same way.
+
+Also dropped an `order-last` I had briefly used to position the block: the
+parent is `space-y-4`, not a flex container, so the class does nothing — the
+same inert-utility mistake as the submit button's `flex-1`.

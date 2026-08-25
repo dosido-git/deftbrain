@@ -229,6 +229,19 @@ const DecisionCoach = ({ tool }) => {
   const deleteTemplate = (id) => setTemplates(prev => prev.filter(t => t.id !== id));
 
   // ── Text builders ──
+  // Everything the decision was actually given, straight from the form state.
+  // Deliberately not a model field: this is the one part of the output that
+  // can be guaranteed faithful, so it is rendered rather than generated.
+  const decisionBasis = useMemo(() => {
+    const rows = [];
+    if (decisionNeeded.trim()) rows.push([t('dc_basis_asked'), decisionNeeded.trim()]);
+    if (extraContext.trim()) rows.push([t('dc_basis_matters'), extraContext.trim()]);
+    if (constraints.length) rows.push([t('dc_basis_constraints'), constraints.map(v => getLabelFor(QUICK_CONSTRAINTS, v)).join(' · ')]);
+    if (capacity) rows.push([t('dc_basis_capacity'), getLabelFor(CAPACITY_OPTIONS, capacity)]);
+    if (rejectedChoices.length) rows.push([t('dc_basis_ruledout'), rejectedChoices.join(' · ')]);
+    return rows;
+  }, [decisionNeeded, extraContext, constraints, capacity, rejectedChoices, t]);
+
   const buildDecisionText = useCallback(() => {
     if (!results) return '';
     const d = results?.decision_made_for_you || {};
@@ -236,8 +249,12 @@ const DecisionCoach = ({ tool }) => {
     if (Array.isArray(results?.execution_instructions)) { lines.push('Steps:'); results?.execution_instructions?.forEach((s, i) => lines.push(`${i + 1}. ${s}`)); }
     (d.alternatives_eliminated || []).forEach((a, i) => { if (i === 0) lines.push('', 'Ruled out:'); lines.push(`  ✕ ${a}`); });
     if (results?.no_second_guessing) lines.push('', results?.no_second_guessing);
+    if (decisionBasis.length) {
+      lines.push('', `${t('dc_basis_title')}:`);
+      decisionBasis.forEach(([label, value]) => lines.push(`  ${label}: ${value}`));
+    }
     return lines.join('\n') + BRANDING;
-  }, [results]);
+  }, [results, decisionBasis, t]);
 
   const buildProsText = useCallback(() => {
     if (!prosResult) return '';
@@ -684,6 +701,20 @@ const DecisionCoach = ({ tool }) => {
         {renderSteps(steps)}
         {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
         {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
+        {decisionBasis.length > 0 && (
+          <div className={`p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
+            <dl className="space-y-1.5">
+              {decisionBasis.map(([label, value]) => (
+                <div key={label} className="flex flex-col sm:flex-row sm:gap-2">
+                  <dt className={`text-xs font-semibold ${c.textSecondary} sm:w-40 sm:shrink-0`}>{label}</dt>
+                  <dd className={`text-xs ${c.text}`}>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+
         {showRejectionPicker ? (
           <div className={`p-4 rounded-2xl border ${c.card}`}>
             <p className={`text-xs font-bold ${c.text} mb-2`}>{t('dc_why_not')} <span className={`font-normal ${c.textMuteded}`}>{t('dc_why_not_hint')}</span></p>
