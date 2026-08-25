@@ -1,14 +1,74 @@
-# CrisisPrioritizer — architecture & lock notes (v1, 2026-07-01)
+# Crisis Prioritizer — V2 integration (2026-08-24)
 
-Triage tool: separates real urgency from anxiety across 12 actions (generate, quick-dump, re-triage, delegate, pattern, time-block, just-one-thing, split-task, accountability, rolling-update, dashboard, follow-up). In `LOCALIZED_TOOLS`.
+Owner supplied a matched frontend/backend pair implementing
+`CRISIS_PRIORITIZER_V2`. Both files landed in the repo directly; this pass was
+integration, not redesign. The design, flow and copy are the owner's and are
+preserved verbatim.
 
-- **Model:** all actions `claude-sonnet-4-6` via `callClaudeWithRetry` + `withLanguage` (no currency — correct).
-- **Endpoint:** `/api/crisis-prioritizer` (dispatch on `action`).
-- **Golden:** `audit/crisis-prioritizer-golden-sample.json` (generate/right_now). Verify: `npm run check:golden crisis-prioritizer`.
+## Gate 9 — the item the README left explicit
 
-## DO NOT silently reverse
-1. **i18n namespace: CrisisPrioritizer owns `cp_*`; ChaosPilot was moved to `chp_*`.** The two tools collided on `cp_tagline`/`cp_submit_hint`/`cp_recent` (different values); the flat merge let CrisisPrioritizer clobber ChaosPilot's strings in all 13 languages. Do not reintroduce `cp_`-prefixed keys in chaos-pilot. (Gate 5 can't see value collisions.)
-2. **All 12 action guards key on top-level fields** (objective_priorities, tasks, acknowledgment, message, pattern_summary, schedule_summary, the_one_thing, diagnosis, progress_acknowledgment, total_sessions, hindsight_summary) — correct, no always-500. `generate` max_tokens 5000, `time-block` 4000.
-3. Enum values the frontend switches on stay clean (`actual_urgency`, `block.type`, `plan_status`). String `(number)`/`(true/false)` annotations were stripped from rendered fields.
-4. Safety framing: grounding message, disclaimer, anti-catastrophizing (`consequence_if_missed` = "what ACTUALLY happens, not anxiety's version").
-5. Known-acceptable: the dead `crisis-history` "Recent" panel is intentionally retained (it's the only S1.5-satisfying render anchor; the real history is `journal`). Removing it requires renaming the `journal` feature — out of scope.
+`router.outputGuard = 'crisis-prioritizer-v2'` is a **string**. It reads as a
+declaration to a human and enforces nothing, and Gate 9's regex matches it
+either way — which is exactly how Crash Predictor shipped with a guard that
+never ran. Replaced with a profile whose terms are the V2 contract's deleted
+concepts, each turned into something the validator can catch:
+
+```
+prohibit: invented_deadline_or_consequence, invented_dependency_or_commitment,
+          psychological_read_of_the_visitor, objective_urgency_claim,
+          risk_scoring_or_accuracy_percentage, universal_energy_curve,
+          unrequested_self_care_prescription,
+          overcommitment_diagnosis_without_arithmetic, no_deadline_stated_as_fact
+require:  ranking_traceable_to_supplied_facts,
+          unknowns_surfaced_rather_than_filled_in, fulfills_tool_promise
+```
+
+All twelve actions funnel through one `ask()`, so `runOutputGuard` is wired
+there — "every LLM result", per the contract. `suppliedFrom(req.body)` gives it
+the visitor's own input as the only source of truth, with the rule that silence
+about a deadline is *not supplied*, never *no deadline*.
+
+It earns its place. On the first live runs the guard caught `invented_fact` and
+`unsupported_prediction` on `do_next[0].why_next` and `capacity_fit.summary` —
+a model filling in why a task follows another when the visitor never said. The
+`just-one-thing` action passed clean.
+
+Also added `withLocaleContext` (localization layer 2, absent from the supplied
+file) and made `follow-up` accept `lastSession` as well as `originalPlan`.
+
+## Frontend — 32 audit findings and 53 localization issues
+
+The file rendered the V2 schema correctly and carried none of the house layer.
+Fixed without touching the design:
+
+| | Was | Now |
+| --- | --- | --- |
+| Localization | none — no `useTranslation`, every string hardcoded | 88 keys × 13 languages (`cp2_*`) |
+| Header | no icon, tagline or Try an example | PF-30 / PF-17c header card |
+| Palette | 3 keys, `c.muted` (banned), no `card`/`border`/`btnPrimary` | full house set + PF-2 aliases + `linkStyle` |
+| Copy-out | `BRAND` declared, never used; a hand-rolled `copyText` | `useRegisterActions(buildFullText())` (rule 2 and 4) |
+| Results | `useState` — lost on reload | `usePersistentState` |
+| Journal | written every run, never read | rendered as recent plans, with a `preview` field |
+| Re-triage | `window.prompt('…separated by semicolons')` | tick the tasks already on screen |
+| Keyboard | none | ⌘↵ handler + PF-31 chip |
+| Cross-refs | none | pre-result (Brain Dump Buddy), post-result (Batch Flow · PEP) |
+
+**The v1 `cp_*` catalog was orphaned.** 3,446 key lines across 13 languages
+describing anxiety-vs-reality, urgency-accuracy scores and psychological
+profiling — all deleted from the product. Replaced with the `cp2_*` catalog
+rather than left as dead weight beside it.
+
+**PF-25 masked itself.** The rule reports only the *first* `slice(0, N>6)`
+whose preceding 150 characters mention history/journal/log. My own comment on a
+headline-truncation slice contained the word "history", so that line absorbed
+the single report and the real 20-session cap below it was never checked.
+Reworded the comment and moved the exception note to the actual cap.
+
+Catalog copy also carried deleted concepts — `seoDescription` promised to
+"separate real urgency from anxiety urgency" and to rank by "what actually
+breaks if you skip them". Rewritten; `tagline` now matches the page exactly,
+since PF-30 renders it.
+
+**Live:** generate 20.8s EN / 21.7s DE, just-one-thing 6.2s, all 200.
+Browser: header, example, full result render, progress panel; Arabic RTL clean,
+no tofu, no overflow at 375px.

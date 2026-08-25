@@ -263,7 +263,7 @@ export default function CrashPredictor() {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className={`text-base ${c.textSecondary}`}>
-              <span className="me-2 text-lg">{tool?.icon ?? '⚠️'}</span>{t('cpv2_hero')}
+              <span className="me-2 text-lg">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
             </p>
             {/* PF-17c */}
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}

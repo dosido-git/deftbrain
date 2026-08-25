@@ -1,840 +1,593 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
-// ═══════════════════════════════════════════
-// SYSTEM PROMPT
-// ═══════════════════════════════════════════
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use single quotes or plain text inside JSON string values.';
 
-const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted task names or phrases plainly or with single quotes, or it breaks the JSON.';
+const SYSTEM_PROMPT = `You are Crisis Prioritizer, a calm practical task-triage assistant.
 
-const SYSTEM_PROMPT = `You are a calm, clear-headed triage expert. Your job is to separate genuine urgency from the FEELING of urgency.
+Your job is to help a person decide what deserves attention first when several things are competing for their time.
 
-${NO_QUOTE_RULE}`;
+CORE RULES
+1. Rank from evidence, not from emotional interpretation.
+2. Use only information supplied by the visitor or directly entailed by it: stated deadlines, stated consequences, dependencies, people waiting, time sensitivity, available time, and available energy.
+3. Never invent a deadline, consequence, dependency, commitment, person waiting, cost of delay, or safety of delay.
+4. Never decide that a task is anxiety-driven, irrational, guilt-driven, avoidance, perfectionism, procrastination, or a sign of any psychological trait.
+5. Never claim to know what will happen if a task is delayed unless the visitor supplied that consequence.
+6. When a missing fact could materially change the order, expose the uncertainty. Put the task in need_one_fact and ask the smallest useful question.
+7. A missing deadline does not mean no deadline. Say 'not supplied' rather than 'no hard deadline'.
+8. Available time and energy affect feasibility and sequencing. They do not determine whether a task is objectively urgent.
+9. Distinguish urgency from importance. A valuable task may still be able to wait; a small task may be time-sensitive.
+10. Do not manufacture certainty to force every task into a neat ranking.
+11. Prefer concrete next actions over motivational commentary.
+12. Time estimates are rough planning estimates unless the visitor supplied a duration. Label them as estimates.
+13. Do not assume universal energy curves or that particular kinds of work should happen at particular times of day.
+14. Do not prescribe rest, self-care, medical action, sick leave, or stopping work merely from an energy selection. You may make a plan lighter when the visitor reports low capacity.
+15. Do not infer that a workload is unsustainable unless the supplied tasks and available time demonstrate that they do not fit; if so, describe the mismatch rather than diagnosing the person.
+16. History may be used to report factual recurrence: task categories, completion, deferral, timing, or outcomes the visitor recorded. Do not turn history into personality analysis, emotional profiling, or an 'urgency accuracy' score.
+17. Lead with the answer. Keep output compact. Say each point once.
+18. ${NO_QUOTE_RULE}`;
 
-// Voice/tone modifiers
-const VOICE_MODIFIERS = {
-  warm: 'Use a warm, gentle, supportive tone. Like a kind friend sitting with them.',
-  direct: 'Be clear, concise, and no-nonsense. Respect their time. Skip the fluff, give them the facts.',
-  tough_love: 'Be honest and blunt — like a trusted mentor who cares enough to not sugarcoat. Still kind, never cruel.',
-};
+const TRIAGE_SCHEMA = `{
+  "headline": "One sentence stating the most useful conclusion from the supplied information.",
+  "do_first": [
+    {
+      "task": "task text",
+      "why_now": "specific supplied evidence that makes this time-sensitive",
+      "next_action": "one concrete first step",
+      "deadline": "supplied deadline or null",
+      "who_waiting": "supplied person or null"
+    }
+  ],
+  "do_next": [
+    {
+      "task": "task text",
+      "why_next": "why it follows the do-first work, grounded in supplied facts",
+      "next_action": "one concrete first step",
+      "deadline": "supplied deadline or null"
+    }
+  ],
+  "can_probably_wait": [
+    {
+      "task": "task text",
+      "why": "why the supplied information does not establish that it must happen sooner",
+      "revisit": "a supplied deadline or a practical revisit point; null if unsupported"
+    }
+  ],
+  "need_one_fact": [
+    {
+      "task": "task text",
+      "question": "the single missing fact most likely to change this task's position",
+      "why_it_matters": "brief explanation of how the answer could affect ranking"
+    }
+  ],
+  "capacity_fit": {
+    "summary": "whether the proposed do-first/do-next work appears to fit the supplied time and energy, with uncertainty stated",
+    "if_it_does_not_fit": "what to defer, narrow, delegate, or clarify first; null when unnecessary"
+  },
+  "just_one_thing": {
+    "task": "the best-supported first task; null if a missing fact prevents a defensible choice",
+    "first_action": "one concrete action; null when task is null",
+    "why": "brief supplied evidence for this choice, or why one fact is needed first"
+  }
+}`;
 
-// ═══════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════
-
-function buildTaskList(tasks) {
+function taskLines(tasks = []) {
   return tasks.map((t, i) => {
-    let line = `${i + 1}. "${t.task}"`;
-    if (t.deadline) line += ` [Deadline: ${t.deadline}]`;
-    if (t.who_waiting) line += ` [Who's waiting: ${t.who_waiting}]`;
-    return line;
+    const task = typeof t === 'string' ? t : t.task;
+    const bits = [`${i + 1}. ${task}`];
+    if (t?.deadline) bits.push(`Deadline supplied: ${t.deadline}`);
+    if (t?.who_waiting) bits.push(`Person waiting supplied: ${t.who_waiting}`);
+    if (t?.consequence) bits.push(`Consequence supplied: ${t.consequence}`);
+    if (t?.depends_on) bits.push(`Dependency supplied: ${t.depends_on}`);
+    if (t?.context) bits.push(`Context supplied: ${t.context}`);
+    return bits.join(' | ');
   }).join('\n');
 }
 
-function buildStateBlock(energy, hours, emotional, timeframe) {
-  const lines = [];
-  if (emotional) lines.push(`EMOTIONAL STATE: ${emotional.replace(/_/g, ' ')}`);
-  if (energy) lines.push(`ENERGY LEVEL: ${energy.replace(/_/g, ' ')}`);
-  if (hours) {
-    if (timeframe === 'right_now') lines.push(`TIME AVAILABLE: ${hours === 'unknown' ? 'Unknown' : hours + ' hours'}`);
-    else lines.push(`DAILY CAPACITY: ${hours === 'unknown' ? 'Varies' : '~' + hours + ' hours/day'}`);
+// Everything the visitor actually typed, as the guard's only source of truth.
+// This tool's whole failure mode is a deadline, a consequence, a person
+// waiting or a psychological read that was never supplied coming back as a
+// reason to do something first.
+function suppliedFrom(body = {}) {
+  const shown = {};
+  for (const k of ['tasks', 'text', 'task', 'priorities', 'remainingTasks', 'completedTasks',
+                   'newTasks', 'mustDos', 'deferrals', 'originalPlan', 'currentPlan', 'sessions',
+                   'energy_level', 'hours_available', 'hours_remaining', 'start_time', 'period',
+                   'constraints', 'context', 'newContext', 'delegateTo', 'tone', 'recipientType',
+                   'whatGotDone', 'whatDidnt', 'surprises', 'outcomes']) {
+    if (body[k] !== undefined && body[k] !== null && body[k] !== '') shown[k] = body[k];
   }
-  return lines.length ? lines.join('\n') : 'No state info provided';
+  return `WHAT THE VISITOR SUPPLIED — the complete set of established facts:
+${JSON.stringify(shown, null, 2)}
+
+There is no other source. A deadline, consequence, dependency, person waiting, commitment or cost of delay that is not above was invented. Absence of a deadline is 'not supplied', never 'no deadline'. Nothing here establishes why the visitor feels any way about a task.`;
 }
 
-function buildHistoryBlock(pastSessions) {
-  if (!pastSessions?.length) return '';
-  const list = pastSessions.slice(0, 8).map(s =>
-    `  - ${s.date}: ${s.taskCount} tasks, ${s.actuallyUrgent} actually urgent, emotional: ${s.emotional || '?'}${s.followUp ? ` → Follow-up: ${s.followUp}` : ''}`
-  ).join('\n');
-  return `\nPAST CRISIS SESSIONS:\n${list}\nUse these for pattern awareness.\n`;
+async function guardResult(result, { supplied, promise, label, userLanguage, userLocale }) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(result, '');
+  await runOutputGuard(result, {
+    label,
+    fields,
+    supplied,
+    promise,
+    guard: router.outputGuard,
+    userLanguage,
+    locale: withLocaleContext(userLocale),
+  });
 }
 
-function getVoiceInstruction(voice) {
-  return VOICE_MODIFIERS[voice] || VOICE_MODIFIERS.warm;
+// README: "Wire responses through your repository's existing runOutputGuard
+// helper/profile before merge." All twelve actions already funnel through
+// this one function, so that is where it goes.
+async function ask(prompt, userLanguage, label, max_tokens = 3000, guardCtx = null) {
+  const result = await callClaudeWithRetry({
+    model: MODELS.SMART,
+    max_tokens: max_tokens,
+    // withLocaleContext is localization layer 2 — without it the model
+    // reasons in US defaults about working hours, holidays and money.
+    system: withLanguage(SYSTEM_PROMPT, userLanguage) + withLocaleContext(guardCtx?.userLocale),
+    messages: [{ role: 'user', content: prompt }],
+  }, { label });
+  if (guardCtx) await guardResult(result, { ...guardCtx, label, userLanguage });
+  return result;
 }
-
-// Shared priority schema block
-const PRIORITY_SCHEMA = `"objective_priorities": [
-    {
-      "rank": 1, "task": "task text — one sentence",
-      "actual_urgency": "critical|important|medium|low|optional",
-      "deadline": "specific deadline or 'no hard deadline' — one sentence",
-      "consequence_if_missed": "What ACTUALLY happens — not anxiety's version — one sentence",
-      "anxiety_vs_reality": "What anxiety says vs what's true — one sentence",
-      "do_this": "One concrete next action — the FIRST step, not the whole task — one sentence"
-    }
-  ]`;
-
-const ANXIETY_SCHEMA = `"anxiety_audit": {
-    "anxiety_driven": [{ "task": "Task", "why_it_feels_urgent": "reason — one sentence", "reality": "what actually happens if you wait 24-48 hours — one sentence" }],
-    "legitimately_urgent": [{ "task": "Task", "why": "specific real consequence with timeline — one sentence" }]
-  }`;
-
-// ═══════════════════════════════════════════
-// ROUTES
-// ═══════════════════════════════════════════
 
 router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { action = 'generate' } = req.body;
+    const { action = 'generate', userLanguage, userLocale } = req.body;
+    const guardCtx = { supplied: suppliedFrom(req.body), userLocale };
 
-    // ─── GENERATE (main triage — 3 timeframes) ───
     if (action === 'generate') {
-      const { tasks, energy_level, hours_available, emotional_state, timeframe = 'right_now',
-              pastSessions, voice, userLanguage } = req.body;
+      const { tasks = [], energy_level, hours_available, context } = req.body;
+      if (!tasks.length) return res.status(400).json({ error: 'Add at least one task.' });
 
-      if (!tasks?.length) return res.status(400).json({ error: 'Add at least one task.' });
+      const prompt = `TRIAGE THESE TASKS.
 
-      const taskList = buildTaskList(tasks);
-      const stateBlock = buildStateBlock(energy_level, hours_available, emotional_state, timeframe);
-      const historyBlock = buildHistoryBlock(pastSessions);
-      const voiceNote = voice ? `\nTONE: ${getVoiceInstruction(voice)}` : '';
+TASKS
+${taskLines(tasks)}
 
-      // ── Parallel split ──────────────────────────────────────────────
-      // This was one 5000-token call, and its latency scaled with task count:
-      // 8 tasks took 52s, 14 took 82s. Safari abandons a fetch at around 60s
-      // and reports "Load failed", so past roughly ten tasks the tool looked
-      // dead to the user while the server was still working on an answer it
-      // would go on to deliver to nobody.
-      //
-      // The per-task arrays are the bulk AND the part that grows — ranking 14
-      // tasks means 14 objects of six fields, plus the anxiety split. The
-      // narrative half is near enough fixed size. Splitting them makes
-      // wall-clock the slower half instead of the sum. Disjoint keys, merged
-      // on return; each half gets more headroom than the whole had before.
-      const prioritiesSchema = `{
-  ${PRIORITY_SCHEMA}
-}`;
-      const anxietySchema    = `{
-  ${ANXIETY_SCHEMA}
-}`;
+AVAILABLE TIME
+${hours_available || 'Not supplied'}
 
-      let planSchema;
-      if (timeframe === 'right_now') {
-        planSchema = `{
-  "grounding_message": "Warm, specific message for their emotional state. 1-3 sentences.",
-  "reality_check": "Honest summary: 'Of your X tasks, only Y actually need to happen today...' — one sentence",
-  "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "number actually time-sensitive TODAY — one sentence",
-  "can_wait": "number that can wait without real consequences",
-  "estimated_time": "realistic time for ONLY the must-dos — one sentence",
-  "todays_actual_must_dos": ["Task — brief reason it can't wait"],
-  "guilt_free_deferrals": ["FULL SENTENCE: task name + specific reasoning + timeline. e.g. 'Your apartment does not need to be clean today. Nobody is coming over. It can wait until Saturday.'"],
-  "energy_plan": "Realistic plan for their energy/time. Include breaks. Be specific. — one sentence",
-  "overcommitment_warning": "Only if 4+ tasks are genuinely critical, otherwise null — one sentence"
-}`;
-      } else if (timeframe === 'this_week') {
-        planSchema = `{
-  "grounding_message": "Warm, specific message. 1-3 sentences.",
-  "reality_check": "Honest summary of their week — is this doable? — one sentence",
-  "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "number truly time-sensitive this week — one sentence",
-  "can_wait": "number that can wait beyond this week",
-  "todays_actual_must_dos": ["1-3 things that must happen TODAY"],
-  "weekly_plan": [
-    {
-      "day_label": "Monday|Tuesday|etc.",
-      "theme": "Optional — 'catch-up'|'deep work'|'admin'",
-      "energy_note": "When to do what based on typical energy curves — one sentence",
-      "tasks": [{ "task": "description — one sentence", "time_estimate": "~30min|~1hr|~2hr" }],
-      "rest_reminder": "Brief rest note for this day — one sentence"
-    }
-  ],
-  "guilt_free_deferrals": ["FULL SENTENCE with reasoning"],
-  "energy_plan": "Week-level strategy: when to push, when to rest, how to pace. — one sentence",
-  "overcommitment_warning": "If too much for one week — say so. Otherwise null. — one sentence"
-}`;
-      } else {
-        planSchema = `{
-  "grounding_message": "Warm message acknowledging sustained difficulty. 1-3 sentences.",
-  "reality_check": "Honest big-picture summary. — one sentence",
-  "tasks_analyzed": ${tasks.length},
-  "actual_crisis_tasks": "truly time-sensitive in next few weeks — one sentence",
-  "can_wait": "can wait beyond this period or be dropped",
-  "todays_actual_must_dos": ["1-2 things that must happen TODAY"],
-  "multi_week_plan": [
-    {
-      "week_label": "Week 1 (This Week)|Week 2|etc.",
-      "focus": "Main focus area — one sentence",
-      "must_dos": ["tasks that must happen this week"],
-      "delegate": ["tasks to hand off — suggest to whom/how"],
-      "delete": ["tasks to drop entirely — with reasoning"],
-      "self_care": "Specific self-care for this week — one sentence"
-    }
-  ],
-  "guilt_free_deferrals": ["FULL SENTENCE with reasoning"],
-  "sustainability_check": "Honest: Is this workload sustainable? What needs to change? — one sentence",
-  "energy_plan": "How to pace across weeks. — one sentence",
-  "overcommitment_warning": "If unrealistic for one person — say so. Otherwise null. — one sentence"
-}`;
-      }
+ENERGY
+${energy_level || 'Not supplied'}
 
-      const context = `TASKS:
-${taskList}
+ADDITIONAL CONTEXT
+${context || 'None supplied'}
 
-PERSON'S STATE:
-${stateBlock}
-
-TIMEFRAME: ${timeframe === 'right_now' ? 'RIGHT NOW — today\'s triage' : timeframe === 'this_week' ? 'THIS WEEK — day-by-day plan' : 'NEXT FEW WEEKS — sustained crisis management'}
-${historyBlock}${voiceNote}
-
-RULES:
-- Most tasks are NOT critical. Be strict.
-- "I feel like I should" is NOT urgency. "Something irreversible happens" IS urgency.
-- Low energy → fewer tasks, more breaks.`;
-
-      const prioritiesPrompt = `TRIAGE THESE TASKS — rank every one of them.
-
-${context}
+INSTRUCTIONS
+- Every task must appear exactly once across do_first, do_next, can_probably_wait, or need_one_fact.
+- do_first requires supplied evidence of time sensitivity or a dependency that makes it the defensible starting point.
+- do_next is for work that matters but is not as immediately time-sensitive as do_first.
+- can_probably_wait means only that the supplied information does not establish a need to do it sooner. Do not claim delay is consequence-free.
+- need_one_fact is a first-class result, not a failure. Use it whenever an unknown could materially change ranking.
+- If several rankings are plausible, say so rather than inventing a decisive fact.
+- Energy and time may change how much fits, but must not manufacture urgency.
+- just_one_thing must be drawn from do_first when possible. If no defensible first task exists, make task null and point to the most important missing fact.
 
 Return ONLY valid JSON:
-${prioritiesSchema}`;
+${TRIAGE_SCHEMA}`;
 
-      const anxietyPrompt = `TRIAGE THESE TASKS — separate real urgency from anxiety.
-
-${context}
-
-Return ONLY valid JSON:
-${anxietySchema}`;
-
-      const planPrompt = `TRIAGE THESE TASKS — the plan, and the reassurance around it.
-
-${context}
-- Grounding message should be warm and specific to their emotional state.
-- guilt_free_deferrals must be FULL SENTENCES explaining WHY it's safe to wait.
-
-Return ONLY valid JSON:
-${planSchema}`;
-
-      // Three ways, not two. A two-way split got 14 tasks from 82s to 60s —
-      // still on Safari's threshold, so the tool would keep failing for the
-      // long lists that need it most. Ranking is the single heaviest key and
-      // deserves a call to itself.
-      const [prioritiesPart, anxietyPart, planPart] = await Promise.all([
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 3000,
-          system: withLanguage(SYSTEM_PROMPT, userLanguage),
-          messages: [{ role: 'user', content: prioritiesPrompt }],
-        }, { label: 'CrisisPrioritize-priorities' }),
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 1800,
-          system: withLanguage(SYSTEM_PROMPT, userLanguage),
-          messages: [{ role: 'user', content: anxietyPrompt }],
-        }, { label: 'CrisisPrioritize-anxiety' }),
-        callClaudeWithRetry({
-          model: MODELS.SMART,
-          max_tokens: 3500,
-          system: withLanguage(SYSTEM_PROMPT, userLanguage),
-          messages: [{ role: 'user', content: planPrompt }],
-        }, { label: 'CrisisPrioritize-plan' }),
-      ]);
-      const parsed = { ...planPart, ...anxietyPart, ...prioritiesPart };
-
-      // objective_priorities is top-level and always present in rankSchema, so
-      // it is a valid guard key (S7.13). The old guard also accepted `triage`,
-      // which no schema here has ever produced.
-      if (!parsed.objective_priorities) {
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-generate', 4000, { ...guardCtx, promise: 'A defensible order of attention over the tasks the visitor listed — what to do first, what follows, what the supplied information does not show a need to rush, and the single missing fact that would change the order.' });
+      if (!parsed?.headline || !Array.isArray(parsed?.need_one_fact)) {
         return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
       }
       return res.json(parsed);
     }
 
-    // ─── QUICK DUMP (paste paragraph → extract tasks) ───
     if (action === 'quick-dump') {
-      const { text, userLanguage } = req.body;
-      if (!text?.trim()) return res.status(400).json({ error: 'Paste your thoughts.' });
+      const { text } = req.body;
+      if (!text?.trim()) return res.status(400).json({ error: 'Paste what is competing for your attention.' });
 
-      const prompt = withLanguage(`Extract individual tasks from this panicked brain dump. The person couldn't organize their thoughts into separate items, so they pasted a stream of consciousness.
+      const prompt = `TURN THIS BRAIN DUMP INTO TASKS WITHOUT INTERPRETING THE PERSON.
 
-BRAIN DUMP:
-"${text.trim()}"
+BRAIN DUMP
+${text.trim()}
 
-RULES:
-- Extract distinct tasks — not feelings, not context, not complaints. Just actionable items.
-- If they mention the same thing twice in different words, merge it into one task.
-- Infer deadlines from context ("need to do this before Friday" → deadline: Friday)
-- Infer who's waiting from context ("my boss keeps asking" → who: boss)
-- If something is clearly a feeling, not a task, skip it — but note it in the emotional_read.
-- Extract 3-15 tasks. If fewer than 3, the paragraph probably wasn't about tasks.
+RULES
+- Extract actionable tasks.
+- Preserve explicit deadlines, people waiting, consequences, dependencies, and constraints when stated.
+- You may resolve direct references from the text, but do not invent missing facts.
+- Do not produce an emotional read.
+- Do not require a minimum number of tasks.
+- Context that matters but is not itself a task belongs in context_notes.
 
 Return ONLY valid JSON:
 {
   "tasks": [
-    { "task": "Clear, actionable description — one sentence", "deadline": "inferred deadline or null — one sentence", "who_waiting": "inferred person or null — one sentence" }
+    {
+      "task": "clear actionable task",
+      "deadline": "explicit or directly stated deadline, otherwise null",
+      "who_waiting": "explicitly stated person, otherwise null",
+      "consequence": "explicitly stated consequence of delay, otherwise null",
+      "depends_on": "explicitly stated dependency, otherwise null"
+    }
   ],
-  "emotional_read": "One sentence about how this person sounds — 'You sound overwhelmed by...' — warm, not clinical",
-  "count": "number of distinct tasks extracted"
-}
+  "context_notes": ["relevant supplied context that should travel with the tasks"],
+  "count": 0
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2000,
-      system: withLanguage('Task extraction specialist. Pull actionable items from messy text. Warm tone. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisDump' });
-      if (!parsed.tasks) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-dump', 2200, { ...guardCtx, promise: 'The tasks contained in what the visitor wrote, with any deadline, person waiting, consequence or dependency they actually stated preserved and nothing added.' });
+      if (!parsed?.tasks) return res.status(500).json({ error: 'Could not extract the tasks. Please try again.' });
+      return res.json(parsed);
     }
 
-    // ─── RE-TRIAGE (after completing must-dos, what's next?) ───
-    if (action === 're-triage') {
-      const { completedTasks, remainingTasks, energy_level, hours_remaining,
-              userLanguage } = req.body;
-      if (!remainingTasks?.length) return res.status(400).json({ error: 'No remaining tasks.' });
+    if (action === 'just-one-thing') {
+      const { tasks = [], energy_level, hours_available, context } = req.body;
+      if (!tasks.length) return res.status(400).json({ error: 'Add at least one task.' });
 
-      const completedList = (completedTasks || []).map(t => `✓ "${t}"`).join('\n');
-      const remainingList = remainingTasks.map((t, i) => `${i + 1}. "${t.task}"${t.deadline ? ` [${t.deadline}]` : ''}`).join('\n');
+      const prompt = `CHOOSE ONE DEFENSIBLE NEXT ACTION FROM THESE TASKS.
 
-      const prompt = withLanguage(`Re-triage after progress. The person has completed some tasks and wants to know what's next.
+${taskLines(tasks)}
 
-COMPLETED:
-${completedList || 'Nothing yet'}
+AVAILABLE TIME: ${hours_available || 'Not supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
+CONTEXT: ${context || 'None supplied'}
 
-REMAINING:
-${remainingList}
-
-CURRENT ENERGY: ${energy_level || 'unknown'}
-TIME LEFT: ${hours_remaining || 'unknown'}
-
-RULES:
-- They've already done the hardest stuff. Acknowledge that.
-- Re-evaluate urgency — some tasks may have become more or less urgent since the original analysis.
-- If they're running low on energy, suggest stopping and give them permission.
-- Don't just repeat the original analysis — this is a FRESH look at what's left.
+If the supplied evidence does not support choosing one task over the others, do not guess. Ask one question instead.
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "Warm 1-2 sentences recognizing what they've accomplished so far",
-  "still_must_do": ["Tasks that still need to happen — brief reason"],
-  "can_stop_now": true/false,
-  "stop_reasoning": "If they can stop: why it's okay. If not: what still needs doing and roughly how long. — 1-2 sentences",
-  "next_action": "The ONE thing to do next — very specific — one sentence",
-  "updated_deferrals": ["Anything that became deferrable since the first analysis"],
-  "energy_check": "Honest read on whether they should keep going or rest — one sentence"
-}
+  "task": "single task or null",
+  "first_action": "one concrete first action or null",
+  "why": "brief evidence-based reason",
+  "need_one_fact": "one question if needed, otherwise null",
+  "after_this": "one short next step after completing the action"
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage(SYSTEM_PROMPT, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisRetriage' });
-      if (!parsed.acknowledgment) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-one', 1200, { ...guardCtx, promise: 'One task to start with, drawn from the supplied evidence, or one question when the evidence does not support choosing.' });
+      return res.json(parsed);
     }
 
-    // ─── FOLLOW-UP (how did last time go?) ───
-    if (action === 'follow-up') {
-      const { lastSession, whatGotDone, whatDidnt, surprises, userLanguage } = req.body;
-      if (!lastSession) return res.status(400).json({ error: 'Need last session data.' });
-
-      const prompt = withLanguage(`Analyze how someone's last crisis triage went. Help them see patterns.
-
-LAST SESSION:
-- Date: ${lastSession.date || '?'}
-- Tasks: ${lastSession.taskCount || '?'} total, ${lastSession.actuallyUrgent || '?'} marked urgent
-- Emotional state was: ${lastSession.emotional || '?'}
-
-WHAT ACTUALLY GOT DONE: ${whatGotDone || 'Not specified'}
-WHAT DIDN'T GET DONE: ${whatDidnt || 'Not specified'}
-SURPRISES: ${surprises || 'None mentioned'}
-
-Analyze:
-- Were the "critical" items actually critical in hindsight?
-- Did the deferrals work out okay? (They almost always do.)
-- What does this tell them about their urgency calibration?
-
-Return ONLY valid JSON:
-{
-  "hindsight_summary": "2-3 sentences — honest look at how accurate the urgency assessment was",
-  "calibration_insight": "Did they overrate urgency? Underrate it? Pretty accurate? One sentence.",
-  "deferrals_worked": true/false,
-  "deferral_note": "If deferrals worked: 'See? Those things you were worried about waiting on...' If not: what happened. — one sentence",
-  "pattern_hint": "If you notice a pattern from the data — e.g., 'You tend to overrate work emails' — mention it. Otherwise null. — one sentence",
-  "encouragement": "Warm closing — they're getting better at this — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Triage follow-up analyst. Warm, honest, pattern-aware. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisFollowUp' });
-      if (!parsed.hindsight_summary) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
-    }
-
-    // ─── DELEGATE (draft a handoff message) ───
-    if (action === 'delegate') {
-      const { task, delegateTo, context, tone, userLanguage } = req.body;
+    if (action === 'split-task') {
+      const { task, context, energy_level } = req.body;
       if (!task?.trim()) return res.status(400).json({ error: 'Which task?' });
 
-      const prompt = withLanguage(`Write a clear, kind handoff message for delegating this task.
+      const prompt = `BREAK THIS TASK INTO USEFUL, CONCRETE STEPS.
 
-TASK: "${task.trim()}"
-DELEGATE TO: ${delegateTo || 'someone else (general)'}
-CONTEXT: ${context || 'None provided'}
-TONE: ${tone || 'professional but warm'}
+TASK: ${task.trim()}
+CONTEXT: ${context || 'None supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
 
-RULES:
-- Be clear about what needs to happen — the recipient shouldn't have to guess
-- Include any deadlines or constraints
-- Make it easy to say yes — don't dump without context
-- Keep it short — 3-5 sentences max
-- Don't be apologetic about delegating — it's good management, not weakness
-
-Return ONLY valid JSON:
-{
-  "message": "The handoff message — ready to copy/paste — 2-4 sentences",
-  "subject_line": "Email subject line if it's an email — one sentence",
-  "what_to_include": "Any attachments, links, or context they should send along — one sentence",
-  "follow_up_note": "When/how to follow up — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 800,
-      system: withLanguage('Delegation messaging expert. Clear, kind, efficient. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisDelegate' });
-      if (!parsed.message) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
-    }
-
-    // ─── PATTERN (analyze 3+ sessions for recurring themes) ───
-    if (action === 'pattern') {
-      const { sessions, userLanguage } = req.body;
-      if (!sessions?.length || sessions.length < 3) return res.status(400).json({ error: 'Need at least 3 past sessions.' });
-
-      const sessionList = sessions.slice(0, 15).map((s, i) =>
-        `${i + 1}. ${s.date}: ${s.taskCount} tasks, ${s.actuallyUrgent} urgent, emotional: ${s.emotional || '?'}, timeframe: ${s.timeframe || '?'}${s.followUp ? `, follow-up: ${s.followUp}` : ''}`
-      ).join('\n');
-
-      const prompt = withLanguage(`Analyze this person's crisis history for patterns. Be insightful, not judgmental.
-
-CRISIS SESSIONS (most recent first):
-${sessionList}
-
-Look for:
-- Frequency: How often are they in "crisis mode"? Is it escalating?
-- Urgency calibration: Do they consistently overrate or underrate urgency?
-- Recurring task types: Always work? Always personal? Same category?
-- Emotional patterns: Always panicking? Always frozen? Same triggers?
-- Day/timing patterns: Always Mondays? Always end of month?
-- Improvement: Are they getting better at triage over time?
+RULES
+- Decompose only what the task/context supports.
+- Do not invent project requirements, deadlines, collaborators, or dependencies.
+- 3-8 steps when the task genuinely supports that many; fewer is fine.
+- Give rough time estimates only when useful and label them estimates.
+- Identify dependencies only when logically inherent or supplied.
+- Do not assign urgency to invented sub-tasks.
+- Low energy may justify smaller steps, not claims about what the user can or cannot do.
 
 Return ONLY valid JSON:
 {
-  "pattern_summary": "2-3 sentences — the big picture of their crisis patterns",
-  "frequency_insight": "How often they're hitting crisis mode and whether that's changing — one sentence",
-  "urgency_calibration": "Do they overrate, underrate, or accurately rate urgency? With evidence. — one sentence",
-  "recurring_themes": ["Theme 1: description", "Theme 2: description"],
-  "emotional_pattern": "Their typical emotional state during crises and any shifts — one sentence",
-  "biggest_insight": "The ONE thing that would help them most — specific and actionable — one sentence",
-  "improvement_noted": true/false,
-  "improvement_detail": "If yes: what's gotten better. If no: what's stuck. — one sentence",
-  "encouragement": "Warm note — using this tool IS progress — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Crisis pattern analyst. Insightful, warm, not judgmental. Find the patterns humans can\'t see in their own behavior. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisPattern' });
-      if (!parsed.pattern_summary) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
+  "summary": "one sentence describing the useful decomposition",
+  "steps": [
+    {
+      "step": "concrete action",
+      "rough_time": "rough estimate or null",
+      "depends_on": "step number or null",
+      "can_delegate": "true|false|unknown"
     }
-    return res.json(parsed);
+  ],
+  "smallest_start": "the smallest useful first action",
+  "unknowns": ["missing facts that would materially change the breakdown"]
+}`;
+
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-split', 2500, { ...guardCtx, promise: 'The task the visitor named, broken into concrete steps that the task and its supplied context genuinely support.' });
+      return res.json(parsed);
     }
 
-    // ═══════════════════════════════════════════
-    // v3 NEW ROUTES
-    // ═══════════════════════════════════════════
-
-    // ─── TIME-BLOCK (build concrete schedule from triage results) ───
     if (action === 'time-block') {
-      const { priorities, hours_available, energy_level, start_time, timeframe, voice, userLanguage } = req.body;
-      if (!priorities?.length) return res.status(400).json({ error: 'Need prioritized tasks.' });
+      const { priorities = [], hours_available, energy_level, start_time, constraints } = req.body;
+      if (!priorities.length) return res.status(400).json({ error: 'Need prioritized tasks.' });
 
-      const taskLines = priorities.map((p, i) =>
-        `${i + 1}. [${(p.actual_urgency || 'medium').toUpperCase()}] "${p.task}"${p.do_this ? ` → First step: ${p.do_this}` : ''}${p.deadline ? ` [Due: ${p.deadline}]` : ''}`
-      ).join('\n');
+      const prompt = `BUILD A FEASIBLE SCHEDULE FROM AN EXISTING PRIORITIZED LIST.
 
-      const voiceNote = voice ? `\nTONE: ${getVoiceInstruction(voice)}` : '';
+PRIORITIES
+${taskLines(priorities)}
 
-      const prompt = withLanguage(`Build a concrete, minute-by-minute time-blocked schedule from these prioritized tasks.
+AVAILABLE TIME: ${hours_available || 'Not supplied'}
+START TIME: ${start_time || 'Not supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
+CONSTRAINTS: ${constraints || 'None supplied'}
 
-PRIORITIZED TASKS:
-${taskLines}
-
-AVAILABLE TIME: ${hours_available || 'unknown'} hours
-ENERGY LEVEL: ${energy_level || 'unknown'}
-START TIME: ${start_time || 'now'}
-TIMEFRAME MODE: ${timeframe || 'right_now'}
-${voiceNote}
-
-RULES:
-- Build realistic time blocks — not just task order, but actual "9:00-9:30" blocks
-- Include 5-10 minute breaks between blocks. Longer (15-20 min) breaks every 90 minutes.
-- If energy is low: shorter work blocks (25 min), longer breaks
-- If energy is wired/anxious: channel it — front-load the hardest task while energy is high, then gradually decrease intensity
-- Critical tasks go first, but match task type to energy (creative tasks when fresh, admin when fading)
-- If tasks exceed available hours, be honest: mark what fits and what gets deferred
-- Each block should have a specific, concrete action — not vague goals
-- Add a "done" block at the end with a permission-to-stop message
+RULES
+- Preserve the evidence-based order unless a supplied fixed-time constraint requires otherwise.
+- Do not invent calendar commitments.
+- Time estimates are rough unless supplied.
+- If available time is unknown, make an ordered sequence rather than fake clock times.
+- If the work does not fit, put overflow in not_scheduled.
+- Breaks may be offered as flexible space, not prescribed as medically necessary.
 
 Return ONLY valid JSON:
 {
-  "schedule_summary": "1-2 sentences — 'Here's your next X hours, mapped out.'",
-  "start_time": "formatted start time, e.g. '9:00 AM' — one sentence",
-  "end_time": "when they'll be done if they follow this — one sentence",
-  "total_work_time": "actual work minutes (excluding breaks) — one sentence",
-  "total_break_time": "total break minutes — one sentence",
+  "summary": "one sentence",
   "blocks": [
     {
-      "start": "9:00 AM — one sentence",
-      "end": "9:30 AM — one sentence",
-      "duration_minutes": 30,
-      "type": "work|break|transition",
-      "task": "Specific task or break activity — one sentence",
-      "urgency": "critical|important|medium|low|optional|break",
-      "energy_note": "Brief note like 'You're freshest now — tackle the hard one' or 'Refill water, stretch' for breaks — one sentence",
-      "concrete_action": "The EXACT first thing to do when this block starts — e.g. 'Open email, click reply on boss's Thursday message' — one sentence"
+      "start": "time or null",
+      "end": "time or null",
+      "task": "specific action",
+      "rough_minutes": 0,
+      "note": "brief planning note or null"
     }
   ],
-  "overflow": ["Tasks that didn't fit in available time — with brief note on when to do them"],
-  "flexibility_note": "Brief note: 'If something takes longer, shift everything — don't skip breaks' — one sentence"
-}
+  "not_scheduled": ["work that does not fit"],
+  "adjustment_rule": "one simple rule for what to do if a block runs long"
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Time management expert who builds realistic, humane schedules. You know people underestimate task duration by 50%, so you pad accordingly. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisTimeBlock' });
-      if (!parsed.schedule_summary) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-schedule', 3000, { ...guardCtx, promise: 'A workable sequence for the already-prioritised work that respects supplied fixed times and shows what does not fit.' });
+      return res.json(parsed);
     }
 
-    // ─── JUST ONE THING (panic mode — the single most important action) ───
-    if (action === 'just-one-thing') {
-      const { tasks, energy_level, emotional_state, voice, userLanguage } = req.body;
-      if (!tasks?.length) return res.status(400).json({ error: 'Add at least one task.' });
-
-      const taskList = tasks.map((t, i) => {
-        let line = `${i + 1}. "${typeof t === 'string' ? t : t.task}"`;
-        if (t.deadline) line += ` [Deadline: ${t.deadline}]`;
-        if (t.who_waiting) line += ` [Who's waiting: ${t.who_waiting}]`;
-        return line;
-      }).join('\n');
-
-      const voiceNote = voice ? `\nTONE: ${getVoiceInstruction(voice)}` : '';
-
-      const prompt = withLanguage(`This person is overwhelmed and can't process a full triage. They need ONE THING. Just one.
-
-EVERYTHING ON THEIR PLATE:
-${taskList}
-
-ENERGY: ${energy_level || 'unknown'}
-EMOTIONAL STATE: ${emotional_state || 'unknown'}
-${voiceNote}
-
-RULES:
-- Pick the ONE task that matters most right now. Not the easiest — the most important.
-- If they're completely depleted, the one thing might be "rest for 20 minutes, then do X."
-- Give them the EXACT first physical action. Not "work on the report" but "open the document and write the first sentence."
-- Everything else can wait. Tell them why.
-- This should feel like someone taking them by the shoulders and saying "Just do this."
-- Keep it SHORT. They can't process paragraphs right now.
-
-Return ONLY valid JSON:
-{
-  "the_one_thing": "The single task. Clear and specific. — one sentence",
-  "first_physical_action": "The EXACT thing to do with their hands right now. 'Pick up your phone and dial...' or 'Open your laptop and click...' — one sentence",
-  "time_estimate": "How long this one thing will take — be honest — one sentence",
-  "why_this_one": "One sentence: why THIS task, not the others",
-  "everything_else": "One sentence giving permission to ignore everything else for now",
-  "after_this": "What to do after — either 'come back for a full triage' or 'rest' or the next single action — one sentence",
-  "grounding_word": "A single word or very short phrase of encouragement — 'You've got this.' or 'One step.' or 'Start here.' — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 800,
-      system: withLanguage('Crisis de-escalation specialist. When someone is paralyzed, you cut through the noise and give them one clear action. Minimal words, maximum clarity. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisOneAction' });
-      if (!parsed.the_one_thing) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
-    }
-
-    // ─── SPLIT TASK (break compound tasks into sub-tasks) ───
-    if (action === 'split-task') {
-      const { task, context, energy_level, userLanguage } = req.body;
+    if (action === 'delegate') {
+      const { task, delegateTo, context, tone } = req.body;
       if (!task?.trim()) return res.status(400).json({ error: 'Which task?' });
 
-      const prompt = withLanguage(`This task is actually multiple tasks hiding in a trench coat. Break it down into concrete, individually-completable sub-tasks.
+      const prompt = `DRAFT A SHORT HANDOFF MESSAGE.
 
-THE COMPOUND TASK: "${task.trim()}"
-ADDITIONAL CONTEXT: ${context || 'None'}
-ENERGY LEVEL: ${energy_level || 'unknown'}
+TASK: ${task.trim()}
+RECIPIENT: ${delegateTo || 'Not supplied'}
+CONTEXT: ${context || 'None supplied'}
+REQUESTED TONE: ${tone || 'clear and warm'}
 
-RULES:
-- Each sub-task should be a single, clear action that takes 5-45 minutes
-- Order them logically — what needs to happen first?
-- If some sub-tasks depend on others, note it
-- Assign urgency to each sub-task independently — not everything in a "big task" is equally urgent
-- If energy is low, suggest which sub-tasks could be done with minimal effort
-- Be specific. "Handle the apartment" → "Call landlord about leak", "Pay rent online", "Schedule cleaning for Saturday"
-- 3-8 sub-tasks is the sweet spot. If more than 8, some should probably be separate projects.
+Do not invent deadlines, attachments, authority, or background. If a needed detail is missing, use neutral wording rather than fabricating it.
 
 Return ONLY valid JSON:
 {
-  "diagnosis": "Why this felt overwhelming — 'This is actually 5 different tasks spanning 3 days' — 1-2 sentences",
-  "sub_tasks": [
+  "message": "ready-to-send handoff",
+  "subject_line": "email subject if useful, otherwise null",
+  "include": ["only supplied attachments/context that should accompany it"],
+  "missing_detail": "one detail worth adding before sending, or null"
+}`;
+
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-delegate', 1200, { ...guardCtx, promise: 'A short handoff message about this task that a real person could send as-is, inventing no deadline, authority or background.' });
+      return res.json(parsed);
+    }
+
+    if (action === 're-triage') {
+      const { completedTasks = [], remainingTasks = [], energy_level, hours_remaining, newContext } = req.body;
+      if (!remainingTasks.length) {
+        return res.json({
+          headline: 'Everything in this plan is marked complete.',
+          do_first: [], do_next: [], can_probably_wait: [], need_one_fact: [],
+          capacity_fit: { summary: 'No remaining tasks were supplied.', if_it_does_not_fit: null },
+          just_one_thing: { task: null, first_action: null, why: 'Nothing remains in the supplied plan.' }
+        });
+      }
+
+      const prompt = `RE-TRIAGE WHAT REMAINS AFTER PROGRESS.
+
+COMPLETED
+${completedTasks.length ? completedTasks.join('\n') : 'None supplied'}
+
+REMAINING
+${taskLines(remainingTasks)}
+
+TIME LEFT: ${hours_remaining || 'Not supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
+NEW CONTEXT: ${newContext || 'None supplied'}
+
+Do not assume urgency changed merely because time passed. Use only supplied deadlines and new context.
+
+Return ONLY valid JSON:
+${TRIAGE_SCHEMA}`;
+
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-retriage', 3500, { ...guardCtx, promise: 'A fresh order of attention over what remains, based on supplied deadlines and new context rather than on time having passed.' });
+      return res.json(parsed);
+    }
+
+    if (action === 'plan-period') {
+      const { tasks = [], period = 'this_week', hours_available, energy_level, constraints } = req.body;
+      if (!tasks.length) return res.status(400).json({ error: 'Add at least one task.' });
+
+      const prompt = `BUILD A PRACTICAL ${period === 'few_weeks' ? 'MULTI-WEEK' : 'WEEK'} PLAN FROM THESE TASKS.
+
+${taskLines(tasks)}
+
+AVAILABLE CAPACITY: ${hours_available || 'Not supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
+FIXED CONSTRAINTS: ${constraints || 'None supplied'}
+
+RULES
+- Schedule around supplied deadlines and dependencies.
+- Do not invent dates, commitments, energy curves, or consequences.
+- If exact dates are unknown, use ordered phases rather than fake calendar precision.
+- If work appears not to fit supplied capacity, show the mismatch and what needs deferral, narrowing, delegation, or clarification.
+
+Return ONLY valid JSON:
+{
+  "headline": "one sentence",
+  "periods": [
     {
-      "task": "Clear, specific sub-task — one sentence",
-      "time_estimate": "~15 min|~30 min|~1 hr",
-      "urgency": "critical|important|medium|low",
-      "effort_level": "minimal|moderate|significant",
-      "depends_on": null or "sub-task number that must be done first",
-      "note": "Optional — any context that helps — one sentence"
+      "label": "day/week label grounded in supplied dates, or Phase 1/Phase 2",
+      "focus": "short focus",
+      "tasks": ["tasks/actions for this period"],
+      "rough_load": "rough workload estimate or null"
     }
   ],
-  "quick_wins": ["Sub-task numbers that are easy wins — do these first for momentum"],
-  "can_delegate": ["Sub-task numbers someone else could handle"],
-  "total_time_estimate": "Realistic total time for all sub-tasks — one sentence"
-}
+  "not_scheduled": ["tasks that do not fit or cannot yet be placed"],
+  "need_one_fact": [
+    { "task": "task", "question": "missing fact that would change placement" }
+  ],
+  "capacity_note": "brief fit/mismatch note"
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Task decomposition expert. You see the hidden tasks inside vague to-dos. Specific, actionable, honest time estimates. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisTaskSplit' });
-      if (!parsed.diagnosis) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-period', 3500, { ...guardCtx, promise: 'A practical plan across the period that schedules around supplied deadlines and dependencies and shows what does not fit.' });
+      return res.json(parsed);
     }
 
-    // ─── ACCOUNTABILITY SNAPSHOT (shareable plan summary) ───
     if (action === 'accountability-snapshot') {
-      const { mustDos, deferrals, timeframe, emotional_state, recipientType, voice, userLanguage } = req.body;
-      if (!mustDos?.length) return res.status(400).json({ error: 'Need tasks to share.' });
+      const { mustDos = [], deferrals = [], recipientType, context } = req.body;
+      if (!mustDos.length) return res.status(400).json({ error: 'Need tasks to share.' });
 
-      const mustDoList = mustDos.map((t, i) => `${i + 1}. ${typeof t === 'string' ? t : t.task}`).join('\n');
-      const deferralList = (deferrals || []).join('\n');
-      const voiceNote = voice ? `\nTONE: ${getVoiceInstruction(voice)}` : '';
+      const prompt = `WRITE A CONCISE ACCOUNTABILITY MESSAGE USING ONLY THIS PLAN.
 
-      const prompt = withLanguage(`Create a shareable accountability message. This person wants to tell someone their plan for the day/week.
+DOING
+${mustDos.join('\n')}
 
-WHAT THEY'RE TACKLING:
-${mustDoList}
+NOT DOING YET
+${deferrals.join('\n') || 'None supplied'}
 
-WHAT THEY'RE INTENTIONALLY DEFERRING:
-${deferralList || 'Nothing specified'}
+RECIPIENT: ${recipientType || 'Not supplied'}
+CONTEXT: ${context || 'None supplied'}
 
-TIMEFRAME: ${timeframe || 'today'}
-HOW THEY'RE FEELING: ${emotional_state || 'not specified'}
-RECIPIENT TYPE: ${recipientType || 'friend or partner'}
-${voiceNote}
-
-RULES:
-- Make it feel confident, not apologetic. They're making a plan, not confessing.
-- Include what they're doing AND what they're intentionally NOT doing — both are decisions.
-- Keep it natural — this should read like a text message, not a corporate memo.
-- If the recipient is a partner: warmer, more personal
-- If the recipient is a coworker: more professional, focused on deliverables
-- If the recipient is a friend: casual, honest
-- Include a subtle "you can check in on me" invitation — accountability works better with check-ins
-- Short — 4-8 sentences max
+Do not invent a check-in time or ask the recipient to monitor the user unless requested.
 
 Return ONLY valid JSON:
 {
-  "message": "The shareable message — ready to send — 2-4 sentences",
-  "format_hint": "text|email|slack — suggested format",
-  "check_in_time": "Suggested time for the recipient to check in — e.g. 'around 3pm' or 'end of day' — one sentence",
-  "tone_note": "Brief note on the tone — 'Confident and clear' or 'Honest but hopeful' — one sentence"
-}
+  "message": "ready-to-send message",
+  "format_hint": "text|email|slack|other",
+  "optional_check_in_line": "optional line inviting a check-in, or null"
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Accountability messaging expert. You draft clear, confident plans that invite support without sounding needy. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisAccountability' });
-      if (!parsed.message) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-accountability', 1200, { ...guardCtx, promise: 'A short message the visitor could send about what they are doing and what they are not, using only this plan.' });
+      return res.json(parsed);
     }
 
-    // ─── ROLLING CRISIS UPDATE (re-triage within persistent multi-week plan) ───
+    if (action === 'follow-up') {
+      const { originalPlan, whatGotDone, whatDidnt, surprises, outcomes } = req.body;
+      if (!originalPlan) return res.status(400).json({ error: 'Need the earlier plan.' });
+
+      const prompt = `REVIEW WHAT HAPPENED AFTER A PRIOR TRIAGE.
+
+ORIGINAL PLAN
+${JSON.stringify(originalPlan)}
+
+DONE: ${whatGotDone || 'Not supplied'}
+NOT DONE: ${whatDidnt || 'Not supplied'}
+SURPRISES: ${surprises || 'Not supplied'}
+OUTCOMES: ${outcomes || 'Not supplied'}
+
+RULES
+- Compare plan with reported outcomes.
+- Do not infer that an uncompleted task was never urgent.
+- Do not create an urgency-accuracy score.
+- Do not infer personality or emotional patterns.
+- Surface only lessons supported by the reported outcome.
+
+Return ONLY valid JSON:
+{
+  "what_happened": "brief factual comparison",
+  "what_the_outcome_supports": ["grounded lessons"],
+  "what_it_does_not_establish": ["tempting conclusions not supported by the evidence"],
+  "use_next_time": ["specific factual information worth capturing earlier next time"]
+}`;
+
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-followup', 2200, { ...guardCtx, promise: 'A factual comparison of the plan with what the visitor reported happened, separating what the outcome supports from what it does not establish.' });
+      return res.json(parsed);
+    }
+
+    if (action === 'history-patterns' || action === 'pattern' || action === 'dashboard-insights') {
+      const sessions = req.body.sessions || [];
+      if (sessions.length < 2) return res.status(400).json({ error: 'Need at least 2 past sessions.' });
+
+      const prompt = `SUMMARIZE FACTUAL PATTERNS ACROSS THESE PRIORITIZATION SESSIONS.
+
+SESSIONS
+${JSON.stringify(sessions.slice(0, 20))}
+
+RULES
+- Report only recurrence explicitly represented in the stored session data.
+- Useful patterns include recurring task categories, recurring deadlines, completion/deferral outcomes, workload counts, or timing.
+- Do not score urgency accuracy.
+- Do not label tasks anxiety-driven.
+- Do not infer personality, emotional tendencies, avoidance, perfectionism, or improvement unless the stored outcomes directly establish the specific claim.
+- Distinguish counts from interpretations.
+
+Return ONLY valid JSON:
+{
+  "headline": "one grounded sentence",
+  "recurring_facts": [
+    { "pattern": "factual recurrence", "evidence": "count/examples from supplied sessions" }
+  ],
+  "outcome_patterns": [
+    { "pattern": "factual completion/deferral/outcome pattern", "evidence": "support" }
+  ],
+  "worth_capturing_next_time": ["missing factual fields that would make future triage more useful"],
+  "limits": ["what this history cannot establish"]
+}`;
+
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-history', 2500, { ...guardCtx, promise: 'Factual recurrence across the stored sessions — counts and repeats — with the limits of what history can establish stated.' });
+      return res.json(parsed);
+    }
+
     if (action === 'rolling-crisis-update') {
-      const { currentPlan, completedTasks, newTasks, energy_level, emotional_state,
-              weekNumber, userLanguage } = req.body;
+      const { currentPlan, completedTasks = [], newTasks = [], hours_available, energy_level, newContext } = req.body;
       if (!currentPlan) return res.status(400).json({ error: 'Need existing plan.' });
 
-      const completedList = (completedTasks || []).map(t => `✓ "${t}"`).join('\n');
-      const newTaskList = (newTasks || []).map((t, i) => `NEW ${i + 1}. "${t.task}"${t.deadline ? ` [Deadline: ${t.deadline}]` : ''}`).join('\n');
+      const prompt = `UPDATE AN EXISTING PERIOD PLAN.
 
-      const planSummary = (currentPlan.multi_week_plan || []).map(w => {
-        const mustDos = (w.must_dos || []).join(', ');
-        const delegates = (w.delegate || []).join(', ');
-        return `${w.week_label} [Focus: ${w.focus || '?'}]: Must-dos: ${mustDos || 'none'}, Delegate: ${delegates || 'none'}`;
-      }).join('\n');
+CURRENT PLAN
+${JSON.stringify(currentPlan)}
 
-      const prompt = withLanguage(`Update an ongoing multi-week crisis plan. The person is checking in for a mid-period update.
+COMPLETED
+${completedTasks.join('\n') || 'None supplied'}
 
-CURRENT MULTI-WEEK PLAN:
-${planSummary}
+NEW TASKS
+${taskLines(newTasks)}
 
-WHAT'S BEEN COMPLETED SINCE LAST CHECK:
-${completedList || 'Nothing reported'}
+AVAILABLE CAPACITY: ${hours_available || 'Not supplied'}
+ENERGY: ${energy_level || 'Not supplied'}
+NEW CONTEXT: ${newContext || 'None supplied'}
 
-NEW TASKS ADDED:
-${newTaskList || 'None'}
-
-CURRENT WEEK: ${weekNumber || '?'}
-ENERGY: ${energy_level || 'unknown'}
-EMOTIONAL STATE: ${emotional_state || 'unknown'}
-
-RULES:
-- Acknowledge progress first — what they've completed matters.
-- Re-slot remaining tasks + any new ones across remaining weeks.
-- If the plan is falling behind, be honest but kind about it.
-- If new tasks make the plan unsustainable, flag it.
-- Don't just repeat the old plan — this should feel like a fresh assessment.
-- Adjust the remaining weeks based on what's changed.
+Preserve supplied deadlines/dependencies. Do not invent reasons a plan is behind, sustainable, or unsustainable.
 
 Return ONLY valid JSON:
 {
-  "progress_acknowledgment": "Warm 1-2 sentences on what they've accomplished",
-  "plan_status": "on_track|slightly_behind|significantly_behind|ahead",
-  "status_note": "Brief honest assessment of where things stand — one sentence",
-  "updated_weeks": [
-    {
-      "week_label": "Week N — 2-4 words",
-      "focus": "Updated focus area — one sentence",
-      "must_dos": ["remaining + new critical tasks for this week"],
-      "delegate": ["tasks to hand off"],
-      "delete": ["tasks that should be dropped given new context"],
-      "self_care": "Specific self-care for this week — one sentence"
-    }
+  "headline": "what changed",
+  "updated_periods": [
+    { "label": "existing or evidence-based period label", "tasks": ["remaining/new tasks"], "rough_load": "rough estimate or null" }
   ],
-  "sustainability_update": "Updated sustainability check — are they pacing okay? — one sentence",
-  "next_check_in": "When they should check in next — 'End of this week' or 'Wednesday' — one sentence"
-}
+  "completed": ["reported completed tasks"],
+  "not_scheduled": ["tasks that do not fit or cannot yet be placed"],
+  "need_one_fact": [{ "task": "task", "question": "missing fact that would change placement" }],
+  "next_action": "best-supported next action"
+}`;
 
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(SYSTEM_PROMPT + '\nYou are updating an ongoing crisis management plan. Be honest about progress while maintaining hope.', userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisRollingUpdate' });
-      if (!parsed.progress_acknowledgment) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
+      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-rolling', 3000, { ...guardCtx, promise: 'The existing plan brought up to date with reported progress and new work, preserving supplied deadlines and dependencies.' });
+      return res.json(parsed);
     }
 
-    // ─── DASHBOARD INSIGHTS (AI-powered stats summary from journal) ───
-    if (action === 'dashboard-insights') {
-      const { sessions, userLanguage } = req.body;
-      if (!sessions?.length) return res.status(400).json({ error: 'Need session data.' });
-
-      const sessionList = sessions.slice(0, 20).map((s, i) =>
-        `${i + 1}. ${s.date}: ${s.taskCount} tasks, ${s.actuallyUrgent} urgent, canWait: ${s.canWait || '?'}, emotional: ${s.emotional || '?'}, timeframe: ${s.timeframe || '?'}${s.followUp ? `, follow-up: ${s.followUp}` : ''}`
-      ).join('\n');
-
-      const prompt = withLanguage(`Generate dashboard insights from this person's crisis triage history.
-
-SESSIONS (${sessions.length} total, showing up to 20):
-${sessionList}
-
-Calculate and summarize:
-- Total tasks triaged
-- Average tasks per session
-- Percentage that turned out to be anxiety-driven vs genuinely urgent
-- Most common emotional state
-- Most common timeframe used
-- Trend: are crises getting more or less frequent?
-- Trend: is urgency calibration improving?
-
-Return ONLY valid JSON:
-{
-  "total_sessions": ${sessions.length},
-  "total_tasks_triaged": "estimated total — one sentence",
-  "avg_tasks_per_session": "number — one sentence",
-  "urgency_accuracy": "percentage — how often their 'urgent' was actually urgent (estimate from data) — one sentence",
-  "anxiety_driven_pct": "estimated percentage of tasks that were anxiety, not reality",
-  "most_common_emotion": "the emotional state they most often arrive in — one sentence",
-  "most_common_timeframe": "right_now|this_week|few_weeks",
-  "frequency_trend": "increasing|stable|decreasing",
-  "calibration_trend": "improving|stable|declining",
-  "headline_insight": "One powerful sentence summarizing their journey — e.g., 'You've triaged 47 tasks across 8 sessions, and you're getting better at telling anxiety from reality.' — one sentence",
-  "encouragement": "Brief warm note — one sentence"
-}
-
-Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
-
-      const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      system: withLanguage('Data analyst who turns crisis triage history into encouraging, actionable insights. Return ONLY valid JSON. ' + NO_QUOTE_RULE, userLanguage),
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'CrisisDashboard' });
-      if (!parsed.total_sessions) {
-      return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
-    }
-    return res.json(parsed);
-    }
-
-    return res.status(400).json({ error: 'Invalid action. Use: generate, quick-dump, re-triage, follow-up, delegate, pattern, time-block, just-one-thing, split-task, accountability-snapshot, rolling-crisis-update, dashboard-insights' });
+    return res.status(400).json({ error: 'Invalid action.' });
   } catch (error) {
-    console.error('[CrisisPrioritizer]', error.message);
-    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    console.error('[CrisisPrioritizerV2]', error);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+// crisis-prioritizer-v2. A STRING here declares nothing and enforces nothing
+// — Gate 9's regex matches it either way, which is exactly how Crash
+// Predictor shipped with a guard that never ran. Each term below is a
+// deleted concept from the V2 contract, turned into something the validator
+// can actually catch.
+router.outputGuard = {
+  prohibit: [
+    'invented_deadline_or_consequence',   // a due date or cost of delay the visitor never gave
+    'invented_dependency_or_commitment',
+    'psychological_read_of_the_visitor',  // anxiety-driven, avoidance, perfectionism, guilt
+    'objective_urgency_claim',            // "this is actually the urgent one"
+    'risk_scoring_or_accuracy_percentage',
+    'universal_energy_curve',             // "mornings are for deep work"
+    'unrequested_self_care_prescription',
+    'overcommitment_diagnosis_without_arithmetic',
+    'no_deadline_stated_as_fact',         // silence is 'not supplied', not 'no deadline'
+  ],
+  require: [
+    'ranking_traceable_to_supplied_facts',
+    'unknowns_surfaced_rather_than_filled_in',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
