@@ -5488,10 +5488,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Everything feels urgent and you can't tell what's real.",
+    when: "Several things are competing for your attention and you can't tell what to start with.",
     give: "Your tasks, and a timeframe — today, this week, or a few weeks out.",
-    get: "What genuinely needs attention now, what can wait, and who's actually waiting on you.",
-    edge: "It separates real urgency from anxiety urgency by checking consequences and who's waiting, not how loud something feels.",
+    get: "An order to work in, what the supplied facts don't show a need to rush, and the one missing detail that would change it.",
+    edge: "It ranks only from what you supply — deadlines, consequences, who is waiting — and puts a task in 'need one fact' rather than inventing a reason to move it.",
   },
   seoDescription: "Put a crowded task list in a defensible order using the deadlines, consequences and dependencies you actually have — and see the one missing fact that would change it. Free.",
   seoTitle: "Task Triage Tool: What's Actually Urgent",
@@ -5501,7 +5501,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🚨",
   categories: ['Energy', 'Do It!'],
   headerColor: "#d4dde8",
-  description: "When everything feels urgent, sort out what needs attention first. Crisis Prioritizer looks at deadlines, consequences, dependencies, and the time and energy you have available—then gives you a practical order of attack.",
+  description: "When several things are competing for your attention, work out a defensible order. Crisis Prioritizer uses the deadlines, consequences and dependencies you actually supply — plus the time and energy you have — and where a missing detail would change the order, it asks for that one fact instead of guessing.",
   guide: {
     overview: "Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.",
     howToUse: [

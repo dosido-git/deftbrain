@@ -72,3 +72,14 @@ since PF-30 renders it.
 **Live:** generate 20.8s EN / 21.7s DE, just-one-thing 6.2s, all 200.
 Browser: header, example, full result render, progress panel; Arabic RTL clean,
 no tofu, no overflow at 375px.
+
+## Button hierarchy — 2026-08-24
+
+The two bottom actions sat in a 50/50 grid at the same height and text size,
+so they read as a choice between equals. Experience guidelines: "If a visitor
+is unsure what to do next, the screen has failed."
+
+Prioritize These Tasks now owns the full width at 56px and 16px/700 in filled
+cyan. Just Tell Me ONE Thing sits beneath it, centred, as an underlined ghost
+control at 44px and 14px/600 — still obviously pressable, no longer competing.
+Measured 697×56 against 197×44: 4.5× the area.

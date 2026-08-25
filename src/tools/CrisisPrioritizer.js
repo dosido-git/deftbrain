@@ -62,6 +62,7 @@ export default function CrisisPrioritizer() {
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100' : 'bg-white border-gray-300 text-gray-900',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    btnGhost:      isDark ? 'text-zinc-400 hover:text-zinc-100' : 'text-slate-500 hover:text-slate-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -340,11 +341,17 @@ export default function CrisisPrioritizer() {
         </Field>
       </Card>
 
-      <div className="grid sm:grid-cols-2 gap-2">
-        <Button c={c} primary className="w-full" onClick={generate} disabled={loading || !cleanTasks.length}>
+      <div className="space-y-3">
+        <button type="button" onClick={generate} disabled={loading || !cleanTasks.length}
+          className={`w-full min-h-[56px] rounded-xl px-5 text-base font-bold shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
           {loading ? <>{spinner}{t('cp2_prioritizing')}</> : <>{t('cp2_prioritize_cta')} <span className="opacity-60 text-xs ms-1">⌘↵</span></>}
-        </Button>
-        <Button c={c} className="w-full" onClick={oneThing} disabled={loading || !cleanTasks.length}>🎯 {t('cp2_one_cta')}</Button>
+        </button>
+        <div className="text-center">
+          <button type="button" onClick={oneThing} disabled={loading || !cleanTasks.length}
+            className={`min-h-[44px] px-3 text-sm font-semibold underline underline-offset-4 disabled:opacity-40 ${c.btnGhost}`}>
+            🎯 {t('cp2_one_cta')}
+          </button>
+        </div>
       </div>
 
       {!!journal.length && <Card c={c} title={t('cp2_recent_title', { n: journal.length })}>
