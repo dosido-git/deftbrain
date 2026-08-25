@@ -152,3 +152,60 @@ in the response.
 **Note:** the first restart hit `EADDRINUSE` and the old process kept serving —
 the documented trap where a test reads a stale build. Confirmed
 `started PID == listening PID` before trusting any of the above.
+
+## One bucket per task — 2026-08-24
+
+Owner: the model was still sneaking assumptions into careful-sounding language,
+and the landlord task was ranked Do next *and* listed under Need one fact —
+two contradictory claims about the same task on one screen.
+
+**My rule 6a caused it.** It said an unknown you name "must also appear in
+need_one_fact". *Also* is the word that produced the double placement: the
+model dutifully ranked the task and questioned it. An unknown does not
+annotate a ranking — it replaces one. Rewritten: if a missing fact could
+materially change where a task belongs, the task goes in need_one_fact **and
+nowhere else**. A task you cannot place is not placed.
+
+**Enforced in code, because the prose rule already existed and was already
+being broken.** The generate prompt has said "every task must appear exactly
+once" since the owner wrote it. `enforceSingleBucket()` runs after parsing on
+generate and re-triage: anything named in `need_one_fact` is removed from the
+ranked buckets, and a `just_one_thing` pointing at an unplaceable task is
+nulled with the blocking question kept as its `why`. Match is
+trim + lowercase, so a whitespace or capitalisation difference cannot smuggle a
+duplicate through.
+
+Proved it fires rather than assuming — a hand-built draft with the landlord in
+`do_next`, in `can_probably_wait` as `'  reply to the LANDLORD  '`, in
+`need_one_fact`, and as `just_one_thing`: three placements removed, the
+question preserved.
+
+Three more rules for the specific leaks:
+
+- **6b** — no speculation about anyone else's situation. "May have their own
+  timeline operating in the background" is a claim about a person the visitor
+  mentioned once.
+- **6c** — `why_it_matters` says how the answer moves the task in the ranking,
+  full stop. What an expired registration "leads to" is outside knowledge, and
+  stating it is inventing a consequence. Schema field rewritten to match.
+- **headline** — states what the evidence shows; does not recommend an action,
+  and never claims a benefit for one ("reduces the cost of that deferral").
+
+Guard terms added: `task_ranked_and_questioned`,
+`speculation_about_another_persons_situation`,
+`outside_knowledge_about_consequences`,
+`benefit_claim_for_a_recommended_action`, `countdown_instead_of_supplied_date`.
+
+**On the date.** "Roughly two days to that deadline" is not an unsupported
+inference — `lib/claude.js:52` injects the current date into every request, so
+the model does have today. But the countdown is still wrong, for a different
+reason: results are persisted now, so a plan reopened three days later still
+says two days. Rule 17 prefers the supplied date over a countdown — "due on
+the 30th", not "two days away".
+
+**Verified on the owner's exact scenario** (landlord waiting/no deadline,
+undated registration, Q3 due the 30th): every task in exactly one bucket;
+landlord reads "The landlord is supplied as waiting. No deadline was supplied";
+registration's why_it_matters is purely positional — "a deadline on or before
+the 30th would move this into do_first"; headline states the evidence and
+recommends nothing.

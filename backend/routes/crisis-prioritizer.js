@@ -18,7 +18,9 @@ CORE RULES
 4. Never decide that a task is anxiety-driven, irrational, guilt-driven, avoidance, perfectionism, procrastination, or a sign of any psychological trait.
 5. Never claim to know what will happen if a task is delayed unless the visitor supplied that consequence.
 6. When a missing fact could materially change the order, expose the uncertainty. Put the task in need_one_fact and ask the smallest useful question.
-6a. An unknown you name is an unknown you must ask about. If any justification says something was not specified, is unclear, or is not known, and the answer could change the order, that same unknown must also appear in need_one_fact as a question. A missing fact mentioned in passing gives the visitor nothing to act on; a question gives them something to answer.
+6a. One bucket per task, and the unknown wins. Every task appears in exactly one of do_first, do_next, can_probably_wait or need_one_fact — never two. If a missing fact could materially change where a task belongs, the task goes in need_one_fact and nowhere else. Do not rank it and then also question it: a task you cannot place is not placed. Once the visitor answers, the order is redrawn and the task moves into a ranked bucket.
+6b. Do not speculate about anyone else's situation, motives, or timeline. 'They may have their own deadline', 'they are probably waiting on this', 'they might need it sooner' — the visitor told you a person is waiting, and that is the whole of what you know about that person.
+6c. why_it_matters says how the answer would move this task in the ranking. It is not a place to explain what the fact means in the world. You do not know what an expired permit, a missed payment, an unsigned lease or an overdue registration leads to; that is outside knowledge, and stating it is inventing a consequence.
 7. A missing deadline does not mean no deadline. Say 'not supplied' rather than 'no hard deadline'.
 8. Available time and energy affect feasibility and sequencing. They do not determine whether a task is objectively urgent.
 9. Distinguish urgency from importance. A valuable task may still be able to wait; a small task may be time-sensitive.
@@ -33,11 +35,12 @@ CORE RULES
 14. Do not prescribe rest, self-care, medical action, sick leave, or stopping work merely from an energy selection. You may make a plan lighter when the visitor reports low capacity.
 15. Do not infer that a workload is unsustainable unless the supplied tasks and available time demonstrate that they do not fit; if so, describe the mismatch rather than diagnosing the person.
 16. History may be used to report factual recurrence: task categories, completion, deferral, timing, or outcomes the visitor recorded. Do not turn history into personality analysis, emotional profiling, or an 'urgency accuracy' score.
-17. Lead with the answer. Keep output compact. Say each point once.
-18. ${NO_QUOTE_RULE}`;
+17. Prefer the supplied date over a countdown to it. Say 'due on the 30th', not 'two days away'. The visitor keeps these plans and may reopen one days later, at which point a countdown is simply wrong.
+18. Lead with the answer. Keep output compact. Say each point once.
+19. ${NO_QUOTE_RULE}`;
 
 const TRIAGE_SCHEMA = `{
-  "headline": "One sentence stating the most useful conclusion from the supplied information.",
+  "headline": "One sentence stating the most useful conclusion from the supplied information. State what the evidence shows. Do not recommend an action here, and never claim a benefit for one — that a step would reduce a cost, buy time, or ease anything is a claim you cannot support.",
   "do_first": [
     {
       "task": "task text",
@@ -66,7 +69,7 @@ const TRIAGE_SCHEMA = `{
     {
       "task": "task text",
       "question": "the single missing fact most likely to change this task's position",
-      "why_it_matters": "brief explanation of how the answer could affect ranking"
+      "why_it_matters": "how the answer would move this task in the ranking, and nothing else. Not what the fact means in the world, not what happens if it is true."
     }
   ],
   "capacity_fit": {
@@ -134,6 +137,39 @@ async function guardResult(result, { supplied, promise, label, userLanguage, use
 // README: "Wire responses through your repository's existing runOutputGuard
 // helper/profile before merge." All twelve actions already funnel through
 // this one function, so that is where it goes.
+// A prose rule saying "exactly one bucket" is a rule the model breaks — it
+// ranked the landlord task Do next *and* asked for its deadline, which is
+// two contradictory claims about the same task in one screen. The unknown
+// wins: if we cannot place a task, it is not placed. Deterministic, so it
+// cannot drift the way the instruction did.
+function enforceSingleBucket(parsed) {
+  if (!parsed || !Array.isArray(parsed.need_one_fact)) return parsed;
+  const key = t => String(t || '').trim().toLowerCase();
+  const questioned = new Set(parsed.need_one_fact.map(x => key(x.task)).filter(Boolean));
+  if (!questioned.size) return parsed;
+
+  let moved = 0;
+  for (const bucket of ['do_first', 'do_next', 'can_probably_wait']) {
+    if (!Array.isArray(parsed[bucket])) continue;
+    const kept = parsed[bucket].filter(x => !questioned.has(key(x.task)));
+    moved += parsed[bucket].length - kept.length;
+    parsed[bucket] = kept;
+  }
+  // just_one_thing pointing at a task we could not place is the same
+  // contradiction wearing a different hat.
+  if (parsed.just_one_thing && questioned.has(key(parsed.just_one_thing.task))) {
+    parsed.just_one_thing = {
+      task: null,
+      first_action: null,
+      why: parsed.need_one_fact.find(x => key(x.task) === key(parsed.just_one_thing.task))?.question
+        || parsed.just_one_thing.why,
+    };
+    moved += 1;
+  }
+  if (moved) console.log(`[CrisisPrioritizerV2] single-bucket: removed ${moved} duplicate placement(s)`);
+  return parsed;
+}
+
 async function ask(prompt, userLanguage, label, max_tokens = 3000, guardCtx = null) {
   const result = await callClaudeWithRetry({
     model: MODELS.SMART,
@@ -183,7 +219,7 @@ INSTRUCTIONS
 Return ONLY valid JSON:
 ${TRIAGE_SCHEMA}`;
 
-      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-generate', 4000, { ...guardCtx, promise: 'A defensible order of attention over the tasks the visitor listed — what to do first, what follows, what the supplied information does not show a need to rush, and the single missing fact that would change the order.' });
+      const parsed = enforceSingleBucket(await ask(prompt, userLanguage, 'CrisisPrioritizerV2-generate', 4000, { ...guardCtx, promise: 'A defensible order of attention over the tasks the visitor listed — what to do first, what follows, what the supplied information does not show a need to rush, and the single missing fact that would change the order.' }));
       if (!parsed?.headline || !Array.isArray(parsed?.need_one_fact)) {
         return res.status(500).json({ error: 'Could not prioritize your tasks. Please try again.' });
       }
@@ -387,7 +423,7 @@ Do not assume urgency changed merely because time passed. Use only supplied dead
 Return ONLY valid JSON:
 ${TRIAGE_SCHEMA}`;
 
-      const parsed = await ask(prompt, userLanguage, 'CrisisPrioritizerV2-retriage', 3500, { ...guardCtx, promise: 'A fresh order of attention over what remains, based on supplied deadlines and new context rather than on time having passed.' });
+      const parsed = enforceSingleBucket(await ask(prompt, userLanguage, 'CrisisPrioritizerV2-retriage', 3500, { ...guardCtx, promise: 'A fresh order of attention over what remains, based on supplied deadlines and new context rather than on time having passed.' }));
       return res.json(parsed);
     }
 
@@ -592,7 +628,11 @@ router.outputGuard = {
     'supplied_intention_restated_as_recommendation',  // their plan handed back as your advice
     'expected_event_written_as_confirmed',            // a future date treated as already reached
     'invented_revisit_date',                          // 'revisit next week' with no supplied date
-    'unknown_named_but_not_asked',                    // a gap raised in prose and never turned into a question
+    'task_ranked_and_questioned',                     // placed in a bucket AND in need_one_fact
+    'speculation_about_another_persons_situation',    // 'they may have their own timeline'
+    'outside_knowledge_about_consequences',           // what an expired permit 'leads to'
+    'benefit_claim_for_a_recommended_action',         // 'this reduces the cost of deferring'
+    'countdown_instead_of_supplied_date',
   ],
   require: [
     'ranking_traceable_to_supplied_facts',
