@@ -235,10 +235,10 @@ export const tools = [
   primer: {
     when: "You've booked the trip and you don't want to be the rude tourist.",
     give: "Destination, trip purpose, how long, and where you're from.",
-    get: "What to do, what never to do, how to greet people, what not to wear, how tipping really works, which gestures to avoid.",
-    edge: "Specific instructions, not 'respect local customs'. And it's calibrated to where YOU are from — what's rude depends on both ends.",
+    get: "What is widely observed, what tends to cause friction, what varies by region or setting, and what to check locally before you rely on it.",
+    edge: "Specific and calibrated to where you are from, rather than 'respect local customs' — and it separates a strong convention from a practice that varies, instead of presenting a country as one thing.",
   },
-  seoDescription: "Get a free travel etiquette briefing for any country — greetings, taboos, tipping, dining, and dress — plus the insider tips guidebooks miss. Know before you go.",
+  seoDescription: "A free travel etiquette briefing for any country — greetings, taboos, tipping, dining and dress — separating what is widely observed from what varies, and flagging what to check locally. Know before you go.",
   seoTitle: "Travel Etiquette & Culture Guide by Country",
   title: "Culture Briefing",
   tagline: "Know before you go — cultural intelligence for any destination",
@@ -246,7 +246,7 @@ export const tools = [
   icon: "🌍",
   categories: ['Out & About'],
   headerColor: "#b8d4e8",
-  description: "Get a real cultural intelligence briefing before traveling anywhere — greetings, taboos, dining, dress, tipping, business etiquette, religion, safety, and the insider tips guidebooks miss. Tailored to your trip purpose.",
+  description: "A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.",
   guide: {
     overview: "Most travel guides tell you to 'be respectful of local customs' without telling you what that means. CultureBriefing gives you specific, actionable cultural intelligence: what to do, what to never do, how to greet people correctly, what not to wear, how tipping actually works, what gestures to avoid, and the things most travelers learn the hard way. Tailored by trip purpose — tourism, business, family visits, living abroad — so you get what actually matters for your situation. Works for 190+ countries and major cities.",
 
@@ -257,7 +257,7 @@ export const tools = [
       "Click 'Get My Briefing' — get a full cultural briefing organized by topic",
       "Navigate topics using the pill buttons — tap any section to expand it",
       "Review ✅ DOs, 🚫 DON'Ts, and ℹ️ context notes for each area",
-      "Check insider tips and key phrases before you land",
+      "Read the practical tips and key phrases before you land, and note anything marked as worth checking locally",
     ],
 
     tips: [
@@ -271,7 +271,7 @@ export const tools = [
 
     example: {
       scenario: "An American businessperson traveling to Japan for the first time selects 'Business' and enters 'United States' as home country and '1 week' as duration.",
-      result: "Overview: Japan's business culture is built on hierarchy, relationship-building, and non-verbal communication — directness that works in the US can read as aggressive here. Sections include: Greetings (bow at 15°, exchange business cards with both hands and study them before pocketing); Taboos (never write in red ink, don't tip — it's considered insulting); Business etiquette (silence is respect, not discomfort; decisions happen before meetings, not during them); Dining (never stick chopsticks upright in rice; wait to be seated); plus 6 insider tips and 5 key phrases with pronunciation guides."
+      result: "Overview: Japanese business culture leans on hierarchy, relationship-building and non-verbal communication, and directness that works in the US can read as aggressive. Greetings: a bow and a two-handed business-card exchange are widely observed; depth of bow and whether a handshake accompanies it varies by generation and how international the firm is. Taboos: chopsticks upright in rice and names written in red are widely avoided. Tipping: not customary in most settings — flagged as worth checking for your specific context. Business etiquette: silence in meetings often reads as consideration rather than discomfort. Plus practical tips and key phrases."
     },
   },
 },

@@ -23,3 +23,71 @@ Switched model **Sonnet → Haiku** (`MODELS.FAST`) after an A/B showed Haiku+pr
 
 ## Re-lock `culturebriefing-v3` (2026-07-12) — richer inputs + output
 Added the input/schema ideas from the v2 review. **New inputs:** `region` (city/region — sharpens advice for large countries) + `context` (free-text catch-all for who-you're-meeting + constraints: dietary/religious/alcohol/kids/accessibility). Both threaded into the prompt with a "HONOR these" rule — verified honored (dining tailored to vegetarian, region → Osaka/Kansai). **New output:** (1) a `gift_giving` section (🎁, model-translated title, renders via the existing sections loop — empty arrays when N/A); (2) `forgiveness{forgiven[], serious[]}` — minor slips locals overlook vs. mistakes that damage trust (rendered as green/red chip lists + in copy); (3) `confidence` (high/medium/low — model self-rates knowledge depth; **low → a subtle UI banner** so obscure destinations get hedged instead of hallucinated; verified Japan=high, Bhutan=medium). **i18n:** 8 new `cb_` keys × 13 languages (cb_region[_ph], cb_context[_ph], cb_forgiveness_title, cb_forgiven_label, cb_serious_label, cb_confidence_low) — localization gate green. Haiku + code-computed risk_level (v2) retained. Frontend verified in preview (inputs render, forgiveness/gift blocks render, constraints honored). `check:golden` 2/2, all gates + backend audit clean. Golden neutralizes per-section dos/donts/notes; keeps forgiveness non-empty.
+
+## Schema rewritten to the governing standard — 2026-08-25 (`culturebriefing-v4`)
+
+Owner's standard, now the single text used to write the briefing and to check
+it (one constant, so the two cannot drift into paraphrases):
+
+> Describe common practices and useful tendencies without treating a country,
+> city, religion, or population as culturally uniform. Distinguish strong
+> conventions from variable practices. Avoid invented precision and categorical
+> claims about how locals will react. Never claim insider knowledge. For legal,
+> safety, payment, tipping, religious, or rapidly changing practical
+> information, clearly qualify uncertainty and avoid presenting potentially
+> changing information as guaranteed fact.
+
+**The section shape carried the problem.** `dos` / `donts` / `notes` states
+rules; it had nowhere to put "this varies, and here is what it varies with",
+which is the second sentence of the standard. Replaced with four arrays:
+
+| | |
+| --- | --- |
+| `widely_observed` | a strong convention — a safe default across the destination |
+| `best_avoided` | what commonly causes friction, described by what it signals |
+| `varies` | what differs by region, city, generation, setting, religion — **and what it varies with** |
+| `check_locally` | anything legal, financial, religious, safety-related or liable to have changed |
+
+**Three renames, all of which were the field name commissioning the
+violation.** `insider_tips` → `practical_tips`: a field called insider tips
+will produce insider claims. `forgiveness{forgiven, serious}` → `missteps
+{small_slips, higher_stakes}`: "what locals forgive" is a categorical claim
+about how a population reacts. And the prompt opened "You are a cultural
+intelligence expert", which claims the standing the standard forbids before a
+word is written.
+
+**`cultural_gap` and `risk_level` deleted.** A single 0–100 score for how
+different a culture is *is* the uniformity claim in numeric form, and "⚠️ High
+cultural complexity" was that claim on the screen. Both are also `delete`d
+defensively after parsing in case the model volunteers them.
+
+Adopted **PF-39 v2** (not among the 47 frozen). The guard does not police
+describing a common practice — that is the product. It policies five things:
+population treated as uniform, invented precision, predicted reactions, claimed
+insider standing, volatile information stated as settled.
+
+**Two bugs the golden caught that live testing had not.**
+
+1. **German 500 on every call.** A fourth array across ~11 sections pushed the
+   response past `max_tokens: 5000` — the documented truncation class for this
+   catalog. Raised to 7000 *and* capped at 6 items total per section, because
+   raising alone just moves the cliff. DE 200/56s, AR 200/46s afterwards.
+2. **The thin-result detector was reporting `missing: [insider_tips,
+   forgiveness, risk_level]`** on every successful call. Its expected-shape
+   index is built from the goldens, so re-locking fixed it — but until the
+   re-lock, a healthy response was being logged as degraded.
+
+Catalog copy carried the same claims and was rewritten: the description
+promised "the insider tips guidebooks miss", and the worked example was the
+standard's failure list in miniature — a precise bow angle, "never write in red
+ink", and "don't tip — it's considered insulting" as flat fact.
+
+**Live:** guard fired usefully on the first browser run —
+`population_treated_as_uniform` on the overview and `false_precision` on a
+practical tip. EN/DE/AR all 200. Golden 2/2 at v4.
+
+**Worth knowing:** the guard cannot verify a foreign-language term. One run
+glossed the upright-chopsticks taboo as "yasukidachi", which does not match the
+usual names for it. The prompt rule ("only include a local-language word when
+CERTAIN") is the only defence there, and a confident wrong term is exactly the
+failure the standard names. A vocabulary check would need a real source.

@@ -165,18 +165,19 @@ function CultureBriefing({ tool }) {
     if (results.overview) lines.push(results.overview, '');
     results.sections?.forEach(sec => {
       lines.push(`\n${sec.icon ?? '•'} ${sec.title?.toUpperCase()}`);
-      sec.dos?.forEach(d => lines.push(`  ✅ ${d}`));
-      sec.donts?.forEach(d => lines.push(`  🚫 ${d}`));
-      sec.notes?.forEach(n => lines.push(`  ℹ️ ${n}`));
+      sec.widely_observed?.forEach(x => lines.push(`  ✅ ${x}`));
+      sec.best_avoided?.forEach(x => lines.push(`  🚫 ${x}`));
+      sec.varies?.forEach(x => lines.push(`  🔀 ${x}`));
+      sec.check_locally?.forEach(x => lines.push(`  🔎 ${x}`));
     });
-    if (results.insider_tips?.length) {
-      lines.push(`\n💡 ${t('cb_copy_insider_tips')}`);
-      results.insider_tips.forEach(tip => lines.push(`  • ${tip}`));
+    if (results.practical_tips?.length) {
+      lines.push(`\n💡 ${t('cb_copy_practical_tips')}`);
+      results.practical_tips.forEach(tip => lines.push(`  • ${tip}`));
     }
-    if (results.forgiveness?.forgiven?.length || results.forgiveness?.serious?.length) {
-      lines.push(`\n⚖️ ${t('cb_forgiveness_title')}`);
-      results.forgiveness?.forgiven?.forEach(x => lines.push(`  🙆 ${x}`));
-      results.forgiveness?.serious?.forEach(x => lines.push(`  🚫 ${x}`));
+    if (results.missteps?.small_slips?.length || results.missteps?.higher_stakes?.length) {
+      lines.push(`\n⚖️ ${t('cb_missteps_title')}`);
+      results.missteps?.small_slips?.forEach(x => lines.push(`  🙆 ${x}`));
+      results.missteps?.higher_stakes?.forEach(x => lines.push(`  🚫 ${x}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -341,12 +342,6 @@ function CultureBriefing({ tool }) {
               <p className={`text-2xl font-black ${c.text}`}>{results.destination}</p>
               <p className={`text-sm ${c.textMuted}`}>
                 {purposeMeta?.icon} {purposeMeta ? t(purposeMeta.labelKey) : ''} {t('cb_briefing_suffix')}
-                {results.risk_level && (
-                  <span className={`ms-2 text-xs font-bold px-2 py-0.5 rounded-full border ${
-                    results.risk_level === 'high' ? c.danger :
-                    results.risk_level === 'medium' ? c.warning : c.success
-                  }`}>{results.risk_level === 'high' ? t('cb_risk_high') : results.risk_level === 'medium' ? t('cb_risk_medium') : t('cb_risk_low')}</span>
-                )}
               </p>
             </div>
           </div>
@@ -374,44 +369,32 @@ function CultureBriefing({ tool }) {
             {activeData && (
               <div className={`mt-4 pt-4 border-t ${isDark ? 'border-zinc-700' : 'border-slate-200'} space-y-3`}>
                 <p className={`text-sm font-bold ${c.text}`}>{activeData.icon} {activeData.title}</p>
-                {activeData.dos?.length > 0 && (
-                  <div className="space-y-1.5">
-                    {activeData.dos.map((d, i) => (
-                      <div key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}>
-                        <span className="flex-shrink-0">✅</span><span>{d}</span>
+                {[
+                  ['widely_observed', '✅', c.success, 'cb_widely_observed'],
+                  ['best_avoided', '🚫', c.danger, 'cb_best_avoided'],
+                  ['varies', '🔀', c.infoBox, 'cb_varies'],
+                  ['check_locally', '🔎', c.warning, 'cb_check_locally'],
+                ].map(([key, icon, tone, labelKey]) => activeData[key]?.length > 0 && (
+                  <div key={key} className="space-y-1.5">
+                    <p className={`text-xs font-semibold ${c.textMuted}`}>{t(labelKey)}</p>
+                    {activeData[key].map((x, i) => (
+                      <div key={i} className={`text-sm ${tone} border rounded-lg px-3 py-2 flex gap-2`}>
+                        <span className="flex-shrink-0">{icon}</span><span>{x}</span>
                       </div>
                     ))}
                   </div>
-                )}
-                {activeData.donts?.length > 0 && (
-                  <div className="space-y-1.5">
-                    {activeData.donts.map((d, i) => (
-                      <div key={i} className={`text-sm ${c.danger} border rounded-lg px-3 py-2 flex gap-2`}>
-                        <span className="flex-shrink-0">🚫</span><span>{d}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {activeData.notes?.length > 0 && (
-                  <div className="space-y-1.5">
-                    {activeData.notes.map((n, i) => (
-                      <div key={i} className={`text-sm ${c.infoBox} border rounded-lg px-3 py-2 flex gap-2`}>
-                        <span className="flex-shrink-0">ℹ️</span><span>{n}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                ))}
               </div>
             )}
           </div>
         )}
 
         {/* Insider tips */}
-        {results.insider_tips?.length > 0 && (
+        {results.practical_tips?.length > 0 && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>💡 {t('cb_insider_tips')}</p>
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>💡 {t('cb_practical_tips')}</p>
             <ul className="space-y-2">
-              {results.insider_tips.map((tip, i) => (
+              {results.practical_tips.map((tip, i) => (
                 <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}>
                   <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{tip}</span>
                 </li>
@@ -420,24 +403,24 @@ function CultureBriefing({ tool }) {
           </div>
         )}
 
-        {(results.forgiveness?.forgiven?.length > 0 || results.forgiveness?.serious?.length > 0) && (
+        {(results.missteps?.small_slips?.length > 0 || results.missteps?.higher_stakes?.length > 0) && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>⚖️ {t('cb_forgiveness_title')}</p>
-            {results.forgiveness?.forgiven?.length > 0 && (
+            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>⚖️ {t('cb_missteps_title')}</p>
+            {results.missteps?.small_slips?.length > 0 && (
               <div className="mb-3">
-                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_forgiven_label')}</p>
+                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_small_slips_label')}</p>
                 <div className="space-y-1.5">
-                  {results.forgiveness.forgiven.map((x, i) => (
+                  {results.missteps.small_slips.map((x, i) => (
                     <div key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🙆</span><span>{x}</span></div>
                   ))}
                 </div>
               </div>
             )}
-            {results.forgiveness?.serious?.length > 0 && (
+            {results.missteps?.higher_stakes?.length > 0 && (
               <div>
-                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_serious_label')}</p>
+                <p className={`text-xs font-semibold ${c.textMuted} mb-1.5`}>{t('cb_higher_stakes_label')}</p>
                 <div className="space-y-1.5">
-                  {results.forgiveness.serious.map((x, i) => (
+                  {results.missteps.higher_stakes.map((x, i) => (
                     <div key={i} className={`text-sm ${c.danger} border rounded-lg px-3 py-2 flex gap-2`}><span className="flex-shrink-0">🚫</span><span>{x}</span></div>
                   ))}
                 </div>

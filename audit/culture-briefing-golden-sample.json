@@ -1,9 +1,11 @@
 {
   "_meta": {
     "tool": "culture-briefing",
-    "tag": "culturebriefing-v3",
+    "tag": "culturebriefing-v4",
     "locked": "2026-07-12",
-    "note": "v3: added region + free-text context/constraints inputs (honored — dining tailored to vegetarian, region to Osaka); gift_giving section; forgiveness{forgiven[],serious[]}; confidence (high/med/low, low → UI banner). Haiku + code-computed risk_level (from cultural_gap) retained from v2. per-section dos/donts/notes neutralized (allowed empty); forgiveness kept non-empty (reliably populated). i18n: 8 new cb_ keys x 13 langs."
+    "note": "v3: added region + free-text context/constraints inputs (honored — dining tailored to vegetarian, region to Osaka); gift_giving section; forgiveness{forgiven[],serious[]}; confidence (high/med/low, low → UI banner). Haiku + code-computed risk_level (from cultural_gap) retained from v2. per-section dos/donts/notes neutralized (allowed empty); forgiveness kept non-empty (reliably populated). i18n: 8 new cb_ keys x 13 langs. Re-locked 2026-08-25 (v4): schema rewritten to the owner standard. dos/donts/notes became widely_observed/best_avoided/varies/check_locally — the standard asks for strong conventions separated from variable practice, which the old shape had no place for. cultural_gap and the risk_level computed from it are gone: one 0-100 score for how different a culture is IS the uniformity claim. insider_tips became practical_tips (the field name claimed the standing the standard forbids) and forgiveness became missteps (what locals forgive is a categorical claim about how a population reacts). Adopted PF-39 v2 with a guard profile. The fourth array per section pushed German past max_tokens=5000 — raised to 7000 and capped at 6 items total per section.",
+    "baseline": "culturebriefing-v4",
+    "captured": "2026-08-25"
   },
   "cases": [
     {
@@ -22,115 +24,196 @@
         "userRegion": "US"
       },
       "output": {
-        "overview": "Japan values harmony, precision, and respect for hierarchy—a stark contrast to the direct, informal US business culture. Osaka is Japan's most relaxed major city, but business interactions remain formal and protocol-driven. Expect deliberate communication, silence as agreement, and deep attention to rank and ritual.",
+        "overview": "Japan operates on high attention to context, hierarchy, and consideration for others—what you do matters less than how you read the room and the person across from you. Osaka is more relaxed and direct than Tokyo, with a reputation for pragmatism and humour. Expect politeness that is genuine but also sometimes formal, and precision in timing and logistics.",
         "sections": [
           {
             "id": "greetings",
             "icon": "🤝",
             "title": "Greetings & introductions",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Bowing replaces handshakes as the default greeting—a slight bow from the neck works in most business settings; depth and duration increase with formality or status difference",
+              "Business cards are exchanged with both hands, examined briefly and respectfully, never written on or placed in a back pocket during the meeting"
+            ],
+            "best_avoided": [
+              "Assuming the first-name basis that is common in the US—use family name with the appropriate honorific (san, sama for clients) until explicitly invited otherwise"
+            ],
+            "varies": [
+              "Younger professionals in Osaka may blend bows with handshakes; some may extend a hand first, particularly in international business settings"
+            ],
+            "check_locally": []
           },
           {
             "id": "taboos",
             "icon": "🚫",
             "title": "Taboos & common mistakes",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Pointing with chopsticks or fingers at people; touching someone's head; standing chopsticks upright in rice (resembles a funeral ritual)"
+            ],
+            "best_avoided": [
+              "Talking loudly in public spaces or on trains; treating a business meeting as an opportunity to relax or joke (wait for cues from them)"
+            ],
+            "varies": [],
+            "check_locally": []
           },
           {
             "id": "dining",
             "icon": "🍽️",
             "title": "Dining etiquette",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Wait for the host to begin eating; say itadakimasu (literally 'I humbly receive') before eating and gochisousama (thank you for the meal) after",
+              "Slurping noodles and soup is standard and expected—not doing so reads as reluctance or unfamiliarity"
+            ],
+            "best_avoided": [
+              "Pouring your own drink when others are at the table—pour for them, they pour for you (even if you are not drinking alcohol, this gesture matters)"
+            ],
+            "varies": [
+              "Business lunches in Osaka tend toward faster, more casual settings than in Tokyo; evening meals are where relationship-building happens and often involve alcohol for others"
+            ],
+            "check_locally": [
+              "Vegetarian options in business meal settings—confirm what your host is planning or alert them in advance; while vegetarian food exists, it is not assumed in a business dining context, and meat-based stock is common in dishes that appear vegetarian"
+            ]
           },
           {
             "id": "dress",
             "icon": "👗",
             "title": "Dress & appearance",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Business formal is the baseline for client meetings—dark suit, neutral colours, closed-toe shoes; visible tattoos should be covered"
+            ],
+            "best_avoided": [
+              "Casual or athletic wear in any business setting; visible piercings beyond one ear piercing per ear; strong fragrances"
+            ],
+            "varies": [
+              "Tech and creative industries may dress more casually in internal offices, but a client-facing visitor should maintain formal dress"
+            ],
+            "check_locally": []
           },
           {
             "id": "tipping",
             "icon": "💰",
             "title": "Tipping & payment",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Do not tip at restaurants, taxis, or hotels—service charge is included in the bill or the price, and tipping is not customary and can create awkwardness"
+            ],
+            "best_avoided": [
+              "Leaving cash on a table; offering personal payment when a company representative is handling the bill"
+            ],
+            "varies": [],
+            "check_locally": [
+              "Payment methods—check whether your cards (Visa, Mastercard) work in advance; IC cards like Suica or Pasmo are nearly universal for trains and vending but may not be your only option"
+            ]
           },
           {
             "id": "business_etiquette",
             "icon": "💼",
             "title": "Business etiquette",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Hierarchy matters in decisions and deference—address the most senior person first, wait for them to set the tone, and direct formal remarks to them even if others respond",
+              "Meetings often end without a clear yes or no; consensus-building happens offline and across levels, so a non-committal response is not a rejection",
+              "Silence is normal in meetings and does not signal disagreement—it signals thought. Resist filling it"
+            ],
+            "best_avoided": [
+              "Aggressive or competitive language; pushing for immediate decisions; assuming personal opinions shared in conversation are negotiating positions",
+              "Discussing personal matters or using humour about politics, religion, or sensitive history in first meetings"
+            ],
+            "varies": [
+              "Osaka businesses tend toward more direct communication and faster decision-making than Tokyo; generational differences exist, with younger managers sometimes more comfortable with informality"
+            ],
+            "check_locally": []
           },
           {
             "id": "gift_giving",
             "icon": "🎁",
             "title": "Gifts & hospitality",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "A small gift from your home country is standard when meeting a client team for the first time—wrapped, presented with both hands, offered without fanfare or expectation of immediate opening"
+            ],
+            "best_avoided": [
+              "Gifts that are too expensive (signals obligation or impropriety), sets of four items (the number is unlucky), white flowers, or anything with your company logo unless it is genuinely high-quality"
+            ],
+            "varies": [
+              "Some client teams may decline gifts politely due to company policy; accept the decline without pressing and do not take it personally"
+            ],
+            "check_locally": []
           },
           {
             "id": "religion",
             "icon": "🕌",
             "title": "Religion & customs",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Shinto shrines and Buddhist temples are common; removing shoes is expected in temple buildings and some restaurants"
+            ],
+            "best_avoided": [
+              "Stepping on threshold frames; photographing inside temple buildings without permission; dismissing local customs as quaint or superstition"
+            ],
+            "varies": [
+              "Religious observance varies widely by individual; many Japanese practise both Shinto and Buddhist customs without identifying as religious, and some follow neither"
+            ],
+            "check_locally": []
           },
           {
             "id": "transport",
             "icon": "🚌",
             "title": "Getting around",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Trains and subways are the backbone of Osaka transport—they are precise, frequent, and signalled in English in central areas; buy an IC card (Suica or Pasmo) at the airport",
+              "Avoid eating on trains except in designated areas; never talk on your phone; give up seats for elderly people and those visibly pregnant or injured"
+            ],
+            "best_avoided": [
+              "Standing near doors during rush hour; leaning against poles; blocking the path with luggage"
+            ],
+            "varies": [],
+            "check_locally": [
+              "Taxi etiquette—doors open and close automatically, so wait; payment by card is increasingly common but verify with your hotel or in advance; rides are expensive compared to the US"
+            ]
           },
           {
             "id": "safety",
             "icon": "🛡️",
             "title": "Safety & scams",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Osaka is among the safest major cities globally—violent crime against visitors is extremely rare"
+            ],
+            "best_avoided": [],
+            "varies": [],
+            "check_locally": [
+              "Earthquakes are possible—check your hotel's emergency procedures on arrival; verify current security guidance for your US state before departure"
+            ]
           },
           {
             "id": "phrases",
             "icon": "💬",
             "title": "Key phrases & attitude",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "widely_observed": [
+              "Learning even a few phrases (arigatou gozaimasu for formal thanks, sumimasen for excuse me/sorry, wakarimashita for I understand) is valued and disarms formality slightly",
+              "Nodding and saying hai (yes, I am listening) during conversation signals engagement and respect, not necessarily agreement"
+            ],
+            "best_avoided": [
+              "Expecting English in all settings—many middle-aged and older professionals speak very little English; have key business terms written down or use translation apps"
+            ],
+            "varies": [],
+            "check_locally": []
           }
         ],
-        "insider_tips": [
-          "Schedule client meetings between 10 am and 4 pm; lunch is typically 12–1 pm (sacred), and many leave by 5:30 pm. Early morning or after-hours are not preferred.",
-          "Vegetarian options thrive in Osaka's Buddhist temple districts (Shinsekai, Nanba); ask your hotel concierge for 'shokujin taiō shoppu' (vegetarian-friendly restaurants). Convenience stores (7-Eleven, Lawson) also stock vegetarian onigiri and salads.",
-          "Business card exchanges happen at the start of meetings, not the end; if you forget to bring them, it signals poor preparation and is quietly noted as disrespectful."
+        "practical_tips": [
+          "Arrive 10 minutes early and note the train journey time with 5-minute buffer—punctuality is non-negotiable and lateness signals disrespect",
+          "Bring business cards (have them printed before you arrive if possible—a quality card matters more than quantity); exchange them at the start of every meeting",
+          "Alert your host in advance that you are vegetarian and do not drink alcohol so meals can be planned without awkwardness on the day",
+          "Download Google Translate offline and a transit app (Hyperdia or Google Maps work for Osaka trains)—you will not always find English signage outside central areas"
         ],
-        "forgiveness": {
-          "forgiven": [
-            "Awkward bow angle or depth—locals recognize you are trying and appreciate the effort",
-            "Mispronunciation of names or phrases—genuine attempt to speak Japanese is warmly received"
+        "missteps": {
+          "small_slips": [
+            "Mispronouncing someone's name after it has been corrected—you will be forgiven, but correcting yourself matters",
+            "Using chopsticks clumsily—most will offer a fork without comment if you struggle",
+            "Missing a bow or bowing too shallowly—context usually makes intent clear, and visitors are expected to be learning"
           ],
-          "serious": [
-            "Ignoring hierarchy by addressing a junior person before their senior in a meeting—signals ignorance of respect norms and can embarrass the entire team",
-            "Refusing a gift or declining an after-work invitation without cause—seen as rejecting the relationship and trust-building process",
-            "Being visibly late or canceling without notice—implies the client's time and the deal are not important"
+          "higher_stakes": [
+            "Pushing for a decision in a single meeting—interrupts the consensus-building process and signals misunderstanding of how decisions are made",
+            "Casual or dismissive language about Japanese history, politics, or tradition—signals disrespect for the host and damages relationship-building",
+            "Rejecting food or drink offered by your host without a reason—reads as rejection of the hospitality and the relationship"
           ]
         },
-        "confidence": "high",
-        "risk_level": "high"
+        "confidence": "high"
       }
     },
     {
@@ -149,117 +232,208 @@
         "userRegion": "DE"
       },
       "output": {
-        "overview": "Japan verkörpert eine Kultur der Harmonie, subtilen Hierarchie und formalen Höflichkeit, die sich deutlich von der direkteren deutschen Geschäftskommunikation unterscheidet. Besucher werden oft von der extremen Sauberkeit, Effizienz und dem starken Fokus auf Gruppenkonformität überrascht. Geschäftsbeziehungen erfordern Geduld und emotionale Intelligenz – direkte Verhandlungen und Nein-Sagen sind verpönt.",
+        "overview": "In Osaka und Japan allgemein sind Präzision, formale Hierarchien und aufmerksame Rücksichtnahme in geschäftlichen Kontexten weit verbreitet. Geschäftsbeziehungen folgen formalen Protokollen, die Geduld und indirekte Kommunikation voraussetzen. Für einen deutschen Besucher wirkt die Höflichkeit in alltäglichen Interaktionen oft ausgeprägter, während die tatsächlichen Entscheidungsprozesse langwieriger sind als die anfängliche Formalität vermuten lässt.",
         "sections": [
           {
             "id": "greetings",
             "icon": "🤝",
-            "title": "Greetings & introductions",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Grüße und Vorstellungen",
+            "widely_observed": [
+              "Verbeugung (ojigi) statt Handschlag oder als Ergänzung dazu — tiefe und Dauer signalisieren Respekt",
+              "Formalsprache (keigo) in geschäftlichen Erstkontakten, nicht sofort zu Du oder lockerer Ton übergehen",
+              "Namenskarten mit Titel und Unternehmen austauschen — mit beiden Händen überreicht und mit Aufmerksamkeit empfangen"
+            ],
+            "best_avoided": [
+              "Sofortige informelle Ansprache oder Vorname verwenden, bevor man eingeladen wird — signalisiert mangelnden Respekt vor Position",
+              "Beiläufige Handbewegungen oder offene Körperhaltung beim Zuhören — wirkt desinteressiert"
+            ],
+            "varies": [
+              "Jüngere Menschen in kreativen oder internationalen Branchen handhaben Formalität lockerer, aber in etablierten Unternehmen bleibt das Protokoll streng"
+            ],
+            "check_locally": []
           },
           {
             "id": "taboos",
             "icon": "🚫",
-            "title": "Taboos & common mistakes",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Tabus und häufige Fehler",
+            "widely_observed": [
+              "Geschenke nicht in Gegenwart anderer öffnen — wirkt unhöflich; heben Sie sie auf und öffnen Sie sie später privat",
+              "Mit Stäbchen nicht auf Menschen zeigen oder sie senkrecht in Reis stecken (Assoziation mit Bestattungsritualen)",
+              "Schuhe in bestimmten Bereichen (Wohnungen, manche Restaurants, Heiligtümer) ausziehen"
+            ],
+            "best_avoided": [
+              "Zu viel Augenkontakt halten — in Japan kann intensiver Blickkontakt aggressiv wirken",
+              "Laut sprechen oder auffallend gestikulieren in der Öffentlichkeit",
+              "Persönliche Fragen zu Alter, Familienstand oder Gehalt in frühen Gesprächen"
+            ],
+            "varies": [],
+            "check_locally": []
           },
           {
             "id": "dining",
             "icon": "🍽️",
-            "title": "Dining etiquette",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Essenskultur und Etikette",
+            "widely_observed": [
+              "Vor dem Essen 'itadakimasu' (wörtlich: ich empfange dankbar) sagen; nach dem Essen 'gochisousama' — zeigt Dankbarkeit",
+              "Mit Stäbchen essen; unerwartete Schwierigkeiten damit sind normal und werden nicht kommentiert",
+              "Vor dem Essen kurz warten, bis der Gastgeber oder die älteste Person beginnt"
+            ],
+            "best_avoided": [
+              "Essen stehen lassen oder große Mengen übrig lassen — signalisiert Missachtung der Vorbereitung",
+              "Mit vollem Mund sprechen oder beim Essen laut kauen"
+            ],
+            "varies": [
+              "Vegetarische Optionen in traditionellen Restaurants können begrenzt sein; in größeren Städten wie Osaka gibt es zunehmend spezialisierte Angebote"
+            ],
+            "check_locally": [
+              "Vegetarische Menüs im Restaurant vorab klären — 'dashi' (Fischbrühe) ist in vielen Gerichten enthalten; übersetzen Sie Ihre Einschränkungen schriftlich",
+              "Alkoholfreie Getränke in Business-Dinner verfügbar, aber vorab erwähnen hilft, um Überraschung zu vermeiden"
+            ]
           },
           {
             "id": "dress",
             "icon": "👗",
-            "title": "Dress & appearance",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Kleidung und Erscheinung",
+            "widely_observed": [
+              "Geschäftskleidung in Meetings: dunkler Anzug, Krawatte und polierte Schuhe — Konservatismus wird geschätzt",
+              "Saubere, gut gepflegte Kleidung; Verschleiß oder Flecken werden bemerkt",
+              "Unauffälliger Schmuck und dezente Farben in geschäftlichen Kontexten"
+            ],
+            "best_avoided": [
+              "Kurze Hosen, T-Shirts oder Flip-Flops bei Business-Terminen",
+              "Durchsichtige oder zu enge Kleidung"
+            ],
+            "varies": [
+              "In kreativen Industrien (Design, Tech-Startups) in Osaka ist Kleidung lockerer, aber bei Kundentreffen bleibt es konservativ"
+            ],
+            "check_locally": []
           },
           {
             "id": "tipping",
             "icon": "💰",
-            "title": "Tipping & payment",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Trinkgeld und Zahlungen",
+            "widely_observed": [
+              "Kein Trinkgeld üblich oder erwartet — es kann sogar als Beleidigung verstanden werden, da es Dienstleistungsgebühren bereits enthalten sind",
+              "Bargeld ist verbreiteter als Kartenzahlung, besonders in kleineren Läden und Restaurants; große Hotels und Ketten akzeptieren Karten"
+            ],
+            "best_avoided": [
+              "Geld oder Karten mit einer Hand übergeben — mit beiden Händen ist respektvoller"
+            ],
+            "varies": [],
+            "check_locally": [
+              "Aktuelle Zahlungsoptionen (QR-Codes wie PayPay, Alipay) ändern sich schnell; fragen Sie beim Einchecken nach"
+            ]
           },
           {
             "id": "business_etiquette",
             "icon": "💼",
-            "title": "Business etiquette",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Geschäftsetikette",
+            "widely_observed": [
+              "Meishi (Namenskarten-Austausch) mit beiden Händen: überreichen Sie Ihre Karte mit der japanischen Seite oben, empfangen Sie die andere Person's Karte aufmerksam, studieren Sie sie kurz und legen Sie sie vor sich auf den Tisch (nicht sofort in die Tasche stecken)",
+              "Hierarchie beachten: sprechen Sie mit dem ranghöchsten Anwesenden zuerst; Entscheidungen werden selten auf der Stelle getroffen",
+              "Schriftliche Agendas und Hintergrundmaterialien im Voraus senden — zeigt Vorbereitung und Respekt vor ihrer Zeit"
+            ],
+            "best_avoided": [
+              "Zu direkt widersprechen oder 'Nein' frontal sagen — Japaner deuten Ablehnung oft indirekt an ('das wird schwierig sein'); Druck kann Verhandlungen beenden",
+              "Persönliche Erfolgsgeschichten oder Dominanz zeigen — wird als Arroganz wahrgenommen"
+            ],
+            "varies": [
+              "Internationale oder westlich geprägte Unternehmen in Osaka arbeiten direkter, aber staatliche oder traditionelle Organisationen folgen klassischen Hierarchien"
+            ],
+            "check_locally": [
+              "Entscheidungsprozesse können länger dauern als erwartet — mehrere Genehmigungsebenen sind normal; eine Woche ist oft nicht ausreichend für konkrete Zusagen"
+            ]
           },
           {
             "id": "gift_giving",
             "icon": "🎁",
-            "title": "Gifts & hospitality",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Geschenke und Gastfreundschaft",
+            "widely_observed": [
+              "Kleine Geschenke von Ihrem Heimatland oder lokale Spezialitäten sind in geschäftlichen Kontexten üblich und geschätzt — hochwertige Verpackung ist wichtig",
+              "Geschenke niemals mit Ausdrücken von Genauigkeit oder Größe überreichen ('ein kleines Zeichen meiner Wertschätzung')",
+              "Bestimmte Zahlen meiden: 4 (assoziiert mit Tod) und 9 (Unglück); Paare oder 3er-Sets sind günstig"
+            ],
+            "best_avoided": [
+              "Geschenke in Vierer-Sets oder mit 4er-Zahlen",
+              "Sehr teure Geschenke, die eine Schuldigkeit implizieren könnten"
+            ],
+            "varies": [],
+            "check_locally": []
           },
           {
             "id": "religion",
             "icon": "🕌",
-            "title": "Religion & customs",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Religion und Bräuche",
+            "widely_observed": [
+              "Shintoismus und Buddhismus sind weit verbreitet, aber meist nicht dogmatisch im Alltag; viele Menschen praktizieren beide",
+              "Schreine und Tempel respektieren: Schuhe ausziehen, wo angegeben, nicht fotografieren in privaten oder Gebetsräumen"
+            ],
+            "best_avoided": [
+              "Religöse Symbole oder Dekorationen als Souvenirs verwenden"
+            ],
+            "varies": [],
+            "check_locally": []
           },
           {
             "id": "transport",
             "icon": "🚌",
-            "title": "Getting around",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Verkehrsmittel und Mobilität",
+            "widely_observed": [
+              "Öffentliche Verkehrsmittel (U-Bahn, Busse, Züge) sind zuverlässig und pünktlich; IC-Karten (ICOCA in Osaka/Kansai) vereinfachen Zahlungen",
+              "In öffentlichen Verkehrsmitteln: ruhig sein, nicht telefonieren, Plätze für Ältere und Schwangere räumen"
+            ],
+            "best_avoided": [
+              "Sich beim Einsteigen drängen — obwohl es voll wird, ist eine informelle Ordnung üblich"
+            ],
+            "varies": [],
+            "check_locally": []
           },
           {
             "id": "safety",
             "icon": "🛡️",
-            "title": "Safety & scams",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Sicherheit und Betrug",
+            "widely_observed": [
+              "Japan hat niedrige Kriminalitätsraten; Taschendiebstahl in belebten Bereichen ist die Hauptsorge, nicht gewalttätiges Verbrechen"
+            ],
+            "best_avoided": [],
+            "varies": [],
+            "check_locally": [
+              "Aktuelle Naturkatastrophenrisiken prüfen (Erdbeben, Taifune) — Osaka liegt in einer aktiven Zone; Notfall-Nummern und Hotel-Richtlinien klären"
+            ]
           },
           {
             "id": "phrases",
             "icon": "💬",
-            "title": "Key phrases & attitude",
-            "dos": [],
-            "donts": [],
-            "notes": []
+            "title": "Nützliche Ausdrücke und Grundhaltung",
+            "widely_observed": [
+              "Wenn Sie Japanisch versuchen, wird es immer geschätzt, auch wenn nur einzelne Wörter — 'arigatou gozaimasu' (vielen Dank) und 'shitsurei shimasu' (entschuldigen Sie) sind weit bringend",
+              "Indirekte, sanfte Kommunikation ist bevorzugt: 'das könnte schwierig sein' statt 'das geht nicht'; 'wir werden prüfen' statt sofortige Zusagen"
+            ],
+            "best_avoided": [
+              "Englisches Englisch oder Slang in formalen Kontexten; Standardaussprache hilft"
+            ],
+            "varies": [],
+            "check_locally": []
           }
         ],
-        "insider_tips": [
-          "Osaka ist ‚wilder' und geschäftsorientierter als Tokio – Geschäftsleute hier sind pragmatischer und weniger formell, aber erwarte trotzdem Hierarchie und Geduld.",
-          "Vegetarische Restaurants sind in Osaka vorhanden; empfehle, im Voraus mit dem Kundentermin abzustimmen – ‚Kitte' ist ein veganes Café nahe dem Geschäftsviertel.",
-          "Geschenke mit deutschen Herkunftsbezeichnungen (z. B. ‚Made in Germany', deutsche Handwerk, qualitativ hochwertig) sind hochgradig gefragt – sie signalisieren Zuverlässigkeit und Präzision, Werte, die Japaner schätzen.",
-          "Nutze deine Abstinenz als Vorteil: ‚Ich konzentriere mich voll auf Geschäfte' ist eine respektable Aussage – nicht erzwinge, zu trinken, um höflich zu sein."
+        "practical_tips": [
+          "Bringen Sie Ihre Namenkarten auf Deutsch und Englisch mit; wenn möglich, lassen Sie die japanische Rückseite von einem Übersetzungsdienst anfertigen. Kleine Pausen in Verhandlungen sind normal und signalisieren keine Dringlichkeit — das Treffen mit dem Führungsteam wird sich wahrscheinlich über mehrere Gesprächsrunden erstrecken.",
+          "Für vegetarische Gerichte: Teilen Sie Ihre Ernährungsweise dem Restaurant oder Gastgeber früh mit, idealerweise schriftlich. Machen Sie explizit deutlich, dass Fisch, Fleischbrühe und Meeresfrüchte ausgeschlossen sind — in manchen Kontexten werden diese nicht automatisch als Teil einer vegetarischen Einschränkung verstanden. Alkoholablehnung wird in geschäftlichen Kontexten routinemäßig akzeptiert; Sie müssen dies nicht rechtfertigen.",
+          "Kleine lokale Geschenke aus Deutschland (z.B. Kakao, Bier, Süßes in hochwertiger Verpackung) sind praktischer und persönlicher als generische Geschäftsgabeln"
         ],
-        "forgiveness": {
-          "forgiven": [
-            "Falsche Verbeugung oder zu flach – Ausländer werden nicht erwartet, Perfektion zu zeigen",
-            "Stäbchen fallen lassen oder ungeschickt nutzen – Versuchen wird wertgeschätzt",
-            "Unerwartete Stille im Gespräch – kurzes Nachdenken ist akzeptabel"
+        "missteps": {
+          "small_slips": [
+            "Stäbchen falsch halten oder damit auf Menschen zeigen — wird bemerkt, aber nicht kommentiert",
+            "Den Namen falsch aussprechen — kurze Bitte um Korrektur ist willkommen",
+            "Sich leicht verspäten zu einem Treffen — ein oder zwei Minuten sind tolerabel, danach entschuldigen Sie sich formell"
           ],
-          "serious": [
-            "Öffentliche Kritik am Geschäftspartner oder seiner Idee – signalisiert mangelnden Respekt und beschädigt Vertrauen für Wochen",
-            "Direkt ‚Nein' zur Geschäftsmöglichkeit sagen ohne Raum für Neuverhandlung – gilt als Ablehnung der Beziehung selbst",
-            "Meishi nicht respektvoll behandeln (z. B. in die Tasche stopfen, beschriften) – signalisiert Verachtung der Person"
+          "higher_stakes": [
+            "Druck ausüben, schnelle Entscheidungen zu treffen oder 'Nein' direkt zu kritisieren — bricht das Vertrauen und kann das Geschäft beenden",
+            "Hierarchie ignorieren oder den ranghöchsten Anwesenden übergehen — signalisiert Mangel an Respekt und ist ein ernstes Signal",
+            "Geschenke in Gegenwart anderer öffnen oder abzulehnen — kann als unhöflich oder ablehnend verstanden werden"
           ]
         },
-        "confidence": "high",
-        "risk_level": "high"
+        "confidence": "medium"
       }
     }
   ]
