@@ -115,3 +115,40 @@ one call rather than duplicating it.
 Verified end to end: a registration with no supplied expiry sits in
 `need_one_fact`; answering "it expired two weeks ago" moves it to `do_first`,
 and the answer box clears.
+
+## Three distinctions — 2026-08-24
+
+Each got the full escalation: a system-prompt rule (all twelve actions), a
+change to the schema field that commissions the violation, and a guard term for
+when prose doesn't hold.
+
+| Distinction | Rule | Schema | Guard term |
+| --- | --- | --- | --- |
+| Supplied fact ≠ recommended action | 9b — a deadline, a person waiting, or the visitor's own intention establishes that fact and nothing more; the ranking is our claim, not theirs handed back as advice | `why_now`: cite the evidence, don't restate their stated intention as your reason | `supplied_intention_restated_as_recommendation` |
+| Expected event ≠ confirmed event | 9c — "renews next month", "the round closes on the 30th", "they said they would reply" have not happened; never past tense, never a future date treated as reached | `why_now`: keep expected events in the future tense | `expected_event_written_as_confirmed` |
+| Unknown deferral date ≠ permission to invent one | 9d — no supplied deadline, revisit point or billing cycle means no date exists to report; not "next week", not "end of month" | `revisit`: **only** a date the visitor supplied or one that follows necessarily from it — "never a date you chose" | `invented_revisit_date` |
+
+**A fourth rule the testing produced.** Provoking 9c, the model wrote into
+`why_now` that "the visitor did not specify whether renewal must be completed
+by that date" — correctly refusing to resolve it — and then left
+`need_one_fact` empty. The unknown was named and never asked. That was
+tolerable when the section was read-only; now that answering a question redraws
+the ranking, an unknown buried in a justification is a dead end the visitor
+cannot act on. Rule **6a**: an unknown you name is an unknown you must ask
+about. Guard term `unknown_named_but_not_asked`.
+
+With 6a active, the same input produced two questions — including one that asks
+the first distinction outright: "Is there an external consequence tied to a
+specific date, or is the timing based on your own preference to handle it
+tomorrow?"
+
+**Verified against inputs built to provoke each:** an intention ("I should
+really do this tomorrow morning") came back as "establishes personal timing
+rather than a confirmed external deadline"; a future date stayed six days away
+rather than passed; three tasks with no dates at all returned `revisit: null`
+three times, with none of *next week / end of month / in a few days* anywhere
+in the response.
+
+**Note:** the first restart hit `EADDRINUSE` and the old process kept serving —
+the documented trap where a test reads a stale build. Confirmed
+`started PID == listening PID` before trusting any of the above.

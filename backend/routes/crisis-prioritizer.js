@@ -18,10 +18,14 @@ CORE RULES
 4. Never decide that a task is anxiety-driven, irrational, guilt-driven, avoidance, perfectionism, procrastination, or a sign of any psychological trait.
 5. Never claim to know what will happen if a task is delayed unless the visitor supplied that consequence.
 6. When a missing fact could materially change the order, expose the uncertainty. Put the task in need_one_fact and ask the smallest useful question.
+6a. An unknown you name is an unknown you must ask about. If any justification says something was not specified, is unclear, or is not known, and the answer could change the order, that same unknown must also appear in need_one_fact as a question. A missing fact mentioned in passing gives the visitor nothing to act on; a question gives them something to answer.
 7. A missing deadline does not mean no deadline. Say 'not supplied' rather than 'no hard deadline'.
 8. Available time and energy affect feasibility and sequencing. They do not determine whether a task is objectively urgent.
 9. Distinguish urgency from importance. A valuable task may still be able to wait; a small task may be time-sensitive.
 9a. 'Can probably wait' is a statement about the evidence, never a reassurance. The visitor not supplying a consequence is not evidence that there is none. Never write that a task is safe to delay, harmless to postpone, has no downside, will not matter, or can wait without consequence. Say what the supplied information does not establish, and stop there.
+9b. A supplied fact is not a recommended action. The visitor telling you a deadline, a person waiting, or their own intention (I should call the bank tomorrow) establishes that fact and nothing more. It does not establish that the action is right, that the timing is correct, or that they must do it. Report what they supplied as evidence, and let the ranking be your claim, not theirs restated back as advice.
+9c. An expected event is not a confirmed event. Renews next month, the round closes on the 30th, they said they would reply — these describe things that have not happened. Never write about them in the past tense, never treat a future date as already reached, and never treat an intention or a schedule as an outcome. If whether it has happened would change the ranking, that is a need_one_fact question.
+9d. Not knowing when something can safely be deferred to is not permission to choose a date. If the visitor supplied no deadline, revisit point, or billing cycle, you may not invent next week, end of month, in a few days, or any other moment. Use null. A revisit point is only a date the visitor gave you, or one that follows necessarily from a date they gave you.
 10. Do not manufacture certainty to force every task into a neat ranking.
 11. Prefer concrete next actions over motivational commentary.
 12. Time estimates are rough planning estimates unless the visitor supplied a duration. Label them as estimates.
@@ -37,7 +41,7 @@ const TRIAGE_SCHEMA = `{
   "do_first": [
     {
       "task": "task text",
-      "why_now": "specific supplied evidence that makes this time-sensitive",
+      "why_now": "the specific supplied evidence that makes this time-sensitive. Cite the evidence; do not restate the visitor own stated intention as your reason. Keep expected events in the future tense.",
       "next_action": "one concrete first step",
       "deadline": "supplied deadline or null",
       "who_waiting": "supplied person or null"
@@ -55,7 +59,7 @@ const TRIAGE_SCHEMA = `{
     {
       "task": "task text",
       "why": "why the supplied information does not establish that it must happen sooner",
-      "revisit": "a supplied deadline or a practical revisit point; null if unsupported"
+      "revisit": "ONLY a date or moment the visitor supplied, or one that follows necessarily from one they supplied. If they supplied none, this is null. Never a date you chose."
     }
   ],
   "need_one_fact": [
@@ -105,7 +109,7 @@ function suppliedFrom(body = {}) {
   return `WHAT THE VISITOR SUPPLIED — the complete set of established facts:
 ${JSON.stringify(shown, null, 2)}
 
-There is no other source. A deadline, consequence, dependency, person waiting, commitment or cost of delay that is not above was invented. Absence of a deadline is 'not supplied', never 'no deadline', and absence of a stated consequence is not evidence that delaying is safe. Nothing here establishes why the visitor feels any way about a task.`;
+There is no other source. A deadline, consequence, dependency, person waiting, commitment or cost of delay that is not above was invented. Absence of a deadline is 'not supplied', never 'no deadline', and absence of a stated consequence is not evidence that delaying is safe. Nothing here establishes why the visitor feels any way about a task. A fact the visitor supplied is evidence, not their instruction and not a recommendation. Anything dated in the future has not happened yet. If no date was supplied for when something could be revisited, there is no such date to report.`;
 }
 
 async function guardResult(result, { supplied, promise, label, userLanguage, userLocale }) {
@@ -585,6 +589,10 @@ router.outputGuard = {
     'no_deadline_stated_as_fact',         // silence is 'not supplied', not 'no deadline'
     'safe_to_defer_claim',                // "nothing happens if this waits" — the visitor never said that
     'reassurance_not_supported_by_input',
+    'supplied_intention_restated_as_recommendation',  // their plan handed back as your advice
+    'expected_event_written_as_confirmed',            // a future date treated as already reached
+    'invented_revisit_date',                          // 'revisit next week' with no supplied date
+    'unknown_named_but_not_asked',                    // a gap raised in prose and never turned into a question
   ],
   require: [
     'ranking_traceable_to_supplied_facts',
