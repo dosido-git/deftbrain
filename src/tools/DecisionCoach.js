@@ -184,6 +184,7 @@ const DecisionCoach = ({ tool }) => {
   const [templateName, setTemplateName] = useState('');
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [showRejectionPicker, setShowRejectionPicker] = useState(false);
+  const [factAnswer, setFactAnswer] = useState('');
 
   // ── Refs ──
   const timerRef = useRef(null);
@@ -282,6 +283,17 @@ const DecisionCoach = ({ tool }) => {
     } catch (err) { setError(err.message || t('something_wrong')); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decisionNeeded, category, constraints, extraContext, capacity, recentChoices, callToolEndpoint, saveToHistory, userLocale, userCurrency, userRegion, t]);
+
+  const answerOneFact = useCallback(() => {
+    const q = results?.one_thing_that_could_change_this?.question || '';
+    const a = factAnswer.trim();
+    if (!a) return;
+    setExtraContext(prev => [prev, `${q} ${a}`.trim()].filter(Boolean).join(' — '));
+    setFactAnswer('');
+    setResults(null);
+    // generate() reads extraContext through prefString on the next tick
+    setTimeout(() => handleRef.current?.(rejectedChoices), 0);
+  }, [results, factAnswer, rejectedChoices]);
 
   const handleNotThat = useCallback((reason = '') => {
     if (!results || timerLocked) return;
@@ -456,7 +468,9 @@ const DecisionCoach = ({ tool }) => {
   // RENDER: Quick Decide + Templates
   // ══════════════════════════════════════════
   const renderQuickDecide = () => (
-    <div className={`mb-5 p-4 rounded-2xl border ${c.card}`}>
+    <div className={`mt-8 p-4 rounded-2xl border ${c.card}`}>
+      <p className={`text-xs font-bold ${c.textSecondary} mb-0.5`}>{t('dc_quick_intro')}</p>
+      <p className={`text-xs ${c.textMuteded} mb-3`}>{t('dc_quick_sub')}</p>
       <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_quick_decide')}</p>
       <div className="grid grid-cols-5 gap-2 mb-2">
         {QUICK_BUTTONS.map(b => (<button key={b.id} onClick={() => handleQuickDecide(b.cat)} disabled={loading} className={`p-3 rounded-xl border text-center transition-all disabled:opacity-40 ${c.quickBtn}`}><span className="text-xl block mb-1">{b.emoji}</span><span className={`text-[10px] font-bold ${c.text}`}>{t(b.k)}</span></button>))}
@@ -484,6 +498,20 @@ const DecisionCoach = ({ tool }) => {
           <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
             placeholder={decideMode === 'chain' ? t('dc_ph_chain') : t('dc_ph_whatdecide')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
+        </div>
+      )}
+
+      {/* What matters most — promoted from inside More Options. The decision
+          rests on this more than on any preset, and "Anything else?" behind a
+          toggle asked for it in the quietest way available. */}
+      {decideMode !== 'proscons' && (
+        <div className={`p-5 rounded-2xl border ${c.card}`}>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>
+            {t('dc_matters_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>({t('optional')})</span>
+          </label>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('dc_matters_hint')}</p>
+          <textarea value={extraContext} onChange={e => setExtraContext(e.target.value)} rows={2}
+            placeholder={t('dc_matters_ph')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
       )}
 
@@ -542,7 +570,6 @@ const DecisionCoach = ({ tool }) => {
       <div className={`p-5 rounded-2xl border ${c.card}`}>
         <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dc_label_constraints')}</label>
         {renderPills(QUICK_CONSTRAINTS, constraints, toggleConstraint, true)}
-        <input type="text" value={extraContext} onChange={e => setExtraContext(e.target.value)} placeholder={t('dc_ph_anything_else')} className={`w-full mt-3 px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
       </div>
       {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_stuck')}</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
 
@@ -638,6 +665,25 @@ const DecisionCoach = ({ tool }) => {
           <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>{t('dc_your_decision')}</div>
           <p className={`text-2xl font-bold ${c.decisionHighlight} mb-3`}>{d.choice}</p>
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>{t('dc_why')}</strong> {d.why}</p>}
+          {results?.one_thing_that_could_change_this?.question && (
+            <div className={`mt-4 pt-4 border-t ${c.border}`}>
+              <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.decisionText}`}>{t('dc_onefact_title')}</p>
+              <p className={`text-sm ${c.decisionText}`}>{results.one_thing_that_could_change_this.question}</p>
+              {results.one_thing_that_could_change_this.why_it_matters && (
+                <p className={`text-xs mt-1 ${c.textMuteded}`}>{results.one_thing_that_could_change_this.why_it_matters}</p>
+              )}
+              <div className="flex gap-2 mt-2">
+                <input type="text" value={factAnswer} onChange={e => setFactAnswer(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') answerOneFact(); }}
+                  placeholder={t('dc_onefact_ph')} aria-label={results.one_thing_that_could_change_this.question}
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input} outline-none`} />
+                <button onClick={answerOneFact} disabled={loading || !factAnswer.trim()}
+                  className={`px-3 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40 whitespace-nowrap`}>
+                  {t('dc_onefact_cta')}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         {renderSteps(steps)}
         {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
@@ -1054,12 +1100,12 @@ const DecisionCoach = ({ tool }) => {
       {error && (<div className={`mb-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}><span>⚠️</span><p className={`text-sm ${c.danger}`}>{error}</p></div>)}
 
       {activeTab === 'decide' && (<>
-        {renderQuickDecide()}
         {!results && !prosResult && !devilsResult && !chainResult && renderInputForm()}
         {decideMode === 'standard' && renderResults()}
         {decideMode === 'proscons' && renderProsResult()}
         {decideMode === 'devils' && renderDevilsResult()}
         {decideMode === 'chain' && renderChainResult()}
+        {!results && !prosResult && !devilsResult && !chainResult && renderQuickDecide()}
       </>)}
       {activeTab === 'group' && renderGroupTab()}
       {activeTab === 'history' && (<>

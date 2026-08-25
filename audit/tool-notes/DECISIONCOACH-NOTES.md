@@ -110,3 +110,73 @@ on the reproduction run, including `past_behaviour_invented_from_history` twice
 inside `alternatives_eliminated`.
 
 Golden 5/5.
+
+## All-purpose decision helper, not a meal picker — 2026-08-25
+
+Quick Decide opened the page, so the first thing a visitor met was Eat · Do ·
+Tonight · Buy. The description promises an all-purpose decision helper; the
+form promised dinner.
+
+**The page now opens on the promise:**
+
+```
+WHAT NEEDS DECIDING?   Tell me what you're trying to decide. A sentence or two is enough.
+                       e.g. 'Should I renew my lease or look for another apartment?'
+WHAT MATTERS MOST?     (optional) — priorities, concerns, constraints, anything I should know
+HOW SHOULD I HELP?     Decide for me · Compare my options · Gut check · Work through a chain
+MORE OPTIONS ▾         constraints · capacity · saved preferences
+🎯 DECIDE FOR ME
+...then, at the foot:
+DON'T EVEN WANT TO THINK ABOUT IT?  ⚡ Quick Decide — Eat · Do · Tonight · Buy · Surprise me
+```
+
+`extraContext` was promoted out of More Options, where it had been asking for
+the most decision-relevant input in the quietest way available — a box labelled
+"Anything else?" behind a toggle. Mode labels became jobs rather than nouns.
+
+**Ask only what could change the answer.** The route now returns
+`one_thing_that_could_change_this` beside the decision — never instead of it.
+The call is always made; one question is offered when an answer would genuinely
+move it, with a box to answer and re-decide (the answer is folded into the
+supplied context, not sent as a fresh question). "Should I renew my lease?"
+draws a question about the notice deadline; the prompt says most decisions need
+none.
+
+**No second-guessing reframed.** It now means taking responsibility for the
+call, not claiming the call is objectively correct. Live: *"You are done
+deciding. Start the apartment search. The two constraints you gave — a big rent
+hike and a commute that is already too long — both point the same direction.
+That is a clean signal, and I am taking the call."*
+
+### Two defects the testing found, one of them in the shared library
+
+**The repair could contradict the rest of the response.** A run chose "Go to
+the party tonight" and closed with "Stay in. Turn off the group chat." Both in
+one response. Cause: `outputGuard`'s repair prompt showed the flagged field and
+the visitor's input and *nothing else in the response* — so a field whose
+meaning depends on a sibling gets rewritten into a different decision. The
+repair now receives the fields that passed, with an instruction not to
+contradict a conclusion stated in them. **This affected every v2 route**, not
+just this one; anything with a headline plus a dependent closing line was
+exposed.
+
+**A promised deliverable came back empty.** The guard called
+`no_second_guessing` an `unnecessary_section` and the repair removed it.
+`requiredNonEmpty` exists in `outputGuard` and this route was not passing it;
+`decision_made_for_you.choice` and `no_second_guessing` are now protected.
+
+### Not done
+
+**Context-sensitive constraints.** The owner noted the presets (No cooking,
+Don't leave house, Low stimulation) suit everyday decisions better than a job
+change, and "should probably be context-sensitive". Doing that on keyword
+matching would be fragile and wrong often enough to be worse than the current
+universal list. Left as-is deliberately.
+
+**Quick Decide's backend** still makes self-contained suggestions from a
+category alone. That matches the owner's constraint, but it has not been
+re-reviewed under v2.
+
+Golden 5/5. Note: after fixing a locale string post-`build:locales`, the page
+rendered raw key names until the bundle was rebuilt — the documented gotcha,
+hit again.

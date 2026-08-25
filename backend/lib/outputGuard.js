@@ -140,6 +140,16 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
   if (String(check?.verdict).toUpperCase() !== 'FAIL' || !violations.length) return [];
 
+  // Fields that passed, shown to the repair as context it must stay
+  // consistent with. Without this a repaired field can contradict the rest of
+  // the response — the repair only ever saw the one field it was rewriting.
+  const flagged = new Set(allByField.map(([f]) => f));
+  const untouched = fields
+    .filter(([path]) => !flagged.has(path))
+    .slice(0, 40)
+    .map(([path, value]) => `${path}: ${value}`)
+    .join('\n');
+
   const repairPrompt = `Rewrite only these fields of a tool's output. Every other field passed and must not be touched.
 
 WHAT THIS TOOL PROMISES:
@@ -147,6 +157,9 @@ ${promise}
 
 WHAT THE VISITOR ACTUALLY TYPED:
 ${supplied}
+
+THE REST OF THE RESPONSE — these fields PASSED and are staying exactly as they are. Whatever you write must be consistent with them. If one of them states a conclusion, a choice or a recommendation, your rewrite must not contradict it or substitute a different one:
+${untouched || '(no other fields)'}
 
 ${allByField.map(([field, vs], i) => `${i}. [${field}]
 current:
