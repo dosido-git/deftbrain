@@ -6,8 +6,29 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { tools } from '../data/tools';
+import Caret from '../components/Caret';
 
-const today = () => new Date().toISOString().split('T')[0];
+// Local date, not toISOString(): that converts to UTC first, so west of
+// Greenwich an evening check-in lands on tomorrow. This log is a record of
+// the visitor's day, which is the local one.
+const today = () => {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+// Chip key → locale key. Derived labels ("brainFog" → "Brain Fog") read
+// fine in English and are English everywhere else; nothing flags them,
+// because there is no literal to flag.
+const CHIP_LABELS = {
+  work: 'cpr_act_work', social: 'cpr_act_social', exercise: 'cpr_act_exercise',
+  rest: 'cpr_act_rest', obligations: 'cpr_act_obligations',
+  headache: 'cpr_sym_headache', fatigue: 'cpr_sym_fatigue', tension: 'cpr_sym_tension',
+  appetiteChanges: 'cpr_sym_appetite', sleepIssues: 'cpr_sym_sleep_issues',
+  irritability: 'cpr_warn_irritability', brainFog: 'cpr_warn_brain_fog',
+  difficultyDeciding: 'cpr_warn_cant_decide', cryingEasily: 'cpr_warn_crying',
+  withdrawing: 'cpr_warn_withdrawing',
+};
 
 const EMPTY_ENTRY = {
   date: today(),
@@ -216,6 +237,15 @@ export default function CrashPredictor() {
             <p className={`text-sm mt-1 ${c.textMuted}`}>
               {t('cpv2_hero_sub')}
             </p>
+            <details className={`group mt-3 ${c.cardAlt} border ${c.border} rounded-lg p-3`}>
+              <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
+                  {t('cpv2_how_title')}
+                  <Caret groupOpen className="ms-auto" />
+                </div>
+              </summary>
+              <p className={`text-sm mt-2 ${c.textMuted}`}>{t('cpv2_how_body')}</p>
+            </details>
             <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
               className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap">
               ✨ {t('try_example')}
@@ -232,9 +262,9 @@ export default function CrashPredictor() {
 
         <div className="grid grid-cols-3 gap-2 mt-5">
           {[
-            ['dashboard', '🏠', 'Dashboard'],
-            ['checkin', '📅', 'Check-In'],
-            ['history', '📋', 'History'],
+            ['dashboard', '🏠', t('cpv2_tab_dashboard')],
+            ['checkin', '📅', t('cpv2_tab_checkin')],
+            ['history', '📋', t('cpv2_tab_history')],
           ].map(([key, icon, label]) => (
             <button
               key={key} type="button" onClick={() => setView(key)}
@@ -384,17 +414,17 @@ export default function CrashPredictor() {
         <div className="space-y-4">
           <Section title={t('cpv2_today')}>
             <div className="space-y-4">
-              <Metric label={t('cpv2_energy')} value={entry.energy} onChange={v => update('energy', v)} low="Running low" high="Plenty" />
-              <Metric label="Sleep" value={entry.sleep} onChange={v => update('sleep', v)} low="Poor" high="Restful" />
-              <Metric label="Stress" value={entry.stress} onChange={v => update('stress', v)} low="Low" high="High" />
-              <Metric label="Mood" value={entry.mood} onChange={v => update('mood', v)} low="Low" high="Good" />
+              <Metric label={t('cpv2_energy')} value={entry.energy} onChange={v => update('energy', v)} low={t('cpv2_energy_low')} high={t('cpv2_energy_high')} />
+              <Metric label={t('cpv2_sleep_label')} value={entry.sleep} onChange={v => update('sleep', v)} low={t('cpv2_sleep_low')} high={t('cpv2_sleep_high')} />
+              <Metric label={t('cpv2_stress_label')} value={entry.stress} onChange={v => update('stress', v)} low={t('cpv2_stress_low')} high={t('cpv2_stress_high')} />
+              <Metric label={t('cpv2_mood_label')} value={entry.mood} onChange={v => update('mood', v)} low={t('cpv2_mood_low')} high={t('cpv2_mood_high')} />
 
               <div>
                 <p className="text-sm font-medium mb-2">{t('cpv2_part_of_today')}</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(entry.activities).map(k => (
                     <ToggleChip key={k} active={entry.activities[k]} onClick={() => toggleNested('activities', k)}>
-                      {k[0].toUpperCase() + k.slice(1)}
+                      {t(CHIP_LABELS[k])}
                     </ToggleChip>
                   ))}
                 </div>
@@ -405,8 +435,7 @@ export default function CrashPredictor() {
                 <div className="flex flex-wrap gap-2">
                   {[...Object.keys(entry.physicalSymptoms), ...Object.keys(entry.warningSigns)].map(k => {
                     const group = Object.prototype.hasOwnProperty.call(entry.physicalSymptoms, k) ? 'physicalSymptoms' : 'warningSigns';
-                    const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
-                    return <ToggleChip key={k} active={entry[group][k]} onClick={() => toggleNested(group, k)}>{label}</ToggleChip>;
+                    return <ToggleChip key={k} active={entry[group][k]} onClick={() => toggleNested(group, k)}>{t(CHIP_LABELS[k])}</ToggleChip>;
                   })}
                 </div>
               </div>
@@ -459,7 +488,7 @@ export default function CrashPredictor() {
                 className={`w-full min-h-[48px] rounded-lg font-semibold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
                 {loading
                   ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_save')}</>
-                  : <><span>{tool?.icon ?? '⚡'}</span> {t('cpv2_save')}</>}
+                  : t('cpv2_save')}
               </button>
             </div>
           </Section>
@@ -467,7 +496,7 @@ export default function CrashPredictor() {
       )}
 
       {view === 'history' && (
-        <Section title={`History · ${logs.length} check-in${logs.length === 1 ? '' : 's'}`}>
+        <Section title={logs.length === 1 ? t('cpv2_history_1') : t('cpv2_history_n', { n: logs.length })}>
           {logs.length === 0 ? (
             <p className={c.textMuted}>{t('cpv2_no_checkins')}</p>
           ) : (

@@ -49,3 +49,25 @@ It fires usefully rather than decoratively — a 7-entry log drew `causal_claim_
 **Audit rule widened, not exempted.** `audit_v2-3-2.py`'s persistence check accepted a stored `logs` (it matches `[A-Za-z]+Log`) while the render check did not, so a tool whose history *is* a log of check-ins failed half a rule it satisfied. Widened the render side to `[A-Za-z]*[Ll]ogs?` — the two halves now agree. No exemption added.
 
 **Live:** `analyze` 200 / 32.7s, `patterns` 200 / 24.1s, `analyze` DE 200 / 49.2s. Golden 3/3.
+
+## Copy + integration pass — 2026-08-24
+
+Owner's list, plus two things the list implied.
+
+| Asked | Done |
+| --- | --- |
+| Stale catalog description | Replaced with the owner's text. The old one shouted (`YOUR`, "can't trust their own assessment") and promised a days-to-crash countdown the tool no longer makes. |
+| ⚠️ on **Save check-in** | Removed at rest. The spinner keeps `tool?.icon` — S0 requires it, and a *spinning* icon reads as progress, not alarm. |
+| "Anything you noticed?" | → "Anything else you noticed?" — the four sliders above it are already observations. |
+| "Fatigue" → "Low energy" | See below; there was no string to change. |
+| Check-in stamped tomorrow | `toISOString()` converts to UTC first, so west of Greenwich an evening check-in files as the next day. Now built from local `getFullYear/getMonth/getDate`. Verified: stored `2026-08-24` where the old path wrote `2026-08-25`. |
+| Two icons before the tagline | `cpv2_hero` began with "⚡" and the catalog icon `⚠️` rendered immediately before it. Dropped the ⚡ from the string in all 13 languages. |
+| Collapsed "How it works" | Native `<details class="group">` + `Caret groupOpen` (PF-34), under the sub-line and above Try an example — it answers "what am I signing up for?" before the visitor decides. |
+
+**"Fatigue" had no string to replace.** The chips were labelled by transforming their own object keys — `k.replace(/([A-Z])/g, ' $1')`, so `brainFog` → "Brain Fog". English by construction, in every language, with no literal for a translator or for Gate 5 to find. The `cpr_act_*` / `cpr_sym_*` / `cpr_warn_*` keys already existed in all 13 languages; the rewrite had simply stopped using them. Added a `CHIP_LABELS` key→locale-key map beside `EMPTY_ENTRY` so a new symptom cannot be added without a label.
+
+Same class, three more places: the four sliders (`label="Sleep" low="Poor" high="Restful"`), the three tab labels, and the history heading template. All now `t()`. New keys use the rewrite's gentler wording rather than reusing v1's `cpr_energy_low` ("Depleted", "Terrible", "Awful") — the owner called this form Green in English, so English is what the other twelve should say.
+
+**Gate 5 cannot see any of this.** It looks for unwrapped literals; a label computed from a key is not a literal, and a JSX string *attribute* (`low="Poor"`) is not one either. Worth a rule.
+
+Spot-checked es (chips, sliders, tabs, disclosure all translated, no English leak) and ar (RTL, caret at inline-end, no tofu, no clipping, no overflow at 375px).

@@ -4581,7 +4581,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "⚠️",
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Track daily energy, sleep, and stress to identify YOUR personal burnout patterns before you crash. For people who push through warning signs, mask symptoms, or have poor interoception (can't sense body signals). The tool uses objective data to warn you when a crash is coming - because your feelings might say 'I'm fine' even when the pattern shows you're not. Get specific, actionable interventions prioritized by urgency. Built especially for people who can't trust their own assessment.",
+  description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Crash Predictor helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
       overview: "Crash Predictor tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
       
