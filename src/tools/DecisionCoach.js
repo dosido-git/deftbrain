@@ -130,7 +130,6 @@ const DecisionCoach = ({ tool }) => {
     templateBtn: isDark ? 'bg-amber-900/20 border-amber-700 text-amber-300 hover:bg-amber-900/40' : 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100',
     achieveActive: isDark ? 'text-amber-300' : 'text-amber-700',
     achieveLocked: isDark ? 'text-zinc-600' : 'text-zinc-300',
-    streakFire: isDark ? 'text-orange-400' : 'text-orange-500',
     required:   isDark ? 'text-amber-400' : 'text-amber-700',
     labelText:  isDark ? 'text-zinc-200' : 'text-gray-700',
   };
@@ -199,10 +198,6 @@ const DecisionCoach = ({ tool }) => {
   const [dnaResult, setDnaResult] = usePersistentState('decision-coach-dna', null);
 
   // ── Computed ──
-  const followThroughStreak = useMemo(() => {
-    let s = 0; for (const h of sessionHistory) { if (h.followUp === 'did_it') s++; else if (h.followUp) break; else continue; } return s;
-  }, [sessionHistory]);
-  const firstTryRate = useMemo(() => sessionHistory.length === 0 ? 0 : Math.round((sessionHistory.filter(h => !h.rejections).length / sessionHistory.length) * 100), [sessionHistory]);
   const earnedAchievements = useMemo(() => ACHIEVEMENTS.filter(a => a.check(sessionHistory)), [sessionHistory]);
   const recentChoices = useMemo(() => sessionHistory.slice(0, 5).map(h => h.choice).filter(Boolean), [sessionHistory]);
   const rejectionCount = rejectedChoices.length;
@@ -675,8 +670,13 @@ const DecisionCoach = ({ tool }) => {
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>
-          <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>{t('dc_your_decision')}</div>
-          <p className={`text-2xl font-bold ${c.decisionHighlight} mb-3`}>{d.choice}</p>
+          <div className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.decisionText}`}>
+            {results?.one_thing_that_could_change_this?.question ? t('dc_decision_provisional') : t('dc_your_decision')}
+          </div>
+          <p className={`text-2xl font-bold ${c.decisionHighlight} mb-1`}>{d.choice}</p>
+          {results?.one_thing_that_could_change_this?.question && (
+            <p className={`text-xs mb-3 ${c.textMuteded}`}>{t('dc_provisional_note')}</p>
+          )}
           {d.why && <p className={`text-sm ${c.decisionText}`}><strong>{t('dc_why')}</strong> {d.why}</p>}
           {results?.one_thing_that_could_change_this?.question && (
             <div className={`mt-4 pt-4 border-t ${c.border}`}>
@@ -684,6 +684,16 @@ const DecisionCoach = ({ tool }) => {
               <p className={`text-sm ${c.decisionText}`}>{results.one_thing_that_could_change_this.question}</p>
               {results.one_thing_that_could_change_this.why_it_matters && (
                 <p className={`text-xs mt-1 ${c.textMuteded}`}>{results.one_thing_that_could_change_this.why_it_matters}</p>
+              )}
+              {(results.one_thing_that_could_change_this.if_answer_confirms || results.one_thing_that_could_change_this.if_answer_changes_it) && (
+                <div className="mt-2 space-y-1">
+                  {results.one_thing_that_could_change_this.if_answer_confirms && (
+                    <p className={`text-xs ${c.decisionText}`}><strong>{t('dc_onefact_if_yes')}:</strong> {results.one_thing_that_could_change_this.if_answer_confirms}</p>
+                  )}
+                  {results.one_thing_that_could_change_this.if_answer_changes_it && (
+                    <p className={`text-xs ${c.decisionText}`}><strong>{t('dc_onefact_if_no')}:</strong> {results.one_thing_that_could_change_this.if_answer_changes_it}</p>
+                  )}
+                </div>
               )}
               <div className="flex gap-2 mt-2">
                 <input type="text" value={factAnswer} onChange={e => setFactAnswer(e.target.value)}
@@ -1087,13 +1097,6 @@ const DecisionCoach = ({ tool }) => {
           </p>
           {activeTab === 'decide' && !results && !prosResult && !devilsResult && !chainResult && (
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-          )}
-          {(followThroughStreak >= 2 || earnedAchievements.length > 0) && (
-            <div className="flex items-center gap-3 mt-1 flex-wrap">
-              {followThroughStreak >= 2 && <span className={`text-xs font-bold ${c.streakFire}`}>🔥 {t('dc_streak', { count: followThroughStreak })}</span>}
-              {firstTryRate > 0 && sessionHistory.length >= 3 && <span className={`text-xs ${c.textMuteded}`}>⚡ {t('dc_firsttry', { pct: firstTryRate })}</span>}
-              {earnedAchievements.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🏆 {earnedAchievements.length}/{ACHIEVEMENTS.length}</span>}
-            </div>
           )}
         </div>
         <button

@@ -246,3 +246,52 @@ not the button. Worth differentiating if it confuses a visitor the same way.
 Also dropped an `order-last` I had briefly used to position the block: the
 parent is `space-y-4`, not a flex container, so the class does nothing — the
 same inert-utility mistake as the submit button's `flex-1`.
+
+## The decision boundary — 2026-08-25
+
+Owner: the tool said "Repair the laptop", asked whether the battery was
+included, and then told the visitor to approve the repair — three steps after
+naming the fact that could reverse the call. Formalised in the schema rather
+than argued for in prose, as asked.
+
+**Rule 4a, the decision boundary.** When `one_thing_that_could_change_this` is
+not null, three things follow:
+
+1. `choice` carries the condition it rests on.
+2. `execution_instructions` **stop at the point of finding out**. They may
+   gather the fact, and the last step is to come back with the answer. Nothing
+   committing or hard to undo — no approving, paying, signing, dropping off,
+   cancelling — while the answer that could reverse the call is unknown.
+3. `if_answer_confirms` and `if_answer_changes_it` say what happens either way.
+   They must name **different** outcomes; if both land on the same answer, the
+   question could not have changed anything and the field should be null.
+
+Steps now read: ask whether the battery is included → get the quote in writing
+→ *"Come back to this decision once you have that number — the next step
+depends on what they say."* And a question that genuinely needs nothing ("Should
+I go to the party tonight?") returns null and runs its steps to done.
+
+**Point 1 would not hold in prose.** Stated in the approach block and then
+again on the `choice` field itself, the model still returned a bare "Repair the
+laptop." Whether a call is provisional is knowable from the response *shape*,
+so the UI now states it rather than hoping the string does: the header reads
+**"Your decision — for now"** with *"Provisional until you answer the question
+below"* beneath it. Deterministic, and it cannot drift.
+
+**The overreaching sentence, generically.** "A four-year-old machine with a
+working repair quote is not at end of life" — a quote establishes that
+something can be repaired and roughly for how much, not the condition or
+remaining life of the thing. Rule: never infer overall condition, lifespan,
+reliability or future performance from the existence or cost of a quote, and
+the same for any valuation. Guard terms `condition_inferred_from_a_quote` and
+`committing_step_before_the_open_question`.
+
+**Scorecard removed.** 🔥 streak, ⚡ 100% first-try and 🏆 1/8 sat under the
+tagline saying nothing about the decision in front of the visitor, competing
+with the two controls that do. Removing it orphaned `followThroughStreak`,
+`firstTryRate` and the `streakFire` palette key — all removed in the same pass,
+which is the documented second-wave-of-warnings trap.
+`earnedAchievements` stays: the Insights panel inside History still lists them.
+
+**"What I based this on" is standard**, as asked — it renders whenever there is
+a decision, since the question is required and always populates a row.

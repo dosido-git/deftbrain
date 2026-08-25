@@ -3,6 +3,10 @@
 // DeftBrain) stay as-is across languages.
 export const decisionCoach = {
   en: {
+    dc_decision_provisional: "Your decision — for now",
+    dc_provisional_note: "Provisional until you answer the question below.",
+    dc_onefact_if_yes: "If it does",
+    dc_onefact_if_no: "If it doesn't",
     dc_basis_title: "What I based this on",
     dc_basis_asked: "You asked",
     dc_basis_matters: "What matters most",
@@ -240,6 +244,10 @@ export const decisionCoach = {
     dc_ex_extra: "I have chicken, rice, and frozen broccoli. Last three nights were pasta — want something different but not a project.",
   },
   es: {
+    dc_decision_provisional: "Tu decisión — por ahora",
+    dc_provisional_note: "Provisional hasta que respondas la pregunta de abajo.",
+    dc_onefact_if_yes: "Si es que sí",
+    dc_onefact_if_no: "Si es que no",
     dc_basis_title: "En qué me basé",
     dc_basis_asked: "Preguntaste",
     dc_basis_matters: "Lo que más pesa",
@@ -477,6 +485,10 @@ export const decisionCoach = {
     dc_ex_extra: "Tengo pollo, arroz y brócoli congelado. Las últimas tres noches fue pasta — quiero algo diferente pero que no sea un proyecto.",
   },
   zh: {
+    dc_decision_provisional: "你的决定——暂定",
+    dc_provisional_note: "在你回答下面的问题之前，这只是暂定。",
+    dc_onefact_if_yes: "如果是",
+    dc_onefact_if_no: "如果不是",
     dc_basis_title: "我依据的是",
     dc_basis_asked: "你问的是",
     dc_basis_matters: "最重要的是",
@@ -714,6 +726,10 @@ export const decisionCoach = {
     dc_ex_extra: "我有鸡肉、米饭和冷冻西兰花。前三晚都是意面——想吃点不一样的，但又别太麻烦。",
   },
   hi: {
+    dc_decision_provisional: "आपका फ़ैसला — फ़िलहाल",
+    dc_provisional_note: "नीचे दिए सवाल का जवाब मिलने तक यह अस्थायी है।",
+    dc_onefact_if_yes: "अगर हाँ",
+    dc_onefact_if_no: "अगर नहीं",
     dc_basis_title: "मैंने किस आधार पर तय किया",
     dc_basis_asked: "आपने पूछा",
     dc_basis_matters: "सबसे ज़्यादा क्या मायने रखता है",
@@ -951,6 +967,10 @@ export const decisionCoach = {
     dc_ex_extra: "मेरे पास चिकन, चावल और फ्रोज़न ब्रोकली है। पिछली तीन रातें पास्ता थीं — कुछ अलग चाहिए, पर ज़्यादा झंझट वाला नहीं।",
   },
   ar: {
+    dc_decision_provisional: "قرارك — مبدئياً",
+    dc_provisional_note: "مؤقّت إلى أن تجيب عن السؤال أدناه.",
+    dc_onefact_if_yes: "إن كان كذلك",
+    dc_onefact_if_no: "إن لم يكن",
     dc_basis_title: "ما بنيت عليه هذا",
     dc_basis_asked: "سألت",
     dc_basis_matters: "الأهم",
@@ -1188,6 +1208,10 @@ export const decisionCoach = {
     dc_ex_extra: "لديّ دجاج وأرزّ وبروكلي مجمّد. الليالي الثلاث الماضية كانت معكرونة — أريد شيئاً مختلفاً لكن دون عناء كبير.",
   },
   pt: {
+    dc_decision_provisional: "A tua decisão — para já",
+    dc_provisional_note: "Provisória até responderes à pergunta abaixo.",
+    dc_onefact_if_yes: "Se sim",
+    dc_onefact_if_no: "Se não",
     dc_basis_title: "Em que me baseei",
     dc_basis_asked: "Perguntaste",
     dc_basis_matters: "O que pesa mais",
@@ -1425,6 +1449,10 @@ export const decisionCoach = {
     dc_ex_extra: "Tenho frango, arroz e brócolis congelado. As últimas três noites foram massa — quero algo diferente, mas que não dê trabalho.",
   },
   fr: {
+    dc_decision_provisional: "Votre décision — pour l'instant",
+    dc_provisional_note: "Provisoire tant que vous n'avez pas répondu à la question ci-dessous.",
+    dc_onefact_if_yes: "Si oui",
+    dc_onefact_if_no: "Si non",
     dc_basis_title: "Ce sur quoi je me suis appuyé",
     dc_basis_asked: "Vous avez demandé",
     dc_basis_matters: "Ce qui compte le plus",
@@ -1662,6 +1690,10 @@ export const decisionCoach = {
     dc_ex_extra: "J'ai du poulet, du riz et des brocolis surgelés. Les trois derniers soirs, c'était des pâtes — je veux quelque chose de différent, mais sans que ce soit une corvée.",
   },
   de: {
+    dc_decision_provisional: "Deine Entscheidung — vorerst",
+    dc_provisional_note: "Vorläufig, bis du die Frage unten beantwortet hast.",
+    dc_onefact_if_yes: "Wenn ja",
+    dc_onefact_if_no: "Wenn nein",
     dc_basis_title: "Worauf ich mich gestützt habe",
     dc_basis_asked: "Du hast gefragt",
     dc_basis_matters: "Was am meisten zählt",
@@ -1899,6 +1931,10 @@ export const decisionCoach = {
     dc_ex_extra: "Ich habe Hähnchen, Reis und tiefgefrorenen Brokkoli. Die letzten drei Abende gab es Pasta — ich will etwas anderes, aber keine große Sache.",
   },
   ja: {
+    dc_decision_provisional: "いまのところの決定",
+    dc_provisional_note: "下の質問に答えるまでは暫定です。",
+    dc_onefact_if_yes: "そうなら",
+    dc_onefact_if_no: "そうでないなら",
     dc_basis_title: "判断のもとにしたもの",
     dc_basis_asked: "あなたの質問",
     dc_basis_matters: "いちばん効くもの",
@@ -2136,6 +2172,10 @@ export const decisionCoach = {
     dc_ex_extra: "鶏肉、ご飯、冷凍ブロッコリーがあります。ここ3晩はパスタ続き — 違うものがいいけど、手の込んだものは避けたい。",
   },
   ko: {
+    dc_decision_provisional: "일단은 이 결정",
+    dc_provisional_note: "아래 질문에 답하기 전까지는 잠정입니다.",
+    dc_onefact_if_yes: "그렇다면",
+    dc_onefact_if_no: "그렇지 않다면",
     dc_basis_title: "무엇을 근거로 했는지",
     dc_basis_asked: "질문하신 것",
     dc_basis_matters: "가장 중요한 것",
@@ -2373,6 +2413,10 @@ export const decisionCoach = {
     dc_ex_extra: "닭고기, 밥, 냉동 브로콜리가 있어요. 지난 사흘 밤은 파스타였어요 — 뭔가 다른 게 좋지만 너무 손이 많이 가는 건 싫어요.",
   },
   ru: {
+    dc_decision_provisional: "Ваше решение — пока что",
+    dc_provisional_note: "Предварительно, пока вы не ответите на вопрос ниже.",
+    dc_onefact_if_yes: "Если да",
+    dc_onefact_if_no: "Если нет",
     dc_basis_title: "На чём это основано",
     dc_basis_asked: "Вы спросили",
     dc_basis_matters: "Что важнее всего",
@@ -2610,6 +2654,10 @@ export const decisionCoach = {
     dc_ex_extra: "У меня есть курица, рис и замороженная брокколи. Последние три вечера была паста — хочу чего-то другого, но без возни.",
   },
   th: {
+    dc_decision_provisional: "การตัดสินใจของคุณ — ตอนนี้",
+    dc_provisional_note: "ยังเป็นการชั่วคราวจนกว่าคุณจะตอบคำถามด้านล่าง",
+    dc_onefact_if_yes: "ถ้าใช่",
+    dc_onefact_if_no: "ถ้าไม่ใช่",
     dc_basis_title: "ฉันใช้อะไรเป็นฐาน",
     dc_basis_asked: "คุณถามว่า",
     dc_basis_matters: "สิ่งที่สำคัญที่สุด",
@@ -2847,6 +2895,10 @@ export const decisionCoach = {
     dc_ex_extra: "ฉันมีไก่ ข้าว และบรอกโคลีแช่แข็ง สามคืนที่ผ่านมากินพาสต้า — อยากได้อะไรที่ต่างออกไปแต่ไม่ยุ่งยากเกินไป",
   },
   vi: {
+    dc_decision_provisional: "Quyết định của bạn — tạm thời",
+    dc_provisional_note: "Tạm thời cho đến khi bạn trả lời câu hỏi bên dưới.",
+    dc_onefact_if_yes: "Nếu có",
+    dc_onefact_if_no: "Nếu không",
     dc_basis_title: "Tôi dựa trên những gì",
     dc_basis_asked: "Bạn đã hỏi",
     dc_basis_matters: "Điều quan trọng nhất",
