@@ -21,6 +21,7 @@ CORE RULES
 7. A missing deadline does not mean no deadline. Say 'not supplied' rather than 'no hard deadline'.
 8. Available time and energy affect feasibility and sequencing. They do not determine whether a task is objectively urgent.
 9. Distinguish urgency from importance. A valuable task may still be able to wait; a small task may be time-sensitive.
+9a. 'Can probably wait' is a statement about the evidence, never a reassurance. The visitor not supplying a consequence is not evidence that there is none. Never write that a task is safe to delay, harmless to postpone, has no downside, will not matter, or can wait without consequence. Say what the supplied information does not establish, and stop there.
 10. Do not manufacture certainty to force every task into a neat ranking.
 11. Prefer concrete next actions over motivational commentary.
 12. Time estimates are rough planning estimates unless the visitor supplied a duration. Label them as estimates.
@@ -104,7 +105,7 @@ function suppliedFrom(body = {}) {
   return `WHAT THE VISITOR SUPPLIED — the complete set of established facts:
 ${JSON.stringify(shown, null, 2)}
 
-There is no other source. A deadline, consequence, dependency, person waiting, commitment or cost of delay that is not above was invented. Absence of a deadline is 'not supplied', never 'no deadline'. Nothing here establishes why the visitor feels any way about a task.`;
+There is no other source. A deadline, consequence, dependency, person waiting, commitment or cost of delay that is not above was invented. Absence of a deadline is 'not supplied', never 'no deadline', and absence of a stated consequence is not evidence that delaying is safe. Nothing here establishes why the visitor feels any way about a task.`;
 }
 
 async function guardResult(result, { supplied, promise, label, userLanguage, userLocale }) {
@@ -582,6 +583,8 @@ router.outputGuard = {
     'unrequested_self_care_prescription',
     'overcommitment_diagnosis_without_arithmetic',
     'no_deadline_stated_as_fact',         // silence is 'not supplied', not 'no deadline'
+    'safe_to_defer_claim',                // "nothing happens if this waits" — the visitor never said that
+    'reassurance_not_supported_by_input',
   ],
   require: [
     'ranking_traceable_to_supplied_facts',

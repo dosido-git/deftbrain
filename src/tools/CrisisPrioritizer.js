@@ -24,12 +24,13 @@ function Field({ label, children, hint, c }) {
 function Card({ title, children, className = '', c }) {
   return <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 ${className}`}><h3 className={`font-bold mb-3 ${c.text}`}>{title}</h3>{children}</section>;
 }
-function Item({ title, why, action, meta, startLabel, c }) {
+function Item({ title, why, action, meta, startLabel, c, children }) {
   return <div className={`rounded-lg border ${c.border} ${c.cardAlt} p-3`}>
     <p className={`font-semibold ${c.text}`}>{title}</p>
     {why && <p className={`text-sm mt-1 ${c.textSecondary}`}>{why}</p>}
     {action && <p className={`text-sm mt-2 ${c.textSecondary}`}><strong>{startLabel}</strong> {action}</p>}
     {meta && <p className={`text-xs mt-2 ${c.textMuted}`}>{meta}</p>}
+    {children}
   </div>;
 }
 function taskPayload(t) {
@@ -85,6 +86,7 @@ export default function CrisisPrioritizer() {
   const [delegateTo, setDelegateTo] = useState('');
   const [period, setPeriod] = useState('this_week');
   const [doneTasks, setDoneTasks] = useState([]);
+  const [factAnswers, setFactAnswers] = useState({});
   const submitRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -100,7 +102,7 @@ export default function CrisisPrioritizer() {
   const reset = () => {
     setTasks([blankTask(), blankTask(), blankTask()]);
     setDumpText(''); setHours(''); setEnergy(''); setContext('');
-    setResult(null); setSubResult(null); setPanel(null); setSelectedTask(''); setDoneTasks([]);
+    setResult(null); setSubResult(null); setPanel(null); setSelectedTask(''); setDoneTasks([]); setFactAnswers({});
   };
 
   const buildFullText = useCallback(() => {
@@ -183,13 +185,13 @@ export default function CrisisPrioritizer() {
     }
   };
 
-  const generate = async () => {
-    if (!cleanTasks.length) return;
+  const runGenerate = async (tasksIn, contextIn) => {
+    if (!tasksIn.length) return;
     const data = await callToolEndpoint('crisis-prioritizer', {
-      action: 'generate', tasks: cleanTasks, energy_level: energy || null,
-      hours_available: hours || null, context: context.trim() || null
+      action: 'generate', tasks: tasksIn, energy_level: energy || null,
+      hours_available: hours || null, context: contextIn || null
     });
-    setResult(data); setSubResult(null); setPanel(null); setDoneTasks([]);
+    setResult(data); setSubResult(null); setPanel(null); setDoneTasks([]); setFactAnswers({});
     if (data?.headline) {
       // Exception to the cap of 6: the backend's history-patterns action reads
       // up to 20 sessions, and recurrence across fewer than that is not a
@@ -201,6 +203,26 @@ export default function CrisisPrioritizer() {
         result: data,
       }, ...prev].slice(0, 20));
     }
+  };
+
+  const generate = () => runGenerate(cleanTasks, context.trim() || null);
+
+  // An answered question is a supplied fact, so it travels attached to the
+  // task it is about — not as loose prose the model has to re-associate.
+  const answeredFacts = Object.entries(factAnswers).filter(([, v]) => v.trim());
+  const applyFacts = () => {
+    if (!answeredFacts.length) return;
+    const questionFor = Object.fromEntries((result?.need_one_fact || []).map(x => [x.task, x.question]));
+    const answers = Object.fromEntries(answeredFacts.map(([k, v]) => [k, v.trim()]));
+    const enriched = cleanTasks.map(x => answers[x.task]
+      ? { ...x, context: [x.context, `${questionFor[x.task] || ''} ${answers[x.task]}`.trim()].filter(Boolean).join(' — ') }
+      : x);
+    // An answer whose task the visitor has since edited out still counts as
+    // something they told us; it goes to the shared context rather than away.
+    const orphaned = Object.entries(answers)
+      .filter(([k]) => !cleanTasks.some(x => x.task === k))
+      .map(([k, v]) => `${k}: ${v}`);
+    runGenerate(enriched, [context.trim(), ...orphaned].filter(Boolean).join('\n') || null);
   };
 
   const oneThing = async () => {
@@ -392,8 +414,25 @@ export default function CrisisPrioritizer() {
       </Card>}
 
       {!!result.need_one_fact?.length && <Card c={c} title={t('cp2_need_fact')}>
-        <p className={`text-sm mb-3 ${c.textMuted}`}>{t('cp2_need_fact_sub')}</p>
-        <div className="space-y-2">{result.need_one_fact.map((x, i) => <Item key={i} c={c} startLabel={t('cp2_start')} title={x.task} why={x.question} meta={x.why_it_matters} />)}</div>
+        <p className={`text-sm mb-3 ${c.textMuted}`}>{t('cp2_need_fact_sub')} {t('cp2_fact_answer_hint')}</p>
+        <div className="space-y-2">{result.need_one_fact.map((x, i) => (
+          <Item key={i} c={c} startLabel={t('cp2_start')} title={x.task} why={x.question} meta={x.why_it_matters}>
+            <input
+              className={`mt-3 w-full rounded-lg border p-2 text-base ${c.input}`}
+              value={factAnswers[x.task] || ''}
+              onChange={e => setFactAnswers(prev => ({ ...prev, [x.task]: e.target.value }))}
+              placeholder={t('cp2_fact_answer_ph')}
+              aria-label={x.question}
+            />
+          </Item>
+        ))}</div>
+        {!!answeredFacts.length && (
+          <button type="button" onClick={applyFacts} disabled={loading}
+            className={`mt-3 w-full min-h-[48px] rounded-lg px-4 text-sm font-bold shadow-sm disabled:opacity-40 ${c.btnPrimary}`}>
+            {loading ? <>{spinner}{t('cp2_prioritizing')}</>
+              : (answeredFacts.length === 1 ? t('cp2_fact_use_1') : t('cp2_fact_use_n', { n: answeredFacts.length }))}
+          </button>
+        )}
       </Card>}
 
       {result.just_one_thing && <Card c={c} title={t('cp2_just_one_title')}>

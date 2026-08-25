@@ -83,3 +83,35 @@ Prioritize These Tasks now owns the full width at 56px and 16px/700 in filled
 cyan. Just Tell Me ONE Thing sits beneath it, centred, as an underlined ghost
 control at 44px and 14px/600 — still obviously pressable, no longer competing.
 Measured 697×56 against 197×44: 4.5× the area.
+
+## "Safe to defer" + answerable facts — 2026-08-24
+
+**The defer rule lived in the wrong place.** "Do not claim delay is
+consequence-free" sat in the *generate* action's instructions, so `re-triage`
+and `plan-period` — which also produce `can_probably_wait` — never saw it.
+Promoted to system-prompt rule 9a, where all twelve actions get it, and stated
+as what it actually is: *can probably wait* is a claim about the evidence, not
+a reassurance. The visitor not supplying a consequence is not evidence there
+isn't one.
+
+Prose alone doesn't hold, so the adversarial half went in too —
+`safe_to_defer_claim` and `reassurance_not_supported_by_input` in the guard
+profile, plus a line in the guard's source-of-truth framing. **It fired on its
+first real run**, on `can_probably_wait[0].why`, alongside three
+`unsupported_prediction` hits. The shipped text after repair reads "No deadline
+or person waiting was supplied. You did not provide consequences of further
+delay" — a statement about the evidence, which is the whole point.
+
+**`need_one_fact` is answerable.** Each question gets an input; answering one
+reveals a control that re-runs the ranking. The answer travels *attached to the
+task it is about* — merged into that task's `context` alongside the question —
+rather than as loose prose the model has to re-associate. An answer whose task
+the visitor has since edited out still counts as something they told us, so it
+goes to the shared context instead of being dropped.
+
+`generate` was refactored to `runGenerate(tasks, context)` so both paths share
+one call rather than duplicating it.
+
+Verified end to end: a registration with no supplied expiry sits in
+`need_one_fact`; answering "it expired two weeks ago" moves it to `do_first`,
+and the answer box clears.
