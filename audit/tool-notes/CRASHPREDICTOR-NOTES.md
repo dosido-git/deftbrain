@@ -106,3 +106,37 @@ Never above the form." Moved to the foot and re-gated from `!logs.length` to
 
 "How it works" now sits directly below the header card rather than inside it,
 so the header keeps its single muted line.
+
+## "Start over" did nothing — 2026-08-24
+
+`reset()` cleared the draft entry, the analysis and the patterns. Its
+visibility was keyed on `(logs.length > 0 || analysis || patterns)` — and
+`logs` is the one thing it never touches. So in the state a returning visitor
+is almost always in (dashboard, check-ins saved, no analysis on screen) the
+button was visible and pressing it changed nothing. The condition promised
+something the handler didn't do.
+
+Now gated on `canReset` — `analysis || patterns || entryDirty || view !== 'dashboard'`
+— so it appears only when it has something to clear, and clicking it always
+does something visible. `entryDirty` compares the draft to `EMPTY_ENTRY`
+excluding `date`, which is pre-filled and would otherwise read as dirty on
+arrival.
+
+**The log had no delete at all.** A mistyped day was permanent, and there was
+no way to start a fresh history — which is probably what the owner was reaching
+for when they pressed Start over. Added **Clear all check-ins** to the History
+view behind `window.confirm`, the house pattern for persisted data
+(DoctorVisitPrep, BrainRoulette, DecisionCoach, BuyWise, BillRescue). It clears
+`analysis`/`patterns` too, since both describe a history that no longer exists.
+`deleteHover` was missing from this tool's palette; added.
+
+Start over deliberately does **not** delete saved check-ins — that is what the
+reset control means everywhere else in the catalog, and one click should not
+destroy a month of daily entries.
+
+**Still open:** no per-entry delete. One bad day can only be fixed by clearing
+everything. Worth adding if the owner wants it.
+
+Verified: fresh dashboard → hidden; Check-In view → appears; click → returns to
+dashboard and disappears; after saving → hidden again; History → Clear all
+present, confirm fires, log emptied, button gone.

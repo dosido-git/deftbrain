@@ -108,6 +108,7 @@ export default function CrashPredictor() {
     input:         isDark ? 'bg-zinc-900 border-zinc-600 text-zinc-100' : 'bg-white border-gray-300 text-gray-900',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+    deleteHover:   isDark ? 'hover:text-red-400' : 'hover:text-red-600',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-300 text-red-800',
@@ -136,6 +137,19 @@ export default function CrashPredictor() {
   const results = analysis || patterns;
   const latest = logs[0];
   const markedCrashCount = useMemo(() => logs.filter(l => l.crashDay).length, [logs]);
+
+  // True once the visitor has put something into today's draft. `date` is
+  // pre-filled, so it is excluded — otherwise the draft is dirty on arrival.
+  const entryDirty = useMemo(() => {
+    const blank = { ...EMPTY_ENTRY };
+    return Object.keys(blank).some(k =>
+      k !== 'date' && JSON.stringify(entry[k]) !== JSON.stringify(blank[k]));
+  }, [entry]);
+
+  // Start over clears the working state, never the log — that is what the
+  // reset control means everywhere else in the catalog. Deleting saved
+  // history is a separate, confirmed action in the History view.
+  const canReset = Boolean(analysis || patterns || entryDirty || view !== 'dashboard');
 
   const reset = () => {
     setEntry({ ...EMPTY_ENTRY, date: today() });
@@ -236,7 +250,7 @@ export default function CrashPredictor() {
               ✨ {t('try_example')}
             </button>
           </div>
-          {(logs.length > 0 || analysis || patterns) ? (
+          {canReset ? (
             <button
               onClick={reset}
               className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
@@ -505,6 +519,11 @@ export default function CrashPredictor() {
                   {log.notes && <p className="text-sm mt-2">{log.notes}</p>}
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() => { if (window.confirm(t('cpv2_clear_confirm'))) { setLogs([]); setAnalysis(null); setPatterns(null); } }}
+                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} ${c.deleteHover} py-1.5 rounded-lg`}
+              >{t('cpv2_clear_all')}</button>
             </div>
           )}
         </Section>
