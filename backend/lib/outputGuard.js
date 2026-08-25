@@ -41,6 +41,27 @@ const VIOLATION_TYPES = [
  * @param opts.userLanguage / opts.locale
  * @returns violations (possibly empty); never throws past its caller's catch
  */
+// A guarded call is generate + check + repair. Each stage is bounded here so
+// the total cannot drift past what an edge proxy will wait for. Numbers are
+// deliberately well under any plausible gateway timeout: a slightly less
+// polished answer beats a 502, every time.
+const CHECK_BUDGET_MS  = Number(process.env.OUTPUT_GUARD_CHECK_MS  || 45_000);
+const REPAIR_BUDGET_MS = Number(process.env.OUTPUT_GUARD_REPAIR_MS || 45_000);
+
+// Resolves to `fallback` if the promise has not settled in time. The work
+// carries on in the background and is ignored — we are past caring about it.
+function withDeadline(promise, ms, fallback, label, stage) {
+  let timer;
+  const bail = new Promise(resolve => {
+    timer = setTimeout(() => {
+      console.log(`[${label}] v2 guard: ${stage} exceeded ${ms}ms — skipped, returning the unguarded result`);
+      resolve(fallback);
+    }, ms);
+    timer.unref?.();
+  });
+  return Promise.race([promise, bail]).finally(() => clearTimeout(timer));
+}
+
 async function runOutputGuard(draft, opts) {
   const { label, fields, supplied, promise, guard = {}, userLanguage, locale = '' } = opts;
   if (!Array.isArray(fields) || !fields.length) return [];
@@ -86,11 +107,18 @@ verdict and field are machine identifiers, not prose. Write verdict as the Engli
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-  const check = await callClaudeWithRetry({
-    model: MODELS.FAST,
-    max_tokens: 2500,
-    messages: [{ role: 'user', content: withLanguage(checkPrompt, userLanguage) }],
-  }, { label: `${label}-guard` });
+  // maxRetries: 0 — a check that failed once has already cost the visitor time,
+  // and retrying it buys a nicety, not the answer.
+  const check = await withDeadline(
+    callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 2500,
+      messages: [{ role: 'user', content: withLanguage(checkPrompt, userLanguage) }],
+    }, { label: `${label}-guard`, maxRetries: 0 }).catch(err => {
+      console.log(`[${label}] v2 guard: check failed (${err.message}) — returning the unguarded result`);
+      return null;
+    }),
+    CHECK_BUDGET_MS, null, label, 'check');
 
   // One repair per field: two violations in one field would otherwise be
   // rewritten independently against the original, and the second write would
@@ -139,11 +167,17 @@ OUTPUT (JSON only):
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
 
-  const repair = await callClaudeWithRetry({
-    model: MODELS.FAST,
-    max_tokens: 3000,
-    messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
-  }, { label: `${label}-guard-repair` });
+  const repair = await withDeadline(
+    callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: withLanguage(repairPrompt, userLanguage) + locale }],
+    }, { label: `${label}-guard-repair`, maxRetries: 0 }).catch(err => {
+      console.log(`[${label}] v2 guard: repair failed (${err.message}) — flagged fields left as written`);
+      return null;
+    }),
+    REPAIR_BUDGET_MS, null, label, 'repair');
+  if (!repair) return violations;
 
   // Snapshot before writing: a repair that empties a promised deliverable is
   // worse than the violation it removed, and the visitor is left with a blank

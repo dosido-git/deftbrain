@@ -293,8 +293,18 @@ function getApiBlock() {
   return _apiBlock;
 }
 
+// A wall-clock ceiling on the whole retry sequence. Without it the arithmetic
+// is: callClaudeWithRetry's 3 attempts x the SDK's 2 x a 300s timeout = up to
+// 30 minutes for one call, and a guarded route makes three of them. No edge
+// proxy waits that long, so the visitor gets a 502 — a blank failure after
+// minutes of waiting, which is worse than any error we could have shown them.
+// Past the budget we stop retrying and let the route's own handler answer.
+const CALL_BUDGET_MS = Number(process.env.CLAUDE_CALL_BUDGET_MS || 150_000);
+
 async function callClaudeWithRetry(promptOrRequest, options = {}) {
   const { label = 'tool', maxRetries = 2 } = options;
+  const startedAt = Date.now();
+  const outOfTime = () => Date.now() - startedAt > CALL_BUDGET_MS;
   let lastError;
 
   // Detect calling convention: string = simple, object with messages = full request
@@ -335,10 +345,11 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       // stop claiming the service is fine while every tool 500s.
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} API error:`, err.message);
-      if (attempt < maxRetries) {
+      if (attempt < maxRetries && !outOfTime()) {
         await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
         continue;
       }
+      if (outOfTime()) console.error(`[${label}] budget ${CALL_BUDGET_MS}ms spent after ${attempt + 1} attempt(s) — not retrying`);
       break;
     }
 
@@ -369,6 +380,7 @@ async function callClaudeWithRetry(promptOrRequest, options = {}) {
       // Complete response but unparseable JSON — uncommon model variance; a retry may help.
       lastError = err;
       console.error(`[${label}] Attempt ${attempt + 1} parse error:`, err.message);
+      if (outOfTime()) { console.error(`[${label}] budget ${CALL_BUDGET_MS}ms spent — not retrying`); break; }
       if (attempt < maxRetries) {
         await new Promise(r => setTimeout(r, retryBackoffMs(attempt)));
       }
