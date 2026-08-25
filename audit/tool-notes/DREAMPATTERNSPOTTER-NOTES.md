@@ -72,3 +72,41 @@ the *dreamer selected about their own dream and sent to us*, which is the one
 case the smell is not meant to catch — recorded in
 `SCHEMA_CONGRUENCE_EXEMPT` with that reason rather than renaming a field to
 dodge a check. The smell still fires for the other nine patterns.
+
+## Borrowed evidence — 2026-08-25
+
+Description replaced with the owner's, which describes what the tool now does
+rather than the frameworks it used to invoke: spots notable elements, possible
+associations and recurring patterns, then asks questions — with the three
+lenses as *optional additional ways of looking*, which is where they belong now
+that they are collapsed and named as traditions.
+
+**The prompt did not cover the claim rule and now does.** Nothing had stopped
+an interpretation being dressed as evidence. "Water commonly represents the
+unconscious in the research" is a *stronger* claim than "water is the
+unconscious", because it borrows a citation that does not exist — and the
+existing rules only caught the second form. Added: do not describe an
+interpretation or claim about dream content as documented, research-supported,
+scientifically established, universal, common or typical unless it actually is;
+and where general dream-science context is given, separate what research has
+broadly found from speculation about *this* dream, with no general finding
+presented as explaining the dream in front of you.
+
+Guard terms `interpretation_dressed_as_research` and
+`general_finding_applied_to_this_dream`. **Both fired on their first real run**
+— a deliberately over-symbolised dream (falling, teeth crumbling, a snake) drew
+the first on the Freudian lens and the second on the dream-science lens. The
+shipped text after repair reads: *"Falling, teeth-loss, and fear are common
+elements in remembered dreams across many people, though what any individual
+dream means — or whether it means anything at all — remains an open
+question."* General finding stated as general, this dream left open.
+
+Checked the repair did not cost a section: all seven present afterwards, with
+`connections_to_your_life` empty because no waking-life context was supplied,
+which is the enforced behaviour rather than a loss.
+
+Worth knowing: the V2 core check flagged `patterns_to_watch` as an
+`unnecessary_section`. It is a section the owner specified, and the repair
+rewrote rather than removed it, so nothing was lost — but the general standard
+and this tool's design disagree about that field, and a future repair could
+decide differently.

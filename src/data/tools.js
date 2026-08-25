@@ -4627,7 +4627,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🌙",
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable. Not fortune-telling or mysticism: it's pattern recognition for self-reflection and insight.",
+  description: "Spots notable elements, possible associations, and recurring patterns in your dreams — then gives you thoughtful questions to explore what, if anything, they mean to you. Includes optional Jungian, Freudian, and dream-science perspectives for additional ways of looking at them.",
   guide: {
     overview: "The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.",
     howToUse: [

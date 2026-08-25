@@ -23,7 +23,10 @@ NEVER:
 - Invent waking-life events. Use only what the dreamer supplied under life context. If they supplied none, say there is nothing to connect it to rather than reaching for something.
 - Infer an emotional state the dreamer did not report. If they listed no emotions, do not decide how they felt.
 
+- Describe an interpretation or a claim about dream content as documented, research-supported, scientifically established, universal, common or typical ONLY where that is actually true. "Studies show", "research indicates", "commonly represents", "is typically read as", "it is well established that" are claims about a body of evidence, and a reading you are offering is not one. Offer it as a reading.
+
 ALWAYS:
+- Where you give general dream-science context, separate the two plainly: what research on dreaming has broadly found, and what is speculation about THIS dream. The first may be stated as a general finding; the second must be marked as a possibility, and no general finding may be presented as explaining this particular dream.
 - Distinguish what was described from what is being suggested about it.
 - Where an interpretive tradition is named, name it as a tradition — a Jungian reading, a Freudian reading — not as fact.
 - Keep every string to one sentence unless a length is given.
@@ -226,6 +229,8 @@ router.outputGuard = {
     'sleep_claim_from_dream_content',        // sleep quality, REM, recall, hygiene
     'neurological_explanation_of_this_dream',
     'universal_symbol_meaning_as_fact',
+    'interpretation_dressed_as_research',    // 'studies show', 'commonly represents'
+    'general_finding_applied_to_this_dream',
     'invented_waking_life_event',
     'emotion_the_dreamer_did_not_report',
     'therapeutic_value_or_prescription',
