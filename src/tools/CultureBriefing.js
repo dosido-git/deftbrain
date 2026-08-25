@@ -280,11 +280,12 @@ function CultureBriefing({ tool }) {
         <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
           {t('cb_context')} <span className={`text-xs font-normal ${c.textMuted}`}>({t('optional')})</span>
         </label>
+        <p className={`text-xs ${c.textMuted} mb-1.5`}>{t('cb_context_ph')}</p>
         <textarea
           value={context}
           onChange={e => setContext(e.target.value)}
           placeholder={t('cb_context_ph')}
-          rows={2}
+          rows={3}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`}
         />
       </div>
@@ -482,7 +483,6 @@ function CultureBriefing({ tool }) {
           </div>
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('cb_xref_layover_intro2')} <a href="/LayoverMaximizer" className={linkStyle}>✈️ {t('cb_layover')}</a> {t('cb_xref_layover_outro')}</p>}
       {!results && renderInput()}
       {results && renderResults()}
     </div>

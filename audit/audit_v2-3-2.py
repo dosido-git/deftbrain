@@ -1017,7 +1017,10 @@ for name, fpath in tools:
     # Crowd Wisdom joined them on 2026-08-24: its pre-result link offered to
     # stress-test the belief first, which asks a visitor holding one question
     # to go and answer a different one. Post-result refs kept and enforced.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom')
+    # Culture Briefing joined on 2026-08-25: its pre-form link offered Layover
+    # Maximizer, which is unrelated for most people asking about etiquette and
+    # sat above the form. Post-result refs kept and still enforced.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom', 'CultureBriefing')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')

@@ -140,3 +140,31 @@ failure: "Nigerians may arrive late without apology", the stereotype restated
 as a plain trait after being banned from the tips. That prompted a rule
 banning national and ethnic trait claims in **every** field, and it cleared.
 Nothing here is a guarantee; the guard is a second reader, not a filter.
+
+## Form adjustments — 2026-08-25
+
+Three changes, no redesign. Destination, Trip Purpose, Duration and Home
+Country untouched as concepts; Recent Briefings left where it is.
+
+- **"Region or city" → "Region, state, or city."** The destination field
+  already takes a country or a city, so the narrower second label read as a
+  contradiction.
+- **"Anything specific?" → "Anything we should know? (optional)"**, with the
+  hint promoted from placeholder-only to a visible line above the box, and the
+  box grown from 2 rows to 3. The rewritten output makes real use of this field
+  — dietary and religious needs, accessibility, who they are meeting — and a
+  thin grey placeholder inside an empty two-line box never said so.
+- **Pre-form Layover Maximizer cross-ref removed.** "Planning your route?" sat
+  above the form, interrupting the path to the primary action, and a layover is
+  unrelated to most people asking about etiquette. The post-result related-tools
+  block still links there.
+
+S5.5 requires a pre-result cross-ref, so CultureBriefing joins `_pre_exempt` —
+the narrow list, alongside ColdOpenCraft, ComebackCooker, ConflictCoach,
+CaptionMagic and CrowdWisdom. **Not** `NO_CROSSREF`, which exempts both ends
+and would have stopped enforcing the post-result links that stay. Verified the
+rule still fires on the same file under a non-exempt name.
+
+Home country is worth more now than it was: with the schema separating strong
+conventions from variable practice, the output can explain a difference between
+two places without flattening either into a single character.
