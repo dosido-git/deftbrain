@@ -61,3 +61,52 @@ example in the header, Start over, and the Decide For Me button.
 Verified end to end: question typed → submit enabled → answer returned with
 the important-decision disclaimer intact → both cross-refs appear only at that
 point. Golden 5/5.
+
+## Grounding leaks — 2026-08-25 (`decision-coach-v2`)
+
+**Owner asked whether three things were supplied. Traced the payload: no.**
+
+The route receives `decisionNeeded`, `category`, `preferences` (the constraint
+pills plus the free-text box), `capacityLevel`, `rejectedChoices`, and
+`recentDecisions` — which is `sessionHistory.slice(0,5).map(h => h.choice)`.
+Bare choice strings. No dates, no times of day, no frequency.
+
+| Claim | Verdict |
+| --- | --- |
+| "You have every ingredient already" | **Fabricated.** There is no pantry, fridge or cupboard field anywhere in the payload. |
+| "your last three nights" | **Inflated.** It had a list of previous *choices* with no dates attached, and turned it into a record of nights. "Three" was invented precision on top. |
+| The ruled-out alternatives | **Model's own.** `alternatives_eliminated` is generated, not supplied. Presenting them as ruled out implies the visitor had them in hand. Only `rejectedChoices` is real. |
+
+**The narrow rule**, owner's wording, as a shared `GROUNDING_RULE` constant
+applied to the seven endpoints that make or execute a choice — one text rather
+than a rule drifting between ten prompts:
+
+> When explaining or executing a decision, never convert an assumed resource,
+> possession, ingredient, past behaviour, preference, constraint or future
+> reaction into a supplied fact. Optional additions must be explicitly
+> conditional.
+
+**`no_second_guessing` was asking for the leak.** It requested a "firm,
+encouraging message", and encouragement is what produced "Future you will be
+pleased". Now: emphatic, closing on the supplied constraints, pointing at the
+first action, never a claim about how they will feel. Live: *"Decision is
+closed. Garlic butter pasta tonight. It takes under 20 minutes and needs no
+plan. Go put the water on."*
+
+**One over-correction, caught and fixed.** The first pass produced "Add shrimp
+(if you have it, fresh or thawed)" — the tool hedging the dish it had just
+chosen, which hands the decision back and is the failure mode the owner named
+from Crowd Wisdom. The rule is about *additions*: the chosen thing is the
+decision, not an assumption to qualify. Both the prompt and the guard framing
+now say so. Second pass commits to the pasta and conditionalises only the
+butter, oil and parmesan.
+
+Adopted **v2** (not among the 47 frozen). The guard leaves decisiveness alone —
+choosing firmly, and choosing something the visitor never named, is the product
+— and covers five things: assumed possession, unsupplied resource stated
+unconditionally, past behaviour invented from the choice list, an alternative
+attributed to the visitor, and a predicted future reaction. It fires: 6 fields
+on the reproduction run, including `past_behaviour_invented_from_history` twice
+inside `alternatives_eliminated`.
+
+Golden 5/5.

@@ -3,6 +3,7 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 // ════════════════════════════════════════════════════════════
 // DECISION COACH v3 — Backend
 // v1: decide
@@ -19,6 +20,66 @@ const CAPACITY = {
 };
 
 // ── v1: Main decide ──
+// Everything the route was given, so the guard can tell a supplied constraint
+// from an invented one. RECENT DECISIONS is spelled out because that is the
+// field the model kept inflating into "your last three nights".
+function suppliedFrom(body) {
+  const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices } = body;
+  return `WHAT THE VISITOR SUPPLIED, IN FULL:
+The decision: ${decisionNeeded || '(none)'}
+${category ? `Category: ${category}` : 'No category.'}
+${preferences ? `Constraints and preferences they typed: ${preferences}` : 'They gave NO constraints or preferences.'}
+${capacityLevel ? `Capacity they selected: ${capacityLevel}` : ''}
+${recentDecisions?.length ? `Their previous CHOICES, as bare strings with no dates, no times of day and no frequency: ${recentDecisions.join(', ')}` : 'No previous choices on record.'}
+${rejectedChoices?.length ? `Answers they already rejected: ${rejectedChoices.join(', ')}` : ''}
+
+THAT IS THE WHOLE OF IT. There is no pantry, no fridge, no cupboard, no calendar, no record of what they ate or did on any night, no budget, no household, no schedule.
+
+WHAT THIS TOOL IS. It commits to ONE answer and tells them how to start. Being decisive is the product — do NOT flag an answer for being firm, for choosing without hedging, or for recommending something the visitor did not name. Choosing is the job.
+
+WHAT FAILS — the one rule: an assumed resource, possession, ingredient, past behaviour, preference, constraint or future reaction written as a supplied fact.
+1. 'You have every ingredient already', 'you already own one' — possessions they never mentioned. A step needing an INCIDENTAL extra must be conditional: 'if you have soy sauce'. NOTE: the chosen thing itself is the decision, not an assumption — a step may name it outright. Do not flag 'cook the shrimp' in an answer whose choice is shrimp; that is the tool committing, which is what it is for.
+2. 'Your last three nights', 'you have had pasta twice this week' — a record inflated out of a bare list of previous choices.
+3. Alternatives written as though the visitor proposed them or had them available.
+4. 'Future you will be pleased', 'you will not regret this' — a satisfaction that has not happened.`;
+}
+
+async function guardResult(parsed, body, label) {
+  const fields = [];
+  const walk = (val, path) => {
+    if (typeof val === 'string' && val.trim().length > 15) fields.push([path, val]);
+    else if (Array.isArray(val)) val.forEach((v, i) => walk(v, `${path}[${i}]`));
+    else if (val && typeof val === 'object') Object.entries(val).forEach(([k, v]) => walk(v, path ? `${path}.${k}` : k));
+  };
+  walk(parsed, '');
+  await runOutputGuard(parsed, {
+    label,
+    fields,
+    supplied: suppliedFrom(body),
+    promise: 'One specific decision, briefly justified against the constraints the visitor gave, with concrete steps to start it now.',
+    guard: router.outputGuard,
+    userLanguage: body.userLanguage,
+    locale: withLocaleContext(body.userLocale, body.userCurrency, body.userRegion),
+  });
+  return parsed;
+}
+
+// The one grounding rule (owner, 2026-08-25). Everything this route knows
+// arrives in the payload: the question, constraints/preferences, a capacity
+// level, and up to five PREVIOUS CHOICE STRINGS. There is no pantry, no
+// calendar, no record of nights. A stir-fry answer that said "you have every
+// ingredient already" and "your last three nights" had invented both.
+const GROUNDING_RULE = `GROUNDING — THE ONE RULE:
+When explaining or executing a decision, never convert an assumed resource, possession, ingredient, past behaviour, preference, constraint or future reaction into a supplied fact. Optional additions must be explicitly conditional.
+
+In practice:
+- You do NOT know what they own or have in the house. Never write 'you have every ingredient already', 'you already own one', 'it is in your cupboard'. If a step needs something that was not supplied, mark it conditional: 'if you have soy sauce', 'assuming you have oil — otherwise dry-fry it'.
+- RECENT DECISIONS is a list of previous choices and nothing else. It carries no dates, no nights, no frequency. 'Your last three nights', 'you have had pasta twice this week', 'you always pick the easy option' all invent a record you were not given.
+- Alternatives you eliminate are your own reasoning, not things they were considering. Say why one loses against the supplied constraints; never imply they proposed it or had it to hand.
+- Never predict how they will feel afterwards. 'Future you will be pleased', 'you will not regret this', 'you will thank yourself' claim a satisfaction that has not happened.
+- Being decisive requires none of this. A firm answer grounded only in what they typed is more convincing than a warm one built on invented detail.
+- Do NOT hedge the decision itself. Choosing a dish means the main ingredient is part of the choice, not an assumption to qualify — 'garlic butter shrimp (if you have shrimp)' hands the decision back. Commit to the answer; make only the INCIDENTAL additions conditional: the oil, the acid, the garnish, the side.`;
+
 router.post('/decision-coach', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decisionNeeded, category, preferences, capacityLevel, recentDecisions, rejectedChoices, rejectionReason, userLanguage } = req.body;
@@ -38,12 +99,14 @@ ${rejectedChoices?.length > 0 ? `REJECTED (do NOT suggest these or similar): ${r
 ${rejectionReason ? `REASON FOR LAST REJECTION: "${rejectionReason}" — factor this heavily into your new suggestion.` : ''}
 IMPORTANT: New answer must be CLEARLY DIFFERENT — not a variation.` : ''}
 
+${GROUNDING_RULE}
+
 YOUR APPROACH:
 1. Consider ALL constraints
 2. Pick ONE SPECIFIC answer (not "pasta" but "spaghetti carbonara")
 3. Give 2-4 concrete execution steps (what to do RIGHT NOW)
 4. Explain why you eliminated alternatives
-5. Add a "no second-guessing" message — encouraging but firm
+5. Add a "no second-guessing" message — emphatic and final, never a prediction about their future feelings
 
 TONE: Confident, warm, slightly playful. Like a friend who's great at decisions.
 
@@ -56,13 +119,14 @@ OUTPUT (JSON only):
     "why": "1-2 sentences why this is right",
     "alternatives_eliminated": ["Alt 1 — why it lost", "Alt 2 — why it lost", "Alt 3 — why it lost"]
   },
-  "execution_instructions": ["Step 1: ...", "Step 2: ...", "Step 3: ..."],
-  "no_second_guessing": "Firm, encouraging message to stop deliberating"
+  "execution_instructions": ["Step 1: ... — anything a step needs that was not supplied is named conditionally (if you have X), never assumed into their possession", "Step 2: ...", "Step 3: ..."],
+  "no_second_guessing": "Emphatic, not predictive. Close the loop on the supplied constraints and point at the first action. Model: 'You are done deciding. Stir-fry tonight is the call. It fits the constraints you gave us. Go start the rice.' Never a claim about how they will feel later."
 }
 
 CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 
-    res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' }));
+    const parsed = await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach1' });
+    res.json(await guardResult(parsed, req.body, 'DecisionCoach1'));
   } catch (e) { console.error('DecisionCoach decide:', e); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -91,6 +155,9 @@ For each option, evaluate:
 - Hidden downsides
 
 Then PICK ONE WINNER. Be confident.
+
+
+${GROUNDING_RULE}
 
 OUTPUT (JSON only):
 {
@@ -138,6 +205,9 @@ Rules:
 - Maximum 2 execution steps
 - Assume lowest possible effort tolerance
 - Surprise them — don't be predictable
+
+
+${GROUNDING_RULE}
 
 OUTPUT (JSON only):
 {
@@ -241,6 +311,9 @@ YOUR APPROACH:
 4. If perfect consensus is impossible, say who compromises and why it's fair
 
 TONE: Diplomatic but decisive. You're the friend who ends the 30-minute restaurant debate.
+
+
+${GROUNDING_RULE}
 
 OUTPUT (JSON only):
 {
@@ -425,6 +498,9 @@ Be honest. If their gut is actually wrong given their constraints, say so. If it
 
 The insight: "You already knew the answer. You just needed someone to say it's okay." — OR — "Your gut is leading you astray this time. Here's why."
 
+
+${GROUNDING_RULE}
+
 OUTPUT (JSON only):
 {
   "case_against": ["Reason 1 against their gut", "Reason 2", "Reason 3"],
@@ -463,6 +539,9 @@ Rules:
 - Mix it up: some easy, some slightly adventurous
 - 1 execution step each (keep it fast)
 - Label each for the day (Day 1, Day 2, etc.)
+
+
+${GROUNDING_RULE}
 
 OUTPUT (JSON only):
 {
@@ -507,6 +586,9 @@ Your job:
 
 This eliminates cascading paralysis — solve it all at once.
 
+
+${GROUNDING_RULE}
+
 OUTPUT (JSON only):
 {
   "primary": {
@@ -531,5 +613,24 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
     res.json(await callClaudeWithRetry({ model: MODELS.SMART, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }, { label: 'DecisionCoach10' }));
   } catch (e) { console.error('DecisionCoach chain:', e); res.status(500).json({ error: 'Decision chain failed' }); }
 });
+
+router.outputStandard = 'v2';
+// decision-coach-v2. Reviewed 2026-08-25. Deciding firmly is the product and
+// is not guarded. The guard covers one thing: an assumption written as a fact
+// the visitor supplied.
+router.outputGuard = {
+  prohibit: [
+    'assumed_possession_stated_as_fact',      // 'you have every ingredient already'
+    'unsupplied_ingredient_or_resource',      // a step needing something never mentioned, unconditionally
+    'past_behaviour_invented_from_history',   // 'your last three nights' from a bare list of choices
+    'alternative_attributed_to_the_visitor',
+    'predicted_future_reaction',              // 'future you will be pleased'
+  ],
+  require: [
+    'one_specific_answer',
+    'reasoning_traceable_to_supplied_constraints',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
