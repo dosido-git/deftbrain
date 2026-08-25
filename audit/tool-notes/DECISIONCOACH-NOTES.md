@@ -336,3 +336,41 @@ birthday run no longer manufactures a question at all.
 
 Still open, and the owner's own next step: cases where a follow-up genuinely
 flips the answer have not been tested end to end.
+
+## Related guides — 2026-08-25
+
+Owner: "How to decide what to eat when nothing sounds good" led the Related
+guides block and made an all-purpose decision tool read as a meal planner.
+
+**It was an ordering problem, not a content gap.** Three broad guides were
+already attached and already rendering — gut-vs-logic, not-enough-information,
+commit-by-deadline. Both consumers (`RelatedLinks.js` and `prerender.js`) take
+`guides.filter(toolId).slice(0, 4)` in manifest order, and the manifest is
+sorted by category then slug, so `how-to-decide-what-to-eat…` won on the letter
+*e*.
+
+**Added "How to Choose Between Two Good Options."** Its spec already declared
+`toolId: 'DecisionCoach'` and its HTML already existed and served 200 — it was
+simply absent from the manifest, so nothing linked to it. Adding it puts a
+general decision guide first by the same alphabetical rule that had put the
+meal one there, which fixes the impression without hand-mapping an order the
+code deliberately avoids.
+
+Rendered order now: Choose Between Two Good Options · what to eat · Gut and
+Logic Disagree · Don't Have Enough Information.
+
+**Two things worth knowing.**
+
+The cap is 4, so Decision Coach's fifth guide (commit-by-deadline) now falls
+outside it. Seven tools were already over that cap before this change —
+MeetingBSDetector at 6, five others at 5 — so the truncation is existing
+behaviour, not something this introduced. Left alone rather than changing the
+block for seven tools to serve one.
+
+`guides-manifest.json` is out of sync with `guides/keep-list.json`: the
+manifest carries 171 entries on the July-3 vintage, the keep-list 112 after the
+July-14 tightening. Several guides that render today, including the meal one,
+are not in the keep-list. The consolidated-guide 301s were retired on
+2026-07-31, so every one of them serves 200 and nothing is broken — but the two
+files disagree about what the guide set is, and I could not find the script
+that generates the manifest.

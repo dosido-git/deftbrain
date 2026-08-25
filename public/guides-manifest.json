@@ -367,6 +367,13 @@
       "toolName": "Debate Me"
     },
     {
+      "slug": "how-to-choose-between-two-good-options",
+      "category": "decisions",
+      "title": "How to Choose Between Two Good Options",
+      "toolId": "DecisionCoach",
+      "toolName": "Decision Coach"
+    },
+    {
       "slug": "how-to-decide-what-to-eat-when-nothing-sounds-good",
       "category": "decisions",
       "title": "How to decide what to eat when nothing sounds good",
@@ -521,20 +528,6 @@
       "toolName": "Tip of Tongue"
     },
     {
-      "slug": "whats-that-movie-where-something-happens",
-      "category": "learning",
-      "title": "How to Find That Movie Where Something Specific Happened",
-      "toolId": "TipOfTongue",
-      "toolName": "Tip of Tongue"
-    },
-    {
-      "slug": "whats-that-song-with-a-specific-vibe",
-      "category": "learning",
-      "title": "How to Find That Song You Half-Remember",
-      "toolId": "TipOfTongue",
-      "toolName": "Tip of Tongue"
-    },
-    {
       "slug": "how-to-learn-when-youve-fallen-behind-in-class",
       "category": "learning",
       "title": "How to Learn a Subject When You Have Fallen Behind",
@@ -547,6 +540,20 @@
       "title": "How to Understand a Hard Concept When Explanations Do Not Click",
       "toolId": "TheGap",
       "toolName": "The Gap"
+    },
+    {
+      "slug": "whats-that-movie-where-something-happens",
+      "category": "learning",
+      "title": "How to Find That Movie Where Something Specific Happened",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
+    },
+    {
+      "slug": "whats-that-song-with-a-specific-vibe",
+      "category": "learning",
+      "title": "How to Find That Song You Half-Remember",
+      "toolId": "TipOfTongue",
+      "toolName": "Tip of Tongue"
     },
     {
       "slug": "how-to-ask-if-a-meeting-can-be-canceled",
@@ -747,7 +754,7 @@
     {
       "slug": "do-dogs-just-vomit-sometimes",
       "category": "pets",
-      "title": "Do Dogs Just Vomit Sometimes? Yes \u2014 But Here's When It Matters",
+      "title": "Do Dogs Just Vomit Sometimes? Yes — But Here's When It Matters",
       "toolId": "PetWeirdnessDecoder",
       "toolName": "Pet Weirdness Decoder"
     },
@@ -1025,13 +1032,6 @@
       "toolName": "Brain State Deejay"
     },
     {
-      "slug": "what-to-do-when-youre-panicking-right-before-an-event",
-      "category": "wellness",
-      "title": "What to Do When You Are Panicking Right Before the Event",
-      "toolId": "NerveCheck",
-      "toolName": "Nerve Check"
-    },
-    {
       "slug": "what-to-do-when-you-have-too-much-to-do-and-you-freeze",
       "category": "wellness",
       "title": "What to Do When You Have Too Much to Do and You Freeze",
@@ -1044,6 +1044,13 @@
       "title": "What to do when your to-do list is too long to even look at",
       "toolId": "TaskAvalancheBreaker",
       "toolName": "Task Avalanche Breaker"
+    },
+    {
+      "slug": "what-to-do-when-youre-panicking-right-before-an-event",
+      "category": "wellness",
+      "title": "What to Do When You Are Panicking Right Before the Event",
+      "toolId": "NerveCheck",
+      "toolName": "Nerve Check"
     },
     {
       "slug": "whats-the-difference-between-jealousy-and-envy",
@@ -1127,7 +1134,7 @@
       "category": "workplace",
       "title": "How to see the real structure of a complex document",
       "toolId": "PlainTalk",
-      "toolName": "PlainTalk \u2014 Document Analyst"
+      "toolName": "PlainTalk — Document Analyst"
     },
     {
       "slug": "how-to-spot-the-highest-leverage-thing-you-could-be-doing",
@@ -1193,5 +1200,5 @@
       "toolName": "Future Proof"
     }
   ],
-  "note": "Filtered to keep-list guides (2026-07 footprint prune) \u2014 RelatedLinks must not link consolidated (301) URLs."
+  "note": "Filtered to keep-list guides (2026-07 footprint prune) — RelatedLinks must not link consolidated (301) URLs."
 }
