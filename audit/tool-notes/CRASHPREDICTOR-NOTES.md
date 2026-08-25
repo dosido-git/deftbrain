@@ -140,3 +140,37 @@ everything. Worth adding if the owner wants it.
 Verified: fresh dashboard → hidden; Check-In view → appears; click → returns to
 dashboard and disappears; after saving → hidden again; History → Clear all
 present, confirm fires, log emptied, button gone.
+
+## Per-entry selection + the same-date note — 2026-08-24
+
+**Clear all → checkboxes + Clear checked.** Each History row is now a `<label>`
+wrapping a checkbox, so the whole row is the hit target. Selection is keyed by
+`date`, which identifies exactly one entry because `save()` dedupes on it.
+Clear checked only appears once something is checked, confirms before deleting,
+and drops `analysis`/`patterns` — both describe a history that no longer
+exists. `reset()` clears the selection too, so a stale one can't survive a
+Start over. No select-all: the owner replaced a blanket clear with deliberate
+selection, and adding one back would undo the point.
+
+Singular and plural confirms are separate strings. The first version read
+"Delete 1 selected check-in(s)?" — visible only by running it, which is why the
+live check happens before the commit and not after.
+
+**Same-date note.** "One check-in per day — saving again for the same date
+replaces the earlier one," at the top of Today's check-in.
+
+The note was very nearly untrue. `save()` filtered on the raw `entry.date`
+while stamping the new row with `entry.date || today()` — different values when
+the date is blank, which would have appended a second row for the same day
+instead of replacing. Resolved the date once into `stamp` and both the stamp
+and the filter now use it. Verified live: 3 entries in, save again for today,
+3 entries out, and today's values are the new ones.
+
+**Third wave of key-derived / attribute English** on the dashboard: the four
+metric-card labels (an array of literals), the two "keep going / compare"
+sentences (ternary operands), the button's loading and idle labels, and the
+marked-crash-days sentence (a template literal with inline pluralisation). All
+`t()` now. Gate 5 sees none of these shapes.
+
+Spanish spot-check clean — the only English left on the page is the `ENERGY`
+category chip, which is app chrome and English by design catalog-wide.

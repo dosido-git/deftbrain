@@ -129,6 +129,9 @@ export default function CrashPredictor() {
   const [analysis, setAnalysis] = useState(null);
   const [patterns, setPatterns] = useState(null);
   const [showMore, setShowMore] = useState(false);
+  // Checked rows in History, keyed by date — save() dedupes on date, so
+  // a date identifies exactly one entry.
+  const [checked, setChecked] = useState([]);
   const submitRef = useRef(null);
   const canSubmitRef = useRef(false);
 
@@ -155,7 +158,24 @@ export default function CrashPredictor() {
     setEntry({ ...EMPTY_ENTRY, date: today() });
     setAnalysis(null);
     setPatterns(null);
+    setChecked([]);
     setView('dashboard');
+  };
+
+  const toggleChecked = (date) => setChecked(prev =>
+    prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]);
+
+  const clearChecked = () => {
+    if (!checked.length) return;
+    const ask = checked.length === 1
+      ? t('cpv2_clear_checked_confirm_1')
+      : t('cpv2_clear_checked_confirm', { n: checked.length });
+    if (!window.confirm(ask)) return;
+    setLogs(prev => prev.filter(l => !checked.includes(l.date)));
+    setChecked([]);
+    // Both readings describe a history that no longer exists.
+    setAnalysis(null);
+    setPatterns(null);
   };
 
   const update = (key, value) => setEntry(prev => ({ ...prev, [key]: value }));
@@ -166,7 +186,8 @@ export default function CrashPredictor() {
 
   const save = () => {
     const summary = [`E${entry.energy}`, `S${entry.sleep}`, `St${entry.stress}`, `M${entry.mood}`].join(' · ');
-    const next = [{ ...entry, date: entry.date || today(), preview: entry.notes?.slice(0, 40) || summary }, ...logs.filter(l => l.date !== entry.date)]
+    const stamp = entry.date || today();
+    const next = [{ ...entry, date: stamp, preview: entry.notes?.slice(0, 40) || summary }, ...logs.filter(l => l.date !== stamp)]
       .sort((a, b) => String(b.date).localeCompare(String(a.date)));
     setLogs(next);
     setEntry({ ...EMPTY_ENTRY, date: today() });
@@ -228,10 +249,10 @@ export default function CrashPredictor() {
   };
 
   const metricRows = [
-    ['Energy', latest?.energy],
-    ['Sleep', latest?.sleep],
-    ['Stress', latest?.stress],
-    ['Mood', latest?.mood],
+    [t('cpv2_energy'), latest?.energy],
+    [t('cpv2_sleep_label'), latest?.sleep],
+    [t('cpv2_stress_label'), latest?.stress],
+    [t('cpv2_mood_label'), latest?.mood],
   ];
 
   return (
@@ -362,14 +383,14 @@ export default function CrashPredictor() {
                   <>
                     <p className={c.textMuted}>
                       {logs.length < 2
-                        ? 'Keep checking in to start seeing patterns.'
-                        : 'Compare your recent check-ins for changes and possible patterns.'}
+                        ? t('cpv2_keep_going')
+                        : t('cpv2_compare_sub')}
                     </p>
                     <button
                       type="button" onClick={analyze} disabled={loading || logs.length < 2}
                       className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40"
                     >
-                      {loading ? 'Comparing…' : 'Compare my check-ins'}
+                      {loading ? t('cpv2_comparing') : t('cpv2_compare_cta')}
                     </button>
                   </>
                 )}
@@ -402,7 +423,7 @@ export default function CrashPredictor() {
                   ) : (
                     <>
                       <p className={c.textMuted}>
-                        {t('cpv2_longterm_sub')} {markedCrashCount ? `${markedCrashCount} day${markedCrashCount === 1 ? '' : 's'} marked as a crash can be compared with the days before them.` : ''}
+                        {t('cpv2_longterm_sub')}{markedCrashCount ? ' ' + (markedCrashCount === 1 ? t('cpv2_crash_days_1') : t('cpv2_crash_days_n', { n: markedCrashCount })) : ''}
                       </p>
                       <button type="button" onClick={analyzePatterns} disabled={loading} className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40">
                         {t('cpv2_longterm_cta')}
@@ -419,6 +440,7 @@ export default function CrashPredictor() {
       {view === 'checkin' && (
         <div className="space-y-4">
           <Section title={t('cpv2_today')}>
+            <p className={`text-xs -mt-1 mb-4 ${c.textMuted}`}>{t('cpv2_replace_note')}</p>
             <div className="space-y-4">
               <Metric label={t('cpv2_energy')} value={entry.energy} onChange={v => update('energy', v)} low={t('cpv2_energy_low')} high={t('cpv2_energy_high')} />
               <Metric label={t('cpv2_sleep_label')} value={entry.sleep} onChange={v => update('sleep', v)} low={t('cpv2_sleep_low')} high={t('cpv2_sleep_high')} />
@@ -508,22 +530,33 @@ export default function CrashPredictor() {
           ) : (
             <div className="space-y-2">
               {logs.map((log, i) => (
-                <div key={`${log.date}-${i}`} className={`${c.cardAlt} rounded-lg p-3`}>
-                  <div className="flex items-center justify-between gap-3">
-                    <strong>{log.date}</strong>
-                    {log.crashDay && <span className="text-xs font-semibold">{t('cpv2_marked_short')}</span>}
-                  </div>
-                  <div className={`text-sm mt-1 ${c.textMuted}`}>
-                    {t('cpv2_energy')} {log.energy} {t('cpv2_sleep')} {log.sleep} {t('cpv2_stress')} {log.stress} {t('cpv2_mood')} {log.mood}
-                  </div>
-                  {log.notes && <p className="text-sm mt-2">{log.notes}</p>}
-                </div>
+                <label key={`${log.date}-${i}`} className={`${c.cardAlt} rounded-lg p-3 flex items-start gap-3 cursor-pointer`}>
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-5 w-5 shrink-0"
+                    checked={checked.includes(log.date)}
+                    onChange={() => toggleChecked(log.date)}
+                    aria-label={t('cpv2_select_row', { date: log.date })}
+                  />
+                  <span className="flex-1 min-w-0">
+                    <span className="flex items-center justify-between gap-3">
+                      <strong>{log.date}</strong>
+                      {log.crashDay && <span className="text-xs font-semibold">{t('cpv2_marked_short')}</span>}
+                    </span>
+                    <span className={`block text-sm mt-1 ${c.textMuted}`}>
+                      {t('cpv2_energy')} {log.energy} {t('cpv2_sleep')} {log.sleep} {t('cpv2_stress')} {log.stress} {t('cpv2_mood')} {log.mood}
+                    </span>
+                    {log.notes && <span className="block text-sm mt-2">{log.notes}</span>}
+                  </span>
+                </label>
               ))}
-              <button
-                type="button"
-                onClick={() => { if (window.confirm(t('cpv2_clear_confirm'))) { setLogs([]); setAnalysis(null); setPatterns(null); } }}
-                className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} ${c.deleteHover} py-1.5 rounded-lg`}
-              >{t('cpv2_clear_all')}</button>
+              {checked.length > 0 && (
+                <button
+                  type="button"
+                  onClick={clearChecked}
+                  className={`w-full mt-1 text-center text-xs font-semibold ${c.btnSecondary} ${c.deleteHover} py-1.5 rounded-lg`}
+                >{t('cpv2_clear_checked')}</button>
+              )}
             </div>
           )}
         </Section>
