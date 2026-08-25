@@ -221,8 +221,17 @@ take that risk for text we already have verbatim.
 
 Shows only what is actually present: the question, what matters most, the
 constraint pills (translated labels), capacity, and anything already ruled out.
-Placed after the no-second-guessing card so the answer still leads, and
-appended to the copy-out so the basis travels with the decision.
+Placed directly under the decision card, before the steps — and appended to
+the copy-out so the basis travels with the decision.
+
+**First placement was wrong.** I put it after the no-second-guessing card,
+reasoning that the answer should lead. That reasoning was right and the
+placement was not: it landed second-to-last, past the steps and the ruled-out
+list, at character 2,875 of 3,267. The owner asked "where is the summary?",
+which is the only review that matters — it was rendering perfectly and could
+not be found. The decision still leads either way, because it is the first
+thing on the page; "based on what?" is a question the reader has while the
+answer is still in front of them, so that is where it belongs.
 
 ### A label collision worth knowing about
 

@@ -698,9 +698,6 @@ const DecisionCoach = ({ tool }) => {
             </div>
           )}
         </div>
-        {renderSteps(steps)}
-        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
-        {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
         {decisionBasis.length > 0 && (
           <div className={`p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
             <p className={`text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('dc_basis_title')}</p>
@@ -714,6 +711,9 @@ const DecisionCoach = ({ tool }) => {
             </dl>
           </div>
         )}
+        {renderSteps(steps)}
+        {alts.length > 0 && (<div className={`p-5 rounded-2xl border ${c.card}`}><h3 className={`text-sm font-bold mb-2 ${c.text}`}>{t('dc_ruled_out')}</h3>{alts.map((a, i) => <p key={i} className={`text-xs ${c.textSecondary}`}><span className="line-through opacity-60">{a}</span></p>)}</div>)}
+        {results?.no_second_guessing && (<div className={`p-5 rounded-2xl border ${c.warning}`}><p className={`text-sm font-bold ${c.warnTitle} mb-1`}>{t('dc_no_second')}</p><p className={`text-sm ${c.warnText}`}>{results?.no_second_guessing}</p></div>)}
 
         {showRejectionPicker ? (
           <div className={`p-4 rounded-2xl border ${c.card}`}>
