@@ -277,7 +277,8 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/patterns', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { history, userLanguage } = req.body;
+    const { userLanguage } = req.body;
+    const history = req.body.history || req.body.sessionHistory;
     const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 past decisions' });
 
@@ -442,7 +443,8 @@ CRITICAL: Return ONLY valid JSON. ${NO_QUOTE_RULE}${lang}`;
 // ════════════════════════════════════════════════════════════
 router.post('/decision-coach/dna', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { history, learnedPreferences, userLanguage } = req.body;
+    const { learnedPreferences, userLanguage } = req.body;
+    const history = req.body.history || req.body.sessionHistory;
     const lang = withLanguage('', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
     if (!history?.length || history.length < 5) return res.status(400).json({ error: 'Need at least 5 decisions for DNA analysis' });
 

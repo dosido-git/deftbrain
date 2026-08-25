@@ -374,3 +374,43 @@ are not in the keep-list. The consolidated-guide 301s were retired on
 2026-07-31, so every one of them serves 200 and nothing is broken — but the two
 files disagree about what the guide set is, and I could not find the script
 that generates the manifest.
+
+## Decision DNA was 400-ing on every click — 2026-08-25
+
+`/decision-coach/dna` destructured `history` from the body. The frontend has
+always sent `sessionHistory`. So `history` was undefined, the length guard
+returned **400 "Need at least 5 decisions for DNA analysis"** whatever the
+visitor had, and the catch showed "Something went wrong — please try again".
+
+**`/patterns` had exactly the same mismatch**, so both were dead, not just the
+one that was reported.
+
+Both now read `req.body.history || req.body.sessionHistory` rather than
+renaming one side and trusting the other never drifts back. This is a repeat
+offender in this catalog — FocusPocus's `/patterns` had the identical bug in
+July, and it is in the notes as "dead-param sessionHistory-vs-history (accept
+both)".
+
+Proved by calling each endpoint under both key names: 400/200 before, 200/200
+after, then clicked Build DNA in the browser and got a rendered profile with no
+error.
+
+### Worth a decision: DNA is still doing what you thought was removed
+
+While fixing the crash I read the prompt. It opens:
+
+> "You are a behavioral psychologist building a deep Decision DNA profile. Go
+> far beyond surface patterns — identify the PSYCHOLOGICAL architecture of how
+> this person decides."
+
+and returns `archetype`, `stated_vs_real`, `domain_velocity`. When the tabs were
+reorganised the reasoning was "since we eliminated Decision DNA and
+psychological profiling, Insights may no longer deserve a top-level tab" — but
+nothing has removed it. It was only demoted into History, and until today it
+had been failing silently, which is presumably why nobody noticed it was still
+there.
+
+So the feature now works and profiles the visitor, which is the opposite of the
+intent. Three options, none of them mine to pick: delete DNA outright, keep it
+and rewrite it to report factual recurrence like `/patterns` does, or leave it
+as an explicitly opt-in curiosity. Flagged rather than acted on.
