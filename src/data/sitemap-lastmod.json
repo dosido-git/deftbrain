@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "ac60694ecec3f202290cff5d49c7d9b727bd70a7",
-  "lastmod": "2026-08-23"
+  "hash": "ac045f79f579dee7c2644fd610e1511b2cd166c1",
+  "lastmod": "2026-08-25"
  },
  "static:about": {
   "hash": "721c743af61d8a6426b9b918e64cff5f1f8b8d73",
@@ -156,8 +156,8 @@
   "lastmod": "2026-08-23"
  },
  "tool:WhichLife": {
-  "hash": "f3d264df517bb67808bb5b59f41929587ec668fa",
-  "lastmod": "2026-08-23"
+  "hash": "797ce3d7e28e02e536eae0610420d4b29d71eb7c",
+  "lastmod": "2026-08-25"
  },
  "tool:WrongAnswersOnly": {
   "hash": "302cafb76d9b78579e05bbae915e3e760fce3fa5",

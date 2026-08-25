@@ -1,4 +1,39 @@
 export const toolFinderMetadata = {
+  ContractDecoder: {
+    problems: [
+      "I have a contract and do not understand what some of the clauses actually mean",
+      "I want to know which terms deserve attention before I sign or renew",
+      "I need plain-English questions to ask about gaps, vague language, or missing details in an agreement",
+      "I want possible language for raising or negotiating a contract point without pretending the tool can make the legal decision for me",
+    ],
+    capabilities: [
+      "reads pasted contract text or an uploaded contract file and produces a plain-English overview",
+      "identifies important terms and anchors each explanation to quoted contract language",
+      "describes the apparent practical effect of contract wording without presenting enforceability or legal outcomes as established facts",
+      "surfaces document-specific ambiguities and missing details as questions to clarify",
+      "offers optional negotiation asks when a term presents a concrete point the user may want to discuss",
+      "finishes with a concise before-you-sign checklist derived from the supplied agreement",
+    ],
+    accepts: [
+      "contract text or an uploaded contract file",
+      "optional governing country and state/province, if known",
+      "optional situation or concern that should shape the explanation",
+    ],
+    notFor: [
+      "giving a definitive legal opinion on whether a clause is enforceable, valid, fair, or illegal",
+      "predicting what a court, regulator, landlord, employer, client, or other party will do",
+      "assigning overall contract risk scores or red-flag ratings",
+      "reviewing a residential lease when the user wants the lease-specific workflow and protections covered by Lease Trap Detector",
+    ],
+    handoffs: [
+      { when: "the document is a residential lease and the user wants a lease-specific review rather than a general contract explanation", toolId: "LeaseTrapDetector" },
+      { when: "the user understands the term but wants help planning how to negotiate leverage around it", toolId: "LeverageLogic" },
+    ],
+    primaryIntent: "understand the important terms, practical implications, open questions, and possible negotiation points in a specific contract before signing or renewing",
+    whenToRecommend: "Recommend when the user has an actual contract, agreement, NDA, subscription terms, employment or freelance agreement, purchase agreement, service agreement, or similar document and wants a grounded plain-English review.",
+    whenNotToRecommend: "Do not recommend when the user wants a definitive legal ruling, enforceability opinion, litigation prediction, or an overall risk score rather than an explanation of the supplied document.",
+  },
+
   AlternatePath: {
     problems: [
       "I wonder what would have happened if a historical event had gone differently",
@@ -367,6 +402,36 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user wants curiosity, discovery, or an unexpected connection among interests rather than an answer to a predetermined question.",
     whenNotToRecommend: "Do not recommend for belief stress-testing, personal-life connection chains, or straightforward single-topic research.",
   },
+  BrainStateDeejay: {
+    problems: [
+      "I need music that helps me move from how I feel now to the state I need",
+      "I am scattered or foggy and want something to listen to while I work or study",
+      "I want a listening approach for winding down, getting energized, focusing, creating, or feeling more grounded",
+    ],
+    capabilities: [
+      "builds a phased listening plan from the user's current state toward a desired state",
+      "describes the sound profile to try in each phase rather than pretending to create a transferable playlist",
+      "opens phase-specific searches in Spotify, Apple Music, YouTube Music, Tidal, or SoundCloud",
+      "adapts the plan to a supplied task, genre preferences, and listening sensitivities",
+    ],
+    accepts: [
+      "current state and desired state",
+      "optional task such as writing, studying, exercise, chores, or unwinding",
+      "optional genre preferences and listening sensitivities",
+    ],
+    notFor: [
+      "diagnosing or treating a mental-health or sleep condition",
+      "creating or saving a playlist inside a music service",
+      "identifying a song the user cannot remember",
+    ],
+    handoffs: [
+      { when: "the user is trying to identify a song, artist, lyric fragment, or other half-remembered thing rather than choose music for a state transition", toolId: "TipOfTongue" },
+      { when: "the user's main problem is allocating work around changing energy rather than choosing what to listen to", toolId: "PEP" },
+    ],
+    primaryIntent: "choose a phased music-listening approach for moving from a current mental or energy state toward a desired one",
+    whenToRecommend: "Recommend when the user wants music or a listening strategy for focus, calming down, energizing, creating, unwinding, or another state transition.",
+    whenNotToRecommend: "Do not recommend as treatment for a health condition, when the user expects DeftBrain to create a real playlist inside a music service, or when the task is identifying forgotten media.",
+  },
   BuyWise: {
     problems: [
       "I am considering a purchase and do not know whether it is worth it",
@@ -404,6 +469,36 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user is close enough to a purchase to name the item, price, or competing options and wants a decision rather than general shopping inspiration.",
     whenNotToRecommend: "Do not recommend for markup explanation alone, bill disputes, gift ideation before a product is chosen, or quote analysis where no retail purchase decision is involved.",
   },
+  CaptionMagic: {
+    problems: [
+      "I have a photo but cannot think of a caption",
+      "I want captions that are funnier, drier, warmer, weirder, or less obvious",
+      "I need several caption ideas for a social-media post",
+    ],
+    capabilities: [
+      "generates six distinct caption options from an uploaded image or image description",
+      "uses user-supplied context about people, relationships, events, or inside jokes that the image cannot show",
+      "can generate a new batch that is funnier, warmer, drier, more unhinged, or surprising",
+      "can refine a chosen caption, adapt it for other platforms, and provide alt text",
+    ],
+    accepts: [
+      "an uploaded photo or a description of the image",
+      "optional context the image cannot show",
+      "anything the captions should avoid mentioning",
+      "platform and preferred caption length",
+    ],
+    notFor: [
+      "editing or retouching the image itself",
+      "writing a social-media content calendar or campaign strategy",
+      "supplying factual backstory about real people or events that the user has not provided",
+    ],
+    handoffs: [
+      { when: "the user needs a first private message to someone they do not know rather than text for a public post", toolId: "ColdOpenCraft" },
+    ],
+    primaryIntent: "generate useful, clever, funny, or playful captions for a specific photo or social-media image",
+    whenToRecommend: "Recommend when the user has a photo or image in mind and wants several caption ideas, especially when they can add context the image alone cannot show.",
+    whenNotToRecommend: "Do not recommend for image editing, general social-media planning, or fabricating real-world backstory about the people or event in a photo.",
+  },
   ChaosPilot: {
     problems: [
       "My life feels stale even though nothing is obviously wrong",
@@ -431,6 +526,69 @@ export const toolFinderMetadata = {
     primaryIntent: "introduce one targeted, low-stakes disruption to a stagnant routine",
     whenToRecommend: "Recommend when the user says life is repetitive, stale, or stuck and wants a deliberate experiment rather than a full plan.",
     whenNotToRecommend: "Do not recommend for emergencies, task scheduling, waiting-mode, or mental-health care navigation.",
+  },
+  ColdOpenCraft: {
+    problems: [
+      "I need to message someone I do not know and do not want to sound like spam",
+      "I want to reach out to a recruiter, mentor, creator, expert, or potential collaborator",
+      "I know why I am contacting someone but cannot find a natural first message",
+    ],
+    capabilities: [
+      "writes three complete ready-to-send outreach messages that open in genuinely different ways",
+      "uses only the recipient facts, user background, and connection points the user supplies",
+      "adapts the message to email, LinkedIn, Twitter/X DM, Instagram DM, or text",
+      "provides a grounded follow-up message if the first outreach gets no reply",
+    ],
+    accepts: [
+      "who the user wants to contact",
+      "why the user is reaching out",
+      "the communication channel",
+      "optional facts the user knows about the recipient",
+      "optional relevant background about the user",
+    ],
+    notFor: [
+      "replying to an existing tense or difficult message",
+      "preparing for a serious conversation with someone the user already knows",
+      "mass cold-email campaigns or automated spam",
+    ],
+    handoffs: [
+      { when: "the user received a tense message and needs help responding", toolId: "ConflictCoach" },
+      { when: "the user needs to prepare for a difficult live conversation rather than make first contact", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "write a natural first outreach message to someone the user does not know or does not know well",
+    whenToRecommend: "Recommend when the user wants to make first contact with a specific person for networking, a job, mentorship, collaboration, a pitch, or another legitimate connection.",
+    whenNotToRecommend: "Do not recommend for replies to existing conflict, ongoing difficult conversations, mass outreach, or situations where the user wants the tool to invent a connection or credential.",
+  },
+  ComebackCooker: {
+    problems: [
+      "I thought of the perfect response hours too late",
+      "I keep replaying something rude, awkward, intrusive, or condescending that someone said",
+      "I want a witty, sharp, petty, surgical, or dignified comeback",
+    ],
+    capabilities: [
+      "generates five comeback options in the mood the user chooses",
+      "uses the situation, exact words, and relationship context the user supplies without inventing personal facts",
+      "includes a High Road response that may be more useful in real life",
+      "keeps an intentionally over-the-top Nuclear Option in a clearly cathartic fantasy drawer",
+    ],
+    accepts: [
+      "what happened",
+      "optional exact words the other person used",
+      "optional relationship or situational context",
+      "a comeback mood: Surgical, Witty, Petty, or Dignified",
+    ],
+    notFor: [
+      "analyzing another person's motives, personality, or psychology",
+      "planning harassment, threats, or retaliation",
+      "working through an active tense-message exchange where the main goal is de-escalation or boundary-setting",
+    ],
+    handoffs: [
+      { when: "the user has an active tense message and wants a grounded response that advances a real conversational goal", toolId: "ConflictCoach" },
+      { when: "the user needs to prepare for a difficult conversation rather than enjoy or choose a comeback", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "generate satisfying and sometimes useful comeback ideas for something someone already said",
+    whenToRecommend: "Recommend when the user is replaying a remark and wants clever response ideas, including playful or cathartic options.",
+    whenNotToRecommend: "Do not recommend when the primary need is conflict analysis, de-escalation, safety planning, or retaliation.",
   },
   ComplaintEscalationWriter: {
     problems: [
@@ -462,6 +620,40 @@ export const toolFinderMetadata = {
     primaryIntent: "escalate an unresolved consumer complaint through increasingly formal channels",
     whenToRecommend: "Recommend when the user has already complained to a company or provider and needs a structured escalation path.",
     whenNotToRecommend: "Do not recommend for first-step interpersonal conversations, general bill triage, or broad exception/appeal mapping where no complaint sequence exists yet.",
+  },
+  ConflictCoach: {
+    problems: [
+      "I received a tense message and do not know how to answer",
+      "I want to set a boundary without turning the exchange into a bigger fight",
+      "I want to acknowledge what someone said without agreeing with it",
+      "I want to step away from a text exchange or move the conversation off text",
+    ],
+    capabilities: [
+      "briefly identifies wording in the received message that materially affects how it can be answered",
+      "provides four complete ready-to-send response strategies tied to the user's selected goal",
+      "supports goals such as fixing the problem, setting a limit, stepping away, acknowledging without agreeing, or taking the conversation off text",
+      "lets the user adjust the tone of a response and continue with Follow-up Coaching after the other person replies",
+    ],
+    accepts: [
+      "the message the user received",
+      "the user's relationship to the sender",
+      "optional earlier conversation context",
+      "optional draft of what the user is tempted to say",
+      "one response goal",
+    ],
+    notFor: [
+      "detecting manipulation, gaslighting, contempt, or another person's hidden motives",
+      "diagnosing the sender's emotions, needs, personality, or intentions",
+      "predicting how the sender will react",
+      "generating a witty comeback when usefulness is secondary to catharsis",
+    ],
+    handoffs: [
+      { when: "the user mainly wants a clever or cathartic comeback to something that was said", toolId: "ComebackCooker" },
+      { when: "the user needs to prepare for a difficult conversation rather than answer a specific received message", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "help the user choose and draft a grounded response to a specific tense message",
+    whenToRecommend: "Recommend when the user has received a tense, sarcastic, confrontational, or difficult message and wants several grounded ways to respond toward a specific goal.",
+    whenNotToRecommend: "Do not recommend for psychological diagnosis, motive detection, prediction of the other person's reaction, general relationship counseling, or purely cathartic comeback generation.",
   },
   ContextCollapse: {
     problems: [
@@ -1361,36 +1553,186 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when an upcoming commitment is causing the user to feel unable to begin anything else or to keep checking the clock.",
     whenNotToRecommend: "Do not recommend for ordinary task scheduling, focus companionship, or live calendar/reminder management.",
   },
+
+
   WhichLife: {
     problems: [
-      "I am torn between two life paths and a pro-con list is not helping",
-      "I want to imagine what ordinary life might feel like under each option",
-      "I am deciding whether to stay or leave, move or stay, take one path or another",
+      "I am torn between two meaningful life paths and a pro-con list is not settling it",
+      "I want to imagine what ordinary life might feel like under each of two options",
+      "I keep circling a stay-or-leave, move-or-stay, career, relationship, or other two-path decision",
     ],
     capabilities: [
-      "creates two explicitly invented ordinary-day narratives based on the user’s two paths",
-      "uses stated priorities and tensions to ground the simulations",
-      "invites the user to notice reactions without treating the stories as predictions or advice",
+      "creates two explicitly imagined ordinary-day narratives from the paths the user supplies",
+      "uses the user's stated priorities, tensions, and uncertainties to keep the simulations relevant",
+      "keeps invented texture inside the simulations and grounds the interpretation afterward in user-supplied facts",
+      "highlights the tradeoff the user described, invites the user to notice their reaction, and ends with a grounded question to sit with",
     ],
     accepts: [
       "Path A",
       "Path B",
       "what matters in the decision",
-      "what makes the choice hard",
+      "what makes the choice difficult or uncertain",
       "a future time horizon",
+      "optional personal context that would make the imagined days more relevant",
     ],
     notFor: [
-      "factual prediction of what will happen",
-      "counterfactual history",
-      "ranked comparison of arbitrary products or known alternatives",
+      "predicting which future will actually occur",
+      "giving a definitive recommendation about which path to choose",
+      "historical counterfactuals",
+      "product comparison or other factual side-by-side research",
     ],
     handoffs: [
-      { when: "the user wants to change a real historical event and trace the alternate consequences", toolId: "AlternatePath" },
+      { when: "the user wants several strongly different viewpoints on the decision rather than two imagined futures", toolId: "CrowdWisdom" },
+      { when: "the user wants the decision run through structured frameworks rather than experiential simulation", toolId: "PlotTwist" },
+      { when: "the user wants a direct recommendation rather than a simulation", toolId: "DecisionCoach" },
+      { when: "the user wants to change a real historical event and trace an alternate timeline", toolId: "AlternatePath" },
     ],
-    primaryIntent: "help the user feel two personal future paths by imagining an ordinary day in each",
-    whenToRecommend: "Recommend when the user is weighing two meaningful personal life choices and wants experiential simulation rather than another pro-con list.",
-    whenNotToRecommend: "Do not recommend for factual forecasts, historical counterfactuals, or general product comparison.",
+    primaryIntent: "help the user feel the difference between two meaningful personal futures by imagining an ordinary day in each",
+    whenToRecommend: "Recommend when the user is choosing between two personal life paths and wants an experiential way to notice the tradeoffs and their own reaction.",
+    whenNotToRecommend: "Do not recommend for factual prediction, a request for one definitive answer, historical counterfactuals, or ordinary product comparison.",
   },
+
+  CrashPredictor: {
+    problems: [
+      "I keep hitting periods where my energy drops hard and I want to see what tends to happen beforehand",
+      "I want a lightweight daily record of energy, sleep, stress, mood, workload, and other signals",
+      "I have days when I hit a wall and want to compare those days with the check-ins that came before them",
+    ],
+    capabilities: [
+      "stores one user-reported check-in per day and builds a personal history over time",
+      "compares recent check-ins with the user's own prior entries rather than population thresholds",
+      "surfaces changes, repeated co-occurrences, and possible patterns while explicitly distinguishing thin evidence from repeated evidence",
+      "lets the user mark a day as a crash or hit-a-wall day using their own definition and compares preceding check-ins when enough history exists",
+      "can suggest one small reversible experiment and what to watch in later check-ins",
+      "supports longer-term pattern review after enough check-ins have accumulated",
+    ],
+    accepts: [
+      "daily energy, sleep, stress, and mood ratings",
+      "activities, physical or other noticed signals, and optional notes",
+      "an optional user-defined marker that the day was a crash or hit-a-wall day",
+      "optional details such as caffeine, alcohol, medication notes, HRV, resting heart rate, sleep hours, and steps",
+    ],
+    notFor: [
+      "diagnosing burnout, depression, anxiety, sleep disorders, or another medical or psychological condition",
+      "predicting whether or when a crash will happen or assigning crash probability, severity, or risk colors",
+      "interpreting biometrics using universal medical thresholds",
+      "providing an immediate energy boost or one-off motivation plan when there is no history to compare",
+    ],
+    handoffs: [
+      { when: "the user wants an immediate plan for managing today's available energy rather than longitudinal pattern tracking", toolId: "PEP" },
+      { when: "the user mainly needs live accountability or company while completing a task", toolId: "VirtualBodyDouble" },
+    ],
+    primaryIntent: "help the user learn their own recurring patterns by comparing daily self-reported check-ins over time",
+    whenToRecommend: "Recommend when the user wants to track energy, sleep, stress, mood, or other personal signals across days and learn what tends to coincide with lower-energy or self-marked hit-a-wall periods.",
+    whenNotToRecommend: "Do not recommend when the user is asking for a medical diagnosis, a burnout verdict, a crash forecast, biometric interpretation, or only an immediate one-time energy intervention.",
+  },
+
+  CrisisPrioritizer: {
+    problems: [
+      "Everything feels urgent and I do not know what to do first",
+      "I have more tasks than time and need a defensible order of attack",
+      "I know some deadlines or consequences but I am missing facts that could change the ranking",
+      "I need one concrete next action because a full plan is too much right now",
+    ],
+    capabilities: [
+      "turns a task list or messy brain dump into a grounded triage based on supplied deadlines, consequences, dependencies, and people waiting",
+      "sorts tasks into Do first, Do next, Can probably wait, and Need one fact without inventing missing urgency",
+      "uses available time and energy to test whether the proposed plan appears feasible without treating low energy as evidence of urgency",
+      "asks for the smallest missing fact that could materially change a task's position and can re-rank after the user supplies it",
+      "offers follow-up actions to split a task, build a schedule, draft a delegation handoff, re-triage after progress, plan a longer period, or reduce the result to one next action",
+    ],
+    accepts: [
+      "individual tasks or an unsorted brain dump",
+      "optional task details such as deadlines, consequences, dependencies, and who is waiting",
+      "optional available time and energy",
+      "optional context or constraints that could affect the order",
+    ],
+    notFor: [
+      "emergency-response instructions for a real medical, safety, legal, or other immediate emergency",
+      "diagnosing anxiety, burnout, avoidance, procrastination, or another psychological state",
+      "breaking one large project into tiny startable steps when prioritization is not the problem",
+      "grouping an already-prioritized day by cognitive mode to reduce context switching",
+    ],
+    handoffs: [
+      { when: "the user has a head full of mixed thoughts, worries, decisions, and tasks and needs the whole pile organized before prioritizing", toolId: "BrainDumpBuddy" },
+      { when: "one project feels too large to start and the user mainly needs micro-steps", toolId: "TaskAvalancheBreaker" },
+      { when: "the tasks are already known and the user wants them batched by cognitive mode into a lower-switching schedule", toolId: "BatchFlow" },
+    ],
+    primaryIntent: "put competing tasks into a defensible order using only the urgency evidence the user actually supplies",
+    whenToRecommend: "Recommend when several tasks are competing for attention and the user's main question is what deserves attention first, especially when deadlines, consequences, dependencies, or people waiting matter.",
+    whenNotToRecommend: "Do not recommend for true emergency response, psychological assessment, a single overwhelming project that only needs decomposition, or ordinary task batching after priorities are already clear.",
+  },
+
+  CrowdWisdom: {
+    problems: [
+      "I am stuck on a decision and want to hear several genuinely different ways of looking at it",
+      "I want to expose the blind spots in the way I am currently framing a choice",
+      "I want strong disagreement and perspective rather than one supposedly correct answer",
+    ],
+    capabilities: [
+      "puts the user's question in front of five deliberately different simulated lenses: Pragmatist, Risk-Taker, Did It and Regretted It, Didn't and Regretted It, and Contrarian",
+      "lets each lens argue its position forcefully without presenting the voice as a real person or fabricated testimony",
+      "surfaces what each perspective notices and what it may miss",
+      "draws out the central tension across the perspectives and offers an additional question the original framing may have overlooked",
+    ],
+    accepts: [
+      "one decision or question",
+      "optional context that makes the perspectives more specific",
+    ],
+    notFor: [
+      "real human testimonials, survey results, community consensus, or sourced public opinion",
+      "a definitive recommendation about what the user should choose",
+      "factual research about which option is objectively better",
+      "stress-testing a belief or rule rather than looking at a concrete choice",
+    ],
+    handoffs: [
+      { when: "the user wants one direct recommendation rather than deliberately conflicting perspectives", toolId: "DecisionCoach" },
+      { when: "the user wants the choice analyzed through structured decision frameworks", toolId: "PlotTwist" },
+      { when: "the user wants to pressure-test a belief or rule that is driving the choice", toolId: "BeliefStressTest" },
+      { when: "the user has exactly two personal paths and wants to imagine an ordinary future day inside each", toolId: "WhichLife" },
+    ],
+    primaryIntent: "help the user see a decision through several strongly different simulated perspectives so disagreement reveals tradeoffs and blind spots",
+    whenToRecommend: "Recommend when the user is stuck on a choice and would benefit from hearing multiple opinionated lenses rather than receiving one answer or another pro-con list.",
+    whenNotToRecommend: "Do not recommend when the user wants real people's opinions, sourced evidence, one definitive recommendation, or a formal stress test of a belief.",
+  },
+
+  CultureBriefing: {
+    problems: [
+      "I am traveling somewhere unfamiliar and want to avoid obvious etiquette mistakes",
+      "I need to know which cultural practices are widely observed and which vary by setting, region, or generation",
+      "I am traveling for business, family, study, remote work, tourism, or a move and want the briefing tailored to that context",
+      "I have dietary, religious, accessibility, family, or meeting-specific concerns that could affect how I navigate the destination",
+    ],
+    capabilities: [
+      "creates a destination-specific briefing across greetings, dining, dress, tipping and payment, business etiquette, gifts, religion and customs, getting around, safety and scams, and key phrases or attitude",
+      "separates widely observed practices from things best avoided and practices that vary by region, generation, company, relationship, or setting",
+      "tailors the briefing to trip purpose, home country, duration, region or city, and specific needs supplied by the traveler",
+      "provides practical tips plus small slips and higher-stakes missteps without claiming that an entire culture reacts uniformly",
+      "flags information that is worth checking locally rather than presenting changing or uncertain practical details as guaranteed fact",
+    ],
+    accepts: [
+      "destination country or city",
+      "optional region, state, or city",
+      "trip purpose such as tourism, business, family/social, moving/living, study/research, or remote work",
+      "optional trip duration",
+      "optional home country",
+      "optional specific needs, people being met, dietary or religious needs, accessibility needs, or travel-with-children context",
+    ],
+    notFor: [
+      "live visa, entry, legal, health, or government travel requirements",
+      "real-time safety advisories or guarantees that a destination or neighborhood is safe",
+      "building a sightseeing itinerary or deciding how to use a layover",
+      "pronouncing a specific foreign name, place, menu item, or phrase",
+    ],
+    handoffs: [
+      { when: "the user wants help pronouncing a specific name, place, food, brand, or foreign word", toolId: "PronounceItRight" },
+      { when: "the user wants to decide whether to leave the airport and build a safe layover itinerary", toolId: "LayoverMaximizer" },
+    ],
+    primaryIntent: "prepare a traveler for destination-specific cultural etiquette while clearly separating strong conventions from practices that vary or should be checked locally",
+    whenToRecommend: "Recommend when the user is preparing for interaction in another country or culture and wants practical etiquette guidance tailored to the destination and purpose of the trip.",
+    whenNotToRecommend: "Do not recommend for live entry requirements, real-time safety advisories, itinerary planning, or pronunciation-only questions.",
+  },
+
   WrongAnswersOnly: {
     problems: [
       "Give me a deliberately wrong answer to a real question",
