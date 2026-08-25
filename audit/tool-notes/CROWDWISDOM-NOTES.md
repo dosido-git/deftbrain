@@ -128,3 +128,42 @@ fields per voice-block, 28 for a full response, with only `archetype` and
 
 Live: cast canonical 3/3, guard PASS 3/3, no first-person testimony phrases,
 golden 2/2.
+
+## Overclaiming, second pass — 2026-08-25
+
+Owner's list, all backend except two labels:
+
+| | Was | Now |
+| --- | --- | --- |
+| Reframe label | "The deeper question:" — claims to know what lies underneath | "Another way to frame it:" |
+| Tension label | "The Real Tension" — *real* again implies privileged access | "The Central Tension" |
+| Did-It-and-Regretted-It | "The clients felt like a safety net until I realised…" | "The risk this lens watches for is the gap between…" |
+| Didn't-and-Regretted-It | profile claimed it "knows exactly what it cost" | "focuses on the possible cost of letting an opportunity pass, and how that cost shows up later rather than now" |
+| Contrarian | "your employer does not know yet what you might negotiate" | "worth asking: is there a version where you advise, invest a small amount, consult part-time…" |
+
+**Three of five voices were still commissioning a biography.** The earlier pass
+only reframed `profile` on voices 1 and 2 — voices 3, 4 and 5 still read "Who
+this person is". Each now describes a lens.
+
+**The rule was aimed at the wrong thing.** "No narrated events" let through
+"the clients felt like a safety net until I realised" — a remembered *feeling*
+carries no event, and it is every bit as fabricated. The rule is now the
+register itself: never the first person past tense, at all. Present and
+hypothetical — "the risk this lens watches for", "someone taking this step
+often finds". Guard term `first_person_past_tense`.
+
+The Contrarian's invention got its own rule: a perspective may raise an option,
+it may not assert a fact about a third party the visitor mentioned — an
+employer, a partner, a company. Ask, don't claim. Guard term
+`asserted_fact_about_a_third_party`.
+
+**An instruction leaked into the output.** I had written "A lens, not a life."
+into the `profile` field descriptions, and the model rendered it verbatim at
+the end of two profiles — the annotation-leak class this repo has hit
+repeatedly. Caught it on screen, not in the JSON. Moved to the rules block
+with an explicit "this is a rule for you, not a phrase for the output".
+
+Live, against a verified PID: canonical cast 2/2, no instruction leak, no
+first-person past, no third-party claims, guard PASS 2/2, golden 2/2. First
+attempt at this verification ran against a stale process (started PID ≠
+listening PID) and was rerun.

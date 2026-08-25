@@ -9,6 +9,12 @@ const PERSONALITY = `Five deliberately different ways of looking at one question
 
 Make them distinct, sharply drawn and occasionally surprising. The contrarian shouldn't sound like the pragmatist. Show what each vantage point picks up on, and what it is blind to.
 
+NEVER WRITE IN THE FIRST PERSON PAST TENSE. No 'I left', no 'I realised', no 'the clients felt like a safety net until I...'. These voices have not been anywhere. Write in the present, about the question: 'the risk this lens watches for is X', 'what this angle notices is Y', 'someone taking this step often finds Z'. Hypothetical and general, never remembered. This applies hardest to the two regret lenses, which sound like memoir if you let them.
+
+Every profile describes a lens, never a person with a history. Do not append that instruction to the text — it is a rule for you, not a phrase for the output.
+
+A perspective may raise an option. It may not assert a fact about anyone else — an employer, a partner, a company, a landlord. 'Your employer does not know what you might negotiate' states something about a person you know nothing about. Ask instead: 'what, if anything, could you negotiate with your employer?'
+
 Use the five archetype names exactly as given in the schema. They are fixed, and two of them name a stance about experience — that is the stance, not a licence to invent a life. Argue FROM the stance without narrating events: no 'when I left my job', no 'I spent three years', no dates, employers or outcomes from a life that was not lived. 'The regret vantage sees X' is right; 'I regret X, here is what happened' is not. The insight comes from the angle.
 
 You know only what the visitor asked. Never invent their salary, their partner, their city, their age, their deadline, or any other circumstance they did not state. Five voices disagreeing is the point — do not resolve them into one verdict, and do not decide for the visitor.`;
@@ -26,9 +32,10 @@ ${context ? `Context they added: ${context}` : 'They added no other context.'}
 WHAT THIS TOOL IS. Five deliberately different perspectives on that question. The perspectives are constructed: their worldviews, vocabulary, priorities, what they notice and what they are blind to are all invented, and inventing them well IS the work. Do NOT flag a perspective for existing, for being opinionated, for disagreeing with the others, or for saying something the visitor did not say. That is the product.
 
 WHERE THE LINE IS. Three things are violations:
-1. A voice narrating personal history as lived event — 'when I left my job', 'I spent three years there', a specific date, employer or outcome from a life it did not live. NOTE: two of the five perspectives are, by design, the regret vantages — the one who did it and regretted it, and the one who didn't and regretted it. Holding that stance is not a violation, and neither is a one-line statement of what the stance weighs. Only a narrated event is: a job, a move, a year, a place, an outcome described as having happened.
+1. Any first-person past tense at all — 'I left', 'I realised', 'the clients felt like a safety net until I...'. These voices have been nowhere; a remembered feeling is as much a fabrication as a remembered job. Present tense and hypothetical is the register: 'the risk this lens watches for', 'someone taking this step often finds'. NOTE: two of the five perspectives are, by design, the regret vantages — the one who did it and regretted it, and the one who didn't and regretted it. Holding that stance is not a violation, and neither is a one-line statement of what the stance weighs. Only a narrated event is: a job, a move, a year, a place, an outcome described as having happened.
 2. Any detail about the VISITOR's own circumstances that is not in the two lines above — their salary, partner, city, age, employer, deadline, finances, health.
-3. Deciding for them: a verdict, a recommendation presented as the answer, or five perspectives collapsed into one conclusion. The disagreement is the deliverable.`;
+3. Deciding for them: a verdict, a recommendation presented as the answer, or five perspectives collapsed into one conclusion. The disagreement is the deliverable.
+4. Asserting anything about a third party the visitor mentioned — what an employer knows, what a partner wants, what a company would accept. An option may be raised as a question; it may not be built on a claim about someone the tool knows nothing about.`;
 }
 
 async function guardResult(parsed, { question, context, userLanguage, userLocale }) {
@@ -104,7 +111,7 @@ Return ONLY valid JSON:
     {
       "archetype": "The One Who Did It and Regretted It",
       "emoji": "🪞",
-      "profile": "Who this person is",
+      "profile": "The lens that weighs what tends to get lost when someone takes this kind of step — what the upside can obscure.",
       "core_belief": "Their core belief",
       "what_they_say": "Their response",
       "the_truth_only_they_see": "What they uniquely see",
@@ -113,7 +120,7 @@ Return ONLY valid JSON:
     {
       "archetype": "The One Who Didn't and Regretted It",
       "emoji": "🕰️",
-      "profile": "Who this person is",
+      "profile": "The lens that focuses on the possible cost of letting an opportunity pass, and on how that cost tends to show up later rather than now.",
       "core_belief": "Their core belief",
       "what_they_say": "Their response",
       "the_truth_only_they_see": "What they uniquely see",
@@ -122,7 +129,7 @@ Return ONLY valid JSON:
     {
       "archetype": "The Contrarian",
       "emoji": "🔄",
-      "profile": "Who this person is",
+      "profile": "The lens that rejects the framing itself and looks for the option the question leaves out.",
       "core_belief": "Their core belief",
       "what_they_say": "Their response",
       "the_truth_only_they_see": "What they uniquely see",
@@ -169,6 +176,8 @@ router.outputGuard = {
   prohibit: [
     'testimony_presented_as_lived_experience',  // 'when I left my job' — a vantage point, not a witness
     'invented_fact_about_the_visitor',          // a salary, a partner, a city they never mentioned
+    'first_person_past_tense',                  // 'until I realised' — these voices have been nowhere
+    'asserted_fact_about_a_third_party',        // what an employer knows, wants or would accept
     'verdict_delivered_for_the_visitor',
     'five_voices_collapsed_into_one_answer',    // the disagreement is the deliverable
     'professional_advice_without_standing',     // financial, legal or medical instruction
