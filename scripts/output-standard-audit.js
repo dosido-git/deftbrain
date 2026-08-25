@@ -100,7 +100,15 @@ const SCHEMA_SMELLS = [
 ];
 // Named exceptions, with reasons. Empty — an exception here should be a
 // conspicuous decision, not a hole somebody fell into.
-const SCHEMA_CONGRUENCE_EXEMPT = new Map([]);
+const SCHEMA_CONGRUENCE_EXEMPT = new Map([
+  ['dream-pattern-spotter',
+    'The "emotion" field holds emotions the DREAMER selected about their own ' +
+    'dream and sent to us — recurring_emotions counts how often each of their ' +
+    'own reported feelings recurs. The smell targets a field that names what ' +
+    'another person feels; this one names what the visitor told us they felt. ' +
+    'The prompt and the guard both forbid inferring an emotion that was not ' +
+    'reported (emotion_the_dreamer_did_not_report).'],
+]);
 
 for (const slug of onDisk) {
   const src = fs.readFileSync(path.join(ROUTES, `${slug}.js`), 'utf8');
