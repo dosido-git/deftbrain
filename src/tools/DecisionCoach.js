@@ -109,9 +109,6 @@ const DecisionCoach = ({ tool }) => {
     welcomeText: isDark ? 'text-amber-200' : 'text-amber-900',
     hintBg: isDark ? 'bg-zinc-700/60 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
     hintText: isDark ? 'text-zinc-300' : 'text-gray-600',
-    tabActive: isDark ? 'border-amber-500 text-amber-400' : 'border-amber-500 text-amber-700',
-    tabInactive: isDark ? 'border-transparent text-zinc-400 hover:text-zinc-300' : 'border-transparent text-zinc-500 hover:text-zinc-600',
-    tabBorderColor: isDark ? 'rgb(63,63,70)' : 'rgb(231,229,228)',
     prosWinner: isDark ? 'bg-emerald-900/30 border-emerald-600' : 'bg-emerald-50 border-emerald-400',
     prosWinText: isDark ? 'text-emerald-300' : 'text-emerald-800',
     prosLoser: isDark ? 'bg-zinc-700/40 border-zinc-600' : 'bg-zinc-50 border-zinc-200',
@@ -478,25 +475,35 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderInputForm = () => (
     <div className="space-y-4">
-      {/* Mode toggle */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {[{ id:'standard',l:t('dc_mode_standard_l'),d:t('dc_mode_standard_d') },{ id:'proscons',l:t('dc_mode_proscons_l'),d:t('dc_mode_proscons_d') },{ id:'devils',l:t('dc_mode_devils_l'),d:t('dc_mode_devils_d') },{ id:'chain',l:t('dc_mode_chain_l'),d:t('dc_mode_chain_d') }].map(m => (
-          <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
-            className={`p-3 rounded-xl border text-start transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
-            <p className={`text-xs font-bold ${c.text}`}>{m.l}</p><p className={`text-[10px] ${c.textMuteded}`}>{m.d}</p>
-          </button>
-        ))}
-      </div>
-
-      {/* Standard / Devils / Chain input */}
-      {['standard','devils','chain'].includes(decideMode) && (<>
-        {decideMode !== 'chain' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{t('dc_label_category')}</label>{renderPills(DECISION_CATEGORIES, category, setCategory)}</div>)}
+      {/* The question. First substantial field, and the only required one —
+          category was removed because the sentence already contains it. */}
+      {decideMode !== 'proscons' && (
         <div className={`p-5 rounded-2xl border ${c.card}`}>
-          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{decideMode === 'chain' ? t('dc_label_primary') : t('dc_label_whatdecide')} <span className={c.required}>*</span></label>
+          <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-1 block`}>{decideMode === 'chain' ? t('dc_label_primary') : t('dc_label_whatdecide')} <span className={c.required}>*</span></label>
+          <p className={`text-xs ${c.textMuteded} mb-2`}>{t('dc_whatdecide_hint')}</p>
           <input type="text" value={decisionNeeded} onChange={e => setDecisionNeeded(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (decideMode === 'devils') handleDevilsAdvocate(); else if (decideMode === 'chain') handleChain(); else generate([]); } }}
             placeholder={decideMode === 'chain' ? t('dc_ph_chain') : t('dc_ph_whatdecide')} className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
         </div>
+      )}
+
+      {/* How to tackle it — optional, after the question, and defaulted.
+          Ignoring it entirely still gets the core product. */}
+      <div>
+        <p className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2`}>
+          {t('dc_tackle_label')} <span className={`font-normal normal-case ${c.textMuteded}`}>({t('optional')})</span>
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {[{ id:'standard',l:t('dc_mode_standard_l') },{ id:'proscons',l:t('dc_mode_proscons_l') },{ id:'devils',l:t('dc_mode_devils_l') },{ id:'chain',l:t('dc_mode_chain_l') }].map(m => (
+            <button key={m.id} onClick={() => { setDecideMode(m.id); setResults(null); setProsResult(null); setDevilsResult(null); setChainResult(null); }}
+              className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${decideMode === m.id ? c.pillActive : c.pillInactive}`}>
+              {m.l}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {['standard','devils','chain'].includes(decideMode) && (<>
         {decideMode === 'devils' && (
           <div className={`p-5 rounded-2xl border ${c.card}`}>
             <label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_gut')} <span className={c.required}>*</span></label>
@@ -539,6 +546,19 @@ const DecisionCoach = ({ tool }) => {
       </div>
       {decideMode !== 'devils' && (<div className={`p-5 rounded-2xl border ${c.card}`}><label className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide mb-2 block`}>{t('dc_label_stuck')}</label>{renderPills(CAPACITY_OPTIONS, capacity, setCapacity)}</div>)}
 
+      {/* Saved preferences — a repeat-visitor convenience, not part of the
+          essential flow, so it lives in here rather than under the button. */}
+      <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
+        <div className="flex items-center gap-2 mb-2">
+          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>{t('dc_saved_prefs')}</label>
+          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? <Caret open /> : t('dc_save_template')}</button>
+        </div>
+        <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder={t('dc_ph_prefs')} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
+        {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">{t('dc_template_name_label')}</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('dc_ph_template_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{t('dc_save')}</button></div>)}
+        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_learned')}</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
+      </div>
+
+
       {/* Timer (standard only) */}
       {decideMode === 'standard' && (
         <div className={`p-4 rounded-2xl border ${c.card}`}>
@@ -564,16 +584,6 @@ const DecisionCoach = ({ tool }) => {
         )}
       </button>
 
-      {/* Template save + prefs */}
-      <div className={`p-4 rounded-2xl border ${c.hintBg}`}>
-        <div className="flex items-center gap-2 mb-2">
-          <label className={`text-[10px] font-bold ${c.textSecondary} uppercase flex-1`}>{t('dc_saved_prefs')}</label>
-          <button onClick={() => setShowTemplateSave(!showTemplateSave)} className={`text-[10px] font-semibold ${c.histAccent}`}>{showTemplateSave ? <Caret open /> : t('dc_save_template')}</button>
-        </div>
-        <input type="text" value={savedPreferences} onChange={e => setSavedPreferences(e.target.value)} placeholder={t('dc_ph_prefs')} className={`w-full px-3 py-2 rounded-lg border text-xs ${c.input} outline-none`} />
-        {showTemplateSave && (<div className="flex gap-2 mt-2"><label htmlFor="dc-template-name" className="sr-only">{t('dc_template_name_label')}</label><input id="dc-template-name" type="text" value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder={t('dc_ph_template_name')} className={`flex-1 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} onKeyDown={e => { if (e.key === 'Enter') saveTemplate(); }} /><button onClick={saveTemplate} disabled={!templateName.trim()} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{t('dc_save')}</button></div>)}
-        {learnedPreferences.length > 0 && (<div className="mt-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_learned')}</p><div className="flex flex-wrap gap-1">{learnedPreferences.slice(0, 5).map((l, i) => <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border ${c.pillInactive}`}>{l}</span>)}</div></div>)}
-      </div>
     </div>
   );
 
@@ -990,13 +1000,6 @@ const DecisionCoach = ({ tool }) => {
   // ══════════════════════════════════════════
   // TABS + MAIN RENDER
   // ══════════════════════════════════════════
-  const TABS = [
-    { id: 'decide',   label: t('dc_tab_decide'),   description: t('dc_desc_decide') },
-    { id: 'group',    label: t('dc_tab_group'),    description: t('dc_desc_group') },
-    { id: 'insights', label: t('dc_tab_insights'), description: t('dc_desc_insights') },
-    { id: 'history',  label: `${t('dc_tab_history')}${sessionHistory.length ? ` (${sessionHistory.length})` : ''}`, description: t('dc_desc_history') },
-  ];
-
   handleRef.current = generate;
   canSubmitRef.current = !loading && activeTab === 'decide' && !!decisionNeeded.trim();
 
@@ -1029,25 +1032,26 @@ const DecisionCoach = ({ tool }) => {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-2 border-b overflow-x-auto" style={{ borderColor: c.tabBorderColor }}>
-        {TABS.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? c.tabActive : c.tabInactive}`}>
-            {tab.label}
+      {/* Secondary ways in. Available, not competing: deciding is the default
+          view and does not announce itself with a tab. */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        {activeTab !== 'decide' ? (
+          <button onClick={() => setActiveTab('decide')} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${c.btnSecondary}`}>
+            ← {t('dc_back_to_decide')}
           </button>
-        ))}
+        ) : (<>
+          <button onClick={() => setActiveTab('group')} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${c.btnSecondary}`}>
+            👥 {t('dc_open_group')}
+          </button>
+          {sessionHistory.length > 0 && (
+            <button onClick={() => setActiveTab('history')} className={`px-3 py-1.5 rounded-full text-xs font-semibold ${c.btnSecondary}`}>
+              📜 {t('dc_open_history')} ({sessionHistory.length})
+            </button>
+          )}
+        </>)}
       </div>
-      <p className={`text-xs ${c.textMuteded} mb-5`}>{TABS.find(t => t.id === activeTab)?.description}</p>
 
       {error && (<div className={`mb-4 p-4 ${c.danger} border rounded-xl flex items-start gap-3`}><span>⚠️</span><p className={`text-sm ${c.danger}`}>{error}</p></div>)}
-
-      {!results && !prosResult && !devilsResult && !chainResult && activeTab === 'decide' && (
-        <p className={`text-sm ${c.textSecondary}`}>
-          {t('dc_xref_contrast_q')}{' '}<a href="/WhichLife" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
-          {t('dc_xref_contrast_tail')}
-        </p>
-      )}
 
       {activeTab === 'decide' && (<>
         {renderQuickDecide()}
@@ -1058,17 +1062,26 @@ const DecisionCoach = ({ tool }) => {
         {decideMode === 'chain' && renderChainResult()}
       </>)}
       {activeTab === 'group' && renderGroupTab()}
-      {activeTab === 'insights' && renderInsightsTab()}
-      {activeTab === 'history' && renderHistoryTab()}
+      {activeTab === 'history' && (<>
+        {renderHistoryTab()}
+        {sessionHistory.length > 0 && <div className="mt-8">{renderInsightsTab()}</div>}
+      </>)}
 
-      {/* Cross-refs — textSecondary (not textMuted): on the cardAlt zinc-700
-          backdrop the muted shade only reaches ~4.1:1 */}
-      <div className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
-        <p className={`text-xs ${c.textSecondary}`}>
-          {t('dc_xref_buy_q')}{' '}<a href="/BuyWise" className={linkStyle}>{t('dc_xref_buywise')}</a>{' '}
-          {t('dc_xref_buy_tail')}
-        </p>
-      </div>
+      {/* Cross-refs, and only once there is an answer to hand off FROM.
+          textSecondary (not textMuted): on the cardAlt zinc-700 backdrop the
+          muted shade only reaches ~4.1:1 */}
+      {(results || prosResult || devilsResult || chainResult) && (
+        <div className={`mt-6 p-4 rounded-2xl border ${c.cardAlt} ${c.border}`}>
+          <p className={`text-xs ${c.textSecondary}`}>
+            {t('dc_xref_contrast_q')}{' '}<a href="/WhichLife" className={linkStyle}>{t('dc_xref_contrast')}</a>{' '}
+            {t('dc_xref_contrast_tail')}
+          </p>
+          <p className={`text-xs mt-2 ${c.textSecondary}`}>
+            {t('dc_xref_buy_q')}{' '}<a href="/BuyWise" className={linkStyle}>{t('dc_xref_buywise')}</a>{' '}
+            {t('dc_xref_buy_tail')}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

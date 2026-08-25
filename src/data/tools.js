@@ -3644,7 +3644,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 // ── DifficultTalkCoach tools.js entry ──
 // Replace existing entry (id: "DifficultTalkCoach")
-// Changes: modified date, description trimmed, tags 6→9, duplicate tips removed, pitfalls added
 
 {
   modified: "2026-03-11",
@@ -3935,8 +3934,6 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     }
 },
 // ── DecisionCoach tools.js entry ──
-// Replace the existing entry (search for id: "DecisionCoach")
-// Changes: modified date added, tags expanded from 7 → 9
 
 {
   modified: "2026-03-11",
@@ -3945,7 +3942,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
     when: "Too depleted to choose, but you still have to.",
-    give: "The category and what needs deciding.",
+    give: "A sentence saying what you are stuck on. Constraints and preferences are optional.",
     get: "One answer. Not options.",
     edge: "It gives a single decision on purpose. A ranked list is another choice to make, which is the thing you couldn't do.",
   },
