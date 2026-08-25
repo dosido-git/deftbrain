@@ -27,11 +27,13 @@ ${STANDARD}
 
 WHAT THIS TOOL IS. A practical briefing written from general knowledge about a place. Describing a common practice is the job — do NOT flag an ordinary etiquette observation for lacking a citation. What fails is claiming more than general knowledge supports.
 
+SCOPE. These apply to EVERY field — the overview and the practical tips and the missteps exactly as much as the topic sections. A sweeping characterisation is not excused by being an introduction, and a tip is not excused by being practical.
+
 The failures:
-1. TREATING A POPULATION AS UNIFORM — a country, city, religion or population written as though everyone in it does the same thing. Practices that belong to a region, generation, setting or faith community must be attributed to it.
+1. TREATING A POPULATION AS UNIFORM — a country, city, religion or population written as though everyone in it does the same thing, INCLUDING in the overview. A place given a set of adjectives ('direct, energetic and relationship-driven'), or values described as held across it ('warmth and humour are valued across social settings', 'respect for elders is expected'), fails. So does 'handshakes are standard' — and 'firm grip expected' — for a practice that varies by gender, religion, region and setting. 'Expected' and 'customary' are the same categorical claim as 'standard'. Practices belonging to a region, generation, setting or faith community must be attributed to it.
 2. INVENTED PRECISION — a price, percentage, tipping rate, distance, duration or statistic presented as fact when it is a guess, and a local-language phrase or physical custom stated with confidence it does not warrant.
-3. PREDICTING REACTIONS — 'they will be offended', 'locals will appreciate this', 'nobody will mind'. A convention can be described; an individual's response cannot be known.
-4. CLAIMED INSIDER STANDING — 'locals will tell you', 'what only residents know', 'the secret is'. The briefing has not been there.
+3. PREDICTING REACTIONS — 'they will be offended', 'locals will appreciate this', 'nobody will mind', 'people will understand', 'this damages trust', 'it breaks rapport', 'you will learn it quickly'. Also the softer forms, which are the same assertion with a gentler verb: 'is read as confident', 'this signals respect', 'is appreciated', 'traffic is understood', and any hedged effect — 'can damage the working relationship', 'may break rapport', 'could wound'. Hedging an effect claim does not make it an observation. 'Can come across as X' is the permitted ceiling and nothing may be appended to it. A convention can be described and a consequence can be phrased as how something CAN come across; how a person WILL respond cannot be known. In small_slips, a recovery ('a brief apology and asking for the pronunciation is a reasonable recovery') is right and a reassurance is not.
+4. CLAIMED INSIDER STANDING — 'locals will tell you', 'what only residents know', 'the secret is'. The briefing has not been there. A tip resting on a named national stereotype — 'X time', 'X directness' — fails here too. So does the same claim stated plainly in any other field: 'Nigerians may arrive late without apology', 'Germans are direct', 'the French expect formality'. A nationality is not a behaviour, and moving the claim out of the tips into a section does not fix it. Attach the observation to a SETTING, never to a people.
 5. VOLATILE INFORMATION STATED AS SETTLED — anything legal, financial, payment, tipping, religious, safety-related or subject to change, presented as guaranteed rather than as something to verify.`;
 }
 
@@ -94,13 +96,13 @@ ${contextParts.join('\n')}
 Return ONLY valid JSON in this exact shape — no markdown, no explanation:
 
 {
-  "overview": "2–3 sentence cultural snapshot — tone, values, what surprises most visitors",
+  "overview": "2-3 sentences orienting a visitor. Do NOT characterise the place or its people with adjectives — no 'X is direct, energetic and relationship-driven', no 'warmth and humour are valued across social settings', no 'generosity and respect for elders are expected'. A city is not one temperament and its residents are not one set of values. Say instead what a visitor is likely to encounter and where practice differs: which settings are formal and which are not, what varies between business and social contexts, between generations, between religious communities, between this city and the rest of the country. If you cannot say something specific and bounded, say less.",
   "sections": [
     {
       "id": "greetings",
       "icon": "🤝",
       "title": "Greetings & introductions",
-      "widely_observed": ["a practice common enough across this destination to be a safe default — a strong convention, not a rule you invented"],
+      "widely_observed": ["a practice common enough to be a safe default. Scope it — 'common in business settings', 'usual in first meetings' — and NEVER write 'is standard', 'is expected', 'is customary', 'is the norm', 'is appreciated', 'signals respect': those state a rule for a whole population or a reaction you cannot know. Describe the practice; let the reader infer."],
       "best_avoided": ["something that commonly causes friction or offence here, described by what it signals rather than by how people will react"],
       "varies": ["a practice that differs by region, city, generation, setting, religion or individual — name WHAT it varies with, not just that it does"],
       "check_locally": ["anything legal, financial, religious, safety-related or liable to have changed — say what to verify and why it moves"]
@@ -197,13 +199,13 @@ Return ONLY valid JSON in this exact shape — no markdown, no explanation:
     }
   ],
   "practical_tips": [
-    "A specific, non-obvious thing that tends to help here — practical, not privileged. Nothing framed as what only locals know.",
+    "A specific, practical thing that tends to help, held to the same discipline as everything else: no claim about what a whole population does, no prediction of how anyone will react, no invented figure. Never build a tip on a named cultural stereotype — no advice that rests on 'X time', 'X directness', 'X hospitality' as a trait of a nationality. If a tip only makes sense because of a stereotype, drop it.",
     "Another",
     "Another"
   ],
   "missteps": {
-    "small_slips": ["a minor slip that usually carries little consequence for a visitor — say what it is, not how people will feel about it"],
-    "higher_stakes": ["a misstep that tends to matter more — say what it signals or interrupts, without predicting anyone's reaction"]
+    "small_slips": ["a minor slip, described with a RECOVERY rather than a reaction. Write 'a brief apology and asking for the correct pronunciation is a reasonable recovery'. Never 'people will understand', 'nobody minds', 'they recover from this easily', 'you will pick it up quickly' — those predict other people and predict the visitor."],
+    "higher_stakes": ["a misstep that tends to matter more, described by HOW IT CAN COME ACROSS rather than by what it does to anyone. Write 'can come across as disrespectful', 'can read as rejecting hospitality'. Never 'this damages trust', 'which wounds', 'it breaks rapport' — those assert an effect on a person you know nothing about."]
   },
   "confidence": "high | medium | low — YOUR confidence in the specifics of THIS briefing; use 'low' for places you have thin or uncertain knowledge of"
 }
@@ -213,8 +215,11 @@ Rules:
 - Frame advice RELATIVE to the traveler's home country (${homeCountry || 'their home country'}) — emphasize where norms DIFFER from home, not just absolute rules
 - Where an etiquette rule has a specific named or local-language concept, NAME it with a brief gloss (e.g. the Japanese business-card ritual = meishi) — but ONLY include a local-language word or phrase when you are CERTAIN of its meaning and usage; if not certain, describe the concept in English instead. A wrong phrase confidently delivered is worse than no phrase. Same for physical customs (which escalator side, which hand): state them only if certain, and never invert regional variations.
 - Use realistic, specific numbers — never inflate quantities, and never invent a figure to sound precise. No invented prices, percentages, distances, times, or tipping rates. If a number moves or you are unsure of it, put the item in check_locally and say what to verify
+- NO NATIONAL OR ETHNIC TRAIT CLAIMS, in any field. Not 'Nigerians may arrive late', not 'Germans are direct', not 'the French expect', not 'X time' as a concept. A nationality is not a behaviour. If lateness is common in a particular setting, say that about the SETTING — 'meetings in some Lagos offices start later than scheduled' — never about a people. This holds in the overview, the sections, the tips and the missteps alike, and restating a stereotype as a neutral-sounding observation does not launder it
 - Never claim insider standing. No 'locals will tell you', 'what only residents know', 'the secret is'. You are writing from general knowledge about a place you have not been
-- Never state categorically how people will react. 'This is considered rude' describes a convention; 'they will be offended', 'locals will appreciate it', 'nobody will mind' predicts individuals. Write the convention, not the reaction
+- THE VARIABILITY AND REACTION RULES GOVERN EVERY FIELD, not only the topic sections. overview, practical_tips, small_slips and higher_stakes are held to exactly the same standard as widely_observed and varies. A sweeping sentence is not more acceptable for being in the introduction
+- 'Standard', 'expected', 'always', 'universally', 'everyone', 'the norm', 'is customary' are all claims about a whole population. A greeting practice varies by gender, religion, region, age and setting even where it is common — say 'common in business settings' and name what shifts it, rather than 'handshakes are standard'
+- Never state categorically how people will react. 'This is considered rude' describes a convention; 'they will be offended', 'locals will appreciate it', 'nobody will mind' predicts individuals. So does the softer form — 'is read as confident', 'signals respect to them', 'comes across to locals as' — when it asserts what a specific reader takes from it. Write the convention and, where a consequence is worth stating, write how something CAN come across — and stop there. 'Can come across as disrespect for hierarchy' is right; 'can come across as disrespect AND can damage the working relationship' is not, because the second half asserts an effect on a relationship you know nothing about. A hedge does not license the claim: 'can damage trust', 'may break rapport', 'could wound' are the same assertion with a softer verb. Likewise 'this signals respect', 'traffic is understood', 'is appreciated' assert what a reader takes from an act; write what the act is, not what it earns
 - Treat no country, city, religion or population as uniform. Where a practice belongs to a region, a generation, a setting or a faith community rather than to everyone, say which
 - If the traveller context includes constraints (dietary, religious, alcohol, accessibility, travelling with children), TAILOR the relevant sections to them (e.g. vegetarian to dining; non-drinker to business-drinking customs)
 - gift_giving: leave its arrays [] if gift-giving is not commonly significant for this destination/purpose
@@ -263,6 +268,9 @@ router.outputGuard = {
     'invented_precision',                   // a price, rate, distance or statistic that is a guess
     'predicted_reaction',                   // 'they will be offended', 'locals will appreciate it'
     'claimed_insider_standing',             // 'what only residents know'
+    'stereotype_offered_as_guidance',       // advice resting on a national trait
+    'national_or_ethnic_trait_claim',       // 'Nigerians may arrive late', 'Germans are direct'
+    'sweeping_characterisation_of_a_place', // a city given three adjectives
     'volatile_information_stated_as_settled',  // legal, payment, tipping, religious, changeable
     'uncertain_local_phrase_stated_confidently',
   ],

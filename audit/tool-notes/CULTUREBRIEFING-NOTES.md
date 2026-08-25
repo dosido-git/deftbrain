@@ -91,3 +91,52 @@ glossed the upright-chopsticks taboo as "yasukidachi", which does not match the
 usual names for it. The prompt rule ("only include a local-language word when
 CERTAIN") is the only defence there, and a confident wrong term is exactly the
 failure the standard names. A vocabulary check would need a real source.
+
+## Variability discipline made global — 2026-08-25
+
+The rules were written for the section arrays and reached nothing else, so
+`overview`, `practical_tips` and `missteps` were ungoverned. All three field
+descriptions now carry the discipline directly, plus a rule stating that it
+governs every field ("a sweeping sentence is not more acceptable for being in
+the introduction").
+
+- **overview** — no longer permitted to characterise a place with adjectives.
+  "Lagos is direct, energetic and relationship-driven" became "Business
+  practice leans formal in corporate settings… Religious observance varies by
+  individual and neighbourhood rather than being uniform across the city."
+- **missteps** — the owner's registers: `small_slips` describes a **recovery**
+  ("a brief apology and asking for the pronunciation is a reasonable
+  recovery"), never a reassurance; `higher_stakes` describes **how something
+  can come across**, never an effect ("can read as rejecting hospitality", not
+  "this damages trust").
+- **practical_tips** — the "arrive early / Nigerian time" tip is gone.
+
+**The real bug was in a shared library, and it had been eating the guard.**
+`factCheck.getByPath` matched `^([a-z_]+)(\[(\d+)\])?(\.([a-z_]+))?$` — at most
+one index and one key. Culture Briefing's content lives at
+`sections[0].widely_observed[1]` and `missteps.small_slips[0]`, which both
+resolve to `undefined`. `outputGuard` filters violations on
+`getByPath(draft, v.field) !== undefined`, so the validator was finding
+problems and every one of them was discarded before repair. The log said
+`FAIL (0 field(s))` — a guard reporting failure and doing nothing.
+
+That is why three rounds of prompt tightening had no visible effect: the
+generation rule was competing with an unenforced repair. Both helpers now parse
+arbitrary paths. Same run afterwards: **16 fields flagged and repaired** where
+it had been 0.
+
+This affected any route whose response nests arrays inside arrays. The other
+nine v2 routes use `key[i].sub` shapes, which the old regex handled, so
+Culture Briefing is the first to hit it — but it was a silent hole for
+everything that followed.
+
+**Honest state.** Nigeria and the six specific complaints come back clean. A
+German run still produced one "locals will …" out of 16 flagged-and-repaired
+fields. Categorical qualifiers ("is standard", "is expected") are much reduced
+but not eliminated — of five survivors in one run, four were sound
+("eating with your right hand is standard practice; cutlery is available in
+formal restaurants but not universal in casual settings") and one was a real
+failure: "Nigerians may arrive late without apology", the stereotype restated
+as a plain trait after being banned from the tips. That prompted a rule
+banning national and ethnic trait claims in **every** field, and it cleared.
+Nothing here is a guarantee; the guard is a second reader, not a filter.

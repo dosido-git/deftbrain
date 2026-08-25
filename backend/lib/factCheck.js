@@ -24,35 +24,63 @@ const { MODELS } = require('./models');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
-// Paths are a closed vocabulary handed to the checker verbatim, so these only
-// ever see shapes they know: field, field[0], field[0].sub, field.sub.
-const PATH = /^([a-z_]+)(?:\[(\d+)\])?(?:\.([a-z_]+))?$/;
+// Paths come from the field walk each route does over its own response, so
+// the shapes are whatever that response nests: field, field[0], field[0].sub,
+// field.sub, and — Culture Briefing, 2026-08-25 — field[0].sub[1] and
+// field.sub[0]. The old regex stopped at one index plus one key, so anything
+// deeper resolved to undefined, the violation was filtered out before repair,
+// and the guard logged FAIL with zero fields. It found the problem and threw
+// it away. Parse the path properly instead of enumerating shapes.
+const SEGMENT = /([A-Za-z_][A-Za-z0-9_]*)|\[(\d+)\]/g;
+
+function parsePath(path) {
+  const str = String(path);
+  const segs = [];
+  let m, consumed = 0;
+  SEGMENT.lastIndex = 0;
+  while ((m = SEGMENT.exec(str))) {
+    // reject anything the tokens do not fully cover (stray punctuation, spaces)
+    if (m.index !== consumed && str.slice(consumed, m.index) !== '.') return null;
+    consumed = m.index + m[0].length;
+    segs.push(m[1] !== undefined ? m[1] : Number(m[2]));
+  }
+  if (consumed !== str.length || !segs.length || typeof segs[0] !== 'string') return null;
+  return segs;
+}
 
 function getByPath(obj, path) {
-  const m = String(path).match(PATH);
-  if (!m) return undefined;
-  const [, key, idx, sub] = m;
-  let cur = obj[key];
-  if (idx !== undefined) cur = Array.isArray(cur) ? cur[Number(idx)] : undefined;
-  if (sub) cur = cur && typeof cur === 'object' ? cur[sub] : undefined;
+  const segs = parsePath(path);
+  if (!segs) return undefined;
+  let cur = obj;
+  for (const seg of segs) {
+    if (cur === null || typeof cur !== 'object') return undefined;
+    if (typeof seg === 'number') {
+      if (!Array.isArray(cur) || seg < 0 || seg >= cur.length) return undefined;
+    } else if (!(seg in cur)) return undefined;
+    cur = cur[seg];
+  }
   return cur;
 }
 
 function setByPath(obj, path, value) {
-  const m = String(path).match(PATH);
-  if (!m) return false;
-  const [, key, idx, sub] = m;
-  if (idx === undefined) {
-    if (!sub) { if (!(key in obj)) return false; obj[key] = value; return true; }
-    if (!obj[key] || typeof obj[key] !== 'object') return false;
-    obj[key][sub] = value; return true;
+  const segs = parsePath(path);
+  if (!segs) return false;
+  let cur = obj;
+  for (let i = 0; i < segs.length - 1; i++) {
+    const seg = segs[i];
+    if (cur === null || typeof cur !== 'object') return false;
+    if (typeof seg === 'number') {
+      if (!Array.isArray(cur) || seg < 0 || seg >= cur.length) return false;
+    } else if (!(seg in cur)) return false;
+    cur = cur[seg];
   }
-  if (!Array.isArray(obj[key])) return false;
-  const i = Number(idx);
-  if (i < 0 || i >= obj[key].length) return false;
-  if (!sub) { obj[key][i] = value; return true; }
-  if (!obj[key][i] || typeof obj[key][i] !== 'object') return false;
-  obj[key][i][sub] = value; return true;
+  const last = segs[segs.length - 1];
+  if (cur === null || typeof cur !== 'object') return false;
+  if (typeof last === 'number') {
+    if (!Array.isArray(cur) || last < 0 || last >= cur.length) return false;
+  } else if (!(last in cur)) return false;
+  cur[last] = value;
+  return true;
 }
 
 /**
