@@ -414,3 +414,61 @@ So the feature now works and profiles the visitor, which is the opposite of the
 intent. Three options, none of them mine to pick: delete DNA outright, keep it
 and rewrite it to report factual recurrence like `/patterns` does, or leave it
 as an explicitly opt-in curiosity. Flagged rather than acted on.
+
+## Decision DNA out, Patterns rebuilt — 2026-08-25
+
+**Deleted:** the `/decision-coach/dna` endpoint, the whole DNA section
+(archetype, strengths, blind spots, say-vs-do, core blocker, prescription,
+shareable statement), and Achievements entirely — including Serial Rejector,
+which rewarded rejecting the tool's recommendations eight times in a session.
+With them went `dnaResult`, `dnaLoading`, `handleDNA`, `earnedAchievements`,
+the `ACHIEVEMENTS` table, four palette keys and ~650 locale lines across 13
+languages.
+
+**Patterns is now the whole history analysis**, restricted to what the record
+establishes:
+
+```
+YOUR DECISION PATTERNS
+  5 decisions recorded · 2 Quick Decides · 3 you entered yourself · 3 areas
+WHAT YOU'VE TENDED TO CHOOSE
+  • In the work decision, you chose not to take on the extra project.
+  • In the laptop decision, you chose repair over replacement.
+  • In the social decision, you chose to stay home rather than go to the party.
+  Quick Decide results are excluded from preference analysis, because those
+  choices were generated for you.
+CONSTRAINTS THAT RECUR
+  • 'Low effort' appeared in 2 decisions — the work and social decisions.
+NOT ENOUGH HISTORY YET
+  Three decisions is too small a sample to tell whether any of this reflects
+  lasting preferences or simply what fit those particular situations.
+```
+
+The counts are computed in the frontend, not requested — a tally of storage is
+the one thing that can be exactly right, and a model asked for numbers produces
+plausible ones. Dedupe runs on both sides before anything is counted, since a
+re-decide writes a second record and counting it twice invents a repeat.
+
+The prompt's prohibitions are explicit: no archetype or type, no claim about
+what they struggle with or avoid, no say-versus-do gap, no advice or blind
+spot, nothing shareable, and no pattern drawn from fewer than two decisions.
+
+**Records now carry `source`, `constraints` and `capacity`.** Without `source`
+there is no way to keep Quick Decide out; without the other two there is
+nothing to count.
+
+### Two payload bugs found by running it
+
+The direct API test passed and the browser leaked both Quick Decide choices —
+"In the food decision, you chose fried rice." `handlePatterns` builds its
+payload field by field and had never listed `source`, so the backend could not
+tell a generated choice from a real one. The data existed and the payload threw
+it away: the same shape as the `sessionHistory`/`history` mismatch fixed an
+hour earlier, and only visible because the browser and the direct call disagreed.
+
+Separately, the button appears at 3 user-entered decisions and the route
+accepts 3, but `handlePatterns` still returned silently under 5 — a visible
+control that did nothing for two decisions' worth of history.
+
+**Batch generalised** to Meals · Outfits · Workouts · Errands · Evening plans ·
+Something else, and stays a secondary History utility.
