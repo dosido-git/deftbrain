@@ -71,3 +71,38 @@ Same class, three more places: the four sliders (`label="Sleep" low="Poor" high=
 **Gate 5 cannot see any of this.** It looks for unwrapped literals; a label computed from a key is not a literal, and a JSX string *attribute* (`low="Poor"`) is not one either. Worth a rule.
 
 Spot-checked es (chips, sliders, tabs, disclosure all translated, no English leak) and ar (RTL, caret at inline-end, no tofu, no clipping, no overflow at 375px).
+
+## Header conformed to PF-30 / PF-17c — 2026-08-24
+
+The rewrite hand-rolled its own header instead of the catalog-wide one, so
+Crash Predictor was the odd page out. Against the spec:
+
+| | Rewrite | PF-30 / PF-17c |
+| --- | --- | --- |
+| Tagline | `text-lg font-semibold` — a heading | `text-base ${c.textSecondary}` — one muted line |
+| Icon | no size class | `text-lg`, one step above the tagline |
+| Card padding | `p-5` (20px top) | `px-5 pt-2.5` — 20 reads as a blank line |
+| Divider | none | `pb-3 border-b border-zinc-500` under the header row |
+| Shadow | none | `shadow-sm` |
+| Grey lines | two (tagline + sub) | **one** — PF-30 is explicit; Batch Flow's second sentence was removed for the same reason |
+| Try an example | no `disabled` binding | `disabled={loading}` + `disabled:opacity-40` |
+| Start over | `py-1.5 text-xs` | `py-2 text-sm font-bold min-h-[40px]` |
+| Mode tabs | 3 tall emoji cards, active state = a ring and **no background at all** | `flex gap-2 pt-3`, `c.btnPrimary` / `c.btnSecondary` |
+
+The sub-line's sentence is the opening of the catalog description, which the
+wrapper already renders above the card — nothing was lost by dropping it, and
+`cpv2_hero_sub` would have been a dead key in 13 languages.
+
+**Catalog tagline was stale too.** The page said "Learn what tends to happen
+before you run out of steam" while `tools.js` still said "Spot your burnout
+patterns before the crash" — the old shouty register, and PF-30 renders the
+tagline, so the two need to agree. Catalog now matches the page.
+
+**Cross-ref moved.** The pre-result PEP link sat *above* the header card — the
+first thing on the page, before the tool says what it is. CONVENTIONS: "one
+inline sentence at the foot of the tool, wrapped in `{!results && (...)}`.
+Never above the form." Moved to the foot and re-gated from `!logs.length` to
+`!results`.
+
+"How it works" now sits directly below the header card rather than inside it,
+so the header keeps its single muted line.

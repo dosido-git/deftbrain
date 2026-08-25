@@ -222,59 +222,51 @@ export default function CrashPredictor() {
 
   return (
     <div className={`space-y-4 ${c.text}`}>
-      {!logs.length && (
-        <p className={`text-xs ${c.textMuted} px-1`}>
-          {t('cpv2_xref_pre')} <a href="/PEP" className={linkStyle}>✨ {t('cpr_xref_pep')}</a>
-        </p>
-      )}
-
-      <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <p className="text-lg font-semibold">
-              <span className="me-2">{tool?.icon ?? '⚡'}</span>{t('cpv2_hero')}
+      {/* ── Unified header card: icon + tagline + Try an example + reset + tabs ── */}
+      <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
+        <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+          <div className="flex-1 min-w-0">
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '⚠️'}</span>{t('cpv2_hero')}
             </p>
-            <p className={`text-sm mt-1 ${c.textMuted}`}>
-              {t('cpv2_hero_sub')}
-            </p>
-            <details className={`group mt-3 ${c.cardAlt} border ${c.border} rounded-lg p-3`}>
-              <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
-                  {t('cpv2_how_title')}
-                  <Caret groupOpen className="ms-auto" />
-                </div>
-              </summary>
-              <p className={`text-sm mt-2 ${c.textMuted}`}>{t('cpv2_how_body')}</p>
-            </details>
-            <button onClick={loadExample} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
-              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap">
+            {/* PF-17c */}
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
               ✨ {t('try_example')}
             </button>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {(logs.length > 0 || analysis || patterns) && (
-              <button onClick={reset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap`}>
-                ↺ {t('start_over')}
-              </button>
-            )}
-          </div>
+          {(logs.length > 0 || analysis || patterns) ? (
+            <button
+              onClick={reset}
+              className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold min-h-[40px] ${c.btnSecondary}`}
+            >↺ {t('start_over')}</button>
+          ) : null}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mt-5">
+        <div className="flex gap-2 pt-3">
           {[
-            ['dashboard', '🏠', t('cpv2_tab_dashboard')],
-            ['checkin', '📅', t('cpv2_tab_checkin')],
-            ['history', '📋', t('cpv2_tab_history')],
-          ].map(([key, icon, label]) => (
+            ['dashboard', t('cpv2_tab_dashboard')],
+            ['checkin', t('cpv2_tab_checkin')],
+            ['history', t('cpv2_tab_history')],
+          ].map(([key, label]) => (
             <button
               key={key} type="button" onClick={() => setView(key)}
-              className={`min-h-[52px] rounded-lg border p-3 font-medium ${view === key ? 'ring-2 ring-offset-1' : ''}`}
-            >
-              <span className="block">{icon}</span><span className="text-sm">{label}</span>
-            </button>
+              className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all ${view === key ? c.btnPrimary : c.btnSecondary}`}
+            >{label}</button>
           ))}
         </div>
       </div>
+
+      <details className={`group ${c.cardAlt} border ${c.border} rounded-xl p-3`}>
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+          <div className={`flex items-center gap-2 text-xs font-bold ${c.text}`}>
+            {t('cpv2_how_title')}
+            <Caret groupOpen className="ms-auto" />
+          </div>
+        </summary>
+        <p className={`text-sm mt-2 ${c.textMuted}`}>{t('cpv2_how_body')}</p>
+      </details>
 
       {view === 'dashboard' && (
         <div className="space-y-4">
@@ -516,6 +508,12 @@ export default function CrashPredictor() {
             </div>
           )}
         </Section>
+      )}
+
+      {!results && (
+        <p className={`text-xs text-center px-4 ${c.textMuted}`}>
+          {t('cpv2_xref_pre')} <a href="/PEP" className={linkStyle}>✨ {t('cpr_xref_pep')}</a>
+        </p>
       )}
 
       {results && (
