@@ -210,3 +210,53 @@ violations" above four numbered items.)
 
 Live: 3/3 questions clean on all four categories with voices intact, golden
 2/2, against a verified PID.
+
+## Retraction — 2026-08-25
+
+Owner: we overcorrected after fixing the genuine fake-lived-experience problem.
+The governing rule is now theirs verbatim:
+
+> These are deliberately opinionated simulated perspectives, not factual
+> assessments. Let each lens argue its position confidently, including
+> reasonable generalizations, speculation, and possible consequences. Do not
+> fabricate specific facts about the user's situation, lived experiences,
+> evidence, statistics, or external authority. Do not make the five voices
+> artificially cautious or alike.
+
+**Retracted** — guard terms `universal_claim` and `inevitable_outcome`, and the
+hedging ceiling ("often / tends to / many people find" as the maximum a lens
+could assert). Both were mine, both were wrong for this tool. A lens that must
+qualify every proposition has nothing to say, and five of them are one cautious
+narrator wearing five hats. Persona-specific speculation is no longer policed:
+the regret lenses are meant to explore the downside in full, the Risk-Taker to
+argue for accepting uncertainty rather than resolving it.
+
+**Kept** — fabricated facts about the visitor or a third party; fake lived
+experience and the first-person past tense; deciding for them; and the
+simulated-voice disclaimer.
+
+**Added, because the retraction opens a door** — `fabricated_evidence_or_authority`.
+Confidence without a hedge is fine; confidence propped on an invented statistic,
+study, or expert consensus is not. A lens argues from its own reasoning.
+
+**Added the failure of the opposite kind** — `voices_homogenised_into_one_register`,
+and `each_lens_argues_its_position_with_conviction` on the require side. The
+guard now flags five voices that have converged into the same careful register.
+That is the failure mode the last three passes were quietly creating, and
+nothing was watching for it.
+
+The guard's framing was rewritten to lead with **what not to flag**: not
+opinionated, not one-sided, not a generalization, not speculation, not an
+unqualified consequence. "A confident, unqualified, arguable claim is the
+product working."
+
+**Live.** On "should I tell my sister what I really think about her partner?"
+the Risk-Taker returned the owner's own example sentence unprompted — "The
+conversation feels risky precisely because it matters, and a sisterhood that
+can only survive on pleasant agreement was already fragile before this moment."
+Zero hedges in four of five primary fields. Baited the kept boundaries with a
+raise-or-job-hunt question: no invented statistics, no claims about the
+employer, no invented finances, no first-person past. Guard PASS, golden 2/2,
+verified PID.
+
+The two labels in the owner's message were already shipped in 0d38a523.
