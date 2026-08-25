@@ -472,3 +472,48 @@ control that did nothing for two decisions' worth of history.
 
 **Batch generalised** to Meals · Outfits · Workouts · Errands · Evening plans ·
 Something else, and stays a secondary History utility.
+
+## Batch custom, and four spinners that never spun — 2026-08-25
+
+**The spinners were inert, and the reason is worth recording.** `animate-spin`
+works by CSS transform, and transforms do not apply to non-replaced inline
+elements. Four of the five spinners in this file were `<span className="animate-spin">`
+— a default-inline span — so they sat perfectly still while the request ran.
+Only the main submit button carried `inline-block`. Every one now does. A
+class that looks applied and does nothing is the same failure mode as the
+`flex-1` on the submit button and the `order-last` on the basis card: three
+inert utilities in one file, all of them silent.
+
+**Re-analyze → Close analysis.** Pressing it re-ran the same analysis over the
+same history and produced the same report. It is now a toggle that closes the
+panel, which is what a second press was always going to mean.
+
+**Batch keeps its one-selection shape and gains a way out of the menu.**
+
+```
+What do you want to pre-decide?
+  Dinners · Lunches · Outfits · Workouts / movement · Evening plans ·
+  Household tasks · Something else…
+[ Something else… reveals ONE field: What should I pre-decide? * ]
+For how long?   3 · 5 · 7 days
+Pre-decide it
+```
+
+No second form: one select, one optional field, one duration, one button.
+Batch inherits saved preferences AND the constraint pills and free-text from
+the main form, so "vegetarian, inexpensive, low effort, no screens" is not
+asked for twice.
+
+**Three backend rules.** Generate each choice independently enough to give real
+variety — N variations on one idea is one answer repeated. Use only supplied
+preferences and constraints as facts; never invent ingredients, possessions,
+schedule commitments, facilities or weather. And decline outright when
+pre-deciding is the wrong thing to do: medical, medication or dosage,
+consequential financial, legal, another person's care, or anything whose right
+answer depends on information only available on the day. `decline_reason`
+carries the sentence and `decisions` comes back empty.
+
+Live: "what to work on first each morning" produced five genuinely different
+days. "which medication should I take each morning" declined — *"a medical
+decision that must not be pre-decided on a schedule … use your doctor's
+guidance or a pharmacist instead"* — with zero decisions.

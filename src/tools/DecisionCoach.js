@@ -165,6 +165,7 @@ const DecisionCoach = ({ tool }) => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [showRejectionPicker, setShowRejectionPicker] = useState(false);
   const [factAnswer, setFactAnswer] = useState('');
+  const [batchCustom, setBatchCustom] = useState('');
 
   // ── Refs ──
   const timerRef = useRef(null);
@@ -377,7 +378,7 @@ const DecisionCoach = ({ tool }) => {
   const handleBatch = async () => {
     setError(''); setBatchResult(null);
     try {
-      const res = await callToolEndpoint('decision-coach/batch', { category: batchCategory, count: batchCount, preferences: [savedPreferences, ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
+      const res = await callToolEndpoint('decision-coach/batch', { category: batchCategory === 'custom' ? batchCustom.trim() : batchCategory, count: batchCount, preferences: [savedPreferences, prefString(), ...learnedPreferences].filter(Boolean).join('; '), recentDecisions: recentChoices, locale: navigator.language || 'en', userLocale, userCurrency, userRegion });
       setBatchResult(res);
     } catch { setError(t('something_wrong')); }
   };
@@ -840,7 +841,7 @@ const DecisionCoach = ({ tool }) => {
         {groupPeople.length < 6 && <button onClick={() => { shouldFocusNewGroupPeopleRef.current = true; setGroupPeople(p => [...p, {name:'',constraints:''}]); }} className={`text-xs font-semibold ${c.histAccent}`}>{t('dc_add')}</button>}
       </div>
       <button onClick={handleGroupDecide} disabled={loading || !groupDecision.trim() || groupPeople.filter(p => p.name.trim()).length < 2} className={`w-full py-4 rounded-2xl text-sm font-bold ${c.btnDecide} disabled:opacity-40`}>
-        {loading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : <><span>👥</span> {t('dc_decide_for_group')}</>}
+        {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_working')}</> : <><span>👥</span> {t('dc_decide_for_group')}</>}
       </button>
       {groupResult && (
         <div className="space-y-4 mt-4">
@@ -911,8 +912,8 @@ const DecisionCoach = ({ tool }) => {
             <p className={`text-xs ${c.textMuteded}`}>{t('dc_pat_need_more')}</p>
           </div>
         ) : (<>
-          <button onClick={handlePatterns} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
-            {patternsLoading ? <><span className="animate-spin">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : patternsResult ? t('dc_reanalyze') : t('dc_pat_cta')}
+          <button onClick={() => (patternsResult ? setPatternsResult(null) : handlePatterns())} disabled={patternsLoading} className={`px-5 py-2 rounded-xl text-xs font-bold ${c.btnDecide} disabled:opacity-40 mb-3`}>
+            {patternsLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> {t('dc_analyzing')}</> : patternsResult ? t('dc_pat_close') : t('dc_pat_cta')}
           </button>
           {patternsResult && (<div className="space-y-3">
             {!!patternsResult.tended_to_choose?.length && (
@@ -946,18 +947,40 @@ const DecisionCoach = ({ tool }) => {
       <div>
         <h3 className={`text-sm font-bold ${c.text} mb-1`}>{t('dc_batch_title')}</h3>
         <p className={`text-[10px] ${c.textMuteded} mb-3`}>{t('dc_batch_hint')}</p>
+        <label className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_what')}</label>
+        <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`w-full px-3 py-2 rounded-lg border text-sm mb-3 ${c.input}`}>
+          <option value="dinner">{t('dc_batch_dinners')}</option>
+          <option value="lunch">{t('dc_batch_lunches')}</option>
+          <option value="outfit">{t('dc_batch_outfits')}</option>
+          <option value="workout or movement">{t('dc_batch_workouts')}</option>
+          <option value="evening plan">{t('dc_batch_evenings')}</option>
+          <option value="household task">{t('dc_batch_household')}</option>
+          <option value="custom">{t('dc_batch_custom')}</option>
+        </select>
+
+        {batchCategory === 'custom' && (
+          <div className="mb-3">
+            <label htmlFor="dc-batch-custom" className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_custom_label')} <span className={c.required}>*</span></label>
+            <input id="dc-batch-custom" type="text" value={batchCustom} onChange={e => setBatchCustom(e.target.value)}
+              placeholder={t('dc_batch_custom_ph')} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`} />
+          </div>
+        )}
+
         <div className="flex gap-2 mb-3">
-          <select value={batchCategory} onChange={e => setBatchCategory(e.target.value)} className={`flex-1 px-3 py-2 rounded-lg border text-sm ${c.input}`}>
-            <option value="meal">{t('dc_batch_meals')}</option>
-            <option value="outfit">{t('dc_batch_outfits')}</option>
-            <option value="workout">{t('dc_batch_workouts')}</option>
-            <option value="errand">{t('dc_batch_errands')}</option>
-            <option value="evening plan">{t('dc_batch_evenings')}</option>
-            <option value="something else">{t('dc_batch_other')}</option>
-          </select>
-          <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
-          <button onClick={handleBatch} disabled={loading} className={`px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading ? <span className="animate-spin">{tool?.icon ?? '🎯'}</span> : t('dc_batch_go')}</button>
+          <div className="flex-1">
+            <label className={`block text-[10px] font-bold uppercase tracking-wider ${c.textMuteded} mb-1`}>{t('dc_batch_howlong')}</label>
+            <select value={batchCount} onChange={e => setBatchCount(Number(e.target.value))} className={`w-full px-3 py-2 rounded-lg border text-sm ${c.input}`}>{[3,5,7].map(n => <option key={n} value={n}>{t('dc_batch_days', { n })}</option>)}</select>
+          </div>
+          <button onClick={handleBatch} disabled={loading || (batchCategory === 'custom' && !batchCustom.trim())}
+            className={`self-end px-4 py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>
+            {loading ? <span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span> : t('dc_batch_cta')}
+          </button>
         </div>
+        {batchResult?.decline_reason && (
+          <div className={`p-4 rounded-xl border ${c.warning} mb-2`}>
+            <p className={`text-xs ${c.warnText}`}>{batchResult.decline_reason}</p>
+          </div>
+        )}
         {batchResult?.decisions?.length > 0 && (
           <div className="space-y-2">
             {batchResult.decisions.map((d, i) => (
@@ -1065,7 +1088,7 @@ const DecisionCoach = ({ tool }) => {
                           <div className="mb-2"><p className={`text-[10px] ${c.textMuteded} mb-1`}>{t('dc_fu_satisfaction')}</p><div className="flex gap-1">{[1,2,3,4,5].map(n => <button key={n} onClick={() => setFollowUpSatisfaction(n)} className={`w-8 h-8 rounded-full text-xs font-bold border ${followUpSatisfaction>=n?c.pillActive:c.pillInactive}`}>{n}</button>)}</div></div>
                         )}
                         {followUpOutcome === 'changed' && <><label htmlFor="dc-followup-actual" className="sr-only">{t('dc_fu_what_instead')}</label><input id="dc-followup-actual" type="text" value={followUpActual} onChange={e => setFollowUpActual(e.target.value)} placeholder={t('dc_fu_what_instead')} className={`w-full mb-2 px-3 py-1.5 rounded-lg border text-xs ${c.input} outline-none`} /></>}
-                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
+                        {followUpOutcome && <button onClick={handleFollowUp} disabled={loading||(followUpOutcome==='changed'&&!followUpActual.trim())} className={`w-full py-2 rounded-lg text-xs font-bold ${c.btnDecide} disabled:opacity-40`}>{loading?<span className="animate-spin inline-block">{tool?.icon ?? '🎯'}</span>:t('dc_fu_get_feedback')}</button>}
                         {followUpResult && (
                           <div className={`mt-2 p-3 rounded-lg border ${c.card}`}>
                             <p className={`text-xs ${c.textSecondary} mb-2`}>{followUpResult.response}</p>

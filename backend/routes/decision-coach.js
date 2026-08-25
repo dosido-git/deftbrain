@@ -505,17 +505,21 @@ ${preferences ? `CONSTRAINTS: ${preferences}` : ''}
 ${recentDecisions?.length > 0 ? `RECENT (avoid these): ${recentDecisions.join(', ')}` : ''}
 
 Rules:
-- Each answer must be DIFFERENT from the others (variety is key)
-- Each must be hyper-specific
-- Mix it up: some easy, some slightly adventurous
-- 1 execution step each (keep it fast)
-- Label each for the day (Day 1, Day 2, etc.)
+- Generate each choice independently enough to give real variety. ${n} answers that are variations on one idea are one answer repeated.
+- Each must be specific enough to act on without further thought.
+- Mix it up: some easy, some slightly adventurous.
+- 1 execution step each (keep it fast).
+- Label each for the day (Day 1, Day 2, etc.).
+- Use ONLY the supplied preferences and constraints as facts. Do not invent available ingredients, possessions, schedule commitments, facilities, weather or any other circumstance. If a choice needs something that was not supplied, say so conditionally in the step rather than assuming they have it.
+
+DECLINE WHEN PRE-DECIDING IS THE WRONG THING TO DO. This feature delegates low-stakes recurring choices. Some requests must not be pre-decided at all — anything medical or involving medication or dosage, anything financial with real consequences, anything legal, anything about another person's care, and anything where the right answer depends on information only available on the day. Do not force such a request into a schedule. Return an empty decisions array and put one plain sentence in decline_reason saying why this is not something to decide a week ahead, and what to use instead.
 
 
 ${GROUNDING_RULE}
 
 OUTPUT (JSON only):
 {
+  "decline_reason": "null normally. One plain sentence ONLY when this request should not be pre-decided at all — in that case decisions is [].",
   "decisions": [
     {
       "day": 1,
