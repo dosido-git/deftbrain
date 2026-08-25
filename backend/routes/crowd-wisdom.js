@@ -19,7 +19,7 @@ router.post('/crowd-wisdom', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 THE QUESTION: "${question.trim()}"
 ${context?.trim() ? `CONTEXT: ${context.trim()}` : ''}
 
-Generate five distinct perspectives from people who have lived this question — each with their own worldview, vocabulary, and hard-won truth.
+Generate five distinct perspectives on this question — each a different way of looking at it, with its own worldview, vocabulary and priorities. These are constructed viewpoints, not testimony from real people, so write what each perspective notices about the question rather than claiming personal experience of it.
 
 IMPORTANT: keep every field to ONE short sentence — these render in compact voice cards, so longer text breaks the layout and overflows the budget.
 
@@ -34,7 +34,7 @@ Return ONLY valid JSON:
       "profile": "Who this person is in one sentence — what life experience gives them this view",
       "core_belief": "The core belief that shapes their perspective on this question",
       "what_they_say": "Their actual response in their voice. Real, specific, grounded. Not generic advice.",
-      "the_truth_only_they_see": "The uncomfortable specific truth this archetype is uniquely positioned to deliver",
+      "the_truth_only_they_see": "The uncomfortable specific thing this perspective is positioned to notice about the question. What it sees, not what it has lived through.",
       "the_thing_they_might_miss": "What this perspective tends to overlook or underweight"
     },
     {

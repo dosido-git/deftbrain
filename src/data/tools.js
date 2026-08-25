@@ -552,12 +552,12 @@ export const tools = [
   seoDescription: "Get five real perspectives on the choice you can't stop thinking about — Pragmatist, Risk-Taker, and more. See the tension and the question nobody asked. Free.",
   seoTitle: "Decision Helper: 5 Perspectives on Your Choice",
   title: "Crowd Wisdom",
-  tagline: "Five real perspectives on the choice you can't stop thinking about",
+  tagline: "Five different ways to look at the choice you can't stop thinking about",
   tags: ['decision', 'advice', 'perspective', 'stuck', 'dilemma', 'choice', 'career', 'relationship', 'life change', 'opinions'],
   icon: "👥",
   categories: ['Diversions', 'Veer'],
   headerColor: "#b8dcd8",
-  description: "Five life archetypes — the Pragmatist, the Risk-Taker, the one who Did It and Regretted It, the one who Didn't, and the Contrarian — each respond to your question from their own experience. See the tension between their views and find the question nobody thought to ask.",
+  description: "See your question through five deliberately different lenses: the Pragmatist, the Risk-Taker, the person who tried it and regretted it, the person who chose not to, and the Contrarian. See where their arguments clash—and what each perspective notices that the others miss.",
   guide: {
       overview: "Crowd Wisdom channels five distinct life archetypes — each shaped by different values and different outcomes. The goal isn't consensus. It's to surface the tension, the blind spots, and the question you haven't thought to ask yet.",
       howToUse: [

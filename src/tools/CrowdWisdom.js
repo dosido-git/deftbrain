@@ -198,14 +198,6 @@ const CrowdWisdom = ({ tool }) => {
         </div>
       </div>
 
-      {/* Pre-result cross-ref */}
-      {!results && (
-        <p className={`text-xs ${c.textMuted}`}>
-          {t('cw_pre_xref_q')}{' '}
-          <a href="/BeliefStressTest" className={linkStyle}>🧪 {t('cw_belief')}</a>
-        </p>
-      )}
-
       {/* Input card */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-4`}>
         <div className="pb-3 border-b border-zinc-500">

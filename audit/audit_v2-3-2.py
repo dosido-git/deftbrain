@@ -1014,7 +1014,10 @@ for name, fpath in tools:
     # suggestion to go elsewhere first interrupts a visitor who is not looking
     # for one. Their post-result cross-refs are untouched and still enforced
     # below, so each still points onward once there is an outcome to point from.
-    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic')
+    # Crowd Wisdom joined them on 2026-08-24: its pre-result link offered to
+    # stress-test the belief first, which asks a visitor holding one question
+    # to go and answer a different one. Post-result refs kept and enforced.
+    _pre_exempt = _tool_name in ('ToolFinder', 'ColdOpenCraft', 'ComebackCooker', 'ConflictCoach', 'CaptionMagic', 'CrowdWisdom')
 
     if total_hrefs == 0 and not _pre_exempt:
         fails.append('S5.5: no cross-tool links at all — add pre-result and post-result refs')
