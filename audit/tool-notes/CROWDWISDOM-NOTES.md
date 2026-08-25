@@ -62,3 +62,69 @@ post-result links the owner kept.
 
 Proved the exemption is what silenced the rule, not a crash: the identical
 file under a non-exempt name still fires S5.5. Golden 2/2.
+
+## Adopted V2 — 2026-08-25 (`crowd-wisdom-v2`)
+
+Owner: the 47 frozen tools are the only ones on v1; everything else is reviewed
+under V2. Crowd Wisdom was never on the frozen list, so this edit triggered
+Gate 9 and the review happened.
+
+**Reviewed against the standard.** §1 the visitor has a choice they cannot
+settle; §2 the closing question is the handle they leave with; §3 five
+disagreeing views *are* uncertainty made usable; §4 the tool must not decide —
+that is the whole design. Nothing in the standard fights this tool. What
+needed stating was where invention stops.
+
+**The guard deliberately does not police invention.** The five perspectives,
+their worldviews, priorities and what they notice are all fabricated, and that
+is the product. Three boundaries only:
+
+```
+prohibit: testimony_presented_as_lived_experience, invented_fact_about_the_visitor,
+          verdict_delivered_for_the_visitor, five_voices_collapsed_into_one_answer,
+          professional_advice_without_standing
+require:  five_genuinely_different_lenses, grounded_in_the_question_actually_asked,
+          fulfills_tool_promise
+```
+
+The `supplied` block spells this out at length, because the validator never
+sees the prompt and would otherwise flag every voice as an invented fact.
+(Caption Magic, 2026-08: an epistemic guard applied literally to a creative
+tool eats the tool.)
+
+**Three things the first live runs exposed.**
+
+1. **The guard flagged the cast.** `voices[2].archetype` = "The One Who Did It
+   and Regretted It" came back as `testimony_presented_as_lived_experience` on
+   every run. Right about the words, wrong about the target — that name is ours,
+   identical every time, not a claim the model made. Telling the validator to
+   ignore it in prose did not hold. The field is no longer sent:
+   `archetype` and `emoji` are tool-fixed, and a guard should judge what the
+   model wrote.
+
+2. **The cast drifted.** Naming the five only inside the schema example let the
+   model read them as placeholders — "The One Who Sees the Bet", "The One Who
+   Stayed". Worse, my own no-biography rule fought two of the names. Fixed both
+   ways: the cast is now pinned as an instruction ("these five, this order,
+   these emoji, whatever the question is"), and the rule separates the label
+   from the writing — the name is a stance, argue *from* it without narrating
+   events. Canonical cast on 3/3 questions afterwards.
+
+3. **`profile` commissioned the violation.** It asked for "what life experience
+   gives them this view" — a field that requests a biography will get one, and
+   that is what the guard kept catching. Now: the vantage in one sentence, no
+   jobs held, places lived, or things that happened to it.
+
+Also `the_question_nobody_asked` drew `mind_reading` — it asked for what the
+crowd "would tell them to ask themselves". Now an adjacent question following
+from the one they asked, raised without asserting what the visitor is really
+thinking or avoiding.
+
+**Verified the guard is not inert.** Three consecutive PASSes could equally
+mean nothing was inspected — `runOutputGuard` returns early on an empty field
+list, which logs identically to a clean pass. Walked a sample response: 8
+fields per voice-block, 28 for a full response, with only `archetype` and
+`emoji` excluded.
+
+Live: cast canonical 3/3, guard PASS 3/3, no first-person testimony phrases,
+golden 2/2.
