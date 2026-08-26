@@ -3884,56 +3884,61 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 
 {
-  modified: "",
+  modified: "2026-08-26",
   id: "FocusPocus",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "You need to start, or you've been at it too long to notice.",
-    give: "What you're working on and how long. Context on meals and obligations helps.",
-    get: "A session that holds you in, then interrupts you when time's up and pushes back if you quit early.",
-    edge: "It handles both failure modes. Most timers only help you start; this one also gets you to stop.",
+    when: "You need to start something, and you know you will not stop on your own.",
+    give: "What you are working on, how long, and what would make this session enough.",
+    get: "A bounded session with a stopping point you set in advance — and a note telling you where to pick up if you do not finish.",
+    edge: "It is built to get you out, not to keep you going. The extensions run out on purpose.",
   },
-  seoDescription: "Lock in with a focus timer that keeps you on task, then pulls you out when time's up — escalating if you ignore it, with a recovery plan. Free, no signup.",
-  seoTitle: "Focus Timer & Pomodoro Session Tracker",
+  seoDescription: "Free focus session timer that helps you stop, not just start. Set a concrete 'enough for now' before you begin, get pulled out when time is up, and leave yourself a note about where to pick up.",
+  seoTitle: "Focus Session Timer That Gets You to Stop",
   title: "Focus Pocus",
-  tagline: "Lock in. Get pulled out. Take care of yourself.",
-  tags: ['focus', 'timer', 'session', 'productivity', 'distraction', 'pomodoro', 'work'],
-  icon: "🎩",
+  tagline: "Get something done without disappearing into it",
+  tags: [
+    'focus', 'focus timer', 'focus session', 'deep work', 'time boxing',
+    'stop working', 'know when to stop', 'hyperfocus', 'adhd focus',
+    'work session', 'pomodoro', 'lose track of time', 'stopping point',
+    'take a break', 'break reminder', 'where was i', 'pick up where i left off'
+  ],
+  icon: "\ud83c\udfa9",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "A focus session timer that keeps you on task, then pulls you out when time's up — with escalating urgency if you ignore it.",
+  description: "Decide what 'enough for now' looks like before you start, then work to it. When the time is up it says so plainly, gives you at most three five-minute extensions, and if you did not finish it writes down where to pick up so you can put it down.",
   guide: {
-      overview: "Focus Pocus manages both sides of attention: it keeps you locked in during your session (FocusWall), then interrupts you when time's up (HyperfocusInterrupter). If you try to quit early, it pushes back. If you go overtime, it escalates. When you finally break, it generates a personalized recovery plan based on what you were doing and how long you went.",
+    overview: "Most timers only help you start. Focus Pocus is built around the other half: stopping. Before the clock runs you name one concrete thing that would make the session enough — not the whole project, a place to stop — and it will help you make that concrete if what you typed is vague. While it runs you can ask for the smallest next move if you are stuck, or say you finished early rather than filling the time. When the session ends it asks whether you reached the target. If you did, it says so and sends you off. If you did not, it writes the note that lets you close the laptop without carrying the task around. Extensions exist, but there are three of them and then there are none.",
 
-      howToUse: [
-        "Name what you're focusing on and pick a session length (or use a Pomodoro preset)",
-        "Optionally add context — upcoming obligations, skipped meals — for smarter breaks",
-        "Hit Start. The timer runs even if you close the tab",
-        "If you want to quit early, the tool pushes back — but won't trap you",
-        "When time's up, take the break or snooze (max 3 times). Urgency escalates",
-        "Get a personalized break plan with mandatory actions and a re-entry strategy"
-      ],
+    howToUse: [
+      "Say what you are working on and how long you want to focus.",
+      "Write what would make this session enough. A stopping point, not the finish line — and if yours is vague, ask it to make that concrete.",
+      "Start. The countdown runs in your browser; the session itself is held on the server, so a refresh or a closed tab does not lose it.",
+      "If you stall, 'I'm stuck' gives you one small next move rather than a page of advice.",
+      "If you get there before the timer does, say you finished early. Filling the remaining time is not the point.",
+      "At the end, answer honestly. 'Almost' and 'I got stuck' both leave you a note about where to pick up."
+    ],
 
-      example: {
-        scenario: "You're 2 hours into coding a new feature. You set a 60-min session but snoozed twice.",
-        action: "Focus Pocus escalates from gentle nudge to urgent intervention, then generates a break plan tailored to prolonged coding: eye rest, wrist stretches, hydration, and a bookmark for where you left off.",
-        result: "You take a real break, come back sharper, and your next session is more productive because you're not running on fumes."
-      },
+    example: {
+      scenario: "A budget proposal you have been avoiding, and forty-five minutes before your next meeting.",
+      action: "Type the task, choose 45 minutes, and write 'draft the headline numbers and the headcount section' as what would make it enough.",
+      result: "A session that ends at a place you chose rather than when you run out of steam. If the headcount section is still open at the end, you leave with a sentence telling you exactly where to start next time, instead of the vague dread of an unfinished thing."
+    },
 
-      tips: [
-        "The 25-minute Pomodoro preset is great for getting started — extend once you build the habit",
-        "Fill in the optional context for much better break plans (especially upcoming obligations)",
-        "If you keep hitting snooze, that's data — try shorter sessions next time",
-        "Your session persists even if you close the tab, so don't worry about losing progress"
-      ],
+    tips: [
+      "Pick the stopping point before you start; it is much harder to judge once you are absorbed",
+      "'Enough for now' should be something you can answer yes or no to when the timer ends",
+      "Finishing early is a real outcome — the session is a boundary, not a quota",
+      "The three extensions are the whole budget; when they are gone that is the answer"
+    ],
 
-      pitfalls: [
-        "Setting unrealistically long sessions (start with 25-45 min, not 3 hours)",
-        "Ignoring the break plan actions — they're short and your body needs them",
-        "Using pause as a loophole to extend indefinitely"
-      ]
-    }
+    pitfalls: [
+      "The countdown runs in your browser, so the tab needs to stay open for the timer to be visible — the session itself is held server-side and survives a refresh",
+      "It is not a task manager and keeps no history; the breadcrumb is for the next hour, not the next month",
+      "If you close the browser and come back days later, the session will have expired"
+    ]
+  }
 },
 // ── DecisionCoach tools.js entry ──
 

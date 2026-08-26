@@ -838,7 +838,11 @@ for name, fpath in tools:
     # them with, on a shared device — and fed a pattern alert reporting that
     # someone had done it twice this month. A tool for the worst text you got
     # this week should not be keeping a file on the sender.
-    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach'}
+    # FocusPocus joined on 2026-08-26 with the bounded-session rewrite. The tool
+    # is one session at a time and ends by telling you to put it down; a stored
+    # list of what you failed to finish is the opposite of that, and the
+    # breadcrumb it writes is for the next hour, not the next month.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 
