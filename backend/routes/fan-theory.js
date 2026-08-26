@@ -45,39 +45,43 @@ ${directionHints[direction] || directionHints.wild}
 
 Generate a wild but internally-consistent fan theory. The theory must cite specific plot details as evidence. It should be WRONG but DEFENSIBLE — that "wait... actually?" feeling.
 
-EVIDENCE MUST BE CANON — NON-NEGOTIABLE:
+CANONICAL EVIDENCE — STRICT MODE:
 
-Fan Theory is allowed to invent interpretations, motives, conspiracies,
-connections, and explanations. It is NOT allowed to invent the underlying
-evidence.
+Use only simple canonical observations you are highly confident are true.
 
-Every statement presented before the → interpretation must be something
-you are highly confident actually occurs, is stated, or is clearly shown
-in the source material.
+Prefer broad, unmistakable facts over impressive-sounding specifics.
 
-Do not:
-- invent dialogue or paraphrase dialogue as though it occurred
-- combine separate events into a new supposed fact
-- change who owned, said, did, knew, created, or discovered something
-- turn an interpretation into a canonical event
-- claim the story establishes something it deliberately leaves unresolved
-- manufacture a factual premise because it makes the theory better
+GOOD:
+"Michael repeatedly behaves in ways that would get many managers in trouble."
 
-If you are not highly confident a detail is canonical, DO NOT USE IT.
+BAD:
+"Michael is almost fired or demoted at least seven times."
 
-It is better to provide 4 strong pieces of real evidence than 6 pieces
-containing invented canon.
+GOOD:
+"The documentary crew follows the employees for years."
 
-FORMAT DISCIPLINE:
+BAD:
+"The crew never speaks, never interferes, and never reacts emotionally."
 
-FACT:
-The text before → must contain only the canonical observation.
+GOOD:
+"Sabre introduces unusual products and management practices."
 
-THEORY:
-The text after → may be as imaginative, conspiratorial, absurd, or
-delightfully overinterpreted as desired.
+BAD:
+Listing specific Sabre policies unless you are highly confident each one
+actually appears in the source.
 
-The absurdity belongs after the arrow, never before it.
+Never add:
+- exact counts unless certain
+- "always," "never," "only," or similar absolutes unless unquestionably true
+- rankings, statistics, chronology, quotes, episode details, or named events
+  unless highly confident
+- plausible details reconstructed from memory
+- facts inferred from the theory itself
+
+When choosing between a colorful specific claim and a boring canonical fact,
+USE THE BORING CANONICAL FACT.
+
+The creativity belongs entirely in the interpretation after the arrow.
 
 In the JSON below, "detail" is the text BEFORE the arrow and "spin" is the
 text AFTER it. The reader sees them joined that way.
@@ -110,7 +114,7 @@ Return ONLY valid JSON:
   "the_theory": "Full theory explanation in 150-250 words. Build the case like a conspiracy theorist: evidence, connections, the big reveal. Make it compelling.",
   "evidence": [
     {
-      "detail": "A REAL detail from the source material — something that actually occurs in it. Not invented, not altered",
+      "detail": "A SIMPLE, BROAD canonical observation you are highly confident of. Boring and unmistakable beats colourful and specific. No counts, absolutes, quotes or episode details unless certain",
       "spin": "The speculative reading you are putting on that real detail. This is where the invention belongs",
       "strength": "COMPELLING | SUSPICIOUS | A STRETCH | PURE DELUSION"
     }
@@ -125,16 +129,21 @@ Return ONLY valid JSON:
 Generate exactly 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.
 plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only — most fan theories are plausibility 2-4). Keep every text field to 1-2 sentences — punchy, not padded.
 
-Before returning the answer, silently audit every Evidence and Smoking Gun
-claim:
+FINAL CANON AUDIT:
 
-"Am I confident this specific event, statement, relationship, object,
-or fact actually appears in the source?"
+Before returning the answer, inspect ONLY the text before each →.
 
-If no, uncertain, or only inferred, replace it with a canonical detail
-you are confident about.
+For every factual claim ask:
+"Would a knowledgeable fan immediately recognize this as unquestionably
+true from the source?"
 
-Never sacrifice factual canon for a better fan theory.`;
+If not, simplify it until the answer is yes.
+
+Do not ask whether the claim is plausible.
+Do not ask whether it fits the theory.
+Ask only whether it is reliably canonical.
+
+If uncertain, remove it.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,

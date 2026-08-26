@@ -293,7 +293,7 @@ const FanTheory = ({ tool }) => {
             </div>
           </div>
           <button onClick={runGenerate} disabled={!title.trim() || loading}
-            className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`w-full ${title.trim() ? c.btnPrimary : c.btnIdle} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
             {loading
               ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_theorizing')}</>
               : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_generate')}</>}
