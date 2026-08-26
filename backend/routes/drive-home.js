@@ -397,7 +397,9 @@ WHAT FAILS:
 5. Telling the driver to use a phone, timer or this tool while the vehicle is moving.
 6. A reported condition restated as something stronger or more specific than it was: rain described as low visibility or bad weather; heavy traffic described as a commute or rush hour; two reported facts joined into a claim about what is causing the third.
 7. A person or a place nobody mentioned — a colleague still at the office, someone at home who could collect them, a housemate, a cafe, a spare bed. Offering "a rested person, if one is available" is fine; asserting one exists is not.
-8. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs.`;
+8. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs.
+9. An entry in factors_in_favor that does not make the DRIVING easier or safer — an observation about the driver's judgement, a compliment on their self-awareness, a silver lining. That section is allowed to be empty and usually should be on a pause.
+10. An inferred purpose, arrival time or amount of slack: that the trip is a visit, that they can afford to wait, that arriving late is or is not a problem. A destination is not a purpose.`;
 }
 
 // V2: the tool's primary job is the pre-drive decision.
@@ -514,6 +516,11 @@ STAY THE SIZE OF WHAT YOU WERE TOLD:
 - Name a reported condition with the weight the driver gave it. Rain is rain — not low-visibility weather, not poor conditions, not a downpour. Heavy traffic is heavy traffic — not a commute, not rush hour, not congestion caused by anything in particular. Evening is a time of day and says nothing about why the roads are busy. Joining two reported facts into a third claim about their cause or severity is an invention even when it sounds obvious.
 - Do not create people or circumstances. There is no colleague still in the office, nobody at home who could come and collect them, no housemate, no spare room, no second driver, unless the driver said so. Offer the category and leave it open — 'ask a rested person to drive, if someone is available' — and never populate it with a person whose existence you assumed. The same goes for places: no mention of the office they can wait in, the cafe down the road, or anywhere else you have not been told exists.
 - You cannot know how long a person needs in order to become alert, and you cannot know that food, a hot drink, fresh air, a short walk or a nap will get them there. Never name an interval — not 20-30 minutes, not half an hour, not 'after a coffee' — and never present a remedy as evidence they will be fit to drive. Where waiting is the advice, the shape is: wait somewhere safe and reassess before leaving; go only if they feel clearly alert and the conditions they were worried about have improved enough that they are comfortable making the drive.
+- factors_in_favor is for facts about the DRIVING that genuinely offset the concern. It is not a place for observations about the driver's judgement, a compliment on their self-awareness, or a silver lining. 'You noticed the fatigue before starting, which is a sound instinct' does not make the road safer. Neither does 'the anxiety is tracking a concrete uncertainty' — that is an observation about their reasoning. On a pause or a do-not-drive call the honest answer is usually [], and an empty section is better than a padded one.
+- Never infer why they are travelling, when they must arrive, or how much slack they have. A destination is not a purpose: 'my parents' place' does not establish a visit, people who could drive, or anywhere to stay. 'Early morning means there is time to wait without arriving very late' invents a schedule nobody described. You do not know whether this drive is optional, urgent, or already late.
+- Each safer_option is a DIFFERENT KIND of action — resolve the unknown, wait and reassess, hand the drive to someone else, travel another way, do not make the trip. Two entries that differ only in wording are one option padded into two. If only two kinds apply here, return two.
+- safer_options are options, written as things the driver could do. Do not write them as questions back to the visitor. 'Do you have access to a rested, experienced winter driver?' is a question; 'have a rested, experienced winter driver make the drive instead, if that is available' is an option. Every one of them stays conditional about people and resources you were not told exist.
+- before_you_decide is the most useful field in this response when one concrete, checkable fact would settle it. Where an official source exists for that fact — a road-conditions line or website, a transport authority, a closure or chain-law notice — say to check it and say what a closure, a restriction or an advisory they are not equipped for would mean for the decision. Do not name a specific phone number, URL or agency you cannot verify; name the kind of source.
 
 DECISION STANDARD:
 1. Put the driver's present condition first.
@@ -531,11 +538,11 @@ Return ONLY valid JSON with exactly this shape:
   "summary": "1-3 concise sentences grounded only in supplied facts",
   "main_concern": "Single most important concern in one sentence, or null",
   "factors_harder": ["Only factors actually supplied by the user — at most 5, one short line each"],
-  "factors_in_favor": ["Only genuinely favorable supplied facts; do not invent any — at most 4, one short line each"],
+  "factors_in_favor": ["USUALLY EMPTY. A supplied fact that genuinely makes the driving easier or safer — a short drive, clear conditions, a road they said they know. At most 3, one short line each. If nothing supplied does that, return [] — the section disappears, which is the correct outcome"],
   "before_you_decide": "One concrete decision boundary or missing fact in one or two sentences, or null. Do not open by restating the field name — the reader can already see the heading",
   "safer_options": ["Practical alternatives when recommendation is pause or do_not_drive — at most 5, one short line each"],
   "prep_checklist": ["Short pre-departure actions when recommendation is go — at most 6, one short line each"],
-  "watch_for": ["General signs/conditions that should make the driver stop or reassess, phrased without pretending they are currently present — at most 5, one short line each"],
+  "watch_for": ["ONLY when recommendation is go, otherwise []. General signs that should make the driver stop or reassess, phrased without pretending they are currently present — at most 5, one short line each"],
   "limits": ["the server overwrites this — do not spend effort on it"]
 }
 
@@ -568,8 +575,15 @@ Return only the requested JSON.`;
 
     const finalise = draft => {
       const clean = sanitizeResult(draft, userLanguage);
-      if (clean.recommendation !== 'go') clean.prep_checklist = [];
-      else clean.safer_options = [];
+      if (clean.recommendation !== 'go') {
+        // Both of these are advice for a drive that has just been told not to
+        // start. watch_for is the worse of the two: "signs to stop" under a
+        // do-not-start call reads as terms on which to go anyway.
+        clean.prep_checklist = [];
+        clean.watch_for = [];
+      } else {
+        clean.safer_options = [];
+      }
       clean.limits = [t(userLanguage, 'limits')];
       return clean;
     };
@@ -620,6 +634,9 @@ router.outputGuard = {
     'supplied_fact_upgraded',            // rain → "low-visibility"; evening + traffic → "commute"
     'invented_person_or_circumstance',   // a colleague, someone at home, a cafe to wait in
     'invented_recovery_interval',        // "wait 20-30 minutes"; coffee as proof of alertness
+    'favorable_factor_that_is_not_one',  // an observation or a compliment listed under "what helps"
+    'inferred_purpose_or_schedule',      // why they are going, when they must arrive, what slack they have
+    'option_written_as_a_question',      // "Do you have access to…?" instead of an option they can take
   ],
   require: [
     'a_decision_the_driver_can_act_on',

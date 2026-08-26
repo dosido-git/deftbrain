@@ -67,13 +67,39 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    can collect you"; offer the category conditionally, never populate it.
    **Golden case 5 is this exact input.** Structure alone will not catch a
    regression here — read it after any prompt change.
-9. **`DriveHome` is in `PF22_PER_ITEM_COPY`** (audit/audit_v2-3-2.py). The one
+9. **Sections are clamped by verdict in `finalise()`, not by the prompt.**
+   `watch_for` and `prep_checklist` are GO-only; `safer_options` is for pause
+   and do_not_drive. `watch_for` is the one that matters: "signs that should
+   make you stop" printed under a do-not-start call reads as terms on which to
+   go anyway, and it was reaching the page because the frontend condition was
+   missing (owner, 2026-08-25). Both the card and `buildFullText` check it too.
+10. **`factors_in_favor` is usually `[]` and that is correct.** It is for facts
+   about the DRIVING that offset the concern — a short drive, clear conditions,
+   a road they said they know. Not an observation about the driver's judgement
+   ("the anxiety is tracking a concrete uncertainty"), not a compliment on their
+   self-awareness, not a silver lining inferred from the clock ("early morning
+   gives time to wait without arriving very late" — nobody said when they must
+   arrive). The "What helps" card simply does not render, and the factors grid
+   drops to one column so the survivor is not left in half the width.
+11. **`safer_options` are options, and each is a different KIND** — resolve the
+   unknown, wait and reassess, hand it to someone else, travel another way, do
+   not go. Not questions back to the visitor ("Do you have access to…?"), and
+   never asserting the person or resource exists. Two entries that differ only
+   in wording are one option padded into two; `cleanList` only catches exact
+   duplicates, so the distinctness rule is in the prompt.
+12. **`before_you_decide` is the tool at its best** and the prompt now says so:
+   where one concrete fact would settle it and an official source exists — a
+   road-conditions line, a transport authority, a closure or chain-law notice —
+   name the KIND of source and say what a closure, a restriction or an advisory
+   they are not equipped for would mean. Never a specific number, URL or agency.
+   Golden case 2 is this.
+13. **`DriveHome` is in `PF22_PER_ITEM_COPY`** (audit/audit_v2-3-2.py). The one
    inline `CopyBtn` copies the departure message — a different artefact with a
    different recipient than the global copy, which hands over the assessment.
-10. **The persisted verdict expires after 90 minutes.** S1.7 wants results in
+14. **The persisted verdict expires after 90 minutes.** S1.7 wants results in
    `usePersistentState`; a pre-drive call that reappears next week wearing the
    authority of a fresh one is a different problem. Stamped and dropped on mount.
-11. Option ids are the frontend/backend contract: `daytime evening late_night
+15. Option ids are the frontend/backend contract: `daytime evening late_night
     early_morning` · `clear rain snow_ice fog high_wind heavy_traffic
     construction` · `highway city rural mixed` · `fine a_little_tired very_tired
     anxious not_great`. The backend 400s on anything else, in the reader's language.

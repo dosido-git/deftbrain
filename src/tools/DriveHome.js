@@ -330,7 +330,7 @@ const DriveHome = ({ tool }) => {
     if (result.before_you_decide) L.push(`\n${t('dh_before_decide')}\n${result.before_you_decide}`);
     if (result.safer_options.length && result.recommendation !== 'go') L.push(`\n${t('dh_safer')}\n${result.safer_options.map(x => `• ${x}`).join('\n')}`);
     if (result.prep_checklist.length && result.recommendation === 'go') L.push(`\n${t('dh_prep')}\n${result.prep_checklist.map(x => `• ${x}`).join('\n')}`);
-    if (result.watch_for.length) L.push(`\n${t('dh_watch_for')}\n${result.watch_for.map(x => `• ${x}`).join('\n')}`);
+    if (result.watch_for.length && result.recommendation === 'go') L.push(`\n${t('dh_watch_for')}\n${result.watch_for.map(x => `• ${x}`).join('\n')}`);
     if (result.limits.length) L.push(`\n${result.limits.map(x => `• ${x}`).join('\n')}`);
     return L.join('\n') + BRAND;
   }, [result, tool, t]);
@@ -480,7 +480,7 @@ const DriveHome = ({ tool }) => {
           </section>
 
           {(result.factors_harder.length > 0 || result.factors_in_favor.length > 0) && (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={`grid gap-4 ${result.factors_harder.length > 0 && result.factors_in_favor.length > 0 ? 'md:grid-cols-2' : ''}`}>
               {result.factors_harder.length > 0 && <Card title={t('dh_harder')}><Bullets items={result.factors_harder} /></Card>}
               {result.factors_in_favor.length > 0 && <Card title={t('dh_helps')}><Bullets items={result.factors_in_favor} /></Card>}
             </div>
@@ -489,7 +489,7 @@ const DriveHome = ({ tool }) => {
           {result.before_you_decide && <Card title={t('dh_before_decide')}><p className={`text-sm ${c.textSecondary}`}>{result.before_you_decide}</p></Card>}
           {result.safer_options.length > 0 && result.recommendation !== 'go' && <Card title={t('dh_safer')}><Bullets items={result.safer_options} /></Card>}
           {result.prep_checklist.length > 0 && result.recommendation === 'go' && <Card title={t('dh_prep')}><Bullets items={result.prep_checklist} /></Card>}
-          {result.watch_for.length > 0 && <Card title={t('dh_watch_for')}><Bullets items={result.watch_for} /></Card>}
+          {result.watch_for.length > 0 && result.recommendation === 'go' && <Card title={t('dh_watch_for')}><Bullets items={result.watch_for} /></Card>}
 
           {/* One limitation paragraph. This card used to carry a heading, the
               backend's two limit strings and a note, and three of the four said
