@@ -5,7 +5,7 @@
   "model": "MODELS.SMART, max_tokens 3400, no tools",
   "baseline": "drivehome-v3",
   "how_to_regress": "npm run check:golden drive-home  (dev backend up)",
-  "note": "V2 rewrite, 2026-08-25. Replaces the v1 sample outright: the old tool ran web_search and spoke confidently about named highways and interchanges it could not see. safety_overview, risk_level, honest_assessment, checklist and before_you_go are gone, and there is no risk score of any kind. The endpoint takes enum ids (time_of_day, road_type, driver_state, conditions[]), not display labels. limits is ONE server-written string. SECTION RULES, clamped in finalise(): watch_for and prep_checklist are GO-only; safer_options is for pause and do_not_drive only; factors_in_favor is usually [] on anything but a go, because an observation about the driver is not a thing that makes the driving safer. Case 1 is the only case here with a non-empty favor/watch/prep, and that is the point — compare the four against it. driver_state \"very_tired\" is a SERVER-SIDE boundary: case 4 returns do_not_drive from a localized string table without calling the model, so it must stay byte-stable and must never contain English. Case 3 is the German stress case (four conditions plus a long concern) and guards against truncation. Case 2 is the tool at its best: before_you_decide naming an official road-conditions source and what a closure or a restriction would mean. Case 5 is the grounding case — this exact input produced \"Heavy traffic — evening commute conditions\", \"low-visibility weather\", a 20-30 minute recovery prescription, and safer_options inventing a colleague and someone at home. READ cases 2 and 5 after any prompt change; structure alone will not catch a regression in either."
+  "note": "V2 rewrite, 2026-08-25. Replaces the v1 sample outright: the old tool ran web_search and spoke confidently about named highways and interchanges it could not see. safety_overview, risk_level, honest_assessment, checklist and before_you_go are gone, and there is no risk score of any kind. The endpoint takes enum ids (time_of_day, road_type, driver_state, conditions[]), not display labels. limits is ONE server-written string. SECTION RULES, clamped in finalise(): watch_for and prep_checklist are GO-only; safer_options is for pause and do_not_drive only; factors_in_favor is usually [] on anything but a go, because an observation about the driver is not a thing that makes the driving safer. Case 1 is the only case here with a non-empty favor/watch/prep, and that is the point — compare the four against it. driver_state \"very_tired\" is a SERVER-SIDE boundary: case 4 returns do_not_drive from a localized string table without calling the model, so it must stay byte-stable and must never contain English. Case 3 is the German stress case (four conditions plus a long concern) and guards against truncation. Case 2 is the tool at its best: before_you_decide naming an official road-conditions source and what a closure or a restriction would mean. Case 5 is the grounding case — this exact input produced \"Heavy traffic — evening commute conditions\", \"low-visibility weather\", a 20-30 minute recovery prescription, and safer_options inventing a colleague and someone at home. OUTPUT DISCIPLINE and STATE-SPECIFIC OUTPUT RULES were added 2026-08-25 and the sanitiser caps were aligned to them: harder 5, favor 4, safer 4, prep 3, watch 2. A GO answer is now materially SHORTER than a pause — case 1 is ~850 chars against ~1800-2000 for cases 2, 3 and 5. If a future capture shows GO growing back toward the others, the discipline block has stopped working. READ cases 2 and 5 after any prompt change; structure alone will not catch a regression in either. optionalSections on a case names the arrays this tool is DESIGNED to leave empty, so a run that correctly returns [] is not read as a regression; safer_options on a pause and factors_harder on a pause are NOT optional and stay asserted."
  },
  "cases": [
   {
@@ -30,32 +30,33 @@
    },
    "output": {
     "recommendation": "go",
-    "headline": "Nothing in what you've reported gives a clear reason to wait before leaving.",
-    "summary": "You report feeling fine, conditions are clear, and the drive is a short one on city streets. The only hesitation you named is the hour, which is later than planned — that's a useful thing to stay aware of on a late-night drive, but it isn't by itself a reason to delay.",
-    "main_concern": "You report feeling fine, conditions are clear, and the drive is short. The hour is later than you planned — stay aware of that, but it is not by itself a reason to delay.",
+    "headline": "Nothing in what you've reported gives a clear reason to wait.",
+    "summary": "You report feeling fine, conditions are clear, and the drive is a short city-street trip. Staying later than planned isn't itself a driving concern, though late-night driving on city streets does carry its own considerations.",
+    "main_concern": null,
     "factors_harder": [
-     "Later than intended — worth a honest self-check before leaving"
+     "Late-night city driving means visibility depends entirely on street lighting and your headlights; if either is poor on your route, that matters."
     ],
     "factors_in_favor": [
-     "Conditions reported as clear",
-     "City streets, short drive of roughly 20 minutes",
-     "Driver reports feeling fine"
+     "You report feeling fine.",
+     "Clear conditions.",
+     "Short duration — approximately 20 minutes."
     ],
-    "before_you_decide": "Before you start the car, check in with yourself honestly about how you feel right now.",
+    "before_you_decide": null,
     "safer_options": [],
     "prep_checklist": [
-     "Do an honest alertness check before you start the engine",
-     "Lock doors and set your destination before moving — no phone interaction once driving"
+     "Before you start, check whether drowsiness or fogginess has appeared since you decided to drive."
     ],
-    "watch_for": [
-     "Any drowsiness, heavy eyelids, or difficulty focusing — pull over somewhere safe if that appears",
-     "Erratic drivers around you — give them extra space",
-     "Noticing you've lost track of where you are or missed a turn"
-    ],
+    "watch_for": [],
     "limits": [
      "Drive Home doesn't have live traffic, weather, or road-condition data. This assessment uses only what you reported. If conditions change, reassess before leaving."
     ]
-   }
+   },
+   "optionalSections": [
+    "factors_harder",
+    "factors_in_favor",
+    "prep_checklist",
+    "watch_for"
+   ]
   },
   {
    "name": "assess-pause-snow-unknown-pass",
@@ -80,31 +81,32 @@
    },
    "output": {
     "recommendation": "pause",
-    "headline": "Check road conditions on the pass before deciding — the answer could change either way.",
-    "summary": "Snow or ice combined with high wind on a highway is a significant combination, and the driver has not driven in snow since last winter. The condition of the pass is unknown and is the central variable here. Starting without that information is avoidable.",
-    "main_concern": "The pass conditions are unknown, and snow, ice, and high wind on a highway can require a level of recent winter-driving experience the driver may not have refreshed yet.",
+    "headline": "Check current road and pass conditions before committing to this drive.",
+    "summary": "You have reported snow or ice, high wind, and highway driving at roughly 90 minutes. You have also flagged a specific unknown — the condition of the pass — and limited recent snow-driving experience. That unknown is concrete and checkable, and it materially affects whether this drive is reasonable to start.",
+    "main_concern": "The pass condition is unverified. Snow or ice combined with high wind on a highway can vary dramatically over short distances, and you have identified this directly as your hesitation.",
     "factors_harder": [
-     "Reported snow or ice on the highway",
-     "Reported high wind",
-     "Driver has not driven in snow since last winter",
-     "Pass conditions are unknown",
-     "90-minute highway drive in these conditions"
+     "Reported snow or ice on a highway route",
+     "Reported high wind, which can reduce visibility and vehicle stability independently of road surface",
+     "Self-reported gap in recent snow-driving experience",
+     "Pass condition is currently unknown to you"
     ],
     "factors_in_favor": [],
-    "before_you_decide": "Check current road conditions and any chain-law or closure notices for the pass through an official state road-conditions source before leaving — if the pass is closed, restricted, or under an advisory the driver is not equipped for, that settles it.",
+    "before_you_decide": "Check the current road condition report for the pass before deciding. Look for a state department of transportation road-conditions site or traveler information line — these typically report surface conditions, chain or traction laws, and whether a road is closed or restricted. If the pass is closed, under a restriction you are not equipped for, or rated at a severity beyond your current comfort level, do not start. If conditions are reported as manageable and you feel ready, you can proceed wit",
     "safer_options": [
-     "Check official state road-conditions information for the pass and reassess; if conditions are actively dangerous or restricted, do not start",
-     "Wait and reassess after conditions improve and before leaving confirm pass status again",
-     "Have a rested, experienced winter driver make the drive instead, if one is available",
-     "Travel by an alternative means if one is available for this route",
-     "Delay the trip until conditions have cleared enough that you are comfortable making the drive"
+     "Wait somewhere safe, recheck the pass and weather conditions, and reassess before starting.",
+     "If a driver with recent winter highway experience is available, that person could make the drive instead.",
+     "Delay the trip until a forecast window with reduced wind and precipitation, if that is an option",
+     "If the pass is closed or restricted, consider whether the trip can be postponed entirely"
     ],
     "prep_checklist": [],
     "watch_for": [],
     "limits": [
      "Drive Home doesn't have live traffic, weather, or road-condition data. This assessment uses only what you reported. If conditions change, reassess before leaving."
     ]
-   }
+   },
+   "optionalSections": [
+    "factors_in_favor"
+   ]
   },
   {
    "name": "assess-german-four-conditions",
@@ -131,30 +133,34 @@
    },
    "output": {
     "recommendation": "pause",
-    "headline": "Kurz innehalten, bis die Umleitung klar ist – dann neu entscheiden.",
-    "summary": "Regen und Nebel sind gemeldet. Die unbekannte Baustellen-Umleitung bei Nacht und starkem Verkehr erhöht das Orientierungsrisiko. Die Fahrt wirkt grundsätzlich machbar, aber die Umleitungsstrecke sollte vor Abfahrt geklärt sein.",
-    "main_concern": "Eine unbekannte Umleitung bei Nacht, Nebel und starkem Verkehr macht Navigation schwieriger und erfordert mehr Aufmerksamkeit.",
+    "headline": "Kurze Pause empfohlen – eine konkrete Unklarheit lässt sich vor der Abfahrt klären.",
+    "summary": "Die Unklarheit über die Umleitung bei gleichzeitig sinkender Sichtweite ist der Punkt, der sich vor der Abfahrt klären lässt. Danach können Sie neu beurteilen, ob die Fahrt passt.",
+    "main_concern": "Unbekannte Umleitung bei aktiv sinkender Sichtweite durch Nebel und Regen – beides zusammen, spät nachts.",
     "factors_harder": [
-     "Regen und Nebel sind gemeldet",
-     "Baustellen-Umleitung ist unbekannt",
-     "Spätabends, Dunkelheit",
-     "Starker Verkehr gemeldet",
-     "Gemischte Straßentypen – 75 Minuten Fahrtzeit"
+     "Nebel und Regen gleichzeitig – Sichtweite sinkt nach eigenen Angaben weiter",
+     "Unbekannte Umleitungsführung durch die Baustelle",
+     "Starker Verkehr spät in der Nacht erhöht Überraschungspotenzial",
+     "75 Minuten Fahrtzeit bei diesen Bedingungen ohne Ortskenntnis der Umleitung"
     ],
-    "factors_in_favor": [],
-    "before_you_decide": "Prüfe die Umleitungsstrecke vor der Abfahrt, zum Beispiel über eine Navigations-App oder die Verkehrsmeldungen des jeweiligen Landes- oder Stadtbetriebs. Wenn du die Route kennst oder sie in der App hast, fällt ein großer Teil der Unsicherheit weg.",
+    "factors_in_favor": [
+     "Fahrer fühlt sich nach eigenen Angaben fit"
+    ],
+    "before_you_decide": "Klären Sie vor der Abfahrt, wie die Umleitung verläuft – zum Beispiel über eine aktuelle Navigationsapp, die Baustellenbeschilderung vorab auf einer Karte nachvollziehen oder eine offizielle Verkehrsinformationsquelle (z. B. Verkehrslagebericht des zuständigen Landesbetriebs). Wenn Sie die Umleitung kennen oder eingespeichert haben, entfällt der Hauptgrund für diese Empfehlung.",
     "safer_options": [
-     "Umleitungsstrecke jetzt recherchieren und zumindest grob einprägen, dann neu entscheiden",
-     "Warten, bis Sicht und Verkehrslage sich verbessern, und vor Abfahrt neu einschätzen",
-     "Eine ausgeruhte Person um die Fahrt bitten, falls das möglich ist",
-     "Auf öffentliche Verkehrsmittel oder ein Taxi umsteigen, wenn das eine Option ist"
+     "Umleitung jetzt am Rechner oder Gerät einsehen und in ein Navigationsgerät einprogrammieren – erst dann abfahren",
+     "Warten, bis der Nebel sich etwas hebt oder der Verkehr nachlässt, dann neu beurteilen",
+     "Falls verfügbar, jemanden bitten, die Fahrt zu übernehmen, der die Strecke kennt",
+     "Falls möglich, die Nacht am Büro oder in der Nähe verbringen und bei Tageslicht und besserer Sicht fahren"
     ],
     "prep_checklist": [],
     "watch_for": [],
     "limits": [
      "Drive Home hat keine Live-Daten zu Verkehr, Wetter oder Straßenzustand. Diese Einschätzung verwendet nur das, was du angegeben hast. Wenn sich die Bedingungen ändern, bewerte die Fahrt vor der Abfahrt neu."
     ]
-   }
+   },
+   "optionalSections": [
+    "factors_in_favor"
+   ]
   },
   {
    "name": "assess-very-tired-server-boundary-de",
@@ -217,30 +223,34 @@
    },
    "output": {
     "recommendation": "pause",
-    "headline": "Wait and reassess before leaving — the fatigue and worsening rain together are worth taking seriously before a 45-minute mixed-road drive in heavy traffic.",
-    "summary": "You reported feeling a little tired and caught yourself yawning before the drive began. The rain is heavier than it was earlier, and you are facing 45 minutes of heavy traffic on mixed roads in the evening. None of these alone would necessarily stop the drive, but together they are worth a short pause and honest reassessment.",
-    "main_concern": "Pre-drive yawning alongside worsening rain and heavy traffic on a 45-minute evening drive on mixed roads raises the stakes on a drive where you need to stay alert.",
+    "headline": "Worth pausing a few minutes before starting — the combination of tiredness and heavier rain is worth taking seriously.",
+    "summary": "You've reported feeling a little tired, caught yourself yawning on the way to the car, and noticed the rain has intensified since you arrived. Any one of those alone might not shift the call, but together — on a 45-minute mixed-road drive in heavy evening traffic — they make a short pause before departure the prudent move.",
+    "main_concern": "Self-reported tiredness combined with yawning and worsening rain heading into a 45-minute drive in heavy traffic.",
     "factors_harder": [
-     "Yawning noticed before the drive started — fatigue already present at departure",
-     "Rain is heavier now than on arrival",
-     "Heavy traffic reported",
-     "45-minute duration on mixed roads in evening conditions",
-     "Yawning and heavier rain both present before departure"
+     "Yawning before even reaching the car is a concrete signal of fatigue, not just a feeling.",
+     "Rain has worsened since you arrived at the office.",
+     "Heavy traffic extends the time you need to stay fully attentive.",
+     "45 minutes on mixed roads in rain requires sustained focus."
     ],
-    "factors_in_favor": [],
-    "before_you_decide": "The key question is whether you feel clearly alert right now — not just 'good enough.' If you decide to wait, reassess honestly before you leave. If the rain continues to intensify, check whether local conditions are changing in ways that matter to you.",
+    "factors_in_favor": [
+     "You noticed the fatigue and the worsening rain before starting — not mid-drive."
+    ],
+    "before_you_decide": "Sit quietly for a few minutes without driving. Notice whether the yawning continues or the tiredness feels worse. If either does, that is a reason to delay further or hand the drive to someone else if that option exists. If you feel more alert after the rest, reassess then.",
     "safer_options": [
-     "Wait somewhere safe and reassess before leaving; go only if you feel clearly alert and are comfortable with the conditions",
-     "Ask someone who is available and willing whether they could drive you instead",
-     "Check whether public transit or rideshare reach your destination",
-     "Delay the trip until conditions or your alertness improve enough that you are comfortable making the drive"
+     "Wait somewhere safe and reassess before starting.",
+     "If a rested person is available, ask them to drive instead.",
+     "If another mode of transport is available for this route, use it and avoid driving in your current state.",
+     "If the option exists, delay until you feel more alert."
     ],
     "prep_checklist": [],
     "watch_for": [],
     "limits": [
      "Drive Home doesn't have live traffic, weather, or road-condition data. This assessment uses only what you reported. If conditions change, reassess before leaving."
     ]
-   }
+   },
+   "optionalSections": [
+    "factors_in_favor"
+   ]
   }
  ]
 }

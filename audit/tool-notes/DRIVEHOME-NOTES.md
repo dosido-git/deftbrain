@@ -104,6 +104,21 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
     construction` · `highway city rural mixed` · `fine a_little_tired very_tired
     anxious not_great`. The backend 400s on anything else, in the reader's language.
 
+16. **OUTPUT DISCIPLINE and STATE-SPECIFIC OUTPUT RULES** (owner, 2026-08-25)
+   are the general form of rules 8-12 — do not fill a section because it
+   exists, prefer one strong item to three generic ones, empty is a correct
+   answer. The `cleanList` caps in `sanitizeResult` ARE those rules' numbers
+   (harder 5, favor 4, safer 4, prep 3, watch 2); if you change one, change
+   both, or the prompt states a limit nothing enforces. A GO answer should come
+   out materially shorter than a pause — roughly 1,000 characters against
+   1,800-2,100. If they converge, the discipline block has stopped working.
+17. **`invented_recovery_interval` has to name its fields.** The term existed
+   for a round and the checker applied it only to `before_you_decide` while
+   "wait inside for 10-15 minutes" sailed through as `safer_options[0]` in two
+   runs of three. WHAT FAILS #8 now says CHECK safer_options AND prep_checklist
+   explicitly, and three clean runs came back with none. A guard term that
+   names a failure but not where to look for it is half a rule.
+
 ## Known, not fixed
 
 - The Try-an-example pill is **1.2:1 in dark mode** — `headerColor #1e2a3a` at
@@ -112,5 +127,16 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
   (DriveHome, PlantRescue, SafeWalk, SensoryMinefieldMapper, SpiralStopper,
   PronounceItRight). PF-17c's premise — "headerColor is pale on 119 of 125" —
   holds in light mode and inverts in dark. Catalog-wide decision, not a local patch.
+- The repair occasionally grafts one `safer_options` entry onto another, so two
+  entries say nearly the same thing. Exact duplicates are dropped; near ones are
+  not. An anti-duplication clause was tried in the SHARED repair prompt on
+  2026-08-25 and NOT kept: no benefit could be demonstrated over the tool's own
+  "each option is a different KIND" rule, and telling every v2 repair not to
+  repeat a sibling field is dangerous for schemas that legitimately carry the
+  same identifier in several sections.
+- The v2 guard check fails open on roughly 1 call in 49 (`maxRetries: 0`, a JSON
+  parse error, logged as "check failed — returning the unguarded result").
+  Measured across 49 checks this session. That is a deliberate latency trade in
+  `backend/lib/outputGuard.js`, left alone.
 - With "Start over" showing, the header tagline is squeezed to roughly one word
   per line at 375px in Spanish. Same flex row as every other PF-30 tool.

@@ -5,7 +5,7 @@
   "model": "MODELS.SMART",
   "baseline": "crisis-prioritizer-v2",
   "how_to_regress": "npm run check:golden crisis-prioritizer  (dev backend up)",
-  "note": "Recaptured 2026-08-25. The V2 rewrite replaced the whole shape — grounding_message / reality_check / todays_actual_must_dos / anxiety_audit / objective_priorities / guilt_free_deferrals / energy_plan / overcommitment_warning are gone, and headline / do_first / do_next / can_probably_wait / need_one_fact / capacity_fit / just_one_thing took their place. The old sample was never recaptured, so check:golden failed on every section and backend/lib/completeness.js — which builds its expected shape from these files — logged tool_thin_result on every healthy call. A task appears in exactly one primary bucket; router.outputGuard is live. cp_ i18n split from ChaosPilot (chp_)."
+  "note": "Recaptured 2026-08-25. The V2 rewrite replaced the whole shape — grounding_message / reality_check / todays_actual_must_dos / anxiety_audit / objective_priorities / guilt_free_deferrals / energy_plan / overcommitment_warning are gone, and headline / do_first / do_next / can_probably_wait / need_one_fact / capacity_fit / just_one_thing took their place. The old sample was never recaptured, so check:golden failed on every section and backend/lib/completeness.js — which builds its expected shape from these files — logged tool_thin_result on every healthy call. A task appears in exactly one primary bucket; router.outputGuard is live. cp_ i18n split from ChaosPilot (chp_). optionalSections: a task appears in exactly ONE primary bucket, so which buckets are populated varies run to run — 2 of 3 clean runs put all three tasks in need_one_fact and left do_first empty. Presence of every key is still asserted; non-emptiness of the four buckets is not. (Whether \"pay rent, 3 days late\" belongs in need_one_fact rather than do_first is a real quality question, unresolved as of 2026-08-25.)"
  },
  "cases": [
   {
@@ -73,7 +73,13 @@
      "first_action": "Identify what this task requires and begin it.",
      "why": "It carries today's deadline, the nearest of the two supplied deadlines."
     }
-   }
+   },
+   "optionalSections": [
+    "do_first",
+    "do_next",
+    "can_probably_wait",
+    "need_one_fact"
+   ]
   }
  ]
 }

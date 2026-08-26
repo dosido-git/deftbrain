@@ -103,7 +103,16 @@ function parseSse(text) {
 const isDiagram = (o) => o && typeof o === 'object' && typeof o.html === 'string' && 'type' in o;
 
 // Derive invariants from the known-good output, assert against the fresh one.
-function diffCase(goldenOut, fresh) {
+//
+// optionalSections: keys the tool is DESIGNED to leave empty some of the time.
+// Presence is still required; non-emptiness is not. Before output-discipline
+// prompts ("return [] rather than filling a section with filler"), every array
+// that happened to be populated at capture time became an invariant, so a tool
+// doing the right thing on a re-run read as a regression. Declare the key on
+// the case rather than capturing a run where it happens to be empty — that is
+// the same assertion made silently, and it hides which fields are optional.
+function diffCase(goldenOut, fresh, optionalSections) {
+  const optional = new Set(Array.isArray(optionalSections) ? optionalSections : []);
   const fails = [];
   if (fresh.status !== 200) fails.push(`HTTP ${fresh.status} (expected 200)`);
   const out = fresh.json;
@@ -119,7 +128,7 @@ function diffCase(goldenOut, fresh) {
       if (!(k in out)) { fails.push(`missing section: "${k}"`); continue; }
       const gv = goldenOut[k];
       const nv = out[k];
-      if (Array.isArray(gv) && gv.length > 0 && (!Array.isArray(nv) || nv.length === 0)) {
+      if (Array.isArray(gv) && gv.length > 0 && !optional.has(k) && (!Array.isArray(nv) || nv.length === 0)) {
         fails.push(`section "${k}" was a non-empty array, now empty/absent`);
       }
     }
@@ -150,7 +159,7 @@ async function runTool(tool) {
       if (/ECONNREFUSED|fetch failed|ENOTFOUND/i.test(why)) console.log(`     ↳ backend not reachable on ${BASE} — start it: npm run dev:backend`);
       continue;
     }
-    const fails = diffCase(c.output, fresh);
+    const fails = diffCase(c.output, fresh, c.optionalSections);
     if (fails.length === 0) { console.log('PASS'); passed++; }
     else { console.log('FAIL'); fails.forEach(f => console.log(`     ✖ ${f}`)); }
   }
