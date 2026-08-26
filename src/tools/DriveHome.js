@@ -200,7 +200,19 @@ const DriveHome = ({ tool }) => {
     return () => clearInterval(timerRef.current);
   }, [timerEnd]);
 
-  const toggleCondition = v => setConditions(p => (p.includes(v) ? p.filter(x => x !== v) : [...p, v]));
+  // A verdict describes the form that produced it. The submit button is hidden
+  // while a result is on screen (owner, 2026-08-25 — Start over is the way back),
+  // so without this an edited form would sit under a stale answer with no way to
+  // re-run it. Worse here than in most tools: a "go" left standing after you
+  // changed Fine to Very tired reads as a verdict on the drive you are now
+  // describing. Editing any assessment input clears the answer, which brings the
+  // button back. The arrival check-in is deliberately untouched — a running
+  // timer belongs to a drive, not to the form.
+  const onEdit = setter => value => { if (session) setSession(null); setter(value); };
+  const toggleCondition = v => {
+    if (session) setSession(null);
+    setConditions(p => (p.includes(v) ? p.filter(x => x !== v) : [...p, v]));
+  };
 
   // ══════════════════════════════════════════
   // ASSESS
@@ -403,25 +415,25 @@ const DriveHome = ({ tool }) => {
           <label className="block">
             <span className={`text-sm font-semibold ${c.label}`}>{t('dh_from')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
             <input className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={from}
-              onChange={e => setFrom(e.target.value)} placeholder={t('dh_ph_from')} />
+              onChange={e => onEdit(setFrom)(e.target.value)} placeholder={t('dh_ph_from')} />
           </label>
           <label className="block">
             <span className={`text-sm font-semibold ${c.label}`}>{t('dh_to')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
             <input className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={to}
-              onChange={e => setTo(e.target.value)} placeholder={t('dh_ph_to')} />
+              onChange={e => onEdit(setTo)(e.target.value)} placeholder={t('dh_ph_to')} />
           </label>
         </div>
         <div className="mt-4">
           <p className={`text-sm font-semibold ${c.label}`}>{t('dh_how_long')} <span className={c.required}>*</span></p>
           <div className="mt-2 flex flex-wrap gap-2">
             {DURATIONS.map(m => (
-              <Choice key={m} active={Number(minutes) === m} onClick={() => setMinutes(String(m))}>
+              <Choice key={m} active={Number(minutes) === m} onClick={() => onEdit(setMinutes)(String(m))}>
                 {m === 60 ? t('dh_dur_60') : m === 90 ? t('dh_dur_90') : t('dh_eta_min', { count: m })}
               </Choice>
             ))}
             <input type="number" min="1" inputMode="numeric" aria-label={t('dh_aria_minutes')}
               className={`w-28 rounded-lg border px-3 py-2 ${c.input}`} value={minutes}
-              onChange={e => setMinutes(e.target.value)} placeholder={t('dh_ph_minutes')} />
+              onChange={e => onEdit(setMinutes)(e.target.value)} placeholder={t('dh_ph_minutes')} />
           </div>
         </div>
       </Card>
@@ -429,7 +441,7 @@ const DriveHome = ({ tool }) => {
       <Card title={t('dh_sec_like')}>
         <p className={`text-sm font-semibold ${c.label}`}>{t('dh_when')} <span className={c.required}>*</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {TIMES.map(([v, k]) => <Choice key={v} active={time === v} onClick={() => setTime(v)}>{t(k)}</Choice>)}
+          {TIMES.map(([v, k]) => <Choice key={v} active={time === v} onClick={() => onEdit(setTime)(v)}>{t(k)}</Choice>)}
         </div>
         <p className={`mt-5 text-sm font-semibold ${c.label}`}>{t('dh_conditions')} <span className={c.textMuted}>{t('dh_select_all')}</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -437,23 +449,25 @@ const DriveHome = ({ tool }) => {
         </div>
         <p className={`mt-5 text-sm font-semibold ${c.label}`}>{t('dh_road_type')} <span className={c.required}>*</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {ROADS.map(([v, k]) => <Choice key={v} active={road === v} onClick={() => setRoad(v)}>{t(k)}</Choice>)}
+          {ROADS.map(([v, k]) => <Choice key={v} active={road === v} onClick={() => onEdit(setRoad)(v)}>{t(k)}</Choice>)}
         </div>
       </Card>
 
       <Card title={t('dh_sec_you')}>
         <p className={`mb-3 text-sm ${c.textMuted}`}>{t('dh_be_literal')}</p>
         <div className="flex flex-wrap gap-2">
-          {STATES.map(([v, k]) => <Choice key={v} active={driverState === v} onClick={() => setDriverState(v)}>{t(k)}</Choice>)}
+          {STATES.map(([v, k]) => <Choice key={v} active={driverState === v} onClick={() => onEdit(setDriverState)(v)}>{t(k)}</Choice>)}
         </div>
         <label className="mt-4 block">
           <span className={`text-sm font-semibold ${c.label}`}>{t('dh_hesitate')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
           <textarea rows={3} className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={concern}
-            onChange={e => setConcern(e.target.value)} placeholder={t('dh_ph_hesitate')} />
+            onChange={e => onEdit(setConcern)(e.target.value)} placeholder={t('dh_ph_hesitate')} />
         </label>
       </Card>
 
-      <button type="button" onClick={assess} disabled={!canAssess || loading} title={t('dh_cmd_enter')}
+      {/* Once a result exists there is nothing to submit — the form above it is
+          the form that produced it, and Start over is the way to a new one. */}
+      {!result && <button type="button" onClick={assess} disabled={!canAssess || loading} title={t('dh_cmd_enter')}
         className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition ${canAssess && !loading ? c.btnPrimary : c.btnIdle}`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '🚗'}</span> {t('dh_checking')}</>
@@ -464,7 +478,7 @@ const DriveHome = ({ tool }) => {
             ⌘↵
           </kbd>
         )}
-      </button>
+      </button>}
 
       {error && (
         <div className={`rounded-xl border p-4 text-sm ${c.danger}`}>{error}</div>

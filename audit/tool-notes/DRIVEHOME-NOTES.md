@@ -161,6 +161,16 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    very-tired boundary, the per-verdict section clamps, the caps, the dedupe
    and the limits line. Verified by forcing `DRIVE_HOME_GUARD_ENTRY_MS=1` —
    the skip fires, the answer still arrives clamped.
+21. **No submit button while a result is on screen** (owner, 2026-08-25). A
+   second prominent "Help me decide about this drive" under a finished answer —
+   especially a DO NOT START — invites re-rolling the verdict. Start over is
+   the way to a new assessment. That change needs its companion or it creates a
+   trap: editing any assessment input now CLEARS the answer, which brings the
+   button back. Without that, a form edited under a hidden button leaves a
+   stale verdict standing — a "go" from before you changed Fine to Very tired,
+   reading as a verdict on the drive you are now describing. The arrival
+   check-in is deliberately not cleared: a running timer belongs to a drive,
+   not to the form.
 
 ## Known, not fixed
 
