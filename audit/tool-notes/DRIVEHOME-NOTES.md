@@ -151,6 +151,16 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    The prompt now says the list is instances of one move and names the tell:
    a dash followed by a fact nobody gave you. Three runs after, "early morning"
    comes back bare or does not appear at all. Golden case 2 is the test case.
+20. **The guard only starts if there is time left for it** —
+   `GUARD_ENTRY_MS`, default 60s, env-overridable. The answer is COMPLETE
+   before `runOutputGuard` is called, and the worst case was main 150s + check
+   45s + repair 45s = **240s** for a request whose deliverable existed at second
+   150. Losing that to a gateway timeout is the worst trade this route can
+   make. Skipping is logged, never silent. Everything that keeps the tool
+   honest under a bad answer is CODE and still runs on the skip path: the
+   very-tired boundary, the per-verdict section clamps, the caps, the dedupe
+   and the limits line. Verified by forcing `DRIVE_HOME_GUARD_ENTRY_MS=1` —
+   the skip fires, the answer still arrives clamped.
 
 ## Known, not fixed
 

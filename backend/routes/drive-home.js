@@ -408,7 +408,20 @@ WHAT FAILS:
 // V2: the tool's primary job is the pre-drive decision.
 // Arrival/check-in behavior is intentionally frontend/local; this route does not
 // pretend to monitor the drive, send messages, or retrieve live traffic/weather.
+// The answer is COMPLETE before the guard runs. Worst case the main call spends
+// its 150s budget, the guard check takes 45 and the repair another 45 — 240s for
+// a request whose deliverable existed at second 150. If the gateway gives up in
+// that last stretch the visitor gets a 502 instead of the answer we already had,
+// which is the worst trade this route can make.
+//
+// So the guard gets a slot only if there is time left for one. Everything that
+// keeps this tool honest under a bad answer is CODE, not the guard: the
+// very-tired boundary, the per-verdict section clamps, the caps, the dedupe and
+// the limits line all still apply. The guard is the quality pass on top.
+const GUARD_ENTRY_MS = Number(process.env.DRIVE_HOME_GUARD_ENTRY_MS || 60_000);
+
 router.post('/drive-home', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
     const {
       action,
@@ -652,6 +665,14 @@ Return only the requested JSON.`;
     };
     // limits are ours, not the model's — nothing to check and nothing to repair.
     walk({ ...result, limits: undefined }, '');
+
+    const elapsed = Date.now() - startedAt;
+    if (elapsed > GUARD_ENTRY_MS) {
+      // Logged rather than silent: a guard that has stopped running looks
+      // exactly like one that found nothing.
+      console.log(`[drive-home-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
+      return res.json(finalise(result));   // same clamps the guarded path exits through
+    }
 
     await runOutputGuard(result, {
       label: 'drive-home-v2',
