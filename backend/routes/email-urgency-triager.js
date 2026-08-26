@@ -370,6 +370,24 @@ consequence.
 A deadline days or weeks away belongs in THIS_WEEK unless the email
 establishes a specific reason action is needed today.
 
+SAME-DAY REQUESTS:
+
+A clear, direct request for the user to respond or take an action today
+normally belongs in NOW, even when the consequence of waiting is modest.
+
+Do not require a serious consequence before honoring an explicit same-day
+request.
+
+Distinguish between:
+- a sender explicitly asking the user to act today -> NOW
+- a sender merely expressing a preference or hope for today -> use the
+  actual deadline and consequences to decide
+- something that happens today but does not require the user's action
+  today -> not automatically NOW
+
+The purpose of NOW is to identify what genuinely belongs on today's
+attention list, not only what would cause serious harm if delayed.
+
 NO REPLY NEEDED THRESHOLD:
 
 NO REPLY NEEDED means the message does not reasonably invite or require
