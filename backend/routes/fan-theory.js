@@ -3,6 +3,10 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// The theory is finished before the guard runs; never hold it hostage.
+const GUARD_ENTRY_MS = Number(process.env.FAN_THEORY_GUARD_ENTRY_MS || 60_000);
 
 const PERSONALITY = `Fan theory analyst and grader. Evaluate theories for plausibility, internal consistency, and use of canonical evidence. Be the brilliant, slightly pedantic professor who has seen everything.
 
@@ -14,6 +18,7 @@ Never place a double-quote (") character inside any JSON string value — write 
 // POST /fan-theory — Generate a wild fan theory
 // ════════════════════════════════════════════════════════════
 router.post('/fan-theory', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
     const { title, mediaType, direction, userLanguage } = req.body;
 
@@ -39,6 +44,43 @@ ${directionHints[direction] || directionHints.wild}
 
 Generate a wild but internally-consistent fan theory. The theory must cite specific plot details as evidence. It should be WRONG but DEFENSIBLE — that "wait... actually?" feeling.
 
+CANON VS. THEORY — CRITICAL:
+
+The theory may be wild. The evidence may not be invented.
+
+Clearly distinguish between:
+
+1. CANONICAL EVIDENCE
+   Events, dialogue, character behavior, relationships, objects, or other
+   details that actually occur in the source material.
+
+2. INTERPRETATION
+   The deliberately speculative meaning the theory assigns to those facts.
+
+Never invent a scene, event, quote, relationship, outcome, character status,
+ownership interest, chronology, or other supposedly canonical fact merely
+because it would strengthen the theory.
+
+When uncertain whether a specific detail is actually canonical, do not state
+it as fact. Either omit it or explicitly qualify it.
+
+The fun should come from making an absurdly clever interpretation of real
+evidence—not from fabricating the evidence itself.
+
+Evidence ratings such as COMPELLING, SUSPICIOUS, A STRETCH, and PURE DELUSION
+rate how strongly a real canonical detail supports the theory. They do not
+indicate confidence that the underlying canonical detail is true.
+
+SMOKING GUN:
+
+Choose the single real canonical detail that creates the most entertaining
+case for the theory.
+
+"Smoking Gun" means the theory's best piece of circumstantial evidence,
+not proof that the theory is actually true.
+
+Do not invent or alter canon to create a Smoking Gun.
+
 Return ONLY valid JSON:
 
 {
@@ -47,12 +89,12 @@ Return ONLY valid JSON:
   "the_theory": "Full theory explanation in 150-250 words. Build the case like a conspiracy theorist: evidence, connections, the big reveal. Make it compelling.",
   "evidence": [
     {
-      "detail": "A specific plot detail that 'supports' the theory",
-      "spin": "How you interpret this detail to support the theory",
+      "detail": "A REAL detail from the source material — something that actually occurs in it. Not invented, not altered",
+      "spin": "The speculative reading you are putting on that real detail. This is where the invention belongs",
       "strength": "COMPELLING | SUSPICIOUS | A STRETCH | PURE DELUSION"
     }
   ],
-  "the_smoking_gun": "The single strongest piece of evidence. The one that makes people pause.",
+  "the_smoking_gun": "The single REAL canonical detail that makes the most entertaining case. Circumstantial evidence for the theory, not proof it is true, and never invented to fit",
   "counterargument": "The strongest argument AGAINST this theory — and your response to it",
   "plausibility": 4,
   "mind_blown_factor": 7,
@@ -72,6 +114,47 @@ plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only —
     if (!parsed.theory_name || !Array.isArray(parsed.evidence)) {
       return res.status(500).json({ error: 'Could not generate a fan theory. Please try again.' });
     }
+
+    const elapsed = Date.now() - startedAt;
+    if (elapsed > GUARD_ENTRY_MS) {
+      console.log(`[fan-theory-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
+      return res.json(parsed);
+    }
+
+    // Only the halves that claim to be canon. `spin` is the invented reading and
+    // is the product; guarding it would be guarding the joke.
+    const fields = [];
+    (parsed.evidence || []).forEach((e, i) => {
+      if (typeof e?.detail === 'string' && e.detail.trim()) fields.push([`evidence[${i}].detail`, e.detail]);
+    });
+    if (typeof parsed.the_smoking_gun === 'string') fields.push(['the_smoking_gun', parsed.the_smoking_gun]);
+    if (typeof parsed.rabbit_hole === 'string') fields.push(['rabbit_hole', parsed.rabbit_hole]);
+
+    await runOutputGuard(parsed, {
+      label: 'fan-theory-v2',
+      fields,
+      supplied: `THE VISITOR NAMED ONE TITLE AND NOTHING ELSE:
+Title: ${title.trim()}
+Type: ${mediaType || 'movie'}
+Theory direction they picked: ${direction || 'wild'}
+
+The source material is public and widely known; you may use it. What you may not do is add to it.
+
+WHAT FAILS — and ONLY these. A wild, absurd, obviously-wrong READING is the entire product and must never be flagged:
+1. A scene, event or moment that does not occur in the source material.
+2. A line of dialogue nobody says, presented as a quote.
+3. A relationship, ownership, parentage, or character status that is not established in the work.
+4. A chronology or outcome that contradicts the work, stated as if it were canon.
+5. A detail the writer is plainly unsure about, stated flatly as fact rather than qualified.
+6. A smoking gun that is not actually in the source. The theory's best circumstantial evidence still has to exist.
+
+The COMPELLING / SUSPICIOUS / A STRETCH / PURE DELUSION rating describes how well a REAL detail supports the theory. A PURE DELUSION rating does not license an invented detail.`,
+      promise: 'Fan Theory builds a wild but defensible theory about a named work: an absurdly clever interpretation of details that really are in it.',
+      guard: router.outputGuard,
+      userLanguage,
+      locale: withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+    });
+
     res.json(parsed);
 
   } catch (error) {
@@ -136,5 +219,24 @@ plausibility and creativity are INTEGERS 1-10 (return the number only). strength
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+// fan-theory-v2. Reviewed 2026-08-26. The theory is meant to be wrong; the
+// EVIDENCE is not meant to be invented. Everything here polices the second
+// half, and nothing polices the first — a wild reading is the product.
+router.outputGuard = {
+  prohibit: [
+    'invented_scene_or_event',
+    'invented_quote_or_dialogue',
+    'invented_relationship_or_character_status',
+    'invented_chronology_or_outcome',
+    'uncertain_detail_stated_as_canon',
+    'smoking_gun_that_is_not_in_the_source',
+  ],
+  require: [
+    'evidence_is_real_even_where_the_reading_is_not',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

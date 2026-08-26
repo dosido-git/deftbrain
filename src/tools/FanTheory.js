@@ -38,17 +38,12 @@ const EVIDENCE_STYLES = {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+// No direction here on purpose. Try an example used to switch it to Secret
+// Villain or It's a Simulation, so the visitor never saw Surprise Me — which is
+// the default and the best first answer (owner, 2026-08-26).
 const EXAMPLES = [
-  {
-    title: 'The Office',
-    mediaType: 'show',
-    direction: 'villain',
-  },
-  {
-    title: 'Inception',
-    mediaType: 'movie',
-    direction: 'simulation',
-  },
+  { title: 'The Office', mediaType: 'show' },
+  { title: 'Inception', mediaType: 'movie' },
 ];
 const FanTheory = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -110,7 +105,6 @@ const FanTheory = ({ tool }) => {
     const ex = pickExample('FanTheory', EXAMPLES);
     setTitle(ex.title);
     setMediaType(ex.mediaType);
-    setDirection(ex.direction);
   };
 
   // ── State (all useState first — PF-11/PF-14) ──

@@ -2048,7 +2048,7 @@ export const tools = [
   icon: "🧵",
   categories: ['What If?'],
   headerColor: "#b8dcd8",
-  description: "Name any movie, show, book, or game — AI generates a wild but internally-consistent fan theory with cited evidence. Six theory directions: Surprise Me, Secret Villain, Shared Universe, Timeline Twist, Dead or Alive, and It's a Simulation. Each theory comes with evidence rated from Compelling to Pure Delusion, a Smoking Gun, counterarguments, and plausibility/mind-blown ratings. Second mode: Grade My Theory — paste your own fan theory and get an academic grade with strengths, weaknesses, and a Reddit performance prediction.",
+  description: "Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.",
   guide: {
     overview: "FanTheory generates conspiracy theories for fiction — the kind that make you go 'wait... actually?' Every theory cites specific plot details as evidence and is internally consistent, even when it's a stretch.",
     howToUse: [
