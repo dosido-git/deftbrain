@@ -4,6 +4,7 @@
 // stay identical across languages.
 export const fanTheory = {
   en: {
+    ft_closest_smoking_gun: "Closest Thing to a Smoking Gun",
     ft_title: "Fan Theory",
     ft_tagline: "Name anything — I'll generate a wild but defensible fan theory",
     ft_title_label: "Title",
@@ -78,6 +79,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Plausibility:",
   },
   es: {
+    ft_closest_smoking_gun: "Lo más parecido a una prueba irrefutable",
     ft_title: "Fan Theory",
     ft_tagline: "Nombra cualquier cosa — generaré una teoría de fans descabellada pero defendible",
     ft_title_label: "Título",
@@ -152,6 +154,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Plausibilidad:",
   },
   zh: {
+    ft_closest_smoking_gun: "最接近铁证的东西",
     ft_title: "Fan Theory",
     ft_tagline: "说出任何作品——我会生成一个大胆却站得住脚的粉丝理论",
     ft_title_label: "标题",
@@ -226,6 +229,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "可信度：",
   },
   hi: {
+    ft_closest_smoking_gun: "सबसे मज़बूत सबूत के सबसे करीब",
     ft_title: "Fan Theory",
     ft_tagline: "कोई भी नाम बताएं — मैं एक बेतुकी पर तर्कसंगत फैन थ्योरी बनाऊंगा",
     ft_title_label: "शीर्षक",
@@ -300,6 +304,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "विश्वसनीयता:",
   },
   ar: {
+    ft_closest_smoking_gun: "أقرب شيء إلى دليل قاطع",
     ft_title: "Fan Theory",
     ft_tagline: "اذكر أي عمل — وسأصوغ نظرية معجبين جامحة لكن قابلة للدفاع عنها",
     ft_title_label: "العنوان",
@@ -374,6 +379,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "المعقولية:",
   },
   pt: {
+    ft_closest_smoking_gun: "O mais próximo de uma prova cabal",
     ft_title: "Fan Theory",
     ft_tagline: "Diga qualquer coisa — vou criar uma teoria de fãs maluca, mas defensável",
     ft_title_label: "Título",
@@ -448,6 +454,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Plausibilidade:",
   },
   fr: {
+    ft_closest_smoking_gun: "Ce qui s’en rapproche le plus",
     ft_title: "Fan Theory",
     ft_tagline: "Nommez n'importe quoi — je génère une théorie de fans folle mais défendable",
     ft_title_label: "Titre",
@@ -522,6 +529,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Plausibilité :",
   },
   de: {
+    ft_closest_smoking_gun: "Das, was einem Beweis am nächsten kommt",
     ft_title: "Fan Theory",
     ft_tagline: "Nenne irgendetwas — ich generiere eine wilde, aber haltbare Fan-Theorie",
     ft_title_label: "Titel",
@@ -596,6 +604,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Plausibilität:",
   },
   ja: {
+    ft_closest_smoking_gun: "決定打にいちばん近いもの",
     ft_title: "Fan Theory",
     ft_tagline: "作品名を入力すれば、突拍子もないが筋の通ったファン理論を生成します",
     ft_title_label: "タイトル",
@@ -670,6 +679,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "説得力：",
   },
   ko: {
+    ft_closest_smoking_gun: "결정적 증거에 가장 가까운 것",
     ft_title: "Fan Theory",
     ft_tagline: "무엇이든 말해 보세요 — 엉뚱하지만 그럴듯한 팬 이론을 만들어 드립니다",
     ft_title_label: "제목",
@@ -744,6 +754,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "설득력:",
   },
   ru: {
+    ft_closest_smoking_gun: "Самое близкое к неопровержимой улике",
     ft_title: "Fan Theory",
     ft_tagline: "Назовите что угодно — я придумаю безумную, но защитимую фанатскую теорию",
     ft_title_label: "Название",
@@ -818,6 +829,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "Правдоподобие:",
   },
   th: {
+    ft_closest_smoking_gun: "สิ่งที่ใกล้เคียงหลักฐานชี้ขาดที่สุด",
     ft_title: "Fan Theory",
     ft_tagline: "บอกชื่ออะไรก็ได้ — แล้วฉันจะสร้างทฤษฎีแฟนคลับสุดแหวกแต่มีเหตุผล",
     ft_title_label: "ชื่อเรื่อง",
@@ -892,6 +904,7 @@ export const fanTheory = {
     ft_copy_plaus_line: "ความน่าเชื่อถือ:",
   },
   vi: {
+    ft_closest_smoking_gun: "Thứ gần với bằng chứng quyết định nhất",
     ft_title: "Fan Theory",
     ft_tagline: "Nêu bất cứ tác phẩm nào — tôi sẽ tạo ra một giả thuyết người hâm mộ điên rồ nhưng có cơ sở",
     ft_title_label: "Tựa đề",

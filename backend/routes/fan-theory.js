@@ -21,7 +21,7 @@ Never place a double-quote (") character inside any JSON string value — write 
 router.post('/fan-theory', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const startedAt = Date.now();
   try {
-    const { title, mediaType, direction, userLanguage } = req.body;
+    const { title, mediaType, direction, typeTouched, userLanguage } = req.body;
 
     if (!title?.trim()) {
       return res.status(400).json({ error: 'Name a movie, show, book, or game!' });
@@ -39,72 +39,51 @@ router.post('/fan-theory', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     const userPrompt = `FAN THEORY GENERATOR:
 
 TITLE: "${title.trim()}"
-TYPE: ${mediaType || 'movie'}
+TYPE: ${mediaType || 'movie'}${typeTouched ? ' (the visitor chose this)' : ' (a default the visitor did not change — if this work is primarily known in a different medium, use that one instead and say so in detected_type)'}
 DIRECTION: ${direction || 'wild'}
 ${directionHints[direction] || directionHints.wild}
 
-Generate a wild but internally-consistent fan theory. The theory must cite specific plot details as evidence. It should be WRONG but DEFENSIBLE — that "wait... actually?" feeling.
+Create the most surprising, entertaining theory you can without changing the
+source material to make it possible.
 
-CANONICAL EVIDENCE — STRICT MODE:
+Your job is to reinterpret real details, not invent new ones. The ideal reaction is:
+"That's probably wrong—but I can't believe those details actually fit."
+not:
+"That would be interesting if those things had actually happened."
 
-Use only simple canonical observations you are highly confident are true.
+Be conservative about what happened; be fearless about what it might mean.
 
-Prefer broad, unmistakable facts over impressive-sounding specifics.
+CANON INTEGRITY — NON-NEGOTIABLE
 
-GOOD:
-"Michael repeatedly behaves in ways that would get many managers in trouble."
+The theory may be wild. The evidence may not be invented.
 
-BAD:
-"Michael is almost fired or demoted at least seven times."
+- Base every factual claim about the source material on events, dialogue, characters, relationships, chronology, rules, or details you are confident actually appear in the work.
+- Never invent, combine, relocate, or misremember a scene, quotation, character action, plot event, or piece of lore in order to make the theory work.
+- Clearly separate observation from interpretation. In each evidence item, the observation must describe something actually present in the source; the interpretation may speculate freely about what it means.
+- If you are uncertain whether a specific detail is canonical, do not present it as evidence. Use a broader detail you are confident about or omit it.
+- Do not treat absence of information as proof. You may identify an omission or ambiguity, but label the inference appropriately.
+- Prefer a weaker theory supported by real evidence over a spectacular theory supported by invented evidence.
 
-GOOD:
-"The documentary crew follows the employees for years."
+EVIDENCE STRENGTH
 
-BAD:
-"The crew never speaks, never interferes, and never reacts emotionally."
+Assign evidence labels based on how strongly the real canonical detail supports the theory—not on how entertaining the interpretation is.
+A theory may contain weak evidence, stretches, and outright absurd interpretations. Label them accordingly. Do not inflate evidence strength to make the theory seem more convincing.
 
-GOOD:
-"Sabre introduces unusual products and management practices."
+THE SMOKING GUN
 
-BAD:
-Listing specific Sabre policies unless you are highly confident each one
-actually appears in the source.
+Use THE SMOKING GUN only for the strongest genuine canonical detail supporting the theory.
+If no detail deserves that description, use CLOSEST THING TO A SMOKING GUN instead — set "smoking_gun_is_weak" to true when you do. Never manufacture or distort evidence to create a smoking gun.
+Keep it to 2-3 sentences, under 300 characters: the canonical detail first, then the reading. Both halves must be there. It is the punchline, not another essay.
 
-Never add:
-- exact counts unless certain
-- "always," "never," "only," or similar absolutes unless unquestionably true
-- rankings, statistics, chronology, quotes, episode details, or named events
-  unless highly confident
-- plausible details reconstructed from memory
-- facts inferred from the theory itself
+COUNTERARGUMENT
 
-When choosing between a colorful specific claim and a boring canonical fact,
-USE THE BORING CANONICAL FACT.
+Give the strongest canon-based argument against the theory. Do not create a weak objection merely so the theory can defeat it.
+If the counterargument seriously damages or defeats the theory, say so. A theory can be entertaining even when it is probably wrong.
 
-The creativity belongs entirely in the interpretation after the arrow.
+PLAUSIBILITY SCORE
 
-In the JSON below, "detail" is the text BEFORE the arrow and "spin" is the
-text AFTER it. The reader sees them joined that way.
-
-SMOKING GUN:
-
-Choose the single real canonical detail that creates the most entertaining
-case for the theory.
-
-"Smoking Gun" means the theory's best piece of circumstantial evidence,
-not proof that the theory is actually true.
-
-Do not invent or alter canon to create a Smoking Gun.
-
-SMOKING GUN LENGTH:
-
-Keep the Smoking Gun concise: 2–3 sentences maximum, and under 300 characters
-in total — count them.
-State the canonical detail first, then the theory's interpretation. Both halves
-must be present; a bare fact with no reading is not a Smoking Gun, and a reading
-with no fact is not evidence.
-It should feel like the theory's punchline, not another essay. If it runs long,
-cut the qualifying clauses, not the reading.
+Score plausibility according to how well the theory fits the actual source material: strength of evidence, consistency with canon, explanatory power, contradictions, and how many unsupported assumptions it requires.
+Creativity and entertainment value belong in the mind-blown score, not the plausibility score.
 
 Return ONLY valid JSON:
 
@@ -114,11 +93,13 @@ Return ONLY valid JSON:
   "the_theory": "Full theory explanation in 150-250 words. Build the case like a conspiracy theorist: evidence, connections, the big reveal. Make it compelling.",
   "evidence": [
     {
-      "detail": "A SIMPLE, BROAD canonical observation you are highly confident of. Boring and unmistakable beats colourful and specific. No counts, absolutes, quotes or episode details unless certain",
-      "spin": "The speculative reading you are putting on that real detail. This is where the invention belongs",
+      "detail": "OBSERVATION ONLY. A specific, canonical detail from the work that you are confident is accurate. The interface draws the arrow and prints spin after it — do NOT put an arrow, and do NOT put the interpretation, in this field",
+      "spin": "THEORY INTERPRETATION. How a fan theorist could reinterpret that real detail to support the theory. This is the text AFTER the arrow, and it may be audacious, conspiratorial or ridiculous",
       "strength": "COMPELLING | SUSPICIOUS | A STRETCH | PURE DELUSION"
     }
   ],
+  "detected_type": "movie | show | book | game — the medium this work is primarily known in",
+  "smoking_gun_is_weak": false,
   "the_smoking_gun": "UNDER 300 CHARACTERS, 2-3 sentences. One sentence of canon, then one or two of reading — BOTH halves must be there. The canonical detail first, then the theory reading of it. The punchline, not another essay. Real canon, circumstantial evidence for the theory, never proof and never invented to fit",
   "counterargument": "The strongest argument AGAINST this theory — and your response to it",
   "plausibility": 4,
@@ -151,6 +132,18 @@ If uncertain, remove it.`;
       system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'fan-theory' });
+
+    // A model told to think in "observation → interpretation" sometimes writes
+    // the arrow into the observation field. Split rather than scold: the half
+    // after the arrow is the spin, which is where it belonged.
+    (parsed.evidence || []).forEach(e => {
+      if (typeof e?.detail === 'string' && e.detail.includes('→')) {
+        const [head, ...tail] = e.detail.split('→');
+        const rest = tail.join('→').trim();
+        e.detail = head.trim();
+        if (rest && !e.spin) e.spin = rest;
+      }
+    });
 
     if (!parsed.theory_name || !Array.isArray(parsed.evidence)) {
       return res.status(500).json({ error: 'Could not generate a fan theory. Please try again.' });

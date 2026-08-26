@@ -105,11 +105,16 @@ const FanTheory = ({ tool }) => {
     const ex = pickExample('FanTheory', EXAMPLES);
     setTitle(ex.title);
     setMediaType(ex.mediaType);
+    setTypeTouched(false);
   };
 
   // ── State (all useState first — PF-11/PF-14) ──
   const [expandedSaved, setExpandedSaved] = useState(null); // id of expanded saved card
   const [mediaType, setMediaType] = useState('movie');
+  // Movie is a starting guess, not an answer. Until the visitor picks a type
+  // themselves the backend is free to use the medium the work is actually known
+  // in, and the control corrects itself to match (owner, 2026-08-26).
+  const [typeTouched, setTypeTouched] = useState(false);
   const [direction, setDirection] = useState('wild');
   const [myTheory, setMyTheory] = useState('');
   const [gradeResults, setGradeResults] = useState(null);
@@ -139,13 +144,16 @@ const FanTheory = ({ tool }) => {
     setError('');
     // Don't blank results yet — keep showing previous while loading
     try {
-      const data = await callToolEndpoint('fan-theory', { title: title.trim(), mediaType, direction, userLocale, userCurrency, userRegion });
+      const data = await callToolEndpoint('fan-theory', { title: title.trim(), mediaType, direction, typeTouched, userLocale, userCurrency, userRegion });
       setResults(data);
+      // The control corrects itself to whatever medium the work is actually
+      // known in, unless the visitor already picked one.
+      if (!typeTouched && MEDIA_TYPES.some(m => m.value === data?.detected_type)) setMediaType(data.detected_type);
       setGradeResults(null);
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 200);
     } catch (err) { setError(err.message || t('ft_err_theory')); }
-  }, [title, mediaType, direction, callToolEndpoint, results, setTheoryHistory, setResults, userLocale, userCurrency, userRegion, t]);
+  }, [title, mediaType, direction, typeTouched, callToolEndpoint, results, setTheoryHistory, setResults, userLocale, userCurrency, userRegion, t]);
 
   // ── API: Grade theory ──
   const runGrade = useCallback(async () => {
@@ -252,7 +260,7 @@ const FanTheory = ({ tool }) => {
             </div>
             {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
             {(gradeResults || results || myTheory.trim() || theoryHistory.length || title.trim()) ? (
-              <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setDirection('wild'); setTheoryHistory([]); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+              <button onClick={() => { setResults(null); setGradeResults(null); setMyTheory(''); setError(''); setTitle(''); setMediaType('movie'); setTypeTouched(false); setDirection('wild'); setTheoryHistory([]); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                 🔄 {t('ft_reset')}
               </button>
             ) : null}
@@ -270,7 +278,7 @@ const FanTheory = ({ tool }) => {
               <label className={`text-xs font-bold ${c.textSecondary} uppercase block mb-1.5`}>{t('ft_type_label')}</label>
               <div className="flex gap-1.5 flex-wrap">
                 {MEDIA_TYPES.map(m => (
-                  <button key={m.value} onClick={() => setMediaType(m.value)}
+                  <button key={m.value} onClick={() => { setMediaType(m.value); setTypeTouched(true); }}
                     className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border min-h-[30px] ${
                       mediaType === m.value ? c.pillActive : c.pillInactive}`}>
                     {m.icon} {t(m.labelKey)}
@@ -387,7 +395,7 @@ const FanTheory = ({ tool }) => {
 
           {results.the_smoking_gun && (
             <div className={`${c.warning} border-2 rounded-xl p-4`}>
-              <p className="text-[10px] font-bold uppercase mb-1">🔫 {t('ft_the_smoking_gun')}</p>
+              <p className="text-[10px] font-bold uppercase mb-1">🔫 {results.smoking_gun_is_weak ? t('ft_closest_smoking_gun') : t('ft_the_smoking_gun')}</p>
               <p className="text-sm font-bold">{results.the_smoking_gun}</p>
             </div>
           )}
