@@ -70,6 +70,9 @@ const FocusPocus = ({ tool }) => {
   const [nudge, setNudge] = useState('');
   const [remaining, setRemaining] = useState('');
   const [reviewChoice, setReviewChoice] = useState('');
+  // The suggestion waits for a yes. Nothing starts on a target the person has
+  // not seen (owner, 2026-08-26).
+  const [suggested, setSuggested] = useState('');
   const [error, setError] = useState('');
   const [tick, setTick] = useState(0);
 
@@ -139,15 +142,29 @@ const FocusPocus = ({ tool }) => {
   const makeConcrete = async () => {
     if (!task.trim()) { setError(t('fpo_err_task')); return; }
     const data = await call('focus-pocus', { action: 'prepare', task: task.trim(), enough: enough.trim(), minutes: activeMinutes });
-    if (data?.target) setEnough(data.target);
+    if (data?.target) setSuggested(data.target);
   };
 
+  const begin = async (target) => {
+    const data = await call('focus-pocus/session', {
+      action: 'start', task: task.trim(), target, minutes: activeMinutes,
+    });
+    if (data?.id) { timeUpRef.current = false; setNudge(''); setSuggested(''); setSession(data); }
+  };
+
+  // The target used to fall back to the task itself, so "Sort out the tax
+  // paperwork" became its own stopping point — the one thing this tool exists
+  // to prevent. Nothing starts without a real target now: if what they wrote is
+  // blank or vague, the model proposes one and they approve it first.
   const startSession = async () => {
     if (!task.trim()) { setError(t('fpo_err_task')); return; }
-    const data = await call('focus-pocus/session', {
-      action: 'start', task: task.trim(), target: enough.trim() || task.trim(), minutes: activeMinutes,
-    });
-    if (data?.id) { timeUpRef.current = false; setNudge(''); setSession(data); }
+    const typed = enough.trim();
+    const data = await call('focus-pocus', { action: 'prepare', task: task.trim(), enough: typed, minutes: activeMinutes });
+    if (!data) return;
+    if (typed && data.wasVague === false) return begin(typed);   // theirs was already usable
+    if (data.target) return setSuggested(data.target);
+    if (typed) return begin(typed);                              // model gave nothing; theirs beats the task
+    setError(t('fpo_err_task'));
   };
 
   const extend = async () => {
@@ -186,7 +203,7 @@ const FocusPocus = ({ tool }) => {
     if (session?.id) await callToolEndpoint('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
     timeUpRef.current = false;
     setSession(null); setTask(''); setEnough(''); setMinutes(25); setCustomMinutes('');
-    setNudge(''); setRemaining(''); setReviewChoice(''); setError('');
+    setNudge(''); setRemaining(''); setReviewChoice(''); setSuggested(''); setError('');
   }, [session, callToolEndpoint, setSession]);
   handleResetRef.current = handleReset;
 
@@ -301,6 +318,19 @@ const FocusPocus = ({ tool }) => {
               <p className={`mt-1 text-sm ${c.textMuted}`}>{t('fpo_not_fill_body')}</p>
             </div>
           </Card>
+
+          {suggested && (
+            <Card className={c.infoBox}>
+              <p className="text-xs font-bold uppercase">{t('fpo_suggested_label')}</p>
+              <p className="mt-1 text-sm font-semibold">{suggested}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button type="button" onClick={() => begin(suggested)} disabled={loading}
+                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-bold ${c.btnPrimary}`}>{t('fpo_use_this')}</button>
+                <button type="button" onClick={() => { setEnough(suggested); setSuggested(''); }}
+                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_edit')}</button>
+              </div>
+            </Card>
+          )}
 
           <button type="button" onClick={startSession} disabled={!task.trim() || loading} title={t('fpo_cmd_enter')}
             className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition whitespace-nowrap ${task.trim() && !loading ? c.btnPrimary : c.btnIdle}`}>

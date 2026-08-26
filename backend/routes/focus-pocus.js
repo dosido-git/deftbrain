@@ -100,15 +100,6 @@ ${NO_QUOTE_RULE}`;
 async function coach(kind, body) {
   const { task, enough, target, remaining, minutes, userLanguage, userLocale, userCurrency, userRegion } = body;
   const prompts = {
-    prepare: `Someone is about to start a ${minutes}-minute focus session.
-
-What they typed they are working on: ${task}
-What they typed would make it enough: ${enough || 'NOTHING — they left it blank.'}
-
-Turn that into one concrete stopping point for THIS session. If what they wrote is already concrete and specific, return it close to unchanged rather than rewriting it for the sake of it.
-
-Return ONLY valid JSON: { "target": "one or two sentences, second person" }`,
-
     stuck: `Someone is mid-session and pressed "I'm stuck".
 
 Working on: ${task}
@@ -176,6 +167,37 @@ WHAT FAILS:
   return text;
 }
 
+// prepare needs the model's judgement AND its suggestion, so it does not go
+// through the single-field helper. Whether the person's own wording was already
+// usable decides whether they are interrupted for approval at all.
+const PREPARE_PROMPT = ({ task, enough, minutes }) => `Someone is about to start a ${minutes}-minute focus session.
+
+What they typed they are working on: ${task}
+What they typed would make it enough: ${enough || 'NOTHING — they left it blank.'}
+
+Two jobs. First decide whether what they wrote is ALREADY a usable stopping point — something specific enough that they could answer yes or no to it when the timer ends. "Make progress on it", "work on it", "get started" and a blank are not. Then give the target.
+
+NEVER return the task itself as the target. "Sort out the tax paperwork" is the task; a target is one bounded piece of it that fits in ${minutes} minutes and leaves something behind — a pile, a list, a draft, a decision.
+
+Turn that into one concrete stopping point for THIS session. If what they wrote is already concrete and specific, return it close to unchanged rather than rewriting it for the sake of it.
+
+Return ONLY valid JSON: { "target": "one or two sentences, second person", "wasVague": true or false }`;
+
+async function prepareTarget(body) {
+  const raw = await callClaudeWithRetry({
+    model: MODELS.FAST,
+    max_tokens: 400,
+    system: withLanguage(COACH_RULES, body.userLanguage) + withLocaleContext(body.userLocale, body.userCurrency, body.userRegion),
+    messages: [{ role: 'user', content: PREPARE_PROMPT(body) }],
+  }, { label: 'focus-pocus-prepare' });
+
+  let target = clean(raw?.target, 400);
+  const task = clean(body.task, 300);
+  // The one failure this must never ship: handing back the task as the target.
+  if (!target || target.toLowerCase() === task.toLowerCase()) target = '';
+  return { target, wasVague: raw?.wasVague !== false };
+}
+
 // ═══════════════════════════════════════════════════════════════
 // POST /focus-pocus — the three actions that call the model
 // ═══════════════════════════════════════════════════════════════
@@ -185,8 +207,8 @@ router.post('/focus-pocus', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (action === 'prepare') {
       const task = clean(req.body.task, 300);
       if (!task) return res.status(400).json({ error: t(userLanguage, 'needTask') });
-      const target = await coach('prepare', { ...req.body, task });
-      return res.json({ target });
+      const { target, wasVague } = await prepareTarget({ ...req.body, task });
+      return res.json({ target, wasVague });
     }
 
     if (action === 'stuck') {

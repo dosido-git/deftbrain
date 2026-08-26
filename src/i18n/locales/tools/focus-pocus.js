@@ -4,6 +4,9 @@
 // break plans and a pattern history. None of it survives the redesign.
 export const focusPocus = {
   en: {
+    fpo_suggested_label: 'Suggested stopping point',
+    fpo_use_this: 'Use this',
+    fpo_edit: 'Edit',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Get something done without disappearing into it.',
     fpo_task_label: 'What are you working on?',
@@ -56,6 +59,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   es: {
+    fpo_suggested_label: 'Punto de parada sugerido',
+    fpo_use_this: 'Usar esto',
+    fpo_edit: 'Editar',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Haz algo sin desaparecer dentro de ello.',
     fpo_task_label: '¿En qué estás trabajando?',
@@ -108,6 +114,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   zh: {
+    fpo_suggested_label: '建议的停下点',
+    fpo_use_this: '就用这个',
+    fpo_edit: '修改',
     fpo_title: 'Focus Pocus',
     fpo_hero: '把事情做成，但不要陷进去。',
     fpo_task_label: '你正在做什么？',
@@ -160,6 +169,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   hi: {
+    fpo_suggested_label: 'सुझाया गया रुकने का बिंदु',
+    fpo_use_this: 'यही इस्तेमाल करें',
+    fpo_edit: 'बदलें',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'कुछ पूरा कीजिए, पर उसमें खो मत जाइए।',
     fpo_task_label: 'आप किस पर काम कर रहे हैं?',
@@ -212,6 +224,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   ar: {
+    fpo_suggested_label: 'نقطة التوقف المقترحة',
+    fpo_use_this: 'استخدم هذه',
+    fpo_edit: 'تعديل',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'أنجز شيئًا دون أن تختفي داخله.',
     fpo_task_label: 'على ماذا تعمل؟',
@@ -264,6 +279,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   pt: {
+    fpo_suggested_label: 'Ponto de parada sugerido',
+    fpo_use_this: 'Usar este',
+    fpo_edit: 'Editar',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Avançar em algo sem desaparecer dentro disso.',
     fpo_task_label: 'No que você está trabalhando?',
@@ -316,6 +334,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   fr: {
+    fpo_suggested_label: 'Point d’arrêt suggéré',
+    fpo_use_this: 'Utiliser',
+    fpo_edit: 'Modifier',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Avancer sur quelque chose sans y disparaître.',
     fpo_task_label: 'Sur quoi travaillez-vous ?',
@@ -368,6 +389,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   de: {
+    fpo_suggested_label: 'Vorgeschlagener Schlusspunkt',
+    fpo_use_this: 'So übernehmen',
+    fpo_edit: 'Bearbeiten',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Etwas erledigen, ohne darin zu verschwinden.',
     fpo_task_label: 'Woran arbeitest du?',
@@ -420,6 +444,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   ja: {
+    fpo_suggested_label: '提案されたやめどき',
+    fpo_use_this: 'これでいく',
+    fpo_edit: '編集',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'のめり込まずに、ひとつ進める。',
     fpo_task_label: '今どんな作業をしていますか？',
@@ -472,6 +499,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   ko: {
+    fpo_suggested_label: '제안된 멈출 지점',
+    fpo_use_this: '이걸로 할게요',
+    fpo_edit: '수정',
     fpo_title: 'Focus Pocus',
     fpo_hero: '빠져들지 않고 하나를 끝내기.',
     fpo_task_label: '지금 무슨 일을 하고 있나요?',
@@ -524,6 +554,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   ru: {
+    fpo_suggested_label: 'Предложенная точка остановки',
+    fpo_use_this: 'Использовать',
+    fpo_edit: 'Изменить',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Сделать дело, не исчезнув в нём.',
     fpo_task_label: 'Над чем вы работаете?',
@@ -576,6 +609,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   th: {
+    fpo_suggested_label: 'จุดหยุดที่แนะนำ',
+    fpo_use_this: 'ใช้อันนี้',
+    fpo_edit: 'แก้ไข',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'ทำงานให้เสร็จสักอย่าง โดยไม่จมหายไปกับมัน',
     fpo_task_label: 'คุณกำลังทำอะไรอยู่',
@@ -628,6 +664,9 @@ export const focusPocus = {
     fpo_xref_sound: 'Focus Sound Architect',
   },
   vi: {
+    fpo_suggested_label: 'Điểm dừng được gợi ý',
+    fpo_use_this: 'Dùng cái này',
+    fpo_edit: 'Sửa',
     fpo_title: 'Focus Pocus',
     fpo_hero: 'Làm xong một việc mà không biến mất trong nó.',
     fpo_task_label: 'Bạn đang làm gì?',
