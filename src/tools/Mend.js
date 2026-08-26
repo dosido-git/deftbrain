@@ -124,6 +124,26 @@ function groupRoadmap(steps) {
   return order.map(k => [k, bucket.get(k)]);
 }
 
+// Module scope, not inside the component. Declared inside, it is a new type on
+// every parent render, so React remounts it — the input loses focus after a
+// character or two AND the half-typed note is wiped (owner, 2026-08-26).
+const FollowUpInput = ({ repairId, c, t, addFollowUp }) => {
+  const [note, setNote] = useState('');
+  return (
+    <div className="flex gap-2 mt-2">
+      <label htmlFor={`ac-followup-${repairId}`} className="sr-only">{t('apc_rep_followup_sr')}</label>
+      <input id={`ac-followup-${repairId}`} type="text" value={note} onChange={e => setNote(e.target.value)}
+        placeholder={t('apc_rep_ph_followup')}
+        className={`flex-1 p-2 text-sm border rounded-lg outline-none ${c.input}`} />
+      <button onClick={() => { if (note.trim()) { addFollowUp(repairId, note.trim()); setNote(''); } }}
+        disabled={!note.trim()}
+        className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
+        <span>➕</span>
+      </button>
+    </div>
+  );
+};
+
 const Mend = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading } = useClaudeAPI();
@@ -2500,22 +2520,6 @@ const Mend = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // VIEW: Repairs
   // ════════════════════════════════════════════════════════════
-  const FollowUpInput = ({ repairId }) => {
-    const [note, setNote] = useState('');
-    return (
-      <div className="flex gap-2 mt-2">
-        <label htmlFor={`ac-followup-${repairId}`} className="sr-only">{t('apc_rep_followup_sr')}</label>
-        <input id={`ac-followup-${repairId}`} type="text" value={note} onChange={e => setNote(e.target.value)}
-          placeholder={t('apc_rep_ph_followup')}
-          className={`flex-1 p-2 text-sm border rounded-lg outline-none ${c.input} ${c.input}`} />
-        <button onClick={() => { if (note.trim()) { addFollowUp(repairId, note.trim()); setNote(''); } }}
-          disabled={!note.trim()}
-          className={`px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-40 ${c.btnPrimary}`}>
-          <span>➕</span>
-        </button>
-      </div>
-    );
-  };
 
   // Backend problem-type id → translation key for its display label.
   const PROBLEM_TYPE_KEYS = {
@@ -2804,7 +2808,7 @@ const Mend = ({ tool }) => {
                 </div>
               )}
 
-              <FollowUpInput repairId={r.id} />
+              <FollowUpInput repairId={r.id} c={c} t={t} addFollowUp={addFollowUp} />
             </div>
           ))}
         </div>

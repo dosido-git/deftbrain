@@ -111,6 +111,32 @@ const fmtClock = (ms) => {
 // ════════════════════════════════════════════════════════════
 // COMPONENT
 // ════════════════════════════════════════════════════════════
+// Defined at module scope, NOT inside the component. A component declared inside
+// another is a new type on every render, so React unmounts and remounts its
+// whole subtree — which drops focus out of the text field after a character or
+// two, and the browser's find-as-you-type grabs the rest (owner, 2026-08-26).
+const Choice = ({ c, active, onClick, children }) => (
+  <button
+    type="button" aria-pressed={active} onClick={onClick}
+    className={`min-h-[44px] rounded-lg border px-3 py-2 text-sm font-semibold transition ${active ? c.pillActive : c.pillInactive}`}
+  >{children}</button>
+);
+
+const Card = ({ c, title, children, className = '' }) => (
+  <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 shadow-sm ${className}`}>
+    {title && <h3 className={`mb-3 font-bold ${c.text}`}>{title}</h3>}
+    {children}
+  </section>
+);
+
+const Bullets = ({ c, items }) => (
+  <ul className="space-y-2">
+    {items.map((x, i) => (
+      <li key={i} className={`flex gap-2 text-sm ${c.textSecondary}`}><span aria-hidden="true">•</span><span>{x}</span></li>
+    ))}
+  </ul>
+);
+
 const DriveHome = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -352,27 +378,6 @@ const DriveHome = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER HELPERS
   // ══════════════════════════════════════════
-  const Choice = ({ active, onClick, children }) => (
-    <button
-      type="button" aria-pressed={active} onClick={onClick}
-      className={`min-h-[44px] rounded-lg border px-3 py-2 text-sm font-semibold transition ${active ? c.pillActive : c.pillInactive}`}
-    >{children}</button>
-  );
-
-  const Card = ({ title, children, className = '' }) => (
-    <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 shadow-sm ${className}`}>
-      {title && <h3 className={`mb-3 font-bold ${c.text}`}>{title}</h3>}
-      {children}
-    </section>
-  );
-
-  const Bullets = ({ items }) => (
-    <ul className="space-y-2">
-      {items.map((x, i) => (
-        <li key={i} className={`flex gap-2 text-sm ${c.textSecondary}`}><span aria-hidden="true">•</span><span>{x}</span></li>
-      ))}
-    </ul>
-  );
 
   const tone = result?.recommendation === 'do_not_drive' ? c.danger
     : result?.recommendation === 'go' ? c.success
@@ -410,7 +415,7 @@ const DriveHome = ({ tool }) => {
         </div>
       </div>
 
-      <Card title={t('dh_sec_drive')}>
+      <Card c={c} title={t('dh_sec_drive')}>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="block">
             <span className={`text-sm font-semibold ${c.label}`}>{t('dh_from')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
@@ -427,7 +432,7 @@ const DriveHome = ({ tool }) => {
           <p className={`text-sm font-semibold ${c.label}`}>{t('dh_how_long')} <span className={c.required}>*</span></p>
           <div className="mt-2 flex flex-wrap gap-2">
             {DURATIONS.map(m => (
-              <Choice key={m} active={Number(minutes) === m} onClick={() => onEdit(setMinutes)(String(m))}>
+              <Choice c={c} key={m} active={Number(minutes) === m} onClick={() => onEdit(setMinutes)(String(m))}>
                 {m === 60 ? t('dh_dur_60') : m === 90 ? t('dh_dur_90') : t('dh_eta_min', { count: m })}
               </Choice>
             ))}
@@ -438,25 +443,25 @@ const DriveHome = ({ tool }) => {
         </div>
       </Card>
 
-      <Card title={t('dh_sec_like')}>
+      <Card c={c} title={t('dh_sec_like')}>
         <p className={`text-sm font-semibold ${c.label}`}>{t('dh_when')} <span className={c.required}>*</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {TIMES.map(([v, k]) => <Choice key={v} active={time === v} onClick={() => onEdit(setTime)(v)}>{t(k)}</Choice>)}
+          {TIMES.map(([v, k]) => <Choice c={c} key={v} active={time === v} onClick={() => onEdit(setTime)(v)}>{t(k)}</Choice>)}
         </div>
         <p className={`mt-5 text-sm font-semibold ${c.label}`}>{t('dh_conditions')} <span className={c.textMuted}>{t('dh_select_all')}</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {CONDITIONS.map(([v, k]) => <Choice key={v} active={conditions.includes(v)} onClick={() => toggleCondition(v)}>{t(k)}</Choice>)}
+          {CONDITIONS.map(([v, k]) => <Choice c={c} key={v} active={conditions.includes(v)} onClick={() => toggleCondition(v)}>{t(k)}</Choice>)}
         </div>
         <p className={`mt-5 text-sm font-semibold ${c.label}`}>{t('dh_road_type')} <span className={c.required}>*</span></p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {ROADS.map(([v, k]) => <Choice key={v} active={road === v} onClick={() => onEdit(setRoad)(v)}>{t(k)}</Choice>)}
+          {ROADS.map(([v, k]) => <Choice c={c} key={v} active={road === v} onClick={() => onEdit(setRoad)(v)}>{t(k)}</Choice>)}
         </div>
       </Card>
 
-      <Card title={t('dh_sec_you')}>
+      <Card c={c} title={t('dh_sec_you')}>
         <p className={`mb-3 text-sm ${c.textMuted}`}>{t('dh_be_literal')}</p>
         <div className="flex flex-wrap gap-2">
-          {STATES.map(([v, k]) => <Choice key={v} active={driverState === v} onClick={() => onEdit(setDriverState)(v)}>{t(k)}</Choice>)}
+          {STATES.map(([v, k]) => <Choice c={c} key={v} active={driverState === v} onClick={() => onEdit(setDriverState)(v)}>{t(k)}</Choice>)}
         </div>
         <label className="mt-4 block">
           <span className={`text-sm font-semibold ${c.label}`}>{t('dh_hesitate')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
@@ -495,22 +500,22 @@ const DriveHome = ({ tool }) => {
 
           {(result.factors_harder.length > 0 || result.factors_in_favor.length > 0) && (
             <div className={`grid gap-4 ${result.factors_harder.length > 0 && result.factors_in_favor.length > 0 ? 'md:grid-cols-2' : ''}`}>
-              {result.factors_harder.length > 0 && <Card title={t('dh_harder')}><Bullets items={result.factors_harder} /></Card>}
-              {result.factors_in_favor.length > 0 && <Card title={t('dh_helps')}><Bullets items={result.factors_in_favor} /></Card>}
+              {result.factors_harder.length > 0 && <Card c={c} title={t('dh_harder')}><Bullets c={c} items={result.factors_harder} /></Card>}
+              {result.factors_in_favor.length > 0 && <Card c={c} title={t('dh_helps')}><Bullets c={c} items={result.factors_in_favor} /></Card>}
             </div>
           )}
 
-          {result.before_you_decide && <Card title={t('dh_before_decide')}><p className={`text-sm ${c.textSecondary}`}>{result.before_you_decide}</p></Card>}
-          {result.safer_options.length > 0 && result.recommendation !== 'go' && <Card title={t('dh_safer')}><Bullets items={result.safer_options} /></Card>}
-          {result.prep_checklist.length > 0 && result.recommendation === 'go' && <Card title={t('dh_prep')}><Bullets items={result.prep_checklist} /></Card>}
-          {result.watch_for.length > 0 && result.recommendation === 'go' && <Card title={t('dh_watch_for')}><Bullets items={result.watch_for} /></Card>}
+          {result.before_you_decide && <Card c={c} title={t('dh_before_decide')}><p className={`text-sm ${c.textSecondary}`}>{result.before_you_decide}</p></Card>}
+          {result.safer_options.length > 0 && result.recommendation !== 'go' && <Card c={c} title={t('dh_safer')}><Bullets c={c} items={result.safer_options} /></Card>}
+          {result.prep_checklist.length > 0 && result.recommendation === 'go' && <Card c={c} title={t('dh_prep')}><Bullets c={c} items={result.prep_checklist} /></Card>}
+          {result.watch_for.length > 0 && result.recommendation === 'go' && <Card c={c} title={t('dh_watch_for')}><Bullets c={c} items={result.watch_for} /></Card>}
 
           {/* One limitation paragraph. This card used to carry a heading, the
               backend's two limit strings and a note, and three of the four said
               the same thing (owner, 2026-08-25). The text is the backend's, so
               the model cannot delete the product's own disclaimer. */}
           {result.limits.length > 0 && (
-            <Card>
+            <Card c={c}>
               {result.limits.map((x, i) => (
                 <p key={i} className={`text-sm ${c.textMuted}${i ? ' mt-2' : ''}`}>{x}</p>
               ))}
@@ -532,7 +537,7 @@ const DriveHome = ({ tool }) => {
 
       {showCheckin && (
         <div className="space-y-4">
-          <Card title={t('dh_before_leave')}>
+          <Card c={c} title={t('dh_before_leave')}>
             <p className={`mb-4 text-sm ${c.textMuted}`}>{t('dh_checkin_note')}</p>
             <label className="block">
               <span className={`text-sm font-semibold ${c.label}`}>{t('dh_checkin_person')} <span className={c.textMuted}>{t('dh_optional')}</span></span>
@@ -544,7 +549,7 @@ const DriveHome = ({ tool }) => {
               <p className={`text-sm font-semibold ${c.label}`}>{t('dh_remind_after')}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {[30, 45, 60, 75, 90, 120].map(m => (
-                  <Choice key={m} active={checkinDuration === m} onClick={() => setCheckinMinutes(String(m))}>{t('dh_eta_min', { count: m })}</Choice>
+                  <Choice c={c} key={m} active={checkinDuration === m} onClick={() => setCheckinMinutes(String(m))}>{t('dh_eta_min', { count: m })}</Choice>
                 ))}
                 <input type="number" min="1" inputMode="numeric" aria-label={t('dh_aria_checkin_minutes')}
                   className={`w-28 rounded-lg border px-3 py-2 ${c.input}`} value={checkinMinutes}
@@ -574,7 +579,7 @@ const DriveHome = ({ tool }) => {
           </Card>
 
           {timerEnd && !arrived && (
-            <Card title={remaining > 0 ? t('dh_reminder_running') : t('dh_checkin_now')}>
+            <Card c={c} title={remaining > 0 ? t('dh_reminder_running') : t('dh_checkin_now')}>
               {remaining > 0 ? (
                 <>
                   <p className="text-4xl font-bold tabular-nums">{fmtClock(remaining)}</p>
@@ -598,7 +603,7 @@ const DriveHome = ({ tool }) => {
           )}
 
           {arrived && (
-            <Card title={t('dh_checked_in')}>
+            <Card c={c} title={t('dh_checked_in')}>
               <p className={c.textSecondary}>✓ {t('dh_reminder_cleared')}</p>
               {contact && <p className={`mt-2 text-sm ${c.textMuted}`}>{t('dh_tell_contact', { name: contact })}</p>}
             </Card>

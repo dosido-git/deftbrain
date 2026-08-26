@@ -28,6 +28,14 @@ const clock = (ms) => {
   return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
 };
 
+// Defined at module scope, NOT inside the component. A component declared inside
+// another is a new type on every render, so React unmounts and remounts its
+// whole subtree — which drops focus out of the text field after a character or
+// two, and the browser's find-as-you-type grabs the rest (owner, 2026-08-26).
+const Card = ({ c, children, className = '' }) => (
+  <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 shadow-sm ${className}`}>{children}</section>
+);
+
 const FocusPocus = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -233,9 +241,6 @@ const FocusPocus = ({ tool }) => {
 
   useRegisterActions(buildFullText(), tool?.title || t('fpo_title'));
 
-  const Card = ({ children, className = '' }) => (
-    <section className={`rounded-xl border ${c.border} ${c.card} p-4 md:p-5 shadow-sm ${className}`}>{children}</section>
-  );
 
   const crossRef = (
     <p className={`text-center text-sm ${c.textMuted}`}>
@@ -279,7 +284,7 @@ const FocusPocus = ({ tool }) => {
       {/* ── SETUP ── */}
       {!session && (
         <>
-          <Card>
+          <Card c={c}>
             <label className="block">
               <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_task_label')} <span className={c.required}>*</span></span>
               <input className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={task}
@@ -320,7 +325,7 @@ const FocusPocus = ({ tool }) => {
           </Card>
 
           {suggested && (
-            <Card className={c.infoBox}>
+            <Card c={c} className={c.infoBox}>
               <p className="text-xs font-bold uppercase">{t('fpo_suggested_label')}</p>
               <p className="mt-1 text-sm font-semibold">{suggested}</p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -354,7 +359,7 @@ const FocusPocus = ({ tool }) => {
             <p className="mt-1 text-5xl font-bold tabular-nums">{overtime ? `+${clock(overtimeMs)}` : clock(remainingMs)}</p>
           </section>
 
-          <Card>
+          <Card c={c}>
             <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_your_task')}</p>
             <p className={`mt-1 font-semibold ${c.text}`}>{session.task}</p>
             <p className={`mt-3 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_enough_label')}</p>
@@ -369,7 +374,7 @@ const FocusPocus = ({ tool }) => {
                 className={`min-h-[44px] flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_finished_early')}</button>
             </div>
           ) : (
-            <Card className={c.danger}>
+            <Card c={c} className={c.danger}>
               <p className="font-bold">{t('fpo_stop_title')}</p>
               <p className="mt-1 text-sm">{t('fpo_stop_body')}</p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -384,7 +389,7 @@ const FocusPocus = ({ tool }) => {
           )}
 
           {nudge && (
-            <Card className={c.warning}>
+            <Card c={c} className={c.warning}>
               <p className="text-xs font-bold uppercase">{t('fpo_smallest_move')}</p>
               <p className="mt-1 text-sm">{nudge}</p>
             </Card>
@@ -395,7 +400,7 @@ const FocusPocus = ({ tool }) => {
       {/* ── REVIEW ── */}
       {session?.status === 'review' && (
         <>
-          <Card>
+          <Card c={c}>
             <p className={`text-lg font-bold ${c.text}`}>{t('fpo_time_up')}</p>
             <p className={`mt-2 text-sm ${c.textSecondary}`}>{session.target}</p>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
@@ -433,7 +438,7 @@ const FocusPocus = ({ tool }) => {
       {/* ── DONE — this is the tool's result ── */}
       {results && (
         <>
-          <Card className={results.completed === 'yes' ? c.success : c.infoBox}>
+          <Card c={c} className={results.completed === 'yes' ? c.success : c.infoBox}>
             <p className="text-lg font-bold">{session.completed === 'yes' ? t('fpo_done_title') : t('fpo_breadcrumb_title')}</p>
             {results.completed === 'yes'
               ? <p className="mt-2 text-sm">{t('fpo_done_body')}</p>
