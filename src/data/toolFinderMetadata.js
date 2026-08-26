@@ -715,6 +715,40 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user wants help planning an actual date or evening out.",
     whenNotToRecommend: "Do not recommend for general travel itineraries, layovers, or relationship decisions.",
   },
+  DecisionCoach: {
+    problems: [
+      "I am too stuck or depleted to choose and I want someone to pick for me",
+      "I keep cycling through options and need one answer, not another list",
+      "I know my constraints and preferences but still cannot make a simple everyday decision",
+    ],
+    capabilities: [
+      "applies the user's stated constraints, preferences, and current capacity to one concrete choice",
+      "returns a single decision rather than a ranked list of alternatives",
+      "briefly explains why the choice fits what the user supplied",
+      "turns the decision into immediate execution steps so the user can stop deliberating",
+    ],
+    accepts: [
+      "the decision the user is stuck on",
+      "optional category or context such as food, task, purchase, or activity",
+      "hard constraints and softer preferences",
+      "the user's current capacity or energy",
+    ],
+    notFor: [
+      "comparing several alternatives in depth",
+      "researching current prices, availability, or outside facts",
+      "exploring two meaningful life futures",
+      "working through a high-stakes decision with multiple frameworks when the user does not want a single delegated answer",
+    ],
+    handoffs: [
+      { when: "the user wants several deliberately different viewpoints rather than one answer", toolId: "CrowdWisdom" },
+      { when: "the user wants to imagine how two meaningful personal paths might feel rather than delegate the choice", toolId: "WhichLife" },
+      { when: "the user wants a difficult decision analyzed through multiple structured frameworks", toolId: "PlotTwist" },
+    ],
+    primaryIntent: "make one concrete everyday decision for a user who is experiencing choice paralysis and explicitly wants the burden of choosing removed",
+    whenToRecommend: "Recommend when the user says they cannot decide, feels overwhelmed by options, and wants one clear choice that respects stated constraints and preferences.",
+    whenNotToRecommend: "Do not recommend when the user wants a comparison, current research, multiple perspectives, a two-future simulation, or a framework-based analysis rather than one delegated answer.",
+  },
+
   DecoderRing: {
     problems: [
       "I received a message and cannot tell what the person really meant",
@@ -840,6 +874,111 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user already has medical notes, results, or instructions and needs help understanding the language.",
     whenNotToRecommend: "Do not recommend for bills, pre-visit preparation, or evaluating a recommended procedure.",
   },
+  DreamPatternSpotter: {
+    problems: [
+      "I keep having the same kind of dream and want to know what pattern is repeating",
+      "I want to reflect on what a vivid dream might connect to in my waking life",
+      "I have several dreams and want to compare their themes, symbols, and emotional patterns",
+    ],
+    capabilities: [
+      "analyzes one dream for notable elements, emotional themes, and possible associations",
+      "compares multiple dreams to surface recurring themes, symbols, emotional signatures, and changes over time",
+      "uses optional waking-life context to generate more relevant reflection questions",
+      "can add Jungian, Freudian, and dream-science perspectives as optional lenses rather than definitive interpretations",
+      "frames the result as self-reflection rather than diagnosis or mystical certainty",
+    ],
+    accepts: [
+      "a detailed description of one dream",
+      "two to six dreams for pattern comparison",
+      "emotions felt in or after the dream",
+      "optional dates and waking-life context",
+    ],
+    notFor: [
+      "predicting the future or treating dreams as supernatural messages",
+      "diagnosing a mental-health condition from dream content",
+      "treating insomnia, nightmares, or another sleep disorder",
+      "finding a mental-health professional when the user is asking for care rather than reflection",
+    ],
+    handoffs: [
+      { when: "the user says the underlying issue is distress they want professional help with rather than dream reflection", toolId: "MentalHealthNavigator" },
+      { when: "the user's real problem is a crowded, tangled set of waking thoughts that need sorting rather than dream analysis", toolId: "BrainDumpBuddy" },
+    ],
+    primaryIntent: "spot recurring themes and emotional patterns in one or more dreams and turn them into grounded questions for self-reflection",
+    whenToRecommend: "Recommend when the user wants to explore the possible meaning or recurring pattern of dreams without treating the interpretation as prophecy or diagnosis.",
+    whenNotToRecommend: "Do not recommend for supernatural prediction, clinical diagnosis, sleep-disorder treatment, or care navigation.",
+  },
+
+  DriveHome: {
+    problems: [
+      "I am about to drive and something is making me hesitate",
+      "I am tired, nervous, facing difficult conditions, or unsure whether to start this drive now",
+      "I want a clear go, pause, or do-not-start call based on the conditions I can report",
+    ],
+    capabilities: [
+      "makes a pre-drive go, pause, or do-not-start call using only the facts the user supplies",
+      "weighs reported drive length, time of day, visible conditions, road type, and the user's current state",
+      "names what makes the drive harder and what is in the user's favor",
+      "when the answer is pause, identifies the missing or changeable fact that would help settle the decision",
+      "when the answer is not go, suggests practical alternatives or reasons to wait",
+      "after a go call, can provide a browser-based arrival reminder and a departure message the user can copy",
+    ],
+    accepts: [
+      "approximate drive duration",
+      "time of day",
+      "current conditions the user can observe",
+      "road type",
+      "how the user feels right now",
+      "anything specific causing hesitation",
+      "optional origin and destination for context only",
+    ],
+    notFor: [
+      "live traffic, weather, road-condition, map, or route lookups",
+      "certifying that a drive is safe",
+      "navigation or assistance while the vehicle is moving",
+      "monitoring the user's trip or contacting someone automatically",
+    ],
+    handoffs: [
+      { when: "the user decides to walk instead and wants a pre-walk safety check plus walking-mode tools", toolId: "SafeWalk" },
+    ],
+    primaryIntent: "help someone decide whether to start a specific drive right now using only the conditions and personal state they report",
+    whenToRecommend: "Recommend immediately before a drive when the user is hesitating because of fatigue, time, weather they can see, road type, nerves, or another reported condition and wants a straight go, pause, or do-not-start call.",
+    whenNotToRecommend: "Do not recommend for live traffic or weather information, route planning, a guarantee that driving is safe, trip monitoring, or any use while the vehicle is moving.",
+  },
+
+  EmailUrgencyTriager: {
+    problems: [
+      "My inbox has piled up and I cannot tell what actually needs a reply today",
+      "I feel pressure to answer everything and need to know what can wait or be ignored",
+      "I want a batch of emails sorted by real urgency rather than sender tone",
+    ],
+    capabilities: [
+      "sorts pasted emails into reply now, reply this week, or optional/never",
+      "explains why each message received its priority",
+      "extracts explicit deadlines when they appear in the pasted text",
+      "states what is likely to happen if the user waits on each message",
+      "uses the user's role or context when judging urgency",
+      "summarizes the batch with estimated clearing time, delegation opportunities, and messages that can be ignored",
+    ],
+    accepts: [
+      "one or more pasted emails, ideally including subject, sender, and body",
+      "the user's role or work context",
+      "messy batches separated with delimiters or pasted together",
+    ],
+    notFor: [
+      "reading or triaging the user's live inbox without pasted message content",
+      "sending, archiving, labeling, or otherwise managing email accounts",
+      "decoding interpersonal subtext when urgency is not the question",
+      "organizing a general non-email task list",
+    ],
+    handoffs: [
+      { when: "the user received a short message and mainly wants to understand its possible subtext", toolId: "DecoderRing" },
+      { when: "the real problem is a scattered task list and context switching rather than email urgency", toolId: "BatchFlow" },
+    ],
+    primaryIntent: "triage a pasted batch of emails into what needs attention now, what can wait until this week, and what can be ignored",
+    whenToRecommend: "Recommend when the user has multiple emails in front of them and wants help deciding which actually require attention today versus later or never.",
+    whenNotToRecommend: "Do not recommend for live inbox management, message sending, general task scheduling, or subtext analysis when urgency is not the main question.",
+  },
+
   FakeReviewDetective: {
     problems: [
       "These product reviews look suspicious",
@@ -869,6 +1008,43 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user has reviews or a review page and wants help judging whether the feedback appears trustworthy.",
     whenNotToRecommend: "Do not recommend for price evaluation, markup explanation, or live shopping lookup.",
   },
+  FanTheory: {
+    problems: [
+      "I finished a movie, show, book, or game and want a surprising theory that still fits the story",
+      "I want to see ordinary plot details reinterpreted as evidence for a wild fan theory",
+      "I have my own fan theory and want it graded for plausibility, creativity, and evidence quality",
+    ],
+    capabilities: [
+      "generates a fan theory from a title and optional theory direction",
+      "builds the theory around recognizable story details and separates those observations from speculative interpretation",
+      "labels individual evidence items by how strongly they support the theory",
+      "identifies the strongest supporting detail as a smoking gun or closest thing to one",
+      "gives plausibility and mind-blown scores",
+      "includes a strong counterargument and a rabbit-hole prompt for what to revisit in the source",
+      "grades a user-supplied theory for plausibility, creativity, and evidence quality",
+    ],
+    accepts: [
+      "the title of a movie, TV show, book, or game",
+      "optional media type",
+      "an optional theory direction such as secret villain, shared universe, timeline twist, dead or alive, or simulation",
+      "a user-written fan theory in grading mode",
+    ],
+    notFor: [
+      "real-world conspiracy theories or allegations about real people",
+      "authoritative fact checking or canonical plot reference",
+      "a straightforward plot summary or explanation with no speculative theory",
+      "stress-testing a real-world belief or claim",
+    ],
+    handoffs: [
+      { when: "the user wants a real-world claim or belief pressure-tested rather than a fictional fan theory", toolId: "BeliefStressTest" },
+      { when: "the user wants to find or examine a possible inconsistency in the story rather than construct a theory", toolId: "PlotHole" },
+      { when: "the user wants to save a detail, clue, quotation, or moment for later rather than theorize about it", toolId: "Bookmark" },
+    ],
+    primaryIntent: "generate or grade a deliberately wild but internally defensible theory about a fictional work using story details as evidence",
+    whenToRecommend: "Recommend when the user names a fictional movie, show, book, or game and wants an entertaining fan theory, hidden interpretation, or critique of their own theory.",
+    whenNotToRecommend: "Do not recommend for real-world conspiracies, authoritative canon lookup, ordinary plot summaries, or testing non-fiction beliefs and claims.",
+  },
+
   FinalWish: {
     problems: [
       "I want my family to know where important accounts and documents are if something happens to me",
