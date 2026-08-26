@@ -124,8 +124,24 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // rewritten independently against the original, and the second write would
   // silently undo the first.
   const byField = new Map();
+  // The checker sometimes names a CONTAINER — "factors_harder" — when it means
+  // one element of it. getByPath returns the array, so the old `!== undefined`
+  // test let it through, and setByPath then wrote the repair STRING over the
+  // whole array. Downstream that is either a section that silently vanishes
+  // (a route that re-sanitises) or a .map() on a string (a white screen).
+  // Found on drive-home, 2026-08-25; it could have happened to any v2 route.
+  // Repairs only ever rewrite string leaves, so requiring one here removes the
+  // failure without narrowing what the guard can legitimately fix.
+  const containerHits = [];
   (Array.isArray(check?.violations) ? check.violations : [])
-    .filter(v => v && typeof v.field === 'string' && getByPath(draft, v.field) !== undefined)
+    .filter(v => {
+      if (!v || typeof v.field !== 'string') return false;
+      if (typeof getByPath(draft, v.field) !== 'string') {
+        if (getByPath(draft, v.field) !== undefined) containerHits.push(v.field);
+        return false;
+      }
+      return true;
+    })
     .forEach(v => {
       if (!byField.has(v.field)) byField.set(v.field, []);
       byField.get(v.field).push(v);
@@ -137,6 +153,9 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // returns the same empty list as one that found nothing, and this path is
   // fail-open, so nothing else would ever say so.
   console.log(`[${label}] v2 guard: ${String(check?.verdict).toUpperCase() === 'FAIL' ? 'FAIL' : 'PASS'} (${violations.length} field(s)${violations.length ? ': ' + violations.map(v => `${v.field}=${v.violation_type}`).join(', ') : ''})`);
+  if (containerHits.length) {
+    console.log(`[${label}] v2 guard: dropped ${containerHits.length} violation(s) naming a non-string field, not repaired: ${containerHits.join(', ')}`);
+  }
 
   if (String(check?.verdict).toUpperCase() !== 'FAIL' || !violations.length) return [];
 
