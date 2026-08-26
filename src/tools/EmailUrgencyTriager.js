@@ -17,6 +17,7 @@ const TIER_CFG = {
 
 const TONES = ['professional', 'casual', 'firm', 'apologetic', 'grateful', 'urgent'];
 const LENGTHS = ['quick', 'standard', 'detailed'];
+const ROLES = ['employee', 'manager', 'business_owner', 'student', 'other'];
 
 
 function splitEmailBlocks(raw) {
@@ -118,7 +119,7 @@ export default function EmailUrgencyTriager({ tool }) {
   const [emailContent, setEmailContent] = usePersistentState('eut-email-content', '');
   const [results, setResults] = usePersistentState('eut-email-results', null);
   const [triageLog, setTriageLog] = usePersistentState('eut-triage-log-v2', []);
-  const [profile, setProfile] = usePersistentState('eut-profile-v2', { name: 'Work', role: 'Employee' });
+  const [profile, setProfile] = usePersistentState('eut-profile-v3', { role: 'employee' });
 
   // mode used to initialise from `results`, which forced usePersistentState
   // above the useState block (PF-11/PF-14). Restoring it on mount keeps the
@@ -186,7 +187,7 @@ export default function EmailUrgencyTriager({ tool }) {
     try {
       const data = await callToolEndpoint('email-urgency-triager', {
         emailContent: emailContent.trim(),
-        userRole: profile.role || 'Employee',
+        userRole: tx(`role_${profile.role}`),
         userTimezone,
         senderHistory: {}, // V2 intentionally does not feed AI-derived sender scoring back into urgency.
         triageHistory: [],
@@ -215,6 +216,14 @@ export default function EmailUrgencyTriager({ tool }) {
   const todayCount = itemsByTier('now').length;
   const weekCount = itemsByTier('this_week').length;
   const optionalCount = itemsByTier('optional').length;
+
+  // Same rule as the email cards: no triangle where there is nothing behind it.
+  // batch_insights and anxiety_relief are told to come back empty when there is
+  // no useful cross-email insight, so an empty briefing is a normal outcome.
+  const hasBriefing = !!(results?.anxiety_relief?.permission_to_wait
+    || results?.anxiety_relief?.what_to_ignore
+    || results?.batch_insights?.time_block_suggestion
+    || results?.batch_insights?.similar_emails?.length);
 
   const saveHistory = () => {
     if (!results) return;
@@ -257,7 +266,7 @@ export default function EmailUrgencyTriager({ tool }) {
         tone: composeTone,
         length: composeLength,
         instructions: composeInstructions.trim() || null,
-        userRole: profile.role || 'Employee',
+        userRole: tx(`role_${profile.role}`),
         userLocale,
         userCurrency,
         userRegion,
@@ -272,6 +281,9 @@ export default function EmailUrgencyTriager({ tool }) {
     const key = `${tier}-${idx}-${email.email_subject}`;
     const isOpen = !!expanded[key];
     const done = !!handled[key];
+    // A triangle that opens onto nothing is a promise the card cannot keep.
+    const hasDetail = !!(email.action_requested || email.consequence_of_delay
+      || (email.draft_reply && tier !== 'optional') || tier !== 'optional');
 
     // The tier's colour is carried once, by the section header above. Repeating
     // it on every card drew a second coloured rectangle around text already
@@ -281,8 +293,8 @@ export default function EmailUrgencyTriager({ tool }) {
         <div className="flex items-start justify-between gap-3">
           <button
             type="button"
-            className="text-start flex-1 min-w-0"
-            onClick={() => setExpanded(p => ({ ...p, [key]: !p[key] }))}
+            className={`text-start flex-1 min-w-0 ${hasDetail ? '' : 'cursor-default'}`}
+            onClick={() => hasDetail && setExpanded(p => ({ ...p, [key]: !p[key] }))}
           >
             <p className={`font-semibold ${c.text}`}>{email.email_subject}</p>
             <p className={`text-xs mt-1 ${c.textMuted}`}>{tx('from', { sender: email.from })}</p>
@@ -294,12 +306,14 @@ export default function EmailUrgencyTriager({ tool }) {
               )}
             </div>
           </button>
-          <button type="button" onClick={() => setExpanded(p => ({ ...p, [key]: !p[key] }))} className={`${c.btnSecondary} rounded-lg p-2`}>
-            <Caret open={isOpen} />
-          </button>
+          {hasDetail && (
+            <button type="button" onClick={() => setExpanded(p => ({ ...p, [key]: !p[key] }))} className={`${c.btnSecondary} rounded-lg p-2`}>
+              <Caret open={isOpen} />
+            </button>
+          )}
         </div>
 
-        {isOpen && (
+        {isOpen && hasDetail && (
           <div className={`mt-4 pt-4 border-t ${c.border} space-y-3`}>
             {email.action_requested && (
               <div><p className={`text-xs font-bold ${c.textMuted}`}>{tx('action')}</p><p className={`text-sm ${c.textSecondary}`}>{email.action_requested}</p></div>
@@ -369,7 +383,7 @@ export default function EmailUrgencyTriager({ tool }) {
       {/* Quiet utilities — capabilities remain, but no six-tab app chrome. */}
       <div className={`${c.card} border ${c.border} rounded-xl p-3 flex flex-wrap items-center gap-2`}>
         <button type="button" onClick={() => setShowProfile(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
-          👤 {profile.name} · {profile.role} <Caret open={showProfile} />
+          👤 {tx(`role_${profile.role}`)} <Caret open={showProfile} />
         </button>
         {triageLog.length > 0 && (
           <button type="button" onClick={() => setShowHistory(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
@@ -384,15 +398,19 @@ export default function EmailUrgencyTriager({ tool }) {
       </div>
 
       {showProfile && (
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 grid gap-3 sm:grid-cols-2`}>
-          <label>
-            <span className={`text-xs font-semibold ${c.textSecondary}`}>{tx('profileName')}</span>
-            <input value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} className={`mt-1 w-full rounded-lg border p-2.5 ${c.input}`} />
-          </label>
-          <label>
-            <span className={`text-xs font-semibold ${c.textSecondary}`}>{tx('role')}</span>
-            <input value={profile.role} onChange={e => setProfile(p => ({ ...p, role: e.target.value }))} className={`mt-1 w-full rounded-lg border p-2.5 ${c.input}`} />
-          </label>
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-semibold ${c.textSecondary}`}>{tx('role')}</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {ROLES.map(r => (
+              <button
+                key={r}
+                type="button"
+                aria-pressed={profile.role === r}
+                onClick={() => setProfile(p => ({ ...p, role: r }))}
+                className={`min-h-[40px] rounded-lg border px-3 py-2 text-sm font-semibold ${profile.role === r ? c.btnPrimary : c.btnSecondary}`}
+              >{tx(`role_${r}`)}</button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -505,6 +523,7 @@ export default function EmailUrgencyTriager({ tool }) {
             );
           })}
 
+          {hasBriefing && (
           <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
             <button type="button" onClick={() => setShowMore(v => !v)} className="w-full flex items-center justify-between text-sm font-bold">
               <span>{tx('biggerPicture')}</span><Caret open={showMore} />
@@ -520,6 +539,7 @@ export default function EmailUrgencyTriager({ tool }) {
               </div>
             )}
           </div>
+          )}
 
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={saveHistory} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-sm font-semibold`}>
