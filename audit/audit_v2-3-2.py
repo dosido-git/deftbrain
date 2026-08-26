@@ -667,7 +667,13 @@ for name, fpath in tools:
     # Tools whose output is a LIST OF ALTERNATIVES, where copying the one you
     # picked is the terminal action. Cold Open Craft's three messages qualify
     # for the same reason Caption Magic's six captions do.
-    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft'}
+    # DriveHome added 2026-08-25. Not a list of alternatives, but the same
+    # failure the exemption exists to prevent: the inline button does NOT
+    # duplicate the global one. The global copy hands over the drive
+    # assessment; this one hands over the short message you send a person
+    # before you pull out, which is a different artefact with a different
+    # recipient. There is exactly one, and it never carries buildFullText().
+    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft', 'DriveHome'}
     _import_section_end = 0
     for _imp_m in re.finditer(r'^import\s', content, re.MULTILINE):
         _import_section_end = _imp_m.end()

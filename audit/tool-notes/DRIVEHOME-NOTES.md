@@ -1,13 +1,77 @@
-# DriveHome — architecture & lock notes (v1, 2026-07-02)
+# Drive Home — architecture & lock notes (v3, 2026-08-25)
 
-Solo-drive safety companion: pre-drive AI assessment (`claude-sonnet-4-6` + web_search, max_tokens 4000, bounded arrays) + check-in timer → "Are you safe?" → 30s auto-alarm → emergency overlay (siren, geolocation, SMS composer, emergency call). In `LOCALIZED_TOOLS`.
+Pre-drive decision helper. One question: should you start this drive right now?
+`MODELS.SMART`, `max_tokens 3400`, no tools, single `POST /api/drive-home`
+(`action: 'assess'`). Returns `recommendation` (`go` | `pause` | `do_not_drive`)
+plus headline, summary, main_concern, factors_harder, factors_in_favor,
+before_you_decide, safer_options, prep_checklist, watch_for, limits.
+`router.outputStandard = 'v2'` with a real `router.outputGuard` profile. In
+`LOCALIZED_TOOLS`.
 
-- **Golden:** `audit/drive-home-golden-sample.json` (assess). Verify: `npm run check:golden drive-home`.
+- **Golden:** `audit/drive-home-golden-sample.json`, 4 cases. Verify: `npm run check:golden drive-home`.
+
+## What v3 removed, and why it is not coming back
+
+v1 ran `web_search` and spoke about the route: "the SR-520 floating bridge is
+known for crosswinds", "the I-405/I-90 interchange near Factoria is a known
+high-pressure merge zone", "rear-end collisions spike on rain-slicked I-405".
+It had never seen the road. It also returned a `risk_level` and an
+`honest_assessment`, which read as a safety rating on a drive it could not
+assess. All of it is gone: no web search, no risk score, no certification, and
+place names are context only.
+
+The emergency alarm, the 30-second auto-SOS, the SMS composer, the shared
+contact list and the three-tab layout went with the rewrite (owner, 2026-08-25).
+What remains is an arrival reminder that runs in the visitor's own browser and
+contacts nobody. ~95 `dh_*` keys were retired with those features.
 
 ## DO NOT silently reverse
-1. **Contacts storage key is `safewalk-contacts`** — shared with SafeWalk, as the UI promises in 13 languages. DriveHome once used its own `deftbrain-safety-contacts` → contacts set in SafeWalk never appeared here and emergency alerts fell to clipboard-only.
-2. **Emergency call is region-aware** via `src/utils/emergencyNumber.js` (`getEmergencyNumber(userRegion)` → 911/112/000/999/…, default 112) + `dh_call_emergency` (`{{num}}`) ×13. It was `tel:911` hardcoded in every language. The href is precomputed (`emergencyHref`) — an inline template href trips the S5.5 scanner. **SafeWalk still hardcodes 911** (locked tool — fix separately with its golden regression).
-3. **Timer reconciler handles the already-expired persisted state**: `!running && remainingSec <= 0 && lastTick → setTimerExpired(true)`. A reload after expiry previously showed a frozen 0:00 ring with no "Are you safe?" prompt and no auto-alarm — the safety net silently disarmed exactly when the driver stopped responding.
-4. **"Alert sent" wording stays honest** — `dh_alert_sent_to` ×13 says the message was *opened* and SEND must be pressed. Only an SMS composer opens (programmatic click inside a geolocation callback; may be gesture-blocked); claiming delivery to an incapacitated driver's contact is the worst possible overclaim.
-5. Try Example uses real option ids (`evening`/`rain`/`mixed`) + gate-passing locations ("…, WA").
-6. No success guard by design (frontend fully null-safe); enums clean (risk_level/severity/priority ===-switched).
+
+1. **`driver_state: 'very_tired'` is a server-side boundary.** It returns
+   `do_not_drive` from `UI_STRINGS` **without calling the model at all**. Never
+   route it through the prompt "for a better explanation" — the whole point is
+   that no amount of context can talk it round. Golden case 4 locks this.
+2. **`factors_harder` is empty on that path on purpose.** It used to echo the
+   form back through the English `TIME_LABELS` / `CONDITION_LABELS` constants,
+   so a German reader got "Time: late night" and "snow or ice" sitting inside
+   otherwise translated text. It also added nothing to a do-not-drive call.
+3. **`recommendation` is pinned to English in the prompt.** `withLanguage`
+   translates JSON string *values*, so without the pin a German run returns
+   "Los" and `sanitizeResult` silently falls back to `pause` — a wrong verdict
+   in twelve languages with no error anywhere. The rule is in the OUTPUT block.
+4. **`finalise()` runs again after `runOutputGuard`.** The guard's repair writes
+   into the object *after* sanitisation, so a repaired field re-enters
+   unfiltered — one live run came back with an empty string sitting in
+   `watch_for`. Anything the sanitiser guarantees has to be re-established once
+   the guard has had its turn.
+5. **`cleanList` dedupes.** The repair reprinted one `factors_harder` entry
+   verbatim; exact duplicates are dropped. Near-duplicates it cannot catch, and
+   the repair does occasionally produce a longer paraphrase of a sibling.
+6. **`UI_STRINGS` carries the catalog's thirteen languages** — `en es zh hi ar
+   pt fr de ja ko ru th vi`. The version this replaced shipped `it` and `nl`
+   (which the product does not offer) and omitted `th` and `vi` (which it does),
+   so Thai and Vietnamese silently fell back to English.
+7. **The frontend renders `limits` from the response**, not a hardcoded English
+   card. The backend overwrites `limits` on every path so the model cannot
+   delete the product's own disclaimer.
+8. **`DriveHome` is in `PF22_PER_ITEM_COPY`** (audit/audit_v2-3-2.py). The one
+   inline `CopyBtn` copies the departure message — a different artefact with a
+   different recipient than the global copy, which hands over the assessment.
+9. **The persisted verdict expires after 90 minutes.** S1.7 wants results in
+   `usePersistentState`; a pre-drive call that reappears next week wearing the
+   authority of a fresh one is a different problem. Stamped and dropped on mount.
+10. Option ids are the frontend/backend contract: `daytime evening late_night
+    early_morning` · `clear rain snow_ice fog high_wind heavy_traffic
+    construction` · `highway city rural mixed` · `fine a_little_tired very_tired
+    anxious not_great`. The backend 400s on anything else, in the reader's language.
+
+## Known, not fixed
+
+- The Try-an-example pill is **1.2:1 in dark mode** — `headerColor #1e2a3a` at
+  50% over `#27272a` with PF-17c's prescribed dark ink. Not specific to this
+  tool: 92 of 125 tools are under 4.5:1 and six are effectively invisible
+  (DriveHome, PlantRescue, SafeWalk, SensoryMinefieldMapper, SpiralStopper,
+  PronounceItRight). PF-17c's premise — "headerColor is pale on 119 of 125" —
+  holds in light mode and inverts in dark. Catalog-wide decision, not a local patch.
+- With "Start over" showing, the header tagline is squeezed to roughly one word
+  per line at 375px in Spanish. Same flex row as every other PF-30 tool.

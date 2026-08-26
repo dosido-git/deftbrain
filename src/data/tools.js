@@ -432,60 +432,61 @@ export const tools = [
   }
 },
 {
-  modified: "2026-03-24",
+  modified: "2026-08-25",
   id: "DriveHome",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before a long or late solo drive, especially if you're tired.",
-    give: "Where you're driving from and to, conditions, road type, and how you're feeling.",
-    get: "A pre-drive checklist, what to watch for on that route, and an honest read if you shouldn't be driving.",
-    edge: "Not navigation. It's the passenger who notices you're too tired and says so.",
+    when: "You are about to start a drive and something in you is hesitating.",
+    give: "How long the drive is, when it is, the conditions, the road type, and how you are feeling.",
+    get: "A straight call — go, pause, or don't start — with what makes this drive harder and what to do instead.",
+    edge: "It works only from what you report, so it never talks you into a drive on facts it invented.",
   },
-  seoDescription: "Your free safety net for every drive — a check-in timer and companion for night, solo, and bad-weather trips. Set it and someone gets alerted if you're late.",
-  seoTitle: "Safe Drive Check-In Timer & Safety Companion",
+  seoDescription: "Free pre-drive decision helper. Say how long the drive is, what the conditions are, and how you're feeling — get a straight go, pause, or don't-start call, with safer options if the answer is wait.",
+  seoTitle: "Should I Drive? A Pre-Drive Decision Check",
   title: "Drive Home",
-  tagline: "Your safety net for every drive",
+  tagline: "A clearer call before you get behind the wheel",
   tags: [
-    'drive', 'driving', 'safety', 'car', 'night driving', 'solo drive',
-    'check-in', 'timer', 'emergency', 'bad weather', 'snow', 'rain',
-    'location sharing', 'watch for me', 'nervous driving', 'road safety',
-    'long drive', 'late night', 'highway', 'inclement weather'
+    'drive', 'driving', 'should i drive', 'too tired to drive', 'safe to drive',
+    'car', 'night driving', 'solo drive', 'bad weather', 'snow', 'rain', 'fog',
+    'tired driving', 'drowsy driving', 'nervous driving', 'road safety',
+    'long drive', 'late night', 'highway', 'arrival check-in'
   ],
   icon: "🚗",
   categories: ['The Grind'],
   headerColor: "#1e2a3a",
-  description: "AI safety companion for solo drives — assess your route and conditions before you leave, then activate the check-in timer so someone always knows you made it.",
+  description: "Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.",
   guide: {
-    overview: "DriveHome is a safety net for solo drives, not a navigation app. Setup tab: enter your from/to locations, select conditions, road type, and how you're feeling — the AI assesses your specific drive with watch-for items, a pre-drive checklist, and an honest take if you're tired or anxious. Then set a check-in timer and copy a Watch-For-Me message to send before you leave. Drive tab: the timer counts down and asks 'Are you safe?' when it expires. If you don't respond within 30 seconds, the emergency alarm triggers automatically. Share Location and one-tap Emergency are always available. Emergency contacts are shared with SafeWalk — set once, used in both.",
+    overview: "Drive Home answers one question: should you start this drive right now? You give it the length of the drive, the time of day, the conditions you can see, the road type, and an honest word about your own state. It comes back with go, pause, or do not start — a headline, what makes the drive harder, what is in your favour, and, if the answer is anything but go, what to do instead. It does not score your risk, it does not certify a drive as safe, and it has no live traffic, weather, or road data. Place names are context only; it will not tell you about a road it cannot see. If the call is go, you can set an arrival reminder that runs in your own browser and copy a message to send someone before you leave.",
 
     howToUse: [
-      "SETUP TAB: Enter where you're driving from and to (include city and state). Select time of day, road conditions, road type, and how you're feeling. Tap 'Assess My Drive' for a tailored safety briefing.",
-      "Review the checklist and check off items. If you're tired or anxious, read the Honest Take — it's there for a reason.",
-      "Set your check-in timer (how long the drive should take), copy the Watch-For-Me message and send it to your primary contact, then tap 'Start Drive'.",
-      "DRIVE TAB: The timer counts down. When it expires, tap 'I'm Safe' to confirm you arrived. If you need more time, tap +15 or +30 min. If you don't respond within 30 seconds, the alarm triggers automatically.",
-      "Use Share Location to copy your GPS coordinates into a ready-to-send text at any point during the drive.",
-      "SETTINGS: Add emergency contacts — the primary contact's name appears in alerts and the Watch-For-Me message. Contacts are shared with SafeWalk."
+      "Say roughly how long the drive is. The presets cover most trips; type a number for anything else.",
+      "Pick the time of day, tick any conditions that apply, and choose the road type. From and To are optional — they add context, not route knowledge.",
+      "Answer 'How are you doing right now?' literally. 'Very tired' always returns do-not-start; that is a fixed boundary, not an opinion.",
+      "Add anything making you hesitate. One concrete sentence changes the answer more than any other field.",
+      "Read the call. If it says pause, 'Before you decide' names the one fact that would settle it.",
+      "If the call is go, optionally set the arrival reminder and copy the departure message before you start the engine."
     ],
 
     example: {
-      scenario: "Driving home from a friend's house at midnight in a snowstorm, about 45 minutes on the highway.",
-      action: "Enter 'From: 45 Elm St, Brookline, MA', 'To: Home, Arlington, MA'. Select 'Late night', 'Snow / Ice', 'Highway', and 'Fine'. Tap Assess.",
-      result: "AI flags reduced visibility and longer stopping distances on the specific highway, recommends a checklist item for tires and wipers, and generates an ETA message. You copy the Watch-For-Me message to your partner, set a 55-minute timer (buffer built in), and start the drive. When the timer expires, you tap 'I'm Safe' from the parking lot."
+      scenario: "Leaving a friend's birthday dinner much later than you meant to. Twenty minutes home on city streets, clear night, and you feel fine.",
+      action: "Choose 20 minutes, Late night, Clear, City streets, Fine, and add: 'It is much later than I meant to stay out.'",
+      result: "A go call that says so plainly — nothing you reported gives a reason to wait — with the late hour named as the thing that makes it harder, a short list to do before you pull out, and the signs that should make you stop and reassess on the way. Then, if you want it, a twenty-five-minute arrival reminder and a message to send before you leave."
     },
 
     tips: [
-      "Add a primary emergency contact in Settings — their name appears in the Watch-For-Me message and emergency alerts",
-      "Set the timer slightly longer than your expected drive — you can always tap 'I'm Safe' early",
-      "The 30-second auto-alarm countdown appears when the timer expires — tap any button to stop it",
-      "Share Location copies your GPS as a Google Maps link — paste it into any messaging app in one tap",
-      "Contacts set in DriveHome are also available in SafeWalk, and vice versa"
+      "Answer the condition question about now, not about the forecast — it reasons from what you report, so a stale answer gives a stale call",
+      "The hesitation box is the highest-value field on the form; a specific worry gets a specific answer",
+      "A go call is not a safety guarantee — it means nothing you reported gave a clear reason to wait",
+      "If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it",
+      "Walking home instead? SafeWalk covers that trip"
     ],
 
     pitfalls: [
-      "DriveHome does not have real-time traffic or road condition data — the AI assessment uses the conditions you select",
-      "Location sharing requires browser location permission — grant it before starting the drive, not mid-drive",
-      "The check-in timer runs in-browser — keep the tab open or the timer may not fire on some mobile browsers"
+      "Drive Home has no live traffic, weather, or road-condition data, and no map — it reasons only from the conditions you report",
+      "Place names are context, not route knowledge; it will not tell you what a particular road or highway is like",
+      "The arrival reminder runs in this browser tab and contacts nobody for you — it is a nudge to check in, not a monitoring service",
+      "Never open or use Drive Home while the vehicle is moving"
     ]
   }
 },
