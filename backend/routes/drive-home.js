@@ -395,13 +395,14 @@ WHAT FAILS:
 3. A fact about the driver, their vehicle or their surroundings that they did not supply.
 4. Advice for pushing through fatigue or impairment, or steps for proceeding under a pause or do-not-drive call.
 5. Telling the driver to use a phone, timer or this tool while the vehicle is moving.
-6. A reported condition restated as something stronger or more specific than it was: rain described as low visibility or bad weather; heavy traffic described as a commute or rush hour; two reported facts joined into a claim about what is causing the third.
-7. A person or a place nobody mentioned — a colleague still at the office, someone at home who could collect them, a housemate, a cafe, a spare bed. Offering "a rested person, if one is available" is fine; asserting one exists is not.
-8. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "wait inside for 10-15 minutes and reassess", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs. CHECK safer_options AND prep_checklist FOR THIS, not only before_you_decide — the interval usually appears as the first safer option. "Wait somewhere safe and reassess before starting" is the correct form of the same advice.
-9. Generic driving advice that would read identically on any other drive — check your mirrors, watch for erratic drivers, top up the fuel, allow extra following distance — unless the supplied facts make it specifically relevant here. One item tied to this situation beats three that are true of every journey.
-10. An entry in factors_in_favor that does not make the DRIVING easier or safer — an observation about the driver's judgement, a compliment on their self-awareness, a silver lining. That section is allowed to be empty and usually should be on a pause.
-11. Where the concern is fatigue: any short intervention offered as evidence of readiness — a brief wait, yawning stopping, food, caffeine, fresh air, a walk. Making the visitor's own symptom the pass condition ("notice whether the yawning continues or stops") is the same failure. The boundary is whether they feel clearly alert and able to sustain attention for the whole drive; if fatigue remains, the answer is not to start.
-12. An inferred purpose, arrival time or amount of slack: that the trip is a visit, that they can afford to wait, that arriving late is or is not a problem. A destination is not a purpose.`;
+6. A claim you cannot point to a user input for, stated as true rather than as something to check. Apply the test to every item: what establishes this? A selected condition establishes that they REPORTED it, not what the road is doing — 'snow or ice' is not 'snow or ice on the road surface', 'high wind' is not 'high wind on exposed highway', 'early morning' is not 'darkness' or 'low visibility'. A fact about what someone has done is not a verdict on what they can do: 'has not driven in snow since last winter' is not 'your skills are rusty' or 'you have lost the feel for traction'. Where something is unknown, saying what to check is correct and speculating about what is probably there is not. General knowledge may identify what to CHECK; it may never be stated as a fact about this drive.
+7. A reported condition restated as something stronger or more specific than it was: rain described as low visibility or bad weather; heavy traffic described as a commute or rush hour; two reported facts joined into a claim about what is causing the third.
+8. A person or a place nobody mentioned — a colleague still at the office, someone at home who could collect them, a housemate, a cafe, a spare bed. Offering "a rested person, if one is available" is fine; asserting one exists is not.
+9. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "wait inside for 10-15 minutes and reassess", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs. CHECK safer_options AND prep_checklist FOR THIS, not only before_you_decide — the interval usually appears as the first safer option. "Wait somewhere safe and reassess before starting" is the correct form of the same advice.
+10. Generic driving advice that would read identically on any other drive — check your mirrors, watch for erratic drivers, top up the fuel, allow extra following distance — unless the supplied facts make it specifically relevant here. One item tied to this situation beats three that are true of every journey.
+11. An entry in factors_in_favor that does not make the DRIVING easier or safer — an observation about the driver's judgement, a compliment on their self-awareness, a silver lining. That section is allowed to be empty and usually should be on a pause.
+12. Where the concern is fatigue: any short intervention offered as evidence of readiness — a brief wait, yawning stopping, food, caffeine, fresh air, a walk. Making the visitor's own symptom the pass condition ("notice whether the yawning continues or stops") is the same failure. The boundary is whether they feel clearly alert and able to sustain attention for the whole drive; if fatigue remains, the answer is not to start.
+13. An inferred purpose, arrival time or amount of slack: that the trip is a visit, that they can afford to wait, that arriving late is or is not a problem. A destination is not a purpose.`;
 }
 
 // V2: the tool's primary job is the pre-drive decision.
@@ -514,6 +515,19 @@ NON-NEGOTIABLE BOUNDARIES:
 - If one concrete missing fact could materially change the call, use recommendation 'pause' and state that fact in before_you_decide rather than inventing it.
 - Keep the result concise enough to read before departure.
 
+GROUNDING TEST FOR EVERY OUTPUT ITEM:
+
+Before including any claim, ask: could I point to the exact user input that establishes this? If no, either remove the claim, or frame it clearly as something to CHECK rather than something that is true.
+
+Do not elaborate a selected condition into an unreported consequence. What the form establishes is that the driver REPORTED something, not what the road is doing:
+- 'Snow / Ice' selected means 'you reported snow or ice'. NOT 'snow or ice on the road surface'.
+- 'High wind' selected means 'you reported high wind'. NOT 'high wind on exposed or open highway'.
+- 'Early morning' means early morning. NOT 'darkness', NOT 'low visibility', NOT 'temperatures at their lowest', NOT anything else you can attach to the hour. The examples below are instances of ONE move — taking a thing they selected and adding the consequence you associate with it — and the ban is on the move, not on this list. If you find yourself writing a dash and then a fact they did not give you, that is the move.
+- 'I have not driven in snow since last winter' means exactly that. NOT 'your winter-driving skills are rusty', NOT 'you have lost the feel for traction'. A fact about what they have done is not a verdict on what they can do.
+- Pass conditions they said they do not know means: check for closures, restrictions, advisories and current conditions. NOT speculation about what is probably up there.
+
+General knowledge may be used to identify WHAT THE DRIVER SHOULD CHECK when resolving an uncertainty. It must never be presented as a fact about their current drive.
+
 GROUNDING THIS TOOL LEARNED THE HARD WAY:
 - Never infer why they are travelling, when they must arrive, or how much slack they have. A destination is not a purpose: 'my parents' place' does not establish a visit, people who could drive, or anywhere to stay.
 - factors_in_favor is for facts about the DRIVING. An observation about the driver's judgement is not one — 'you noticed the fatigue before starting' and 'the anxiety is tracking a concrete uncertainty' are remarks about their reasoning, not things that make the road safer.
@@ -542,7 +556,7 @@ Return ONLY valid JSON with exactly this shape:
   "headline": "Direct plain-language call, no safety guarantee — one sentence",
   "summary": "1-3 concise sentences grounded only in supplied facts",
   "main_concern": "Specific concern grounded in supplied facts, or null",
-  "factors_harder": ["0-5 grounded factors, one short line each"],
+  "factors_harder": ["0-5 grounded factors, one short line each. Each names what the driver REPORTED, not what you infer the road or the driver to be like"],
   "factors_in_favor": ["0-4 genuinely favorable supplied facts, one short line each"],
   "before_you_decide": "One concrete decision boundary, or null. Do not open by restating the field name — the reader can already see the heading",
   "safer_options": ["0-4 grounded alternatives, one short line each"],
@@ -679,6 +693,8 @@ router.outputGuard = {
     'option_written_as_a_question',      // "Do you have access to…?" instead of an option they can take
     'generic_advice_not_tied_to_this',   // "check your mirrors", fuel checks, defensive-driving filler
     'alertness_inferred_from_a_proxy',   // yawning stopping, coffee, a short wait taken as readiness
+    'elaborated_into_a_consequence',     // "snow/ice" → on the road surface; "early morning" → darkness
+    'characterised_the_person',          // "not driven in snow since winter" → "your skills are rusty"
   ],
   require: [
     'persisting_fatigue_ends_in_not_driving',

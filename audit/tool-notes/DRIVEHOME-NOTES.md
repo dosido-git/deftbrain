@@ -133,6 +133,24 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    recovery methods rather than sitting beside it: that one has an "unless the
    user supplied a reason" exception, and for fatigue there is no exception.
    Golden case 5 is the fatigue case; read its `before_you_decide`.
+19. **The grounding test governs every other rule here** (owner, 2026-08-25):
+   before including any claim, could you point to the exact user input that
+   establishes it? If not, remove it or frame it as something to CHECK. The
+   sharp part is what a form selection actually establishes — that the driver
+   REPORTED something, not what the road is doing. "Snow / Ice" is "you
+   reported snow or ice", never "snow or ice on the road surface"; "high wind"
+   is not "high wind on exposed highway"; "early morning" is not darkness, not
+   low visibility, not temperatures at their lowest. And a fact about what
+   someone has DONE is not a verdict on what they can do: "has not driven in
+   snow since last winter" is not "your skills are rusty". General knowledge
+   may name what to check; it may never be stated as a fact about this drive.
+   Guard terms `elaborated_into_a_consequence` and `characterised_the_person`.
+   **The ban is on the MOVE, not on the listed consequences.** The examples were
+   in the prompt for one round and the model simply picked a consequence they
+   did not list — "Early morning — temperature typically at or near its lowest".
+   The prompt now says the list is instances of one move and names the tell:
+   a dash followed by a fact nobody gave you. Three runs after, "early morning"
+   comes back bare or does not appear at all. Golden case 2 is the test case.
 
 ## Known, not fixed
 
