@@ -7,6 +7,40 @@ const { runOutputGuard } = require('../lib/outputGuard');
 
 // The theory is finished before the guard runs; never hold it hostage.
 const GUARD_ENTRY_MS = Number(process.env.FAN_THEORY_GUARD_ENTRY_MS || 60_000);
+const CANON_CHECK_MS = Number(process.env.FAN_THEORY_CANON_MS || 30_000);
+
+// Two rounds of "silently audit before returning" did not hold — the finale was
+// described wrongly, an office burned down that never burns down, and the
+// Jim/Pam and Michael/Holly arcs were bent to fit. A model asked to check its
+// own work in the same breath as producing it does not really check it. This is
+// a separate call that sees ONLY the factual claims and the title, with no
+// theory to protect, which is the whole point (owner, 2026-08-26).
+async function canonCheck(title, claims, userLanguage) {
+  if (!claims.length) return null;
+  const prompt = `These are factual claims about "${title}". Judge each ONLY on whether it is accurate to the actual work. You have not been told the theory they were written for, and you do not need it.
+
+${claims.map((c, i) => `${i}. ${c}`).join('\n')}
+
+For each, return a verdict:
+- "ok" — accurate as written.
+- "fix" — recognisably about something real but wrong in a detail, exaggerated, or overstated. Supply a "replacement": the same observation, corrected and made broader/safer, keeping it one sentence.
+- "cut" — describes something that does not happen in the work, contradicts it, or you cannot verify.
+
+Exaggeration counts as wrong. "The office burns down" is not a fix of a small fire; it is a different event. Do not soften a false claim into a vague one — if it did not happen, cut it.
+
+Write "verdict" as the English word ok, fix or cut whatever language the rest of this is in — code compares it literally. "replacement" is shown to the reader and must be in their language.\n\nReturn ONLY valid JSON: { "verdicts": [ { "n": 0, "verdict": "ok|fix|cut", "replacement": "only when fix" } ] }`;
+  try {
+    const res = await Promise.race([
+      callClaudeWithRetry({ model: MODELS.FAST, max_tokens: 1500, messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) }] },
+        { label: 'fan-theory-canon-check', maxRetries: 0 }),
+      new Promise(r => setTimeout(() => r(null), CANON_CHECK_MS)),
+    ]);
+    return Array.isArray(res?.verdicts) ? res.verdicts : null;
+  } catch (err) {
+    console.log(`[fan-theory-v2] canon check failed (${err.message}) — claims left as written`);
+    return null;
+  }
+}
 
 
 const PERSONALITY = `Fan theory analyst and grader. Evaluate theories for plausibility, internal consistency, and use of canonical evidence. Be the brilliant, slightly pedantic professor who has seen everything.
@@ -149,6 +183,48 @@ If uncertain, remove it.`;
       return res.status(500).json({ error: 'Could not generate a fan theory. Please try again.' });
     }
 
+    // Canon check, before the guard: bad facts are cheaper to remove than to
+    // argue with, and the guard should not be repairing a claim that should not
+    // be there at all.
+    const claimIdx = [];
+    const claims = [];
+    (parsed.evidence || []).forEach((e, i) => {
+      if (typeof e?.detail === 'string' && e.detail.trim()) { claimIdx.push({ kind: 'evidence', i }); claims.push(e.detail.trim()); }
+    });
+    if (typeof parsed.the_smoking_gun === 'string' && parsed.the_smoking_gun.trim()) { claimIdx.push({ kind: 'smoking_gun' }); claims.push(parsed.the_smoking_gun.trim()); }
+
+    const verdicts = await canonCheck(title.trim(), claims, userLanguage);
+    if (verdicts) {
+      const drop = new Set();
+      let fixed = 0;
+      for (const v of verdicts) {
+        const slot = claimIdx[Number(v?.n)];
+        if (!slot) continue;
+        if (v.verdict === 'cut') { drop.add(Number(v.n)); continue; }
+        if (v.verdict === 'fix' && typeof v.replacement === 'string' && v.replacement.trim()) {
+          fixed++;
+          if (slot.kind === 'evidence') parsed.evidence[slot.i].detail = v.replacement.trim();
+          else parsed.the_smoking_gun = v.replacement.trim();
+        }
+      }
+      // Never cut the tool down to nothing: a theory with one piece of evidence
+      // is still a theory, none is a blank card.
+      const keep = (parsed.evidence || []).filter((_, i) => !drop.has(claimIdx.findIndex(c => c.kind === 'evidence' && c.i === i)));
+      if (keep.length >= 2) parsed.evidence = keep;
+      // If the Smoking Gun itself was invented, promote the strongest surviving
+      // evidence rather than leaving the card blank — and label it honestly.
+      const sgIdx = claimIdx.findIndex(c => c.kind === 'smoking_gun');
+      if (sgIdx >= 0 && drop.has(sgIdx)) {
+        const rank = { COMPELLING: 0, SUSPICIOUS: 1, 'A STRETCH': 2, 'PURE DELUSION': 3 };
+        const best = [...(parsed.evidence || [])]
+          .filter(e => e?.detail && e?.spin)
+          .sort((a, b) => (rank[a.strength] ?? 9) - (rank[b.strength] ?? 9))[0];
+        parsed.the_smoking_gun = best ? `${best.detail} ${best.spin}` : '';
+        parsed.smoking_gun_is_weak = true;
+      }
+      if (drop.size || fixed) console.log(`[fan-theory-v2] canon check: ${fixed} corrected, ${drop.size} cut of ${claims.length} claims`);
+    }
+
     const elapsed = Date.now() - startedAt;
     if (elapsed > GUARD_ENTRY_MS) {
       console.log(`[fan-theory-v2] v2 guard: skipped — ${Math.round(elapsed / 1000)}s already spent, answer returned unguarded`);
@@ -266,6 +342,8 @@ router.outputGuard = {
     'invented_chronology_or_outcome',
     'uncertain_detail_stated_as_canon',
     'smoking_gun_that_is_not_in_the_source',
+    'exaggerated_real_event',            // a small fire becomes the office burning down
+    'contradicts_the_source',
   ],
   require: [
     'evidence_is_real_even_where_the_reading_is_not',
