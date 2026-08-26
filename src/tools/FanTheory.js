@@ -301,10 +301,14 @@ const FanTheory = ({ tool }) => {
             </div>
           </div>
           <button onClick={runGenerate} disabled={!title.trim() || loading}
-            className={`w-full ${title.trim() ? c.btnPrimary : c.btnIdle} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+            className={`w-full ${title.trim() ? c.btnPrimary : c.btnIdle} font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 min-h-[48px] whitespace-nowrap`}>
+            {/* Both halves are wrapped. A bare text node beside a span in a flex
+                row is an anonymous flex item, which is how the label ended up
+                laid out outside the button — white on a pale background, so the
+                button looked like it had no text (owner, 2026-08-26). */}
             {loading
-              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_theorizing')}</>
-              : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_generate')}</>}
+              ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span><span>{t('ft_theorizing')}</span></>
+              : <><span>{tool?.icon ?? '🧵'}</span><span>{t('ft_generate')}</span></>}
           </button>
 
           {/* Pre-result cross-ref */}
@@ -444,10 +448,10 @@ const FanTheory = ({ tool }) => {
               placeholder={t('ft_theory_ph')}
               rows={4} className={`w-full px-3 py-2.5 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 resize-y`} />
             <button title={t('cmd_enter')} onClick={runGrade} disabled={!myTheory.trim() || loading}
-              className={`relative w-full ${(!myTheory.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 min-h-[44px]`}>
+              className={`relative w-full ${(!myTheory.trim()) ? c.btnIdle : c.btnPrimary} font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap`}>
               {loading
-                ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span> {t('ft_grading')}</>
-                : <><span className="me-1">{tool?.icon ?? '🧵'}</span>{t('ft_grade_theory')}</>}
+                ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧵'}</span><span>{t('ft_grading')}</span></>
+                : <><span>{tool?.icon ?? '🧵'}</span><span>{t('ft_grade_theory')}</span></>}
             {!loading && (
               <kbd aria-hidden="true"
                 className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
