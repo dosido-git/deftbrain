@@ -8,6 +8,7 @@ const { runOutputGuard } = require('../lib/outputGuard');
 // The theory is finished before the guard runs; never hold it hostage.
 const GUARD_ENTRY_MS = Number(process.env.FAN_THEORY_GUARD_ENTRY_MS || 60_000);
 
+
 const PERSONALITY = `Fan theory analyst and grader. Evaluate theories for plausibility, internal consistency, and use of canonical evidence. Be the brilliant, slightly pedantic professor who has seen everything.
 
 Judge theories on their own merits: a great crack theory earns more respect than a boring obvious one. Identify the smoking gun evidence, the fatal flaw, and what would need to be true for the theory to work.
@@ -44,32 +45,42 @@ ${directionHints[direction] || directionHints.wild}
 
 Generate a wild but internally-consistent fan theory. The theory must cite specific plot details as evidence. It should be WRONG but DEFENSIBLE — that "wait... actually?" feeling.
 
-CANON VS. THEORY — CRITICAL:
+EVIDENCE MUST BE CANON — NON-NEGOTIABLE:
 
-The theory may be wild. The evidence may not be invented.
+Fan Theory is allowed to invent interpretations, motives, conspiracies,
+connections, and explanations. It is NOT allowed to invent the underlying
+evidence.
 
-Clearly distinguish between:
+Every statement presented before the → interpretation must be something
+you are highly confident actually occurs, is stated, or is clearly shown
+in the source material.
 
-1. CANONICAL EVIDENCE
-   Events, dialogue, character behavior, relationships, objects, or other
-   details that actually occur in the source material.
+Do not:
+- invent dialogue or paraphrase dialogue as though it occurred
+- combine separate events into a new supposed fact
+- change who owned, said, did, knew, created, or discovered something
+- turn an interpretation into a canonical event
+- claim the story establishes something it deliberately leaves unresolved
+- manufacture a factual premise because it makes the theory better
 
-2. INTERPRETATION
-   The deliberately speculative meaning the theory assigns to those facts.
+If you are not highly confident a detail is canonical, DO NOT USE IT.
 
-Never invent a scene, event, quote, relationship, outcome, character status,
-ownership interest, chronology, or other supposedly canonical fact merely
-because it would strengthen the theory.
+It is better to provide 4 strong pieces of real evidence than 6 pieces
+containing invented canon.
 
-When uncertain whether a specific detail is actually canonical, do not state
-it as fact. Either omit it or explicitly qualify it.
+FORMAT DISCIPLINE:
 
-The fun should come from making an absurdly clever interpretation of real
-evidence—not from fabricating the evidence itself.
+FACT:
+The text before → must contain only the canonical observation.
 
-Evidence ratings such as COMPELLING, SUSPICIOUS, A STRETCH, and PURE DELUSION
-rate how strongly a real canonical detail supports the theory. They do not
-indicate confidence that the underlying canonical detail is true.
+THEORY:
+The text after → may be as imaginative, conspiratorial, absurd, or
+delightfully overinterpreted as desired.
+
+The absurdity belongs after the arrow, never before it.
+
+In the JSON below, "detail" is the text BEFORE the arrow and "spin" is the
+text AFTER it. The reader sees them joined that way.
 
 SMOKING GUN:
 
@@ -80,6 +91,16 @@ case for the theory.
 not proof that the theory is actually true.
 
 Do not invent or alter canon to create a Smoking Gun.
+
+SMOKING GUN LENGTH:
+
+Keep the Smoking Gun concise: 2–3 sentences maximum, and under 300 characters
+in total — count them.
+State the canonical detail first, then the theory's interpretation. Both halves
+must be present; a bare fact with no reading is not a Smoking Gun, and a reading
+with no fact is not evidence.
+It should feel like the theory's punchline, not another essay. If it runs long,
+cut the qualifying clauses, not the reading.
 
 Return ONLY valid JSON:
 
@@ -94,7 +115,7 @@ Return ONLY valid JSON:
       "strength": "COMPELLING | SUSPICIOUS | A STRETCH | PURE DELUSION"
     }
   ],
-  "the_smoking_gun": "The single REAL canonical detail that makes the most entertaining case. Circumstantial evidence for the theory, not proof it is true, and never invented to fit",
+  "the_smoking_gun": "UNDER 300 CHARACTERS, 2-3 sentences. One sentence of canon, then one or two of reading — BOTH halves must be there. The canonical detail first, then the theory reading of it. The punchline, not another essay. Real canon, circumstantial evidence for the theory, never proof and never invented to fit",
   "counterargument": "The strongest argument AGAINST this theory — and your response to it",
   "plausibility": 4,
   "mind_blown_factor": 7,
@@ -102,7 +123,18 @@ Return ONLY valid JSON:
 }
 
 Generate exactly 4-6 evidence items. At least one should be genuinely clever, at least one should be a hilarious stretch.
-plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only — most fan theories are plausibility 2-4). Keep every text field to 1-2 sentences — punchy, not padded.`;
+plausibility and mind_blown_factor are INTEGERS 1-10 (return the number only — most fan theories are plausibility 2-4). Keep every text field to 1-2 sentences — punchy, not padded.
+
+Before returning the answer, silently audit every Evidence and Smoking Gun
+claim:
+
+"Am I confident this specific event, statement, relationship, object,
+or fact actually appears in the source?"
+
+If no, uncertain, or only inferred, replace it with a canonical detail
+you are confident about.
+
+Never sacrifice factual canon for a better fan theory.`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.FAST,
