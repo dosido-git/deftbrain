@@ -105,6 +105,7 @@ export default function EmailUrgencyTriager({ tool }) {
   const [handled, setHandled] = useState({});
   const [showMore, setShowMore] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showOptional, setShowOptional] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
   const [composeTarget, setComposeTarget] = useState(null);
@@ -366,7 +367,7 @@ export default function EmailUrgencyTriager({ tool }) {
       {/* Quiet utilities — capabilities remain, but no six-tab app chrome. */}
       <div className={`${c.card} border ${c.border} rounded-xl p-3 flex flex-wrap items-center gap-2`}>
         <button type="button" onClick={() => setShowProfile(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
-          👤 {profile.name}
+          👤 {profile.name} · {profile.role} <Caret open={showProfile} />
         </button>
         {triageLog.length > 0 && (
           <button type="button" onClick={() => setShowHistory(v => !v)} className={`${c.btnSecondary} rounded-lg px-3 py-2 text-xs font-semibold`}>
@@ -479,17 +480,25 @@ export default function EmailUrgencyTriager({ tool }) {
             if (!emails.length && tier === 'optional') return null;
             return (
               <section key={tier} className="space-y-3">
-                <div className={`${c[tier === 'this_week' ? 'week' : tier]} border rounded-xl p-4`}>
+                <button
+                  type="button"
+                  onClick={() => tier === 'optional' && setShowOptional(v => !v)}
+                  className={`${c[tier === 'this_week' ? 'week' : tier]} border rounded-xl p-4 w-full text-start ${tier === 'optional' ? 'cursor-pointer' : 'cursor-default'}`}
+                >
                   <div className="flex items-center gap-2">
                     <span>{cfg.icon}</span>
                     <h3 className="font-bold">{tx(cfg.key)}</h3>
                     <span className="text-sm opacity-75">({emails.length})</span>
+                    {tier === 'optional' && <Caret open={showOptional} className="ms-auto" />}
                   </div>
                   <p className="text-xs mt-1 opacity-75">{tx(`${cfg.key}Sub`)}</p>
-                </div>
-                {emails.length ? emails.map((e, i) => renderEmail(e, tier, i)) : (
+                </button>
+                {/* No reply needed is the pile you are being given permission to
+                    ignore; it opens closed so it does not compete with the two
+                    that need you (owner, 2026-08-26). */}
+                {(tier !== 'optional' || showOptional) && (emails.length ? emails.map((e, i) => renderEmail(e, tier, i)) : (
                   <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 text-sm ${c.textMuted}`}>{tx('nothingToday')}</div>
-                )}
+                ))}
               </section>
             );
           })}

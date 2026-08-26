@@ -357,6 +357,34 @@ Return ONLY valid JSON with exactly these top-level keys:
   }
 }
 
+TODAY THRESHOLD:
+
+Do not classify an email as NOW merely because failing to act eventually
+has a consequence.
+
+NOW requires evidence that waiting until tomorrow would materially worsen
+the user's position, miss a same-day or imminent deadline, block someone
+today, interrupt a service today, or create another concrete today-level
+consequence.
+
+A deadline days or weeks away belongs in THIS_WEEK unless the email
+establishes a specific reason action is needed today.
+
+NO REPLY NEEDED THRESHOLD:
+
+NO REPLY NEEDED means the message does not reasonably invite or require
+a response.
+
+Do not classify a message as NO REPLY NEEDED merely because the stakes
+are low or there is no serious consequence for waiting.
+
+If a person directly asks the user a question, proposes a plan, requests
+a call, asks for a decision, or otherwise clearly expects an answer,
+classify it as THIS_WEEK unless there is evidence it belongs in NOW.
+
+Reserve NO REPLY NEEDED primarily for FYIs, newsletters, automated
+notices, informational CCs, and messages that genuinely require no response.
+
 THREAD FIELDS:
 - follow_up_count: report what can actually be counted from the pasted thread; otherwise 0.
 - is_escalating: true only when later messages contain a materially stronger ask, deadline, or consequence than earlier messages.
@@ -625,6 +653,8 @@ router.outputGuard = {
     'invented_commitment_in_a_draft',   // a date, deliverable, price or apology nobody offered
     'invented_visitor_workload',        // their calendar, their other priorities
     'escalation_that_was_not_threatened',
+    'now_without_a_today_level_consequence',   // a deadline weeks out is not today
+    'no_reply_for_a_message_that_asks_one',    // low stakes is not the same as no ask
   ],
   require: [
     'tier_traceable_to_the_email_text',
