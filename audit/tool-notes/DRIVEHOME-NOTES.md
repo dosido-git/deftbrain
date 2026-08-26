@@ -51,16 +51,29 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    pt fr de ja ko ru th vi`. The version this replaced shipped `it` and `nl`
    (which the product does not offer) and omitted `th` and `vi` (which it does),
    so Thai and Vietnamese silently fell back to English.
-7. **The frontend renders `limits` from the response**, not a hardcoded English
-   card. The backend overwrites `limits` on every path so the model cannot
-   delete the product's own disclaimer.
-8. **`DriveHome` is in `PF22_PER_ITEM_COPY`** (audit/audit_v2-3-2.py). The one
+7. **`limits` is ONE server-written string** and the frontend renders it and
+   nothing else. The card used to hold a heading, the backend's two limit
+   strings and a note, three of which said the same thing. The backend
+   overwrites it on every path so the model cannot delete the disclaimer.
+8. **Three guard terms exist because of one real output** (owner, 2026-08-25):
+   `supplied_fact_upgraded` — rain restated as "low-visibility weather", evening
+   plus heavy traffic restated as "evening commute conditions"; joining two
+   supplied facts into a claim about their cause is an invention even when it
+   sounds obvious. `invented_recovery_interval` — "wait 20-30 minutes", food or
+   a hot drink offered as evidence the driver will be alert enough; nothing
+   establishes how long this person needs, so the shape is wait somewhere safe
+   and reassess, go only if you feel clearly alert. `invented_person_or_
+   circumstance` — "ask a colleague still in the office", "if someone at home
+   can collect you"; offer the category conditionally, never populate it.
+   **Golden case 5 is this exact input.** Structure alone will not catch a
+   regression here — read it after any prompt change.
+9. **`DriveHome` is in `PF22_PER_ITEM_COPY`** (audit/audit_v2-3-2.py). The one
    inline `CopyBtn` copies the departure message — a different artefact with a
    different recipient than the global copy, which hands over the assessment.
-9. **The persisted verdict expires after 90 minutes.** S1.7 wants results in
+10. **The persisted verdict expires after 90 minutes.** S1.7 wants results in
    `usePersistentState`; a pre-drive call that reappears next week wearing the
    authority of a fresh one is a different problem. Stamped and dropped on mount.
-10. Option ids are the frontend/backend contract: `daytime evening late_night
+11. Option ids are the frontend/backend contract: `daytime evening late_night
     early_morning` · `clear rain snow_ice fog high_wind heavy_traffic
     construction` · `highway city rural mixed` · `fine a_little_tired very_tired
     anxious not_great`. The backend 400s on anything else, in the reader's language.

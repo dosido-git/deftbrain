@@ -491,15 +491,17 @@ const DriveHome = ({ tool }) => {
           {result.prep_checklist.length > 0 && result.recommendation === 'go' && <Card title={t('dh_prep')}><Bullets items={result.prep_checklist} /></Card>}
           {result.watch_for.length > 0 && <Card title={t('dh_watch_for')}><Bullets items={result.watch_for} /></Card>}
 
-          <Card>
-            <p className={`text-sm font-semibold ${c.label}`}>{t('dh_limits_title')}</p>
-            {result.limits.length > 0 && (
-              <ul className={`mt-1 space-y-1 text-sm ${c.textMuted}`}>
-                {result.limits.map((x, i) => <li key={i}>{x}</li>)}
-              </ul>
-            )}
-            <p className={`mt-2 text-sm ${c.textMuted}`}>{t('dh_limits_note')}</p>
-          </Card>
+          {/* One limitation paragraph. This card used to carry a heading, the
+              backend's two limit strings and a note, and three of the four said
+              the same thing (owner, 2026-08-25). The text is the backend's, so
+              the model cannot delete the product's own disclaimer. */}
+          {result.limits.length > 0 && (
+            <Card>
+              {result.limits.map((x, i) => (
+                <p key={i} className={`text-sm ${c.textMuted}${i ? ' mt-2' : ''}`}>{x}</p>
+              ))}
+            </Card>
+          )}
 
           {result.recommendation === 'go' && !showCheckin && (
             <button type="button" onClick={() => setShowCheckin(true)}

@@ -61,8 +61,7 @@ const UI_STRINGS = {
     optionStay: 'Stay where you are if that is workable.',
     optionDriver: 'Ask a rested person to drive.',
     optionAlternate: 'Take a taxi, a ride service, public transport, or another available option.',
-    limitLive: 'Drive Home is not a live traffic, weather, or road-condition service.',
-    limitReported: 'This assessment uses only the conditions you reported.',
+    limits: 'Drive Home doesn\'t have live traffic, weather, or road-condition data. This assessment uses only what you reported. If conditions change, reassess before leaving.',
     headlineGo: 'The drive looks manageable from what you told us.',
     headlinePause: 'Pause before you leave.',
     headlineNo: 'Do not start this drive right now.',
@@ -82,8 +81,7 @@ const UI_STRINGS = {
     optionStay: 'Quédate donde estás si es posible.',
     optionDriver: 'Pide a una persona descansada que conduzca.',
     optionAlternate: 'Usa taxi, transporte por aplicación, transporte público u otra alternativa disponible.',
-    limitLive: 'Drive Home no es un servicio en vivo de tráfico, clima o estado de las carreteras.',
-    limitReported: 'Esta evaluación usa únicamente las condiciones que reportaste.',
+    limits: 'Drive Home no dispone de datos en vivo de tráfico, clima ni estado de las carreteras. Esta evaluación usa únicamente lo que reportaste. Si las condiciones cambian, vuelve a evaluarlo antes de salir.',
     headlineGo: 'El trayecto parece manejable con lo que nos contaste.',
     headlinePause: 'Detente un momento antes de salir.',
     headlineNo: 'No empieces este trayecto ahora mismo.',
@@ -103,8 +101,7 @@ const UI_STRINGS = {
     optionStay: 'Restez sur place si c’est possible.',
     optionDriver: 'Demandez à une personne reposée de conduire.',
     optionAlternate: 'Utilisez un taxi, un VTC, les transports en commun ou une autre solution disponible.',
-    limitLive: 'Drive Home n’est pas un service en direct de trafic, météo ou état des routes.',
-    limitReported: 'Cette évaluation utilise uniquement les conditions que vous avez signalées.',
+    limits: 'Drive Home ne dispose d\'aucune donnée en direct sur le trafic, la météo ou l\'état des routes. Cette évaluation utilise uniquement ce que vous avez indiqué. Si les conditions changent, réévaluez avant de partir.',
     headlineGo: 'Le trajet paraît gérable au vu de ce que vous avez indiqué.',
     headlinePause: 'Faites une pause avant de partir.',
     headlineNo: 'Ne prenez pas la route maintenant.',
@@ -124,8 +121,7 @@ const UI_STRINGS = {
     optionStay: 'Bleib dort, wenn das praktikabel ist.',
     optionDriver: 'Bitte eine ausgeruhte Person zu fahren.',
     optionAlternate: 'Nutze Taxi, Fahrdienst, öffentliche Verkehrsmittel oder eine andere verfügbare Alternative.',
-    limitLive: 'Drive Home ist kein Live-Dienst für Verkehr, Wetter oder Straßenzustand.',
-    limitReported: 'Diese Einschätzung verwendet nur die von dir gemeldeten Bedingungen.',
+    limits: 'Drive Home hat keine Live-Daten zu Verkehr, Wetter oder Straßenzustand. Diese Einschätzung verwendet nur das, was du angegeben hast. Wenn sich die Bedingungen ändern, bewerte die Fahrt vor der Abfahrt neu.',
     headlineGo: 'Nach deinen Angaben wirkt die Fahrt machbar.',
     headlinePause: 'Halte kurz inne, bevor du losfährst.',
     headlineNo: 'Fahre jetzt nicht los.',
@@ -145,8 +141,7 @@ const UI_STRINGS = {
     optionStay: 'Fique onde está, se isso for viável.',
     optionDriver: 'Peça para uma pessoa descansada dirigir.',
     optionAlternate: 'Use táxi, aplicativo de transporte, transporte público ou outra alternativa disponível.',
-    limitLive: 'Drive Home não é um serviço em tempo real de trânsito, clima ou condições da via.',
-    limitReported: 'Esta avaliação usa apenas as condições que você informou.',
+    limits: 'O Drive Home não tem dados em tempo real de trânsito, clima ou condições da via. Esta avaliação usa apenas o que você informou. Se as condições mudarem, reavalie antes de sair.',
     headlineGo: 'Pelo que você contou, a viagem parece administrável.',
     headlinePause: 'Faça uma pausa antes de sair.',
     headlineNo: 'Não comece esta viagem agora.',
@@ -166,8 +161,7 @@ const UI_STRINGS = {
     optionStay: 'ابقَ حيث أنت إذا كان ذلك عمليًا.',
     optionDriver: 'اطلب من شخص مرتاح أن يقود.',
     optionAlternate: 'استخدم سيارة أجرة أو خدمة نقل أو المواصلات العامة أو بديلًا متاحًا آخر.',
-    limitLive: 'Drive Home ليس خدمة مباشرة لحركة المرور أو الطقس أو حالة الطرق.',
-    limitReported: 'يعتمد هذا التقييم فقط على الظروف التي أبلغت عنها.',
+    limits: 'لا تتوفر لدى Drive Home بيانات مباشرة عن حركة المرور أو الطقس أو حالة الطرق. يعتمد هذا التقييم فقط على ما ذكرته أنت. وإذا تغيرت الظروف، فأعد التقييم قبل المغادرة.',
     headlineGo: 'بناءً على ما ذكرته، تبدو الرحلة ممكنة.',
     headlinePause: 'توقف قليلًا قبل أن تنطلق.',
     headlineNo: 'لا تبدأ هذه الرحلة الآن.',
@@ -187,8 +181,7 @@ const UI_STRINGS = {
     optionStay: '如果可行，留在原地。',
     optionDriver: '请一位休息充分的人来驾驶。',
     optionAlternate: '使用出租车、网约车、公共交通或其他可用方式。',
-    limitLive: 'Drive Home 不是实时交通、天气或道路状况服务。',
-    limitReported: '此评估仅使用你报告的情况。',
+    limits: 'Drive Home 没有实时的交通、天气或道路状况数据。此评估仅使用你报告的情况。如果情况有变，出发前请重新评估。',
     headlineGo: '就你所说的情况来看，这趟车是可以应付的。',
     headlinePause: '出发前先停下来想一想。',
     headlineNo: '现在不要开始这趟驾驶。',
@@ -208,8 +201,7 @@ const UI_STRINGS = {
     optionStay: '可能ならその場所にとどまってください。',
     optionDriver: '十分に休んだ人に運転を頼んでください。',
     optionAlternate: 'タクシー、配車サービス、公共交通機関など別の手段を使ってください。',
-    limitLive: 'Drive Home はリアルタイムの交通・天気・道路状況サービスではありません。',
-    limitReported: 'この評価は、あなたが報告した状況だけを使っています。',
+    limits: 'Drive Home はリアルタイムの交通・天気・道路状況のデータを持っていません。この評価は、あなたが報告した内容だけを使っています。状況が変わったら、出発前にもう一度確認してください。',
     headlineGo: 'お聞きした範囲では、無理のない運転になりそうです。',
     headlinePause: '出発する前に、少し立ち止まってください。',
     headlineNo: '今は運転を始めないでください。',
@@ -229,8 +221,7 @@ const UI_STRINGS = {
     optionStay: '가능하다면 현재 있는 곳에 머무르세요.',
     optionDriver: '충분히 쉰 사람에게 운전을 부탁하세요.',
     optionAlternate: '택시, 차량 호출 서비스, 대중교통 또는 다른 가능한 수단을 이용하세요.',
-    limitLive: 'Drive Home은 실시간 교통, 날씨 또는 도로 상태 서비스가 아닙니다.',
-    limitReported: '이 평가는 사용자가 보고한 조건만 사용합니다.',
+    limits: 'Drive Home에는 실시간 교통, 날씨, 도로 상태 데이터가 없습니다. 이 평가는 사용자가 알려준 내용만 사용합니다. 상황이 달라지면 출발 전에 다시 판단하세요.',
     headlineGo: '말씀하신 내용으로 보면 감당할 만한 운전입니다.',
     headlinePause: '출발하기 전에 잠시 멈추세요.',
     headlineNo: '지금은 운전을 시작하지 마세요.',
@@ -250,8 +241,7 @@ const UI_STRINGS = {
     optionStay: 'Останьтесь там, где вы находитесь, если это возможно.',
     optionDriver: 'Попросите отдохнувшего человека сесть за руль.',
     optionAlternate: 'Используйте такси, сервис поездок, общественный транспорт или другой доступный вариант.',
-    limitLive: 'Drive Home не является сервисом реального времени для трафика, погоды или состояния дорог.',
-    limitReported: 'Эта оценка использует только те условия, о которых вы сообщили.',
+    limits: 'У Drive Home нет данных о трафике, погоде или состоянии дорог в реальном времени. Эта оценка использует только то, что вы сообщили. Если условия изменятся, оцените заново перед выездом.',
     headlineGo: 'Судя по тому, что вы описали, поездка выглядит посильной.',
     headlinePause: 'Остановитесь на минуту перед выездом.',
     headlineNo: 'Не начинайте эту поездку сейчас.',
@@ -271,8 +261,7 @@ const UI_STRINGS = {
     optionStay: 'अगर संभव हो तो वहीं रुकें।',
     optionDriver: 'किसी आराम कर चुके व्यक्ति से ड्राइव करने को कहें।',
     optionAlternate: 'टैक्सी, राइडशेयर, सार्वजनिक परिवहन या कोई दूसरा उपलब्ध विकल्प लें।',
-    limitLive: 'Drive Home लाइव ट्रैफिक, मौसम या सड़क की स्थिति की सेवा नहीं है।',
-    limitReported: 'यह आकलन केवल आपके बताए हुए हालात पर आधारित है।',
+    limits: 'Drive Home के पास ट्रैफिक, मौसम या सड़क की स्थिति का लाइव डेटा नहीं है। यह आकलन केवल आपके बताए हुए हालात पर आधारित है। हालात बदलें तो निकलने से पहले दोबारा आकलन करें।',
     headlineGo: 'आपने जो बताया, उसके हिसाब से यह ड्राइव संभालने लायक लगती है।',
     headlinePause: 'निकलने से पहले एक पल रुकें।',
     headlineNo: 'अभी यह ड्राइव शुरू न करें।',
@@ -292,8 +281,7 @@ const UI_STRINGS = {
     optionStay: 'อยู่ที่เดิมก่อน ถ้าทำได้',
     optionDriver: 'ขอให้คนที่พักผ่อนเพียงพอเป็นคนขับ',
     optionAlternate: 'ใช้แท็กซี่ บริการเรียกรถ ขนส่งสาธารณะ หรือทางเลือกอื่นที่มี',
-    limitLive: 'Drive Home ไม่ใช่บริการข้อมูลการจราจร สภาพอากาศ หรือสภาพถนนแบบเรียลไทม์',
-    limitReported: 'การประเมินนี้ใช้เฉพาะสภาพการณ์ที่คุณแจ้งไว้เท่านั้น',
+    limits: 'Drive Home ไม่มีข้อมูลการจราจร สภาพอากาศ หรือสภาพถนนแบบเรียลไทม์ การประเมินนี้ใช้เฉพาะสิ่งที่คุณแจ้งไว้เท่านั้น หากสถานการณ์เปลี่ยน ให้ประเมินใหม่ก่อนออกเดินทาง',
     headlineGo: 'จากสิ่งที่คุณบอกมา การขับรถเที่ยวนี้ดูรับมือไหว',
     headlinePause: 'หยุดคิดสักครู่ก่อนออกเดินทาง',
     headlineNo: 'อย่าเพิ่งเริ่มขับรถตอนนี้',
@@ -313,8 +301,7 @@ const UI_STRINGS = {
     optionStay: 'Ở lại nơi bạn đang đứng nếu điều đó khả thi.',
     optionDriver: 'Nhờ một người đã nghỉ ngơi đầy đủ lái xe.',
     optionAlternate: 'Đi taxi, dịch vụ gọi xe, phương tiện công cộng hoặc lựa chọn khác đang có.',
-    limitLive: 'Drive Home không phải là dịch vụ giao thông, thời tiết hay tình trạng đường theo thời gian thực.',
-    limitReported: 'Đánh giá này chỉ dựa trên các điều kiện bạn đã cung cấp.',
+    limits: 'Drive Home không có dữ liệu giao thông, thời tiết hay tình trạng đường theo thời gian thực. Đánh giá này chỉ dựa trên những gì bạn cung cấp. Nếu điều kiện thay đổi, hãy cân nhắc lại trước khi khởi hành.',
     headlineGo: 'Theo những gì bạn mô tả, chuyến đi này có vẻ trong khả năng.',
     headlinePause: 'Dừng lại một chút trước khi khởi hành.',
     headlineNo: 'Đừng bắt đầu chuyến đi này lúc này.',
@@ -407,7 +394,10 @@ WHAT FAILS:
 2. A numeric risk score, percentage, probability, or a statement that the drive is safe.
 3. A fact about the driver, their vehicle or their surroundings that they did not supply.
 4. Advice for pushing through fatigue or impairment, or steps for proceeding under a pause or do-not-drive call.
-5. Telling the driver to use a phone, timer or this tool while the vehicle is moving.`;
+5. Telling the driver to use a phone, timer or this tool while the vehicle is moving.
+6. A reported condition restated as something stronger or more specific than it was: rain described as low visibility or bad weather; heavy traffic described as a commute or rush hour; two reported facts joined into a claim about what is causing the third.
+7. A person or a place nobody mentioned — a colleague still at the office, someone at home who could collect them, a housemate, a cafe, a spare bed. Offering "a rested person, if one is available" is fine; asserting one exists is not.
+8. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs.`;
 }
 
 // V2: the tool's primary job is the pre-drive decision.
@@ -485,10 +475,7 @@ router.post('/drive-home', rateLimit(DEFAULT_LIMITS), async (req, res) => {
         ],
         prep_checklist: [],
         watch_for: [],
-        limits: [
-          t(userLanguage, 'limitLive'),
-          t(userLanguage, 'limitReported'),
-        ],
+        limits: [t(userLanguage, 'limits')],
       });
     }
 
@@ -523,6 +510,11 @@ NON-NEGOTIABLE BOUNDARIES:
 - If one concrete missing fact could materially change the call, use recommendation 'pause' and state that fact in before_you_decide rather than inventing it.
 - Keep the result concise enough to read before departure.
 
+STAY THE SIZE OF WHAT YOU WERE TOLD:
+- Name a reported condition with the weight the driver gave it. Rain is rain — not low-visibility weather, not poor conditions, not a downpour. Heavy traffic is heavy traffic — not a commute, not rush hour, not congestion caused by anything in particular. Evening is a time of day and says nothing about why the roads are busy. Joining two reported facts into a third claim about their cause or severity is an invention even when it sounds obvious.
+- Do not create people or circumstances. There is no colleague still in the office, nobody at home who could come and collect them, no housemate, no spare room, no second driver, unless the driver said so. Offer the category and leave it open — 'ask a rested person to drive, if someone is available' — and never populate it with a person whose existence you assumed. The same goes for places: no mention of the office they can wait in, the cafe down the road, or anywhere else you have not been told exists.
+- You cannot know how long a person needs in order to become alert, and you cannot know that food, a hot drink, fresh air, a short walk or a nap will get them there. Never name an interval — not 20-30 minutes, not half an hour, not 'after a coffee' — and never present a remedy as evidence they will be fit to drive. Where waiting is the advice, the shape is: wait somewhere safe and reassess before leaving; go only if they feel clearly alert and the conditions they were worried about have improved enough that they are comfortable making the drive.
+
 DECISION STANDARD:
 1. Put the driver's present condition first.
 2. Then consider drive duration, time of day, user-reported weather/traffic/road conditions, and road type.
@@ -544,10 +536,7 @@ Return ONLY valid JSON with exactly this shape:
   "safer_options": ["Practical alternatives when recommendation is pause or do_not_drive — at most 5, one short line each"],
   "prep_checklist": ["Short pre-departure actions when recommendation is go — at most 6, one short line each"],
   "watch_for": ["General signs/conditions that should make the driver stop or reassess, phrased without pretending they are currently present — at most 5, one short line each"],
-  "limits": [
-    "Drive Home is not a live traffic, weather, or road-condition service.",
-    "This assessment uses only the conditions the user reported."
-  ]
+  "limits": ["the server overwrites this — do not spend effort on it"]
 }
 
 The value of "recommendation" is an identifier, not prose. Return it as exactly one of the English strings go, pause or do_not_drive whatever language the rest of the response is written in. Everything else in the JSON is prose and is written in the reader's language.
@@ -581,7 +570,7 @@ Return only the requested JSON.`;
       const clean = sanitizeResult(draft, userLanguage);
       if (clean.recommendation !== 'go') clean.prep_checklist = [];
       else clean.safer_options = [];
-      clean.limits = [t(userLanguage, 'limitLive'), t(userLanguage, 'limitReported')];
+      clean.limits = [t(userLanguage, 'limits')];
       return clean;
     };
 
@@ -628,6 +617,9 @@ router.outputGuard = {
     'push_through_impairment_advice',
     'in_motion_device_instruction',      // use the phone/timer while driving
     'proceed_anyway_steps_under_a_hold', // prep steps beneath pause/do_not_drive
+    'supplied_fact_upgraded',            // rain → "low-visibility"; evening + traffic → "commute"
+    'invented_person_or_circumstance',   // a colleague, someone at home, a cafe to wait in
+    'invented_recovery_interval',        // "wait 20-30 minutes"; coffee as proof of alertness
   ],
   require: [
     'a_decision_the_driver_can_act_on',
