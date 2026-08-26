@@ -1,7 +1,7 @@
 {
  "homepage": {
-  "hash": "ac045f79f579dee7c2644fd610e1511b2cd166c1",
-  "lastmod": "2026-08-25"
+  "hash": "4a2ba34833536038fd78ce5d01c08d99763a58a8",
+  "lastmod": "2026-08-26"
  },
  "static:about": {
   "hash": "721c743af61d8a6426b9b918e64cff5f1f8b8d73",
@@ -28,8 +28,8 @@
   "lastmod": "2026-08-23"
  },
  "tool:BillRescue": {
-  "hash": "b6fc9830a9594d7d246a5df4f9114674e0f9b5b2",
-  "lastmod": "2026-08-23"
+  "hash": "c3275d73c0f023963bf6b0a8d16a97c24c5c6396",
+  "lastmod": "2026-08-26"
  },
  "tool:BragSheetBuilder": {
   "hash": "74d601a90d73ca47dc8aa886b2dde5da8a11ff59",
