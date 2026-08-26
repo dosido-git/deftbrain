@@ -86,10 +86,16 @@ const i18n = {
   // with template: "Hello {{name}}" → "Hello Bruce"
   t(key, vars) {
     const lang = i18n.language;
+    // `??` falls through on null/undefined but NOT on '', so an empty value in
+    // the active language returned an empty string — the control rendered with
+    // no label at all, which is worse than either the English text or the raw
+    // key, and gives nobody a thread to pull. Fan Theory's submit button
+    // (2026-08-26) is how this surfaced: the same component's loading label
+    // rendered and its idle label did not. Treat empty as missing.
+    const own = RESOURCES[lang]?.[key];
     const str =
-      RESOURCES[lang]?.[key] ??
-      RESOURCES['en']?.[key] ??
-      key; // safe fallback — returns the key if nothing found
+      (own !== undefined && own !== '') ? own
+      : (RESOURCES['en']?.[key] || key); // never return nothing
 
     if (!vars) return str;
 
