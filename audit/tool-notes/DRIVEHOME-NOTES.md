@@ -118,6 +118,21 @@ contacts nobody. ~95 `dh_*` keys were retired with those features.
    runs of three. WHAT FAILS #8 now says CHECK safer_options AND prep_checklist
    explicitly, and three clean runs came back with none. A guard term that
    names a failure but not where to look for it is half a rule.
+18. **Fatigue has its own boundary, and it is not a timer** (owner,
+   2026-08-25). No short intervention counts as evidence the person is ready to
+   drive — not a brief wait, not the yawning stopping, not food, caffeine,
+   fresh air or a walk. The failure this replaced was subtle: the tool was
+   writing "notice whether the yawning continues or stops", which quietly makes
+   the visitor's own symptom the pass condition. The test is whether they feel
+   clearly alert and able to sustain attention for the WHOLE drive, not alert
+   enough to start; and if fatigue, sleepiness, repeated yawning or difficulty
+   staying alert remains, the response must say plainly not to start — not
+   offer a longer wait, not leave it as their judgement call. Guard term
+   `alertness_inferred_from_a_proxy`, plus `persisting_fatigue_ends_in_not_
+   driving` in `require`. This NARROWS the OUTPUT DISCIPLINE line about
+   recovery methods rather than sitting beside it: that one has an "unless the
+   user supplied a reason" exception, and for fatigue there is no exception.
+   Golden case 5 is the fatigue case; read its `before_you_decide`.
 
 ## Known, not fixed
 

@@ -400,7 +400,8 @@ WHAT FAILS:
 8. A named recovery interval, or a remedy offered as evidence of fitness to drive: "wait 20-30 minutes", "wait inside for 10-15 minutes and reassess", "after something to eat you will feel sharper", "a coffee and you will be fine". Nothing establishes how long this person needs. CHECK safer_options AND prep_checklist FOR THIS, not only before_you_decide — the interval usually appears as the first safer option. "Wait somewhere safe and reassess before starting" is the correct form of the same advice.
 9. Generic driving advice that would read identically on any other drive — check your mirrors, watch for erratic drivers, top up the fuel, allow extra following distance — unless the supplied facts make it specifically relevant here. One item tied to this situation beats three that are true of every journey.
 10. An entry in factors_in_favor that does not make the DRIVING easier or safer — an observation about the driver's judgement, a compliment on their self-awareness, a silver lining. That section is allowed to be empty and usually should be on a pause.
-11. An inferred purpose, arrival time or amount of slack: that the trip is a visit, that they can afford to wait, that arriving late is or is not a problem. A destination is not a purpose.`;
+11. Where the concern is fatigue: any short intervention offered as evidence of readiness — a brief wait, yawning stopping, food, caffeine, fresh air, a walk. Making the visitor's own symptom the pass condition ("notice whether the yawning continues or stops") is the same failure. The boundary is whether they feel clearly alert and able to sustain attention for the whole drive; if fatigue remains, the answer is not to start.
+12. An inferred purpose, arrival time or amount of slack: that the trip is a visit, that they can afford to wait, that arriving late is or is not a problem. A destination is not a purpose.`;
 }
 
 // V2: the tool's primary job is the pre-drive decision.
@@ -519,6 +520,12 @@ GROUNDING THIS TOOL LEARNED THE HARD WAY:
 - safer_options are written as things the driver could do, never as questions back to them. 'Do you have access to a rested, experienced winter driver?' is a question; 'if available, have a rested, experienced winter driver make the drive instead' is an option.
 - Each safer_option is a different KIND of action — resolve the unknown, wait and reassess, hand the drive to someone else, travel another way, do not make the trip.
 - before_you_decide is the most useful field in this response when one concrete, checkable fact would settle it. Where an official source exists for that fact — a road-conditions line or website, a transport authority, a closure or chain-law notice — say to check it and say what a closure, a restriction or an advisory they are not equipped for would mean for the decision. Name the KIND of source; never a specific phone number, URL or agency you cannot verify.
+
+WHERE THE CONCERN IS FATIGUE OR ALERTNESS — this narrows the rule above, it does not sit beside it:
+- Do not use a brief waiting period, the cessation of yawning, food, caffeine, fresh air, walking, or any other short intervention as evidence that the person is ready to drive. None of them establishes it. 'Once the yawning stops you are good to go' and 'after a coffee you will be fine' are the same mistake in different words, and 'notice whether the yawning continues or stops' quietly makes it the test.
+- The decision boundary is the person's ACTUAL ALERTNESS, not an interval elapsed and not a symptom that has gone quiet. Recommend waiting and reassessing.
+- Proceed only if they feel clearly alert and able to sustain attention for the whole drive — not alert enough to start.
+- If fatigue, sleepiness, repeated yawning, or difficulty staying alert remains, recommend NOT STARTING the drive. Say that plainly. Do not offer a longer wait as the answer and do not leave it hanging as their judgement call.
 
 DECISION STANDARD:
 1. Put the driver's present condition first.
@@ -671,8 +678,10 @@ router.outputGuard = {
     'inferred_purpose_or_schedule',      // why they are going, when they must arrive, what slack they have
     'option_written_as_a_question',      // "Do you have access to…?" instead of an option they can take
     'generic_advice_not_tied_to_this',   // "check your mirrors", fuel checks, defensive-driving filler
+    'alertness_inferred_from_a_proxy',   // yawning stopping, coffee, a short wait taken as readiness
   ],
   require: [
+    'persisting_fatigue_ends_in_not_driving',
     'a_decision_the_driver_can_act_on',
     'grounded_in_what_was_reported',
     'fulfills_tool_promise',
