@@ -82,6 +82,9 @@ const FocusPocus = ({ tool }) => {
   // not seen (owner, 2026-08-26).
   // The whole plan waits for a yes, and every line of it is editable first.
   const [plan, setPlan] = useState(null);          // { stoppingPoint, firstStep, doneWhen }
+  // Resume hides the banner for this visit but keeps the note: if they wander
+  // off without starting, it should still be there next time. Dismiss deletes it.
+  const [resumeHidden, setResumeHidden] = useState(false);
   const [blockerOpen, setBlockerOpen] = useState(false);
   const [extendOpen, setExtendOpen] = useState(false);
   const [promise, setPromise] = useState('');
@@ -118,6 +121,15 @@ const FocusPocus = ({ tool }) => {
   const overtimeMs = session ? Math.max(0, Date.now() - session.endsAt) : 0;
   const overtime = session?.status === 'running' && overtimeMs > 0;
   const extensionsLeft = session ? session.extensionsLeft ?? 0 : 3;
+
+  // The most recent saved restart point, whatever the task was. Older entries
+  // stay in storage and surface again once this one is resumed or dismissed.
+  const resumable = useMemo(() => {
+    const rows = Object.entries(breadcrumbs || {})
+      .filter(([, v]) => v && typeof v === 'object' && v.note)
+      .sort((a, b) => (b[1].at || 0) - (a[1].at || 0));
+    return rows.length ? { key: rows[0][0], ...rows[0][1] } : null;
+  }, [breadcrumbs]);
 
   const call = useCallback(async (endpoint, payload) => {
     setError('');
@@ -217,7 +229,7 @@ const FocusPocus = ({ tool }) => {
       setSession(data);
       // The breadcrumb comes back with the task, not with the session.
       const key = (data.task || '').trim().toLowerCase();
-      if (key && data.breadcrumb) setBreadcrumbs(b => ({ ...b, [key]: data.breadcrumb }));
+      if (key && data.breadcrumb) setBreadcrumbs(b => ({ ...b, [key]: { task: data.task, note: data.breadcrumb, at: Date.now() } }));
       if (key && result === 'yes') setBreadcrumbs(b => { const n = { ...b }; delete n[key]; return n; });
     }
   };
@@ -239,7 +251,7 @@ const FocusPocus = ({ tool }) => {
     timeUpRef.current = false;
     setSession(null); setTask(''); setEnough(''); setMinutes(25); setCustomMinutes('');
     setNudge(''); setRemaining(''); setReviewChoice(''); setPlan(null); setError('');
-    setBlockerOpen(false); setExtendOpen(false); setPromise('');
+    setBlockerOpen(false); setExtendOpen(false); setPromise(''); setResumeHidden(false);
   }, [session, callToolEndpoint, setSession]);
   handleResetRef.current = handleReset;
 
@@ -310,10 +322,19 @@ const FocusPocus = ({ tool }) => {
       {error && <div className={`rounded-xl border p-4 text-sm ${c.danger}`}>{error}</div>}
 
       {/* ── SETUP ── */}
-      {!session && !!breadcrumbs[task.trim().toLowerCase()] && (
+      {/* The tool promises to save a restart point. This is where that promise
+          becomes visible — not buried until you retype the same task. */}
+      {!session && resumable && !resumeHidden && (
         <Card c={c} className={c.warning}>
-          <p className="text-xs font-bold uppercase">{t('fpo_last_time')}</p>
-          <p className="mt-1 text-sm">{breadcrumbs[task.trim().toLowerCase()]}</p>
+          <p className="text-xs font-bold uppercase">{t('fpo_pick_up')}</p>
+          <p className="mt-1 font-semibold">{resumable.task}</p>
+          <p className={`mt-1 text-sm ${c.textSecondary}`}>{t('fpo_next_label')}: {resumable.note}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" onClick={() => { setTask(resumable.task); setEnough(''); setPlan(null); setResumeHidden(true); }}
+              className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-bold ${c.btnPrimary}`}>{t('fpo_resume')}</button>
+            <button type="button" onClick={() => { setResumeHidden(true); setBreadcrumbs(b => { const n = { ...b }; delete n[resumable.key]; return n; }); }}
+              className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_dismiss')}</button>
+          </div>
         </Card>
       )}
 
@@ -531,18 +552,27 @@ const FocusPocus = ({ tool }) => {
       {/* ── DONE — this is the tool's result ── */}
       {results && (
         <>
+          {/* The ending has to BE an ending. Sending someone who has just stopped
+              working straight back to a form asking what they want to work on
+              undoes the closure the breadcrumb just created (owner, 2026-08-26).
+              Done for now leaves the tool; starting again is the quiet option. */}
           <Card c={c} className={results.completed === 'yes' ? c.success : c.infoBox}>
-            <p className="text-lg font-bold">{session.completed === 'yes' ? t('fpo_done_title') : t('fpo_breadcrumb_title')}</p>
+            <p className="text-lg font-bold">{results.completed === 'yes' ? t('fpo_done_title') : t('fpo_let_go')}</p>
             {results.completed === 'yes'
               ? <p className="mt-2 text-sm">{t('fpo_done_body')}</p>
               : <>
-                  <p className={`mt-2 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_breadcrumb_label')}</p>
+                  <p className="mt-2 text-sm">{t('fpo_saved')}</p>
+                  <p className={`mt-3 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_next_label')}</p>
                   <p className="mt-1 text-sm font-semibold">{results.breadcrumb}</p>
-                  <p className="mt-3 text-sm">{t('fpo_breadcrumb_body')}</p>
                 </>}
           </Card>
-          <button type="button" onClick={startAnother}
-            className={`min-h-[48px] w-full rounded-xl px-4 py-3 font-bold ${c.btnPrimary}`}>{t('fpo_take_break')}</button>
+          <a href="/" className={`block min-h-[48px] w-full rounded-xl px-4 py-3 text-center font-bold ${c.btnPrimary}`}>
+            {t('fpo_done_for_now')}
+          </a>
+          <p className={`text-center text-sm ${c.textMuted}`}>
+            {t('fpo_ready_another')}{' '}
+            <button type="button" onClick={startAnother} className={`font-semibold ${linkStyle}`}>{t('fpo_start_something')}</button>
+          </p>
           {/* Written out rather than reusing the shared crossRef: S5.5 counts the
               link itself, and a variable defined above the results block puts
               every href on the wrong side of it. */}
