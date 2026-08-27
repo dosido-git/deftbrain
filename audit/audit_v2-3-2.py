@@ -846,7 +846,13 @@ for name, fpath in tools:
     # panel, which was the only thing that read fsa-history — so the tool was
     # quietly recording six listening sessions nobody could ever look at.
     # Recording data with no way to see it is worse than not recording it.
-    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus', 'FocusSoundArchitect'}
+    # FriendshipFadeAlerter joined on 2026-08-27. Its history is per-person and
+    # permanent — every logged contact lives on that person's card and renders
+    # on their screen — not a list of tool sessions. A second, session-shaped
+    # history would be a log of every time you needed help talking to a friend,
+    # which is a thing to be shown as little as possible.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus', 'FocusSoundArchitect',
+                         'FriendshipFadeAlerter'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

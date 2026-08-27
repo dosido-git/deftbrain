@@ -1,16 +1,112 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// The starters are written before the guard runs; never hold them hostage.
+const GUARD_ENTRY_MS = Number(process.env.FFA_GUARD_ENTRY_MS || 60_000);
+
+// Only the prose the visitor reads. The rhythm enum is a contract with the
+// frontend and is not the guard's business.
+async function guardStarters(parsed, body, startedAt) {
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[friendship-fade-alerter-v2] v2 guard: skipped — out of time, answer returned unguarded');
+    return;
+  }
+  const fields = [];
+  const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
+  push('encouragement', parsed.encouragement);
+  (parsed.starters || []).forEach((x, i) => {
+    push(`starters[${i}].message`, x && x.message);
+    push(`starters[${i}].why_it_works`, x && x.why_it_works);
+  });
+  (parsed.conversation_topics || []).forEach((x, i) => push(`conversation_topics[${i}].angle`, x && x.angle));
+  if (!fields.length) return;
+
+  await runOutputGuard(parsed, {
+    label: 'friendship-fade-alerter-v2',
+    fields,
+    supplied: `WHAT THE USER TOLD US ABOUT THIS PERSON, IN FULL — nothing else is known:
+Name they used: ${body.name || '(not given)'}
+Relationship, in the user's words: ${body.relationshipType || '(not given)'}
+Days since they last spoke: ${body.daysSinceContact ?? '(not given)'}
+Notes the user chose to keep: ${(body.contextNotes || '').trim() || 'NONE — they wrote nothing'}
+Past contacts logged: ${(body.contactLog || []).length}
+
+Nothing about why the gap happened, whether either person was hurt, who owes
+whom a message, what the friendship used to be like, or how either of them
+feels about it now.
+
+WHAT FAILS:
+1. Treating elapsed time as evidence. A long gap is a fact about calendars, not
+   about the relationship. "Things have clearly drifted", "you have been out of
+   touch too long", "before this fades completely" all assert a decline the
+   user never reported and the number cannot show.
+2. Inventing the reason for the gap — busyness, a falling-out, one person
+   pulling away, life getting in the way. The user did not say.
+3. Scorekeeping. Who reached out last, who owes whom, whether the friendship is
+   balanced. Not ours to score, and the tool exists to make contact easier, not
+   to adjudicate it.
+4. Putting an apology in the user's mouth. A starter that opens by apologising
+   for the silence makes the visitor concede a fault they never named.
+5. Diagnosing the friendship's health, trajectory, or future.
+6. Inventing shared history — a trip, a joke, a conversation — that is not in
+   the notes above. The message has to be sendable as written.`,
+  }, { max_tokens: 1400 });
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — message text and quoted phrases must be written plainly with no inner quote marks, or it breaks the JSON.';
+
+
+// ═══════════════════════════════════════════════════════════════
+// RECOMMEND RHYTHM — gentle first-use help, not a prescription
+// ═══════════════════════════════════════════════════════════════
+router.post('/friendship-fade-alerter/recommend-rhythm', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { name, relationshipType, contextNotes, userLanguage } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+
+    const prompt = `Help someone choose a comfortable contact rhythm for a relationship. This is a preference, not a rule or judgment about how friendship should work.
+
+PERSON: ${name.trim()}
+RELATIONSHIP: ${relationshipType || 'friend'}
+${contextNotes?.trim() ? `CONTEXT: ${contextNotes.trim()}` : ''}
+
+Choose the least demanding rhythm that still plausibly fits the relationship. Do not imply that longer gaps mean a friendship is failing. Some close relationships are naturally low-frequency.
+
+Return ONLY valid JSON:
+{
+  "suggested_frequency": "one of: weekly | biweekly | monthly | quarterly | semiannually",
+  "reasoning": "One short, humane sentence explaining why this may be a comfortable starting point. Make clear it can be changed.",
+  "note": "One short sentence reminding the user that the right rhythm is the one that feels natural and sustainable."
+}
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 700,
+      system: (withLanguage('You are a practical, non-judgmental relationship assistant. Never turn friendship into a quota.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
+      messages: [{ role: 'user', content: prompt }],
+    }, { label: 'friendship-fade-alerter-recommend-rhythm' });
+
+    const valid = ['weekly', 'biweekly', 'monthly', 'quarterly', 'semiannually'];
+    if (!valid.includes(parsed.suggested_frequency)) parsed.suggested_frequency = 'monthly';
+    res.json(parsed);
+  } catch (error) {
+    console.error('[FriendshipFade/recommend-rhythm] Error:', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN — generate conversation starters for one person
 // ═══════════════════════════════════════════════════════════════
 
 router.post('/friendship-fade-alerter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
     const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity, userLanguage } = req.body;
 
@@ -34,7 +130,7 @@ router.post('/friendship-fade-alerter', rateLimit(DEFAULT_LIMITS), async (req, r
       ? `\nINITIATION PATTERN: You initiated ${reciprocity.youInitiated} times, they initiated ${reciprocity.theyInitiated} times out of last ${reciprocity.total} contacts.`
       : '';
 
-    const prompt = `You are helping someone reconnect with a person in their life. Life gets busy and people lose track of time between conversations — that's completely normal. Your job is to make reaching out easy and natural.
+    const prompt = `You are helping someone reconnect with a person in their life. Life gets busy and gaps happen, including in healthy relationships. Your job is to make reaching out easy and natural without treating elapsed time as evidence that anything is wrong.
 
 PERSON: ${name}
 RELATIONSHIP: ${relationshipType}
@@ -47,7 +143,7 @@ ${reciprocityBlock}
 
 RULES:
 - Messages should sound like THEM, not a template
-- No guilt, no apologies for time passing — just natural warmth
+- No guilt, no scorekeeping, and no assumption that the gap means the relationship is damaged
 - Reference specific shared interests, past conversations, or upcoming events when available
 - Provide a range: quick low-effort texts AND deeper catch-up invitations
 - Each message should be ready to copy and send as-is
@@ -83,7 +179,7 @@ Return ONLY valid JSON:
       "angle": "How to naturally bring this into conversation — one sentence"
     }
   ],
-  "encouragement": "One warm, practical sentence about why reaching out now is a good idea (no guilt, no psychology, just real talk) — one sentence"
+  "encouragement": "One warm, practical sentence that makes reaching out feel easy, without implying the user is late or has failed — one sentence"
 }
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
@@ -91,9 +187,10 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
+      system: (withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter' });
+    await guardStarters(parsed, req.body, startedAt);
     res.json(parsed);
 
   } catch (error) {
@@ -147,7 +244,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
+      system: (withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-batch' });
     res.json(parsed);
@@ -193,7 +290,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 800,
-      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
+      system: (withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-followup' });
     res.json(parsed);
@@ -250,7 +347,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 4000,
-      system: withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage),
+      system: (withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-digest' });
     res.json(parsed);
@@ -316,7 +413,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage),
+      system: (withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'friendship-fade-alerter-reengage' });
     res.json(parsed);
@@ -386,7 +483,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1200,
-      system: withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage),
+      system: (withLanguage('You are a thoughtful relationship coach. Be honest, specific, and avoid generic advice.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-health-insight' });
     res.json(parsed);
@@ -439,7 +536,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1400,
-      system: withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage),
+      system: (withLanguage('You are a direct, honest relationship coach. No fluff — give specific, actionable guidance.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-say-it-coach' });
     res.json(parsed);
@@ -491,7 +588,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
       max_tokens: 1500,
-      system: withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage),
+      system: (withLanguage('You are a direct, practical relationship coach. No fluff.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter-frequency-suggest' });
 
@@ -508,5 +605,27 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+// friendship-fade-alerter-v2. Reviewed 2026-08-27. The tool's whole risk is
+// that a number — days since contact — reads as a verdict on a friendship. It
+// is not one. Someone can go eight months without speaking to a person they
+// would take a 3am call from. The guard's job is to stop the output turning
+// arithmetic into a diagnosis, and to stop it inventing the history that would
+// justify one.
+router.outputGuard = {
+  prohibit: [
+    'elapsed_time_treated_as_evidence_of_decline',
+    'invents_a_reason_for_the_gap',
+    'scorekeeping_about_who_reached_out',
+    'apologises_on_the_users_behalf',
+    'diagnoses_the_friendships_health',
+    'invents_shared_history_not_in_the_notes',
+  ],
+  require: [
+    'message_is_sendable_as_written',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

@@ -193,8 +193,8 @@ Do not replace a violation with a milder version of itself — swapping "they ar
 
 WHERE THE FIELD IS A DELIVERABLE — a message to send, an option to choose — it must come back usable. Never empty, never a placeholder, never a note about why it was removed. If the violation was the whole idea, write a different one that does the same job without it: the visitor was promised this option and an empty box is not one.
 
-OUTPUT (JSON only):
-{ "fixes": [ { "n": 0, "value": "the full rewritten field" } ] }
+OUTPUT (JSON only). Copy "field" exactly as it appears in the brackets above — do not translate it, it is an address, not text:
+{ "fixes": [ { "n": 0, "field": "the.exact.path.in.brackets", "value": "the full rewritten field" } ] }
 
 ${NO_QUOTE_RULE}
 CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
@@ -216,10 +216,28 @@ CRITICAL: Return ONLY valid JSON. No preamble, no markdown.`;
   // option where the tool said there would be one.
   const before = new Map(allByField.map(([field]) => [field, getByPath(draft, field)]));
 
-  // Keyed by NUMBER: withLanguage translates JSON string values, and a
-  // translated field path addresses nothing.
+  // Keyed by NUMBER because withLanguage translates JSON string values, and a
+  // translated field path addresses nothing. But an index is one digit the
+  // repair can get wrong, and when it does the write lands in the wrong field
+  // silently. Measured on friendship-fade-alerter: one run in four put an
+  // explanation into a starter's `message` — a field the visitor is told to
+  // send to a real person as written.
+  //
+  // So the repair now returns the path too. Where that path exactly matches a
+  // field we flagged, it wins: an exact identifier match is far stronger
+  // evidence of intent than an integer, and if the two disagree the integer is
+  // the one that was mistyped. A path we do not recognise (translated despite
+  // the instruction, or invented) falls back to the index, which is no worse
+  // than before.
+  const indexOfPath = new Map(allByField.map(([f], i) => [f, i]));
   (Array.isArray(repair?.fixes) ? repair.fixes : []).forEach(fix => {
-    const entry = allByField[Number(fix?.n)];
+    let idx = Number(fix?.n);
+    const named = typeof fix?.field === 'string' ? indexOfPath.get(fix.field.trim()) : undefined;
+    if (named !== undefined && named !== idx) {
+      console.log(`[${label}] v2 guard: repair keyed n=${fix.n} but named "${fix.field}" — writing to the named field`);
+      idx = named;
+    }
+    const entry = allByField[idx];
     if (!entry || typeof fix.value !== 'string') return;
     setByPath(draft, entry[0], fix.value.trim());
   });
