@@ -232,7 +232,7 @@ const TOOL_IDS = [
   'BillRescue','Bookmark','BragSheetBuilder','BrainDumpBuddy','BrainRoulette',
   'BrainStateDeejay','BuyWise','CaptionMagic','ChaosPilot','ColdOpenCraft',
   'ComebackCooker','ComplaintEscalationWriter','ConflictCoach','ContextCollapse',
-  'ContractDecoder','CrashPredictor','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
+  'BeforeTheCrash','ContractDecoder','CrisisPrioritizer','CrowdWisdom','CultureBriefing','DateNight',
   'ArgueSmarter','DecisionCoach','DecoderRing','DifficultTalkCoach','DoctorVisitPrep','DoctorVisitTranslator',
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
@@ -368,6 +368,9 @@ const LEGACY_REDIRECTS = {
   // Old lowercase/kebab forms of renamed tools resolve in ONE hop: leaving
   // the old id in TOOL_IDS would send /apologycalibrator to
   // /ApologyCalibrator and only then to /Mend.
+  '/CrashPredictor':             '/BeforeTheCrash',
+  '/crashpredictor':             '/BeforeTheCrash',
+  '/crash-predictor':            '/BeforeTheCrash',
   '/apologycalibrator':          '/Mend',
   '/rulebookbreaker':            '/NotSoFast',
   '/hiddenpaths':                '/NotSoFast',

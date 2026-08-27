@@ -62,7 +62,7 @@ const DURATION_OPTIONS = [
 const MAX_WEEKS = 12;
 
 const CROSS_REFS = [
-  { id: 'CrashPredictor', icon: '📉', labelKey: 'sea_xref_crash_label' },
+  { id: 'BeforeTheCrash', icon: '📉', labelKey: 'sea_xref_crash_label' },
   { id: 'DopamineMenuBuilder', icon: '🧪', labelKey: 'sea_xref_dopamine_label' },
   { id: 'BrainStateDeejay', icon: '🎧', labelKey: 'sea_xref_brainstate_label' },
 ];
@@ -2123,7 +2123,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
       {!results && view === 'log' && (
         <p className={`text-[11px] ${c.textMuted} text-center`}>
-          {t('sea_xref_pre')} <a href="/CrashPredictor" className={linkStyle}>{t('sea_xref_crashpredictor')}</a> {t('sea_xref_post')}
+          {t('sea_xref_pre')} <a href="/BeforeTheCrash" className={linkStyle}>{t('sea_xref_crashpredictor')}</a> {t('sea_xref_post')}
         </p>
       )}
 

@@ -137,7 +137,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/LeverageLogic.js',
   'src/tools/TaskAvalancheBreaker.js',
   'src/tools/DreamPatternSpotter.js',
-  'src/tools/CrashPredictor.js',
+  'src/tools/BeforeTheCrash.js',
   'src/tools/LazyWorkoutAdapter.js',
   'src/tools/TheRunthrough.js',
   'src/tools/BrainDumpBuddy.js',

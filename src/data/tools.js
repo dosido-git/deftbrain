@@ -4568,7 +4568,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "CrashPredictor",
+  id: "BeforeTheCrash",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4578,16 +4578,16 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
     edge: "It learns your indicators rather than generic burnout symptoms — which is why it needs a few days before it's useful.",
   },
   seoDescription: "Track energy, sleep, and stress to spot YOUR personal burnout pattern before you crash. Get a days-to-crash warning and the urgent fixes. Free.",
-  seoTitle: "Burnout Warning Sign Tracker & Predictor",
-  title: "Crash Predictor",
+  seoTitle: "Spot Your Own Burnout Warning Signs Early",
+  title: "Before the Crash",
   tagline: "Learn what tends to happen before you run out of steam",
   tags: ['burnout', 'burnout patterns', 'energy', 'low energy', 'running on empty', 'crash', 'hit a wall', 'daily check-in', 'pattern tracking', 'energy tracker', 'sleep', 'stress', 'workload', 'symptoms', 'routines', 'personal patterns', 'fatigue', 'overextended', 'warning signs'],
   icon: "⚡",
   categories: ['Energy', 'Me'],
   headerColor: "#b8dcd8",
-  description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Crash Predictor helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
+  description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
-      overview: "Crash Predictor tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
+      overview: "Before the Crash tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
       
       howToUse: [
         "Daily check-in: Rate energy (1-10), sleep quality (1-10), stress level (1-10), check activities, physical symptoms, and warning signs. Takes 60 seconds.",

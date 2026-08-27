@@ -44,6 +44,23 @@ User marked a crash/hit-a-wall day: ${log.crashDay ? 'yes' : 'no'}
 Notes: ${log.notes || 'none'}`;
 }
 
+// N check-ins have N-1 gaps between them. The model was left to work that out
+// and did not, so a run of five could be described as five changes. Every
+// number it is allowed to state is computed here and handed over, which also
+// gives the consistency check something to check against (owner, 2026-08-26).
+function logArithmetic(logs) {
+  const dated = logs.map(l => l?.date).filter(Boolean).sort();
+  const crashDays = logs.filter(l => l?.crashDay).length;
+  return `THE ARITHMETIC OF THIS SET — these numbers are computed, not estimated. Use them and do not contradict them:
+- Check-ins supplied: ${logs.length}
+- Transitions between check-ins: ${Math.max(0, logs.length - 1)}. ${logs.length} check-ins have ${Math.max(0, logs.length - 1)} gaps between them, so there are at most ${Math.max(0, logs.length - 1)} changes to describe. Never state more.
+- First check-in: ${dated[0] || 'undated'}
+- Most recent check-in: ${dated[dated.length - 1] || 'undated'}
+- Check-ins the visitor marked as a crash or hit-a-wall day: ${crashDays}
+
+A count you state in prose must be one of these numbers or something you can point at in the check-ins themselves. "Across four check-ins" when there are three is the failure this exists to prevent.`;
+}
+
 const SYSTEM = `You help a person learn from their own repeated check-ins.
 
 Your job is pattern noticing, not diagnosis and not prediction.
@@ -63,7 +80,15 @@ EPISTEMIC RULES:
 12. Do not infer motives, personality, coping style, masking, poor interoception, or an inability to assess oneself.
 13. Use only facts present in the logs. Do not invent work demands, family circumstances, diagnoses, routines, or symptoms.
 14. Lead with the most useful observation. Keep the report compact. Say each point once.
-15. ${NO_QUOTE_RULE}`;
+15. A count of check-ins, days, or occurrences must match the arithmetic supplied with the logs. Do not round, estimate, or say "several" where you have been given a number.
+16. ${NO_QUOTE_RULE}
+
+BEFORE YOU RETURN, CHECK THE WHOLE THING AGAINST ITSELF:
+- Every number in prose against the arithmetic supplied and against the other numbers you wrote. A headline saying four changes over a list of three is the most common way this goes wrong.
+- Every date against the check-in dates you were given.
+- Every count of occurrences against how many check-ins actually show it.
+- Every claim about a trend against whether the values you cite actually move that way.
+If two parts disagree, fix the one that is wrong rather than softening both.`;
 
 const ANALYZE_SCHEMA = `Return ONLY valid JSON in exactly this shape:
 {
@@ -92,18 +117,25 @@ const ANALYZE_SCHEMA = `Return ONLY valid JSON in exactly this shape:
       "comparison": "short comparison with this user's own logged baseline; omit if there is not enough data"
     }
   ],
-  "small_experiment": {
-    "try": "one small, reversible change based on the user's own pattern",
+  "next_step": {
+    "kind": "gather_clue | small_change",
+    "try": "if kind is gather_clue: one specific thing to start noticing or noting, so the next check-ins can settle a question these cannot. If kind is small_change: one small, reversible change to the person's own behaviour, drawn from a pattern these logs actually show",
     "watch": "what to compare in the next several check-ins",
-    "why_this_one": "one sentence tying the experiment to the observed logs without claiming causation"
+    "why_this_one": "one sentence tying it to the observed logs without claiming causation"
   },
   "your_own_clues": [
     "recurring user-reported signals that actually appear in the logs"
   ]
 }
 
+CHOOSING THE NEXT STEP:
+- kind must be "gather_clue" when the logs cannot yet support acting: too few check-ins, a pattern seen once or twice, or a signal that is not tracked at all. Gathering a clue is a real answer and the honest one most of the time. It asks the person to NOTICE something, not to change anything.
+- kind may be "small_change" ONLY when these logs already show a pattern worth testing, and the change is a behavioural experiment the person could run and observe. It changes what they DO.
+- Never label a request to notice something as a change, and never dress up a change as observation. They are different offers and the person acts on them differently.
+- Caution is not automatically the right answer. When a co-occurrence appears in THREE OR MORE check-ins, the logs have already done the noticing, and asking the person to keep watching it wastes the weeks they spent recording. That is when a small_change earns its place: name the one thing to vary, and what they would see in the next few check-ins if it mattered. Still no causation claim — the experiment is how they find out.
+
 ARRAY RULES:
-- recent_changes: 0-4 items
+- recent_changes: 0-4 items, and never more than the number of transitions given above
 - patterns_worth_noticing: 0-4 items
 - not_enough_evidence_yet: 0-3 items
 - compared_with_your_usual: 0-4 items
@@ -204,7 +236,7 @@ router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, r
     }
 
     const summaries = logs.slice(0, 60).map((log, i, arr) => buildLogSummary(log, i, arr.length)).join('\n\n');
-    const prompt = `CHECK-INS:\n${summaries}\n\n${ANALYZE_SCHEMA}`;
+    const prompt = `CHECK-INS:\n${summaries}\n\n${logArithmetic(logs)}\n\n${ANALYZE_SCHEMA}`;
     const result = await callStructured({
       prompt,
       system: SYSTEM,
@@ -217,7 +249,7 @@ router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, r
     // arrays, so a malformed response ships as a render crash rather than an
     // error anyone can act on.
     if (!result?.headline || !Array.isArray(result.recent_changes)) {
-      console.error('Crash Predictor: unexpected analyze shape', Object.keys(result || {}));
+      console.error('Before the Crash: unexpected analyze shape', Object.keys(result || {}));
       return res.status(500).json({ error: 'Could not compare these check-ins.' });
     }
 
@@ -235,7 +267,7 @@ router.post('/crash-predictor-analyze', rateLimit(DEFAULT_LIMITS), async (req, r
 
     res.json(result);
   } catch (error) {
-    console.error('Crash Predictor V2 analyze error:', error);
+    console.error('Before the Crash V2 analyze error:', error);
     res.status(500).json({ error: 'Could not compare these check-ins.' });
   }
 });
@@ -261,7 +293,7 @@ router.post('/crash-predictor-patterns', rateLimit(DEFAULT_LIMITS), async (req, 
     // arrays, so a malformed response ships as a render crash rather than an
     // error anyone can act on.
     if (!result?.headline || !Array.isArray(result.recurring_patterns)) {
-      console.error('Crash Predictor: unexpected patterns shape', Object.keys(result || {}));
+      console.error('Before the Crash: unexpected patterns shape', Object.keys(result || {}));
       return res.status(500).json({ error: 'Could not compare the longer-term pattern.' });
     }
 
@@ -279,7 +311,7 @@ router.post('/crash-predictor-patterns', rateLimit(DEFAULT_LIMITS), async (req, 
 
     res.json(result);
   } catch (error) {
-    console.error('Crash Predictor V2 patterns error:', error);
+    console.error('Before the Crash V2 patterns error:', error);
     res.status(500).json({ error: 'Could not compare the longer-term pattern.' });
   }
 });

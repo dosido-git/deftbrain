@@ -742,7 +742,7 @@ const PEP = ({ tool }) => {
         {/* Cross-references */}
         <p className={`text-xs ${c.textMuted} text-center`}>
           {t('pep_xref_intro')}{' '}
-          {t('pep_xref_crash_q')}{' '}<a href="/CrashPredictor" className={linkStyle}>{t('pep_crash_predictor')}</a>{' '}
+          {t('pep_xref_crash_q')}{' '}<a href="/BeforeTheCrash" className={linkStyle}>{t('pep_crash_predictor')}</a>{' '}
           {t('pep_xref_crash_mid')}{' '}<a href="/BrainStateDeejay" className={linkStyle}>{t('pep_brain_state_deejay')}</a>{' '}
           {t('pep_xref_brain_end')}
         </p>

@@ -521,7 +521,7 @@ const SensoryMinefieldMapper = ({ tool }) => {
         {/* ════════ FORM ════════ */}
         {view === 'form' && !results && (
           <p className={`text-[11px] ${c.textMuted} text-center px-4`}>
-            {t('smm_form_xref')} <a href="/CrashPredictor" className={linkStyle}>📉 {t('smm_xref_crashpredictor')}</a> {t('smm_form_xref_tail')}
+            {t('smm_form_xref')} <a href="/BeforeTheCrash" className={linkStyle}>📉 {t('smm_xref_crashpredictor')}</a> {t('smm_form_xref_tail')}
           </p>
         )}
         {view === 'form' && (

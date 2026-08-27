@@ -1885,7 +1885,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('lwa_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/CrashPredictor" className={`text-xs ${linkStyle}`}>⚡ {t('lwa_crash_predictor')}</a>
+            <a href="/BeforeTheCrash" className={`text-xs ${linkStyle}`}>⚡ {t('lwa_crash_predictor')}</a>
             <a href="/PEP" className={`text-xs ${linkStyle}`}>✨ {t('lwa_pep')}</a>
           </div>
         </div>

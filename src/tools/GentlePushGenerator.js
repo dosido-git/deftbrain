@@ -417,7 +417,7 @@ const GentlePushGenerator = ({ tool }) => {
       <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('gpg_related_tools')}</p>
       <div className="flex flex-wrap gap-3">
         <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>{t('gpg_xref_difficult_talk')}</a>
-        <a href="/CrashPredictor" className={`text-xs ${linkStyle}`}>{t('gpg_xref_crash_predictor')}</a>
+        <a href="/BeforeTheCrash" className={`text-xs ${linkStyle}`}>{t('gpg_xref_crash_predictor')}</a>
       </div>
     </div>
   );
