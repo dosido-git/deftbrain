@@ -673,7 +673,11 @@ for name, fpath in tools:
     # assessment; this one hands over the short message you send a person
     # before you pull out, which is a different artefact with a different
     # recipient. There is exactly one, and it never carries buildFullText().
-    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft', 'DriveHome'}
+    # FriendshipFadeAlerter joined on 2026-08-27: each suggested message is a
+    # separate thing the visitor sends to a person, so a single copy of the
+    # whole result is not the action they want. It uses `exact` so the shared
+    # DeftBrain header does not travel to the friend along with the message.
+    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft', 'DriveHome', 'FriendshipFadeAlerter'}
     _import_section_end = 0
     for _imp_m in re.finditer(r'^import\s', content, re.MULTILINE):
         _import_section_end = _imp_m.end()

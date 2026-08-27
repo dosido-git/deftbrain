@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useScrollToSection } from '../hooks/useScrollToSection';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { CopyBtn } from '../components/ActionButtons';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 
@@ -42,6 +43,16 @@ const SNOOZE_CHOICES = [[7, 'ffa_1_week'], [14, 'ffa_2_weeks'], [30, 'ffa_1_mont
 // arriving is worth remembering and worth talking about; it is not the two of
 // them having spoken, so it must not reset the rhythm. `meaningful` is the only
 // thing that moves lastContact.
+// The tool deliberately stores no phone number or address, so every one of
+// these opens the composer with the text already in it and lets the visitor
+// pick the recipient from their own contacts. No `tel:` — a call carries no
+// message, so it has nothing to hand off.
+const SEND_CHANNELS = [
+  ['ffa_send_text', '\uD83D\uDCAC', m => `sms:?&body=${encodeURIComponent(m)}`],
+  ['ffa_send_email', '\u2709\uFE0F', m => `mailto:?body=${encodeURIComponent(m)}`],
+  ['ffa_send_whatsapp', '\uD83D\uDFE2', m => `https://wa.me/?text=${encodeURIComponent(m)}`],
+];
+
 // Three different social problems, not three tones of the same message.
 const APPROACHES = [
   ['pickUpThread', 'ffa_pick_up_thread'],
@@ -162,7 +173,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [logNote, setLogNote] = useState('');
   const [loggingKind, setLoggingKind] = useState(false);
   const [checkedIds, setCheckedIds] = useState([]);
-  const [showArchived, setShowArchived] = useState(false);
+  const [editReturn, setEditReturn] = useState('dashboard');
   const [snoozeDays, setSnoozeDays] = useState(14);
   const [error, setError] = useState('');
 
@@ -238,7 +249,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
     setLastContactChoice('today');
     setCustomLastContact('');
     setRhythmSuggestion(null);
-    setView('dashboard');
+    setView(editReturn);
+    setEditReturn('dashboard');
   };
 
   const askForRhythm = async () => {
@@ -316,7 +328,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
     setView('dashboard');
   };
 
-  const editPerson = (p) => {
+  const editPerson = (p, from) => {
+    setEditReturn(from || 'dashboard');
     setForm({ ...p });
     setLastContactChoice('custom');
     setCustomLastContact(p.lastContact);
@@ -398,6 +411,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
     setSelectedId(null);
     setLogNote('');
     setError('');
+    setEditReturn('dashboard');
     setView(people.length ? 'dashboard' : 'welcome');
   };
 
@@ -453,7 +467,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
               so the only thing "start over" could honestly mean on the dashboard
               is deleting everyone — which belongs behind Remove, per person, not
               behind a quiet header button. */}
-          {(screen === 'add' || screen === 'person') && (
+          {(screen === 'add' || screen === 'person' || screen === 'archive') && (
             <button className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`} onClick={handleReset}>
               ↺ {t('ffa_back_people')}
             </button>
@@ -602,30 +616,37 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </button>
             )}
 
-            {/* Archiving is now the only way a person leaves the list, so it has
-                to be reversible — otherwise it is a delete with a gentler word
-                on it and no way back. */}
             {archived.length > 0 && (
-              <div className={`rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
-                <div className="flex items-center justify-between gap-3">
-                  <span className={`text-sm ${c.textMuted}`}>{t('ffa_archived_count', { n: archived.length })}</span>
-                  <button onClick={() => setShowArchived(v => !v)} className={`text-sm font-semibold ${linkStyle}`}>
-                    {showArchived ? t('ffa_hide') : t('ffa_show')}
-                  </button>
-                </div>
-                {showArchived && (
-                  <ul className="mt-3 space-y-2">
-                    {archived.map(p => (
-                      <li key={p.id} className="flex items-center justify-between gap-3 text-sm">
-                        <span>{p.name}</span>
-                        <button onClick={() => restorePerson(p.id)} className={`font-semibold ${linkStyle}`}>{t('ffa_restore')}</button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <button onClick={() => setView('archive')} className={`text-sm font-semibold ${linkStyle}`}>
+                {t('ffa_view_archive', { n: archived.length })}
+              </button>
             )}
           </>
+        )}
+
+        {screen === 'archive' && (
+          <section className={`rounded-2xl border ${c.border} p-5 sm:p-6 ${c.card}`}>
+            <h2 className="text-xl font-black">{t('ffa_archive_title')}</h2>
+            <p className={`text-sm mt-1 mb-5 ${c.textSecondary}`}>{t('ffa_archive_hint')}</p>
+            {archived.length === 0 ? (
+              <p className={`text-sm ${c.textMuted}`}>{t('ffa_archive_empty')}</p>
+            ) : (
+              <ul className="space-y-3">
+                {archived.map(p => (
+                  <li key={p.id} className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
+                    <div className="min-w-0">
+                      <div className="font-bold">{p.name}</div>
+                      <div className={`text-sm ${c.textSecondary}`}>{t(relationKey(p.relationshipType))} · {t(rhythmKey(p.rhythm))}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button onClick={() => editPerson(p, 'archive')} className={`rounded-xl border px-4 py-2 text-sm ${c.pillInactive}`}>{t('ffa_edit')}</button>
+                      <button onClick={() => restorePerson(p.id)} className={`rounded-xl border px-4 py-2 text-sm font-semibold ${c.pillInactive}`}>{t('ffa_restore')}</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
 
         {screen === 'person' && selected && (
@@ -690,6 +711,18 @@ const FriendshipFadeAlerter = ({ tool }) => {
                         <div className={`text-xs font-bold uppercase ${c.accentTxt}`}>{t(labelKey)}</div>
                         <div className="mt-2">{a.message}</div>
                         {a.why && <div className={`text-xs mt-2 ${c.textMuted}`}>{a.why}</div>}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {/* `exact` so the copy is only the message. The shared
+                              button otherwise prepends a DeftBrain header, which
+                              would go out to the friend along with the text. */}
+                          <CopyBtn exact content={a.message} label={t('ffa_copy')} />
+                          {SEND_CHANNELS.map(([lk, emoji, href]) => (
+                            <a key={lk} href={href(a.message)} target="_blank" rel="noopener noreferrer"
+                              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${c.pillInactive}`}>
+                              <span className="me-1">{emoji}</span>{t(lk)}
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     );
                   })}
@@ -702,11 +735,11 @@ const FriendshipFadeAlerter = ({ tool }) => {
             )}
 
             <div className={`mt-6 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
-              <div className="font-bold">{t('ffa_busy')}</div>
+              <div className="font-bold" id="ffa-setaside-label">{t('ffa_busy')}</div>
               <p className={`text-sm mt-1 ${c.textSecondary}`}>{t('ffa_pause_hint')}</p>
               <div className="flex flex-wrap gap-2 mt-3 items-center">
-                <label className="sr-only" htmlFor="ffa-snooze">{t('ffa_busy')}</label>
-                <select id="ffa-snooze" value={snoozeDays} onChange={e => setSnoozeDays(e.target.value)}
+                <select id="ffa-snooze" aria-labelledby="ffa-setaside-label"
+                  value={snoozeDays} onChange={e => setSnoozeDays(e.target.value)}
                   className={`rounded-xl border px-3 py-2 ${c.input}`}>
                   {SNOOZE_CHOICES.map(([d, labelKey]) => <option key={d} value={d}>{t(labelKey)}</option>)}
                 </select>
