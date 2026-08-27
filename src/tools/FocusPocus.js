@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
+import { useScrollToSection } from '../hooks/useScrollToSection';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
@@ -256,6 +257,12 @@ const FocusPocus = ({ tool }) => {
   handleResetRef.current = handleReset;
 
   // PF-31 — the chip only goes on a button whose shortcut exists.
+  // Advancing to the next screen must put that screen at the top of the window;
+  // a re-render on its own leaves the visitor wherever the last button was.
+  const stageRef = useRef(null);
+  const phase = results ? 'done' : (session?.status || 'setup');
+  useScrollToSection(stageRef, phase);
+
   const canStartRef = useRef(false);
   canStartRef.current = !!task.trim() && !loading && !session;
   const startRef = useRef(null);
@@ -338,6 +345,7 @@ const FocusPocus = ({ tool }) => {
         </Card>
       )}
 
+      <div ref={stageRef} className="scroll-mt-24 space-y-4">
       {!session && (
         <>
           <Card c={c}>
@@ -582,6 +590,7 @@ const FocusPocus = ({ tool }) => {
           </p>
         </>
       )}
+      </div>
     </div>
   );
 };
