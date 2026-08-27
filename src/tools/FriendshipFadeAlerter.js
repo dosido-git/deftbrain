@@ -161,11 +161,15 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [reachoutLoading, setReachoutLoading] = useState(false);
   const [logNote, setLogNote] = useState('');
   const [loggingKind, setLoggingKind] = useState(false);
+  const [checkedIds, setCheckedIds] = useState([]);
+  const [showArchived, setShowArchived] = useState(false);
   const [snoozeDays, setSnoozeDays] = useState(14);
   const [error, setError] = useState('');
 
   const [storedPeople, setStoredPeople] = usePersistentState('ffa-relationships', []);
-  const people = useMemo(() => (storedPeople || []).map(migratePerson), [storedPeople]);
+  const allPeople = useMemo(() => (storedPeople || []).map(migratePerson), [storedPeople]);
+  const people = useMemo(() => allPeople.filter(p => !p.archived), [allPeople]);
+  const archived = useMemo(() => allPeople.filter(p => p.archived), [allPeople]);
   const setPeople = setStoredPeople;
 
 
@@ -176,7 +180,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   // This tool's outcome is the reach-out. Naming it `results` as well is what
   // places its cross-refs on the right side of the result.
   const results = reachout;
-  const selected = people.find(p => p.id === selectedId) || null;
+  const selected = allPeople.find(p => p.id === selectedId) || null;
 
   const stageRef = useRef(null);
   useScrollToSection(stageRef, screen);
@@ -319,11 +323,15 @@ const FriendshipFadeAlerter = ({ tool }) => {
     setView('add');
   };
 
-  const removePerson = (p) => {
-    if (!window.confirm(t('ffa_confirm_remove', { name: p.name }))) return;
-    setPeople(prev => prev.filter(x => x.id !== p.id));
-    setView(people.length <= 1 ? 'welcome' : 'dashboard');
+  const archiveChecked = () => {
+    if (!checkedIds.length) return;
+    setPeople(prev => prev.map(x => checkedIds.includes(x.id) ? { ...x, archived: true } : x));
+    setCheckedIds([]);
   };
+
+  const restorePerson = (id) => setPeople(prev => prev.map(x => x.id === id ? { ...x, archived: false } : x));
+
+  const toggleChecked = (id) => setCheckedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
   const startAdding = () => {
     setForm(blankPerson());
@@ -353,6 +361,32 @@ const FriendshipFadeAlerter = ({ tool }) => {
     setRhythmSuggestion(null);
     setError('');
     setView('add');
+  };
+
+  // The person screen is where Help me reach out lives, and a visitor with an
+  // empty list can never get to it. This one saves the example rather than
+  // filling a form, so the screen being demonstrated is the one you land on.
+  const loadExamplePerson = () => {
+    const ex = pickExample('FriendshipFadeAlerter', [
+      { nameKey: 'ffa_example_name', notesKey: 'ffa_example_notes', relationshipType: 'close_friend', rhythm: 'biweekly', daysAgo: 21 },
+      { nameKey: 'ffa_example2_name', notesKey: 'ffa_example2_notes', relationshipType: 'friend', rhythm: 'semiannually', daysAgo: 400 },
+    ]);
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    setPeople(prev => [...prev, {
+      ...blankPerson(),
+      id,
+      name: t(ex.nameKey),
+      relationshipType: ex.relationshipType,
+      rhythm: ex.rhythm,
+      lastContact: isoDaysAgo(ex.daysAgo),
+      contextNotes: t(ex.notesKey),
+    }]);
+    setSelectedId(id);
+    setReachout(null);
+    setLoggingKind(false);
+    setLogNote('');
+    setError('');
+    setView('person');
   };
 
   const handleReset = () => {
@@ -404,8 +438,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
             {i18n.language !== 'en' && (
               <p className={`mt-1 text-sm max-w-2xl ${c.textSecondary}`}>{t('ffa_description')}</p>
             )}
-            {(screen === 'welcome' || screen === 'add') && (
-              <button onClick={loadExample}
+            {(screen === 'welcome' || screen === 'add' || screen === 'person') && (
+              <button onClick={screen === 'person' ? loadExamplePerson : loadExample}
                 style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
                 className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap">
                 ✨ {t('try_example')}
@@ -528,6 +562,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </div>
             </section>
 
+            <p className={`text-sm ${c.textMuted}`}>{t('ffa_list_hint')}</p>
+
             <div className="space-y-3">
               {sortedPeople.map(p => {
                 const s = personStatus(p);
@@ -537,22 +573,58 @@ const FriendshipFadeAlerter = ({ tool }) => {
                     ? (isDark ? 'border-sky-800 bg-sky-950/10' : 'border-sky-200 bg-sky-50/40')
                     : c.card;
                 return (
-                  <button key={p.id} onClick={() => openPerson(p.id)}
-                    className={`w-full text-start rounded-2xl border p-5 transition hover:-translate-y-0.5 ${tone}`}>
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <div className="text-lg font-black">{p.name}</div>
-                        <div className={`text-sm ${c.textSecondary}`}>{t(relationKey(p.relationshipType))} · {t(rhythmKey(p.rhythm))}</div>
+                  <div key={p.id} className={`flex items-center gap-3 rounded-2xl border p-5 ${tone}`}>
+                    {/* The checkbox sits outside the button: a control nested in a
+                        button cannot be clicked without also opening the person. */}
+                    <input type="checkbox" checked={checkedIds.includes(p.id)} onChange={() => toggleChecked(p.id)}
+                      aria-label={t('ffa_select_person', { name: p.name })}
+                      className="size-5 shrink-0 accent-cyan-600 cursor-pointer" />
+                    <button onClick={() => openPerson(p.id)} className="flex-1 min-w-0 text-start transition hover:-translate-y-0.5">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <div className="text-lg font-black">{p.name}</div>
+                          <div className={`text-sm ${c.textSecondary}`}>{t(relationKey(p.relationshipType))} · {t(rhythmKey(p.rhythm))}</div>
+                        </div>
+                        <div className="text-end">
+                          <div className="font-bold">{s.label}</div>
+                          <div className={`text-xs ${c.textMuted}`}>{s.detail}</div>
+                        </div>
                       </div>
-                      <div className="text-end">
-                        <div className="font-bold">{s.label}</div>
-                        <div className={`text-xs ${c.textMuted}`}>{s.detail}</div>
-                      </div>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 );
               })}
             </div>
+
+            {checkedIds.length > 0 && (
+              <button onClick={archiveChecked} className={`rounded-xl border px-4 py-2 text-sm font-bold ${c.pillInactive}`}>
+                {t('ffa_archive_selected', { n: checkedIds.length })}
+              </button>
+            )}
+
+            {/* Archiving is now the only way a person leaves the list, so it has
+                to be reversible — otherwise it is a delete with a gentler word
+                on it and no way back. */}
+            {archived.length > 0 && (
+              <div className={`rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className={`text-sm ${c.textMuted}`}>{t('ffa_archived_count', { n: archived.length })}</span>
+                  <button onClick={() => setShowArchived(v => !v)} className={`text-sm font-semibold ${linkStyle}`}>
+                    {showArchived ? t('ffa_hide') : t('ffa_show')}
+                  </button>
+                </div>
+                {showArchived && (
+                  <ul className="mt-3 space-y-2">
+                    {archived.map(p => (
+                      <li key={p.id} className="flex items-center justify-between gap-3 text-sm">
+                        <span>{p.name}</span>
+                        <button onClick={() => restorePerson(p.id)} className={`font-semibold ${linkStyle}`}>{t('ffa_restore')}</button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </>
         )}
 
@@ -660,8 +732,6 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
             <div className="flex flex-wrap gap-2 mt-6">
               <button onClick={() => editPerson(selected)} className={`rounded-xl border px-4 py-2 ${c.pillInactive}`}>{t('ffa_edit')}</button>
-              <button onClick={() => removePerson(selected)}
-                className={`rounded-xl border px-4 py-2 ${c.danger}`}>{t('ffa_remove')}</button>
             </div>
           </section>
         )}
