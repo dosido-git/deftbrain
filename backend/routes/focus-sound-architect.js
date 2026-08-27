@@ -3,6 +3,52 @@ const router = express.Router();
 const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// The soundscape is finished before the guard runs; never hold it hostage.
+const GUARD_ENTRY_MS = Number(process.env.FSA_GUARD_ENTRY_MS || 60_000);
+
+// Only the prose. Layer types, volumes and frequencies are the synth's contract
+// with the browser and are not the guard's business.
+async function guardProse(parsed, body, startedAt) {
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[focus-sound-architect-v2] v2 guard: skipped — out of time, answer returned unguarded');
+    return;
+  }
+  const fields = [];
+  const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
+  push('description', parsed.description);
+  (parsed.usage_tips || []).forEach((x, i) => push(`usage_tips[${i}]`, x));
+  (parsed.layers || []).forEach((l, i) => push(`layers[${i}].why`, l && l.why));
+  push('adjustment_guide', parsed.adjustment_guide);
+  if (!fields.length) return;
+
+  await runOutputGuard(parsed, {
+    label: 'focus-sound-architect-v2',
+    fields,
+    supplied: `WHAT THE LISTENER TOLD US, IN FULL — nothing else about them is known:
+Task: ${body.task || '(not given)'}
+What is interfering: ${body.interference || '(not given)'}
+Where they are: ${body.environment || '(not given)'}
+Sounds they asked for: ${(body.soundPreferences || []).join(', ') || 'NONE — they left it to you'}
+Sounds they cannot stand: ${(body.sensitivities || []).join(', ') || 'none given'}
+How energised they want to feel: ${body.energyGoal ?? '(not given)'}/100
+How long they will listen: ${body.sessionMinutes || body.minutes || '(not given)'} minutes
+
+Nothing about their room, their headphones, their diagnosis, their history, or how well they usually concentrate.
+
+WHAT FAILS:
+1. A cognitive effect attributed to a frequency or band. Alpha, theta, beta and gamma are NAMES FOR FREQUENCY RANGES. Saying one produces learning, creativity, insight, alertness or focus is a claim the evidence does not support.
+2. A clinical or therapeutic claim — that a sound helps anxiety, ADHD, insomnia, pain or any condition.
+3. Research or studies invoked without being real and named.
+4. A detail about the listener nobody supplied.
+5. Promising a mental state, including when the promise hides inside the purpose — "designed to keep you alert" is the same claim as "keeps you alert". Describe how it will SOUND and what it will mask; let them judge the rest.
+6. Narrating its own constraints at the reader — "without claiming guaranteed cognitive effects" is a rule the writer was given, not something the listener asked about.`,
+    promise: 'Focus Sound Architect builds a soundscape for the thing the listener said is interfering with them, and explains how it will sound.',
+    guard: router.outputGuard,
+    userLanguage: body.userLanguage,
+  });
+}
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
@@ -15,8 +61,9 @@ const hasSuddenSensitivity = (sensitivities) => {
 const SHARP_TRANSIENT_TYPES = ['rain', 'fire'];
 
 router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
-    const { task, environment, soundPreferences, sensitivities, energyGoal, feedback, userLanguage } = req.body;
+    const { task, environment, interference, soundPreferences, sensitivities, energyGoal, feedback, sessionMinutes, userLanguage } = req.body;
 
     if (!task) {
       return res.status(400).json({ error: 'Task type is required' });
@@ -32,6 +79,8 @@ router.post('/focus-sound-architect', rateLimit(DEFAULT_LIMITS), async (req, res
 USER PROFILE:
 - Task: ${task}
 - Environment: ${envList.join(', ') || 'not specified'}
+- What is interfering: ${interference || 'not specified'}
+- Planned listening time: ${sessionMinutes ? `${sessionMinutes} minutes` : 'open-ended'}
 - Sound preferences: ${prefList.join(', ') || 'not specified'}
 - Sensitivities: ${sensList.join(', ') || 'none specified'}
 - Energy goal: ${energyGoal || 50}/100 (0=very calm, 100=energized)
@@ -40,7 +89,7 @@ ${feedback ? `- Previous feedback: ${feedback}` : ''}
 AVAILABLE SOUND LAYER TYPES (you MUST only use these exact type strings):
 - "white_noise" — Equal energy across all frequencies. Good for masking speech.
 - "pink_noise" — Lower frequencies louder. Warmer, less harsh. Good default.
-- "brown_noise" — Deep, rumbling. Very warm. Best for deep focus and anxiety.
+- "brown_noise" — Deep, rumbling and warm. Useful when the listener prefers a low-frequency, less bright texture.
 - "rain" — Rhythmic rain pattern. Masks distractions naturally.
 - "ocean" — Slow wave patterns. Calming, good for creative work.
 - "wind" — Gentle wind texture. Subtle, organic.
@@ -48,17 +97,19 @@ AVAILABLE SOUND LAYER TYPES (you MUST only use these exact type strings):
 - "fire" — Crackling fireplace. Warm, cozy, slightly stimulating.
 - "cafe" — Coffee shop murmur. Low-level social noise for those who focus better with it.
 - "binaural" — Binaural beats (requires headphones). Must include "hz" field (frequency difference):
-    * 1-4 Hz (delta) = deep relaxation
-    * 4-8 Hz (theta) = meditation, creativity
-    * 8-14 Hz (alpha) = calm focus, learning
-    * 14-30 Hz (beta) = active focus, alertness
+    * Beat frequency may change the perceived rhythmic quality, but do NOT claim a specific mental-state, focus, learning, creativity, or sleep effect.
+    * Treat binaural beats as an optional preference, not an evidence-backed performance enhancer.
     * "base_hz" should be between 150-300 Hz
 
 Design a soundscape with 2-5 layers. Consider:
 - The user's task (deep work needs fewer layers, creative work can handle more variety)
-- Their environment (noisy office needs stronger masking, quiet home needs less)
+- What is interfering is more important than location: voices may call for stronger steady masking; too-quiet environments may need gentle atmosphere; restlessness may benefit from modest variation; sleepiness may call for a lighter, less soporific texture.
+- Their environment (noisy office may need stronger masking, quiet home usually needs less)
 - Sensitivities (sudden sound sensitivity = avoid fire/rain with sharp transients, high frequency sensitivity = prefer brown/pink over white)
-- Energy goal (low = brown noise, ocean, theta binaural; high = pink noise, cafe, beta binaural)
+- Energy goal (use texture, brightness, density and variation; do not claim binaural frequencies reliably create particular mental states)
+- Prefer 2-3 layers unless there is a clear reason for more. Simpler mixes are easier to ignore while working.
+- If soundPreferences is empty, choose appropriate layers yourself.
+- If the planned session is 60+ minutes, include a practical after_30_minutes adjustment rather than making the user choose a separate evolving-scene mode.
 
 Return ONLY valid JSON (no markdown, no preamble, no code fences):
 
@@ -78,7 +129,7 @@ Return ONLY valid JSON (no markdown, no preamble, no code fences):
       "hz": 10,
       "base_hz": 200,
       "label": "Alpha Focus",
-      "why": "Why binaural at this frequency helps — one sentence"
+      "why": "Why this optional binaural texture may suit the user preference — do not claim proven cognitive effects"
     }
   ],
   "usage_tips": [
@@ -99,6 +150,8 @@ CRITICAL:
 - For binaural type, ALWAYS include "hz" (beat frequency 1-30) and "base_hz" (carrier 150-300)
 - Be specific in "why" — reference the user's actual task and preferences
 - Keep it practical — this will be synthesized and played immediately
+- Never make medical, therapeutic, neurological, sleep-treatment, or guaranteed performance claims
+- When binaural beats are included, say evidence for specific cognitive effects is mixed and headphones are required
 - ${NO_QUOTE_RULE}`, userLanguage);
 
     const parsed = await callClaudeWithRetry({
@@ -115,6 +168,10 @@ CRITICAL:
         parsed.layers = parsed.layers.filter(l => !SHARP_TRANSIENT_TYPES.includes(l.type));
       }
     }
+
+    // Fail-open: it wraps a working answer.
+    try { await guardProse(parsed, req.body, startedAt); }
+    catch (e) { console.error('[focus-sound-architect] guard skipped:', e.message); }
 
     res.json(parsed);
 
@@ -152,12 +209,26 @@ USER PROFILE:
 AVAILABLE SOUND LAYER TYPES (use ONLY these exact type strings):
 "white_noise", "pink_noise", "brown_noise", "rain", "ocean", "wind", "forest", "fire", "cafe", "binaural"
 
-For binaural type, ALWAYS include "hz" (beat frequency 1-50) and "base_hz" (carrier 150-300):
-  * 1-4 Hz (delta) = deep relaxation/sleep
-  * 4-8 Hz (theta) = meditation, creativity
-  * 8-14 Hz (alpha) = calm focus, learning
-  * 14-30 Hz (beta) = active focus, alertness
-  * 30-50 Hz (gamma) = peak concentration
+For binaural type, ALWAYS include "hz" (beat frequency 1-50) and "base_hz" (carrier 150-300).
+The bands are named, and that is all they are — a name for a frequency range:
+  * 1-4 Hz (delta), 4-8 Hz (theta), 8-14 Hz (alpha), 14-30 Hz (beta), 30-50 Hz (gamma)
+
+Slower beats are experienced by many people as calmer and faster ones as more
+stimulating, and that is the whole basis for choosing one. Do NOT tell the user
+a frequency produces meditation, creativity, learning, alertness, peak
+concentration or any other cognitive state — the evidence does not support it,
+and a soundscape that promises a mental state it cannot deliver is worse than
+one that just sounds right. Describe how it is likely to SOUND and let them
+judge. If the visitor did not ask for binaural, you do not have to include it.
+
+Two ways this goes wrong even when you are trying to be careful:
+- Smuggling the claim into the purpose. "Designed to mask conversation while
+  maintaining alertness" still promises a mental state; it has only moved the
+  promise into the word "designed". Say what the sound DOES — masks speech
+  frequencies, stays steady, has no sudden events — and stop there.
+- Narrating the disclaimer. "This beat provides texture without claiming
+  guaranteed cognitive effects" tells the reader about a rule you were given.
+  They did not ask about your constraints. Just describe the texture.
 
 DESIGN PRINCIPLES FOR EVOLVING SCENES:
 1. Each phase should have a clear psychoacoustic purpose (ramp up, sustain, wind down, etc.)
@@ -270,8 +341,9 @@ For "remove_index", use null or the index number to remove.
 
 CRITICAL:
 - Be conservative — small changes (5-15 volume points) usually suffice
-- If feedback is "too busy", lower busier layers (cafe, rain) and keep foundation (brown_noise)
-- If "too sparse", boost variety layers or suggest adding one
+- If feedback is "too_distracting", simplify the mix: lower or remove busier layers and preserve one steady foundation
+- If feedback is "too_sleepy", slightly reduce very low/dark layers and modestly increase a brighter steady texture; do not claim this treats fatigue
+- If feedback is "not_enough", modestly increase the masking or variation most relevant to the user problem
 - If "too harsh", reduce white_noise/high-frequency layers, boost brown_noise
 - Keep the total soundscape balanced
 - ${NO_QUOTE_RULE}`, userLanguage);
@@ -295,5 +367,25 @@ CRITICAL:
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+// focus-sound-architect-v2. Reviewed 2026-08-26. Sound is subjective and the
+// tool's job is to make something that sounds right for a stated interference.
+// What it must not do is borrow authority it has not got: the frequency-band
+// names are names, not mechanisms, and no noise colour treats anything.
+router.outputGuard = {
+  prohibit: [
+    'cognitive_effect_claimed_for_a_frequency',   // "alpha for learning", "gamma for insight"
+    'clinical_or_therapeutic_claim',              // "best for anxiety", "helps ADHD"
+    'research_backing_that_was_not_cited',
+    'invented_detail_about_the_listener',         // their room, their gear, their diagnosis
+    'promise_of_a_mental_state',              // incl. "designed to keep you alert"
+    'narrates_its_own_disclaimer',
+  ],
+  require: [
+    'addresses_the_interference_they_named',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

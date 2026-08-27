@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Caret from '../components/Caret';
 import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
@@ -240,59 +240,32 @@ const LAYER_TYPES = {
 // ════════════════════════════════════════════════════════════
 
 const QUICK_PRESETS = [
-  {
-    id: 'deep_focus', name: '🧠 Deep Focus', nameKey: 'fsa_preset_deep_focus_name', descKey: 'fsa_preset_deep_focus_desc', description: 'Brown noise + binaural alpha for sustained concentration',
-    layers: [
-      { type: 'brown_noise', volume: 60, label: 'Brown Noise', labelKey: 'fsa_ll_brown_noise', why: 'Consistent masking to block distractions', whyKey: 'fsa_ll_brown_noise_why' },
-      { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Waves (10Hz)', labelKey: 'fsa_ll_alpha_10', why: 'Promotes relaxed alertness', whyKey: 'fsa_ll_alpha_10_why' },
-    ],
-  },
-  {
-    id: 'creative_flow', name: '🎨 Creative Flow', nameKey: 'fsa_preset_creative_flow_name', descKey: 'fsa_preset_creative_flow_desc', description: 'Rain + café murmur for inspired thinking',
-    layers: [
-      { type: 'rain', volume: 40, label: 'Gentle Rain', labelKey: 'fsa_ll_gentle_rain', why: 'Natural rhythm without pattern recognition', whyKey: 'fsa_ll_gentle_rain_why' },
-      { type: 'cafe', volume: 25, label: 'Café Murmur', labelKey: 'fsa_ll_cafe_murmur', why: 'Low social energy boost for creative work', whyKey: 'fsa_ll_cafe_murmur_why' },
-    ],
-  },
-  {
-    id: 'calm_study', name: '📚 Calm Study', nameKey: 'fsa_preset_calm_study_name', descKey: 'fsa_preset_calm_study_desc', description: 'Ocean + forest for relaxed learning',
-    layers: [
-      { type: 'ocean', volume: 45, label: 'Ocean Waves', labelKey: 'fsa_ll_ocean_waves', why: 'Slow rhythm reduces anxiety', whyKey: 'fsa_ll_ocean_waves_why' },
-      { type: 'forest', volume: 20, label: 'Forest Ambience', labelKey: 'fsa_ll_forest_ambience', why: 'Natural texture keeps you grounded', whyKey: 'fsa_ll_forest_ambience_why' },
-    ],
-  },
-  {
-    id: 'sleep', name: '😴 Sleep', nameKey: 'fsa_preset_sleep_name', descKey: 'fsa_preset_sleep_desc', description: 'Deep brown noise + theta waves for drifting off',
-    layers: [
-      { type: 'brown_noise', volume: 50, label: 'Deep Brown Noise', labelKey: 'fsa_ll_deep_brown_noise', why: 'Steady low-frequency warmth', whyKey: 'fsa_ll_deep_brown_noise_why' },
-      { type: 'binaural', volume: 15, hz: 4, base_hz: 150, label: 'Theta Waves (4Hz)', labelKey: 'fsa_ll_theta_4', why: 'Promotes transition to sleep', whyKey: 'fsa_ll_theta_4_why' },
-    ],
-  },
-  {
-    id: 'energize', name: '⚡ Energize', nameKey: 'fsa_preset_energize_name', descKey: 'fsa_preset_energize_desc', description: 'Pink noise + fire + beta waves for high energy',
-    layers: [
-      { type: 'pink_noise', volume: 35, label: 'Pink Noise', labelKey: 'fsa_ll_pink_noise', why: 'Balanced energy noise', whyKey: 'fsa_ll_pink_noise_why' },
-      { type: 'fire', volume: 30, label: 'Crackling Fire', labelKey: 'fsa_ll_crackling_fire', why: 'Warm, dynamic texture', whyKey: 'fsa_ll_crackling_fire_why' },
-      { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Waves (18Hz)', labelKey: 'fsa_ll_beta_18', why: 'Active thinking state', whyKey: 'fsa_ll_beta_18_why' },
-    ],
-  },
-  {
-    id: 'speech_mask', name: '🔇 Speech Masker', nameKey: 'fsa_preset_speech_mask_name', descKey: 'fsa_preset_speech_mask_desc', description: 'Optimized to mask voices and conversation',
-    layers: [
-      { type: 'pink_noise', volume: 55, label: 'Pink Noise (speech band)', labelKey: 'fsa_ll_pink_speech_band', why: 'Targets speech frequency range', whyKey: 'fsa_ll_pink_speech_band_why' },
-      { type: 'cafe', volume: 35, label: 'Café Murmur', labelKey: 'fsa_ll_cafe_murmur', why: 'Confuses speech recognition, blends voices', whyKey: 'fsa_ll_cafe_murmur_speech_why' },
-      { type: 'rain', volume: 20, label: 'Rain (texture)', labelKey: 'fsa_ll_rain_texture', why: 'Adds high-frequency texture', whyKey: 'fsa_ll_rain_texture_why' },
-    ],
-  },
+  { id: 'deep_focus', nameKey: 'fsa_qs_deep_focus', descKey: 'fsa_qs_deep_focus_d', name: '🧠 Deep Focus', description: 'Steady brown + pink noise for a simple, low-distraction background', layers: [
+    { type: 'brown_noise', volume: 55, whyKey: 'fsa_why_warm_steady', why: 'A warm, steady foundation that can help cover irregular background sound.' },
+    { type: 'pink_noise', volume: 22, whyKey: 'fsa_why_brightness', why: 'Adds a little brightness without making the mix busy.' },
+  ]},
+  { id: 'creative_flow', nameKey: 'fsa_qs_creative', descKey: 'fsa_qs_creative_d', name: '🎨 Creative Flow', description: 'Rain + café murmur for a gently varied atmosphere', layers: [
+    { type: 'rain', volume: 35, whyKey: 'fsa_why_natural_var', why: 'Adds natural variation without requiring attention.' },
+    { type: 'cafe', volume: 22, whyKey: 'fsa_why_soft_activity', why: 'Provides a soft sense of activity for people who prefer some background life.' },
+  ]},
+  { id: 'calm_study', nameKey: 'fsa_qs_study', descKey: 'fsa_qs_study_d', name: '📚 Calm Study', description: 'Ocean + soft brown noise for a quieter study backdrop', layers: [
+    { type: 'ocean', volume: 38, whyKey: 'fsa_why_slow_gentle', why: 'Creates slow, gentle variation.' },
+    { type: 'brown_noise', volume: 25, whyKey: 'fsa_why_steady_less_bright', why: 'Keeps the background steady and less bright.' },
+  ]},
+  { id: 'sleep', nameKey: 'fsa_qs_settle', descKey: 'fsa_qs_settle_d', name: '😴 Settle Down', description: 'Deep brown noise + soft ocean for a low-stimulation backdrop', layers: [
+    { type: 'brown_noise', volume: 45, whyKey: 'fsa_why_low_freq', why: 'Provides a steady, low-frequency texture.' },
+    { type: 'ocean', volume: 20, whyKey: 'fsa_why_no_transients', why: 'Adds slow variation without sharp transients.' },
+  ]},
+  { id: 'energize', nameKey: 'fsa_qs_brighter', descKey: 'fsa_qs_brighter_d', name: '⚡ Brighter Background', description: 'Pink noise + light café ambience for a more active-feeling mix', layers: [
+    { type: 'pink_noise', volume: 35, whyKey: 'fsa_why_brighter_than_brown', why: 'A brighter steady texture than brown noise.' },
+    { type: 'cafe', volume: 20, whyKey: 'fsa_why_modest_var', why: 'Adds modest variation and background activity.' },
+  ]},
+  { id: 'speech_mask', nameKey: 'fsa_qs_speech', descKey: 'fsa_qs_speech_d', name: '🔇 Speech Masker', description: 'Steady noise + soft murmur designed to make nearby conversation less distinct', layers: [
+    { type: 'pink_noise', volume: 50, whyKey: 'fsa_why_broad_masking', why: 'Provides broad, steady masking around much of the speech range.' },
+    { type: 'cafe', volume: 25, whyKey: 'fsa_why_voice_texture', why: 'Adds non-distinct voice-like texture that can make separate words less salient.' },
+  ]},
 ];
 
-const BINAURAL_PROGRAMS = [
-  { id: 'alpha', label: 'Alpha (8-12Hz)', labelKey: 'fsa_binaural_alpha_label', emoji: '🧘', hz: 10, base: 200, desc: 'Relaxed focus, meditation', descKey: 'fsa_binaural_alpha_desc' },
-  { id: 'beta', label: 'Beta (12-30Hz)', labelKey: 'fsa_binaural_beta_label', emoji: '⚡', hz: 18, base: 250, desc: 'Active thinking, alertness', descKey: 'fsa_binaural_beta_desc' },
-  { id: 'theta', label: 'Theta (4-8Hz)', labelKey: 'fsa_binaural_theta_label', emoji: '💤', hz: 6, base: 150, desc: 'Deep relaxation, creativity', descKey: 'fsa_binaural_theta_desc' },
-  { id: 'delta', label: 'Delta (0.5-4Hz)', labelKey: 'fsa_binaural_delta_label', emoji: '😴', hz: 2, base: 100, desc: 'Deep sleep, recovery', descKey: 'fsa_binaural_delta_desc' },
-  { id: 'gamma', label: 'Gamma (30-50Hz)', labelKey: 'fsa_binaural_gamma_label', emoji: '🔬', hz: 40, base: 300, desc: 'Peak concentration, insight', descKey: 'fsa_binaural_gamma_desc' },
-];
 
 // All available layers users can manually add
 const ADDABLE_LAYERS = Object.entries(LAYER_TYPES).map(([type, def]) => ({
@@ -301,78 +274,6 @@ const ADDABLE_LAYERS = Object.entries(LAYER_TYPES).map(([type, def]) => ({
 }));
 
 // Scene presets for multi-phase evolution
-const SCENE_PRESETS = [
-  {
-    id: 'deep_work_arc', name: '🧠 Deep Work Arc', nameKey: 'fsa_scene_deep_work_arc_name', desc: '90-min: ramp up → sustain → wind down', descKey: 'fsa_scene_deep_work_arc_desc',
-    phases: [
-      { name: 'Ramp Up', nameKey: 'fsa_phase_ramp_up', durationMin: 15, layers: [
-        { type: 'pink_noise', volume: 40, label: 'Warm Start', labelKey: 'fsa_ll_warm_start' },
-        { type: 'binaural', volume: 20, hz: 18, base_hz: 250, label: 'Beta Boost', labelKey: 'fsa_ll_beta_boost' },
-      ]},
-      { name: 'Deep Focus', nameKey: 'fsa_phase_deep_focus', durationMin: 55, layers: [
-        { type: 'brown_noise', volume: 60, label: 'Deep Foundation', labelKey: 'fsa_ll_deep_foundation' },
-        { type: 'binaural', volume: 20, hz: 10, base_hz: 200, label: 'Alpha Sustain', labelKey: 'fsa_ll_alpha_sustain' },
-      ]},
-      { name: 'Wind Down', nameKey: 'fsa_phase_wind_down', durationMin: 20, layers: [
-        { type: 'brown_noise', volume: 40, label: 'Gentle Foundation', labelKey: 'fsa_ll_gentle_foundation' },
-        { type: 'ocean', volume: 25, label: 'Calming Waves', labelKey: 'fsa_ll_calming_waves' },
-      ]},
-    ],
-  },
-  {
-    id: 'creative_journey', name: '🎨 Creative Journey', nameKey: 'fsa_scene_creative_journey_name', desc: '60-min: inspire → flow → reflect', descKey: 'fsa_scene_creative_journey_desc',
-    phases: [
-      { name: 'Inspire', nameKey: 'fsa_phase_inspire', durationMin: 15, layers: [
-        { type: 'cafe', volume: 30, label: 'Social Energy', labelKey: 'fsa_ll_social_energy' },
-        { type: 'rain', volume: 25, label: 'Natural Rhythm', labelKey: 'fsa_ll_natural_rhythm' },
-        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Creativity', labelKey: 'fsa_ll_theta_creativity' },
-      ]},
-      { name: 'Flow', nameKey: 'fsa_phase_flow', durationMin: 30, layers: [
-        { type: 'rain', volume: 40, label: 'Steady Rain', labelKey: 'fsa_ll_steady_rain' },
-        { type: 'binaural', volume: 18, hz: 10, base_hz: 200, label: 'Alpha Flow', labelKey: 'fsa_ll_alpha_flow' },
-      ]},
-      { name: 'Reflect', nameKey: 'fsa_phase_reflect', durationMin: 15, layers: [
-        { type: 'ocean', volume: 35, label: 'Ocean Calm', labelKey: 'fsa_ll_ocean_calm' },
-        { type: 'wind', volume: 15, label: 'Gentle Breeze', labelKey: 'fsa_ll_gentle_breeze' },
-      ]},
-    ],
-  },
-  {
-    id: 'sleep_descent', name: '😴 Sleep Descent', nameKey: 'fsa_scene_sleep_descent_name', desc: '45-min: relax → drift → silence', descKey: 'fsa_scene_sleep_descent_desc',
-    phases: [
-      { name: 'Relax', nameKey: 'fsa_phase_relax', durationMin: 15, layers: [
-        { type: 'brown_noise', volume: 45, label: 'Warm Blanket', labelKey: 'fsa_ll_warm_blanket' },
-        { type: 'ocean', volume: 25, label: 'Slow Waves', labelKey: 'fsa_ll_slow_waves' },
-        { type: 'binaural', volume: 15, hz: 6, base_hz: 150, label: 'Theta Descent', labelKey: 'fsa_ll_theta_descent' },
-      ]},
-      { name: 'Drift', nameKey: 'fsa_phase_drift', durationMin: 20, layers: [
-        { type: 'brown_noise', volume: 30, label: 'Deep Hum', labelKey: 'fsa_ll_deep_hum' },
-        { type: 'binaural', volume: 10, hz: 3, base_hz: 120, label: 'Delta Waves', labelKey: 'fsa_ll_delta_waves' },
-      ]},
-      { name: 'Silence', nameKey: 'fsa_phase_silence', durationMin: 10, layers: [
-        { type: 'brown_noise', volume: 15, label: 'Fading Warmth', labelKey: 'fsa_ll_fading_warmth' },
-      ]},
-    ],
-  },
-  {
-    id: 'study_session', name: '📚 Study Sprint', nameKey: 'fsa_scene_study_session_name', desc: '45-min: energize → sustain → review', descKey: 'fsa_scene_study_session_desc',
-    phases: [
-      { name: 'Energize', nameKey: 'fsa_phase_energize', durationMin: 10, layers: [
-        { type: 'pink_noise', volume: 35, label: 'Active Noise', labelKey: 'fsa_ll_active_noise' },
-        { type: 'fire', volume: 20, label: 'Warm Energy', labelKey: 'fsa_ll_warm_energy' },
-        { type: 'binaural', volume: 15, hz: 18, base_hz: 250, label: 'Beta Focus', labelKey: 'fsa_ll_beta_focus' },
-      ]},
-      { name: 'Sustain', nameKey: 'fsa_phase_sustain', durationMin: 25, layers: [
-        { type: 'brown_noise', volume: 50, label: 'Steady Focus', labelKey: 'fsa_ll_steady_focus' },
-        { type: 'binaural', volume: 18, hz: 12, base_hz: 200, label: 'High Alpha', labelKey: 'fsa_ll_high_alpha' },
-      ]},
-      { name: 'Review', nameKey: 'fsa_phase_review', durationMin: 10, layers: [
-        { type: 'rain', volume: 30, label: 'Calming Rain', labelKey: 'fsa_ll_calming_rain' },
-        { type: 'forest', volume: 15, label: 'Nature Refresh', labelKey: 'fsa_ll_nature_refresh' },
-      ]},
-    ],
-  },
-];
 
 // ════════════════════════════════════════════════════════════
 // PREFERENCE OPTIONS
@@ -386,6 +287,15 @@ const TASKS = [
   { id: 'tedious', label: 'Tedious Tasks', labelKey: 'fsa_task_tedious', emoji: '📋' },
   { id: 'relaxing', label: 'Relaxing', labelKey: 'fsa_task_relaxing', emoji: '🧘' },
   { id: 'sleeping', label: 'Falling Asleep', labelKey: 'fsa_task_sleeping', emoji: '😴' },
+];
+
+const INTERFERENCES = [
+  { id: 'voices', label: 'Voices or conversation', labelKey: 'fsa_int_voices', emoji: '🗣️' },
+  { id: 'generalNoise', label: 'General background noise', labelKey: 'fsa_int_noise', emoji: '🔊' },
+  { id: 'tooQuiet', label: 'It is too quiet', labelKey: 'fsa_int_quiet', emoji: '🤫' },
+  { id: 'restless', label: 'I feel restless', labelKey: 'fsa_int_restless', emoji: '↗️' },
+  { id: 'sleepy', label: 'I feel sleepy', labelKey: 'fsa_int_sleepy', emoji: '🥱' },
+  { id: 'atmosphere', label: 'Nothing — I just want the right atmosphere', labelKey: 'fsa_int_atmosphere', emoji: '✨' },
 ];
 
 const ENVIRONMENTS = [
@@ -415,12 +325,12 @@ const SENSITIVITIES = [
 ];
 
 const SMART_FEEDBACK_OPTIONS = [
-  { id: 'too_busy', emoji: '🔊', label: 'Too busy', labelKey: 'fsa_fb_too_busy' },
-  { id: 'too_sparse', emoji: '🔈', label: 'Too sparse', labelKey: 'fsa_fb_too_sparse' },
-  { id: 'too_harsh', emoji: '😣', label: 'Too harsh / sharp', labelKey: 'fsa_fb_too_harsh' },
-  { id: 'too_monotone', emoji: '😴', label: 'Too monotone', labelKey: 'fsa_fb_too_monotone' },
-  { id: 'need_more_bass', emoji: '🔉', label: 'Need more bass', labelKey: 'fsa_fb_need_more_bass' },
-  { id: 'voices_bleeding', emoji: '🗣️', label: 'Voices still bleeding through', labelKey: 'fsa_fb_voices_bleeding' },
+  { id: 'too_distracting', emoji: '🌀', label: 'Too distracting', labelKey: 'fsa_fb_distracting' },
+  { id: 'too_sleepy', emoji: '🥱', label: 'Too sleepy', labelKey: 'fsa_fb_sleepy' },
+  { id: 'too_harsh', emoji: '😣', label: 'Too harsh / sharp', labelKey: 'fsa_fb_harsh' },
+  { id: 'too_monotone', emoji: '〰️', label: 'Too monotonous', labelKey: 'fsa_fb_monotone' },
+  { id: 'voices_bleeding', emoji: '🗣️', label: 'Still hearing voices', labelKey: 'fsa_fb_voices' },
+  { id: 'not_enough', emoji: '🔈', label: 'Not enough', labelKey: 'fsa_fb_notenough' },
 ];
 
 const EQ_BANDS = [
@@ -429,13 +339,6 @@ const EQ_BANDS = [
   { id: 'treble', label: 'Treble', labelKey: 'fsa_eq_treble', freq: 4000, type: 'highshelf', emoji: '🔔' },
 ];
 
-const AI_SCENE_DURATIONS = [
-  { label: '30 min', labelKey: 'fsa_duration_30', min: 30 },
-  { label: '45 min', labelKey: 'fsa_duration_45', min: 45 },
-  { label: '60 min', labelKey: 'fsa_duration_60', min: 60 },
-  { label: '90 min', labelKey: 'fsa_duration_90', min: 90 },
-  { label: '120 min', labelKey: 'fsa_duration_120', min: 120 },
-];
 
 const TIMER_PRESETS = [
   { label: '30 min', labelKey: 'fsa_duration_30', min: 30 }, { label: '45 min', labelKey: 'fsa_duration_45', min: 45 },
@@ -501,8 +404,6 @@ const FocusSoundArchitect = ({ tool }) => {
     // modifiers because tools carry their own border/text utilities on the
     // submit and Tailwind resolves conflicts by stylesheet order, not class
     // order. See the PF-13 exception in audit/audit_v2-3-2.py.
-    btnIdle:       isDark ? '!bg-transparent !border-2 !border-cyan-500/85 !text-cyan-300 cursor-not-allowed'
-                          : '!bg-transparent !border-2 !border-cyan-600/85 !text-cyan-800 cursor-not-allowed',
     btnSecondary:  isDark ? 'bg-zinc-700 hover:bg-zinc-600 text-zinc-100' : 'bg-gray-100 hover:bg-gray-200 text-gray-700',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
@@ -524,7 +425,8 @@ const FocusSoundArchitect = ({ tool }) => {
 
   const [task, setTask] = useState('deep_work');
   const [environments, setEnvironments] = useState([]);
-  const [soundPrefs, setSoundPrefs] = useState(['brownNoise']);
+  const [interference, setInterference] = useState('');
+  const [soundPrefs, setSoundPrefs] = useState([]);
   const [sensitivities, setSensitivities] = useState([]);
   const [energyGoal, setEnergyGoal] = useState(50);
   const [error, setError] = useState('');
@@ -567,12 +469,8 @@ const FocusSoundArchitect = ({ tool }) => {
   const [scenePhaseStartedAt, setScenePhaseStartedAt] = useState(null);
 
   // ── AI Scene generation ──
-  const [aiSceneLoading, setAiSceneLoading] = useState(false);
-  const [aiSceneDuration, setAiSceneDuration] = useState(60);
-  const [showAISceneForm, setShowAISceneForm] = useState(false);
 
   // ── Manual Mix ──
-  const [manualMix, setManualMix] = useState([]);
 
   // ── Share/export ──
   const [showShareUrl, setShowShareUrl] = useState(false);
@@ -582,7 +480,6 @@ const FocusSoundArchitect = ({ tool }) => {
   const [adaptiveMode, setAdaptiveMode] = useState(false);
 
   // ── Listening history ──
-  const [listeningHistory, setListeningHistory] = usePersistentState('fsa-history', []);
 
   // ── Audio refs ──
   const ctxRef = useRef(null);
@@ -667,9 +564,8 @@ const FocusSoundArchitect = ({ tool }) => {
       preview: (recipe.soundscape_name || t('fsa_fallback_session')).slice(0, 40),
     };
     if (entry.durationMin >= 1) {
-      setListeningHistory(prev => [entry, ...prev].slice(0, 6));
     }
-  }, [recipe, isPlaying, timerStartedAt, activeScene, setListeningHistory]);
+  }, [recipe, isPlaying, timerStartedAt, activeScene]);
 
   const stopLayersWithHistory = useCallback(() => {
     recordListeningSession();
@@ -823,29 +719,6 @@ const FocusSoundArchitect = ({ tool }) => {
   // SCENE PLAYBACK ENGINE
   // ═══════════════════════════════════════
 
-  const startScene = useCallback(async (scene) => {
-    stopLayers();
-    clearInterval(sceneTimerRef.current);
-    setActiveScene(scene);
-    setScenePhaseIdx(0);
-    setSceneStartedAt(Date.now());
-    setScenePhaseStartedAt(Date.now());
-
-    // Load first phase as recipe
-    const firstPhase = scene.phases[0];
-    if (firstPhase) {
-      const phaseRecipe = {
-        soundscape_name: `${sceneName(scene)}${t('fsa_phase_join')}${phaseName(firstPhase)}`,
-        description: sceneDesc(scene),
-        layers: firstPhase.layers,
-      };
-      setRecipe(phaseRecipe);
-      // Auto-start audio
-      setTimeout(async () => {
-        try { await startAudio(phaseRecipe); } catch (e) { /* */ }
-      }, 100);
-    }
-  }, [stopLayers, startAudio]);
 
   const advanceScenePhase = useCallback(async (scene, nextIdx) => {
     if (!scene || nextIdx >= scene.phases.length) {
@@ -916,18 +789,6 @@ const FocusSoundArchitect = ({ tool }) => {
   // LISTENING STATS
   // ═══════════════════════════════════════
 
-  const listeningStats = React.useMemo(() => {
-    if (listeningHistory.length === 0) return null;
-    const totalMin = listeningHistory.reduce((s, h) => s + (h.durationMin || 0), 0);
-    const layerCounts = {};
-    listeningHistory.forEach(h => {
-      (h.layers || []).forEach(l => {
-        layerCounts[l.type] = (layerCounts[l.type] || 0) + 1;
-      });
-    });
-    const topLayers = Object.entries(layerCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    return { totalSessions: listeningHistory.length, totalMin, topLayers };
-  }, [listeningHistory]);
 
   // ═══════════════════════════════════════
   // SMART FEEDBACK (AI MICRO-ADJUSTMENTS)
@@ -984,43 +845,6 @@ const FocusSoundArchitect = ({ tool }) => {
   // AI SCENE GENERATION
   // ═══════════════════════════════════════
 
-  const handleGenerateAIScene = useCallback(async () => {
-    if (soundPrefs.length === 0) { setError(t('fsa_err_select_pref')); return; }
-    setAiSceneLoading(true); setError('');
-    try {
-      const data = await callToolEndpoint('focus-sound-architect/scene', {
-        task: TASKS.find(tk => tk.id === task)?.label || task,
-        environment: environments.map(e => ENVIRONMENTS.find(x => x.id === e)?.label || e),
-        soundPreferences: soundPrefs.map(s => SOUND_PREFS.find(x => x.id === s)?.label || s),
-        sensitivities: sensitivities.map(s => SENSITIVITIES.find(x => x.id === s)?.label || s),
-        energyGoal,
-        totalMinutes: aiSceneDuration,
-      });
-
-      if (data.phases && data.phases.length > 0) {
-        // Convert AI response to scene format matching SCENE_PRESETS shape
-        const aiScene = {
-          id: `ai_${Date.now()}`,
-          name: data.scene_name || t('fsa_fallback_ai_scene'),
-          desc: data.description || '',
-          phases: data.phases.map(p => ({
-            name: p.name,
-            durationMin: p.durationMin,
-            layers: p.layers,
-            purpose: p.purpose,
-          })),
-          arcExplanation: data.arc_explanation,
-          transitionNotes: data.transition_notes,
-        };
-        startScene(aiScene);
-        setShowAISceneForm(false);
-      }
-    } catch (err) {
-      setError(err.message || t('fsa_err_generate_scene'));
-    } finally {
-      setAiSceneLoading(false);
-    }
-  }, [task, environments, soundPrefs, sensitivities, energyGoal, aiSceneDuration, callToolEndpoint, startScene]);
 
   // ═══════════════════════════════════════
   // LAYER SOLO / MUTE
@@ -1206,60 +1030,6 @@ const FocusSoundArchitect = ({ tool }) => {
   // FOCUSPOCUS CORRELATION
   // ═══════════════════════════════════════
 
-  const focusCorrelation = useMemo(() => {
-    if (listeningHistory.length < 3) return null;
-    try {
-      const fpHistory = JSON.parse(localStorage.getItem('fp-history') || '[]');
-      if (!fpHistory.length) return null;
-
-      // Match listening sessions to focus sessions by overlapping times (within 2 hours)
-      const matches = [];
-      listeningHistory.forEach(lh => {
-        const lhTime = new Date(lh.date).getTime();
-        const fpMatch = fpHistory.find(fh => {
-          const fhTime = new Date(fh.date).getTime();
-          return Math.abs(fhTime - lhTime) < 2 * 60 * 60 * 1000 && fh.score;
-        });
-        if (fpMatch) {
-          matches.push({
-            soundscape: lh.name,
-            layers: lh.layers || [],
-            focusScore: fpMatch.score,
-            activity: fpMatch.activity,
-          });
-        }
-      });
-
-      if (matches.length < 2) return null;
-
-      // Find best-performing layer types
-      const layerScores = {};
-      matches.forEach(m => {
-        m.layers.forEach(l => {
-          if (!layerScores[l.type]) layerScores[l.type] = [];
-          layerScores[l.type].push(m.focusScore);
-        });
-      });
-
-      const layerAvgs = Object.entries(layerScores)
-        .filter(([_, scores]) => scores.length >= 2)
-        .map(([type, scores]) => ({
-          type,
-          avgScore: Math.round(scores.reduce((s, v) => s + v, 0) / scores.length),
-          count: scores.length,
-        }))
-        .sort((a, b) => b.avgScore - a.avgScore);
-
-      const bestSoundscape = matches.reduce((best, m) => m.focusScore > (best?.focusScore || 0) ? m : best, null);
-
-      return {
-        totalMatches: matches.length,
-        avgScore: Math.round(matches.reduce((s, m) => s + m.focusScore, 0) / matches.length),
-        layerAvgs: layerAvgs.slice(0, 5),
-        bestSoundscape,
-      };
-    } catch (e) { return null; }
-  }, [listeningHistory]);
 
   // ═══════════════════════════════════════
   // FORM HANDLERS
@@ -1271,15 +1041,16 @@ const FocusSoundArchitect = ({ tool }) => {
 
   const handleGenerate = async () => {
     setError(''); stopLayers(); setFeedback(null);
-    if (soundPrefs.length === 0) { setError(t('fsa_err_select_pref')); return; }
     try {
       const data = await callToolEndpoint('focus-sound-architect', {
         task: TASKS.find(tk => tk.id === task)?.label || task,
         environment: environments.map(e => ENVIRONMENTS.find(x => x.id === e)?.label || e),
+        interference: INTERFERENCES.find(x => x.id === interference)?.label || interference || 'not specified',
         soundPreferences: soundPrefs.map(s => SOUND_PREFS.find(x => x.id === s)?.label || s),
         sensitivities: sensitivities.map(s => SENSITIVITIES.find(x => x.id === s)?.label || s),
         energyGoal,
         feedback: feedback,
+        sessionMinutes: timerMin,
       });
       setRecipe(data);
       const scrollTimer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 200);
@@ -1299,43 +1070,18 @@ const FocusSoundArchitect = ({ tool }) => {
     });
   };
 
-  const toggleManualLayer = (type) => {
-    setManualMix(prev => {
-      if (prev.some(l => l.type === type)) return prev.filter(l => l.type !== type);
-      const def = LAYER_TYPES[type];
-      const defaultVol = type === 'binaural' ? 20 : type === 'brown_noise' ? 60 : 50;
-      return [...prev, {
-        type, volume: defaultVol,
-        label: def?.label || type, labelKey: def?.labelKey, why: t('fsa_fallback_manually_selected'),
-        ...(type === 'binaural' ? { hz: 10, base_hz: 200 } : {}),
-      }];
-    });
-  };
 
-  const updateManualLayerVolume = (type, vol) => {
-    setManualMix(prev => prev.map(l => l.type === type ? { ...l, volume: vol } : l));
-  };
 
-  const startManualMix = () => {
-    if (manualMix.length === 0) return;
-    stopLayers(); setFeedback(null);
-    setRecipe({
-      soundscape_name: t('fsa_fallback_manual_mix_name'),
-      description: manualMix.map(l => layerLabel(l)).join(' · '),
-      layers: manualMix,
-      usage_tips: [t('fsa_tip_drag_sliders'), t('fsa_tip_add_more_layers')],
-    });
-  };
 
   const handleReset = () => {
     recordListeningSession();
     stopLayers(); if (activeScene) stopScene();
     if (adaptiveMode) stopAdaptiveMode();
     setRecipe(null); setFeedback(null);
-    setTask('deep_work'); setEnvironments([]); setSoundPrefs(['brownNoise']);
+    setTask('deep_work'); setEnvironments([]); setInterference(''); setSoundPrefs([]);
     setSensitivities([]); setEnergyGoal(50); setError(''); setShowTips(false);
-    setShowAddLayer(false); setMutedLayers({}); setLayerEQs({}); setShowEQ(null); setManualMix([]);
-    setShowShareUrl(false); setShareUrl(''); setShowAISceneForm(false);
+    setShowAddLayer(false); setMutedLayers({}); setLayerEQs({}); setShowEQ(null);
+    setShowShareUrl(false); setShareUrl('');
   };
 
   const energyLabel = energyGoal < 25 ? t('fsa_energy_very_calm') : energyGoal < 50 ? t('fsa_energy_calm') : energyGoal < 75 ? t('fsa_energy_balanced') : t('fsa_energy_energized');
@@ -1404,6 +1150,7 @@ const FocusSoundArchitect = ({ tool }) => {
             <p className={`text-base ${c.textSecondary}`}>
               <span className="me-2 text-lg">{tool?.icon ?? ' 🎧'}</span>{tool?.tagline ?? t('fsa_tagline')}
             </p>
+            <p className={`text-xs ${c.textMuted} mt-1 max-w-3xl`}>{t('fsa_intro')}</p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
           </div>
           {recipe && (
@@ -1420,336 +1167,115 @@ const FocusSoundArchitect = ({ tool }) => {
       {!recipe && (
         <div className="space-y-4">
 
-          {/* Quick-start presets */}
+          {/* Fast path: ready-made soundscapes */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_quick_start')}</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_quick_start_hint')}</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_need_now')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_quick_hint')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {QUICK_PRESETS.map(p => (
                 <button key={p.id} onClick={() => loadPreset(p)}
                   className={`p-3 rounded-xl border text-start transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
-                  <div className={`text-sm font-bold ${c.text}`}>{t(p.nameKey)}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(p.descKey)}</div>
+                  <div className={`text-sm font-bold ${c.text}`}>{p.nameKey ? t(p.nameKey) : p.name}</div>
+                  <div className={`text-xs ${c.textMuted} mt-0.5`}>{p.descKey ? t(p.descKey) : p.description}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 🎬 Scene Timeline Selector */}
-          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_evolving_scenes')}</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_evolving_scenes_hint')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SCENE_PRESETS.map(scene => (
-                <button key={scene.id} onClick={() => startScene(scene)}
-                  className={`p-3 rounded-xl border text-start transition-all ${isDark ? 'border-zinc-600 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-zinc-200 hover:border-cyan-400 hover:bg-cyan-50'}`}>
-                  <div className={`text-sm font-bold ${c.text}`}>{t(scene.nameKey)}</div>
-                  <div className={`text-xs ${c.textMuteded} mt-0.5`}>{t(scene.descKey)}</div>
-                  <div className="flex items-center gap-1 mt-1.5">
-                    {scene.phases.map((ph, i) => (
-                      <React.Fragment key={i}>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-700 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
-                          {t('fsa_phase_meta', { name: t(ph.nameKey), min: ph.durationMin })}
-                        </span>
-                        {i < scene.phases.length - 1 && <span className={`text-[10px] ${c.textMuteded}`}>→</span>}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* AI Scene Generator */}
-            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-zinc-700' : 'border-zinc-200'}`}>
-              {!showAISceneForm ? (
-                <button onClick={() => setShowAISceneForm(true)}
-                  className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed transition-all text-sm font-bold ${
-                    isDark ? 'border-cyan-700 text-cyan-400 hover:border-cyan-500 hover:bg-cyan-900/20' : 'border-cyan-300 text-cyan-600 hover:border-cyan-400 hover:bg-cyan-50'
-                  }`}>
-                  {t('fsa_design_custom_ai_scene')}
-                </button>
-              ) : (
-                <div className={`p-4 rounded-xl border ${isDark ? 'bg-cyan-900/20 border-cyan-700/50' : 'bg-cyan-50 border-cyan-200'}`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className={`text-sm font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{t('fsa_ai_scene_designer')}</p>
-                    <button onClick={() => setShowAISceneForm(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
-                  </div>
-                  <p className={`text-xs ${c.textSecondary} mb-3`}>
-                    {t('fsa_ai_scene_designer_hint')}
-                  </p>
-                  <div className="mb-3">
-                    <label className={`text-xs font-bold ${c.textSecondary} mb-1.5 block`}>{t('fsa_session_duration')}</label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {AI_SCENE_DURATIONS.map(d => (
-                        <button key={d.min} onClick={() => setAiSceneDuration(d.min)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                            aiSceneDuration === d.min
-                              ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-100 text-cyan-700'
-                              : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-300'
-                          }`}>
-                          {t(d.labelKey)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <button onClick={handleGenerateAIScene} disabled={aiSceneLoading || soundPrefs.length === 0}
-                    className={`w-full px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                      soundPrefs.length > 0
-                        ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                        : isDark ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                    } disabled:opacity-40`}>
-                    {aiSceneLoading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing_scene')}</> : <><span className="me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_generate_scene', { min: aiSceneDuration })}</>}
-                  </button>
-                  {soundPrefs.length === 0 && (
-                    <p className={`text-[10px] ${c.textMuteded} mt-1.5`}>{t('fsa_select_prefs_first')}</p>
-                  )}
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-3 py-1">
+            <div className={`h-px flex-1 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
+            <span className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>{t('fsa_built_for_you')}</span>
+            <div className={`h-px flex-1 ${isDark ? 'bg-zinc-700' : 'bg-zinc-200'}`} />
           </div>
 
-          {/* 🎛️ Manual Mix */}
+          {/* 1. Goal */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_manual_mix')}</label>
-            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_manual_mix_hint')}</p>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {Object.entries(LAYER_TYPES).map(([type, def]) => {
-                const active = manualMix.some(l => l.type === type);
-                return (
-                  <button key={type} onClick={() => toggleManualLayer(type)}
-                    className={`flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                      active ? c.pillActive : c.pillInactive
-                    }`}>
-                    <span>{def.emoji}</span> {t(def.labelKey)}
-                  </button>
-                );
-              })}
-            </div>
-            {manualMix.length > 0 && (
-              <div className="space-y-2 mb-4">
-                {manualMix.map(layer => (
-                  <div key={layer.type} className="flex items-center gap-3">
-                    <span className={`text-xs font-medium w-28 flex-shrink-0 truncate ${c.textSecondary}`}>
-                      {LAYER_TYPES[layer.type]?.emoji} {layerLabel(layer)}
-                    </span>
-                    <input type="range" min="0" max="100" value={layer.volume}
-                      onChange={e => updateManualLayerVolume(layer.type, Number(e.target.value))}
-                      className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
-                    <span className={`text-xs font-mono w-6 text-end ${c.textMuted}`}>{layer.volume}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {manualMix.length > 0 && (
-              <button onClick={startManualMix}
-                className={`w-full py-2.5 rounded-xl text-sm font-bold ${c.btnPrimary} flex items-center justify-center gap-2 min-h-[40px]`}>
-                <span>{tool?.icon ?? ' 🎧'}</span>{t('fsa_start_playing')}
-              </button>
-            )}
-          </div>
-
-          {/* 📊 Listening History */}
-          {listeningStats && (
-            <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-              <h4 className={`text-sm font-bold ${c.text} mb-3`}>{t('fsa_listening_stats')}</h4>
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                  <div className={`text-xl font-bold ${c.text}`}>{listeningStats.totalSessions}</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_sessions')}</div>
-                </div>
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                  <div className={`text-xl font-bold ${c.text}`}>{t('fsa_stat_hours', { hours: Math.round(listeningStats.totalMin / 60) })}</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_listened')}</div>
-                </div>
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                  <div className="flex items-center justify-center gap-1">
-                    {listeningStats.topLayers.slice(0, 2).map(([type]) => (
-                      <span key={type} className="text-sm">{LAYER_TYPES[type]?.emoji || '🔊'}</span>
-                    ))}
-                  </div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_top_sounds')}</div>
-                </div>
-              </div>
-              {listeningHistory.length > 0 && (
-                <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                  {listeningHistory.slice(0, 6).map(h => (
-                    <div key={h.id} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
-                      <div className="flex items-center gap-0.5">
-                        {(h.layers || []).slice(0, 3).map((l, i) => (
-                          <span key={i} className="text-xs">{LAYER_TYPES[l.type]?.emoji || '🔊'}</span>
-                        ))}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-bold truncate ${c.text}`}>{h.name}</p>
-                      </div>
-                      <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_stat_minutes', { min: h.durationMin })}</span>
-                      <span className={`text-[10px] ${c.textMuteded}`}>{new Date(h.date).toLocaleDateString()}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* 🎯 FocusPocus × Sound Correlation */}
-          {focusCorrelation && (
-            <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-              <h4 className={`text-sm font-bold ${c.text} mb-3`}>{t('fsa_sound_focus_score')}</h4>
-              <p className={`text-xs ${c.textSecondary} mb-3`}>
-                {t('fsa_correlation_intro', { count: focusCorrelation.totalMatches })}
-              </p>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-50'}`}>
-                  <div className={`text-xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{focusCorrelation.avgScore}</div>
-                  <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_avg_focus_score')}</div>
-                </div>
-                {focusCorrelation.bestSoundscape && (
-                  <div className={`text-center p-2.5 rounded-xl ${isDark ? 'bg-cyan-900/20' : 'bg-cyan-50'}`}>
-                    <div className={`text-sm font-bold truncate ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{focusCorrelation.bestSoundscape.soundscape}</div>
-                    <div className={`text-[10px] ${c.textMuteded}`}>{t('fsa_best_score', { score: focusCorrelation.bestSoundscape.focusScore })}</div>
-                  </div>
-                )}
-              </div>
-              {focusCorrelation.layerAvgs.length > 0 && (
-                <div>
-                  <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('fsa_best_performing_sounds')}</p>
-                  <div className="space-y-1">
-                    {focusCorrelation.layerAvgs.map(la => (
-                      <div key={la.type} className={`flex items-center gap-2 p-2 rounded-lg ${isDark ? 'bg-zinc-700/30' : 'bg-zinc-50/80'}`}>
-                        <span className="text-sm">{LAYER_TYPES[la.type]?.emoji || '🔊'}</span>
-                        <span className={`text-xs font-bold flex-1 ${c.text}`}>{layerLabel({ type: la.type })}</span>
-                        <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{t('fsa_avg_suffix', { score: la.avgScore })}</span>
-                        <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_count_x', { count: la.count })}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Task */}
-          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_what_doing')}</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_pick_one')}</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_q1')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_closest_fit')}</p>
             <div className="flex flex-wrap gap-2">
               {TASKS.map(tk => (
                 <button key={tk.id} onClick={() => setTask(tk.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                    task === tk.id
-                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
-                  <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    task === tk.id ? isDark ? 'border-cyan-400' : 'border-cyan-500' : isDark ? 'border-zinc-500' : 'border-zinc-300'
-                  }`}>
-                    {task === tk.id && <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-cyan-500'}`} />}
-                  </span>
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${task === tk.id ? c.pillActive : c.pillInactive}`}>
                   <span>{tk.emoji}</span> {t(tk.labelKey)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Environment */}
+          {/* 2. Interference — the key personalization question */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_where_are_you')}</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_calibrate_masking')}</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_q2')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_q2_hint')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {INTERFERENCES.map(item => (
+                <button key={item.id} onClick={() => setInterference(item.id)}
+                  className={`p-3 rounded-xl border text-start text-sm font-semibold transition-all ${interference === item.id ? c.pillActive : c.pillInactive}`}>
+                  <span className="me-2">{item.emoji}</span>{item.labelKey ? t(item.labelKey) : item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Environment */}
+          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_q3')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_q3_hint')}</p>
             <div className="flex flex-wrap gap-2">
               {ENVIRONMENTS.map(e => (
-                <button key={e.id} onClick={() => toggleMulti(environments, setEnvironments, e.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                    environments.includes(e.id)
-                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
+                <button key={e.id} onClick={() => setEnvironments([e.id])}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${environments.includes(e.id) ? c.pillActive : c.pillInactive}`}>
                   <span>{e.emoji}</span> {t(e.labelKey)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Sound preferences */}
+          {/* 4. Preferences / sensitivities — optional progressive disclosure */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_sound_preferences')}</label>
-            <p className={`text-xs ${c.textMuteded} mb-3`}>{t('fsa_sound_prefs_hint')}</p>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_q4')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_q4_hint')}</p>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {SOUND_PREFS.map(sp => (
+                <button key={sp.id} onClick={() => toggleMulti(soundPrefs, setSoundPrefs, sp.id)}
+                  className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${soundPrefs.includes(sp.id) ? c.pillActive : c.pillInactive}`}>
+                  {t(sp.labelKey)}
+                </button>
+              ))}
+            </div>
+            <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('fsa_avoid')}</p>
             <div className="flex flex-wrap gap-2">
-              {SOUND_PREFS.map(s => (
-                <button key={s.id} onClick={() => toggleMulti(soundPrefs, setSoundPrefs, s.id)}
-                  className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                    soundPrefs.includes(s.id)
-                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
-                  {t(s.labelKey)}
+              {SENSITIVITIES.map(item => (
+                <button key={item.id} onClick={() => toggleMulti(sensitivities, setSensitivities, item.id)}
+                  className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${sensitivities.includes(item.id) ? (isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700') : c.pillInactive}`}>
+                  {t(item.labelKey)}
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Energy + Sensitivities */}
-          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <div className="mb-5">
-              <label className={`block text-sm font-bold ${c.text} mb-2`}>
-                {t('fsa_energy_goal')} <span className={isDark ? 'text-cyan-400' : 'text-cyan-600'}>{energyLabel}</span>
-              </label>
-              <input type="range" min="0" max="100" value={energyGoal}
-                onChange={e => setEnergyGoal(Number(e.target.value))}
+            <div className="mt-4">
+              <label className={`block text-xs font-bold ${c.textSecondary} mb-2`}>{t('fsa_energy')} <span className={c.accentTxt}>{energyLabel}</span></label>
+              <input type="range" min="0" max="100" value={energyGoal} onChange={e => setEnergyGoal(Number(e.target.value))}
                 className="fsa-slider w-full h-2 rounded-lg cursor-pointer accent-cyan-600" />
-              <div className={`flex justify-between text-[10px] ${c.textMuteded} mt-1`}>
-                <span>{t('fsa_energy_very_calm_pill')}</span><span>{t('fsa_energy_energized_pill')}</span>
-              </div>
-            </div>
-            <button onClick={() => document.getElementById('fsa-sens')?.classList.toggle('hidden')}
-              className={`flex items-center gap-1.5 text-xs font-bold ${c.textSecondary}`}>
-              {t('fsa_sensitivities_toggle')}
-            </button>
-            <div id="fsa-sens" className="hidden mt-3 flex flex-wrap gap-2">
-              {SENSITIVITIES.map(s => (
-                <button key={s.id} onClick={() => toggleMulti(sensitivities, setSensitivities, s.id)}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                    sensitivities.includes(s.id)
-                      ? isDark ? 'border-amber-500 bg-amber-900/30 text-amber-300' : 'border-amber-400 bg-amber-50 text-amber-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
-                  {t(s.labelKey)}
-                </button>
-              ))}
+              <div className={`flex justify-between text-[10px] ${c.textMuted} mt-1`}><span>{t('fsa_very_calm')}</span><span>{t('fsa_energized')}</span></div>
             </div>
           </div>
 
-          {/* Session timer */}
+          {/* Duration: the architect may use it to shape a longer session */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <label className={`block text-sm font-bold ${c.text} mb-2`}>{t('fsa_session_timer')}</label>
+            <label className={`block text-sm font-bold ${c.text} mb-1`}>{t('fsa_how_long')}</label>
+            <p className={`text-xs ${c.textMuted} mb-3`}>{t('fsa_duration_hint')}</p>
             <div className="flex flex-wrap gap-2">
               {TIMER_PRESETS.map(tp => (
                 <button key={tp.min} onClick={() => setTimerMin(tp.min)}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    timerMin === tp.min
-                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${timerMin === tp.min ? c.pillActive : c.pillInactive}`}>
                   {t(tp.labelKey)}
                 </button>
               ))}
             </div>
-            {timerMin > 0 && <p className={`text-xs ${c.textMuteded} mt-2`}>{t('fsa_timer_fade_note')}</p>}
           </div>
 
-          {/* Generate */}
-          <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading || soundPrefs.length === 0}
-            className={`relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg ${
-              soundPrefs.length > 0
-                ? 'bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40'
-                : c.btnIdle
-            }`}>
-            {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1">{tool?.icon ?? ' 🎧'}</span>{t('fsa_design_my_soundscape')}</>}
-          {!loading && (
-            <kbd aria-hidden="true"
-              className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-              ⌘↵
-            </kbd>
-          )}
+          <button title={t('cmd_enter')} onClick={handleGenerate} disabled={loading}
+            className="relative w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-200 dark:shadow-cyan-900/40 disabled:opacity-50">
+            {loading ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '🎧'}</span>{t('fsa_designing')}</> : <><span className="me-1">{tool?.icon ?? '🎧'}</span>{t('fsa_design_btn')}</>}
           </button>
 
           {error && (
@@ -1796,11 +1322,11 @@ const FocusSoundArchitect = ({ tool }) => {
               )}
             </div>
             <div className="flex items-center gap-3">
-              <span className={`text-xs font-bold w-16 ${c.textMuteded}`}>{t('fsa_master')}</span>
+              <span className={`text-xs font-bold w-16 ${c.textMuted}`}>{t('fsa_master')}</span>
               <input type="range" min="0" max="100" value={masterVolume}
                 onChange={e => setMasterVolume(Number(e.target.value))}
                 className="fsa-slider flex-1 h-2 rounded-lg cursor-pointer accent-cyan-600" />
-              <span className={`text-xs font-mono w-8 text-end ${c.textMuteded}`}>{masterVolume}</span>
+              <span className={`text-xs font-mono w-8 text-end ${c.textMuted}`}>{masterVolume}</span>
             </div>
 
             {/* Binaural layers only work as intended per-ear; on speakers the two
@@ -1838,7 +1364,7 @@ const FocusSoundArchitect = ({ tool }) => {
               <div className={`mt-3 p-3 rounded-xl border ${isDark ? 'bg-zinc-700/50 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                 <div className="flex items-center justify-between mb-1">
                   <p className={`text-xs font-bold ${c.text}`}>{t('fsa_shareable_link')}</p>
-                  <button onClick={() => setShowShareUrl(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+                  <button onClick={() => setShowShareUrl(false)} className={`text-xs ${c.textMuted}`}>✕</button>
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="text" readOnly value={shareUrl}
@@ -1846,7 +1372,7 @@ const FocusSoundArchitect = ({ tool }) => {
                     onClick={e => e.target.select()}
                   />
                 </div>
-                <p className={`text-[10px] ${c.textMuteded} mt-1`}>{t('fsa_share_link_note')}</p>
+                <p className={`text-[10px] ${c.textMuted} mt-1`}>{t('fsa_share_link_note')}</p>
               </div>
             )}
 
@@ -1890,10 +1416,10 @@ const FocusSoundArchitect = ({ tool }) => {
                           ? isDark ? 'bg-emerald-900/20 border border-emerald-800/40' : 'bg-emerald-50 border border-emerald-200'
                           : isDark ? 'bg-zinc-700/30 border border-zinc-700' : 'bg-zinc-50 border border-zinc-200'
                     }`}>
-                      <p className={`text-[10px] font-bold ${isActive ? (isDark ? 'text-cyan-300' : 'text-cyan-700') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuteded}`}>
+                      <p className={`text-[10px] font-bold ${isActive ? (isDark ? 'text-cyan-300' : 'text-cyan-700') : isDone ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : c.textMuted}`}>
                         {isDone ? '✅' : isActive ? '▶' : ''} {phaseName(phase)}
                       </p>
-                      <p className={`text-[9px] ${c.textMuteded}`}>{t('fsa_stat_minutes', { min: phase.durationMin })}</p>
+                      <p className={`text-[9px] ${c.textMuted}`}>{t('fsa_stat_minutes', { min: phase.durationMin })}</p>
                       {isActive && (
                         <div className={`mt-1 w-full h-1 rounded-full overflow-hidden ${isDark ? 'bg-zinc-600' : 'bg-zinc-200'}`}>
                           <div className="h-full rounded-full bg-cyan-400 transition-all duration-1000"
@@ -1934,7 +1460,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       <div className="flex-1 min-w-0">
                         <span className={`text-sm font-bold ${c.text}`}>{layerLabel(layerDef)}</span>
                         {layerDef.type === 'binaural' && layerDef.hz && (
-                          <span className={`text-xs ms-2 ${c.textMuteded}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
+                          <span className={`text-xs ms-2 ${c.textMuted}`}>{t('fsa_layer_hz_meta', { hz: layerDef.hz, base: layerDef.base_hz || 200 })}</span>
                         )}
                       </div>
                     </div>
@@ -1955,7 +1481,7 @@ const FocusSoundArchitect = ({ tool }) => {
                         </button>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`text-xs font-mono w-8 text-end ${c.textMuteded}`}>{vol}</span>
+                        <span className={`text-xs font-mono w-8 text-end ${c.textMuted}`}>{vol}</span>
                         {(recipe.layers || []).length > 1 && (
                           <button onClick={() => removeLayerFromRecipe(idx)}
                             title={t('fsa_remove_layer')}
@@ -1972,16 +1498,16 @@ const FocusSoundArchitect = ({ tool }) => {
                     {/* Per-layer EQ (3-band) */}
                     {showEQ === idx && (
                       <div className={`mt-3 pt-3 border-t space-y-2 ${isDark ? 'border-zinc-600' : 'border-zinc-200'}`}>
-                        <p className={`text-[10px] font-bold ${c.textMuteded}`}>🎚️ {t('fsa_eq')}</p>
+                        <p className={`text-[10px] font-bold ${c.textMuted}`}>🎚️ {t('fsa_eq')}</p>
                         {EQ_BANDS.map(band => {
                           const val = layerEQs[idx]?.[band.id] || 0;
                           return (
                             <div key={band.id} className="flex items-center gap-2">
-                              <span className={`text-[10px] font-bold w-12 ${c.textMuteded}`}>{band.emoji} {t(band.labelKey)}</span>
+                              <span className={`text-[10px] font-bold w-12 ${c.textMuted}`}>{band.emoji} {t(band.labelKey)}</span>
                               <input type="range" min="-12" max="12" step="1" value={val}
                                 onChange={e => updateLayerEQ(idx, band.id, Number(e.target.value))}
                                 className="fsa-slider flex-1 h-1 rounded-lg cursor-pointer accent-cyan-500" />
-                              <span className={`text-[10px] font-mono w-8 text-end ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuteded}`}>
+                              <span className={`text-[10px] font-mono w-8 text-end ${val > 0 ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : val < 0 ? (isDark ? 'text-red-400' : 'text-red-500') : c.textMuted}`}>
                                 {t('fsa_eq_db', { sign: val > 0 ? '+' : '', val })}
                               </span>
                             </div>
@@ -1990,13 +1516,13 @@ const FocusSoundArchitect = ({ tool }) => {
                         <button onClick={() => {
                           updateLayerEQ(idx, 'bass', 0); updateLayerEQ(idx, 'mid', 0); updateLayerEQ(idx, 'treble', 0);
                         }}
-                          className={`text-[10px] font-bold ${c.textMuteded} hover:${c.text}`}>
+                          className={`text-[10px] font-bold ${c.textMuted} hover:${c.text}`}>
                           {t('fsa_reset_eq')}
                         </button>
                       </div>
                     )}
 
-                    {(layerDef.whyKey || layerDef.why) && !showEQ && <p className={`text-xs ${c.textMuteded} mt-2 leading-relaxed`}>{layerDef.whyKey ? t(layerDef.whyKey) : layerDef.why}</p>}
+                    {(layerDef.whyKey || layerDef.why) && !showEQ && <p className={`text-xs ${c.textMuted} mt-2 leading-relaxed`}>{layerDef.whyKey ? t(layerDef.whyKey) : layerDef.why}</p>}
                   </div>
                 );
               })}
@@ -2016,7 +1542,7 @@ const FocusSoundArchitect = ({ tool }) => {
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-zinc-700/30 border-zinc-600' : 'bg-zinc-50 border-zinc-200'}`}>
                     <div className="flex items-center justify-between mb-2">
                       <p className={`text-xs font-bold ${c.text}`}>{t('fsa_choose_sound_layer')}</p>
-                      <button onClick={() => setShowAddLayer(false)} className={`text-xs ${c.textMuteded}`}>✕</button>
+                      <button onClick={() => setShowAddLayer(false)} className={`text-xs ${c.textMuted}`}>✕</button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {ADDABLE_LAYERS.filter(al => !(recipe.layers || []).some(l => l.type === al.type && al.type !== 'binaural')).map(al => (
@@ -2036,7 +1562,7 @@ const FocusSoundArchitect = ({ tool }) => {
 
           {/* Smart Feedback */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('fsa_how_does_it_sound')}</p>
+            <p className={`text-xs font-bold ${c.textMuted} mb-2`}>{t('fsa_how_does_it_sound')}</p>
             <div className="flex flex-wrap gap-1.5">
               {SMART_FEEDBACK_OPTIONS.map(f => (
                 <button key={f.id}
@@ -2051,7 +1577,7 @@ const FocusSoundArchitect = ({ tool }) => {
                       emoji, not as work in progress. Spin it. */}
                   <span className={smartAdjustLoading && feedback === f.id ? 'animate-spin inline-block' : 'inline-block'}>
                     {smartAdjustLoading && feedback === f.id ? tool?.icon ?? ' 🎧' : f.emoji}
-                  </span> {t(f.labelKey)}
+                  </span> {f.labelKey ? t(f.labelKey) : f.label}
                 </button>
               ))}
             </div>
@@ -2070,36 +1596,8 @@ const FocusSoundArchitect = ({ tool }) => {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'} disabled:opacity-40`}>
                 {loading ? tool?.icon ?? ' 🎧' : '🔄'} {t('fsa_full_regenerate')}
               </button>
-              <span className={`text-[10px] ${c.textMuteded}`}>{t('fsa_starts_over_note')}</span>
+              <span className={`text-[10px] ${c.textMuted}`}>{t('fsa_starts_over_note')}</span>
             </div>
-          </div>
-
-          {/* Binaural programs shortcut */}
-          <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5`}>
-            <p className={`text-xs font-bold ${c.textMuteded} mb-2`}>{t('fsa_binaural_programs')}</p>
-            <div className="flex flex-wrap gap-2">
-              {BINAURAL_PROGRAMS.map(bp => (
-                <button key={bp.id} onClick={() => {
-                  const updated = {
-                    ...recipe,
-                    layers: [
-                      ...(recipe.layers || []).filter(l => l.type !== 'binaural'),
-                      { type: 'binaural', volume: 20, hz: bp.hz, base_hz: bp.base, label: bp.label, labelKey: bp.labelKey, why: t(bp.descKey) },
-                    ],
-                  };
-                  stopLayers();
-                  setRecipe(updated);
-                }}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
-                    recipe.layers?.find(l => l.type === 'binaural' && l.hz === bp.hz)
-                      ? isDark ? 'border-cyan-500 bg-cyan-900/40 text-cyan-300' : 'border-cyan-400 bg-cyan-50 text-cyan-700'
-                      : isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500' : 'border-zinc-200 text-zinc-500 hover:border-zinc-400'
-                  }`}>
-                  {bp.emoji} {t(bp.labelKey)}
-                </button>
-              ))}
-            </div>
-            <p className={`text-xs ${c.textMuteded} mt-2`}>{t('fsa_headphones_required')}</p>
           </div>
 
           {/* Tips & Adjustments */}

@@ -842,7 +842,11 @@ for name, fpath in tools:
     # is one session at a time and ends by telling you to put it down; a stored
     # list of what you failed to finish is the opposite of that, and the
     # breadcrumb it writes is for the next hour, not the next month.
-    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus'}
+    # FocusSoundArchitect joined on 2026-08-26. The redesign removed the stats
+    # panel, which was the only thing that read fsa-history — so the tool was
+    # quietly recording six listening sessions nobody could ever look at.
+    # Recording data with no way to see it is worse than not recording it.
+    _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus', 'FocusSoundArchitect'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 
