@@ -63,7 +63,16 @@ function Metric({ label, value, onChange, low, high }) {
         onChange={e => onChange(clamp(e.target.value))}
         className="w-full min-h-[44px]"
       />
-      <div className="flex justify-between text-xs opacity-60"><span>{low}</span><span>{high}</span></div>
+      {/* Scale markers. The number pair above tells you where you are; without
+          these there is nothing telling you how far 7 is from 4 (owner,
+          2026-08-26). Rendered with the inherited colour at two opacities so
+          the row needs no palette and works in both themes. */}
+      <div className="flex justify-between px-0.5 text-[10px] tabular-nums leading-none" aria-hidden="true">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+          <span key={n} className={n === value ? 'font-bold opacity-100' : 'opacity-40'}>{n}</span>
+        ))}
+      </div>
+      <div className="mt-1 flex justify-between text-xs opacity-60"><span>{low}</span><span>{high}</span></div>
     </label>
   );
 }
