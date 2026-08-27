@@ -72,6 +72,7 @@ function publicSession(s) {
     extensionsUsed: s.extensionsUsed,
     extensionsLeft: Math.max(0, MAX_EXTENSIONS - s.extensionsUsed),
     completed: s.completed,
+    earlyExit: !!s.earlyExit,
     breadcrumb: s.breadcrumb,
     remainingMs: running ? Math.max(0, s.endsAt - now) : 0,
     overtimeMs: running ? Math.max(0, now - s.endsAt) : (s.overtimeMs || 0),
@@ -134,9 +135,13 @@ The note you are writing is for the version of them who comes back to this later
 
 Working on: ${task}
 Enough for this session: ${target}
-What they said remains: ${remaining || 'NOTHING — they left it blank.'}
+WHERE THEY SAID THEY LEFT OFF: ${remaining || 'NOTHING — they left it blank.'}
 
-Write the note that lets them close the laptop and stop carrying this. It names WHERE TO PICK UP — the first thing to do on returning. Do not restate the stopping point, do not summarise the session, and never describe the task as finished or the target as met.
+Write the note that lets them close the laptop and stop carrying this.
+
+It starts from WHERE THEY ACTUALLY STOPPED, not from where the session started. If they told you what is done and what is not, the note says what is already behind them and then the single next thing — "Receipts and W-2 are sorted; next, find the 1099." If they left it blank, do not invent progress: write the next action from the stopping point instead, and keep it to one line.
+
+Never repeat the first step they were given at the start. They have moved past it — that is why they are writing this. Do not restate the stopping point, do not summarise the session, and never describe the task as finished or the target as met.
 
 Return ONLY valid JSON: { "breadcrumb": "one or two sentences, second person" }`,
   };
@@ -203,7 +208,9 @@ Two jobs. First decide whether what they wrote is ALREADY a usable stopping poin
 Three fields, and they are different things:
 - stoppingPoint — what "enough for now" means TODAY. One bounded piece of the task that fits in ${minutes} minutes and leaves something behind: a pile, a list, a draft, a decision. NEVER the task itself.
 - firstStep — the first visible action, small enough to start without deciding anything else. What their hands do in the first minute.
-- doneWhen — the observable condition that says the session is finished. Written so they can look at it and answer yes or no. Not a feeling, not "when you have made progress".
+- doneWhen — the observable test for the stoppingPoint. It must operationalise it EXACTLY: same scope, same parts, nothing added and nothing dropped. If the stopping point is "gather the documents AND sort them by type", then doneWhen is met only when both are true. Never widen it with "or", never settle for the easier half. Written so they can look at it and answer yes or no — not a feeling, not "when you have made progress".
+
+CHECK THE THREE AGAINST EACH OTHER BEFORE YOU ANSWER. Could someone satisfy doneWhen while the stoppingPoint is still unfinished? If so, doneWhen is wrong — fix it, do not weaken the stopping point to match. Does firstStep start the work the stoppingPoint describes, or some other work? They are one plan, not three separate sentences.
 
 SCALE TO THE TIME. ${minutes} minutes is what they have. A stopping point that needs two hours is not a stopping point, it is the task again with a timer attached.
 
@@ -362,6 +369,10 @@ router.post('/focus-pocus/session', rateLimit(AUTOMATIC_LIMITS, 'fp-session'), a
 
     if (action === 'finish-early' || action === 'time-up') {
       s.overtimeMs = Math.max(0, Date.now() - s.endsAt);
+      // Finishing early means they reached it. That is a different screen from
+      // "time ran out, did you get there?" — and it must never be answered by
+      // handing back the leftover minutes (owner, 2026-08-26).
+      s.earlyExit = action === 'finish-early';
       s.status = 'review';
       SESSIONS.set(s.id, s);
       return res.json(publicSession(s));
@@ -391,7 +402,9 @@ router.outputGuard = {
     'advice_to_keep_working_past_the_boundary',
     'productivity_technique_instead_of_a_next_move',
     'placeholder_for_the_reader_to_fill_in',
-    'says_the_work_is_finished_when_it_is_not',   // [where you keep it], [person who has it]
+    'says_the_work_is_finished_when_it_is_not',
+    'breadcrumb_repeats_the_original_first_step',
+    'done_when_weaker_than_the_stopping_point',   // [where you keep it], [person who has it]
   ],
   require: [
     'a_stopping_point_they_can_answer_yes_or_no_to',

@@ -5,7 +5,7 @@
   "model": "MODELS.FAST",
   "baseline": "focuspocus-v2",
   "how_to_regress": "npm run check:golden focus-pocus  (dev backend up)",
-  "note": "Rewritten 2026-08-26 as a bounded-session tool. The v1 sample is gone with the v1 tool: escalating alarms, snooze counts, break plans and /patterns no longer exist. Two routes now — POST /api/focus-pocus for the three actions that call the model (prepare, stuck, review) and POST /api/focus-pocus/session for timer state, which sits in the AUTOMATIC rate-limit bucket because the default 12/minute would kill a session that syncs. Sessions are held in memory with a 6h TTL and rehydrate from the client copy after a deploy, so a restart between capture and check is normal and not a regression. The start case is byte-stable; the three model cases vary and are read, not asserted. 2026-08-26: prepare now returns stoppingPoint + firstStep + doneWhen + wasVague (was a single target). Sessions carry firstStep, doneWhen and extensionPromises. extend requires a promise of at least 5 characters and 400s without one. stuck takes a blocker (next|missing|bigger|focus)."
+  "note": "Rewritten 2026-08-26 as a bounded-session tool. The v1 sample is gone with the v1 tool: escalating alarms, snooze counts, break plans and /patterns no longer exist. Two routes now — POST /api/focus-pocus for the three actions that call the model (prepare, stuck, review) and POST /api/focus-pocus/session for timer state, which sits in the AUTOMATIC rate-limit bucket because the default 12/minute would kill a session that syncs. Sessions are held in memory with a 6h TTL and rehydrate from the client copy after a deploy, so a restart between capture and check is normal and not a regression. The start case is byte-stable; the three model cases vary and are read, not asserted. 2026-08-26: prepare now returns stoppingPoint + firstStep + doneWhen + wasVague (was a single target). Sessions carry firstStep, doneWhen and extensionPromises. extend requires a promise of at least 5 characters and 400s without one. stuck takes a blocker (next|missing|bigger|focus). 2026-08-26 (2): doneWhen must operationalise stoppingPoint exactly — same scope, no widening \"or\". finish-early sets earlyExit true and gets its own screen; time-up does not. The review asks where you LEFT OFF, and the breadcrumb starts from that rather than repeating the first step."
  },
  "cases": [
   {
@@ -22,9 +22,9 @@
     "userRegion": "US"
    },
    "output": {
-    "stoppingPoint": "Sort tax documents into categories (income, deductions, receipts, other) and list what is missing or unclear.",
-    "firstStep": "Gather all tax paperwork into one place so you can see what you are working with.",
-    "doneWhen": "You have sorted the papers into piles and written down what documents you still need or what questions came up.",
+    "stoppingPoint": "Gather all the tax documents you have and sort them into a single pile organized by category (income, deductions, receipts, statements).",
+    "firstStep": "Find where your tax documents are and pull them all together in one place.",
+    "doneWhen": "You have one organized pile with documents grouped by category and nothing unsorted left out.",
     "wasVague": true
    },
    "optionalSections": []
@@ -37,28 +37,29 @@
     "task": "Sort out the tax paperwork",
     "target": "Gather what you already have and list what is missing",
     "firstStep": "Find where the paperwork lives",
-    "doneWhen": "Everything is in one place",
+    "doneWhen": "Everything is in one place and the missing list exists",
     "minutes": 25,
     "userLanguage": "en"
    },
    "output": {
-    "id": "566dbffd-a27d-4e0d-a172-bc5fb693bfdd",
+    "id": "44b4b797-cbb0-4b3a-9400-ac55fc8aa0ae",
     "task": "Sort out the tax paperwork",
     "target": "Gather what you already have and list what is missing",
     "plannedMinutes": 25,
     "firstStep": "Find where the paperwork lives",
-    "doneWhen": "Everything is in one place",
+    "doneWhen": "Everything is in one place and the missing list exists",
     "extensionPromises": [],
-    "startedAt": 1787792099135,
-    "endsAt": 1787793599135,
+    "startedAt": 1787793591825,
+    "endsAt": 1787795091825,
     "status": "running",
     "extensionsUsed": 0,
     "extensionsLeft": 3,
     "completed": null,
+    "earlyExit": false,
     "breadcrumb": "",
     "remainingMs": 1500000,
     "overtimeMs": 0,
-    "serverNow": 1787792099135
+    "serverNow": 1787793591825
    }
   }
  ]

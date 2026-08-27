@@ -175,6 +175,7 @@ const FocusPocus = ({ tool }) => {
   // blank or vague, the model proposes one and they approve it first.
   const startSession = async () => {
     if (!task.trim()) { setError(t('fpo_err_task')); return; }
+    if (plan) return begin(plan);                                 // already on screen and edited
     const typed = enough.trim();
     const data = await call('focus-pocus', { action: 'prepare', task: task.trim(), enough: typed, minutes: activeMinutes });
     if (!data) return;
@@ -193,6 +194,16 @@ const FocusPocus = ({ tool }) => {
     setBlockerOpen(false);
     const data = await call('focus-pocus', { action: 'stuck', id: session.id, blocker });
     if (data?.nudge) setNudge(data.nudge);
+  };
+
+  // Choosing another bounded result closes this session honestly first, then
+  // returns to the form with the task kept — it does not extend the old one.
+  const anotherBounded = async () => {
+    await submitReview('yes');
+    await callToolEndpoint('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
+    timeUpRef.current = false;
+    setSession(null); setPlan(null); setEnough(''); setNudge(''); setRemaining('');
+    setReviewChoice(''); setBlockerOpen(false); setExtendOpen(false); setPromise('');
   };
 
   const finishEarly = async () => {
@@ -332,40 +343,41 @@ const FocusPocus = ({ tool }) => {
               </div>
             </div>
 
-            <label className="mt-4 block">
-              <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_enough_q')}</span>
-              <textarea rows={3} className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={enough}
-                onChange={e => setEnough(e.target.value)} placeholder={t('fpo_enough_ph')} />
-            </label>
-            <button type="button" onClick={makeConcrete} disabled={loading || !task.trim()}
-              className={`mt-2 text-sm font-semibold ${linkStyle} disabled:opacity-40`}>
-              ✨ {t('fpo_make_concrete')}
-            </button>
+            {/* One step, not two. The plan lands in editable fields and the same
+                Start button below uses them — a separate "Use this" sat directly
+                above Start and nobody could tell them apart (owner, 2026-08-26). */}
+            {plan ? (
+              <div className="mt-4">
+                <p className={`text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_plan_label')}</p>
+                {[['stoppingPoint', 'fpo_plan_stop'], ['firstStep', 'fpo_plan_first'], ['doneWhen', 'fpo_plan_done']].map(([k, label]) => (
+                  <label key={k} className="mt-3 block">
+                    <span className={`text-sm font-semibold ${c.label}`}>{t(label)}</span>
+                    <textarea rows={2} className={`mt-1 w-full rounded-lg border p-2.5 text-sm ${c.input}`}
+                      value={plan[k] || ''} onChange={e => setPlan(pl => ({ ...pl, [k]: e.target.value }))} />
+                  </label>
+                ))}
+                <button type="button" onClick={() => { setPlan(null); setEnough(''); }}
+                  className={`mt-2 text-sm font-semibold ${linkStyle}`}>{t('fpo_discard_plan')}</button>
+              </div>
+            ) : (
+              <>
+                <label className="mt-4 block">
+                  <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_enough_q')}</span>
+                  <textarea rows={3} className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={enough}
+                    onChange={e => setEnough(e.target.value)} placeholder={t('fpo_enough_ph')} />
+                </label>
+                <button type="button" onClick={makeConcrete} disabled={loading || !task.trim()}
+                  className={`mt-2 text-sm font-semibold ${linkStyle} disabled:opacity-40`}>
+                  ✨ {t('fpo_make_concrete')}
+                </button>
+              </>
+            )}
 
             <div className={`mt-4 rounded-lg border ${c.border} ${c.cardAlt} p-3`}>
               <p className={`text-sm font-semibold ${c.label}`}>{t('fpo_not_fill_title')}</p>
               <p className={`mt-1 text-sm ${c.textMuted}`}>{t('fpo_not_fill_body')}</p>
             </div>
           </Card>
-
-          {plan && (
-            <Card c={c} className={c.infoBox}>
-              <p className="text-xs font-bold uppercase">{t('fpo_plan_label')}</p>
-              {[['stoppingPoint', 'fpo_plan_stop'], ['firstStep', 'fpo_plan_first'], ['doneWhen', 'fpo_plan_done']].map(([k, label]) => (
-                <label key={k} className="mt-3 block">
-                  <span className={`text-xs font-semibold ${c.label}`}>{t(label)}</span>
-                  <textarea rows={2} className={`mt-1 w-full rounded-lg border p-2.5 text-sm ${c.input}`}
-                    value={plan[k] || ''} onChange={e => setPlan(pl => ({ ...pl, [k]: e.target.value }))} />
-                </label>
-              ))}
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" onClick={() => begin(plan)} disabled={loading || !(plan.stoppingPoint || '').trim()}
-                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-bold ${(plan.stoppingPoint || '').trim() ? c.btnPrimary : c.btnIdle}`}>{t('fpo_use_this')}</button>
-                <button type="button" onClick={() => setPlan(null)}
-                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_discard_plan')}</button>
-              </div>
-            </Card>
-          )}
 
           <button type="button" onClick={startSession} disabled={!task.trim() || loading} title={t('fpo_cmd_enter')}
             className={`relative min-h-[48px] w-full rounded-xl px-4 py-3 font-bold transition whitespace-nowrap ${task.trim() && !loading ? c.btnPrimary : c.btnIdle}`}>
@@ -461,7 +473,25 @@ const FocusPocus = ({ tool }) => {
       )}
 
       {/* ── REVIEW ── */}
-      {session?.status === 'review' && (
+      {/* Reaching the boundary early is not the same event as running out of
+          time, and the answer to it is never "here are your leftover minutes". */}
+      {session?.status === 'review' && session.earlyExit && (
+        <>
+          <Card c={c} className={c.success}>
+            <p className="text-lg font-bold">{t('fpo_early_title')}</p>
+            <p className="mt-2 text-sm">{t('fpo_early_body')}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button type="button" onClick={() => submitReview('yes')} disabled={loading}
+                className={`min-h-[48px] flex-1 rounded-lg px-4 py-2 font-bold ${c.btnPrimary}`}>{tool?.icon ?? '\ud83c\udfa9'} {t('fpo_take_break')}</button>
+              <button type="button" onClick={anotherBounded} disabled={loading}
+                className={`min-h-[48px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_another_result')}</button>
+            </div>
+          </Card>
+          {crossRef}
+        </>
+      )}
+
+      {session?.status === 'review' && !session.earlyExit && (
         <>
           <Card c={c}>
             <p className={`text-lg font-bold ${c.text}`}>{t('fpo_time_up')}</p>
@@ -481,9 +511,9 @@ const FocusPocus = ({ tool }) => {
             {(reviewChoice === 'almost' || reviewChoice === 'stuck') && (
               <div className="mt-4">
                 <label className="block">
-                  <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_what_remains')}</span>
+                  <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_left_off')}</span>
                   <textarea rows={3} className={`mt-1 w-full rounded-lg border p-3 ${c.input}`} value={remaining}
-                    onChange={e => setRemaining(e.target.value)} placeholder={t('fpo_what_remains_ph')} />
+                    onChange={e => setRemaining(e.target.value)} placeholder={t('fpo_left_off_ph')} />
                 </label>
                 <button type="button" onClick={() => submitReview(reviewChoice)} disabled={loading}
                   className={`mt-3 min-h-[48px] w-full rounded-xl px-4 py-3 font-bold ${c.btnPrimary}`}>
