@@ -5,7 +5,7 @@
   "model": "MODELS.FAST",
   "baseline": "focuspocus-v2",
   "how_to_regress": "npm run check:golden focus-pocus  (dev backend up)",
-  "note": "Rewritten 2026-08-26 as a bounded-session tool. The v1 sample is gone with the v1 tool: escalating alarms, snooze counts, break plans and /patterns no longer exist. Two routes now — POST /api/focus-pocus for the three actions that call the model (prepare, stuck, review) and POST /api/focus-pocus/session for timer state, which sits in the AUTOMATIC rate-limit bucket because the default 12/minute would kill a session that syncs. Sessions are held in memory with a 6h TTL and rehydrate from the client copy after a deploy, so a restart between capture and check is normal and not a regression. The start case is byte-stable; the three model cases vary and are read, not asserted."
+  "note": "Rewritten 2026-08-26 as a bounded-session tool. The v1 sample is gone with the v1 tool: escalating alarms, snooze counts, break plans and /patterns no longer exist. Two routes now — POST /api/focus-pocus for the three actions that call the model (prepare, stuck, review) and POST /api/focus-pocus/session for timer state, which sits in the AUTOMATIC rate-limit bucket because the default 12/minute would kill a session that syncs. Sessions are held in memory with a 6h TTL and rehydrate from the client copy after a deploy, so a restart between capture and check is normal and not a regression. The start case is byte-stable; the three model cases vary and are read, not asserted. 2026-08-26: prepare now returns stoppingPoint + firstStep + doneWhen + wasVague (was a single target). Sessions carry firstStep, doneWhen and extensionPromises. extend requires a promise of at least 5 characters and 400s without one. stuck takes a blocker (next|missing|bigger|focus)."
  },
  "cases": [
   {
@@ -22,7 +22,10 @@
     "userRegion": "US"
    },
    "output": {
-    "target": "Sort through your tax paperwork and create a pile of what needs to be filed versus what can be discarded. Stop when you have those two groups separated."
+    "stoppingPoint": "Sort tax documents into categories (income, deductions, receipts, other) and list what is missing or unclear.",
+    "firstStep": "Gather all tax paperwork into one place so you can see what you are working with.",
+    "doneWhen": "You have sorted the papers into piles and written down what documents you still need or what questions came up.",
+    "wasVague": true
    },
    "optionalSections": []
   },
@@ -33,16 +36,21 @@
     "action": "start",
     "task": "Sort out the tax paperwork",
     "target": "Gather what you already have and list what is missing",
+    "firstStep": "Find where the paperwork lives",
+    "doneWhen": "Everything is in one place",
     "minutes": 25,
     "userLanguage": "en"
    },
    "output": {
-    "id": "02cfeace-883d-46c2-9961-c87916a1adc1",
+    "id": "566dbffd-a27d-4e0d-a172-bc5fb693bfdd",
     "task": "Sort out the tax paperwork",
     "target": "Gather what you already have and list what is missing",
     "plannedMinutes": 25,
-    "startedAt": 1787771397412,
-    "endsAt": 1787772897412,
+    "firstStep": "Find where the paperwork lives",
+    "doneWhen": "Everything is in one place",
+    "extensionPromises": [],
+    "startedAt": 1787792099135,
+    "endsAt": 1787793599135,
     "status": "running",
     "extensionsUsed": 0,
     "extensionsLeft": 3,
@@ -50,7 +58,7 @@
     "breadcrumb": "",
     "remainingMs": 1500000,
     "overtimeMs": 0,
-    "serverNow": 1787771397412
+    "serverNow": 1787792099135
    }
   }
  ]

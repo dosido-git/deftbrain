@@ -3907,7 +3907,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "\ud83c\udfa9",
   categories: ['Energy', 'Do It!'],
   headerColor: "#b8dcd8",
-  description: "Decide what 'enough for now' looks like, focus on it, and stop without losing your place.",
+  description: "Turn an open-ended task into a clear stopping point, work toward one concrete result, and stop without losing your place. Focus Pocus helps define what \u201cenough for now\u201d means, gives you one next move if you get stuck, and saves a restart breadcrumb when time is up.",
   guide: {
     overview: "Most timers only help you start. Focus Pocus is built around the other half: stopping. Before the clock runs you name one concrete thing that would make the session enough — not the whole project, a place to stop — and it will help you make that concrete if what you typed is vague. While it runs you can ask for the smallest next move if you are stuck, or say you finished early rather than filling the time. When the session ends it asks whether you reached the target. If you did, it says so and sends you off. If you did not, it writes the note that lets you close the laptop without carrying the task around. Extensions exist, but there are three of them and then there are none.",
 

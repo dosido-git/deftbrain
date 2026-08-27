@@ -26,19 +26,19 @@ setInterval(() => {
 }, 10 * 60 * 1000).unref();
 
 const UI_STRINGS = {
-  en: { needTask: 'Tell Focus Pocus what you are working on.', badMinutes: 'A session runs between 1 and 240 minutes.', notFound: 'That session has ended.', noExtensions: 'No extensions left — this is the boundary you set.', notRunning: 'That session is no longer running.', failed: 'Something went wrong. Please try again.' },
-  es: { needTask: 'Dinos en qué estás trabajando.', badMinutes: 'Una sesión dura entre 1 y 240 minutos.', notFound: 'Esa sesión ya terminó.', noExtensions: 'No quedan prórrogas: este es el límite que fijaste.', notRunning: 'Esa sesión ya no está en marcha.', failed: 'Algo salió mal. Inténtalo de nuevo.' },
-  fr: { needTask: 'Dites-nous sur quoi vous travaillez.', badMinutes: 'Une session dure entre 1 et 240 minutes.', notFound: 'Cette session est terminée.', noExtensions: 'Plus de prolongation — c’est la limite que vous aviez fixée.', notRunning: 'Cette session n’est plus en cours.', failed: 'Une erreur est survenue. Veuillez réessayer.' },
-  de: { needTask: 'Sag uns, woran du arbeitest.', badMinutes: 'Eine Session dauert zwischen 1 und 240 Minuten.', notFound: 'Diese Session ist beendet.', noExtensions: 'Keine Verlängerung mehr — das ist die Grenze, die du gesetzt hast.', notRunning: 'Diese Session läuft nicht mehr.', failed: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.' },
-  pt: { needTask: 'Diga no que você está trabalhando.', badMinutes: 'Uma sessão dura entre 1 e 240 minutos.', notFound: 'Essa sessão terminou.', noExtensions: 'Sem mais prorrogações — este é o limite que você definiu.', notRunning: 'Essa sessão não está mais em andamento.', failed: 'Algo deu errado. Tente novamente.' },
-  ar: { needTask: 'أخبرنا بما تعمل عليه.', badMinutes: 'مدة الجلسة بين دقيقة واحدة و240 دقيقة.', notFound: 'انتهت هذه الجلسة.', noExtensions: 'لم يتبقَ تمديد — هذا هو الحد الذي وضعته بنفسك.', notRunning: 'لم تعد هذه الجلسة قيد التشغيل.', failed: 'حدث خطأ ما. حاول مرة أخرى.' },
-  zh: { needTask: '告诉我们你正在做什么。', badMinutes: '一次专注时长在 1 到 240 分钟之间。', notFound: '这个专注时段已经结束。', noExtensions: '没有延长次数了——这是你自己设定的界线。', notRunning: '这个时段已经不在进行中。', failed: '出了点问题。请重试。' },
-  ja: { needTask: '今どんな作業をしているか教えてください。', badMinutes: 'セッションは1〜240分の範囲です。', notFound: 'そのセッションは終了しています。', noExtensions: '延長はもうありません。これはあなた自身が決めた区切りです。', notRunning: 'そのセッションはもう動いていません。', failed: '問題が発生しました。もう一度お試しください。' },
-  ko: { needTask: '지금 어떤 일을 하고 있는지 알려주세요.', badMinutes: '세션 길이는 1분에서 240분 사이입니다.', notFound: '그 세션은 이미 끝났습니다.', noExtensions: '남은 연장이 없습니다 — 직접 정한 경계입니다.', notRunning: '그 세션은 더 이상 진행 중이 아닙니다.', failed: '문제가 발생했습니다. 다시 시도하세요.' },
-  ru: { needTask: 'Скажите, над чем вы работаете.', badMinutes: 'Сессия длится от 1 до 240 минут.', notFound: 'Эта сессия завершена.', noExtensions: 'Продлений больше нет — это граница, которую вы сами поставили.', notRunning: 'Эта сессия больше не идёт.', failed: 'Что-то пошло не так. Попробуйте ещё раз.' },
-  hi: { needTask: 'बताइए आप किस पर काम कर रहे हैं।', badMinutes: 'एक सेशन 1 से 240 मिनट का होता है।', notFound: 'वह सेशन खत्म हो चुका है।', noExtensions: 'और बढ़ाना बाकी नहीं — यह सीमा आपने खुद तय की थी।', notRunning: 'वह सेशन अब नहीं चल रहा।', failed: 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।' },
-  th: { needTask: 'บอกเราหน่อยว่าคุณกำลังทำอะไรอยู่', badMinutes: 'ช่วงโฟกัสมีความยาวระหว่าง 1 ถึง 240 นาที', notFound: 'ช่วงโฟกัสนี้จบไปแล้ว', noExtensions: 'ต่อเวลาไม่ได้อีกแล้ว นี่คือเส้นที่คุณกำหนดไว้เอง', notRunning: 'ช่วงโฟกัสนี้ไม่ได้กำลังทำงานอยู่แล้ว', failed: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง' },
-  vi: { needTask: 'Cho chúng tôi biết bạn đang làm gì.', badMinutes: 'Một phiên kéo dài từ 1 đến 240 phút.', notFound: 'Phiên đó đã kết thúc.', noExtensions: 'Hết lượt gia hạn — đây là ranh giới bạn đã tự đặt ra.', notRunning: 'Phiên đó không còn chạy nữa.', failed: 'Đã xảy ra lỗi. Vui lòng thử lại.' },
+  en: { needPromise: 'Say what five more minutes will finish.', needTask: 'Tell Focus Pocus what you are working on.', badMinutes: 'A session runs between 1 and 240 minutes.', notFound: 'That session has ended.', noExtensions: 'No extensions left — this is the boundary you set.', notRunning: 'That session is no longer running.', failed: 'Something went wrong. Please try again.' },
+  es: { needPromise: 'Di qué van a terminar esos cinco minutos.', needTask: 'Dinos en qué estás trabajando.', badMinutes: 'Una sesión dura entre 1 y 240 minutos.', notFound: 'Esa sesión ya terminó.', noExtensions: 'No quedan prórrogas: este es el límite que fijaste.', notRunning: 'Esa sesión ya no está en marcha.', failed: 'Algo salió mal. Inténtalo de nuevo.' },
+  fr: { needPromise: 'Dites ce que ces cinq minutes vont terminer.', needTask: 'Dites-nous sur quoi vous travaillez.', badMinutes: 'Une session dure entre 1 et 240 minutes.', notFound: 'Cette session est terminée.', noExtensions: 'Plus de prolongation — c’est la limite que vous aviez fixée.', notRunning: 'Cette session n’est plus en cours.', failed: 'Une erreur est survenue. Veuillez réessayer.' },
+  de: { needPromise: 'Sag, was die fünf Minuten fertig machen sollen.', needTask: 'Sag uns, woran du arbeitest.', badMinutes: 'Eine Session dauert zwischen 1 und 240 Minuten.', notFound: 'Diese Session ist beendet.', noExtensions: 'Keine Verlängerung mehr — das ist die Grenze, die du gesetzt hast.', notRunning: 'Diese Session läuft nicht mehr.', failed: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.' },
+  pt: { needPromise: 'Diga o que esses cinco minutos vão terminar.', needTask: 'Diga no que você está trabalhando.', badMinutes: 'Uma sessão dura entre 1 e 240 minutos.', notFound: 'Essa sessão terminou.', noExtensions: 'Sem mais prorrogações — este é o limite que você definiu.', notRunning: 'Essa sessão não está mais em andamento.', failed: 'Algo deu errado. Tente novamente.' },
+  ar: { needPromise: 'قل ما الذي ستنهيه هذه الدقائق الخمس.', needTask: 'أخبرنا بما تعمل عليه.', badMinutes: 'مدة الجلسة بين دقيقة واحدة و240 دقيقة.', notFound: 'انتهت هذه الجلسة.', noExtensions: 'لم يتبقَ تمديد — هذا هو الحد الذي وضعته بنفسك.', notRunning: 'لم تعد هذه الجلسة قيد التشغيل.', failed: 'حدث خطأ ما. حاول مرة أخرى.' },
+  zh: { needPromise: '说清楚这五分钟要完成什么。', needTask: '告诉我们你正在做什么。', badMinutes: '一次专注时长在 1 到 240 分钟之间。', notFound: '这个专注时段已经结束。', noExtensions: '没有延长次数了——这是你自己设定的界线。', notRunning: '这个时段已经不在进行中。', failed: '出了点问题。请重试。' },
+  ja: { needPromise: 'その5分で何を終わらせるかを書いてください。', needTask: '今どんな作業をしているか教えてください。', badMinutes: 'セッションは1〜240分の範囲です。', notFound: 'そのセッションは終了しています。', noExtensions: '延長はもうありません。これはあなた自身が決めた区切りです。', notRunning: 'そのセッションはもう動いていません。', failed: '問題が発生しました。もう一度お試しください。' },
+  ko: { needPromise: '5분 동안 무엇을 끝낼지 적어 주세요.', needTask: '지금 어떤 일을 하고 있는지 알려주세요.', badMinutes: '세션 길이는 1분에서 240분 사이입니다.', notFound: '그 세션은 이미 끝났습니다.', noExtensions: '남은 연장이 없습니다 — 직접 정한 경계입니다.', notRunning: '그 세션은 더 이상 진행 중이 아닙니다.', failed: '문제가 발생했습니다. 다시 시도하세요.' },
+  ru: { needPromise: 'Скажите, что закончат эти пять минут.', needTask: 'Скажите, над чем вы работаете.', badMinutes: 'Сессия длится от 1 до 240 минут.', notFound: 'Эта сессия завершена.', noExtensions: 'Продлений больше нет — это граница, которую вы сами поставили.', notRunning: 'Эта сессия больше не идёт.', failed: 'Что-то пошло не так. Попробуйте ещё раз.' },
+  hi: { needPromise: 'बताइए ये पाँच मिनट क्या पूरा करेंगे।', needTask: 'बताइए आप किस पर काम कर रहे हैं।', badMinutes: 'एक सेशन 1 से 240 मिनट का होता है।', notFound: 'वह सेशन खत्म हो चुका है।', noExtensions: 'और बढ़ाना बाकी नहीं — यह सीमा आपने खुद तय की थी।', notRunning: 'वह सेशन अब नहीं चल रहा।', failed: 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।' },
+  th: { needPromise: 'บอกว่าห้านาทีนี้จะทำอะไรให้เสร็จ', needTask: 'บอกเราหน่อยว่าคุณกำลังทำอะไรอยู่', badMinutes: 'ช่วงโฟกัสมีความยาวระหว่าง 1 ถึง 240 นาที', notFound: 'ช่วงโฟกัสนี้จบไปแล้ว', noExtensions: 'ต่อเวลาไม่ได้อีกแล้ว นี่คือเส้นที่คุณกำหนดไว้เอง', notRunning: 'ช่วงโฟกัสนี้ไม่ได้กำลังทำงานอยู่แล้ว', failed: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง' },
+  vi: { needPromise: 'Nói rõ năm phút này sẽ hoàn thành điều gì.', needTask: 'Cho chúng tôi biết bạn đang làm gì.', badMinutes: 'Một phiên kéo dài từ 1 đến 240 phút.', notFound: 'Phiên đó đã kết thúc.', noExtensions: 'Hết lượt gia hạn — đây là ranh giới bạn đã tự đặt ra.', notRunning: 'Phiên đó không còn chạy nữa.', failed: 'Đã xảy ra lỗi. Vui lòng thử lại.' },
 };
 
 function t(userLanguage, key) {
@@ -63,6 +63,9 @@ function publicSession(s) {
     task: s.task,
     target: s.target,
     plannedMinutes: s.plannedMinutes,
+    firstStep: s.firstStep || '',
+    doneWhen: s.doneWhen || '',
+    extensionPromises: s.extensionPromises || [],
     startedAt: s.startedAt,
     endsAt: s.endsAt,
     status: s.status,
@@ -98,12 +101,28 @@ ALWAYS:
 ${NO_QUOTE_RULE}`;
 
 async function coach(kind, body) {
-  const { task, enough, target, remaining, minutes, userLanguage, userLocale, userCurrency, userRegion } = body;
+  const { task, enough, target, remaining, minutes, blocker, userLanguage, userLocale, userCurrency, userRegion } = body;
   const prompts = {
     stuck: `Someone is mid-session and pressed "I'm stuck".
 
 Working on: ${task}
 Enough for this session: ${target}
+What they say is stopping them: ${{
+      next: 'They do not know what to do next.',
+      missing: 'They are missing something — a file, a fact, a person, a permission.',
+      bigger: 'The task is bigger than they thought.',
+      focus: 'They cannot concentrate.',
+    }[blocker] || 'They did not say.'}
+
+Answer THAT blocker and nothing else. Someone who cannot concentrate does not need the task broken down; someone missing a file does not need encouragement to focus.
+
+Write an INSTRUCTION TO THEM, never a claim about their situation. You do not know what they are missing, why they cannot focus, or what the next action is — they do. Tell them what to do about it and let them fill in the specifics.
+- "Name the one file, fact, person or permission you are missing, then spend the rest of this session only on getting it or writing down where to get it." — good: it is an instruction.
+- "You are missing last year's figures, so go and find them." — bad: you invented what is missing.
+- "Close everything unrelated to this and do one physical action toward it — open the file, write one line, move one object." — good.
+- "You are probably tired, which is why you cannot focus." — bad: you invented a cause.
+
+Do not restate the stopping point. They can already see it on the screen.
 
 Give them the smallest next move — one action small enough to start now. Not a technique, not a list, not encouragement. If you cannot tell what the smallest move is from what they typed, say what single fact or decision they need first.
 
@@ -148,8 +167,12 @@ Session length they chose: ${minutes ? minutes + ' minutes' : '(not given)'}
 
 Nothing else is known. Not the deadline, not who it is for, not what is blocking them, not how long it has already taken, not whether it matters.
 
+AN INSTRUCTION IS NOT A CLAIM. This tool's job is to tell the person what to do, and "name the one file you are missing", "close everything unrelated and do one physical action", "write down the next three possible moves and pick the easiest" invent nothing — they hand the specifics back to the person, which is the correct shape. Do NOT flag an imperative for being specific. Flag it only if it ASSERTS something about their situation that nobody supplied: what they are missing, why they cannot focus, how long they have been at it, what the task involves.
+
+A rewrite that replaces an instruction with a restatement of the stopping point is a worse answer than the one it replaced. The person can already see the stopping point.
+
 WHAT FAILS:
-1. Any detail about the task that was not in those sentences.
+1. Any detail about the task that was not in those sentences, ASSERTED as fact.
 2. A target that is the whole task rather than a place to stop. This tool exists to help someone STOP.
 3. An assumed deadline, consequence or stake.
 4. Praise, encouragement, or a remark about their productivity.
@@ -175,13 +198,16 @@ const PREPARE_PROMPT = ({ task, enough, minutes }) => `Someone is about to start
 What they typed they are working on: ${task}
 What they typed would make it enough: ${enough || 'NOTHING — they left it blank.'}
 
-Two jobs. First decide whether what they wrote is ALREADY a usable stopping point — something specific enough that they could answer yes or no to it when the timer ends. "Make progress on it", "work on it", "get started" and a blank are not. Then give the target.
+Two jobs. First decide whether what they wrote is ALREADY a usable stopping point — something specific enough that they could answer yes or no to it when the timer ends. "Make progress on it", "work on it", "get started" and a blank are not. Then build the plan.
 
-NEVER return the task itself as the target. "Sort out the tax paperwork" is the task; a target is one bounded piece of it that fits in ${minutes} minutes and leaves something behind — a pile, a list, a draft, a decision.
+Three fields, and they are different things:
+- stoppingPoint — what "enough for now" means TODAY. One bounded piece of the task that fits in ${minutes} minutes and leaves something behind: a pile, a list, a draft, a decision. NEVER the task itself.
+- firstStep — the first visible action, small enough to start without deciding anything else. What their hands do in the first minute.
+- doneWhen — the observable condition that says the session is finished. Written so they can look at it and answer yes or no. Not a feeling, not "when you have made progress".
 
-Turn that into one concrete stopping point for THIS session. If what they wrote is already concrete and specific, return it close to unchanged rather than rewriting it for the sake of it.
+SCALE TO THE TIME. ${minutes} minutes is what they have. A stopping point that needs two hours is not a stopping point, it is the task again with a timer attached.
 
-Return ONLY valid JSON: { "target": "one or two sentences, second person", "wasVague": true or false }`;
+Return ONLY valid JSON: { "stoppingPoint": "one sentence", "firstStep": "one sentence", "doneWhen": "one sentence", "wasVague": true or false }`;
 
 async function prepareTarget(body) {
   const raw = await callClaudeWithRetry({
@@ -191,11 +217,16 @@ async function prepareTarget(body) {
     messages: [{ role: 'user', content: PREPARE_PROMPT(body) }],
   }, { label: 'focus-pocus-prepare' });
 
-  let target = clean(raw?.target, 400);
   const task = clean(body.task, 300);
+  let stoppingPoint = clean(raw?.stoppingPoint, 400);
   // The one failure this must never ship: handing back the task as the target.
-  if (!target || target.toLowerCase() === task.toLowerCase()) target = '';
-  return { target, wasVague: raw?.wasVague !== false };
+  if (!stoppingPoint || stoppingPoint.toLowerCase() === task.toLowerCase()) stoppingPoint = '';
+  return {
+    stoppingPoint,
+    firstStep: clean(raw?.firstStep, 400),
+    doneWhen: clean(raw?.doneWhen, 400),
+    wasVague: raw?.wasVague !== false,
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -207,14 +238,14 @@ router.post('/focus-pocus', rateLimit(DEFAULT_LIMITS), async (req, res) => {
     if (action === 'prepare') {
       const task = clean(req.body.task, 300);
       if (!task) return res.status(400).json({ error: t(userLanguage, 'needTask') });
-      const { target, wasVague } = await prepareTarget({ ...req.body, task });
-      return res.json({ target, wasVague });
+      const plan = await prepareTarget({ ...req.body, task });
+      return res.json(plan);
     }
 
     if (action === 'stuck') {
       const s = SESSIONS.get(clean(req.body.id, 64));
       if (!s) return res.status(404).json({ error: t(userLanguage, 'notFound') });
-      const nudge = await coach('stuck', { ...req.body, task: s.task, target: s.target });
+      const nudge = await coach('stuck', { ...req.body, task: s.task, target: s.target, blocker: req.body.blocker });
       return res.json({ nudge });
     }
 
@@ -262,6 +293,9 @@ router.post('/focus-pocus/session', rateLimit(AUTOMATIC_LIMITS, 'fp-session'), a
         id: crypto.randomUUID(),
         task,
         target: clean(req.body.target, 400) || task,
+        firstStep: clean(req.body.firstStep, 400),
+        doneWhen: clean(req.body.doneWhen, 400),
+        extensionPromises: [],
         plannedMinutes: minutes,
         startedAt,
         endsAt: startedAt + minutes * 60_000,
@@ -296,6 +330,8 @@ router.post('/focus-pocus/session', rateLimit(AUTOMATIC_LIMITS, 'fp-session'), a
         s = {
           id, task: clean(l.task, 300), target: clean(l.target, 400),
           plannedMinutes: minutes, startedAt, endsAt,
+          firstStep: clean(l.firstStep, 400), doneWhen: clean(l.doneWhen, 400),
+          extensionPromises: Array.isArray(l.extensionPromises) ? l.extensionPromises.slice(0, MAX_EXTENSIONS) : [],
           status: ['running', 'review', 'done'].includes(l.status) ? l.status : 'running',
           extensionsUsed: Math.min(MAX_EXTENSIONS, Math.max(0, Number(l.extensionsUsed) || 0)),
           completed: null, breadcrumb: clean(l.breadcrumb, 400), overtimeMs: 0, createdAt: startedAt,
@@ -312,6 +348,12 @@ router.post('/focus-pocus/session', rateLimit(AUTOMATIC_LIMITS, 'fp-session'), a
     if (action === 'extend') {
       if (s.status !== 'running') return res.status(409).json({ error: t(userLanguage, 'notRunning') });
       if (s.extensionsUsed >= MAX_EXTENSIONS) return res.status(409).json({ error: t(userLanguage, 'noExtensions') });
+      // An extension you have to name is one you have thought about. Five more
+      // minutes for nothing in particular is how a bounded session stops being
+      // bounded (owner, 2026-08-26).
+      const promise = clean(req.body.promise, 300);
+      if (promise.length < 5) return res.status(400).json({ error: t(userLanguage, 'needPromise') });
+      s.extensionPromises = [...(s.extensionPromises || []), { text: promise, at: Date.now() }];
       s.extensionsUsed += 1;
       s.endsAt = Math.max(Date.now(), s.endsAt) + EXTENSION_MS;
       SESSIONS.set(s.id, s);

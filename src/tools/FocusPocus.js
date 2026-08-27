@@ -80,7 +80,15 @@ const FocusPocus = ({ tool }) => {
   const [reviewChoice, setReviewChoice] = useState('');
   // The suggestion waits for a yes. Nothing starts on a target the person has
   // not seen (owner, 2026-08-26).
-  const [suggested, setSuggested] = useState('');
+  // The whole plan waits for a yes, and every line of it is editable first.
+  const [plan, setPlan] = useState(null);          // { stoppingPoint, firstStep, doneWhen }
+  const [blockerOpen, setBlockerOpen] = useState(false);
+  const [extendOpen, setExtendOpen] = useState(false);
+  const [promise, setPromise] = useState('');
+  // Task → breadcrumb, kept client-side. It survives a deploy (server sessions
+  // do not) and the person's task text never has to live on the server past
+  // the session it belongs to.
+  const [breadcrumbs, setBreadcrumbs] = usePersistentState('focus-pocus-v2-breadcrumbs', {});
   const [error, setError] = useState('');
   const [tick, setTick] = useState(0);
 
@@ -150,14 +158,15 @@ const FocusPocus = ({ tool }) => {
   const makeConcrete = async () => {
     if (!task.trim()) { setError(t('fpo_err_task')); return; }
     const data = await call('focus-pocus', { action: 'prepare', task: task.trim(), enough: enough.trim(), minutes: activeMinutes });
-    if (data?.target) setSuggested(data.target);
+    if (data?.stoppingPoint) setPlan(data);
   };
 
-  const begin = async (target) => {
+  const begin = async (p) => {
     const data = await call('focus-pocus/session', {
-      action: 'start', task: task.trim(), target, minutes: activeMinutes,
+      action: 'start', task: task.trim(), minutes: activeMinutes,
+      target: p.stoppingPoint, firstStep: p.firstStep || '', doneWhen: p.doneWhen || '',
     });
-    if (data?.id) { timeUpRef.current = false; setNudge(''); setSuggested(''); setSession(data); }
+    if (data?.id) { timeUpRef.current = false; setNudge(''); setPlan(null); setSession(data); }
   };
 
   // The target used to fall back to the task itself, so "Sort out the tax
@@ -169,19 +178,20 @@ const FocusPocus = ({ tool }) => {
     const typed = enough.trim();
     const data = await call('focus-pocus', { action: 'prepare', task: task.trim(), enough: typed, minutes: activeMinutes });
     if (!data) return;
-    if (typed && data.wasVague === false) return begin(typed);   // theirs was already usable
-    if (data.target) return setSuggested(data.target);
-    if (typed) return begin(typed);                              // model gave nothing; theirs beats the task
+    if (typed && data.wasVague === false) return begin({ ...data, stoppingPoint: typed });
+    if (data.stoppingPoint) return setPlan(data);
+    if (typed) return begin({ stoppingPoint: typed });            // model gave nothing; theirs beats the task
     setError(t('fpo_err_task'));
   };
 
   const extend = async () => {
-    const data = await call('focus-pocus/session', { action: 'extend', id: session.id });
-    if (data?.id) { timeUpRef.current = false; setSession(data); }
+    const data = await call('focus-pocus/session', { action: 'extend', id: session.id, promise: promise.trim() });
+    if (data?.id) { timeUpRef.current = false; setPromise(''); setExtendOpen(false); setSession(data); }
   };
 
-  const getUnstuck = async () => {
-    const data = await call('focus-pocus', { action: 'stuck', id: session.id });
+  const getUnstuck = async (blocker) => {
+    setBlockerOpen(false);
+    const data = await call('focus-pocus', { action: 'stuck', id: session.id, blocker });
     if (data?.nudge) setNudge(data.nudge);
   };
 
@@ -192,7 +202,13 @@ const FocusPocus = ({ tool }) => {
 
   const submitReview = async (result) => {
     const data = await call('focus-pocus', { action: 'review', id: session.id, result, remaining: remaining.trim() });
-    if (data?.id) setSession(data);
+    if (data?.id) {
+      setSession(data);
+      // The breadcrumb comes back with the task, not with the session.
+      const key = (data.task || '').trim().toLowerCase();
+      if (key && data.breadcrumb) setBreadcrumbs(b => ({ ...b, [key]: data.breadcrumb }));
+      if (key && result === 'yes') setBreadcrumbs(b => { const n = { ...b }; delete n[key]; return n; });
+    }
   };
 
   const loadExample = useCallback(() => {
@@ -211,7 +227,8 @@ const FocusPocus = ({ tool }) => {
     if (session?.id) await callToolEndpoint('focus-pocus/session', { action: 'discard', id: session.id }).catch(() => {});
     timeUpRef.current = false;
     setSession(null); setTask(''); setEnough(''); setMinutes(25); setCustomMinutes('');
-    setNudge(''); setRemaining(''); setReviewChoice(''); setSuggested(''); setError('');
+    setNudge(''); setRemaining(''); setReviewChoice(''); setPlan(null); setError('');
+    setBlockerOpen(false); setExtendOpen(false); setPromise('');
   }, [session, callToolEndpoint, setSession]);
   handleResetRef.current = handleReset;
 
@@ -282,6 +299,13 @@ const FocusPocus = ({ tool }) => {
       {error && <div className={`rounded-xl border p-4 text-sm ${c.danger}`}>{error}</div>}
 
       {/* ── SETUP ── */}
+      {!session && !!breadcrumbs[task.trim().toLowerCase()] && (
+        <Card c={c} className={c.warning}>
+          <p className="text-xs font-bold uppercase">{t('fpo_last_time')}</p>
+          <p className="mt-1 text-sm">{breadcrumbs[task.trim().toLowerCase()]}</p>
+        </Card>
+      )}
+
       {!session && (
         <>
           <Card c={c}>
@@ -324,15 +348,21 @@ const FocusPocus = ({ tool }) => {
             </div>
           </Card>
 
-          {suggested && (
+          {plan && (
             <Card c={c} className={c.infoBox}>
-              <p className="text-xs font-bold uppercase">{t('fpo_suggested_label')}</p>
-              <p className="mt-1 text-sm font-semibold">{suggested}</p>
+              <p className="text-xs font-bold uppercase">{t('fpo_plan_label')}</p>
+              {[['stoppingPoint', 'fpo_plan_stop'], ['firstStep', 'fpo_plan_first'], ['doneWhen', 'fpo_plan_done']].map(([k, label]) => (
+                <label key={k} className="mt-3 block">
+                  <span className={`text-xs font-semibold ${c.label}`}>{t(label)}</span>
+                  <textarea rows={2} className={`mt-1 w-full rounded-lg border p-2.5 text-sm ${c.input}`}
+                    value={plan[k] || ''} onChange={e => setPlan(pl => ({ ...pl, [k]: e.target.value }))} />
+                </label>
+              ))}
               <div className="mt-3 flex flex-wrap gap-2">
-                <button type="button" onClick={() => begin(suggested)} disabled={loading}
-                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-bold ${c.btnPrimary}`}>{t('fpo_use_this')}</button>
-                <button type="button" onClick={() => { setEnough(suggested); setSuggested(''); }}
-                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_edit')}</button>
+                <button type="button" onClick={() => begin(plan)} disabled={loading || !(plan.stoppingPoint || '').trim()}
+                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-bold ${(plan.stoppingPoint || '').trim() ? c.btnPrimary : c.btnIdle}`}>{t('fpo_use_this')}</button>
+                <button type="button" onClick={() => setPlan(null)}
+                  className={`min-h-[44px] rounded-lg px-4 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_discard_plan')}</button>
               </div>
             </Card>
           )}
@@ -364,11 +394,19 @@ const FocusPocus = ({ tool }) => {
             <p className={`mt-1 font-semibold ${c.text}`}>{session.task}</p>
             <p className={`mt-3 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_enough_label')}</p>
             <p className={`mt-1 text-sm ${c.textSecondary}`}>{session.target}</p>
+            {session.firstStep && (<>
+              <p className={`mt-3 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_plan_first')}</p>
+              <p className={`mt-1 text-sm ${c.textSecondary}`}>{session.firstStep}</p>
+            </>)}
+            {session.doneWhen && (<>
+              <p className={`mt-3 text-xs font-bold uppercase ${c.textMuted}`}>{t('fpo_plan_done')}</p>
+              <p className={`mt-1 text-sm ${c.textSecondary}`}>{session.doneWhen}</p>
+            </>)}
           </Card>
 
           {!overtime ? (
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={getUnstuck} disabled={loading}
+              <button type="button" onClick={() => setBlockerOpen(v => !v)} disabled={loading}
                 className={`min-h-[44px] flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_stuck')}</button>
               <button type="button" onClick={finishEarly} disabled={loading}
                 className={`min-h-[44px] flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${c.btnSecondary}`}>{t('fpo_finished_early')}</button>
@@ -380,10 +418,35 @@ const FocusPocus = ({ tool }) => {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button type="button" onClick={finishEarly}
                   className={`min-h-[48px] flex-1 rounded-lg px-4 py-2 font-bold ${c.btnPrimary}`}>{tool?.icon ?? '🎩'} {t('fpo_take_break')}</button>
-                <button type="button" onClick={extend} disabled={extensionsLeft <= 0 || loading}
+                <button type="button" onClick={() => setExtendOpen(v => !v)} disabled={extensionsLeft <= 0 || loading}
                   className={`min-h-[44px] rounded-lg px-3 py-2 text-sm font-semibold ${extensionsLeft > 0 ? c.btnSecondary : c.btnIdle}`}>
                   {extensionsLeft > 0 ? t('fpo_five_more', { n: extensionsLeft }) : t('fpo_no_extensions')}
                 </button>
+              </div>
+              {extendOpen && extensionsLeft > 0 && (
+                <div className="mt-3">
+                  <label className="block">
+                    <span className={`text-sm font-semibold ${c.label}`}>{t('fpo_promise_q')}</span>
+                    <input className={`mt-1 w-full rounded-lg border p-2.5 text-sm ${c.input}`} value={promise}
+                      onChange={e => setPromise(e.target.value)} placeholder={t('fpo_promise_ph')} />
+                  </label>
+                  <button type="button" onClick={extend} disabled={promise.trim().length < 5 || loading}
+                    className={`mt-2 min-h-[44px] w-full rounded-lg px-3 py-2 text-sm font-bold ${promise.trim().length >= 5 ? c.btnPrimary : c.btnIdle}`}>
+                    {t('fpo_grant_extension')}
+                  </button>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {blockerOpen && (
+            <Card c={c}>
+              <p className={`text-sm font-semibold ${c.label}`}>{t('fpo_whats_stopping')}</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {[['next', 'fpo_blocker_next'], ['missing', 'fpo_blocker_missing'], ['bigger', 'fpo_blocker_bigger'], ['focus', 'fpo_blocker_focus']].map(([k, label]) => (
+                  <button key={k} type="button" onClick={() => getUnstuck(k)} disabled={loading}
+                    className={`min-h-[44px] rounded-lg border px-3 py-2 text-start text-sm ${c.pillInactive}`}>{t(label)}</button>
+                ))}
               </div>
             </Card>
           )}
