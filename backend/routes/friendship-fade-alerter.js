@@ -18,11 +18,10 @@ async function guardStarters(parsed, body, startedAt) {
   const fields = [];
   const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
   push('encouragement', parsed.encouragement);
-  (parsed.starters || []).forEach((x, i) => {
-    push(`starters[${i}].message`, x && x.message);
-    push(`starters[${i}].why_it_works`, x && x.why_it_works);
+  ['pickUpThread', 'simpleHello', 'makeAPlan'].forEach(k => {
+    push(`${k}.message`, parsed[k] && parsed[k].message);
+    push(`${k}.why`, parsed[k] && parsed[k].why);
   });
-  (parsed.conversation_topics || []).forEach((x, i) => push(`conversation_topics[${i}].angle`, x && x.angle));
   if (!fields.length) return;
 
   await runOutputGuard(parsed, {
@@ -30,10 +29,10 @@ async function guardStarters(parsed, body, startedAt) {
     fields,
     supplied: `WHAT THE USER TOLD US ABOUT THIS PERSON, IN FULL — nothing else is known:
 Name they used: ${body.name || '(not given)'}
-Relationship, in the user's words: ${body.relationshipType || '(not given)'}
-Days since they last spoke: ${body.daysSinceContact ?? '(not given)'}
-Notes the user chose to keep: ${(body.contextNotes || '').trim() || 'NONE — they wrote nothing'}
-Past contacts logged: ${(body.contactLog || []).length}
+Relationship, in the user's words: ${body.relationship || body.relationshipType || '(not given)'}
+Days since they last actually caught up: ${body.daysSinceMeaningfulConnection ?? body.daysSinceContact ?? '(not given)'}
+Notes the user chose to keep: ${((body.notes ?? body.contextNotes) || '').trim() || 'NONE — they wrote nothing'}
+Recent contact logged: ${(body.recentConnections || body.contactLog || []).map(l => `${l.date} ${l.note || ''} (counted as catching up: ${l.meaningfulConnection === false ? 'no' : 'yes'})`).join('; ') || 'none'}
 
 Nothing about why the gap happened, whether either person was hurt, who owes
 whom a message, what the friendship used to be like, or how either of them
@@ -53,7 +52,12 @@ WHAT FAILS:
    for the silence makes the visitor concede a fault they never named.
 5. Diagnosing the friendship's health, trajectory, or future.
 6. Inventing shared history — a trip, a joke, a conversation — that is not in
-   the notes above. The message has to be sendable as written.`,
+   the notes above. The message has to be sendable as written.
+7. Treating recent contact that was NOT catching up as though they are already
+   back in touch. An email arriving is material for a conversation, not a
+   conversation.
+8. Wedging a remembered detail into a message purely to show it was remembered,
+   where it gives no natural opening.`,
   }, { max_tokens: 1400 });
 }
 
@@ -108,88 +112,113 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 router.post('/friendship-fade-alerter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const startedAt = Date.now();
   try {
-    const { name, relationshipType, daysSinceContact, contextNotes, contactLog, upcomingEvents, usedTopics, reciprocity, userLanguage } = req.body;
+    const {
+      name, relationship, relationshipType, rhythm,
+      lastMeaningfulConnection, daysSinceMeaningfulConnection, daysSinceContact,
+      notes, contextNotes, recentConnections, contactLog, userLanguage,
+    } = req.body;
+
+    const rel = relationship || relationshipType;
+    const days = daysSinceMeaningfulConnection ?? daysSinceContact;
+    const remembered = (notes ?? contextNotes ?? '').trim();
+    const log = Array.isArray(recentConnections) ? recentConnections : (contactLog || []);
 
     if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
-    if (!relationshipType) return res.status(400).json({ error: 'Relationship type is required' });
-    if (daysSinceContact === undefined) return res.status(400).json({ error: 'Days since contact is required' });
+    if (!rel) return res.status(400).json({ error: 'Relationship type is required' });
+    if (days === undefined) return res.status(400).json({ error: 'Days since contact is required' });
 
-    const logBlock = contactLog?.length
-      ? `\nPAST INTERACTIONS (most recent first):\n${contactLog.slice(0, 5).map(l => `- ${l.date}: ${l.note}${l.initiator === 'them' ? ' (they initiated)' : ''}`).join('\n')}`
+    // An email arriving is not the same event as catching up. Both belong in
+    // the prompt, but only one of them resets the clock, and the model has to
+    // be able to tell which is which or it writes "great to have just spoken"
+    // over the top of a two-year silence.
+    const logBlock = log.length
+      ? `\nRECENT CONTACT OF ANY KIND (most recent first). "Counted as catching up: no" means something happened but they did not actually have a conversation — it is conversational material, NOT evidence that they are back in touch:\n${log.slice(0, 6).map(l => `- ${l.date}: ${l.note || '(no note)'} — counted as catching up: ${l.meaningfulConnection === false ? 'no' : 'yes'}`).join('\n')}`
       : '';
 
-    const eventsBlock = upcomingEvents?.length
-      ? `\nUPCOMING EVENTS:\n${upcomingEvents.map(e => `- ${e.label} on ${e.date}`).join('\n')}`
-      : '';
-
-    const freshnessBlock = usedTopics?.length
-      ? `\nTOPICS ALREADY USED IN PAST MESSAGES (avoid these — find fresh angles):\n${usedTopics.map(t => `- "${t}"`).join('\n')}`
-      : '';
-
-    const reciprocityBlock = reciprocity
-      ? `\nINITIATION PATTERN: You initiated ${reciprocity.youInitiated} times, they initiated ${reciprocity.theyInitiated} times out of last ${reciprocity.total} contacts.`
-      : '';
-
-    const prompt = `You are helping someone reconnect with a person in their life. Life gets busy and gaps happen, including in healthy relationships. Your job is to make reaching out easy and natural without treating elapsed time as evidence that anything is wrong.
+    const prompt = `You are helping someone reach out to a person in their life. Life gets busy and gaps happen, including in healthy relationships. Make reaching out easy and natural, without treating elapsed time as evidence that anything is wrong.
 
 PERSON: ${name}
-RELATIONSHIP: ${relationshipType}
-DAYS SINCE LAST CONTACT: ${daysSinceContact}
-${contextNotes ? `CONTEXT / SHARED INTERESTS: ${contextNotes}` : ''}
+RELATIONSHIP: ${rel}
+${rhythm ? `THE RHYTHM THEY CHOSE FOR THIS RELATIONSHIP: ${rhythm}` : ''}
+DAYS SINCE THEY LAST ACTUALLY CAUGHT UP: ${days}
+${lastMeaningfulConnection ? `DATE THEY LAST ACTUALLY CAUGHT UP: ${lastMeaningfulConnection}` : ''}
+${remembered ? `WHAT THE USER CHOSE TO REMEMBER ABOUT THEM: ${remembered}` : ''}
 ${logBlock}
-${eventsBlock}
-${freshnessBlock}
-${reciprocityBlock}
 
-RULES:
-- Messages should sound like THEM, not a template
-- No guilt, no scorekeeping, and no assumption that the gap means the relationship is damaged
-- Reference specific shared interests, past conversations, or upcoming events when available
-- Provide a range: quick low-effort texts AND deeper catch-up invitations
-- Each message should be ready to copy and send as-is
-- If TOPICS ALREADY USED are listed, do NOT reuse those angles ANYWHERE in the response — not in conversation starters and not in context_hooks. Find fresh angles for both
-- If initiation pattern is one-sided, subtly adjust tone (don't lecture about it, just keep it lighter/lower-effort if they rarely initiate)
+USING WHAT THEY REMEMBERED
+The note above is the whole reason this tool is worth using — but only when it
+gives you a real opening. If it does, one message should walk straight through
+that door: the user already knows the thing, so the message can just ask about
+it. If it does not, leave it alone. Never wedge an old note into a message to
+prove you remembered it; a message that name-drops a detail for no reason reads
+worse than one that does not mention it at all.
+
+Invent nothing. If a fact is not written above, you do not know it. You do not
+know why the gap happened, who last reached out, how either of them feels, or
+what has changed in their life.
+
+THREE DIFFERENT APPROACHES, NOT THREE TONES
+Each one solves a different social problem, and they must be genuinely
+different messages — not the same message written casual, warm and direct.
 
 Return ONLY valid JSON:
 {
-  "starters": [
-    {
-      "message": "Ready-to-send message text — 2-4 sentences",
-      "tone": "casual | warm | direct | playful",
-      "effort": "low | medium | high",
-      "why_it_works": "Brief explanation — one sentence",
-      "follow_ups": ["Follow-up idea 1", "Follow-up idea 2"]
-    }
-  ],
-  "approaches": [
-    {
-      "name": "Quick ping — 3-6 words",
-      "message": "Short ready-to-send message — 2-4 sentences",
-      "best_for": "When to use this approach — one sentence"
-    },
-    {
-      "name": "Catch-up invite — 3-6 words",
-      "message": "Message with a specific invitation — 2-4 sentences",
-      "best_for": "When to use this — one sentence"
-    }
-  ],
-  "context_hooks": [
-    {
-      "topic": "Specific topic to bring up — 3-6 words",
-      "angle": "How to naturally bring this into conversation — one sentence"
-    }
-  ],
-  "encouragement": "One warm, practical sentence that makes reaching out feel easy, without implying the user is late or has failed — one sentence"
+  "pickUpThread": {
+    "message": "Picks up something specific and already known — ready to send as written, 1-3 sentences. THIS ONE IS OPTIONAL: if there is no real thread to pick up, set pickUpThread to null. Do not invent a detail, and do not fall back to a general hello — that is the next option and two of the same thing is worse than one.",
+    "why": "One sentence on what this one does."
+  },
+  "simpleHello": {
+    "message": "Asks for nothing and needs no occasion — ready to send as written, 1-2 sentences.",
+    "why": "One sentence on what this one does."
+  },
+  "makeAPlan": {
+    "message": "Proposes actually meeting or talking, concrete enough to answer yes or no — ready to send as written, 1-3 sentences.",
+    "why": "One sentence on what this one does."
+  },
+  "encouragement": "One warm, practical sentence that makes sending one of these feel easy. Do not mention how long it has been, and do not imply the user is late or has failed."
 }
+
+BEFORE YOU RETURN, CHECK YOUR OWN ANSWER SILENTLY:
+- Did I use what they remembered where it gave a natural opening, and leave it out where it did not?
+- Did I invent any fact that is not written above?
+- Are these genuinely different approaches, or the same message more than once? If pickUpThread says roughly what simpleHello says, there was no thread: return null for it.
+- Would a real person actually send each of these, as written, without editing?
+- Did I apologise for the silence, or make the user concede a fault they never named?
+- Is what I wrote consistent with how long it has actually been? If recent contact happened but was not catching up, did I avoid implying they are already back in touch?
+If any answer is wrong, fix it before returning. Return only the corrected version.
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 4000,
+      max_tokens: 2000,
       system: (withLanguage('You are a helpful assistant that responds in the same language as the user.', userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion)),
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'friendship-fade-alerter' });
+
+    // The instruction above is a prose rule, and prose rules slip. When there is
+    // nothing to pick up, the model's pickUpThread drifts into the same message
+    // as simpleHello — measured, with no notes and no log, both came back as
+    // "Hey Tom, thought of you today." Two copies of one option is worse than
+    // one option, so the duplicate is dropped rather than shown.
+    //
+    // 0.45 is measured, not chosen: across live runs a real thread scored 0.10,
+    // a thin-but-distinct pair 0.39, and the actual duplicate 0.55. The
+    // threshold sits in the gap with margin on both sides.
+    const words = (v) => new Set(String(v || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(Boolean));
+    const overlap = (a, b) => {
+      const A = words(a), B = words(b);
+      if (!A.size || !B.size) return 0;
+      let shared = 0;
+      A.forEach(w => { if (B.has(w)) shared++; });
+      return shared / Math.min(A.size, B.size);
+    };
+    if (parsed?.pickUpThread?.message && parsed?.simpleHello?.message
+        && overlap(parsed.pickUpThread.message, parsed.simpleHello.message) >= 0.45) {
+      console.log('[friendship-fade-alerter] pickUpThread duplicated simpleHello — dropped, no thread to pick up');
+      parsed.pickUpThread = null;
+    }
+
     await guardStarters(parsed, req.body, startedAt);
     res.json(parsed);
 
@@ -621,6 +650,8 @@ router.outputGuard = {
     'apologises_on_the_users_behalf',
     'diagnoses_the_friendships_health',
     'invents_shared_history_not_in_the_notes',
+    'treats_non_catchup_contact_as_being_back_in_touch',
+    'name_drops_a_remembered_detail_with_no_opening',
   ],
   require: [
     'message_is_sendable_as_written',

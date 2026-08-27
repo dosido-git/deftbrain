@@ -38,6 +38,24 @@ const LAST_CONTACT_CHOICES = [
 
 const SNOOZE_CHOICES = [[7, 'ffa_1_week'], [14, 'ffa_2_weeks'], [30, 'ffa_1_month'], [60, 'ffa_2_months']];
 
+// What happened, and whether it counts as actually catching up. An email
+// arriving is worth remembering and worth talking about; it is not the two of
+// them having spoken, so it must not reset the rhythm. `meaningful` is the only
+// thing that moves lastContact.
+// Three different social problems, not three tones of the same message.
+const APPROACHES = [
+  ['pickUpThread', 'ffa_pick_up_thread'],
+  ['simpleHello', 'ffa_just_say_hello'],
+  ['makeAPlan', 'ffa_make_a_plan'],
+];
+
+const CONNECTION_KINDS = [
+  ['caught_up', 'ffa_kind_caught_up', true],
+  ['messages', 'ffa_kind_messages', true],
+  ['they_reached_out', 'ffa_kind_they_reached', false],
+  ['other', 'ffa_kind_other', false],
+];
+
 const isoDaysAgo = (days) => {
   const d = new Date();
   d.setHours(12, 0, 0, 0);
@@ -77,8 +95,19 @@ const migratePerson = (p) => ({
   id: p.id ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   rhythm: p.rhythm || p.frequency || 'monthly',
   relationshipType: p.relationshipType === 'colleague' ? 'former_coworker' : (p.relationshipType || 'friend'),
-  contactLog: p.contactLog || [],
+  // Entries logged before the kinds existed were all made by pressing a button
+  // that meant "we connected", so they are read as catching up. Guessing the
+  // other way would tell people they are overdue for connections they made.
+  contactLog: (p.contactLog || []).map(l => ({
+    type: 'caught_up',
+    meaningfulConnection: true,
+    ...l,
+  })),
 });
+
+// `lastContact` only ever advances on a meaningful connection, so it is the
+// anchor for the rhythm. Contact of any kind lives in the log.
+const lastMeaningful = (p) => p.lastContact;
 
 const FriendshipFadeAlerter = ({ tool }) => {
   const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -131,6 +160,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [reachout, setReachout] = useState(null);
   const [reachoutLoading, setReachoutLoading] = useState(false);
   const [logNote, setLogNote] = useState('');
+  const [loggingKind, setLoggingKind] = useState(false);
   const [snoozeDays, setSnoozeDays] = useState(14);
   const [error, setError] = useState('');
 
@@ -171,7 +201,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
         detail: t('ffa_until_date', { date: new Intl.DateTimeFormat(locale).format(new Date(p.snoozedUntil)) }),
       };
     }
-    const elapsed = daysSince(p.lastContact);
+    const elapsed = daysSince(lastMeaningful(p));
     const ratio = elapsed / rhythmDays(p.rhythm);
     const detail = t(elapsed === 1 ? 'ffa_days_since_one' : 'ffa_days_since', { days: elapsed });
     if (ratio < 0.7) return { key: 'recent', label: t('ffa_status_recent'), detail };
@@ -241,10 +271,12 @@ const FriendshipFadeAlerter = ({ tool }) => {
     try {
       const data = await callToolEndpoint('friendship-fade-alerter', {
         name: p.name,
-        relationshipType: p.relationshipType,
-        daysSinceContact: daysSince(p.lastContact),
-        contextNotes: p.contextNotes,
-        contactLog: p.contactLog || [],
+        relationship: p.relationshipType,
+        rhythm: p.rhythm,
+        lastMeaningfulConnection: lastMeaningful(p),
+        daysSinceMeaningfulConnection: daysSince(lastMeaningful(p)),
+        notes: p.contextNotes,
+        recentConnections: (p.contactLog || []).slice(0, 6),
         ...apiLocale,
       });
       setReachout(data);
@@ -255,16 +287,20 @@ const FriendshipFadeAlerter = ({ tool }) => {
     }
   };
 
-  const logContact = (p) => {
+  const logContact = (p, kind) => {
+    const [type, labelKey, meaningful] = kind;
     const note = logNote.trim();
     const now = new Date().toISOString().split('T')[0];
     setPeople(prev => prev.map(x => x.id === p.id ? {
       ...x,
-      lastContact: now,
-      snoozedUntil: null,
-      contactLog: [{ date: now, note: note || t('ffa_connected'), initiator: 'you' }, ...(x.contactLog || [])].slice(0, 20),
+      // Only catching up moves the clock. Logging that an email arrived should
+      // not make the tool announce they connected today.
+      lastContact: meaningful ? now : x.lastContact,
+      snoozedUntil: meaningful ? null : x.snoozedUntil,
+      contactLog: [{ date: now, type, meaningfulConnection: meaningful, note: note || t(labelKey) }, ...(x.contactLog || [])].slice(0, 20),
     } : x));
     setLogNote('');
+    setLoggingKind(false);
     setReachout(null);
     setView('dashboard');
   };
@@ -340,8 +376,9 @@ const FriendshipFadeAlerter = ({ tool }) => {
     if (!reachout || !selected) return '';
     const lines = [`${tool?.icon ?? '💔'} ${t('ffa_copy_starters_title', { name: selected.name })}`, ''];
     if (reachout.encouragement) lines.push(reachout.encouragement, '');
-    (reachout.starters || []).slice(0, 3).forEach((s, i) => {
-      lines.push(t('ffa_copy_option', { n: i + 1, tone: s.tone || t('ffa_natural') }), s.message, '');
+    APPROACHES.forEach(([key, labelKey], i) => {
+      const a = reachout[key];
+      if (a && a.message) lines.push(t('ffa_copy_option', { n: i + 1, tone: t(labelKey) }), a.message, '');
     });
     lines.push(BRAND);
     return lines.join('\n');
@@ -367,7 +404,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
             {i18n.language !== 'en' && (
               <p className={`mt-1 text-sm max-w-2xl ${c.textSecondary}`}>{t('ffa_description')}</p>
             )}
-            {screen === 'welcome' && (
+            {(screen === 'welcome' || screen === 'add') && (
               <button onClick={loadExample}
                 style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
                 className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition whitespace-nowrap">
@@ -546,8 +583,21 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💔'}</span>{t('ffa_writing')}</>
                   : `💬 ${t('ffa_help_reachout')}`}
               </button>
-              <button onClick={() => logContact(selected)} className={`rounded-xl border px-5 py-3 font-bold ${c.pillInactive}`}>✓ {t('ffa_we_connected')}</button>
+              <button onClick={() => setLoggingKind(v => !v)} aria-expanded={loggingKind}
+                className={`rounded-xl border px-5 py-3 font-bold ${c.pillInactive}`}>✓ {t('ffa_we_connected')}</button>
             </div>
+
+            {loggingKind && (
+              <div className={`mt-3 rounded-xl border ${c.border} p-4 ${c.cardAlt}`}>
+                <div className="font-semibold mb-2">{t('ffa_what_happened')}</div>
+                <div className="flex flex-wrap gap-2">
+                  {CONNECTION_KINDS.map(kind => (
+                    <button key={kind[0]} type="button" onClick={() => logContact(selected, kind)}
+                      className={`rounded-xl border px-4 py-2 text-sm font-semibold ${c.pillInactive}`}>{t(kind[1])}</button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-5">
               <label className="block text-sm font-semibold mb-2" htmlFor="ffa-log">{t('ffa_log_note')}</label>
@@ -560,13 +610,17 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <h3 className="font-black text-lg">{t('ffa_ways_in')}</h3>
                 <p className={`text-sm mt-1 ${c.textSecondary}`}>{reachout.encouragement}</p>
                 <div className="space-y-3 mt-4">
-                  {(reachout.starters || []).slice(0, 3).map((starter, i) => (
-                    <div key={i} className={`rounded-xl border ${c.border} p-4 ${c.card}`}>
-                      <div className={`text-xs font-bold uppercase ${c.accentTxt}`}>{starter.tone || t('ffa_natural')}</div>
-                      <div className="mt-2">{starter.message}</div>
-                      {starter.why_it_works && <div className={`text-xs mt-2 ${c.textMuted}`}>{starter.why_it_works}</div>}
-                    </div>
-                  ))}
+                  {APPROACHES.map(([key, labelKey]) => {
+                    const a = reachout[key];
+                    if (!a || !a.message) return null;
+                    return (
+                      <div key={key} className={`rounded-xl border ${c.border} p-4 ${c.card}`}>
+                        <div className={`text-xs font-bold uppercase ${c.accentTxt}`}>{t(labelKey)}</div>
+                        <div className="mt-2">{a.message}</div>
+                        {a.why && <div className={`text-xs mt-2 ${c.textMuted}`}>{a.why}</div>}
+                      </div>
+                    );
+                  })}
                 </div>
                 <p className={`mt-4 text-center text-sm ${c.textMuted}`}>
                   {t('ffa_xref_after')}{' '}
