@@ -83,7 +83,7 @@ const migratePerson = (p) => ({
 const FriendshipFadeAlerter = ({ tool }) => {
   const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const locale = userLocale || (typeof navigator !== 'undefined' ? navigator.language : 'en');
   const apiLocale = { locale: typeof navigator !== 'undefined' ? navigator.language : 'en', userLocale, userCurrency, userRegion };
 
@@ -359,7 +359,14 @@ const FriendshipFadeAlerter = ({ tool }) => {
             <p className="text-base">
               <span className="me-2 text-lg">{tool?.icon ?? '💔'}</span>{tool?.tagline ?? t('ffa_tagline')}
             </p>
-            <p className={`mt-1 text-sm max-w-2xl ${c.textSecondary}`}>{t('ffa_description')}</p>
+            {/* The catalog description above the tool now carries this same
+                sentence, but only in English — src/data/tools.js is English by
+                design. Repeating it here would show an English reader the same
+                paragraph twice; omitting it entirely would leave the other
+                twelve languages with no translated version at all. */}
+            {i18n.language !== 'en' && (
+              <p className={`mt-1 text-sm max-w-2xl ${c.textSecondary}`}>{t('ffa_description')}</p>
+            )}
             {screen === 'welcome' && (
               <button onClick={loadExample}
                 style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
@@ -368,9 +375,16 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </button>
             )}
           </div>
-          {screen !== 'welcome' && (
+          {/* Only where there is something to back out of. On the dashboard this
+              read "Start over" and did nothing: it set the view to the screen you
+              were already on, and the form and selection it cleared are not
+              visible from there. The people list is durable data, not a session,
+              so the only thing "start over" could honestly mean on the dashboard
+              is deleting everyone — which belongs behind Remove, per person, not
+              behind a quiet header button. */}
+          {(screen === 'add' || screen === 'person') && (
             <button className={`shrink-0 px-3 py-2 rounded-lg text-sm font-bold ${c.btnSecondary}`} onClick={handleReset}>
-              {screen === 'dashboard' ? `↺ ${t('start_over')}` : t('ffa_back_people')}
+              ↺ {t('ffa_back_people')}
             </button>
           )}
         </div>

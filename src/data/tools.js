@@ -4939,7 +4939,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "💔",
   categories: ['Humans'],
   headerColor: "#e0b8b8",
-  description: "Never lose touch with people you care about due to time-blindness. Track important relationships, get alerts when it's been too long, and generate personalized conversation starters. Visual color-coded urgency (red/yellow/green), configurable contact frequencies, snooze for busy periods, and guilt-free reconnection scripts. Maintain connections without shame.",
+  description: "Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.",
   guide: {
     overview: "Friendship Fade Alerter helps individuals maintain relationships despite time-blindness. Add important people with their ideal contact frequency (weekly, monthly, etc.), and the tool tracks days since last contact, alerts when overdue, and generates personalized conversation starters when you're ready to reach out. Color-coded visual indicators (red = overdue, yellow = coming due, green = recently contacted) remove guesswork. One-click conversation starter generation removes the 'what do I say?' barrier. Guilt-free framing acknowledges that time got away from you - that's okay. Snooze relationships during busy periods. Track successful reconnections. Low-friction design makes maintaining friendships actually doable.",
     
