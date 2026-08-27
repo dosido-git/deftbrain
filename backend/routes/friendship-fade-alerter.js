@@ -115,6 +115,7 @@ router.post('/friendship-fade-alerter', rateLimit(DEFAULT_LIMITS), async (req, r
     const {
       name, relationship, relationshipType, rhythm,
       lastMeaningfulConnection, daysSinceMeaningfulConnection, daysSinceContact,
+      lastInteraction, daysSinceInteraction,
       notes, contextNotes, recentConnections, contactLog, userLanguage,
     } = req.body;
 
@@ -142,6 +143,7 @@ RELATIONSHIP: ${rel}
 ${rhythm ? `THE RHYTHM THEY CHOSE FOR THIS RELATIONSHIP: ${rhythm}` : ''}
 DAYS SINCE THEY LAST ACTUALLY CAUGHT UP: ${days}
 ${lastMeaningfulConnection ? `DATE THEY LAST ACTUALLY CAUGHT UP: ${lastMeaningfulConnection}` : ''}
+${(daysSinceInteraction !== undefined && daysSinceInteraction !== days) ? `DAYS SINCE ANYTHING AT ALL HAPPENED BETWEEN THEM: ${daysSinceInteraction}${lastInteraction ? ` (on ${lastInteraction})` : ''}. Something recent happened that was not the two of them catching up — see the list below. It may be that the other person reached out and the user has not replied yet. Do not assume either way, and do not write as though they have just spoken.` : ''}
 ${remembered ? `WHAT THE USER CHOSE TO REMEMBER ABOUT THEM: ${remembered}` : ''}
 ${logBlock}
 

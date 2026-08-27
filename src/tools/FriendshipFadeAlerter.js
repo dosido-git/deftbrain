@@ -119,6 +119,7 @@ const migratePerson = (p) => ({
 // `lastContact` only ever advances on a meaningful connection, so it is the
 // anchor for the rhythm. Contact of any kind lives in the log.
 const lastMeaningful = (p) => p.lastContact;
+const lastInteractionOf = (p) => p.lastInteraction || p.lastContact;
 
 const FriendshipFadeAlerter = ({ tool }) => {
   const { callToolEndpoint, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -172,8 +173,10 @@ const FriendshipFadeAlerter = ({ tool }) => {
   const [reachoutLoading, setReachoutLoading] = useState(false);
   const [logNote, setLogNote] = useState('');
   const [loggingKind, setLoggingKind] = useState(false);
+  const [logKind, setLogKind] = useState('');
   const [checkedIds, setCheckedIds] = useState([]);
   const [editReturn, setEditReturn] = useState('dashboard');
+  const [managing, setManaging] = useState(false);
   const [snoozeDays, setSnoozeDays] = useState(14);
   const [error, setError] = useState('');
 
@@ -291,6 +294,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
         rhythm: p.rhythm,
         lastMeaningfulConnection: lastMeaningful(p),
         daysSinceMeaningfulConnection: daysSince(lastMeaningful(p)),
+        lastInteraction: lastInteractionOf(p),
+        daysSinceInteraction: daysSince(lastInteractionOf(p)),
         notes: p.contextNotes,
         recentConnections: (p.contactLog || []).slice(0, 6),
         ...apiLocale,
@@ -303,19 +308,27 @@ const FriendshipFadeAlerter = ({ tool }) => {
     }
   };
 
-  const logContact = (p, kind) => {
+  const saveConnection = (p) => {
+    const kind = CONNECTION_KINDS.find(k => k[0] === logKind);
+    if (!kind) return;
     const [type, labelKey, meaningful] = kind;
     const note = logNote.trim();
     const now = new Date().toISOString().split('T')[0];
     setPeople(prev => prev.map(x => x.id === p.id ? {
       ...x,
-      // Only catching up moves the clock. Logging that an email arrived should
-      // not make the tool announce they connected today.
+      // Two dates, because they answer different questions. lastInteraction is
+      // "when did anything last happen"; lastContact is "when did the two of
+      // them last actually catch up", and only the second one drives the
+      // rhythm. Someone messaging you congratulations is contact; it is not
+      // evidence the friendship has been refreshed, especially if you have not
+      // replied yet.
+      lastInteraction: now,
       lastContact: meaningful ? now : x.lastContact,
       snoozedUntil: meaningful ? null : x.snoozedUntil,
       contactLog: [{ date: now, type, meaningfulConnection: meaningful, note: note || t(labelKey) }, ...(x.contactLog || [])].slice(0, 20),
     } : x));
     setLogNote('');
+    setLogKind('');
     setLoggingKind(false);
     setReachout(null);
     setView('dashboard');
@@ -338,8 +351,13 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
   const archiveChecked = () => {
     if (!checkedIds.length) return;
+    const names = allPeople.filter(x => checkedIds.includes(x.id)).map(x => x.name).join(', ');
+    // Archiving looks destructive even though it is not, so the confirm exists
+    // to say what survives rather than to ask whether they are sure.
+    if (!window.confirm(`${t('ffa_archive_confirm_q', { name: names })}\n\n${t('ffa_archive_confirm_body')}`)) return;
     setPeople(prev => prev.map(x => checkedIds.includes(x.id) ? { ...x, archived: true } : x));
     setCheckedIds([]);
+    setManaging(false);
   };
 
   const restorePerson = (id) => setPeople(prev => prev.map(x => x.id === id ? { ...x, archived: false } : x));
@@ -384,6 +402,8 @@ const FriendshipFadeAlerter = ({ tool }) => {
       { nameKey: 'ffa_example_name', notesKey: 'ffa_example_notes', relationshipType: 'close_friend', rhythm: 'biweekly', daysAgo: 21 },
       { nameKey: 'ffa_example2_name', notesKey: 'ffa_example2_notes', relationshipType: 'friend', rhythm: 'semiannually', daysAgo: 400 },
     ]);
+    const existing = allPeople.find(x => x.name === t(ex.nameKey));
+    if (existing) { openPerson(existing.id); return; }
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     setPeople(prev => [...prev, {
       ...blankPerson(),
@@ -422,7 +442,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
 
   const buildFullText = useCallback(() => {
     if (!reachout || !selected) return '';
-    const lines = [`${tool?.icon ?? '💔'} ${t('ffa_copy_starters_title', { name: selected.name })}`, ''];
+    const lines = [`${tool?.icon ?? '💛'} ${t('ffa_copy_starters_title', { name: selected.name })}`, ''];
     if (reachout.encouragement) lines.push(reachout.encouragement, '');
     APPROACHES.forEach(([key, labelKey], i) => {
       const a = reachout[key];
@@ -442,7 +462,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
           <div className="flex-1 min-w-0">
             {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
             <p className="text-base">
-              <span className="me-2 text-lg">{tool?.icon ?? '💔'}</span>{tool?.tagline ?? t('ffa_tagline')}
+              <span className="me-2 text-lg">{tool?.icon ?? '💛'}</span>{tool?.tagline ?? t('ffa_tagline')}
             </p>
             {/* The catalog description above the tool now carries this same
                 sentence, but only in English — src/data/tools.js is English by
@@ -537,7 +557,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <button type="button" onClick={askForRhythm} disabled={rhythmHelpLoading}
                   className={`rounded-xl border px-4 py-2 font-semibold disabled:opacity-40 ${c.pillInactive}`}>
                   {rhythmHelpLoading
-                    ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💔'}</span>{t('ffa_thinking')}</>
+                    ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💛'}</span>{t('ffa_thinking')}</>
                     : `✨ ${t('ffa_help_choose')}`}
                 </button>
               </div>
@@ -576,7 +596,17 @@ const FriendshipFadeAlerter = ({ tool }) => {
               </div>
             </section>
 
-            <p className={`text-sm ${c.textMuted}`}>{t('ffa_list_hint')}</p>
+            <div className="flex items-center justify-between gap-3">
+              <p className={`text-sm ${c.textMuted}`}>{managing ? t('ffa_manage_hint') : t('ffa_list_hint')}</p>
+              {/* A permanently visible checkbox reads as "select this", and its
+                  only action here is archiving. Someone would tick one to find
+                  out what it does. So selection is a mode you enter on purpose,
+                  and in normal use the card is just a card. */}
+              <button onClick={() => { setManaging(v => !v); setCheckedIds([]); }}
+                className={`shrink-0 text-sm font-semibold ${linkStyle}`}>
+                {managing ? t('ffa_done') : t('ffa_manage')}
+              </button>
+            </div>
 
             <div className="space-y-3">
               {sortedPeople.map(p => {
@@ -586,31 +616,38 @@ const FriendshipFadeAlerter = ({ tool }) => {
                   : s.key === 'hello'
                     ? (isDark ? 'border-sky-800 bg-sky-950/10' : 'border-sky-200 bg-sky-50/40')
                     : c.card;
-                return (
-                  <div key={p.id} className={`flex items-center gap-3 rounded-2xl border p-5 ${tone}`}>
-                    {/* The checkbox sits outside the button: a control nested in a
-                        button cannot be clicked without also opening the person. */}
+                const row = (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <div className="text-lg font-black">{p.name}</div>
+                      <div className={`text-sm ${c.textSecondary}`}>{t(relationKey(p.relationshipType))} · {t(rhythmKey(p.rhythm))}</div>
+                    </div>
+                    <div className="text-end flex items-center gap-2">
+                      <div>
+                        <div className="font-bold">{s.label}</div>
+                        <div className={`text-xs ${c.textMuted}`}>{s.detail}</div>
+                      </div>
+                      {!managing && <span aria-hidden="true" className={c.textMuted}>›</span>}
+                    </div>
+                  </div>
+                );
+                return managing ? (
+                  <label key={p.id} className={`flex items-center gap-3 rounded-2xl border p-5 cursor-pointer ${tone}`}>
                     <input type="checkbox" checked={checkedIds.includes(p.id)} onChange={() => toggleChecked(p.id)}
                       aria-label={t('ffa_select_person', { name: p.name })}
                       className="size-5 shrink-0 accent-cyan-600 cursor-pointer" />
-                    <button onClick={() => openPerson(p.id)} className="flex-1 min-w-0 text-start transition hover:-translate-y-0.5">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div>
-                          <div className="text-lg font-black">{p.name}</div>
-                          <div className={`text-sm ${c.textSecondary}`}>{t(relationKey(p.relationshipType))} · {t(rhythmKey(p.rhythm))}</div>
-                        </div>
-                        <div className="text-end">
-                          <div className="font-bold">{s.label}</div>
-                          <div className={`text-xs ${c.textMuted}`}>{s.detail}</div>
-                        </div>
-                      </div>
-                    </button>
-                  </div>
+                    <div className="flex-1 min-w-0">{row}</div>
+                  </label>
+                ) : (
+                  <button key={p.id} onClick={() => openPerson(p.id)}
+                    className={`w-full text-start rounded-2xl border p-5 transition hover:-translate-y-0.5 ${tone}`}>
+                    {row}
+                  </button>
                 );
               })}
             </div>
 
-            {checkedIds.length > 0 && (
+            {managing && checkedIds.length > 0 && (
               <button onClick={archiveChecked} className={`rounded-xl border px-4 py-2 text-sm font-bold ${c.pillInactive}`}>
                 {t('ffa_archive_selected', { n: checkedIds.length })}
               </button>
@@ -673,7 +710,7 @@ const FriendshipFadeAlerter = ({ tool }) => {
               <button onClick={() => generateReachout(selected)} disabled={reachoutLoading}
                 className={`rounded-xl px-5 py-3 font-bold disabled:opacity-40 ${c.btnPrimary}`}>
                 {reachoutLoading
-                  ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💔'}</span>{t('ffa_writing')}</>
+                  ? <><span className="animate-spin inline-block me-1">{tool?.icon ?? '💛'}</span>{t('ffa_writing')}</>
                   : `💬 ${t('ffa_help_reachout')}`}
               </button>
               <button onClick={() => setLoggingKind(v => !v)} aria-expanded={loggingKind}
@@ -685,18 +722,29 @@ const FriendshipFadeAlerter = ({ tool }) => {
                 <div className="font-semibold mb-2">{t('ffa_what_happened')}</div>
                 <div className="flex flex-wrap gap-2">
                   {CONNECTION_KINDS.map(kind => (
-                    <button key={kind[0]} type="button" onClick={() => logContact(selected, kind)}
-                      className={`rounded-xl border px-4 py-2 text-sm font-semibold ${c.pillInactive}`}>{t(kind[1])}</button>
+                    <button key={kind[0]} type="button" onClick={() => setLogKind(kind[0])}
+                      aria-pressed={logKind === kind[0]}
+                      className={`rounded-xl border px-4 py-2 text-sm font-semibold ${logKind === kind[0] ? c.pillActive : c.pillInactive}`}>{t(kind[1])}</button>
                   ))}
+                </div>
+
+                {/* The note lives inside the transaction now. It used to sit on
+                    the screen permanently, which made it unclear whether typing
+                    in it had already changed anything. */}
+                <label className="block text-sm font-semibold mt-4 mb-2" htmlFor="ffa-log">
+                  {t('ffa_log_note')} <span className={`font-normal ${c.textMuted}`}>{t('ffa_optional')}</span>
+                </label>
+                <input id="ffa-log" value={logNote} onChange={e => setLogNote(e.target.value)}
+                  placeholder={t('ffa_log_placeholder')} className={`w-full rounded-xl border px-4 py-3 ${c.input}`} />
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button onClick={() => saveConnection(selected)} disabled={!logKind}
+                    className={`rounded-xl px-5 py-2.5 font-bold disabled:opacity-40 ${c.btnPrimary}`}>{t('ffa_save_connection')}</button>
+                  <button onClick={() => { setLoggingKind(false); setLogKind(''); setLogNote(''); }}
+                    className={`rounded-xl border px-4 py-2.5 ${c.pillInactive}`}>{t('ffa_cancel')}</button>
                 </div>
               </div>
             )}
-
-            <div className="mt-5">
-              <label className="block text-sm font-semibold mb-2" htmlFor="ffa-log">{t('ffa_log_note')}</label>
-              <input id="ffa-log" value={logNote} onChange={e => setLogNote(e.target.value)}
-                placeholder={t('ffa_log_placeholder')} className={`w-full rounded-xl border px-4 py-3 ${c.input}`} />
-            </div>
 
             {results && (
               <div className={`mt-6 rounded-2xl border ${c.border} p-5 ${c.cardAlt}`}>
