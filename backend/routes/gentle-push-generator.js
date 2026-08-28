@@ -357,7 +357,15 @@ Return only the JSON object.`;
   }, { label: 'gpg-generate' });
 
   const pushes = Array.isArray(parsed?.pushes) ? parsed.pushes.filter(isCompletePush).slice(0, 3) : [];
-  if (pushes.length < 3) return res.status(502).json({ error: 'The generated pushes were incomplete. Please try again.' });
+  // Two usable options beat an error page. The safety and calibration rules
+  // genuinely constrain what can be offered — for a sedentary person at high
+  // capacity, or a money goal where almost every obvious push is banned, the
+  // model can legitimately land on two good ones and a third it should not
+  // make. Failing the whole request in that case punishes the visitor for the
+  // rules working. Below two there is no real choice to present, so that still
+  // fails and asks them to retry.
+  if (pushes.length < 2) return res.status(502).json({ error: 'The generated pushes were incomplete. Please try again.' });
+  if (pushes.length < 3) console.log(`[gentle-push-generator] returned ${pushes.length} complete pushes, not 3 — served rather than failed`);
   const out = { ...parsed, pushes };
   await guardPushes(out, { domain, comfortZone, growthArea, currentCapacity }, startedAt, pushes);
   res.json(out);
