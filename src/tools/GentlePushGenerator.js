@@ -43,6 +43,52 @@ const PUSH_DAYS = [
   { value: 'Sunday', labelKey: 'gpg_day_sunday' },
 ];
 
+// RFC 5545 weekday codes, in the order PUSH_DAYS lists them.
+// Each day gets its BYDAY code and an anchor date that IS that weekday. DTSTART
+// has to match BYDAY or clients disagree about when the series starts — some
+// honour the rule, others emit one stray occurrence on the DTSTART day. The week
+// of 5 Jan 2026 is used because it runs Monday to Sunday cleanly.
+const ICS_DAY = {
+  Monday:    { code: 'MO', anchor: '20260105' },
+  Tuesday:   { code: 'TU', anchor: '20260106' },
+  Wednesday: { code: 'WE', anchor: '20260107' },
+  Thursday:  { code: 'TH', anchor: '20260108' },
+  Friday:    { code: 'FR', anchor: '20260109' },
+  Saturday:  { code: 'SA', anchor: '20260110' },
+  Sunday:    { code: 'SU', anchor: '20260111' },
+};
+
+// A weekly reminder has to reach someone whose tab is closed, which rules out
+// the Notification API the timer-based tools use — it only fires in an open
+// page. A calendar file hands the job to the calendar they already read, with
+// no permission prompt, no service worker and nothing running server-side.
+const buildIcs = ({ day, title, note }) => {
+  const spec = ICS_DAY[day];
+  if (!spec) return null;
+  // Anchored to a fixed past Monday so the series is stable and the file is
+  // identical for everyone who picks the same day — no clock, no timezone.
+  const fold = (line) => line.replace(/[\r\n]+/g, ' ');
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//DeftBrain//Gentle Push Generator//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:deftbrain-gpg-${spec.code}@deftbrain.com`,
+    'DTSTAMP:20260101T090000Z',
+    `DTSTART;VALUE=DATE:${spec.anchor}`,
+    'DURATION:P1D',
+    `RRULE:FREQ=WEEKLY;BYDAY=${spec.code}`,
+    `SUMMARY:${fold(title)}`,
+    `DESCRIPTION:${fold(note)}`,
+    'URL:https://deftbrain.com/GentlePushGenerator',
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+};
+
 const SCARINESS_LABEL_KEYS = ['', 'gpg_scariness_1', 'gpg_scariness_2', 'gpg_scariness_3', 'gpg_scariness_4', 'gpg_scariness_5'];
 
 // The domain is carried as the stable value, not as a translated label matched
@@ -124,6 +170,27 @@ const GentlePushGenerator = ({ tool }) => {
 
   const [pushLog, setPushLog] = usePersistentState('gpg-push-log', []);
   const [pushDay, setPushDay] = usePersistentState('gpg-push-day', '');
+
+  // Is today the day they picked? The calendar file is what reaches them when
+  // the tab is closed; this is what greets them when it is open.
+  const isPushDayToday = !!pushDay && PUSH_DAYS[(new Date().getDay() + 6) % 7]?.value === pushDay;
+
+  const downloadReminder = () => {
+    const ics = buildIcs({
+      day: pushDay,
+      title: t('gpg_ics_title'),
+      note: t('gpg_ics_note'),
+    });
+    if (!ics) return;
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'deftbrain-gentle-push.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   const resultsRef = React.useRef(null);
   // The rule that places cross-refs keys off a `results` sentinel; this tool's
@@ -424,7 +491,23 @@ const GentlePushGenerator = ({ tool }) => {
               {PUSH_DAYS.map(d => <option key={d.value} value={d.value}>{t(d.labelKey)}</option>)}
             </select>
           </div>
+          {pushDay && (
+            <div className={`mt-3 pt-3 border-t ${c.border}`}>
+              <button onClick={downloadReminder} className={`text-xs font-semibold ${linkStyle}`}>
+                📅 {t('gpg_add_to_calendar')}
+              </button>
+              <p className={`text-[10px] mt-1 ${c.textMuted}`}>{t('gpg_add_to_calendar_hint')}</p>
+            </div>
+          )}
         </div>
+
+        {/* The day they chose, used. Nothing here can bring them back — that is
+            the calendar's job — but if they are here on the day, say so. */}
+        {isPushDayToday && (
+          <div className={`${c.success} border rounded-xl p-3`}>
+            <p className="text-xs font-semibold">{t('gpg_push_day_today', { day: t(PUSH_DAYS.find(d => d.value === pushDay).labelKey) })}</p>
+          </div>
+        )}
 
         <div className={`${c.card} ${c.border} border rounded-xl p-5 space-y-3`}>
           <label className={`block text-sm font-semibold ${c.text}`}>
