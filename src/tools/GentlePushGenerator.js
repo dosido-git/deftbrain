@@ -44,19 +44,17 @@ const PUSH_DAYS = [
 
 const SCARINESS_LABEL_KEYS = ['', 'gpg_scariness_1', 'gpg_scariness_2', 'gpg_scariness_3', 'gpg_scariness_4', 'gpg_scariness_5'];
 
+// The domain is carried as the stable value, not as a translated label matched
+// back against the pill text. That round-trip only worked while the example's
+// wording happened to equal the pill's: "Social situations" never matched
+// "Social", so example one was landing on the default. A financial example
+// would have landed on Social too, which is worse than untidy.
 const EXAMPLES = [
-  {
-    domainKey: 'gpg_ex1_domain',
-    comfortZoneKey: 'gpg_ex1_comfort',
-    growthAreaKey: 'gpg_ex1_growth',
-    capacity: 'medium',
-  },
-  {
-    domainKey: 'gpg_ex2_domain',
-    comfortZoneKey: 'gpg_ex2_comfort',
-    growthAreaKey: 'gpg_ex2_growth',
-    capacity: 'low',
-  },
+  { domain: 'social',    comfortZoneKey: 'gpg_ex1_comfort', growthAreaKey: 'gpg_ex1_growth', capacity: 'medium' },
+  { domain: 'creative',  comfortZoneKey: 'gpg_ex2_comfort', growthAreaKey: 'gpg_ex2_growth', capacity: 'low' },
+  { domain: 'financial', comfortZoneKey: 'gpg_ex3_comfort', growthAreaKey: 'gpg_ex3_growth', capacity: 'medium' },
+  { domain: 'physical',  comfortZoneKey: 'gpg_ex4_comfort', growthAreaKey: 'gpg_ex4_growth', capacity: 'high' },
+  { domain: 'emotional', comfortZoneKey: 'gpg_ex5_comfort', growthAreaKey: 'gpg_ex5_growth', capacity: 'low' },
 ];
 
 const GentlePushGenerator = ({ tool }) => {
@@ -131,9 +129,7 @@ const GentlePushGenerator = ({ tool }) => {
 
   const loadExample = () => {
     const ex = pickExample('GentlePushGenerator', EXAMPLES);
-    const translatedDomain = t(ex.domainKey);
-    const match = DOMAINS.find(d => t(d.labelKey).toLowerCase() === String(translatedDomain).toLowerCase());
-    setDomain(match?.value || 'social');
+    setDomain(ex.domain);
     setComfortZone(t(ex.comfortZoneKey));
     setGrowthArea(t(ex.growthAreaKey));
     setCapacity(ex.capacity);
