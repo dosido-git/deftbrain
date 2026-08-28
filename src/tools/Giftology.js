@@ -173,9 +173,9 @@ const Giftology = ({ tool }) => {
     if (r.perfect_picks?.length) {
       out += `━━ ${t('gft_copy_ideas')} ━━\n\n`;
       r.perfect_picks.forEach((p, i) => {
-        out += `${i + 1}. ${p.gift} (${p.price_range})\n`;
+        out += `${i + 1}. ${p.gift}${(p.budget_fit || p.price_range) ? ` (${p.budget_fit || p.price_range})` : ''}\n`;
         out += `   ${t('gft_copy_why')} ${p.why_its_perfect}\n`;
-        out += `   ${t('gft_copy_where')} ${p.where_to_get}\n`;
+        out += `   ${t('gft_copy_where')} ${p.example_to_look_for || p.where_to_get || ''}${p.where_to_look ? ` — ${p.where_to_look}` : ''}\n`;
         if (p.presentation_tip) out += `   ${t('gft_copy_tip')} ${p.presentation_tip}\n`;
         out += `   ${t('gft_copy_card')} "${p.card_message}"\n\n`;
       });
@@ -183,7 +183,7 @@ const Giftology = ({ tool }) => {
 
     if (r.the_wildcard) {
       out += `━━ ${t('gft_copy_wildcard')} ━━\n`;
-      out += `${r.the_wildcard.gift} (${r.the_wildcard.price_range})\n`;
+      out += `${r.the_wildcard.gift}${(r.the_wildcard.budget_fit || r.the_wildcard.price_range) ? ` (${r.the_wildcard.budget_fit || r.the_wildcard.price_range})` : ''}\n`;
       out += `${r.the_wildcard.why_its_perfect}\n`;
       out += `${t('gft_copy_card')} "${r.the_wildcard.card_message}"\n\n`;
     }
@@ -402,7 +402,7 @@ const Giftology = ({ tool }) => {
                           <span className={`text-xs font-bold ${c.textMuted}`}>#{i + 1}</span>
                           <h3 className={`text-sm font-bold ${c.text} truncate`}>{pick.gift}</h3>
                         </div>
-                        <p className={`text-xs ${c.textMuted}`}>{pick.price_range}</p>
+                        <p className={`text-xs ${c.textMuted}`}>{pick.budget_fit || pick.price_range}</p>
                       </div>
                       <Caret open={isExpanded} className="flex-shrink-0" />
                     </button>
@@ -415,7 +415,17 @@ const Giftology = ({ tool }) => {
                         </div>
                         <div>
                           <p className={`text-[10px] font-bold uppercase ${c.textSecondary} mb-1`}>{t('gft_where_get')}</p>
-                          <p className={`text-sm ${c.text}`}>{pick.where_to_get}</p>
+                          {/* A lead worth checking and the kind of place to
+                              check it, kept apart from each other — the old
+                              single field read as "this shop has it". */}
+                          {(pick.example_to_look_for || pick.where_to_get) && (
+                            <p className={`text-sm ${c.text}`}>{pick.example_to_look_for || pick.where_to_get}</p>
+                          )}
+                          {pick.where_to_look && (
+                            <p className={`text-xs mt-1 ${c.textSecondary}`}>
+                              <span className="font-bold">{t('gft_where_to_look')} </span>{pick.where_to_look}
+                            </p>
+                          )}
                         </div>
                         {pick.presentation_tip && (
                           <div className={`${c.cardAlt} rounded-lg p-3`}>
@@ -454,10 +464,15 @@ const Giftology = ({ tool }) => {
                     <span>🃏</span> {t('gft_wildcard')}
                   </p>
                   <h3 className={`text-base font-bold ${c.text} mb-1`}>{results?.the_wildcard?.gift}</h3>
-                  <p className={`text-xs ${c.textMuted} mb-2`}>{results?.the_wildcard?.price_range}</p>
+                  <p className={`text-xs ${c.textMuted} mb-2`}>{results?.the_wildcard?.budget_fit || results?.the_wildcard?.price_range}</p>
                   <p className={`text-sm ${c.textSecondary} mb-3`}>{results?.the_wildcard?.why_its_perfect}</p>
+                  {results?.the_wildcard?.different_because && (
+                    <p className={`text-xs italic mb-3 ${c.textMuted}`}>{results.the_wildcard.different_because}</p>
+                  )}
                   <p className={`text-xs ${c.text} mb-3`}>
-                    <span className={`font-bold ${c.textSecondary}`}>{t('gft_where')} </span>{results?.the_wildcard?.where_to_get}
+                    <span className={`font-bold ${c.textSecondary}`}>{t('gft_where')} </span>
+                    {results?.the_wildcard?.example_to_look_for || results?.the_wildcard?.where_to_get}
+                    {results?.the_wildcard?.where_to_look ? ` — ${results.the_wildcard.where_to_look}` : ''}
                   </p>
                   {results?.the_wildcard?.card_message && (
                     <div className={`${c.warmBg} border ${c.border} rounded-lg p-3`}>
@@ -477,6 +492,9 @@ const Giftology = ({ tool }) => {
               </p>
               <p className={`text-sm font-semibold ${c.text} mb-1`}>{results?.if_deadline_is_now?.instant_option}</p>
               <p className={`text-xs mb-2`}>{results?.if_deadline_is_now?.how}</p>
+              {results?.if_deadline_is_now?.why_it_still_lands && (
+                <p className={`text-xs mb-2 ${c.textSecondary}`}>{results.if_deadline_is_now.why_it_still_lands}</p>
+              )}
               {results?.if_deadline_is_now?.card_message && (
                 <div className="mt-2">
                   <p className={`text-xs italic`}>✉️ "{results?.if_deadline_is_now?.card_message}"</p>

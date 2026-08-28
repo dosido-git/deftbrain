@@ -8,7 +8,7 @@
   },
   "cases": [
     {
-      "name": "de-eur-currency-and-truncation-guard",
+      "name": "de-truncation-and-no-commerce-claims",
       "endpoint": "/api/giftology",
       "input": {
         "recipient": "Meine Schwester, 32, liebt Wandern und Fotografie, trinkt gerne Spezialitätenkaffee, hat gerade eine neue Wohnung bezogen",
@@ -23,54 +23,61 @@
         "userRegion": "DE"
       },
       "output": {
-        "situation_read": "Deine Schwester ist gerade in ein neues Kapitel ihres Lebens gestartet – neue Wohnung, voller Energie – und du willst ihr etwas schenken, das sich nach ihr anfühlt, nicht nach Amazon-Bestsellerliste. Die Herausforderung: Fotografie und Wandern wurden letztes Jahr schon bedient, also muss dieses Geschenk die Verbindung zwischen ihren Welten finden, ohne generisch zu wirken.",
+        "situation_read": "Deine Schwester wandert, fotografiert und interessiert sich für Spezialitätenkaffee. Sie ist gerade in eine neue Wohnung gezogen. Ein Geschenk, das eine dieser Leidenschaften direkt unterstützt – etwas, das sie tatsächlich benutzt – passt besser als etwas Dekoratives.",
         "perfect_picks": [
           {
-            "gift": "'Where the Crawdads Sing' – nein, Moment: 'Mountains of the Mind' von Robert Macfarlane (auf Deutsch: 'Berge im Kopf') – ein literarisches Sachbuch über die Faszination der Berge, Natur und das Abenteuer",
-            "price_range": "16 € – 22 €",
-            "why_its_perfect": "Sie liebt Wandern nicht nur als Sport, sondern als Erfahrung – sonst würde sie nicht gleichzeitig fotografieren. Macfarlane schreibt über die emotionale und philosophische Beziehung zwischen Menschen und Bergen, und dieses Buch wird sie auf dem Sofa ihrer neuen Wohnung genauso fesseln wie auf dem Gipfel. Es ist das perfekte Geschenk für jemanden, dem die Berge auch dann fehlen, wenn er nicht dort ist.",
-            "where_to_get": "Thalia-Filiale (vor Ort, heute noch), alternativ thalia.de mit Expresslieferung. ISBN für die deutsche Ausgabe direkt nennen, damit das Personal sofort findet.",
-            "presentation_tip": "Kein Geschenkpapier – braunes Packpapier mit einem kleinen Stück Wanderkarte (z. B. aus einem alten Tourenführer) drumherum kleben. Sieht aus wie ein Fundstück aus einem Antiquariat, fühlt sich curated an.",
-            "card_message": "Weil du nie wirklich aufhörst zu wandern – auch nicht, wenn du zuhause bist. Dieses Buch versteht das. Für dein neues Zuhause, von dem aus alle nächsten Touren starten. Alles Gute zum Geburtstag."
+            "gift": "Ein hochwertiger Handfilter-Set für Zuhause – zum Beispiel ein Pour-over-Dripper aus Keramik oder Glas, kombiniert mit einer kleinen Auswahl Spezialitätenkaffee aus einer Rösterei",
+            "why_its_perfect": "Sie trinkt gerne Spezialitätenkaffee – das ist kein beiläufiges Detail, sondern ein echter Genussbereich. In der neuen Wohnung hat sie noch keine feste Kaffeeroutine etabliert; ein schönes Brühset gehört dort von Anfang an dazu und macht den Morgen zu etwas Eigenem. Es ist nichts Kitschiges, sondern ein Gebrauchsgegenstand mit echtem Geschmacksunterschied.",
+            "example_to_look_for": "Ein Keramik-Handfilter im Stil eines Origami Dripper oder eines klassischen V60, ergänzt durch frisch gerösteten Filterkaffee aus einer regionalen Spezialitätenrösterei. Da die Deadline diese Woche ist, frag direkt beim Fachgeschäft oder der Rösterei nach, ob sie heute noch liefern können oder ob du abholen kannst.",
+            "where_to_look": "Spezialitätenkaffee-Röstereien mit Onlineshop (viele bieten Starter-Sets an), gut sortierte Küchengeschäfte oder Kaffeefachhandel in größeren Städten",
+            "budget_fit": "Ein Handfilter-Set mit Spezialitätenkaffee sollte in dein Budget passen – prüfe die Preise bei Röstereien oder Kaffeefachgeschäften in deiner Nähe.",
+            "presentation_tip": "Lege ein handgeschriebenes Kärtchen mit dem Namen der Rösterei und einem Satz dazu bei, warum du diesen Kaffee ausgesucht hast – das zeigt, dass du nicht einfach 'irgendeinen Kaffee' gekauft hast.",
+            "card_message": "Für deinen ersten richtigen Morgen in der neuen Wohnung. Du weißt am besten, wie viel ein guter Kaffee den Unterschied macht – jetzt hast du alles, um ihn genau so zu machen, wie du es magst. Herzlichen Glückwunsch zum Geburtstag."
           },
           {
-            "gift": "Monat-Abo 'The Barn Berlin' Specialty Coffee – 250g Filterkaffee-Probierpaket, kuratiert nach Herkunftsland",
-            "price_range": "18 € – 28 €",
-            "why_its_perfect": "Sie trinkt Spezialitätenkaffee – das heißt, sie ist kein Mensch für Jacobs aus dem Supermarkt, aber wahrscheinlich kauft sie immer das gleiche Lieblings-Rösthaus. Ein Paket von The Barn gibt ihr die Chance, neue Herkünfte zu entdecken, genau in dem Moment, wo sie ihren ersten echten Kaffee in ihrer neuen Wohnung kocht. Das erste Aroma in einer neuen Küche – das bleibt.",
-            "where_to_get": "thebarn.de – Onlinebestellung, Lieferzeit 2–4 Werktage. Alternativ, falls du in oder nahe Berlin bist: The Barn hat mehrere Filialen mit Abholmöglichkeit.",
-            "presentation_tip": "Den Kaffee in ein kleines Leinensäckchen legen (Eisenwarenhandel oder Rossmann), dazu eine handgeschriebene Karte mit dem Hinweis, welche Herkunft du für sie ausgesucht hast und warum.",
-            "card_message": "Neue Wohnung, neue Küche – das verdient den ersten Kaffee, der wirklich zählt. Ich hab dir einen aus Äthiopien rausgesucht, weil ich dachte: Du reist auf Wandertouren, dein Kaffee darf das auch. Herzlichen Glückwunsch."
+            "gift": "Ein wetterfestes Notizbuch für draußen, kombiniert mit einem feinen Stift – als Wander- und Fototagebuch",
+            "why_its_perfect": "Wer wandert und fotografiert, hat oft den Impuls, Momente festzuhalten – nicht nur als Bild, sondern auch als Gedanke, Standort oder Stimmung. Ein Notizbuch, das Nässe, Kälte und Rucksack aushält, ist kein dekoratives Accessoire, sondern ein echter Begleiter auf Tour. Es verbindet ihre zwei Leidenschaften, ohne eine Kamera-Tasche zu sein.",
+            "example_to_look_for": "Ein Notizbuch der Marke Rite in the Rain oder ein wasserfestes Fieldnotes-Heft, ergänzt durch einen robusten Stift, der auch bei Kälte schreibt. Achte darauf, dass es diese Woche ankommt – frag beim Händler nach der Lieferzeit oder hole es ab.",
+            "where_to_look": "Outdoor-Fachhandel, gut sortierte Schreibwarengeschäfte, oder Onlineshops mit Outdoor-Zubehör",
+            "budget_fit": "Wasserfeste Notizbücher sind in den meisten Preislagen erhältlich – schau nach, was im Sportfachhandel oder bei Online-Anbietern zu finden ist.",
+            "presentation_tip": "Schreibe auf die erste Seite selbst einen kurzen Satz – zum Beispiel die GPS-Koordinaten eines Ortes, den ihr beide kennt, oder eines Lieblingsbergs von ihr. So ist das erste Wort in dem Buch schon von dir.",
+            "card_message": "Für alle Wege, die du noch gehst – und die Momente dazwischen, die kein Foto ganz einfängt. Herzlichen Glückwunsch zum Geburtstag, ich freue mich, was du damit festhalten wirst."
           },
           {
-            "gift": "Leuchtturm1917 Notizbuch 'Nature' Edition (A5, dotted) + Ohropax-Alternative: Midori-Travelers-Notebook in Kamelbraun",
-            "price_range": "22 € – 35 €",
-            "why_its_perfect": "Eine Fotografin und Wanderin, die gerade einzieht, braucht ein Ort, um Touren zu planen, Bildideen festzuhalten und ihre neue Umgebung zu kartieren – mental wie visuell. Das Leuchtturm1917 Nature-Edition hat eine matte, erdige Ästhetik ohne Kitsch, und das dotted Grid ist perfekt für jemanden, der zwischen Skizzen und Listen lebt. Es passt zu jemandem, dem Details wichtig sind.",
-            "where_to_get": "Hugendubel, Thalia oder ein lokaler Papeterie/Schreibwarenladen (z. B. Modulor in Berlin, Manufactum-Filiale). Leuchtturm1917 ist in fast jeder gut sortierten Buchhandlung vorrätig.",
-            "presentation_tip": "Ein Faber-Castell-Fineliner (0,4mm, schwarz) dazulegen und mit einer kleinen Karte in das erste Seite kleben, auf der steht: 'Seite 1 gehört dir.'",
-            "card_message": "Für alle Touren, die du noch planst, alle Lichtmomente, die du vor dem Auslösen kurz skizzierst, und alle Gedanken in deiner neuen Wohnung, die noch keinen Platz haben. Hier ist einer. Alles Liebe zum Geburtstag."
+            "gift": "Ein Gutschein oder Päckchen für eine Kaffee-Tasting-Erfahrung – entweder ein Rösterei-Besuch oder ein Brew-Guide-Set mit mehreren verschiedenen Kaffees zum Vergleichen",
+            "why_its_perfect": "Jemand, der Spezialitätenkaffee wirklich trinkt, merkt den Unterschied zwischen Herkunftsländern, Röstgraden und Zubereitungsarten – aber nicht jeder bekommt die Chance, das systematisch zu erkunden. Ein Tasting-Set oder ein Röstereibesuch macht aus einer Vorliebe ein echtes Erlebnis und passt wunderbar in eine neue Wohnung, die noch keine eigene Kaffeegeschichte hat.",
+            "example_to_look_for": "Viele Spezialitätenröstereien bieten Tasting-Boxen mit mehreren verschiedenen Herkunftskaffees an, manche auch mit Cupping-Terminen vor Ort. Rufe eine Rösterei in deiner Nähe an – so weißt du sofort, was verfügbar ist und ob es bis Ende der Woche funktioniert.",
+            "where_to_look": "Spezialitätenröstereien in ihrer Stadt oder Region (viele haben Eventkalender auf ihrer Website), alternativ Onlineshops mit kuratierten Kaffee-Tasting-Sets",
+            "budget_fit": "Tasting-Sets und Besuchstermine bei Röstereien variieren im Preis – frag bei lokalen Anbietern nach, was in dein Budget passt.",
+            "presentation_tip": "Drucke die Tasting-Notizen aus oder schreibe sie ab und lege sie dazu – so hat sie beim ersten Kaffee am Morgen gleich etwas zum Lesen.",
+            "card_message": "Du weißt, was du magst – und ich dachte, es wird Zeit, das ein bisschen weiter zu erkunden. Herzlichen Glückwunsch zum Geburtstag, ich bin gespannt, welcher dein Favorit wird."
           },
           {
-            "gift": "Ortlieb Dry-Bag PS10 3L (wasserdichter Packsack) in einer auffälligen Farbe – für Kamera-Zubehör oder Snacks auf Tour",
-            "price_range": "20 € – 30 €",
-            "why_its_perfect": "Letztes Jahr gab es die Kameratasche – aber was ist mit dem ganzen Kleinkram auf der Tour? Akkus, Speicherkarten, Riegel, Schlüssel – alles landet irgendwie nass oder chaotisch. Ein Ortlieb Dry-Bag ist das unauffälligste, nützlichste Ding, das eine aktive Fotografin nie weiß, wie sie ohne ihn gelebt hat. Ortlieb ist deutsche Qualität, kein Kitsch, und die knalligen Farben (Signal Rot, Hochseeblau) sehen im neuen Rucksack gut aus.",
-            "where_to_get": "Globetrotter (Filiale oder globetrotter.de), Bergzeit (bergzeit.de), oder Decathlon für eine günstigere Variante. Globetrotter hat meistens Lagerware zum Mitnehmen.",
-            "presentation_tip": "Den Dry-Bag bereits befüllen: ein paar Riegel drin, eine Mini-Sonnencreme und ein kleiner Zettel mit 'Für die nächste Tour – damit nichts nass wird.' Das macht aus einem Utensil ein Erlebnis.",
-            "card_message": "Weil du nach der perfekten Kameratasche verdient hast, dass auch der Rest deiner Ausrüstung mithalten kann. Und weil ich weiß, dass die nächste Tour schon in deinem Kopf stattfindet. Herzlichen Glückwunsch, Schwesterherz."
+            "gift": "Ein hochwertiger Trailrunning- oder Wander-Duftkerze ist falsch – stattdessen: ein praktisches Wander-Accessoire mit echtem Nutzwert, das nicht zur Kameratasche doppelt – zum Beispiel eine robuste Trinkflasche aus Edelstahl oder ein leichtes, gut verarbeitetes Mikrofaser-Handtuch für die Tour",
+            "why_its_perfect": "Jemand, der aktiv wandert, nutzt Ausrüstung, die funktioniert. Eine gute Isolierflasche oder ein kompaktes Tourenhandtuch ist etwas, das sie auf jedem Weg dabei hat – praktisch, haltbar und nützlich. Da sie nichts Kitschiges möchte, liegt der Fokus auf dem Gebrauch, nicht auf der Dekoration.",
+            "example_to_look_for": "Eine doppelwandige Edelstahltrinkflasche von einer Marke wie Hydro Flask, Klean Kanteen oder einer vergleichbaren Qualitätsmarke – oder ein kompaktes Mikrofaser-Outdoorhandtuch von einem Outdoor-Spezialisten. Prüfe Verfügbarkeit und ob eine Farbe nach ihrem Geschmack dabei ist.",
+            "where_to_look": "Outdoor-Fachgeschäfte (dort kann man auch direkt schauen und anfassen), oder Onlineshops mit Outdoor-Ausrüstung",
+            "budget_fit": "Edelstahltrinkflaschen und Outdoor-Handtücher variieren im Preis – vergleich die Marken und Größen und achte darauf, dass es diese Woche verfügbar ist.",
+            "presentation_tip": "Fülle die Flasche zum Verschenken mit einem kleinen Päckchen ihres Lieblingskaffees oder einem Tütchen Wandertee – sie öffnet das Geschenk und hat direkt zwei Dinge, die zusammenpassen.",
+            "card_message": "Für alle Wege, die noch vor dir liegen – in der neuen Wohnung und auf dem nächsten Gipfel. Herzlichen Glückwunsch zum Geburtstag."
           }
         ],
         "the_wildcard": {
-          "gift": "Ein 'Erster Kaffee in der neuen Wohnung'-Erlebnis: Du kommst vorbei, bringst Bohnen von einer lokalen Specialty-Rösterei und ihr kocht zusammen – du schenkst ihr Zeit, eine fremde Röstung und ein Ritual für ihr Zuhause",
-          "price_range": "10 € – 20 € (Kaffee) + deine Zeit",
-          "why_its_perfect": "Sie ist gerade eingezogen – das bedeutet, ihre Wohnung ist noch nicht 'bewohnt'. Ein geteiltes Ritual macht aus vier Wänden ein Zuhause. Weil sie Spezialitätenkaffee liebt, weißt du, dass ihr ein guter Kaffee etwas bedeutet. Und weil du ihre Schwester bist, bist du die richtige Person, um das erste Erinnerungsmoment dort mitzugestalten.",
-          "where_to_get": "Lokale Specialty-Rösterei in deiner oder ihrer Stadt finden (Suche: 'Specialty Coffee Rösterei [Stadt]') – fast jede größere Stadt hat eine. Alternativ: Five Elephant, Bonanza, Röststätte, Röstkartell, je nach Region.",
-          "card_message": "Ich schenke dir keinen Gegenstand, sondern den ersten richtigen Kaffee in deiner neuen Wohnung – zusammen mit mir. Weil ein neues Zuhause ein erstes Ritual verdient. Wann passt es dir?"
+          "gift": "Ein Fotoprint-Gutschein oder ein Foto-Softcover-Buch, das sie selbst gestalten kann – aber mit einem persönlichen Twist: Du wählst ein bestimmtes Thema vor, das ihre Wanderfotos verbindet (zum Beispiel 'Aussichten' oder 'Wege'), und schenkst ihr damit einen Anlass, eine Auswahl aus ihrem eigenen Archiv zu treffen",
+          "why_its_perfect": "Ein Gutschein für ein Fotobuch oder Fotoprints ist kein dekoratives Accessoire, sondern ein Anlass, etwas aus den eigenen Aufnahmen zu machen. In einer neuen Wohnung hängt noch nichts an den Wänden – das ist ein guter Moment dafür.",
+          "different_because": "Während die anderen Ideen ihr etwas Neues geben, gibt dir das hier einen Anlass, etwas zu holen, was sie schon hat – ihre eigenen Bilder – und ihnen einen Platz zu geben.",
+          "example_to_look_for": "Onlinedienste wie Saal Digital, Photobox oder CEWE bieten Fotobücher und hochwertige Fotodrucke an – manche auch als Gutschein. Prüfe, ob ein Gutschein rechtzeitig digital verfügbar ist und welche Qualitätsstufe in dein Budget passt.",
+          "where_to_look": "Fotodruckdienste mit Onlineshop, oft auch mit digitalem Gutschein-Versand; alternativ ein Fotofachgeschäft, das Abzüge in Galeriequalität anbietet",
+          "budget_fit": "Ein Gutschein für ein hochwertiges Fotobuch oder mehrere Großformatdrucke bewegt sich gut innerhalb deines Budgets, je nach gewähltem Format und Anbieter.",
+          "card_message": "Du machst so schöne Bilder – und ich dachte, es wird Zeit, dass ein paar davon wirklich zu sehen sind. Die neue Wohnung wartet auf Wände, die zu dir passen. Herzlichen Glückwunsch zum Geburtstag."
         },
         "if_deadline_is_now": {
-          "instant_option": "Digitales Geschenk: Ein Jahresabo bei 'komoot' (Premium) – die Wander- und Outdoor-App mit offline Karten, Tourenplanung und Community-Empfehlungen",
-          "how": "komoot.de aufrufen → 'Premium' auswählen → als Geschenk kaufen (Funktion direkt auf der Seite) → PDF-Gutschein kommt sofort per Mail → ausdrucken oder per WhatsApp schicken mit selbst geschriebener Nachricht davor. Dauert 10 Minuten.",
-          "card_message": "Weil jede gute Tour mit einem guten Plan beginnt – und du verdient hast, dass dein Handy offline weiß, wo es langgeht. Komoot Premium für ein Jahr: damit deine nächsten Touren besser werden als alle davor. Alles Liebe zum Geburtstag."
+          "instant_option": "Gehe heute in eine lokale Spezialitätenkaffee-Rösterei oder ein gutes Kaffeefachgeschäft und lass dir dort eine Auswahl von frisch geröstetem Kaffee zusammenstellen – am besten drei kleine Pakete aus verschiedenen Herkünften. Kein Onlinekauf nötig.",
+          "how": "1. Suche heute eine Rösterei oder ein Kaffeefachgeschäft in deiner Nähe (viele haben samstags geöffnet). 2. Erkläre dem Personal kurz, für wen du einkaufst und was du weißt – sie helfen dir in der Regel gerne bei der Auswahl. 3. Bitte um eine kleine Auswahl oder ein Probierpaket. 4. Nimm eine schöne Papiertüte oder eine Box mit, in der du alles überreichen kannst. 5. Schreibe eine kurze Karte dazu.",
+          "why_it_still_lands": "Ein Geschenk, das zeigt, dass du heute eigens losgegangen bist und dir erklären lassen hast, was gut ist, trägt die Geschichte des Choosens bereits in sich – das ist oft mehr wert als ein anonym bestelltes Paket.",
+          "card_message": "Ich wollte, dass heute etwas Besonderes bei dir ankommt – also bin ich losgegangen und habe jemanden gefragt, was wirklich gut ist. Diese hier haben gewonnen. Herzlichen Glückwunsch zum Geburtstag."
         },
-        "never_do_this": "Kein generisches 'Wanderer-Geschenkset' aus dem Drogeriemarkt oder Tchibo – Edelstahlbecher mit aufgedrucktem Bergpanorama, Socken mit Wandermotiv, Kerze mit 'Abenteuer'-Schriftzug. Sie ist jemand, dem Details wichtig sind (das sieht man daran, dass sie fotografiert). Solche Sets signalisieren: 'Ich weiß, dass du wanderst, aber ich kenne dich nicht.' Das ist das Gegenteil von dem, was du willst."
+        "never_do_this": "Vermeide dekorative Foto- oder Wander-Merchandise-Artikel – also Dinge wie bedruckte Tassen mit Bergmotiv, Kerzen mit Outdoor-Düften oder Bilderrahmen mit Wander-Sprüchen. Wer ernsthaft fotografiert und wandert, definiert sich über das Tun, nicht über Symbole davon. Solche Geschenke signalisieren, dass du das Hobby gesehen, aber nicht die Person dahinter. Da sie außerdem kein Kitsch möchte, sind dekorative Hobby-Accessoires genau der blinde Fleck, in den man leicht tritt – prüfe jede Idee mit der Frage: Nutzt sie das, oder schaut sie es nur an?"
       }
     }
   ]
