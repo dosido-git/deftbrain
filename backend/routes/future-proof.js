@@ -13,7 +13,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // that one search serves many visitors asking about the same field, and short
 // enough that nothing here goes stale in a way that changes an answer.
 const FACT_TTL_MS = 7 * DAY_MS;
-const COLD_WAIT_MS = 12000;
+// Zero, on measurement. Across 46 cold requests the search landed inside the
+// 12-second window once. The other 45 waited the full twelve seconds and then
+// answered unverified anyway, so the wait was buying a 2% chance of sources at
+// a guaranteed cost of 12s. The background refresh still runs and still warms
+// the cache for everyone after them, which is where the sourcing actually comes
+// from. Raise this only if the search itself gets much faster.
+const COLD_WAIT_MS = Number(process.env.FP_COLD_WAIT_MS || 0);
 // Deliberately generous. An entry budget normally exists so a slow answer does
 // not get slower, but here the guard is the mechanism the whole tool rests on,
 // and at 75s it was skipped on precisely the requests that need it most: a cold

@@ -368,6 +368,20 @@ const FutureProof = ({ tool }) => {
           )}
           </button>
 
+          {/* While it runs, say so and say why. A minute of nothing reads as
+              broken; a minute of "it is searching, then checking itself" reads
+              as work. Same sentence either way — it is the reason for the wait,
+              not an apology for it. */}
+          {loading ? (
+            <div className={`${c.infoBox} border rounded-lg p-3`} role="status">
+              {/* No second spinner — the button is already spinning the tool's
+                  own icon, and two of them at once is fidget, not feedback. */}
+              <p className="text-xs leading-relaxed">{t('fp_takes_a_while')}</p>
+            </div>
+          ) : (
+            <p className={`text-xs text-center ${c.textMuted} leading-relaxed`}>{t('fp_takes_a_while')}</p>
+          )}
+
           {/* What the tool actually does, next to the button that does it.
               Secondary weight on purpose — this is a description, not a warning. */}
           <p className={`text-xs text-center ${c.textMuted} leading-relaxed`}>{t('fp_not_a_forecast')}</p>
