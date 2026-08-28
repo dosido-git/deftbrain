@@ -44,18 +44,25 @@ const PUSH_DAYS = [
 ];
 
 // RFC 5545 weekday codes, in the order PUSH_DAYS lists them.
-// Each day gets its BYDAY code and an anchor date that IS that weekday. DTSTART
-// has to match BYDAY or clients disagree about when the series starts — some
-// honour the rule, others emit one stray occurrence on the DTSTART day. The week
-// of 5 Jan 2026 is used because it runs Monday to Sunday cleanly.
-const ICS_DAY = {
-  Monday:    { code: 'MO', anchor: '20260105' },
-  Tuesday:   { code: 'TU', anchor: '20260106' },
-  Wednesday: { code: 'WE', anchor: '20260107' },
-  Thursday:  { code: 'TH', anchor: '20260108' },
-  Friday:    { code: 'FR', anchor: '20260109' },
-  Saturday:  { code: 'SA', anchor: '20260110' },
-  Sunday:    { code: 'SU', anchor: '20260111' },
+// RFC 5545 weekday codes, in the order PUSH_DAYS lists them.
+const ICS_DAY = { Monday: 'MO', Tuesday: 'TU', Wednesday: 'WE', Thursday: 'TH', Friday: 'FR', Saturday: 'SA', Sunday: 'SU' };
+
+const pad2 = (n) => String(n).padStart(2, '0');
+
+// The next occurrence of that weekday, today included. The first version
+// anchored every series to a fixed week in January so the file would be
+// identical for everyone — which meant importing it in August added a series
+// whose first occurrence was eight months in the past. Clients that show you
+// the start date show you January, and it reads as though nothing was added.
+const nextOccurrence = (day) => {
+  const order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const target = order.indexOf(day);
+  if (target < 0) return null;
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  const todayIdx = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() + ((target - todayIdx + 7) % 7));
+  return `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
 };
 
 // A weekly reminder has to reach someone whose tab is closed, which rules out
@@ -63,11 +70,15 @@ const ICS_DAY = {
 // page. A calendar file hands the job to the calendar they already read, with
 // no permission prompt, no service worker and nothing running server-side.
 const buildIcs = ({ day, title, note }) => {
-  const spec = ICS_DAY[day];
-  if (!spec) return null;
-  // Anchored to a fixed past Monday so the series is stable and the file is
-  // identical for everyone who picks the same day — no clock, no timezone.
-  const fold = (line) => line.replace(/[\r\n]+/g, ' ');
+  const byday = ICS_DAY[day];
+  const start = nextOccurrence(day);
+  if (!byday || !start) return null;
+  const fold = (line) => String(line).replace(/[\r\n]+/g, ' ');
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  // Unique per download. A fixed UID meant a calendar that had already seen it
+  // silently ignored the second import — someone who tried twice, or who once
+  // deleted the event, could add it again and see nothing happen.
+  const uid = `deftbrain-gpg-${byday}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@deftbrain.com`;
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -75,11 +86,12 @@ const buildIcs = ({ day, title, note }) => {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:deftbrain-gpg-${spec.code}@deftbrain.com`,
-    'DTSTAMP:20260101T090000Z',
-    `DTSTART;VALUE=DATE:${spec.anchor}`,
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;VALUE=DATE:${start}`,
     'DURATION:P1D',
-    `RRULE:FREQ=WEEKLY;BYDAY=${spec.code}`,
+    `RRULE:FREQ=WEEKLY;BYDAY=${byday}`,
+    'SEQUENCE:0',
     `SUMMARY:${fold(title)}`,
     `DESCRIPTION:${fold(note)}`,
     'URL:https://deftbrain.com/GentlePushGenerator',
@@ -182,14 +194,18 @@ const GentlePushGenerator = ({ tool }) => {
       note: t('gpg_ics_note'),
     });
     if (!ics) return;
-    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+    // A data: URI rather than a blob: URL. Safari — and iOS in particular —
+    // frequently ignores the download attribute on a blob, so the click does
+    // nothing visible and the visitor concludes the feature is broken. A data
+    // URI with the calendar MIME type is handled in more places, and on iOS it
+    // hands off to the calendar rather than silently failing.
     const a = document.createElement('a');
-    a.href = url;
+    a.href = `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
     a.download = 'deftbrain-gentle-push.ics';
+    a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
   };
 
   const resultsRef = React.useRef(null);
