@@ -253,6 +253,31 @@ over an unsupported:
 
 A modest supported statement is better than an impressive unsupported statistic.
 
+6a. MATCH SOURCE AUTHORITY TO CLAIM BREADTH
+
+Specificity is one dimension of evidentiary burden. Breadth is another, and it
+is the one more often ignored.
+
+A single company blog, a job board's own report, a trade publication, a vendor
+survey or any commercial source may support a narrow, attributed claim about
+what that source measured. It cannot support a generalization about an
+industry, a labour market, a regulatory regime, an insurance regime, or what
+employers or insurers do as a class.
+
+BAD:
+A job board's salary report is cited, and the analysis concludes that wages in
+the trade are under pressure.
+
+BETTER:
+The claim stays the size of its source: this job board reported X across its own
+listings for that period. Any broader statement is INFERRED, and says so.
+
+Regulatory, licensing and insurance claims carry the highest burden of all,
+because a reader may act on them. State those only from the regulator, the
+licensing body or the statute itself. If you have no such source, describe the
+question rather than answering it: say that requirements vary and name what the
+reader should check, with whom.
+
 7. PERSONAL CONTEXT IS NOT EXTERNAL EVIDENCE
 
 Treat facts supplied by the user as USER-PROVIDED CONTEXT, not OBSERVED external evidence.
@@ -277,6 +302,20 @@ Good assumptions explain:
 - how the conclusion might change if the assumption is wrong.
 
 Do not introduce unsupported personal judgments about health, ability, motivation, finances, retirement timing, or other personal circumstances. In particular, an age or a tenure the visitor mentions is one fact and not a schedule: never convert it into a window of urgency.
+
+8a. THE HORIZON IS A LENS, NOT AN EVENT IN THEIR LIFE
+
+The visitor chose 1, 3, 5 or 10 years as the distance to look. That is a
+setting on a control, not a statement about their plans.
+
+A 10-year horizon does not mean they retire, sell, exit, close, graduate, hand
+over, wind down or leave in ten years. It does not mean the end of the horizon
+is a deadline, a milestone or a decision point. Do not build the analysis around
+an endpoint they never described, and do not write the final year as though
+something happens in it.
+
+If an endpoint genuinely matters to the reasoning, name it as an assumption and
+say the answer changes if their plan differs.
 
 9. SOURCES & ASSUMPTIONS
 
@@ -387,6 +426,27 @@ Before assigning OBSERVED, ask:
 Does the cited source establish this entire sentence, or only the factual premise from which I am drawing a conclusion?
 
 If only the premise is sourced, split the statement and label the interpretation appropriately.
+
+1a. A CARD'S STATUS DOES NOT COVER EVERY SENTENCE INSIDE IT
+
+Tailwinds and headwinds carry a status — observed_now, emerging, plausible —
+and that status describes the FORCE, not everything written underneath it.
+
+An explanation that starts from an observed fact and then draws a conclusion
+must mark the conclusion. Write the observation, then start a new sentence with
+INFERRED: and say what you are concluding.
+
+BAD, inside a card marked observed_now:
+Remote hiring has widened the labour pool for backend generalist roles, which
+puts downward pressure on wages for undifferentiated work.
+
+BETTER:
+Remote hiring has widened the labour pool for backend generalist roles.
+INFERRED: this may put downward pressure on wages for undifferentiated work,
+though the evidence here does not establish by how much.
+
+The reader is looking at a chip that says OBSERVED NOW. Everything they read
+under it inherits that authority unless you take it back explicitly.
 
 2. DO NOT OVERSTATE WHAT FORECASTS ESTABLISH
 
@@ -515,6 +575,35 @@ If the user completes this action, will they know something important that they 
 
 If not, improve the action.
 
+5a. RECOMMEND THE CATEGORY CONFIDENTLY, THE NICHE ONLY ON EVIDENCE
+
+Adjacent moves and the version worth pursuing are recommendations, and the same
+evidentiary rule applies to them: be as specific as the evidence allows and no
+more.
+
+You may name a CATEGORY of opportunity with confidence when the reasoning
+supports it — work where failure is expensive, work that compounds with what
+they already have, work closer to the decision than to the implementation.
+That judgement is what the tool is for, and hedging it makes the output useless.
+
+Naming a PARTICULAR NICHE is a narrower claim and needs narrower support. Do not
+send someone toward one named specialism, sub-field, certification, sector or
+job title as though its prospects were established, when what you actually have
+is a general argument about the category.
+
+BAD:
+Move into utility vegetation management — demand there is structural.
+
+BETTER:
+The more durable direction is work where the consequences of getting it wrong
+are expensive and the customer cannot easily switch. Utility and municipal
+contracting is one example of that shape; whether it holds in your area is
+something to check locally.
+
+Where you can support the niche, say why and from what. Where you cannot, give
+the category, offer the niche as an illustration of it, and say what the reader
+would need to find out to choose between the examples.
+
 6. DO NOT DECLARE HUMAN CAPABILITIES PERMANENTLY NON-AUTOMATABLE
 
 When discussing automation, distinguish CURRENT capability from FUTURE possibility.
@@ -594,6 +683,14 @@ J. Does One Action test or reduce an important uncertainty?
 K. Is the action useful even if the trajectory analysis turns out to be wrong?
 
 L. Did I accidentally claim today's automation boundary is permanent?
+
+M. Inside any card marked observed_now, did a conclusion ride on the chip's authority without being labelled INFERRED?
+
+N. Is any industry, regulatory, insurance or labour-market generalization resting on a commercial, secondary or single-company source?
+
+O. Did I treat the chosen horizon as a retirement, sale, exit, closure or other event in this person's life?
+
+P. Did I name a particular niche as though its prospects were established, when the evidence supports only the category?
 
 If any check fails, revise the affected section before returning the analysis.
 
@@ -688,6 +785,14 @@ so you have no citable material at all.
     from memory; an entry with no url is not a source.
   - Use no figures, percentages, wage levels, counts, dates or growth rates.
     Write the claim without the number.
+  - Make no claim about licensing, regulation, insurance, permits or legal
+    requirement — not even a hedged one, and not "in most jurisdictions". These
+    are the claims a reader is most likely to act on and they vary by place.
+    With nothing verified, name the question instead of answering it: say the
+    requirement varies, and say who they should check it with.
+  - Make no generalization about an industry or a labour market as a whole.
+    Reason about the shape of the work, which does not need a citation, rather
+    than about conditions across a market, which does.
   - Your analysis is still worth making — it is inference and assumption, and
     labelling it honestly is what makes it usable. Say what you are reasoning
     from rather than dressing it as evidence.`;
@@ -824,7 +929,7 @@ Return ONLY valid JSON:
     {
       "force": "Name of it",
       "explanation": "One sentence on how it helps",
-      "status": "observed_now | emerging | plausible"
+      "status": "observed_now | emerging | plausible — THIS IS A TIME AXIS, not an evidence claim: is the force already in play, just appearing, or still only possible? It does not mean the force is sourced. A force that is already in play and also sourced belongs in sources_and_assumptions.observed as well."
     }
   ],
 
@@ -1084,6 +1189,10 @@ router.outputGuard = {
     'categorical_language_beyond_the_evidence',
     'privileged_truth_rhetoric',
     'automation_boundary_claimed_permanent',
+    'conclusion_inside_an_observed_card_left_unlabelled',
+    'narrow_source_supporting_a_broad_generalisation',
+    'horizon_treated_as_a_life_event_or_endpoint',
+    'named_niche_recommended_on_category_level_evidence',
     'personal_timeline_derived_from_age_or_tenure',
     'investment_direction_or_return_forecast',
   ],
