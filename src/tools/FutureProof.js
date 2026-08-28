@@ -37,6 +37,10 @@ const STATUS_KEYS = {
   emerging:     'fp_status_emerging',
   plausible:    'fp_status_plausible',
 };
+// A card needs both halves. One without the other rendered as a titleless
+// paragraph or a heading with nothing under it.
+const usableForce = (x) => !!(x && String(x.force || '').trim() && String(x.explanation || '').trim());
+
 const CERTAINTY_KEYS = { high: 'fp_certainty_high', moderate: 'fp_certainty_moderate', low: 'fp_certainty_low' };
 const EXPOSURE_KEYS = {
   currently_susceptible:          'fp_exp_susceptible',
@@ -237,7 +241,12 @@ const FutureProof = ({ tool }) => {
     if (sa && (sa.observed?.length || sa.inferred?.length || sa.assumed?.length)) {
       lines.push('', t('fp_basis'));
       [['observed', 'fp_basis_observed'], ['inferred', 'fp_basis_inferred'], ['assumed', 'fp_basis_assumed']].forEach(([k, lk]) => {
-        if (sa[k]?.length) { lines.push(t(lk)); sa[k].forEach(x => lines.push(`  · ${x}`)); }
+        if (sa[k]?.length) {
+          lines.push(t(lk));
+          sa[k].forEach(x => lines.push(typeof x === 'object' && x
+            ? `  · ${x.claim}${[x.publisher, x.published].filter(Boolean).length ? ` (${[x.publisher, x.published].filter(Boolean).join(', ')})` : ''}${x.url ? ` ${x.url}` : ''}`
+            : `  · ${x}`));
+        }
       });
     }
     lines.push(BRAND);
@@ -421,13 +430,13 @@ const FutureProof = ({ tool }) => {
           })()}
 
           {/* Tailwinds + Headwinds */}
-          {(results?.tailwinds?.length > 0 || results?.headwinds?.length > 0) && (
+          {(results?.tailwinds?.filter(usableForce).length > 0 || results?.headwinds?.filter(usableForce).length > 0) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {results?.tailwinds?.length > 0 && (
+              {results?.tailwinds?.filter(usableForce).length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>🌬️ {t('fp_tailwinds')}</p>
                   <div className="space-y-3">
-                    {results?.tailwinds?.map((tw, i) => (
+                    {results?.tailwinds?.filter(usableForce).map((tw, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{tw.force}</p>
@@ -441,11 +450,11 @@ const FutureProof = ({ tool }) => {
                   </div>
                 </div>
               )}
-              {results?.headwinds?.length > 0 && (
+              {results?.headwinds?.filter(usableForce).length > 0 && (
                 <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-3`}>⛈️ {t('fp_headwinds')}</p>
                   <div className="space-y-3">
-                    {results?.headwinds?.map((h, i) => (
+                    {results?.headwinds?.filter(usableForce).map((h, i) => (
                       <div key={i}>
                         <div className="flex items-center justify-between gap-2 mb-0.5">
                           <p className={`text-xs font-semibold ${c.text}`}>{h.force}</p>
@@ -629,12 +638,28 @@ const FutureProof = ({ tool }) => {
                     return (
                       <div key={key}>
                         <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-1`}>{t(labelKey)}</p>
-                        <ul className="space-y-1">
-                          {list.map((item, i) => (
-                            <li key={i} className={`text-xs ${c.textSecondary} flex gap-2`}>
-                              <span aria-hidden="true" className={c.textMuted}>·</span><span>{item}</span>
-                            </li>
-                          ))}
+                        <ul className="space-y-1.5">
+                          {list.map((item, i) => {
+                            // Observed entries are records so a reader can go and
+                            // check them; inferred and assumed stay plain strings.
+                            const rec = item && typeof item === 'object' ? item : null;
+                            const text = rec ? rec.claim : item;
+                            const url = rec && typeof rec.url === 'string' && /^https?:\/\//i.test(rec.url) ? rec.url : null;
+                            const meta = rec ? [rec.publisher, rec.published, rec.jurisdiction].filter(Boolean).join(' · ') : '';
+                            return (
+                              <li key={i} className={`text-xs ${c.textSecondary} flex gap-2`}>
+                                <span aria-hidden="true" className={c.textMuted}>·</span>
+                                <span>
+                                  {text}
+                                  {meta && <span className={`block mt-0.5 ${c.textMuted}`}>{meta}</span>}
+                                  {url && (
+                                    <a href={url} target="_blank" rel="noopener noreferrer nofollow"
+                                      className={`block mt-0.5 break-all ${linkStyle}`}>{url}</a>
+                                  )}
+                                </span>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     );

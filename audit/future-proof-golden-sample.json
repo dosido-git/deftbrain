@@ -22,121 +22,109 @@
       },
       "output": {
         "analysis_title": "Freiberufliches Branding und Illustration",
-        "the_question": "Bleibt die Kombination aus strategischem Branding-Urteilsvermögen und handwerklicher Illustration als eigenständige Leistung am Markt bezahlbar, wenn KI-Werkzeuge weiter reifen?",
-        "subject_as_understood": "Eine Einzelperson mit zehn Jahren Markterfahrung in einem Feld, das sich gerade technologisch verschiebt — analysiert als Arbeitsmarktfrage zwischen Aufgabenautomatisierung und positioniertem Fachurteil.",
+        "the_question": "Bleibt eigenständige gestalterische Urteilsfähigkeit im Branding und in der Illustration ein knappes, bezahltes Gut, während KI-Werkzeuge die Ausführungsarbeit verbilligen?",
+        "subject_as_understood": "Ein Arbeitsmarktproblem mit zwei Ebenen: das Feld Grafikdesign insgesamt, und darin die spezifische Rolle des freiberuflichen Spezialisten für Branding und Illustration.",
         "trajectory": "transforming",
         "trajectory_label": "TRANSFORMING ⟳",
         "certainty": "low",
-        "certainty_because": "Dass KI-Bildgeneratoren einfache Illustrationsaufgaben bereits heute übernehmen können, ist beobachtbar. Wie schnell und wie vollständig sie komplexere, kontextuell-strategische Designarbeit ersetzen oder nur ergänzen, lässt sich aus dem heutigen Stand nicht ableiten — das ist der unsichere Kern dieser Analyse.",
-        "the_pattern": "Das Feld Grafikdesign wächst insgesamt — gemessen an der Zahl der Akteure, der Nachfrage nach visueller Kommunikation und den verfügbaren digitalen Absatzmärkten (beobachtet). Innerhalb dieses wachsenden Feldes schrumpft jedoch die Rolle 'standardisierte Bilderstellung zu Marktpreisen', weil KI-Werkzeuge diesen Teil der Wertschöpfungskette schnell günstiger machen (beobachtet). Was für diese Person entscheidend ist: Branding ist nicht primär Bilderzeugung, sondern Urteilsvermögen über Bedeutung, Zielgruppe und strategische Wirkung — ob dieser Teil vom Aufgabenwegfall betroffen oder davon sogar gestärkt wird, ist derzeit eine offene Frage.",
+        "certainty_because": "Dass KI-Werkzeuge bereits heute Ausführungsaufgaben im Designbereich übernehmen können, ist beobachtbar. Wie schnell Auftraggeber ihre Budgets und Beschaffungswege daraufhin umstellen, und wie stark das die Nachfrage nach freiberuflichen Spezialisten dämpft oder umlenkt, ist über einen Zeithorizont von zehn Jahren nicht zuverlässig einzuschätzen.",
+        "the_pattern": "Das Feld Grafikdesign wächst gemessen an der Zahl verfügbarer Werkzeuge und an der Menge produzierter visueller Inhalte — beobachtbar an der Verbreitung von Design-Plattformen und KI-Bildgeneratoren. Die Rolle des freiberuflichen Spezialisten ist davon getrennt zu betrachten: Sie hängt davon ab, ob Auftraggeber für strategisches Urteilen, Markenkonsistenz und handschriftliche Eigenheit weiterhin externes Fachwissen beauftragen oder ob sie das intern oder automatisiert lösen. Dieser Shift ist erkennbar im Gange, sein Ausgang für den Mittelmarkt ist offen.",
         "tailwinds": [
           {
-            "force": "Steigende Nachfrage nach visueller Differenzierung",
-            "explanation": "Je mehr KI-generierte Bilder im Umlauf sind, desto stärker könnte der Wunsch nach erkennbarer, 'menschlicher' Handschrift bei Marken werden — als Differenzierungssignal.",
+            "force": "Wachsende Markendichte im Markt",
+            "explanation": "Je mehr Unternehmen und Produkte um Aufmerksamkeit konkurrieren, desto höher der potenzielle Druck, sich visuell erkennbar zu unterscheiden — was Branding-Expertise relevant hält.",
             "status": "emerging"
           },
           {
-            "force": "Zehn Jahre positionierte Marktpräsenz",
-            "explanation": "Bestehende Kundenbeziehungen, Referenzprojekte und Reputation sind Eintrittsbarrieren, die neue Marktteilnehmer nicht schnell replizieren können.",
-            "status": "observed_now"
+            "force": "KI erzeugt Nachfrage nach Kuration und Urteil",
+            "explanation": "Auftraggeber, die selbst KI-Output erzeugen, benötigen zunehmend jemanden, der bewertet, was davon zur Marke passt — eine Funktion, die Erfahrung voraussetzt und sich schwer automatisieren lässt.",
+            "status": "emerging"
           },
           {
-            "force": "KI als Produktivitätswerkzeug",
-            "explanation": "Wer KI-Werkzeuge in den eigenen Prozess integriert, kann Projekte schneller und zu attraktiveren Margen liefern, ohne das strategische Urteilsvermögen abzugeben.",
-            "status": "observed_now"
-          },
-          {
-            "force": "Komplexität im Markenaufbau bleibt hoch",
-            "explanation": "Strategische Markenkonsistenz über Touchpoints, Kulturen und Medien hinweg erfordert Kontextwissen und Kundennähe, die reine Bildgenerierung nicht liefert.",
+            "force": "Handschriftliche Illustration als Differenzmerkmal",
+            "explanation": "Erkennbarer individueller Stil ist von KI-Systemen bisher nicht reproduzierbar, was ihn als Nischenargument gegenüber generischen Outputs einsetzbar macht.",
             "status": "observed_now"
           }
         ],
         "headwinds": [
           {
-            "force": "Preisdruck im unteren Illustrationssegment",
-            "explanation": "Auftraggeber, die einfache Bilder benötigen, können diese heute schon schneller und günstiger mit KI-Werkzeugen erstellen — dieser Markt ist teilweise bereits weggefallen.",
+            "force": "KI-Bildgeneratoren komprimieren die Ausführungsarbeit",
+            "explanation": "Aufgaben wie Variantenentwicklung, Moodboards und Erstentwürfe sind bereits heute mit KI-Werkzeugen in Minuten statt Stunden erzeugbar, was den abrechenbaren Zeitaufwand für Routinearbeiten senkt.",
             "status": "observed_now",
-            "timing": "Bereits sichtbar"
+            "timing": "Bereits sichtbar, Preisdruck auf Standardleistungen jetzt vorhanden"
           },
           {
-            "force": "Kompressionsdruck auf Freelance-Budgets",
-            "explanation": "Wenn Unternehmen interne KI-Lizenzen nutzen, könnten sie den externen Designbedarf reduzieren, ohne die Qualitätsschwelle zu senken — das Volumen verfügbarer Aufträge könnte sinken.",
+            "force": "Budgetverlagerung bei mittleren Auftraggebern",
+            "explanation": "Mittelgroße Kunden, die bisher freiberufliche Designer für Standardaufgaben beauftragten, könnten diese Arbeiten intern mit KI-Werkzeugen abdecken und nur noch hochwertige Projekte extern vergeben.",
             "status": "emerging",
-            "timing": "Möglich innerhalb von 2–4 Jahren, abhängig davon wie schnell Unternehmen KI-Kompetenz aufbauen"
+            "timing": "Möglich innerhalb von zwei bis fünf Jahren, wenn Werkzeuge zugänglicher und verlässlicher werden"
           },
           {
-            "force": "Wachsendes Angebot positionierter Designerinnen und Designer",
-            "explanation": "KI senkt den Aufwand für die Bildproduktion, was mehr Wettbewerberinnen und Wettbewerber in die 'strategische Designberatung' drängen könnte, ohne dass die Nachfrage proportional wächst.",
-            "status": "plausible",
-            "timing": "Möglich innerhalb von 3–5 Jahren, wenn der Einstieg ins Feld weiter erleichtert wird"
-          },
-          {
-            "force": "Konsolidierung auf Plattformebene",
-            "explanation": "Große Design-Plattformen bündeln KI-Werkzeuge mit Vorlagen und senken dadurch den Schwellenwert für Nicht-Fachleute, was besonders das mittlere Auftragssegment gefährdet.",
+            "force": "Niedrigere Markteintrittsbarriere für Wettbewerber",
+            "explanation": "KI-gestützte Werkzeuge senken den technischen Aufwand, der bisher Einsteiger vom Markt fernhielt, was das Angebot an günstigeren Alternativen erhöhen kann.",
             "status": "observed_now",
-            "timing": "Bereits sichtbar, Ausmaß der Wirkung noch offen"
+            "timing": "Bereits sichtbar im unteren Preissegment"
           }
         ],
         "the_automation_question": {
           "central_to_conclusion": true,
           "exposure": "increasingly_assisted",
-          "what_is_exposed": "Bildvarianten erstellen, Moodboards zusammenstellen, einfache Illustrationen nach Briefing, Stock-Ersatz, technische Ausführung auf Basis klar definierter Vorgaben.",
-          "what_is_not": "Strategische Beratung zum Markenaufbau, Urteilsvermögen über kulturelle und zielgruppenspezifische Bedeutung, Vertrauensbeziehung zum Kunden, Kuration und Bewertung von KI-Output, unverwechselbare künstlerische Handschrift als Alleinstellungsmerkmal.",
-          "net_effect": "Für diese Person eher Werkzeug als Bedrohung — vorausgesetzt, die Positionierung verschiebt sich weg von der reinen Bildproduktion hin zu Urteilsvermögen und strategischer Führung. Welcher Anteil des bisherigen Umsatzes auf dem nun exponierteren Teil der Leistung lag, ist von außen nicht einschätzbar und entscheidet darüber, wie dringlich dieser Schritt ist."
+          "what_is_exposed": "Ausführungsschritte wie Variantenerstellung, Farb- und Layoutexperimente, Stockillustration für Standardkontexte und einfache Logo-Variationen.",
+          "what_is_not": "Strategische Markenentscheidungen, das Verhandeln von Bedeutung mit Auftraggebern, ein wiedererkennbarer persönlicher Illustrationsstil und die redaktionelle Kontrolle darüber, welcher Output tatsächlich zur Marke passt.",
+          "net_effect": "Eher Werkzeug als Bedrohung für jemanden mit einem jahrelang entwickelten Stil und Branding-Urteil — aber nur, wenn dieser Unterschied im eigenen Angebot sichtbar gemacht und kommuniziert wird."
         },
         "the_pivot": {
           "adjacent_moves": [
             {
-              "move": "Marken-Beratungsleistung als explizites Angebot formulieren: nicht 'ich gestalte Logos', sondern 'ich helfe Unternehmen zu entscheiden, wie sie aussehen und warum'.",
-              "why_resilient": "Strategisches Urteilsvermögen ist weniger direkt durch KI-Werkzeuge substituierbar als Bildproduktion — dieser Schritt schützt auch dann, wenn das Automatisierungstempo zunimmt.",
+              "move": "Branding-Beratung als eigenständige Leistung anbieten, nicht nur Ausführung",
+              "why_resilient": "Strategisches Urteilen ist schwerer zu ersetzen als Pixelarbeit, und zehn Jahre Praxiserfahrung sind ein glaubwürdiges Argument dafür.",
               "effort_required": "medium"
             },
             {
-              "move": "Illustration als bewusst 'handgemachtes' Differenzierungsmerkmal positionieren und für Kunden nutzen, die genau das kommunizieren wollen.",
-              "why_resilient": "Wenn KI-Bilder ubiquitär werden, könnte erkennbar menschliche Illustration als Qualitätssignal an Wert gewinnen — der Tailwind 'Differenzierung' greift hier direkt.",
+              "move": "KI-Werkzeuge offen in den eigenen Prozess integrieren und das als Effizienzversprechen an Kunden kommunizieren",
+              "why_resilient": "Wer die Werkzeuge beherrscht und gleichzeitig das Qualitätsurteil mitbringt, ist dem Kunden nützlicher als jemand, der beides getrennt beschafft.",
               "effort_required": "low"
             },
             {
-              "move": "KI-Werkzeuge öffentlich in den Arbeitsprozess integrieren und dokumentieren — als Effizienznachweis gegenüber Kunden, nicht als Ersatz des eigenen Urteils.",
-              "why_resilient": "Wer den Einsatz von KI-Werkzeugen souverän demonstriert, verliert keine Aufträge an sie, sondern hebt den eigenen Wert gegenüber Kunden, die diese Werkzeuge selbst nicht beherrschen.",
-              "effort_required": "medium"
+              "move": "Einen klar abgrenzbaren Illustrationsstil als lizenzierbares Asset entwickeln",
+              "why_resilient": "Lizenzierung entkoppelt Einnahmen vom Zeitaufwand und funktioniert unabhängig davon, wie sich der Markt für Ausführungsarbeit entwickelt.",
+              "effort_required": "high"
             }
           ],
-          "the_version_worth_pursuing": "Eine Praxis, die strategische Markenberatung in den Mittelpunkt stellt, Illustration als bewusst kuratierten Ausdruck positioniert und KI-Werkzeuge als Produktivitätshebel sichtbar nutzt — sodass das Angebot nicht mehr primär auf 'Bilder erzeugen' basiert, sondern auf dem Urteil darüber, welche Bilder welche Wirkung erzeugen und warum. Ob das im jeweiligen Markt und mit dem vorhandenen Kundenstamm funktioniert, lässt sich von außen nicht beurteilen."
+          "the_version_worth_pursuing": "A freelance profile that foregrounds branding judgment and uses AI tools visibly as an efficiency layer — not as a replacement for your own work, but as evidence that clients get both in one person."
         },
         "scenarios": {
           "bull_case": {
-            "if_true": "KI-generierte Bilder werden als austauschbar wahrgenommen, Unternehmen zahlen eine Prämie für erkennbare Autorenschaft und strategische Markenkohärenz, und der Markt für hochwertige Designberatung wächst.",
-            "then": "Die Nachfrage nach erfahrenen, positionierten Designerinnen und Designern steigt, während das Angebot im unteren Segment durch KI-Werkzeuge abgedeckt wird — eine strukturelle Aufwertung des Fachurteils.",
-            "for_you": "Zehn Jahre Erfahrung werden zum Eintrittsvorteil, der für neue Marktteilnehmerinnen und -teilnehmer schwer aufzuholen ist. Preise und Projektqualität können steigen."
+            "if_true": "Clients find that AI output without design judgment risks diluting their brands, and continue to invest in specialists who combine both. Your illustration work becomes valued as a counterpoint to generic image generation.",
+            "then": "Die Nachfrage nach erfahrenen Branding-Freiberuflern stabilisiert sich oder wächst im oberen Preissegment, während das Volumen-Segment an KI-gestützte Inhouse-Lösungen übergeht.",
+            "for_you": "Zehnjährige Erfahrung und ein erkennbarer Stil werden zum Auswahlargument. Höhere Tagessätze für weniger, aber anspruchsvollere Projekte wären unter dieser Bedingung denkbar."
           },
           "base_case": {
-            "if_true": "KI-Werkzeuge übernehmen einen wachsenden Anteil der Bildproduktion, ohne das Bedürfnis nach strategischer Markenarbeit zu eliminieren. Der Markt fragmentiert sich: mehr Volumen im automatisierten Niedrigsegment, stabiles aber nicht wachsendes Segment für positionierte Beratung.",
-            "then": "Einkommen aus reiner Illustrationsproduktion sinkt unter Druck; wer sich früh auf Beratung und Kuration verschoben hat, hält Marge — aber der Wettbewerb in diesem Segment nimmt zu.",
-            "for_you": "Die bestehende Praxis ist tragfähig, wenn aktiv neu positioniert wird. Passiv weitermachen wie bisher dürfte mittelfristig den Preisdruck spürbar erhöhen."
+            "if_true": "The market segments: routine tasks shift toward cheaper AI-backed solutions, while a smaller segment continues to commission external expertise for strategic branding work and illustration.",
+            "then": "Gesamtvolumen freiberuflicher Designaufträge sinkt, aber der Anteil, der auf ausgewiesene Spezialisten entfällt, bleibt oder wächst relativ. Der Wettbewerb in diesem Segment steigt, weil andere Designer ebenfalls dorthin migrieren.",
+            "for_you": "Positionierung und Sichtbarkeit werden entscheidend. Wer nicht klar kommuniziert, warum er mehr ist als Ausführung, wird im Preiskampf landen."
           },
           "bear_case": {
-            "if_true": "KI-Werkzeuge werden so leistungsfähig und zugänglich, dass auch strategische Markenentscheidungen zunehmend von nicht-spezialisierten Nutzerinnen und Nutzern mit KI-Unterstützung getroffen werden. Gleichzeitig sinken die Budgets für externe Designleistungen strukturell.",
-            "then": "Der Markt für freiberufliche Designberatung schrumpft in Breite und Preisfähigkeit. Das betrifft auch erfahrene Fachleute, nicht nur Einsteigerinnen und Einsteiger.",
-            "for_you": "Zehn Jahre Erfahrung schützen nicht vollständig, wenn die Nachfrage strukturell sinkt. Diversifikation in angrenzende Felder — Lehre, Produktentwicklung, Kuration — würde dann an Bedeutung gewinnen."
+            "if_true": "If AI tools advance to handle brand consistency and style adaptation reliably, clients may grow accustomed to sufficient output at very low cost and lower their quality expectations across the board.",
+            "then": "Die Zahlungsbereitschaft für freiberufliche Designleistungen sinkt breit, nicht nur im Segment der Routinearbeit. Nur sehr kleine Nischen — Premiumluxus, kulturell bedeutsame Aufträge, persönliche Beziehungen — bleiben als stabile Einkommensquellen.",
+            "for_you": "Ein Einkommensrückgang wäre unter dieser Bedingung wahrscheinlich, sofern keine alternativen Standbeine — Beratung, Lizenzierung, Lehre — aufgebaut wurden."
           }
         },
-        "what_this_means_for_you": "Was sich beobachten lässt: Das Feld wächst, aber ein Teil der Arbeit — insbesondere standardisierte Bildproduktion — ist bereits unter Preisdruck geraten. Was unklar bleibt: Wie schnell und wie tief dieser Druck das mittlere und obere Segment erreicht, in dem strategische Urteilsfähigkeit gefragt ist. Was für deine Situation relevant ist: Du bist mit zehn Jahren Erfahrung nicht am Anfang einer Lernkurve — du hast Referenzen, Kundennähe und ein eingeübtes Urteilsvermögen, das KI-Werkzeuge heute nicht replizieren. Das ist real, aber es schützt nur, wenn es für Auftraggeber auch sichtbar und abrufbar ist. Die wahrscheinlich robusteste Variante deiner Praxis ist eine, in der 'Branding' nicht als Synonym für 'Logo gestalten' gelesen wird, sondern als Beratungsleistung mit Werkzeugkompetenz. Ob dein aktueller Kundenstamm diesen Schritt mitgeht oder ob du neue Kundinnen und Kunden dafür brauchst, ist eine Frage, die nur du beantworten kannst.",
-        "one_action": "Schreib in den nächsten 90 Tagen drei kurze Fallstudien bestehender Projekte auf — je eine Seite — die nicht das Ergebnis zeigen, sondern die Entscheidungen auf dem Weg dorthin: warum diese Farbe, warum diese Form, welches Problem gelöst wurde.",
-        "one_action_why": "Wer Entscheidungsprozesse sichtbar machen kann, verkauft Urteilsvermögen — nicht nur Bilder — und das ist unter allen drei Szenarien wertvoller als ein Portfolio ohne Begründung.",
+        "what_this_means_for_you": "What you can already observe: AI tools are compressing the value of execution work today, and that pressure is real. What remains unsettled: how far it reaches into the work where branding judgment and illustration style make the difference. Your strongest argument is not that you do design, but that you know which design choices fit which brands. That is not automatically clear from your positioning. One way forward is to integrate AI visibly into your process while naming what it cannot do — your stylistic identity, strategic brand thinking, editorial judgment — as your core offer. Where you work geographically, which industries you serve, and how your current client base is composed will shift this picture significantly.",
+        "one_action": "Write out what you do for clients that an AI tool alone cannot do, then test that framing in a real conversation with an existing customer.",
+        "one_action_why": "Auch wenn die Marktentwicklung anders verläuft als hier skizziert, schärft diese Übung dein eigenes Verständnis davon, wo dein tatsächlicher Wert sitzt — und das ist eine nützliche Information, unabhängig vom Ausgang.",
         "sources_and_assumptions": {
-          "observed": [
-            "KI-Bildgeneratoren sind 2026 kommerziell verfügbar und werden für einfache Illustrationsaufgaben bereits eingesetzt — das ist im Markt sichtbar, nicht nur prognostiziert.",
-            "Grafikdesign als Feld hat in den vergangenen Jahren eine wachsende Zahl von Anbietern und Auftraggebern — insbesondere durch digitale Kanäle — angezogen (beobachtet, ohne spezifische Quellenangabe, da keine geprüften Zahlen vorliegen)."
-          ],
+          "observed": [],
           "inferred": [
-            "Ich schlussfolgere, dass strategisches Markenurteilsvermögen schwerer automatisierbar ist als die reine Bildproduktion — das ist meine Einschätzung, keine geprüfte Tatsache.",
-            "Ich schlussfolgere, dass zehn Jahre Marktpräsenz einen Reputationsvorteil darstellen, der kurzfristig nicht replizierbar ist."
+            "KI-Bildgeneratoren senken beobachtbar den Aufwand für visuelle Ausführungsarbeit — das lässt sich aus der Verbreitung und den öffentlich dokumentierten Fähigkeiten aktueller Systeme schließen, nicht aus einer zitierbaren Marktstudie.",
+            "Die Trennung zwischen Ausführungsarbeit und gestalterischem Urteil ist analytisch plausibel, aber ob Auftraggeber sie im Einkaufsverhalten tatsächlich vollziehen, ist eine offene empirische Frage.",
+            "Freiberufliche Spezialisierung auf Branding und Illustration setzt voraus, dass Auftraggeber bereit sind, für diese Unterscheidung gesondert zu zahlen — das variiert stark nach Branche, Region und Auftragsgröße."
           ],
           "assumed": [
-            "Diese Analyse setzt voraus, dass ein relevanter Teil der bisherigen Einnahmen auf strategischer Beratung basiert, nicht nur auf Bildproduktion — ist das Verhältnis umgekehrt, verschiebt sich die Dringlichkeit des Schritts.",
-            "Es wird angenommen, dass der relevante Markt grundsätzlich für externe Designberatung offen bleibt — in Regionen oder Branchen mit starkem Kostendruck kann das anders aussehen.",
-            "Die Analyse gilt für ein allgemeines westeuropäisches Marktumfeld; rechtliche Rahmenbedingungen, Vergütungsniveaus und Marktstruktur hängen vom tatsächlichen Standort ab, der nicht bekannt ist."
+            "Die Person ist freiberuflich tätig und nicht angestellt — der Arbeitsmarkt für angestellte Inhouse-Designer folgt einer anderen Logik.",
+            "Das Tätigkeitsland ist nicht bekannt. Nachfrage, Preise, Wettbewerbsdichte und rechtliche Rahmenbedingungen für Freiberufler unterscheiden sich erheblich je nach Jurisdiktion.",
+            "Es wird angenommen, dass der bestehende Kundenstamm und die Branchenerfahrung nach zehn Jahren bereits eine Grundlage für Differenzierung bieten — ohne Kenntnis der tatsächlichen Klientel und des Portfolios ist das eine Annahme, keine Beobachtung.",
+            "Die Analyse gilt nur so lange, wie der Markt zwischen generischem und spezialisiertem Output unterscheidet. Wenn diese Unterscheidung kollabiert, ändert sich die Grundlage der Analyse."
           ]
         }
       }
@@ -156,120 +144,109 @@
       },
       "output": {
         "analysis_title": "Paralegal specialising in contract review",
-        "the_question": "Is the contract-review paralegal role becoming less viable as AI tools move into the work, or is the field growing fast enough to absorb that pressure?",
-        "subject_as_understood": "A role-level labour-market question: whether the specific job of contract-review paralegal is shrinking inside a stable or growing legal services field, versus the field itself contracting",
+        "the_question": "Is the contract-review paralegal role being automated away, or is it transforming into something that still has durable value over a five-year horizon?",
+        "subject_as_understood": "A labour-market question about whether demand for a specific paralegal specialisation is being compressed by AI tools faster than adjacent opportunities are opening up",
         "trajectory": "transforming",
         "trajectory_label": "TRANSFORMING ⟳",
         "certainty": "low",
-        "certainty_because": "The direction of automation pressure on routine contract review is well supported by observable product releases and law-firm adoption patterns; how fast that pressure translates into fewer paralegal headcounts, and in which jurisdictions, is not — hiring data from the last two years points in different directions depending on firm size and practice area.",
-        "the_pattern": "OBSERVED: AI-assisted contract review tools — handling clause extraction, risk flagging and comparison tasks — have moved from niche to mainstream adoption among large law firms and corporate legal teams over the past three to four years. INFERRED: The work most exposed to these tools is the high-volume, lower-judgment end of contract review: standard NDAs, routine commercial agreements, first-pass redlines. INFERRED: The work least exposed is the interpretation layer — advising on non-standard clauses, escalating edge cases, understanding client-specific context — which still requires a human with accumulated judgment and accountability.",
+        "certainty_because": "The direction of change — AI tools are already being adopted in contract review — is well supported by observable product releases and law-firm announcements. How fast that adoption compresses paralegal headcount, and whether it creates new roles faster than it eliminates old ones, is not yet visible in labour data and depends heavily on jurisdiction, firm size, and adoption pace.",
+        "the_pattern": "OBSERVED: AI-assisted contract review tools are commercially available and in active use at a subset of law firms and corporate legal departments, handling first-pass clause extraction, risk flagging, and comparison tasks. INFERRED: The tasks most exposed are high-volume, low-ambiguity reviews — the ones that generate the most paralegal hours and therefore the clearest automation business case. What appears harder to automate, based on current system limitations, is the judgement required when contract language is novel, the deal context is complex, or a client relationship carries non-standard expectations; those tasks still appear to require a human accountable for the output.",
         "tailwinds": [
           {
-            "force": "Growth in contracting volume",
-            "explanation": "More commercial activity and more complex supply chains mean more contracts being generated, which could sustain or expand total review demand even as per-contract time falls.",
-            "status": "observed_now"
-          },
-          {
-            "force": "Legal team cost pressure",
-            "explanation": "In-house legal teams under budget pressure have increased their use of paralegals as a cost alternative to associate hours in some settings.",
+            "force": "Contract volume growth",
+            "explanation": "Digitisation of commerce and increasingly complex regulatory environments in many jurisdictions are generating more contracts to manage, which can expand overall demand even as per-document costs fall.",
             "status": "emerging"
           },
           {
-            "force": "Four years of accumulated context",
-            "explanation": "At four years of specialised experience, you have built pattern recognition in contract review that a new hire cannot immediately replicate.",
+            "force": "Liability and oversight requirements",
+            "explanation": "In most legal systems, someone with professional accountability must own the output of a contract review; this creates a structural floor for human involvement that AI tools alone cannot satisfy.",
             "status": "observed_now"
           },
           {
-            "force": "Regulatory and compliance complexity",
-            "explanation": "Expanding data-privacy, sanctions and ESG disclosure requirements are adding layers of contractual obligation that need human review for adequacy — a task that currently resists full automation.",
+            "force": "AI tool operation as a skill",
+            "explanation": "Firms adopting AI review tools need people who can prompt, audit, and correct them — a role that maps closely onto existing contract-review expertise and rewards those already inside the work.",
             "status": "emerging"
           }
         ],
         "headwinds": [
           {
-            "force": "AI tool adoption at the routine end of the work",
-            "explanation": "The tasks most paralegal hours are spent on — first-pass review, clause tagging, deviation flagging — are precisely where current tools perform most credibly, compressing the time and headcount needed per contract.",
+            "force": "Direct automation of first-pass review",
+            "explanation": "The tasks that currently fill the most paralegal hours — extracting standard clauses, flagging deviations, populating comparison tables — are the tasks current AI tools handle most credibly, which may reduce how many hours firms need to buy.",
             "status": "observed_now",
-            "timing": "Already visible in large-firm and in-house settings; possible within 2-3 years in mid-market firms if tool costs fall further"
+            "timing": "Already visible in early-adopter firms; could reach mid-market firms within two to three years if tool costs keep falling"
           },
           {
-            "force": "Credential commoditisation",
-            "explanation": "If AI tools lower the skill floor for basic contract review, the experience premium that distinguishes a four-year paralegal from a new hire could erode.",
+            "force": "Hourly billing pressure",
+            "explanation": "If AI tools reduce the time a firm must bill to complete a review, the revenue attached to paralegal hours on that task shrinks, which can compress headcount even if work volume holds steady.",
             "status": "emerging",
-            "timing": "Possible within 3-5 years if tool interfaces become sufficiently guided that less-experienced users can produce comparable output"
+            "timing": "Possible within two to three years at firms under client pricing pressure"
           },
           {
-            "force": "Offshoring of assisted-review work",
-            "explanation": "AI-assisted review lowers the judgment requirement enough that some firms route human-in-the-loop review to lower-cost jurisdictions, compressing local hiring.",
-            "status": "emerging",
-            "timing": "Already visible in some large corporate legal operations; how far it spreads depends on jurisdiction-specific privilege and confidentiality rules"
-          },
-          {
-            "force": "Flat or falling entry-level hiring signals",
-            "explanation": "If firms slow paralegal hiring at the entry level while retaining experienced staff, the pipeline of people who can grow into senior roles could narrow, which would indicate contraction at the base even if the role does not disappear.",
+            "force": "Jurisdiction and credential uncertainty",
+            "explanation": "Licensing rules for paralegals, and whether AI tool outputs require attorney sign-off, vary by jurisdiction; where rules loosen, the human-oversight floor lowers, which changes the employment floor with it.",
             "status": "plausible",
-            "timing": "Only if AI adoption at large firms accelerates faster than contracting volume grows"
+            "timing": "Only if regulatory guidance in a given jurisdiction evolves to reduce mandatory oversight requirements"
           }
         ],
         "the_automation_question": {
           "central_to_conclusion": true,
           "exposure": "increasingly_assisted",
-          "what_is_exposed": "First-pass review, clause extraction, standard deviation flagging, volume redlining of routine agreement types — the tasks that historically justified the most paralegal hours",
-          "what_is_not": "Judgment calls on non-standard clauses, client-specific risk tolerance, escalation decisions, negotiation support, and any work where accountability has to sit with a named human — these remain difficult to fully automate with current systems",
-          "net_effect": "Automation reads as a structural threat to the volume-throughput version of this role, and as a potential tool that raises the ceiling for paralegals who move up the judgment stack — the two outcomes are not mutually exclusive and which dominates depends on how individual firms choose to redeploy time freed by the tools"
+          "what_is_exposed": "High-volume, template-driven clause review; deviation flagging against a playbook; contract comparison and summarisation — the repetitive throughput work",
+          "what_is_not": "Novel or bespoke contract negotiation context; multi-party deal interpretation; client-facing judgement calls; situations where the stakes are high enough that someone must be professionally accountable for the conclusion",
+          "net_effect": "Threat to the current volume-based model, but also a potential tool for practitioners who reposition around the judgement layer — the question is whether you are the person operating and auditing the tool, or the person the tool is replacing"
         },
         "the_pivot": {
           "adjacent_moves": [
             {
-              "move": "Develop working fluency with two or three leading AI contract-review platforms — enough to configure, QA and explain the output, not just consume it",
-              "why_resilient": "Whether AI displaces or augments the role, someone who can supervise and validate the tools is more defensible than someone who only does the tasks the tools do",
+              "move": "Become the person who audits and quality-controls AI contract review output — develop a structured methodology for catching AI errors and document it",
+              "why_resilient": "This move pays off whether AI adoption accelerates or stalls: if it accelerates, you are indispensable to the adoption process; if it stalls, you still have deeper review expertise",
               "effort_required": "medium"
             },
             {
-              "move": "Narrow toward a high-stakes contract specialism — M&A, technology licensing, complex supply-chain agreements — where the judgment requirement stays high and the volume-automation pressure is lower",
-              "why_resilient": "Specialised judgment is harder to replace with general-purpose tools and commands a pay premium that is set more by scarcity than by budget",
+              "move": "Specialise in a contract domain where volume is growing and AI tools have well-documented weaknesses — cross-border agreements, highly regulated industries, or unusual deal structures",
+              "why_resilient": "Specialisation in a niche where ambiguity is structural reduces substitutability regardless of how general-purpose tools improve",
               "effort_required": "medium"
             },
             {
-              "move": "Explore whether upgrading to a qualifying legal credential makes sense in your jurisdiction — in some markets the gap between paralegal and junior lawyer is narrowing and the investment calculates differently at 29 than at 39",
-              "why_resilient": "A higher credential is resilient across more scenarios because it opens fee-earning roles and moves the accountability question in your favour",
-              "effort_required": "high"
+              "move": "Move toward contract management or contract operations roles at corporate legal departments, where the work includes lifecycle management, obligation tracking, and vendor relationships — not just review",
+              "why_resilient": "These roles are less exposed to per-document automation because they require ongoing organisational context and relationship continuity",
+              "effort_required": "medium"
             }
           ],
-          "the_version_worth_pursuing": "A contract-review specialist who operates at the interpretation and exception layer — handling the cases the tools escalate, configuring and QA-ing the tools themselves, advising on non-standard risk — rather than one whose value is throughput volume; this version is harder to automate and harder to offshore, though it is not invulnerable to either"
+          "the_version_worth_pursuing": "A contract specialist who can run, audit, and credibly override AI review tools in a specific domain, and who owns client or deal context that a tool cannot access — this form retains durable value across more scenarios than a generalist reviewer does, though it requires active repositioning rather than continuing on the current path"
         },
         "scenarios": {
           "bull_case": {
-            "if_true": "Contracting volume grows faster than AI tool adoption reduces per-contract headcount; regulatory complexity keeps adding human-review requirements; and firms treat freed-up paralegal time as capacity for higher-value work rather than as a reason to hire fewer paralegals",
-            "then": "The role evolves upward — more judgment, less mechanical throughput — and experienced paralegals with four-plus years are in shorter supply relative to that demand",
-            "for_you": "Your four years of accumulated pattern recognition become a genuine differentiator; pay could rise if you move into a specialism where scarcity sets the price"
+            "if_true": "AI adoption in legal services turns out to be slower and more uneven than current product announcements suggest — regulatory friction, liability concerns, and client resistance slow deployment; contract volume keeps growing",
+            "then": "Demand for experienced paralegal reviewers stays relatively stable or grows, and the current skill set retains its market value for most of the five-year window",
+            "for_you": "Your four years of experience become a compounding asset; repositioning is still worth doing but there is less urgency"
           },
           "base_case": {
-            "if_true": "AI tools absorb the routine end of the work; firms realise some headcount savings but also face growing regulatory and commercial contracting load; the role persists but bifurcates between a smaller number of higher-judgment specialists and a larger AI-assisted throughput layer that commands lower pay",
-            "then": "The paralegal role survives but the distribution of outcomes widens — those who move up the judgment stack do well; those who stay at the volume end face wage pressure and slower hiring",
-            "for_you": "Your current position is neither safe nor doomed; the next two to three years are the window to move deliberately toward the specialist end before the bifurcation solidifies"
+            "if_true": "AI tools become standard at larger firms and corporate legal departments within the horizon, handling first-pass volume work, while humans concentrate on judgement tasks, oversight, and complex matters; some paralegal positions are eliminated, others are redefined",
+            "then": "The role bifurcates — generalist volume reviewers face wage and headcount pressure, while those who have repositioned toward oversight, specialisation, or operations find continued demand",
+            "for_you": "Whether this is good or bad for you specifically turns on whether you have repositioned by the time bifurcation is visible in hiring — waiting until it is obvious may mean the better positions are already filled"
           },
           "bear_case": {
-            "if_true": "AI contract-review tools improve significantly; firms discover that a junior person with a good tool can match a mid-level paralegal on most tasks; and offshoring absorbs whatever human review remains",
-            "then": "The mid-tier paralegal role — experienced but not credentialed as a lawyer — loses pricing power quickly; hiring slows and the credential premium compresses",
-            "for_you": "Four years of experience may not translate into the seniority premium it once would have; the window to use current earnings and experience to pivot — into a legal credential, a different specialism, or a legal-ops or contract-management function — is shorter than it looks"
+            "if_true": "AI capability in contract review improves substantially faster than expected, adoption cascades to mid-market and smaller firms, and regulatory frameworks fail to impose meaningful human-oversight requirements",
+            "then": "The volume of work priced at paralegal rates shrinks significantly; firms that kept headcount to handle throughput reduce it",
+            "for_you": "Staying in generic contract review becomes materially risky; the moves that remain viable are into roles where accountability, client context, or domain depth cannot be replicated by a tool — these require deliberate action before the compression is fully visible in hiring"
           }
         },
-        "what_this_means_for_you": "You are asking the right question at the right time. The honest read is that the contract-review role is not disappearing — the field is growing — but the version most vulnerable is the one defined by volume throughput, which is where a lot of paralegal hours currently sit. The tools are real and advancing, but firms are still figuring out how to deploy them. Nothing in this analysis tells you the bear case cannot happen — it can — but it is not the only plausible future, and the moves that protect you in the bear case (specialisation, tool fluency, possibly a credential upgrade) are also the moves that accelerate your position in the better cases. Jurisdiction matters significantly here: paralegal licensing, pay benchmarks and the pace of AI adoption in legal practice vary by country and market segment, and you should weight local signals heavily.",
-        "one_action": "Spend 30 to 60 days getting hands-on with one AI contract-review tool — through a free trial, an employer pilot, or a publicly available demo — and write a short internal note or personal document on where it fails and where it adds real speed",
-        "one_action_why": "Whether the analysis above is right or wrong, understanding the tools from the inside rather than from a distance gives you better information about your own exposure and puts you in a position to have a more credible conversation with employers about where human judgment still earns its cost",
+        "what_this_means_for_you": "The most honest reading of the current evidence is that the role is transforming rather than simply growing or simply dying. The tasks that generate the most hours today — high-volume, repeatable clause review — are the ones current AI tools handle most plausibly. That does not mean your career is at risk on a fixed schedule; it means the version of this role that was sellable five years ago is a less durable bet than a version built around judgement, oversight, and domain depth. Your four years of experience are a real asset here, because repositioning from inside the work is easier and more credible than repositioning from outside it. What you do not yet know — and neither does anyone else — is how fast adoption will reach the firms and markets where you actually work, which depends heavily on your jurisdiction and the size of organisations you work with. The most resilient move is one that pays off whether automation accelerates or stalls: becoming the person who can operate, audit, and credibly correct AI review tools in a specific contract domain. That move costs relatively little and gives you better information about where this is actually headed.",
+        "one_action": "In the next 90 days, get hands-on with one of the commercially available AI contract review tools — run a set of contracts you have reviewed yourself through it, document where it was right, where it was wrong, and what the error patterns were",
+        "one_action_why": "This generates real, concrete knowledge about the actual capability gap between current AI tools and your judgement, which is more useful for making decisions than any external analysis — and that knowledge is valuable regardless of which scenario unfolds",
         "sources_and_assumptions": {
-          "observed": [
-            "AI-assisted contract-review tools have reached mainstream commercial availability and are in active use at large law firms and corporate legal teams — this is observable from product announcements, vendor case studies and legal-press reporting as of mid-2026",
-            "The person has four years of experience specialising in contract review and is 29 years old — stated by them directly"
-          ],
+          "observed": [],
           "inferred": [
-            "I infer that routine, high-volume review tasks are more exposed to current AI tools than exception-handling and judgment-intensive tasks, based on what the tools visibly do and do not do",
-            "I infer that a four-year paralegal is likely operating somewhere between the purely mechanical and the fully interpretive ends of the work, making their position genuinely ambiguous rather than clearly safe or clearly at risk"
+            "The tasks most exposed to current AI contract review tools are high-volume, low-ambiguity clause extraction and deviation flagging — inferred from publicly available product documentation and capability descriptions, not from controlled studies",
+            "The tasks hardest to automate with current systems are those requiring novel interpretation, deal context, and professional accountability — inferred from known limitations of large language model systems as of mid-2026, which could change",
+            "Firms adopting AI tools still need human oversight of outputs in most legal jurisdictions, creating a structural floor for human involvement — inferred from how legal liability generally works, not from a specific ruling or statute"
           ],
           "assumed": [
-            "This analysis assumes the person is working in a jurisdiction where paralegals operate as a recognised, distinct role — the labour-market logic breaks down in jurisdictions where that distinction does not exist or is regulated very differently",
-            "The analysis assumes the legal services market in their jurisdiction is not itself contracting sharply for reasons unrelated to AI — a significant economic downturn or sector-specific shock would change the demand side of this picture independently of automation"
+            "The person is working in a jurisdiction where paralegal roles exist as a distinct licensed or recognised category — this varies significantly and affects how exposed or protected the role is",
+            "The analysis assumes the person is employed in a context where AI tool adoption is a real near-term possibility — smaller firms or jurisdictions with lower technology adoption rates may face a materially different and slower timeline",
+            "The five-year horizon is treated as the decision window, not as a prediction of when any specific change will occur",
+            "No specific wage figures or employment statistics are cited because no sourced, URL-traceable figures were available to include; any labour market claims are stated directionally rather than numerically"
           ]
         }
       }
