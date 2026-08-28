@@ -56,6 +56,8 @@ const EXAMPLES = [
   { domain: 'financial', comfortZoneKey: 'gpg_ex3_comfort', growthAreaKey: 'gpg_ex3_growth', capacity: 'medium' },
   { domain: 'physical',  comfortZoneKey: 'gpg_ex4_comfort', growthAreaKey: 'gpg_ex4_growth', capacity: 'high' },
   { domain: 'emotional', comfortZoneKey: 'gpg_ex5_comfort', growthAreaKey: 'gpg_ex5_growth', capacity: 'low' },
+  { domain: 'other',     comfortZoneKey: 'gpg_ex6_comfort', growthAreaKey: 'gpg_ex6_growth', capacity: 'medium' },
+  { domain: 'other',     comfortZoneKey: 'gpg_ex7_comfort', growthAreaKey: 'gpg_ex7_growth', capacity: 'low' },
 ];
 
 const GentlePushGenerator = ({ tool }) => {
