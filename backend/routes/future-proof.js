@@ -118,6 +118,24 @@ A proprietary rating invented by a commercial site — an employability grade, a
 
 Report only what you actually saw published, and only with its publisher, its date and its url. Three good entries beat eight weak ones, and an empty array is a correct and useful answer. Never invent a url, a study, a survey or a statistic. Return ONLY valid JSON. `;
 
+// When the search comes back with nothing, the model has to be told — otherwise
+// it writes "OBSERVED: ... for roughly two decades" over an empty Observed list,
+// and the label promises a citation the reader will go looking for and not find.
+const NO_SOURCES_BLOCK = `
+
+NO SOURCES WERE VERIFIED FOR THIS REQUEST. The search returned nothing usable,
+so you have no citable material at all.
+
+  - Do not label anything OBSERVED. The word means there is a record for it in
+    sources_and_assumptions.observed, and that list will be empty.
+  - Leave sources_and_assumptions.observed as an empty array. Do not populate it
+    from memory; an entry with no url is not a source.
+  - Use no figures, percentages, wage levels, counts, dates or growth rates.
+    Write the claim without the number.
+  - Your analysis is still worth making — it is inference and assumption, and
+    labelling it honestly is what makes it usable. Say what you are reasoning
+    from rather than dressing it as evidence.`;
+
 const GROUNDED_TYPES = new Set(['career', 'skill', 'technology', 'investment']);
 
 function factsKey({ subject, subjectType }) {
@@ -170,9 +188,12 @@ router.post('/future-proof', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       ? FRAMEWORKS[type]
       : `NO TYPE WAS CHOSEN. Work out which of these the subject actually is — a career, a skill, a technology, an investment or a multi-year commitment — say so in subject_as_understood, and reason with that frame.`;
 
+    const tGround = Date.now();
     const facts = (!type || GROUNDED_TYPES.has(type))
       ? await futureProofFacts({ subject: subject.trim(), subjectType: type }).catch(() => '')
       : '';
+    console.log(`[fp-timing] grounding ${Date.now() - tGround}ms (${facts ? 'hit' : 'miss'})`);
+    const tMain = Date.now();
 
     const userPrompt = `STRESS-TEST A LONG-TERM BET
 
@@ -183,7 +204,7 @@ HORIZON THEY CHOSE: ${timeframe || '5 years'}
 
 ${framework}
 ${type === 'investment' ? INVESTMENT_POLICY : ''}
-${facts}
+${facts || NO_SOURCES_BLOCK}
 
 THE ONE RULE THIS TOOL EXISTS FOR
 You are not forecasting. You are showing what can be seen now, what could
@@ -374,6 +395,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'future-proof' });
 
+    console.log(`[fp-timing] main ${Date.now() - tMain}ms`);
     if (!parsed.subject_as_understood) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
@@ -432,7 +454,9 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
         });
     }
 
+    const tGuard = Date.now();
     await guardAnalysis(parsed, req.body, startedAt, type);
+    console.log(`[fp-timing] guard ${Date.now() - tGuard}ms | TOTAL ${Date.now() - startedAt}ms`);
     // groundedFacts strips cite tags before the block is rendered, but the main
     // call reads that block and can copy a tag back out into its own prose.
     // Stripping again on the way out costs nothing and catches that.
@@ -499,6 +523,9 @@ WHAT FAILS:
 8. A figure with no traceable source. Any number that does not correspond to a
    sourced entry in sources_and_assumptions.observed is invented as far as the
    reader can tell, and it is the part they will repeat.
+8b. The word OBSERVED attached to a claim with no matching record in that list.
+   The label is a promise that the reader can go and check; when the list is
+   empty the promise is false and the claim is inference wearing a badge.
 9. A personal timeline derived from an age or a tenure — "succession becomes
    pressing in five to eight years" is a deadline nobody gave, built out of one
    number the visitor happened to mention.
@@ -526,6 +553,7 @@ router.outputGuard = {
     'invents_the_visitors_circumstances',
     'asserts_one_countrys_rules_or_figures_as_universal',
     'statistic_with_no_traceable_source_record',
+    'claim_labelled_observed_with_no_matching_source_record',
     'personal_timeline_derived_from_age_or_tenure',
     'investment_direction_or_return_forecast',
   ],
