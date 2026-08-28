@@ -1510,7 +1510,7 @@ export const tools = [
   icon: "🎁",
   categories: ['Humans', 'Loot'],
   headerColor: "#e0b8b8",
-  description: "Describe whoever you're shopping for — relationship, interests, personality, constraints — and AI finds specific, personal gift ideas that feel thoughtful, not algorithmic. Every suggestion includes why it works for THIS person, where to get it, a presentation tip, and what to write in the card. Includes a wildcard option and a last-minute save if you need something today.",
+  description: "Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.",
   guide: {
     overview: "Giftology connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.",
     howToUse: [

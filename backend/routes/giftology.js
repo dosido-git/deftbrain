@@ -20,9 +20,7 @@ async function guardGifts(parsed, body, startedAt) {
   const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
   push('situation_read', parsed.situation_read);
   (parsed.perfect_picks || []).forEach((x, i) => {
-    push(`perfect_picks[${i}].why_its_perfect`, x && x.why_its_perfect);
     push(`perfect_picks[${i}].example_to_look_for`, x && x.example_to_look_for);
-    push(`perfect_picks[${i}].budget_fit`, x && x.budget_fit);
     push(`perfect_picks[${i}].card_message`, x && x.card_message);
   });
   push('the_wildcard.why_its_perfect', parsed.the_wildcard && parsed.the_wildcard.why_its_perfect);
@@ -161,6 +159,30 @@ you may reason that something functional will land better than decorative garden
 merchandise. You may NOT write that she spent her career putting everyone else
 first.
 
+6a. SPARSE INFORMATION — DO NOT FILL THE GAPS
+
+When the giver tells you little, do not invent tastes, habits, routines,
+hobbies, consumption preferences, working styles or personality traits to make a
+recommendation sound more personal. A confident detail you made up is worse than
+an honest one you did not have: the giver cannot tell which is which, and it is
+their relationship that pays for it.
+
+Personalise from what you actually have — the relationship, the occasion, any
+detail they did supply, the giver's evident intent, the budget, the deadline and
+the constraints. Relationship and occasion alone carry a great deal; a gift for a
+brother is not a gift for a colleague, whatever either of them likes.
+
+Where a recommendation depends on something you do not know, make the condition
+explicit rather than assuming it:
+  If you know they drink coffee...
+  If they tend to use notebooks...
+  If you know what kinds of books they enjoy...
+
+A strong recommendation built on known relationship dynamics beats a falsely
+specific one built on an invented preference.
+
+SPECIFICITY MUST NOT EXCEED RECIPIENT INFORMATION.
+
 7. CARD COPY MUST NOT MANUFACTURE INTIMACY
 
 It may use what the user supplied, the nature of the gift, and reasonable
@@ -238,6 +260,7 @@ availability from memory. With no data, stay an advisor.
 BEFORE RETURNING, CHECK YOUR OWN ANSWER SILENTLY:
 1. Does each idea fit THIS person rather than one of their hobbies?
 2. Did I invent any personal fact?
+2b. Did I attribute any habit, preference, taste, routine or personality characteristic the user did not supply?
 3. Did I make an unverified commerce claim?
 4. Did I imply a price, stock level, availability or delivery time I do not know?
 5. Are the four meaningfully different?
@@ -324,7 +347,10 @@ Return ONLY valid JSON:
   "never_do_this": "One TEMPTING but poorly matched gift category for THIS recipient, with why it misses them — written so the giver can apply the same reasoning to other options they are weighing."
 }
 
-LIMITS: exactly 4 perfect_picks. Keep every field to the sentence count stated.
+LIMITS: exactly 4 perfect_picks. Keep every field to the sentence count stated
+and no longer — be concise, no padding, no restating what another field already
+says. A field that runs long is not more thoughtful, it is just longer, and the
+visitor has to read all of it.
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}
 `;
@@ -363,6 +389,7 @@ router.outputGuard = {
     'unverified_commerce_claim_stock_price_or_delivery',
     'price_stated_as_though_looked_up',
     'invented_personal_history_about_the_recipient',
+    'attributes_a_taste_habit_or_trait_the_giver_never_supplied',
     'card_message_describing_something_the_giver_has_not_done',
     'four_recommendations_that_are_one_idea_repeated',
     'anti_recommendation_too_general_to_teach_anything',
