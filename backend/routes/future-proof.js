@@ -191,18 +191,38 @@ accelerate if X.
 Do not invent a source, a statistic, a study, a survey, a market condition or
 a URL. If you did not see it in the checked block above, you did not see it.
 
+WHERE THIS PERSON IS, YOU DO NOT KNOW.
+Nothing in this request states a country unless they wrote one themselves in
+their own words above. Do not quietly settle on one. Regulation, licensing,
+wages, hiring and market structure are all jurisdiction-specific, and an answer
+written for one country reads as fact to a visitor in another.
+
+  - Where a claim does not depend on jurisdiction, write it neutrally.
+  - Where a checked fact IS jurisdiction-specific, say whose it is, in the
+    sentence: "in the US, BLS records...", "UK licensing requires...". Never
+    present one country's rules or figures as how things simply are.
+  - Where the answer genuinely turns on jurisdiction and you have not been
+    told one, say so in the analysis and add it to sources_and_assumptions as
+    an assumption the reader has to supply.
+
+Any locale or region hint you may have been given describes where their browser
+is, not where their career, business or money is. It is not a statement of
+fact about them and must never be written as one.
+
 CREDENTIALS: name a certification only if you are certain it currently exists
 under that exact name. Otherwise describe it generically and say the reader
 should check the current name.
 
 Return ONLY valid JSON:
 {
-  "subject_as_understood": "What you are analysing and which frame you used, one sentence",
+  "analysis_title": "The subject in AT MOST 6 words, as a label — no verb, no question, no horizon. Example: Small owner-operated plumbing business",
+  "the_question": "The real question you are answering, reframed in one plain sentence, sentence case, ending in a question mark. Example: Is the underlying plumbing skill becoming more valuable even as the current business model comes under pressure?",
+  "subject_as_understood": "Which analytical frame you used, one short sentence",
   "trajectory": "growing | stable | transforming | declining | volatile | context_dependent",
   "trajectory_label": "GROWING ↑ | STABLE → | TRANSFORMING ⟳ | DECLINING ↓ | VOLATILE ⚡ | CONTEXT-DEPENDENT ◇",
 
   "certainty": "high | moderate | low",
-  "certainty_because": "Why the uncertainty sits where it does — name the specific things the outcome depends on. Not a restatement of the label. One or two sentences.",
+  "certainty_because": "One or two sentences naming WHICH PARTS are well supported and WHICH ARE NOT. Not a restatement of the label. The shape that works: 'X is well supported; the N-year outlook for Y and Z is much less certain.'",
 
   "the_pattern": "2-3 sentences on the forces actually driving this. Mark what is observed and what is inferred as you go.",
 
@@ -258,6 +278,7 @@ THE AUTOMATION QUESTION is not always relevant. Include it ONLY when automation
 materially bears on this subject; otherwise leave it null. When you do include
 it, use this shape and this language:
 {
+  "central_to_conclusion": true or false — is automation one of the two or three things this answer actually turns on? Be honest. For a great many subjects the real story is route to market, succession, regulation or demand, and automation is a side note. Say false when it is a side note; the section will still be there, just folded away.
   "exposure": "currently_susceptible | increasingly_assisted | difficult_with_current_systems | could_become_exposed",
   "what_is_exposed": "Which specific tasks or parts, not the whole thing",
   "what_is_not": "What stays hard, and why",
@@ -289,6 +310,9 @@ BEFORE YOU RETURN, CHECK YOUR OWN ANSWER SILENTLY:
 9. Is the one action still worth doing if my read is wrong?
 10. Am I claiming more knowledge of the future than the evidence supports?
 11. Does this help them decide, or does it just sound authoritative?
+12. Did I name a country nobody told me, or state one jurisdiction's rules as though they were universal?
+13. Does certainty_because say which parts are solid and which are not, rather than restating the label?
+14. Is analysis_title six words or fewer, and is the_question one plain sentence?
 Fix anything that fails, then return only the corrected version.
 
 LIMITS: tailwinds and headwinds AT MOST 4 each; adjacent_moves AT MOST 3; each
@@ -378,6 +402,9 @@ WHAT FAILS:
    enrol, sell, go all in — on the strength of this analysis.
 6. Inventing the visitor's circumstances: their savings, their seniority,
    their family, their appetite for risk, how much they can afford to lose.
+7. Picking a country nobody named. Licensing, wages and regulation differ by
+   jurisdiction; stating one country's version as the way things are is wrong
+   for every reader outside it, and they cannot tell.
 ${type === 'investment' ? `7. For an investment: any buy/sell/hold direction, any return or price
    forecast, any probability attached to a scenario, or a one_action that
    amounts to moving money.` : ''}`,
@@ -400,6 +427,7 @@ router.outputGuard = {
     'scenarios_that_are_one_forecast_at_three_volumes',
     'urges_a_large_irreversible_decision',
     'invents_the_visitors_circumstances',
+    'asserts_one_countrys_rules_or_figures_as_universal',
     'investment_direction_or_return_forecast',
   ],
   require: [

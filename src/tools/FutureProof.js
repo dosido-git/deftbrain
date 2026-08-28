@@ -127,6 +127,7 @@ const FutureProof = ({ tool }) => {
   const [error, setError] = useState('');
   const [activeScenario, setActiveScenario] = useState('base_case');
   const [showBasis, setShowBasis] = useState(false);
+  const [showAutomation, setShowAutomation] = useState(false);
   const [sessionHistory, setSessionHistory] = usePersistentState('futureproof-history', []);
 
   // ─── Refs ───
@@ -196,7 +197,8 @@ const FutureProof = ({ tool }) => {
     const r = results;
     const ts = trajStyle(r.trajectory);
     const lines = [
-      `🔮 ${t('fp_copy_header')} — ${r.subject_as_understood || subject}`,
+      `🔮 ${t('fp_copy_header')} — ${r.analysis_title || r.subject_as_understood || subject}`,
+      r.the_question || '',
       `${t('fp_copy_trajectory')} ${r.trajectory_label || ts.label}`,
       `${t('fp_how_certain')}: ${r.certainty ? t(CERTAINTY_KEYS[r.certainty] || 'fp_certainty_moderate') : ''}${r.certainty_because ? ` — ${r.certainty_because}` : ''}`,
       '',
@@ -385,27 +387,32 @@ const FutureProof = ({ tool }) => {
             const ts = trajStyle(results?.trajectory);
             return (
               <div className={`${ts.bg} border-2 rounded-xl p-5`}>
-                <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
-                  <div>
-                    <p className={`text-[10px] font-bold uppercase ${c.textMuted} mb-0.5`}>
-                      {results?.subject_as_understood || subject} · {timeframe}
-                    </p>
-                    <p className={`text-xl font-bold ${ts.txt}`}>
-                      {ts.dot} {results?.trajectory_label || ts.label}
-                    </p>
-                  </div>
-                  {results?.certainty && (
-                    <div className="text-end">
-                      <p className={`text-[9px] ${c.textMuted} uppercase`}>{t('fp_how_certain')}</p>
-                      <p className={`text-sm font-bold ${ts.txt}`}>{t(CERTAINTY_KEYS[results.certainty] || 'fp_certainty_moderate')}</p>
-                    </div>
-                  )}
-                </div>
-                {/* Why the uncertainty sits where it does. A bare Low/Medium/High
-                    tells the reader nothing they can act on. */}
-                {results?.certainty_because && (
-                  <p className={`text-xs ${ts.txt} opacity-90 mb-2 leading-relaxed`}>{results.certainty_because}</p>
+                {/* A short label you can scan, then the question in sentence
+                    case. The whole reframed question used to be set in tiny
+                    uppercase, which is precise and close to unreadable. */}
+                <p className={`text-[10px] font-bold uppercase tracking-wide ${c.textMuted} mb-1`}>
+                  {results?.analysis_title || results?.subject_as_understood || subject} · {timeframe}
+                </p>
+                {results?.the_question && (
+                  <p className={`text-sm ${ts.txt} mb-2 leading-relaxed`}>{results.the_question}</p>
                 )}
+                <p className={`text-xl font-bold ${ts.txt} mb-3`}>
+                  {ts.dot} {results?.trajectory_label || ts.label}
+                </p>
+
+                {/* Certainty and its reason are one block. Split apart, the
+                    reader sees "Moderate" with nothing under it and the reason
+                    reads as the opening of the paragraph below. */}
+                {results?.certainty && (
+                  <div className={`mb-3 pt-3 border-t ${isDark ? 'border-white/15' : 'border-black/10'}`}>
+                    <p className={`text-[9px] ${c.textMuted} uppercase tracking-wide`}>{t('fp_how_certain')}</p>
+                    <p className={`text-sm font-bold ${ts.txt}`}>{t(CERTAINTY_KEYS[results.certainty] || 'fp_certainty_moderate')}</p>
+                    {results?.certainty_because && (
+                      <p className={`text-xs ${ts.txt} opacity-90 mt-1 leading-relaxed`}>{results.certainty_because}</p>
+                    )}
+                  </div>
+                )}
+
                 {results?.the_pattern && (
                   <p className={`text-sm ${ts.txt} leading-relaxed`}>{results?.the_pattern}</p>
                 )}
@@ -459,20 +466,28 @@ const FutureProof = ({ tool }) => {
           {/* Automation question */}
           {results?.the_automation_question && (() => {
             const aq = results?.the_automation_question;
+            const central = aq.central_to_conclusion !== false;
             const as_ = autoStyle(aq.exposure === 'currently_susceptible' ? 'high'
               : aq.exposure === 'could_become_exposed' ? 'medium'
               : aq.exposure === 'increasingly_assisted' ? 'low' : 'negligible');
             return (
               <div className={`${as_.bg} border rounded-xl p-4`}>
-                <div className="flex items-center gap-2 mb-3">
+                {/* Folded away when automation is not one of the things the
+                    answer turns on. For a plumbing business the story is route
+                    to market and succession; automation is a footnote, and a
+                    footnote should not take a page. */}
+                <button onClick={() => setShowAutomation(v => !v)}
+                  aria-expanded={central || showAutomation} disabled={central}
+                  className={`w-full flex items-center gap-2 mb-3 text-start ${central ? 'cursor-default' : ''}`}>
                   <p className={`text-[10px] font-bold uppercase ${c.textMuted}`}>🤖 {t('fp_automation_q')}</p>
                   {EXPOSURE_KEYS[aq.exposure] && (
                     <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${as_.bg} ${as_.txt}`}>
                       {t(EXPOSURE_KEYS[aq.exposure])}
                     </span>
                   )}
-                </div>
-                <div className="space-y-2">
+                  {!central && <span className="ms-auto"><Caret open={showAutomation} /></span>}
+                </button>
+                <div className={`space-y-2 ${central || showAutomation ? '' : 'hidden'}`}>
                   {aq.what_is_exposed && (
                     <div>
                       <p className={`text-[10px] font-semibold ${c.textMuted} mb-0.5`}>{t('fp_what_automated')}</p>
