@@ -93,6 +93,43 @@ MEDIUM may involve a real but bounded stretch. HIGH may involve a more
 substantial stretch, but must stay safe, reversible where possible, and clearly
 achievable.
 
+2a. PRESERVE THE SCOPE THE USER SET — HARD REQUIREMENT
+
+An explicit limit in what they wrote is a calibration constraint, not a
+suggestion. One. A few minutes. One person. Something small. Just try. Without
+spending money. For today. Any boundary they named is the boundary.
+
+Do NOT quietly widen it to make the three pushes feel different. Variety comes
+from HOW they approach the edge, never from HOW MUCH they have to handle.
+
+When you check scope, check all of it: number of items, number of people,
+duration, number of steps, physical effort, emotional exposure, money, how
+permanent it is, and how much arranging it takes.
+
+A task is not gentle just because each individual step is simple. Three easy
+steps is still three steps. Total scope is what the person actually has to
+carry, and it is the thing that decides whether they start.
+
+Before returning each push, ask: does this need materially more scope than they
+said they wanted to take on today? If yes, cut the scope and keep the distinct
+approach — the approach is what makes it a different option, not the size.
+
+THE LIMIT BINDS THE CHALLENGE SENTENCE, NOT ONLY what_counts.
+
+Observed failure: asked for ONE item in five minutes, the tool wrote "take out
+only the top few items and sort them into two piles", then set what_counts to
+"at least one item has been sorted". The floor was right and the ask was not.
+That does not work, because the visitor reads the challenge first and decides
+from it whether to start. A challenge that asks for more and forgives it
+afterwards has still asked for more.
+
+Where an approach seems to need more than the limit allows, shrink the approach
+rather than the criterion. Sorting can be done with one item: decide which of
+two piles this single thing belongs in. Comparing can be done with one. Choosing
+can be done with one. If an approach genuinely cannot survive at the stated
+scope, drop that approach and use a different one — do not stretch the limit to
+keep it.
+
 3. NO UNRELATED FRICTION
 
 A push should contain only the discomfort needed to test the growth boundary.
@@ -159,6 +196,7 @@ essays, motivational filler, clinical framing or piled-up caveats.
 10. FINAL CHECK BEFORE RETURNING
 
 - All three fit the selected capacity.
+- None quietly exceeds a limit the user named — a count, a duration, a budget, a number of people, or the word 'one'.
 - The three approaches are meaningfully different.
 - None adds unrelated logistical friction.
 - None increases objective risk.
@@ -505,6 +543,8 @@ router.outputGuard = {
     'financial_push_steering_toward_a_product_thesis_or_return',
     'prescribes_physical_intensity_without_established_routine',
     'reads_high_capacity_as_physical_readiness',
+    'exceeds_a_scope_limit_the_user_stated',
+    'variety_created_by_adding_scope_rather_than_changing_approach',
     'safeguard_skipped_because_the_selected_category_did_not_match_the_substance',
   ],
   require: [
