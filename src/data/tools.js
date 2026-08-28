@@ -5747,7 +5747,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   icon: "🫸",
   categories: ['Energy', 'Me'],
   headerColor: "#ccdfc4",
-  description: "Micro-challenges slightly outside comfort zone, calibrated to current capacity. Achievable but slightly scary. Not aggressive motivation - gentle expansion. Celebrates attempts regardless of outcome. Growth without pressure.",
+  description: "Turn something you'd like to get better at into a small, doable challenge just beyond what's comfortable today. No pep talks, no pressure—the attempt counts.",
   guide: {
     overview: "Growth happens at the edge of comfort, but pushing too hard backfires. This tool creates micro-challenges sized to your current capacity - achievable but slightly scary. Success = attempting, not outcome. Gentle expansion, not forced change.",
     

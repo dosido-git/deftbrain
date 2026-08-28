@@ -61,6 +61,114 @@ WHAT FAILS:
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use plain wording or single quotes inside string values so the JSON remains valid.';
 
+
+// ════════════════════════════════════════════════════════════
+// FINAL CALIBRATION RULES
+// ════════════════════════════════════════════════════════════
+// Owner-supplied, targeted at the failures in one live run. Deliberately not a
+// redesign: the architecture, schema and localisation stay exactly as they are.
+const CALIBRATION_RULES = `
+GENTLE PUSH GENERATOR — FINAL CALIBRATION RULES
+
+1. THREE DIFFERENT APPROACHES, NOT THREE INTENSITY VARIANTS
+
+All three pushes must be calibrated to the capacity the user selected. Do not
+make one intentionally easier and another intentionally harder just to create
+variety.
+
+They should differ primarily in APPROACH — for example one-person/direct,
+small-group/bounded audience, structured/public-but-reversible,
+practice/rehearsal, environment change, or a tiny real-world experiment. Choose
+approaches that fit this user's stated growth goal. Do not force those exact
+categories.
+
+2. CAPACITY CONSTRAINS THE WHOLE SET
+
+If capacity is LOW, every push must stay genuinely small. No option may require
+crossing the user's stated boundary at full intensity. Reduce one or more of:
+audience size, duration, commitment, permanence, social exposure, financial
+cost, physical demand, complexity.
+
+MEDIUM may involve a real but bounded stretch. HIGH may involve a more
+substantial stretch, but must stay safe, reversible where possible, and clearly
+achievable.
+
+3. NO UNRELATED FRICTION
+
+A push should contain only the discomfort needed to test the growth boundary.
+Avoid setup that is not itself the thing being practised: creating an account,
+learning an unfamiliar platform, buying something, travelling unnecessarily,
+recruiting other people, or several preparatory steps.
+
+If the user wants to get comfortable sharing creative work, the push tests
+sharing — not account creation.
+
+4. SUBJECTIVE STRETCH, NEVER OBJECTIVE RISK
+
+Never make a push bolder by adding physical danger, financial exposure, privacy
+risk, interpersonal conflict, legal risk or irreversible consequences. In every
+domain, increase only the psychological stretch needed to practise the
+behaviour.
+
+5. SUCCESS IS CONTROLLABLE BEHAVIOUR ONLY
+
+what_counts must depend entirely on what the user controls.
+
+Good: sending the message counts. Walking into the room counts. Sharing the
+draft with one person counts.
+
+Bad: having a good conversation. Getting a positive response. Feeling confident
+afterwards.
+
+The attempt is the win. Other people's reactions and the user's own emotional
+outcome are never success criteria.
+
+6. NO INFERRED MOTIVES, DIAGNOSES OR HIDDEN MEANINGS
+
+The acknowledgment may restate what the user explicitly said. It must not
+explain why they behave that way unless they told us.
+
+Avoid: you are protecting your energy. You are afraid of rejection. You do not
+really care about this.
+
+Prefer: you said you have turned down three invitations this month. You have not
+shared your work publicly in over a year.
+
+Do not echo dramatic metaphors literally when calmer wording will do. If the
+user says they want to see that the world does not end, summarise it as taking a
+small step toward sharing again, unless their own wording is genuinely needed.
+
+7. PRESERVE MEANINGFUL CHOICE
+
+Before returning, ask: if I removed the labels, would these still read as three
+distinct approaches? If not, regenerate.
+
+8. FEEDBACK RECALIBRATES, IT DOES NOT REROLL
+
+Too much: reduce exposure, commitment or complexity.
+Too little: add one meaningful degree of stretch.
+Wrong kind: change the approach, not the wording.
+Not practical: keep the growth target, change timing, setting or logistics.
+
+9. COMPACT AND CONCRETE
+
+Each card carries a short approach label, when to do it, one concrete challenge,
+one short sentence on why it fits, and one what_counts criterion. No coaching
+essays, motivational filler, clinical framing or piled-up caveats.
+
+10. FINAL CHECK BEFORE RETURNING
+
+- All three fit the selected capacity.
+- The three approaches are meaningfully different.
+- None adds unrelated logistical friction.
+- None increases objective risk.
+- Success depends only on controllable action.
+- No motive or diagnosis was invented.
+- The user can understand each push immediately.
+
+If any answer is no, revise before returning.
+`;
+
 const CAPACITY_GUIDE = {
   low: 'LOW capacity: all three options must be genuinely tiny. The person may have very little spare energy. A five-second or one-step attempt can be enough.',
   medium: 'MEDIUM capacity: all three options should be real but manageable. Slight discomfort is appropriate; dread, major preparation, or open-ended commitment is not.',
@@ -138,6 +246,7 @@ ACKNOWLEDGMENT RULE:
 Acknowledge only facts the user supplied. Do not say things like you are protecting your energy, you are afraid of rejection, or this means you care unless the user actually said so. Warmth is good; mind-reading is not.
 
 ${SAFETY_RULES}
+${CALIBRATION_RULES}
 
 Return ONLY valid JSON:
 {
@@ -221,6 +330,7 @@ CONTEXT:
 Generate one genuinely revised option. Do not defend the old suggestion. Do not praise the user for giving feedback. Simply acknowledge it and recalibrate.
 
 ${SAFETY_RULES}
+${CALIBRATION_RULES}
 
 Return ONLY valid JSON:
 {
@@ -323,6 +433,9 @@ router.outputGuard = {
     'objective_risk_presented_as_courage',
     'streaks_scores_or_escalation_pressure',
     'push_too_vague_or_too_costly_to_start',
+    'three_pushes_that_are_intensity_variants_not_approaches',
+    'unrelated_setup_friction_that_is_not_the_thing_being_practised',
+    'dramatic_metaphor_echoed_back_instead_of_summarised',
   ],
   require: [
     'success_defined_by_a_controllable_attempt',
