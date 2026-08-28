@@ -205,7 +205,19 @@ const GentlePushGenerator = ({ tool }) => {
     setCapacity(ex.capacity);
   };
 
+  // Anything the visitor has put in counts, so the button appears as soon as
+  // there is something to clear. pushDay is deliberately excluded: it is a
+  // saved preference that survives sessions, and their calendar day should not
+  // disappear because they started a different push.
+  const hasInput = !!(domain || comfortZone.trim() || growthArea.trim() || capacity !== 'medium');
+
   const handleReset = () => {
+    // Start over means the form too. Without this the button was live on the
+    // setup screen and changed nothing a visitor could see.
+    setDomain('');
+    setComfortZone('');
+    setGrowthArea('');
+    setCapacity('medium');
     setPushOptions([]);
     setAcknowledgment('');
     setIfYouDont('');
@@ -478,7 +490,7 @@ const GentlePushGenerator = ({ tool }) => {
   if (view === 'setup') {
     return (
       <div className={`space-y-4 ${c.text}`}>
-        {renderHeader(false)}
+        {renderHeader(hasInput)}
 
         <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
           <div className="flex items-center justify-between gap-4">
