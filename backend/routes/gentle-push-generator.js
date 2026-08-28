@@ -1,90 +1,162 @@
 const express = require('express');
 const router = express.Router();
-const { callClaudeWithRetry, withLanguage } = require('../lib/claude');
+const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
 
-const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted challenges or phrases plainly or with single quotes, or it breaks the JSON.';
+// The pushes are written before the guard runs; never hold them hostage.
+const GUARD_ENTRY_MS = Number(process.env.GPG_GUARD_ENTRY_MS || 60_000);
 
-// ════════════════════════════════════════════════════════════
-// GENTLE PUSH GENERATOR
-// Dispatches to action handlers based on req.body.action
-// ════════════════════════════════════════════════════════════
+// Only the prose the visitor acts on. `approach` is a stable id and not the
+// guard's business.
+async function guardPushes(parsed, body, startedAt, pushes) {
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[gentle-push-generator-v2] v2 guard: skipped — out of time, answer returned unguarded');
+    return;
+  }
+  const fields = [];
+  const push = (path, v) => { if (typeof v === 'string' && v.trim().length > 15) fields.push([path, v]); };
+  push('acknowledgment', parsed.acknowledgment);
+  push('if_you_dont', parsed.if_you_dont);
+  push('pattern_note', parsed.pattern_note);
+  (pushes || []).forEach((x, i) => {
+    push(`pushes[${i}].challenge`, x && x.challenge);
+    push(`pushes[${i}].why_this_size`, x && x.why_this_size);
+    push(`pushes[${i}].what_counts`, x && x.what_counts);
+    push(`pushes[${i}].if_too_much`, x && x.if_too_much);
+  });
+  if (!fields.length) return;
+
+  await runOutputGuard(parsed, {
+    label: 'gentle-push-generator-v2',
+    fields,
+    supplied: `WHAT THE VISITOR TOLD US, IN FULL — nothing else about them is known:
+Area of life: ${body.domain || '(not given)'}
+What feels easy now, in their words: ${(body.comfortZone || '').trim() || 'NOTHING — they wrote none'}
+Where they want to grow, in their words: ${(body.growthArea || '').trim() || '(not given)'}
+Capacity today: ${body.currentCapacity || 'medium'}
+
+Nothing about why this is hard for them, what happened before, their diagnosis,
+their relationships, their finances, or how brave they usually are.
+
+WHAT FAILS:
+1. Naming a motive, fear, diagnosis or trait the visitor did not state. "You are
+   afraid of rejection", "you are protecting your energy", "this matters to you
+   because" — none of that was given, and being told your own reasons by a tool
+   that does not know them is the fastest way to lose someone.
+2. A push whose success depends on another person: a reply, a yes, an invitation,
+   a reaction, a sale. The visitor controls the attempt and nothing else, so the
+   attempt is the only thing that may count.
+3. Objective risk dressed as courage. Physical danger, money moved or spent,
+   credentials shared, confrontation, contact with someone they may need
+   distance from, pushing through pain, anything illegal or deceptive. The
+   stretch is meant to be subjective.
+4. Streaks, scores, levels, badges, momentum, or any suggestion that not
+   attempting was a failure or that the next one has to be bigger.
+5. A push too vague to act on, or one needing purchases, special timing or
+   elaborate preparation to start.`,
+  }, { max_tokens: 1400 });
+}
+
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use plain wording or single quotes inside string values so the JSON remains valid.';
+
+const CAPACITY_GUIDE = {
+  low: 'LOW capacity: all three options must be genuinely tiny. The person may have very little spare energy. A five-second or one-step attempt can be enough.',
+  medium: 'MEDIUM capacity: all three options should be real but manageable. Slight discomfort is appropriate; dread, major preparation, or open-ended commitment is not.',
+  high: 'HIGH capacity: all three options may involve a clearer stretch, but still must be bounded, reversible, and objectively safe. Do not confuse readiness with permission to create risk.',
+};
+
+const SAFETY_RULES = `
+SAFETY AND CALIBRATION — HARD RULES:
+- Increase SUBJECTIVE STRETCH, never OBJECTIVE RISK.
+- Never encourage illegal, dangerous, reckless, coercive, deceptive, humiliating, or self-punishing behavior.
+- Never suggest pushing through pain, ignoring medical limitations, extreme exertion, unsafe environments, or unsupervised physical risk.
+- Financial pushes must not involve buying an investment, gambling, taking on debt, spending meaningful money, moving money impulsively, or sharing financial credentials. Favor looking, asking, comparing, planning, or completing a small administrative step.
+- Emotional pushes must not force trauma exposure, disclosure of highly sensitive information, confrontation, reconciliation, forgiveness, or contact with someone the person may reasonably need distance from.
+- Social/professional pushes must respect other people's boundaries. Ordinary polite interaction is fine; harassment, persistence after disinterest, manipulation, or privacy invasion is not.
+- Never infer motives, diagnoses, personality traits, or hidden causes from the user's behavior. Acknowledge only what they actually told you.
+- If the user describes a situation that makes a proposed push unsafe or inappropriate, make the push smaller or redirect it entirely.
+- A push succeeds when the user completes the CONTROLLABLE ATTEMPT. Another person's response, approval, outcome, sale, invitation, performance, or emotional reaction must never be required for success.
+`;
 
 router.post('/gentle-push-generator', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { action, userLanguage, ...payload } = req.body;
-
-    if (!action) {
-      return res.status(400).json({ error: 'action is required' });
-    }
+    const { action, userLanguage, userLocale, userCurrency, userRegion, ...payload } = req.body;
+    const localeContext = { userLocale, userCurrency, userRegion };
+    if (!action) return res.status(400).json({ error: 'action is required' });
 
     switch (action) {
-      case 'generate':       return await handleGenerate(payload, userLanguage, res);
-      case 'regenerate':     return await handleRegenerate(payload, userLanguage, res);
-      case 'reflect':        return await handleReflect(payload, userLanguage, res);
-      case 'review':         return await handleReview(payload, userLanguage, res);
-      case 'courage-countdown': return await handleCourageCountdown(payload, userLanguage, res);
-      case 'escalation-ladder': return await handleEscalationLadder(payload, userLanguage, res);
-      case 'fear-inventory': return await handleFearInventory(payload, userLanguage, res);
-      default:
-        return res.status(400).json({ error: `Unknown action: ${action}` });
+      case 'generate': return await handleGenerate(payload, userLanguage, localeContext, res);
+      case 'regenerate': return await handleRegenerate(payload, userLanguage, localeContext, res);
+      case 'reflect': return await handleReflect(payload, userLanguage, localeContext, res);
+      default: return res.status(400).json({ error: `Unknown action: ${action}` });
     }
   } catch (error) {
     console.error('GentlePushGenerator error:', error);
-    res.status(500).json({ error: 'Something went wrong. Please try again.'});
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
-// ════════════════════════════════════════════════════════════
-// ACTION: GENERATE — 3 calibrated pushes
-// ════════════════════════════════════════════════════════════
-async function handleGenerate({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, res) {
-  if (!growthArea?.trim()) {
-    return res.status(400).json({ error: 'growthArea is required' });
-  }
+async function handleGenerate({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, localeContext, res) {
+  const startedAt = Date.now();
+  if (!growthArea?.trim()) return res.status(400).json({ error: 'growthArea is required' });
 
-  const capacityGuide = {
-    low:    'Keep challenges TINY. The person is struggling. A small brave step is a big deal right now.',
-    medium: 'Normal calibration. Real but doable — slightly outside comfort but achievable this week.',
-    high:   'They are ready for more. Can push a bit harder. Still must be achievable, not reckless.',
-  };
-
-  const historyNote = pushHistory?.length > 0
-    ? `\nRECENT PUSH HISTORY (last ${pushHistory.length} pushes — use to avoid repeats and notice patterns):\n${pushHistory.slice(0, 5).map(p => `- "${p.challenge}" (${p.intensity}, attempted: ${p.attempted})`).join('\n')}`
+  const capacity = currentCapacity || 'medium';
+  const recent = Array.isArray(pushHistory) ? pushHistory.slice(0, 6) : [];
+  const historyNote = recent.length
+    ? `\nRECENT PUSHES — use only to avoid repetition and improve calibration. Do not score the person, infer a streak, or interpret non-attempts as failure:\n${recent.map(p => `- ${p.challenge || ''} | attempted: ${p.attempted === true ? 'yes' : p.attempted === false ? 'no' : 'unknown'}${p.scariness ? ` | felt: ${p.scariness}/5` : ''}`).join('\n')}`
     : '';
 
-  const prompt = withLanguage(`You are a compassionate growth coach who specializes in calibrating challenges to exactly the right size — not too scary, not too easy. You understand that growth happens at the edge of comfort, not past the point of panic.
+  const prompt = `You design small comfort-zone experiments for Gentle Push Generator.
 
-CONTEXT:
-- Growth area: "${growthArea.trim()}"
-- Domain: ${domain || 'not specified'}
-- Comfort zone baseline: ${comfortZone?.trim() || 'not specified'}
-- Current capacity: ${currentCapacity || 'medium'} — ${capacityGuide[currentCapacity] || capacityGuide.medium}
+PURPOSE:
+Turn something the person wants to grow into three different, concrete ways to stretch a little beyond what is comfortable TODAY. This is not motivation, therapy, exposure treatment, or a bravery contest. The job is precise calibration.
+
+USER CONTEXT:
+- Area of life: ${domain || 'not specified'}
+- What feels easy now / what feels like a stretch: ${comfortZone?.trim() || 'not specified'}
+- Where they want to grow: ${growthArea.trim()}
+- Capacity today: ${capacity}
+- Capacity rule: ${CAPACITY_GUIDE[capacity] || CAPACITY_GUIDE.medium}
 ${historyNote}
 
-Generate 3 distinct push challenges — one gentle, one moderate, one bold. Each must be:
-- SPECIFIC and actionable (not "be more social" — "text one friend you haven't spoken to in 3 months")
-- Sized for their capacity right now
-- Achievable within the time frame given
-- Genuinely different from each other in structure, not just intensity
+GENERATE THREE DIFFERENT APPROACHES AT THE APPROPRIATE CAPACITY.
+Do NOT generate a fixed gentle/moderate/bold ladder. All three should fit today's capacity; they should differ mainly in route or structure.
+Examples of useful structural differences include: a tiny in-the-moment action, a bounded planned practice, a low-stakes real-world experiment, a rehearsal, a request, a first administrative step, or a small act of visibility. Choose approaches that actually fit this user's goal.
+
+Each option must:
+- be specific enough that the user knows exactly what to do;
+- be bounded in time/scope and easy to exit;
+- be possible without special purchases or elaborate preparation;
+- reference the user's stated boundary when one is provided;
+- define success only by a controllable attempt;
+- include a smaller fallback;
+- not repeat another option in different words.
+
+ACKNOWLEDGMENT RULE:
+Acknowledge only facts the user supplied. Do not say things like you are protecting your energy, you are afraid of rejection, or this means you care unless the user actually said so. Warmth is good; mind-reading is not.
+
+${SAFETY_RULES}
 
 Return ONLY valid JSON:
 {
-  "acknowledgment": "1-2 warm sentences acknowledging where they are and what they're working toward — human, not clinical — one sentence",
-  "if_you_dont": "One gentle sentence normalising it if they don't attempt — no shame, just information — one sentence",
-  "pattern_note": "Optional: 1 sentence noting a pattern in their push history (only if pushHistory has 3+ entries and a clear pattern). Omit if no history or no clear pattern. — one sentence",
+  "acknowledgment": "One warm sentence grounded only in what the user actually said. No diagnosis or invented motive.",
+  "if_you_dont": "One brief sentence making non-attempt useful information rather than failure.",
+  "pattern_note": null,
   "pushes": [
     {
-      "intensity": "gentle — one sentence",
-      "challenge": "Specific, concrete challenge they can attempt this week — one sentence",
-      "time_frame": "e.g., 'This week', 'In the next 3 days', 'Today if possible' — one sentence",
-      "why_this_size": "Why this challenge is sized right for them RIGHT NOW — reference their specific situation (number)",
-      "what_counts": "What counts as success — lower the bar intentionally (e.g., 'Sending the text counts, even if they don't reply') — one sentence",
-      "if_too_much": "A smaller version — what to do if this still feels too big — one sentence"
+      "approach": "short stable snake_case id describing the route",
+      "label": "2-4 word human label for this approach",
+      "challenge": "Specific challenge in one or two short sentences",
+      "time_frame": "When or under what circumstance to try it",
+      "why_this_size": "Why this fits today's stated capacity and boundary, without inventing motives",
+      "what_counts": "The smallest controllable attempt that counts as success",
+      "if_too_much": "A clearly smaller fallback"
     },
     {
-      "intensity": "moderate — one sentence",
+      "approach": "different route id",
+      "label": "different human label",
       "challenge": "...",
       "time_frame": "...",
       "why_this_size": "...",
@@ -92,7 +164,8 @@ Return ONLY valid JSON:
       "if_too_much": "..."
     },
     {
-      "intensity": "bold",
+      "approach": "third route id",
+      "label": "third human label",
       "challenge": "...",
       "time_frame": "...",
       "why_this_size": "...",
@@ -102,389 +175,159 @@ Return ONLY valid JSON:
   ]
 }
 
-RULES:
-- Never suggest anything that requires spending money, accessing specific locations, or contacting someone who hasn't consented
-- The "bold" option should still be achievable — not terrifying, just a bigger step
-- If capacity is LOW, even the "bold" option should be small by normal standards
-- what_counts must make attempting easier than not — lower the bar
-- ${NO_QUOTE_RULE}
-- Return ONLY the JSON object`, userLanguage);
+If recent history contains a very clear calibration pattern, pattern_note may be one cautious sentence such as recent pushes have tended to feel easier than expected. Otherwise return null. Never mention streaks, success rates, badges, levels, or achievement status.
+
+${NO_QUOTE_RULE}
+Return only the JSON object.`;
 
   const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-generate' });
+    model: MODELS.SMART,
+    max_tokens: 2600,
+    system: withLanguage('Follow the user-facing language requested for this DeftBrain tool. Keep JSON keys and stable programmatic values unchanged.', userLanguage)
+      + withLocaleContext(localeContext.userLocale, localeContext.userCurrency, localeContext.userRegion)
+      + ' ' + NO_QUOTE_RULE,
+    messages: [{ role: 'user', content: prompt }],
+  }, { label: 'gpg-generate' });
 
-  res.json(parsed);
+  const pushes = Array.isArray(parsed?.pushes) ? parsed.pushes.filter(isCompletePush).slice(0, 3) : [];
+  if (pushes.length < 3) return res.status(502).json({ error: 'The generated pushes were incomplete. Please try again.' });
+  const out = { ...parsed, pushes };
+  await guardPushes(out, { domain, comfortZone, growthArea, currentCapacity }, startedAt, pushes);
+  res.json(out);
 }
 
-// ════════════════════════════════════════════════════════════
-// ACTION: REGENERATE — one new push based on feedback
-// ════════════════════════════════════════════════════════════
-async function handleRegenerate({ previousPush, feedback, domain, comfortZone, growthArea, currentCapacity }, userLanguage, res) {
-  const prompt = withLanguage(`You are a compassionate growth coach. The person didn't like the push they were given and wants something different.
+async function handleRegenerate({ previousPush, feedback, domain, comfortZone, growthArea, currentCapacity }, userLanguage, localeContext, res) {
+  if (!growthArea?.trim()) return res.status(400).json({ error: 'growthArea is required' });
+  if (!feedback?.trim()) return res.status(400).json({ error: 'feedback is required' });
 
-CONTEXT:
-- Growth area: "${growthArea?.trim() || 'not specified'}"
-- Domain: ${domain || 'not specified'}
-- Comfort zone: ${comfortZone?.trim() || 'not specified'}
-- Capacity: ${currentCapacity || 'medium'}
-- Previous push: "${previousPush || 'not specified'}"
-- Feedback: "${feedback}"
-
-Generate ONE new push that directly addresses the feedback. If they said "too scary" — smaller. If "too easy" — bigger. If "wrong direction" — reframe the challenge entirely. If "not relevant" — try a completely different angle.
-
-Return ONLY valid JSON:
-{
-  "response_to_feedback": "1 sentence acknowledging their feedback warmly — 1-2 sentences",
-  "push": {
-    "intensity": "gentle|moderate|bold|adjusted",
-    "challenge": "The new specific challenge — one sentence",
-    "time_frame": "When to do it — one sentence",
-    "why_this_size": "Why this is better sized given their feedback (number)",
-    "what_counts": "What counts as success — one sentence",
-    "if_too_much": "A smaller fallback if needed — one sentence"
-  }
-}
-
-${NO_QUOTE_RULE}`, userLanguage);
-
-  const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-regenerate' });
-
-  res.json(parsed);
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTION: REFLECT — process the outcome
-// ════════════════════════════════════════════════════════════
-async function handleReflect({ push, attempted, scariness, predictedScariness, whatHappened }, userLanguage, res) {
-  const prompt = withLanguage(`You are a compassionate growth coach helping someone process a comfort-zone challenge they just attempted (or didn't attempt).
-
-WHAT THEY DID:
-- Challenge: "${push || 'not specified'}"
-- Attempted: ${attempted ? 'Yes' : 'No'}
-${scariness ? `- How scary it was (actual): ${scariness}/5` : ''}
-${predictedScariness ? `- How scary they expected it to be: ${predictedScariness}/5` : ''}
-${whatHappened?.trim() ? `- What happened: "${whatHappened.trim()}"` : ''}
-
-${attempted
-  ? 'They attempted the challenge. Celebrate the attempt regardless of outcome — attempting IS success.'
-  : 'They did not attempt the challenge. Be compassionate — this is information, not failure. Help them understand without shame.'}
-
-${predictedScariness && scariness && predictedScariness !== scariness
-  ? `The prediction gap: they expected ${predictedScariness}/5, reality was ${scariness}/5. ${predictedScariness > scariness ? 'Their brain overpredicted the danger.' : 'It was harder than expected — that took courage.'}`
-  : ''}
-
-Return ONLY valid JSON:
-{
-  "celebration": ${attempted ? '"Warm celebration of the attempt — 1-2 sentences. Reference what they actually did. No generic cheerleading."' : 'null'},
-  "reflection": "1-2 sentences of honest, warm reflection on what this experience shows about their growth edge",
-  "growth_insight": "One specific insight about their growth pattern — connect this to what their attempt (or non-attempt) reveals — one sentence",
-  "scariness_note": ${scariness ? '"1 sentence calibration note about their scariness rating"' : 'null'},
-  "prediction_insight": ${predictedScariness && scariness ? '"1 sentence insight about the gap between predicted and actual scariness"' : 'null'},
-  "next_suggestion": "One concrete, small suggestion for next time — either the same challenge or a step toward it — one sentence"
-}
-
-${NO_QUOTE_RULE}`, userLanguage);
-
-  const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-reflect' });
-
-  res.json(parsed);
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTION: REVIEW — growth map analysis
-// ════════════════════════════════════════════════════════════
-async function handleReview({ pushLog, domains }, userLanguage, res) {
-  if (!pushLog?.length) {
-    return res.status(400).json({ error: 'pushLog is required' });
-  }
-
-  const attempted = pushLog.filter(p => p.attempted).length;
-  const attemptRate = Math.round((attempted / pushLog.length) * 100);
-  const withScariness = pushLog.filter(p => p.scariness > 0 && p.attempted);
-  const avgScariness = withScariness.length > 0
-    ? Math.round((withScariness.reduce((s, p) => s + p.scariness, 0) / withScariness.length) * 10) / 10
-    : 0;
-
-  const prompt = withLanguage(`You are a growth coach analyzing someone's comfort-zone push history to help them understand their patterns.
-
-PUSH HISTORY (${pushLog.length} total):
-${pushLog.slice(0, 20).map(p => `- "${p.challenge}" | domain: ${p.domain || 'general'} | intensity: ${p.intensity} | attempted: ${p.attempted} | scariness: ${p.scariness || 'not rated'}/5 | date: ${p.date?.slice(0, 10) || 'unknown'}`).join('\n')}
-
-DOMAIN COMFORT SCORES (1=terrified, 5=confident):
-${domains ? Object.entries(domains).map(([d, v]) => `${d}: ${v}/5`).join(', ') : 'not provided'}
-
-COMPUTED STATS:
-- Total pushes: ${pushLog.length}
-- Attempted: ${attempted} (${attemptRate}%)
-- Avg scariness (attempted): ${avgScariness}/5
-
-Analyze their patterns and growth trajectory.
-
-Return ONLY valid JSON:
-{
-  "total_pushes": ${pushLog.length},
-  "attempted": ${attempted},
-  "attempt_rate": "${attemptRate}%",
-  "avg_scariness": ${avgScariness},
-  "comfort_zone_shift": {
-    "direction": "expanding|stable|contracting",
-    "evidence": "1-2 sentences of specific evidence from their history",
-    "biggest_growth": "The domain or area where they've grown most — one sentence"
-  },
-  "streak": {
-    "current": 0,
-    "longest": 0,
-    "observation": "1 sentence about their consistency pattern — one sentence"
-  },
-  "intensity_pattern": {
-    "most_chosen": "gentle|moderate|bold",
-    "observation": "1 sentence about what their intensity choices reveal — one sentence"
-  },
-  "domain_breakdown": [
-    {
-      "domain": "social|professional|creative|physical|emotional|financial",
-      "pushes": 0,
-      "avg_scariness": 0,
-      "trend": "growing|avoiding|neutral"
-    }
-  ],
-  "blind_spots": "1 sentence about domains or patterns they're avoiding — or null if no clear blind spots — one sentence",
-  "encouragement": "1-2 genuinely warm sentences about what their history shows — specific, not generic — one sentence",
-  "next_recommendation": "1 specific suggestion for their next push based on patterns — one sentence"
-}
-
-Only include domains in domain_breakdown that appear in their history.
-
-${NO_QUOTE_RULE}`, userLanguage);
-
-  const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-review' });
-
-  res.json(parsed);
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTION: COURAGE COUNTDOWN — in-the-moment support
-// ════════════════════════════════════════════════════════════
-async function handleCourageCountdown({ push, domain, comfortZone }, userLanguage, res) {
-  if (!push?.trim()) {
-    return res.status(400).json({ error: 'push challenge is required' });
-  }
-
-  const prompt = withLanguage(`You are a calm, grounded coach helping someone in the moment right before they do something scary. They're about to attempt: "${push.trim()}"
-
-Context: domain: ${domain || 'general'}, comfort zone: ${comfortZone?.trim() || 'not specified'}
-
-Create a short courage countdown — a sequence of 4-5 steps that grounds them, reframes their fear, and gets them ready to act. This is NOT a pep talk. It's a practical sequence: breathe, name the fear, shrink it, go.
-
-Return ONLY valid JSON:
-{
-  "opening": "1-2 sentences that meet them where they are — calm, not cheerleady. Acknowledge the fear.",
-  "reframe": "1 sentence that reframes the challenge in a smaller, more manageable way — one sentence",
-  "steps": [
-    { "emoji": "🫁", "instruction": "Take one slow breath. In for 4, out for 6. — one sentence" },
-    { "emoji": "🧠", "instruction": "Name the actual fear. What's the worst realistic thing that happens? — one sentence" },
-    { "emoji": "📏", "instruction": "Shrink it: what's the absolute minimum version of this that still counts? — one sentence" },
-    { "emoji": "⏱️", "instruction": "Set a timer for 2 minutes. You only have to start — not finish. — one sentence" },
-    { "emoji": "🚀", "instruction": "Go. Right now. Before your brain talks you out of it. — one sentence" }
-  ],
-  "go_line": "Short, direct line to go. Not cheerleading — a quiet push. — one sentence",
-  "panic_plan": "If they freeze: 1 sentence on the smallest possible version of the action they can take right now — one sentence"
-}
-
-Steps should be 4-6 total. Keep each instruction to 1-2 sentences max. Practical, grounded, calm.
-
-${NO_QUOTE_RULE}`, userLanguage);
-
-  const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-countdown' });
-
-  res.json(parsed);
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTION: ESCALATION LADDER — step-by-step progression
-// ════════════════════════════════════════════════════════════
-async function handleEscalationLadder({ domain, comfortZone, growthArea, currentCapacity, pushHistory }, userLanguage, res) {
-  if (!growthArea?.trim()) {
-    return res.status(400).json({ error: 'growthArea is required' });
-  }
-
-  const historyNote = pushHistory?.length > 0
-    ? `\nPast pushes in this area: ${pushHistory.slice(0, 5).filter(p => p.attempted).map(p => `"${p.challenge}"`).join(', ')}`
-    : '';
-
-  const prompt = withLanguage(`You are a growth coach building a personalized escalation ladder — a clear progression from tiny first steps to meaningful growth.
-
-CONTEXT:
-- Growth area: "${growthArea.trim()}"
-- Domain: ${domain || 'not specified'}
-- Comfort zone: ${comfortZone?.trim() || 'not specified'}
-- Current capacity: ${currentCapacity || 'medium'}
-${historyNote}
-
-Create a 7-rung ladder from barely scary (1/5) to genuinely challenging (5/5). Each rung should be a clear, specific step. The ladder should tell a coherent story of progression.
-
-Return ONLY valid JSON:
-{
-  "ladder_intro": "1 sentence explaining the ladder's progression — one sentence",
-  "current_position": 1,
-  "rungs": [
-    {
-      "level": 1,
-      "challenge": "Specific challenge — concrete and actionable — one sentence",
-      "estimated_scariness": 1,
-      "why_this_level": "Why this is sized at this level — one sentence"
-    },
-    { "level": 2, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
-    { "level": 3, "challenge": "...", "estimated_scariness": 2, "why_this_level": "..." },
-    { "level": 4, "challenge": "...", "estimated_scariness": 3, "why_this_level": "..." },
-    { "level": 5, "challenge": "...", "estimated_scariness": 3, "why_this_level": "..." },
-    { "level": 6, "challenge": "...", "estimated_scariness": 4, "why_this_level": "..." },
-    { "level": 7, "challenge": "...", "estimated_scariness": 5, "why_this_level": "..." }
-  ],
-  "distance_note": "1 encouraging sentence about the distance from where they are to the top — one sentence",
-  "next_rung_suggestion": "Which rung to start with and why — one sentence"
-}
-
-Set current_position to the rung that matches their current capacity and comfort zone.
-estimated_scariness should use scale 1-5 and increase progressively (not necessarily one per rung).
-
-${NO_QUOTE_RULE}`, userLanguage);
-
-  const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-ladder' });
-
-  res.json(parsed);
-}
-
-// ════════════════════════════════════════════════════════════
-// ACTION: FEAR INVENTORY — profile analysis from scenario ratings
-// ════════════════════════════════════════════════════════════
-async function handleFearInventory({ responses }, userLanguage, res) {
-  if (!responses || Object.keys(responses).length < 5) {
-    return res.status(400).json({ error: 'At least 5 scenario responses required' });
-  }
-
-  const SCENARIOS = {
-    s1:  { text: 'Eating alone at a restaurant',                    domain: 'social' },
-    s2:  { text: 'Making a phone call to a stranger',               domain: 'social' },
-    s3:  { text: 'Starting a conversation at a party',              domain: 'social' },
-    s4:  { text: 'Saying no to a friend\'s request',                domain: 'emotional' },
-    s5:  { text: 'Asking for a raise or promotion',                 domain: 'professional' },
-    s6:  { text: 'Speaking up in a meeting',                        domain: 'professional' },
-    s7:  { text: 'Sharing creative work publicly',                  domain: 'creative' },
-    s8:  { text: 'Singing or performing in front of others',        domain: 'creative' },
-    s9:  { text: 'Going to the gym alone',                          domain: 'physical' },
-    s10: { text: 'Trying a new sport or class',                     domain: 'physical' },
-    s11: { text: 'Crying in front of someone',                      domain: 'emotional' },
-    s12: { text: 'Telling someone they hurt you',                   domain: 'emotional' },
-    s13: { text: 'Checking your bank balance',                      domain: 'financial' },
-    s14: { text: 'Negotiating a price',                             domain: 'financial' },
-    s15: { text: 'Admitting you don\'t know something',             domain: 'professional' },
-    s16: { text: 'Traveling somewhere alone',                       domain: 'physical' },
-    s17: { text: 'Posting a photo of yourself online',              domain: 'creative' },
-    s18: { text: 'Having a difficult conversation with family',     domain: 'emotional' },
-    s19: { text: 'Applying for a job you\'re not sure you qualify for', domain: 'professional' },
-    s20: { text: 'Asking someone on a date',                        domain: 'social' },
+  const feedbackGuide = {
+    too_scary: 'TOO MUCH: make it meaningfully smaller, shorter, easier to exit, or less socially/emotionally exposed.',
+    too_easy: 'TOO LITTLE: add a little more stretch while staying inside the same objective-safety boundary.',
+    wrong_direction: 'WRONG KIND: change the route entirely rather than merely resizing the same challenge.',
+    not_relevant: 'NOT PRACTICAL RIGHT NOW: choose something that fits ordinary life without special timing, location, money, equipment, or another person being available.',
   };
 
-  // Compute domain averages
-  const domainTotals = {};
-  const domainCounts = {};
-  const ratedItems = [];
+  const prompt = `You are recalibrating ONE Gentle Push after the user said the previous suggestion did not fit.
 
-  Object.entries(responses).forEach(([id, score]) => {
-    const scenario = SCENARIOS[id];
-    if (!scenario || !score) return;
-    ratedItems.push(`- "${scenario.text}" (${scenario.domain}): ${score}/5`);
-    if (!domainTotals[scenario.domain]) { domainTotals[scenario.domain] = 0; domainCounts[scenario.domain] = 0; }
-    domainTotals[scenario.domain] += score;
-    domainCounts[scenario.domain]++;
-  });
+CONTEXT:
+- Area: ${domain || 'not specified'}
+- Easy now / stretch boundary: ${comfortZone?.trim() || 'not specified'}
+- Growth goal: ${growthArea.trim()}
+- Capacity today: ${currentCapacity || 'medium'}
+- Previous suggestion: ${previousPush || 'not specified'}
+- Feedback: ${feedback}
+- Interpretation of feedback: ${feedbackGuide[feedback] || feedback}
 
-  const domainAvgs = {};
-  Object.entries(domainTotals).forEach(([d, total]) => {
-    domainAvgs[d] = Math.round((total / domainCounts[d]) * 10) / 10;
-  });
+Generate one genuinely revised option. Do not defend the old suggestion. Do not praise the user for giving feedback. Simply acknowledge it and recalibrate.
 
-  // Convert scariness (1-5) to comfort (1-5, inverted) for domain_scores
-  const domainScores = {};
-  Object.entries(domainAvgs).forEach(([d, avg]) => {
-    domainScores[d] = Math.max(1, Math.min(5, Math.round(6 - avg)));
-  });
-
-  const prompt = withLanguage(`You are a growth coach analyzing someone's fear inventory to create a personalized comfort zone profile.
-
-THEIR RATINGS (1=easy, 5=terrifying):
-${ratedItems.join('\n')}
-
-DOMAIN AVERAGES (scariness 1-5, lower=more comfortable):
-${Object.entries(domainAvgs).map(([d, avg]) => `${d}: ${avg}/5`).join(', ')}
-
-Analyze their fear profile and provide personalized insights.
+${SAFETY_RULES}
 
 Return ONLY valid JSON:
 {
-  "profile_summary": "2-3 sentences summarizing their overall fear profile — what's their comfort zone pattern? What does this reveal about them?",
-  "strongest": {
-    "domain": "the domain name (social|professional|creative|physical|emotional|financial)",
-    "observation": "1 sentence about why this is their strongest area and what it means for growth — one sentence"
-  },
-  "growth_edge": {
-    "domain": "the domain with most growth potential given their profile — one sentence",
-    "observation": "1 sentence about why this domain offers the best leverage for their growth — one sentence"
-  },
-  "biggest_fear": {
-    "domain": "their highest-scariness domain — one sentence",
-    "observation": "1 compassionate sentence about this domain — no judgment, just insight — one sentence"
-  },
-  "patterns": [
-    { "pattern": "Pattern name. Nothing else.", "insight": "What this pattern reveals about them — 1 sentence" },
-    { "pattern": "Pattern name. Nothing else.", "insight": "..." }
-  ],
-  "recommended_first_push": {
-    "direction": "Specific suggested first push — concrete, not generic — one sentence",
-    "why": "Why this is the right starting point for them specifically — one sentence"
-  },
-  "domain_scores": ${JSON.stringify(domainScores)}
+  "response_to_feedback": "One brief, grounded sentence showing how the recalibration will change",
+  "push": {
+    "approach": "short stable snake_case route id",
+    "label": "2-4 word human label",
+    "challenge": "Specific challenge",
+    "time_frame": "When/circumstance",
+    "why_this_size": "Why this better matches the feedback and capacity",
+    "what_counts": "Smallest controllable attempt that counts",
+    "if_too_much": "Smaller fallback"
+  }
 }
 
-Patterns should be cross-domain insights (e.g., "Social-professional crossover: comfortable one-on-one but scared in groups"). 2-3 patterns max. Be specific and insightful, not generic.
-
-${NO_QUOTE_RULE}`, userLanguage);
+${NO_QUOTE_RULE}
+Return only the JSON object.`;
 
   const parsed = await callClaudeWithRetry({
-      model: MODELS.SMART,
-      max_tokens: 3000,
-      messages: [{ role: 'user', content: prompt }]
-    }, { label: 'gpg-inventory' });
+    model: MODELS.SMART,
+    max_tokens: 1000,
+    system: withLanguage('Follow the user-facing language requested for this DeftBrain tool. Keep JSON keys and stable programmatic values unchanged.', userLanguage)
+      + withLocaleContext(localeContext.userLocale, localeContext.userCurrency, localeContext.userRegion)
+      + ' ' + NO_QUOTE_RULE,
+    messages: [{ role: 'user', content: prompt }],
+  }, { label: 'gpg-regenerate' });
 
-  // domain_scores are computed server-side from the user's ratings — authoritative.
-  // Always override the model's echo with the computed values.
-  parsed.domain_scores = domainScores;
+  if (!isCompletePush(parsed?.push)) return res.status(502).json({ error: 'The replacement push was incomplete. Please try again.' });
+  res.json(parsed);
+}
+
+async function handleReflect({ push, attempted, scariness, whatHappened }, userLanguage, localeContext, res) {
+  if (!push?.trim()) return res.status(400).json({ error: 'push is required' });
+
+  const prompt = `You are helping someone briefly learn from a Gentle Push they chose.
+
+CHALLENGE:
+${push.trim()}
+
+DID THEY ATTEMPT IT?
+${attempted ? 'Yes' : 'No'}
+${scariness ? `How much stretch it actually felt like: ${scariness}/5` : ''}
+${whatHappened?.trim() ? `Their own note: ${whatHappened.trim()}` : ''}
+
+RULES:
+- The attempt counts regardless of outcome.
+- If they did not attempt it, treat that as calibration information, not failure.
+- Do not diagnose why they did or did not act.
+- Do not claim their brain overpredicted danger or infer a psychological mechanism from one event.
+- Do not create streaks, scores, badges, achievement language, or pressure to escalate.
+- A next suggestion may repeat the same challenge, shrink it, or take a nearby step. Bigger is not automatically better.
+- Ground any interpretation in what they actually reported.
+${SAFETY_RULES}
+
+Return ONLY valid JSON:
+{
+  "celebration": ${attempted ? '"One warm, specific sentence recognizing the attempt without hype"' : 'null'},
+  "reflection": "One or two grounded sentences about what this attempt/non-attempt tells us about calibration, based only on the supplied facts",
+  "growth_insight": "One cautious, useful observation; null if the supplied information does not support one",
+  "scariness_note": ${scariness ? '"One sentence interpreting the rating only as calibration information"' : 'null'},
+  "next_suggestion": "One concrete next option that stays close to the current edge and does not assume escalation is necessary"
+}
+
+${NO_QUOTE_RULE}
+Return only the JSON object.`;
+
+  const parsed = await callClaudeWithRetry({
+    model: MODELS.SMART,
+    max_tokens: 900,
+    system: withLanguage('Follow the user-facing language requested for this DeftBrain tool. Keep JSON keys and stable programmatic values unchanged.', userLanguage)
+      + withLocaleContext(localeContext.userLocale, localeContext.userCurrency, localeContext.userRegion)
+      + ' ' + NO_QUOTE_RULE,
+    messages: [{ role: 'user', content: prompt }],
+  }, { label: 'gpg-reflect' });
 
   res.json(parsed);
 }
+
+function isCompletePush(push) {
+  return !!(
+    push &&
+    typeof push.challenge === 'string' && push.challenge.trim() &&
+    typeof push.what_counts === 'string' && push.what_counts.trim() &&
+    typeof push.if_too_much === 'string' && push.if_too_much.trim() &&
+    typeof push.why_this_size === 'string' && push.why_this_size.trim()
+  );
+}
+
+router.outputStandard = 'v2';
+// gentle-push-generator-v2. Reviewed 2026-08-28. The risk here is not bad advice
+// so much as presumption: a tool that suggests how to be braver is one keystroke
+// away from telling someone why they are afraid, and it was never told. The
+// other half is safety — the whole design rests on raising subjective stretch
+// without raising objective risk, and that line is easy to cross while sounding
+// encouraging.
+router.outputGuard = {
+  prohibit: [
+    'names_a_motive_or_fear_the_visitor_did_not_state',
+    'success_depending_on_another_persons_response',
+    'objective_risk_presented_as_courage',
+    'streaks_scores_or_escalation_pressure',
+    'push_too_vague_or_too_costly_to_start',
+  ],
+  require: [
+    'success_defined_by_a_controllable_attempt',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
