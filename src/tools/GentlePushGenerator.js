@@ -15,6 +15,7 @@ const DOMAINS = [
   { value: 'physical', icon: '🏃', labelKey: 'gpg_domain_physical_label' },
   { value: 'emotional', icon: '💜', labelKey: 'gpg_domain_emotional_label' },
   { value: 'financial', icon: '💰', labelKey: 'gpg_domain_financial_label' },
+  { value: 'other', icon: '✨', labelKey: 'gpg_domain_other_label' },
 ];
 
 const CAPACITY_LEVELS = [

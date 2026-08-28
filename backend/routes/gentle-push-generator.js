@@ -177,6 +177,24 @@ const CAPACITY_GUIDE = {
 
 const SAFETY_RULES = `
 SAFETY AND CALIBRATION — HARD RULES:
+
+WHICH SAFEGUARDS APPLY IS DECIDED BY WHAT THEY WROTE, NOT BY WHICH BUTTON THEY
+PRESSED. The area of life is a hint about where to look; it is not a boundary
+and it is not a permission. Read the growth goal and the boundary they
+described, work out which domains the substance actually touches, and apply
+every safeguard those domains carry.
+
+A goal filed under Social that involves fasting, running or injury is a physical
+goal and takes the physical rules. A goal filed under Professional that involves
+money they could lose takes the financial rules. A goal filed under Creative
+that involves disclosing something private takes the emotional rules. "Other",
+or no selection at all, removes no protection whatever: work out the substance
+and apply what fits.
+
+Where a goal touches more than one domain, every relevant safeguard applies at
+once. The strictest one governs; they do not cancel each other out, and the
+selected category never overrides any of them.
+
 - Increase SUBJECTIVE STRETCH, never OBJECTIVE RISK.
 - Never encourage illegal, dangerous, reckless, coercive, deceptive, humiliating, or self-punishing behavior.
 - Never suggest pushing through pain, ignoring medical limitations, extreme exertion, unsafe environments, or unsupervised physical risk.
@@ -208,7 +226,7 @@ prescribe a hard workout is a category error and a dangerous one.
 
 No push may require pushing through pain, exhaustion, dizziness, shortness of
 breath beyond ordinary comfortable exertion, or any other warning sign.
-- Financial pushes must not involve buying an investment, gambling, taking on debt, spending meaningful money, moving money impulsively, or sharing financial credentials. Favor looking, asking, comparing, planning, or completing a small administrative step.
+- Where the goal involves money — whatever category was selected — the push must not involve buying an investment, gambling, taking on debt, spending meaningful money, moving money impulsively, or sharing financial credentials. Favor looking, asking, comparing, planning, or completing a small administrative step.
 
 FINANCIAL DOMAIN — NO STEERING.
 Do not teach, imply or reinforce an investment thesis, an expected return, a
@@ -221,8 +239,8 @@ Write the push so it works whatever they eventually decide: notice what the
 uncertainty feels like, find out what a decision would involve, ask someone what
 they wish they had known, put a number on what they could stand to lose. Let
 them choose what to look at.
-- Emotional pushes must not force trauma exposure, disclosure of highly sensitive information, confrontation, reconciliation, forgiveness, or contact with someone the person may reasonably need distance from.
-- Social/professional pushes must respect other people's boundaries. Ordinary polite interaction is fine; harassment, persistence after disinterest, manipulation, or privacy invasion is not.
+- Where the goal involves disclosure, vulnerability or a difficult relationship — whatever category was selected — the push must not force trauma exposure, disclosure of highly sensitive information, confrontation, reconciliation, forgiveness, or contact with someone the person may reasonably need distance from.
+- Where the goal involves other people — whatever category was selected — the push must respect their boundaries. Ordinary polite interaction is fine; harassment, persistence after disinterest, manipulation, or privacy invasion is not.
 - Never infer motives, diagnoses, personality traits, or hidden causes from the user's behavior. Acknowledge only what they actually told you.
 - If the user describes a situation that makes a proposed push unsafe or inappropriate, make the push smaller or redirect it entirely.
 - A push succeeds when the user completes the CONTROLLABLE ATTEMPT. Another person's response, approval, outcome, sale, invitation, performance, or emotional reaction must never be required for success.
@@ -479,6 +497,7 @@ router.outputGuard = {
     'financial_push_steering_toward_a_product_thesis_or_return',
     'prescribes_physical_intensity_without_established_routine',
     'reads_high_capacity_as_physical_readiness',
+    'safeguard_skipped_because_the_selected_category_did_not_match_the_substance',
   ],
   require: [
     'success_defined_by_a_controllable_attempt',
