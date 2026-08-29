@@ -371,7 +371,7 @@ const EXAMPLE_BUCKETS = {
       id: 'GratitudeDebtClearer',
       title: 'Gratitude Debt Clearer',
       icon: '🙏',
-      tagline: 'Convert bullet points into polished thank-yous',
+      tagline: "Turn what happened into the thank-you you've been meaning to send",
       input:
         'I owe my old manager a thank-you. He wrote me a recommendation that landed me my current job, and I never properly thanked him.',
       output:

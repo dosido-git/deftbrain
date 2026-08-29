@@ -65,31 +65,72 @@ const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON 
 // guessing is only meaningful because the response contract below lets the
 // model return a question instead of prose; a prompt that forbids inventing
 // while the schema demands a message every time will produce invention.
-const groundingRules = `GROUNDING AND PERSONALIZATION — HARD REQUIREMENTS
+const groundingRules = `GROUNDED TRANSFORMATION — HARD REQUIREMENT
 
-The user's supplied information is the only source of personal facts.
+Personalization must remain grounded in information the user supplied.
 
-You may:
-- paraphrase facts the user supplied;
-- combine supplied facts;
-- draw modest, directly supported conclusions about why an event mattered;
-- adjust wording, structure, warmth, directness, and length.
+Do not merely repeat or rearrange the user's facts. Transform those facts into natural expressions of gratitude.
 
-You must NOT invent:
+You MAY:
+- interpret the evident effort, significance, contrast, or practical meaning of an action when that interpretation follows naturally from the facts supplied;
+- express appreciation for that effort or significance;
+- paraphrase concrete facts into natural conversational language;
+- connect multiple supplied facts to explain why the gesture was meaningful.
+
+You MUST NOT turn an interpretation into a new personal fact.
+
+Never invent:
 - relationship history or duration;
-- shared memories;
-- inside jokes;
-- recipient habits, tastes, routines, or personality traits;
+- past behavior not supplied;
+- personality or character traits;
 - motives or intentions;
-- emotions the user did not express;
-- things the recipient supposedly always or never does;
-- cultural expectations not explicitly supplied;
-- details of what happened that the user did not provide.
+- thoughts or feelings of the recipient;
+- shared memories or inside jokes;
+- habits, preferences, or routines;
+- emotions or consequences the user did not state and that do not follow directly from the supplied facts.
+
+Examples:
+
+USER FACT:
+"Drove four hours to help me move."
+
+ALLOWED:
+"That was a lot to take on just to help me."
+"You went well out of your way to help."
+
+NOT ALLOWED:
+"You've always been the friend I can count on."
+"You never hesitate to help people."
+
+USER FACT:
+"Didn't complain once."
+
+ALLOWED:
+"You never made any of it feel like a burden."
+"You handled the whole thing without making a fuss."
+
+NOT ALLOWED:
+"I know you were exhausted."
+"That's just the kind of person you are."
+
+USER FACT:
+"Bought me dinner afterward."
+
+ALLOWED:
+"And then you bought me dinner on top of everything else."
+"You somehow topped it off by buying me dinner."
+
+NOT ALLOWED:
+"You knew exactly what I needed."
+"You're always taking care of everyone."
+
+The goal is:
+INTERPRET THE FACTS WITHOUT INVENTING FACTS.
 
 Do not create false intimacy in order to make a message sound personal.
 
-Personalization must come from using the user's real details well, not from
-adding plausible details.
+Cultural expectations are a fact like any other: use them only when the user
+supplied them.
 
 If a requested revision would require information you do not have, do not guess.
 Ask one concise, useful question instead.
@@ -111,6 +152,7 @@ Ask internally:
 2. Did I invent closeness, history, personality, motives, memories, or feelings?
 3. Did I add specificity that was not supplied?
 4. If I lacked information needed for the requested revision, should I ask instead?
+5. Did I transform the user's facts into meaningful gratitude, or did I merely repeat them?
 
 If any answer reveals unsupported content, revise before returning.
 
@@ -287,6 +329,30 @@ Write exactly THREE genuinely different thank-you messages. All three express th
 
 ${groundingRules}
 
+MEANINGFUL DIFFERENTIATION — HARD REQUIREMENT
+
+The three messages must represent genuinely different rhetorical approaches, not three paraphrases of the same sentence.
+
+Each version must actually demonstrate the approach stated in its title and description.
+
+For example:
+
+DIRECT AND SPECIFIC
+Lead with what happened and express appreciation plainly.
+
+LIGHT AND CONVERSATIONAL
+Use natural spoken rhythm, lightness, contrast, or gentle humor when supported by the facts. Do not claim humor unless the message actually contains it.
+
+REFLECTIVE BUT GROUNDED
+Draw out why the supplied actions mattered without inventing emotional meaning, relationship history, or character traits.
+
+FINAL DIFFERENTIATION CHECK:
+Compare all three messages before returning them.
+
+If two messages could become essentially identical by moving the recipient's name, changing sentence order, or substituting a few synonyms, they are not sufficiently different. Rewrite one.
+
+Also verify that each message actually delivers the rhetorical quality promised by its title and description.
+
 WRITING RULES:
 - Lead with concrete details from the user's account rather than generic gratitude language.
 - Sound like a real person, not a greeting card, therapist, etiquette manual, or AI assistant.
@@ -295,7 +361,6 @@ WRITING RULES:
 - Do not add an offer to repay the favor unless the user asked for one.
 - Do not give cultural advice or infer culture from locale, region, language, name, or relationship.
 - If tone is 'Let DeftBrain choose', infer only the degree of formality warranted by the stated relationship and wording; do not infer closeness.
-- The three versions must differ in approach, not merely synonyms. Good distinctions include: direct and specific; light and conversational; reflective but grounded.
 - Do not label a version as best for a relationship history you do not know.
 - Instead, 'choose_if' must describe the MESSAGE EFFECT, e.g. 'You want the thanks to feel warm without getting emotional.'
 - ${lengthGuide}
