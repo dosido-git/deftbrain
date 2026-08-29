@@ -1057,7 +1057,7 @@ export const magicMouth = {
     mm_ex7_want: "Ein Rabatt auf meine Internetrechnung",
     mm_ex7_situation: "Seit 4 Jahren Kunde, die Preise steigen ständig",
     mm_ex8_want: "Extra Soße im Restaurant, ohne dafür zu zahlen",
-    mm_ex8_situation: "Sie berechnen {{sym}}1.50 pro zusätzlichem Soßenbecher",
+    mm_ex8_situation: "Für jeden zusätzlichen Soßenbecher berechnen sie {{sym}}1.50",
   },
   ja: {
     mm_xref_contextcollapse: "ContextCollapse",

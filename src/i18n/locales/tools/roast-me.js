@@ -318,10 +318,10 @@ export const roastMe = {
     rm_copy_unknown: "Inconnu",
   },
   de: {
-    rm_tagline: "Finden Sie die Floskeln, Schlagwörter, versteckten Angebereien und peinlichen Formulierungen, die Sie längst nicht mehr bemerken.",
+    rm_tagline: "Finde die Floskeln, Schlagwörter, versteckten Angebereien und peinlichen Formulierungen, die du längst nicht mehr bemerkst.",
     rm_ct_auto: "Automatisch erkennen",
     rm_every_roast: "Jeder Roast enthält",
-    rm_inc_jokes: "Auf Sie gemünzte Witze",
+    rm_inc_jokes: "Auf dich gemünzte Witze",
     rm_inc_nice: "Eine ehrlich nette Beobachtung",
     rm_inc_share: "Einen Einzeiler zum Teilen",
     rm_ct_resume: "Lebenslauf / CV",

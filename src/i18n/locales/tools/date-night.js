@@ -1295,7 +1295,7 @@ export const dateNight = {
     dn_small_touch: "Eine kleine Geste, die den Abend unvergesslich machen kann",
     dn_confirm_direct: "Öffnungszeiten, Preise, Verfügbarkeit und Reservierungen bitte direkt beim jeweiligen Ort bestätigen.",
     dn_title: "Date Night",
-    dn_tagline: "Planen Sie den perfekten Abend, Station für Station.",
+    dn_tagline: "Plan den perfekten Abend, Station für Station.",
     dn_what_kind: "Welche Art von Date?",
     dn_dt_casual: "Locker",
     dn_dt_casual_d: "Entspannt und ungezwungen",

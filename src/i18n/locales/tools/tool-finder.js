@@ -257,7 +257,7 @@ export const toolFinder = {
   },
   de: {
     tf_paused_title: "Tool Finder wird gerade überarbeitet.",
-    tf_paused_body: "Sehen Sie sich in der Zwischenzeit alle DeftBrain-Tools an.",
+    tf_paused_body: "Sieh dir in der Zwischenzeit alle DeftBrain-Tools an.",
     tf_paused_cta: "Alle Tools ansehen",
     tf_input_label: "Wobei brauchst du Hilfe?",
     tf_input_ph: "z. B. Mein Vermieter will meine Kaution einbehalten, und ich finde das unfair...",

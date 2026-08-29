@@ -409,7 +409,7 @@ export const coldOpenCraft = {
     coc_bg_hint: "Eine passende Erfahrung, ein gemeinsames Interesse, ein Erfolg oder warum du gut passt.",
     coc_ex2_who: "Die Frau, die den Gemeinschaftsgarten zwei Straßen weiter betreibt",
     coc_ex2_why: "Fragen, ob eine Parzelle frei ist — und ob Neulinge, die nichts können, willkommen sind",
-    coc_ex2_know: "Ihr Name steht am Schwarzen Brett. Der Garten hat eine Warteliste, oder hatte 2023 eine, laut einem laminierten Schild. Jemand sagte, sie sei „nett, aber viel beschäftigt“. Mehr weiß ich nicht.",
+    coc_ex2_know: "Am Schwarzen Brett steht ihr Name. Der Garten hat eine Warteliste, oder hatte 2023 eine, laut einem laminierten Schild. Jemand sagte, sie sei „nett, aber viel beschäftigt“. Mehr weiß ich nicht.",
     coc_ex2_bg: "Ich habe jede Pflanze umgebracht, die ich je hatte. Ich kann tragen, samstagvormittags habe ich meist Zeit, und ich bin lieber draußen als drinnen. Mehr habe ich nicht zu bieten.",
     coc_title: "Cold Open Craft",
     coc_tagline: "Mache die erste Nachricht leichter zu senden — und leichter zu beantworten.",

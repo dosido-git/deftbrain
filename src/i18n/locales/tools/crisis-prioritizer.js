@@ -706,7 +706,7 @@ export const crisisPrioritizer = {
     cp2_do_next: "Danach",
     cp2_can_wait: "Kann wahrscheinlich warten",
     cp2_need_fact: "Eine Angabe fehlt",
-    cp2_need_fact_sub: "Ihre Position kann sich ändern, wenn eine fehlende Angabe das Bild verschiebt.",
+    cp2_need_fact_sub: "Die Reihenfolge kann sich ändern, wenn eine fehlende Angabe das Bild verschiebt.",
     cp2_fact_answer_hint: "Beantworte es hier, dann wird neu geordnet",
     cp2_fact_answer_ph: "Deine Antwort",
     cp2_fact_use_1: "Mit dieser Antwort neu ordnen",

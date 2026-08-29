@@ -1315,7 +1315,7 @@ export const sensoryMinefieldMapper = {
     smm_different_places: "ANDERE ORTE",
     smm_skip_trip: "FAHRT AUSLASSEN",
     smm_share_with_companion: "Mit deiner Begleitung teilen",
-    smm_their_name_ph: "Ihr Name (optional)",
+    smm_their_name_ph: "Name der Person (optional)",
     smm_generating: "Wird erstellt...",
     smm_generate_message: "✨ Nachricht erstellen",
     smm_casual_version: "LOCKERE VERSION",
