@@ -1502,7 +1502,7 @@ export const bikeMedic = {
     bmd_tab_seasonal: "Por temporada",
     bmd_tab_toolbox: "Herramientas",
     bmd_tab_maintenance: "Mantenimiento",
-    bmd_tab_miles: "Kilómetros",
+    bmd_tab_miles: "Millas",
     bmd_tab_garage: "Garaje",
     bmd_think_torque: "Comprobando los pares de apriete...",
     bmd_think_catalog: "Consultando el catálogo de piezas...",
@@ -1825,7 +1825,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "¿La llevas al taller? Copia o imprime un resumen del diagnóstico para que sepan qué has probado ya.",
     bmd_fix_safety_disclaimer: "⚠️ Todo lo que te sujeta a la bici o la detiene —frenos, ruedas, dirección, bielas y pedales— conviene que lo revise un taller antes de rodar. Cuando esta guía dice que no ruedes, eso va primero.",
     bmd_tree_step: "Paso {{n}}",
-    bmd_tree_none_match: "¿Ninguno coincide? Pregunta al mecánico IA →",
+    bmd_tree_none_match: "¿Ninguno coincide? Describe lo que pasa →",
     bmd_tree_problem_prefix: "Tengo un problema de {{label}}: ",
     bmd_copy_difficulty: "Dificultad: {{val}}",
     bmd_copy_time: "Tiempo: {{val}}",
@@ -2821,7 +2821,7 @@ export const bikeMedic = {
     bmd_tab_seasonal: "Por estação",
     bmd_tab_toolbox: "Ferramentas",
     bmd_tab_maintenance: "Manutenção",
-    bmd_tab_miles: "Quilômetros",
+    bmd_tab_miles: "Milhas",
     bmd_tab_garage: "Garagem",
     bmd_think_torque: "Verificando os torques...",
     bmd_think_catalog: "Consultando o catálogo de peças...",
@@ -3144,7 +3144,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "Vai levar à oficina? Copie ou imprima um resumo do diagnóstico para que saibam o que você já tentou.",
     bmd_fix_safety_disclaimer: "⚠️ Tudo o que segura você na bike ou a faz parar — freios, rodas, direção, pedivelas e pedais — merece uma conferida na oficina antes de você pedalar. Onde este guia disser para não pedalar, isso vem primeiro.",
     bmd_tree_step: "Passo {{n}}",
-    bmd_tree_none_match: "Nenhum combina? Pergunte ao mecânico IA →",
+    bmd_tree_none_match: "Nenhum combina? Descreva o que está acontecendo →",
     bmd_tree_problem_prefix: "Tenho um problema de {{label}}: ",
     bmd_copy_difficulty: "Dificuldade: {{val}}",
     bmd_copy_time: "Tempo: {{val}}",
@@ -4140,7 +4140,7 @@ export const bikeMedic = {
     bmd_tab_seasonal: "Saisonnier",
     bmd_tab_toolbox: "Outils",
     bmd_tab_maintenance: "Entretien",
-    bmd_tab_miles: "Kilomètres",
+    bmd_tab_miles: "Miles",
     bmd_tab_garage: "Garage",
     bmd_think_torque: "Vérification des couples de serrage...",
     bmd_think_catalog: "Consultation du catalogue de pièces...",
@@ -4463,7 +4463,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "Vous l'emmenez à l'atelier ? Copiez ou imprimez un résumé du diagnostic pour qu'ils sachent ce que vous avez déjà essayé.",
     bmd_fix_safety_disclaimer: "⚠️ Tout ce qui vous tient sur le vélo ou l'arrête — freins, roues, direction, manivelles et pédales — mérite un contrôle en atelier avant de rouler dessus. Quand ce guide dit de ne pas rouler, cela passe avant tout.",
     bmd_tree_step: "Étape {{n}}",
-    bmd_tree_none_match: "Aucun ne correspond ? Demandez au mécano IA →",
+    bmd_tree_none_match: "Aucun ne correspond ? Décrivez ce qui se passe →",
     bmd_tree_problem_prefix: "J'ai un problème de {{label}} : ",
     bmd_copy_difficulty: "Difficulté : {{val}}",
     bmd_copy_time: "Durée : {{val}}",
@@ -5459,7 +5459,7 @@ export const bikeMedic = {
     bmd_tab_seasonal: "Saisonal",
     bmd_tab_toolbox: "Werkzeug",
     bmd_tab_maintenance: "Wartung",
-    bmd_tab_miles: "Kilometer",
+    bmd_tab_miles: "Meilen",
     bmd_tab_garage: "Garage",
     bmd_think_torque: "Drehmomente werden geprüft...",
     bmd_think_catalog: "Teilekatalog wird durchgesehen...",
@@ -5782,7 +5782,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "Bringst du es in die Werkstatt? Kopiere oder drucke eine Diagnosezusammenfassung, damit sie wissen, was du schon versucht hast.",
     bmd_fix_safety_disclaimer: "⚠️ Alles, was Sie auf dem Rad hält oder es anhält — Bremsen, Laufräder, Lenkung, Kurbeln und Pedale — sollte vor der Fahrt eine Werkstatt prüfen. Wo diese Anleitung sagt, nicht zu fahren, gilt das zuerst.",
     bmd_tree_step: "Schritt {{n}}",
-    bmd_tree_none_match: "Passt nichts davon? Frag den KI-Mechaniker →",
+    bmd_tree_none_match: "Passt nichts davon? Beschreib, was passiert →",
     bmd_tree_problem_prefix: "Ich habe ein {{label}}-Problem: ",
     bmd_copy_difficulty: "Schwierigkeit: {{val}}",
     bmd_copy_time: "Dauer: {{val}}",
@@ -7101,7 +7101,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "Mang ra tiệm à? Sao chép hoặc in bản tóm tắt chẩn đoán để họ biết bạn đã thử những gì.",
     bmd_fix_safety_disclaimer: "⚠️ Mọi thứ giữ bạn trên xe hoặc giúp xe dừng lại — phanh, bánh, cổ lái, tay dên và bàn đạp — đều nên nhờ tiệm kiểm tra trước khi đạp. Chỗ nào hướng dẫn này bảo đừng đạp thì điều đó là trên hết.",
     bmd_tree_step: "Bước {{n}}",
-    bmd_tree_none_match: "Không có cái nào khớp? Hỏi thợ máy AI →",
+    bmd_tree_none_match: "Không có cái nào khớp? Mô tả điều đang xảy ra →",
     bmd_tree_problem_prefix: "Tôi gặp vấn đề về {{label}}: ",
     bmd_copy_difficulty: "Độ khó: {{val}}",
     bmd_copy_time: "Thời gian: {{val}}",
@@ -8420,7 +8420,7 @@ export const bikeMedic = {
     bmd_fix_shop_handoff: "要送去车店？复制或打印一份诊断摘要，让他们知道你已经试过什么。",
     bmd_fix_safety_disclaimer: "⚠️ 凡是把你固定在车上或让车停下的部分——刹车、车轮、转向、曲柄和脚踏——上车前都值得请车店检查。本指南说不要骑时，那一条优先。",
     bmd_tree_step: "第 {{n}} 步",
-    bmd_tree_none_match: "都不符合？问问 AI 技师 →",
+    bmd_tree_none_match: "都不符合？描述一下情况 →",
     bmd_tree_problem_prefix: "我有一个{{label}}问题：",
     bmd_copy_difficulty: "难度：{{val}}",
     bmd_copy_time: "用时：{{val}}",
@@ -9798,7 +9798,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "चरण {{n}}",
-    bmd_tree_none_match: "इनमें से कोई मेल नहीं खाता? AI मैकेनिक से पूछें →",
+    bmd_tree_none_match: "इनमें से कोई मेल नहीं खाता? बताएं क्या हो रहा है →",
     bmd_tree_problem_prefix: "मुझे {{label}} की समस्या है: ",
 
     // ── Copy-text builder labels ──
@@ -11245,7 +11245,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "الخطوة {{n}}",
-    bmd_tree_none_match: "لا يطابق أيٌّ منها؟ اسأل ميكانيكي الذكاء الاصطناعي →",
+    bmd_tree_none_match: "لا يطابق أيٌّ منها؟ صِف ما يحدث →",
     bmd_tree_problem_prefix: "لديّ مشكلة {{label}}: ",
 
     // ── Copy-text builder labels ──
@@ -12692,7 +12692,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "ステップ {{n}}",
-    bmd_tree_none_match: "どれも当てはまらない？AIメカニックに質問する →",
+    bmd_tree_none_match: "どれも当てはまらない？状況を説明する →",
     bmd_tree_problem_prefix: "{{label}}の不具合があります： ",
 
     // ── Copy-text builder labels ──
@@ -14139,7 +14139,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "{{n}}단계",
-    bmd_tree_none_match: "해당하는 게 없나요? AI 정비사에게 질문하기 →",
+    bmd_tree_none_match: "해당하는 게 없나요? 상황을 설명해 주세요 →",
     bmd_tree_problem_prefix: "{{label}} 문제가 있습니다: ",
 
     // ── Copy-text builder labels ──
@@ -15586,7 +15586,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "Шаг {{n}}",
-    bmd_tree_none_match: "Ничего не подходит? Спросите ИИ-механика →",
+    bmd_tree_none_match: "Ничего не подходит? Опишите, что происходит →",
     bmd_tree_problem_prefix: "У меня проблема: {{label}}: ",
 
     // ── Copy-text builder labels ──
@@ -17033,7 +17033,7 @@ export const bikeMedic = {
 
     // ── Troubleshooting tree screen ──
     bmd_tree_step: "ขั้นที่ {{n}}",
-    bmd_tree_none_match: "ไม่มีข้อใดตรงเลย? ถามช่าง AI →",
+    bmd_tree_none_match: "ไม่มีข้อใดตรงเลย? อธิบายสิ่งที่เกิดขึ้น →",
     bmd_tree_problem_prefix: "ฉันมีปัญหา {{label}}: ",
 
     // ── Copy-text builder labels ──
