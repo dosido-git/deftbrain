@@ -30,7 +30,7 @@ module.exports = {
       "Engagement cadence",
       "Light-ask drafting"
     ],
-    toolId:   'GravityWell',
+    toolId:   'BeforeHello',
     toolName: 'Gravity Well',
   },
   published: '2026-04-29',

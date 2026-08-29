@@ -30,7 +30,7 @@ module.exports = {
       "Patience-with-pace cues",
       "Long-arc tracking"
     ],
-    toolId:   'GravityWell',
+    toolId:   'BeforeHello',
     toolName: 'Gravity Well',
   },
   published: '2026-04-29',

@@ -938,7 +938,7 @@ export const tools = [
 
 {
   modified: "2026-03-11",
-  id: "GravityWell",
+  id: "BeforeHello",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -949,15 +949,15 @@ export const tools = [
   },
   seoDescription: "Get a 90-day plan to enter someone's orbit before you reach out — no cold outreach. Three phases, the exact first message, and one thing to do today. Free.",
   seoTitle: "90-Day Plan to Get on Someone's Radar",
-  title: "Gravity Well",
-  tagline: "A 90-day plan to pull someone into your orbit — before you ever reach out",
+  title: "Before Hello",
+  tagline: "Become worth knowing before you ask to be known.",
   tags: ['networking', 'cold outreach', 'mentor', 'investor', 'career', 'relationship', 'connection', 'reach out', 'linkedin', 'introduction', 'warm'],
   icon: "🌀",
   categories: ['Humans', 'Pursuits'],
   headerColor: "#e0b8b8",
-  description: "A 90-day plan to naturally enter someone's orbit before you ever reach out. Not cold outreach — gravitational pull. Three phases: become findable, enter their periphery, make the connection natural. Ends with the exact first contact message, the timing condition, and the one thing to do today.",
+  description: "Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.",
   guide: {
-      overview: "GravityWell is built on one insight: cold outreach fails because there's no warm surface. The solution isn't better cold messaging — it's eliminating cold entirely. By building proximity, visibility, and value over 90 days, the first contact feels earned rather than intrusive.",
+      overview: "Before Hello is built on one insight: cold outreach fails because there's no warm surface. The solution isn't better cold messaging — it's eliminating cold entirely. By building proximity, visibility, and value over 90 days, the first contact feels earned rather than intrusive.",
       howToUse: [
         "Describe the person you want in your life — their role, world, and what they're known for",
         "Select the relationship type — mentor, collaborator, investor, employer, client",

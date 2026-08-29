@@ -1,5 +1,5 @@
 // LuckSurface — lks_* keys for all 13 languages. Self-contained data.
-// Brand/tool names (Luck Surface, Six Degrees of Me, GravityWell, ChaosPilot,
+// Brand/tool names (Luck Surface, Six Degrees of Me, Before Hello, ChaosPilot,
 // RulebookBreaker) stay as-is across languages.
 export const luckSurface = {
   en: {

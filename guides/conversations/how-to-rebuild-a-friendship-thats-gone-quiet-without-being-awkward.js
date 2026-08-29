@@ -30,7 +30,7 @@ module.exports = {
       "Awkwardness avoidance",
       "Per-relationship rhythms"
     ],
-    toolId:   'GravityWell',
+    toolId:   'BeforeHello',
     toolName: 'Gravity Well',
   },
   published: '2026-04-29',

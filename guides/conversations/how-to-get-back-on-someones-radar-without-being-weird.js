@@ -30,7 +30,7 @@ module.exports = {
       "Opening-detection cues",
       "No-effort-required outreach"
     ],
-    toolId:   'GravityWell',
+    toolId:   'BeforeHello',
     toolName: 'Gravity Well',
   },
   published: '2026-04-29',

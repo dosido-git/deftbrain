@@ -41,7 +41,7 @@ const PHASE_COLORS = [
   { border: 'border-emerald-500', bg: (d) => d ? 'bg-emerald-900/10' : 'bg-emerald-50', text: (d) => d ? 'text-emerald-300' : 'text-emerald-800' },
 ];
 
-const GravityWell = ({ tool }) => {
+const BeforeHello = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -109,7 +109,7 @@ const GravityWell = ({ tool }) => {
   };
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('GravityWell', EXAMPLES);
+    const ex = pickExample('BeforeHello', EXAMPLES);
     setTargetType(ex.targetType);
     setTargetDescription(ex.targetDescription);
     setWhyThemContext(ex.whyThemContext);
@@ -426,5 +426,5 @@ const GravityWell = ({ tool }) => {
   );
 };
 
-GravityWell.displayName = 'GravityWell';
-export default GravityWell;
+BeforeHello.displayName = 'BeforeHello';
+export default BeforeHello;

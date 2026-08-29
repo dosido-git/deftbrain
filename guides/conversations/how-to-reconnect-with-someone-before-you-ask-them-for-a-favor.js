@@ -30,7 +30,7 @@ module.exports = {
       "Specific-ask drafting",
       "Imposition-acknowledgment lines"
     ],
-    toolId:   'GravityWell',
+    toolId:   'BeforeHello',
     toolName: 'Gravity Well',
   },
   published: '2026-04-29',

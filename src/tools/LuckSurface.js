@@ -336,7 +336,7 @@ const LuckSurface = ({ tool }) => {
               <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${c.textMuteded}`}>{t('lks_related')}</p>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: 'GravityWell', icon: '🌀', label: t('lks_xref_gravitywell') },
+                  { id: 'BeforeHello', icon: '🌀', label: t('lks_xref_gravitywell') },
                   { id: 'ChaosPilot', icon: '🎰', label: t('lks_xref_chaospilot') },
                   { id: 'NotSoFast', icon: '🚪', label: t('lks_xref_rulebookbreaker') },
                 ].map(r => (

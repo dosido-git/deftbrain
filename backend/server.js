@@ -237,7 +237,7 @@ const TOOL_IDS = [
 'DreamPatternSpotter','DriveHome','EgoKiller','EmailUrgencyTriager','PEP',
   'FakeReviewDetective','FanTheory','FinalWish','FocusPocus','FocusSoundArchitect',
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
-  'Giftology','GratitudeDebtClearer','GravityWell','GriefGuide','HecklerPrep','HistoryToday','IdeaAutopsy',
+  'Giftology','GratitudeDebtClearer','BeforeHello','GriefGuide','HecklerPrep','HistoryToday','IdeaAutopsy',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
@@ -291,6 +291,8 @@ const LEGACY_REDIRECTS = {
   '/MoneyMoves':                 '/MoneyDiplomat',
   '/NoiseCanceler':              '/CutToTheChase',
   '/RoomReader':                 '/ReadTheRoom',
+  '/GravityWell':                '/BeforeHello',
+  '/gravitywell':                '/BeforeHello',
 
   // Renamed tools (new — were "no server.js redirect (added pre-launch)" in RENAMES.md)
   '/ApologyCalibrator':          '/Mend',

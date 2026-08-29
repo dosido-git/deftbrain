@@ -104,7 +104,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/TruthBomb.js',
   'src/tools/ToastWriter.js',
   'src/tools/WhereDidTheTimeGo.js',
-  'src/tools/GravityWell.js',
+  'src/tools/BeforeHello.js',
   'src/tools/ChaosPilot.js',
   'src/tools/AlternatePath.js',
   'src/tools/WhichLife.js',

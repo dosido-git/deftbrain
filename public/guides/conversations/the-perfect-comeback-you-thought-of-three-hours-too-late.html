@@ -280,8 +280,8 @@
   <div class="db-capture" style="border-top:1px solid #e8e1d5;background:#f2ece1">
     <div style="max-width:1100px;margin:0 auto;padding:44px 20px;font-family:'DM Sans',system-ui,sans-serif">
       <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #e0d7c6;border-radius:16px;padding:26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
-        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; The Deft Brief</p>
-        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">A short email about once a month: what shipped, and one tool worth knowing before life demands it. No spam &mdash; The Operator hates it more than you do. Unsubscribe in one click.</p>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:#c8872e;margin:0">&#128238; Before you go</p>
+        <p style="font-size:14px;line-height:1.6;color:#5a544a;margin:8px 0 0">One useful tool a month, in a short email &mdash; the one worth knowing about before life demands it. That is the whole thing. No spam, and unsubscribe in one click.</p>
         <form id="db-cap-form" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
           <label for="db-cap-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Email address</label>
           <input id="db-cap-email" type="email" required placeholder="you@anywhere.com" autocomplete="email"
@@ -361,7 +361,13 @@
   </footer>
 
   <footer class="db-tool-index" aria-label="All DeftBrain tools" style="max-width:1100px;margin:40px auto 24px;padding:0 20px;font-family:system-ui,-apple-system,sans-serif">
-    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}</style>
+    <style>.db-tool-index details[open]>nav{display:flex;flex-wrap:wrap;gap:10px 18px}
+    /* This strip lives outside #root, so it survives hydration and no
+       React print rule reaches it — a tool print-out ended with a whole
+       page of site navigation. DashBoard carries its own copy of this
+       rule for the same reason; here it travels with the markup, so
+       every page that emits the strip suppresses it on paper. */
+    @media print{.db-tool-index{display:none!important}}</style>
     <details style="border-top:1px solid #e8e1d5;padding-top:14px">
       <summary style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#6e675c;font-weight:700;cursor:pointer">All DeftBrain tools</summary>
       <nav style="font-size:13px;line-height:1.5;margin-top:14px">
@@ -374,7 +380,7 @@
         <a href="/ScamRadar" style="color:#2c4a6e;text-decoration:none">Scam Radar</a>
         <a href="/DoctorVisitPrep" style="color:#2c4a6e;text-decoration:none">Doctor Visit Prep</a>
         <a href="/DriveHome" style="color:#2c4a6e;text-decoration:none">Drive Home</a>
-        <a href="/ToolFinder" style="color:#2c4a6e;text-decoration:none">Start Here</a>
+        <a href="/ToolFinder" style="color:#2c4a6e;text-decoration:none">Tool Finder</a>
         <a href="/CrowdWisdom" style="color:#2c4a6e;text-decoration:none">Crowd Wisdom</a>
         <a href="/FutureProof" style="color:#2c4a6e;text-decoration:none">Future Proof</a>
         <a href="/MarkupDetective" style="color:#2c4a6e;text-decoration:none">Markup Detective</a>
@@ -384,8 +390,8 @@
         <a href="/OnePercenter" style="color:#2c4a6e;text-decoration:none">One Percenter</a>
         <a href="/BeliefStressTest" style="color:#2c4a6e;text-decoration:none">Belief Stress Test</a>
         <a href="/LuckSurface" style="color:#2c4a6e;text-decoration:none">Luck Surface</a>
-        <a href="/GravityWell" style="color:#2c4a6e;text-decoration:none">Gravity Well</a>
-        <a href="/RulebookBreaker" style="color:#2c4a6e;text-decoration:none">Rulebook Breaker</a>
+        <a href="/BeforeHello" style="color:#2c4a6e;text-decoration:none">Before Hello</a>
+        <a href="/NotSoFast" style="color:#2c4a6e;text-decoration:none">Not So Fast!</a>
         <a href="/TruthBomb" style="color:#2c4a6e;text-decoration:none">Truth Bomb</a>
         <a href="/AnalogyEngine" style="color:#2c4a6e;text-decoration:none">Analogy Engine</a>
         <a href="/ColdOpenCraft" style="color:#2c4a6e;text-decoration:none">Cold Open Craft</a>
@@ -415,7 +421,7 @@
         <a href="/PronounceItRight" style="color:#2c4a6e;text-decoration:none">Pronounce It Right</a>
         <a href="/TheDebrief" style="color:#2c4a6e;text-decoration:none">The Debrief</a>
         <a href="/TheCrux" style="color:#2c4a6e;text-decoration:none">The Crux</a>
-        <a href="/TheAlibi" style="color:#2c4a6e;text-decoration:none">The Alibi</a>
+        <a href="/TheWholeStory" style="color:#2c4a6e;text-decoration:none">The Whole Story</a>
         <a href="/CutToTheChase" style="color:#2c4a6e;text-decoration:none">Cut to the Chase</a>
         <a href="/ContextCollapse" style="color:#2c4a6e;text-decoration:none">Context Collapse</a>
         <a href="/Bookmark" style="color:#2c4a6e;text-decoration:none">Bookmark</a>
@@ -433,7 +439,7 @@
         <a href="/ReadTheRoom" style="color:#2c4a6e;text-decoration:none">Read the Room</a>
         <a href="/MoneyDiplomat" style="color:#2c4a6e;text-decoration:none">Money Diplomat</a>
         <a href="/SkillGapMap" style="color:#2c4a6e;text-decoration:none">Skill Gap Map</a>
-        <a href="/HistoryToday" style="color:#2c4a6e;text-decoration:none">HistoryToday</a>
+        <a href="/HistoryToday" style="color:#2c4a6e;text-decoration:none">History Today</a>
         <a href="/BragSheetBuilder" style="color:#2c4a6e;text-decoration:none">Brag Sheet Builder</a>
         <a href="/LayoverMaximizer" style="color:#2c4a6e;text-decoration:none">Layover Maximizer</a>
         <a href="/TheFinalWord" style="color:#2c4a6e;text-decoration:none">The Final Word</a>
@@ -442,7 +448,7 @@
         <a href="/GratitudeDebtClearer" style="color:#2c4a6e;text-decoration:none">Gratitude Debt Clearer</a>
         <a href="/DifficultTalkCoach" style="color:#2c4a6e;text-decoration:none">Difficult Talk Coach</a>
         <a href="/ComplaintEscalationWriter" style="color:#2c4a6e;text-decoration:none">Complaint Escalation Writer</a>
-        <a href="/PlainTalk" style="color:#2c4a6e;text-decoration:none">Plain Talk — Document Analyst</a>
+        <a href="/PlainTalk" style="color:#2c4a6e;text-decoration:none">Plain Talk</a>
         <a href="/FocusSoundArchitect" style="color:#2c4a6e;text-decoration:none">Focus Sound Architect</a>
         <a href="/FocusPocus" style="color:#2c4a6e;text-decoration:none">Focus Pocus</a>
         <a href="/DecisionCoach" style="color:#2c4a6e;text-decoration:none">Decision Coach</a>
@@ -456,7 +462,7 @@
         <a href="/TaskAvalancheBreaker" style="color:#2c4a6e;text-decoration:none">Task Avalanche Breaker</a>
         <a href="/PetWeirdnessDecoder" style="color:#2c4a6e;text-decoration:none">Pet Weirdness Decoder</a>
         <a href="/FakeReviewDetective" style="color:#2c4a6e;text-decoration:none">Fake Review Detective</a>
-        <a href="/CrashPredictor" style="color:#2c4a6e;text-decoration:none">Crash Predictor</a>
+        <a href="/BeforeTheCrash" style="color:#2c4a6e;text-decoration:none">Before the Crash</a>
         <a href="/DreamPatternSpotter" style="color:#2c4a6e;text-decoration:none">Dream Pattern Spotter</a>
         <a href="/MeetingHijackPreventer" style="color:#2c4a6e;text-decoration:none">Meeting Hijack Preventer</a>
         <a href="/DoctorVisitTranslator" style="color:#2c4a6e;text-decoration:none">Doctor Visit Translator</a>
@@ -480,7 +486,7 @@
         <a href="/BrainStateDeejay" style="color:#2c4a6e;text-decoration:none">Brain State Deejay</a>
         <a href="/SpiralStopper" style="color:#2c4a6e;text-decoration:none">Spiral Stopper</a>
         <a href="/VelvetHammer" style="color:#2c4a6e;text-decoration:none">Velvet Hammer</a>
-        <a href="/TheGap" style="color:#2c4a6e;text-decoration:none">The Gap</a>
+        <a href="/MissingLink" style="color:#2c4a6e;text-decoration:none">Missing Link</a>
         <a href="/BuyWise" style="color:#2c4a6e;text-decoration:none">Buy Wise</a>
         <a href="/SafeWalk" style="color:#2c4a6e;text-decoration:none">Safe Walk</a>
         <a href="/RoommateCourt" style="color:#2c4a6e;text-decoration:none">Roommate Court</a>

@@ -1,9 +1,9 @@
-// GravityWell — gw_* keys for all 13 languages. Self-contained data.
-// Brand/tool names (Gravity Well, Velvet Hammer, HecklerPrep, Luck Surface,
+// BeforeHello (formerly GravityWell; gw_ prefix and filename stay per rename convention) — gw_* keys for all 13 languages. Self-contained data.
+// Brand/tool names (Before Hello, Velvet Hammer, HecklerPrep, Luck Surface,
 // DeftBrain) stay identical across languages — they're invariant.
 export const gravityWell = {
   en: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "A 90-day plan to naturally enter someone's orbit.",
     gw_label_target: "Describe the person you want in your life",
     gw_ph_target: "Their role, what they're known for, what world they operate in — specific enough to design a real strategy…",
@@ -59,7 +59,7 @@ export const gravityWell = {
     gw_copy_today: "DO TODAY:",
   },
   es: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "Un plan de 90 días para entrar de forma natural en la órbita de alguien.",
     gw_label_target: "Describe a la persona que quieres en tu vida",
     gw_ph_target: "Su rol, por qué es conocida, en qué mundo se mueve — con suficiente detalle para diseñar una estrategia real…",
@@ -115,7 +115,7 @@ export const gravityWell = {
     gw_copy_today: "HAZ HOY:",
   },
   zh: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "用 90 天计划自然进入某人的轨道。",
     gw_label_target: "描述你想纳入生活的那个人",
     gw_ph_target: "他们的角色、以何闻名、活跃在什么圈子里——足够具体才能设计出真正的策略……",
@@ -171,7 +171,7 @@ export const gravityWell = {
     gw_copy_today: "今天就做：",
   },
   hi: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "किसी की कक्षा में स्वाभाविक रूप से प्रवेश करने की 90-दिन की योजना।",
     gw_label_target: "उस व्यक्ति का वर्णन करें जिसे आप अपने जीवन में चाहते हैं",
     gw_ph_target: "उनकी भूमिका, वे किसलिए जाने जाते हैं, किस दुनिया में सक्रिय हैं — असली रणनीति बनाने लायक पर्याप्त विवरण के साथ…",
@@ -227,7 +227,7 @@ export const gravityWell = {
     gw_copy_today: "आज करें:",
   },
   ar: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "خطة 90 يوماً للدخول بشكل طبيعي إلى مدار شخص ما.",
     gw_label_target: "صِف الشخص الذي تريده في حياتك",
     gw_ph_target: "دوره، وما اشتُهر به، وفي أي عالم يتحرك — بتفاصيل كافية لتصميم استراتيجية حقيقية…",
@@ -283,7 +283,7 @@ export const gravityWell = {
     gw_copy_today: "افعل اليوم:",
   },
   pt: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "Um plano de 90 dias para entrar naturalmente na órbita de alguém.",
     gw_label_target: "Descreva a pessoa que você quer na sua vida",
     gw_ph_target: "O papel dela, por que é conhecida, em que mundo atua — específico o bastante para desenhar uma estratégia real…",
@@ -339,7 +339,7 @@ export const gravityWell = {
     gw_copy_today: "FAÇA HOJE:",
   },
   fr: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "Un plan de 90 jours pour entrer naturellement dans l'orbite de quelqu'un.",
     gw_label_target: "Décrivez la personne que vous voulez dans votre vie",
     gw_ph_target: "Son rôle, ce pour quoi elle est connue, dans quel monde elle évolue — assez précis pour concevoir une vraie stratégie…",
@@ -395,7 +395,7 @@ export const gravityWell = {
     gw_copy_today: "À FAIRE AUJOURD'HUI :",
   },
   de: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "Ein 90-Tage-Plan, um auf natürliche Weise in jemandes Umlaufbahn zu gelangen.",
     gw_label_target: "Beschreibe die Person, die du in deinem Leben haben willst",
     gw_ph_target: "Ihre Rolle, wofür sie bekannt ist, in welcher Welt sie sich bewegt — konkret genug für eine echte Strategie…",
@@ -451,7 +451,7 @@ export const gravityWell = {
     gw_copy_today: "HEUTE ERLEDIGEN:",
   },
   ja: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "自然に相手の軌道へ入り込むための90日プラン。",
     gw_label_target: "人生に迎え入れたい相手を説明してください",
     gw_ph_target: "その人の役割、何で知られているか、どんな世界で活動しているか——本当の戦略を設計できるくらい具体的に…",
@@ -507,7 +507,7 @@ export const gravityWell = {
     gw_copy_today: "今日やること：",
   },
   ko: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "누군가의 궤도에 자연스럽게 진입하기 위한 90일 계획.",
     gw_label_target: "당신의 삶에 들이고 싶은 사람을 설명하세요",
     gw_ph_target: "그 사람의 역할, 무엇으로 알려졌는지, 어떤 세계에서 활동하는지 — 진짜 전략을 설계할 만큼 구체적으로…",
@@ -563,7 +563,7 @@ export const gravityWell = {
     gw_copy_today: "오늘 하기:",
   },
   ru: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "90-дневный план, чтобы естественно войти в чью-то орбиту.",
     gw_label_target: "Опишите человека, которого хотите видеть в своей жизни",
     gw_ph_target: "Его роль, чем он известен, в каком мире вращается — достаточно конкретно, чтобы выстроить реальную стратегию…",
@@ -619,7 +619,7 @@ export const gravityWell = {
     gw_copy_today: "СДЕЛАТЬ СЕГОДНЯ:",
   },
   th: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "แผน 90 วันเพื่อเข้าสู่วงโคจรของใครบางคนอย่างเป็นธรรมชาติ",
     gw_label_target: "อธิบายคนที่คุณอยากให้อยู่ในชีวิตคุณ",
     gw_ph_target: "บทบาทของเขา สิ่งที่เขาเป็นที่รู้จัก โลกที่เขาเคลื่อนไหว — เจาะจงพอที่จะวางกลยุทธ์จริงได้…",
@@ -675,7 +675,7 @@ export const gravityWell = {
     gw_copy_today: "ทำวันนี้:",
   },
   vi: {
-    gw_title: "Gravity Well",
+    gw_title: "Before Hello",
     gw_tagline: "Kế hoạch 90 ngày để bước vào quỹ đạo của ai đó một cách tự nhiên.",
     gw_label_target: "Mô tả người bạn muốn có trong cuộc đời mình",
     gw_ph_target: "Vai trò của họ, họ nổi tiếng vì điều gì, hoạt động trong thế giới nào — đủ cụ thể để vạch ra chiến lược thực sự…",
