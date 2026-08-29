@@ -942,13 +942,13 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "There's someone you want to know and cold outreach would fail.",
-    give: "Who they are, their world, what they're known for, and your background.",
-    get: "A 90-day plan that builds proximity and visibility, so the first contact isn't cold.",
-    edge: "It doesn't write you a better cold email. It removes the need to send one.",
+    when: "There's someone you'd like to know professionally, and you don't want to arrive as a stranger with an ask.",
+    give: "Who they are, why them, and what you already bring.",
+    get: "What's worth strengthening first, where the real overlap is, and whether there's already a good reason to say hello.",
+    edge: "Every step it suggests is worth taking even if that person never sees it.",
   },
-  seoDescription: "Get a 90-day plan to enter someone's orbit before you reach out — no cold outreach. Three phases, the exact first message, and one thing to do today. Free.",
-  seoTitle: "90-Day Plan to Get on Someone's Radar",
+  seoDescription: "Work out what should be true before you introduce yourself to someone in your field — what to strengthen, where the real overlap is, and whether it's already time to reach out. Free, no signup.",
+  seoTitle: "What To Do Before You Reach Out to Someone",
   title: "Before Hello",
   tagline: "Become worth knowing before you ask to be known.",
   tags: ['networking', 'cold outreach', 'mentor', 'investor', 'career', 'relationship', 'connection', 'reach out', 'linkedin', 'introduction', 'warm'],
@@ -957,29 +957,29 @@ export const tools = [
   headerColor: "#e0b8b8",
   description: "Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.",
   guide: {
-      overview: "Before Hello is built on one insight: cold outreach fails because there's no warm surface. The solution isn't better cold messaging — it's eliminating cold entirely. By building proximity, visibility, and value over 90 days, the first contact feels earned rather than intrusive.",
+      overview: "Before Hello is built on one test: every step it suggests has to be worth taking even if the other person never sees it. So it works on your side of the introduction — what you actually bring, where the overlap is real, and whether there is already a good enough reason to send the message. Sometimes the answer is that there is, and you should send it today.",
       howToUse: [
-        "Describe the person you want in your life — their role, world, and what they're known for",
-        "Select the relationship type — mentor, collaborator, investor, employer, client",
-        "Add why this person specifically and what you genuinely bring to the relationship",
-        "Follow the three phases in order — don't skip to Phase 3 early",
-        "Use the first contact template only when the timing condition is met"
+        "Describe the person — their role, their field, and what they work on",
+        "Pick the kind of connection: mentor, collaborator, investor, employer, client, or professional peer",
+        "Say why this person specifically, and what you already bring",
+        "Read the readiness verdict first — it may tell you to reach out now rather than prepare",
+        "Use the first-contact draft as a starting point, and keep the ask small enough to be easy to decline"
       ],
       example: {
-        scenario: "Want to connect with a VC who invests in climate tech",
-        action: "Describe their focus, your background in climate research, why this specific person",
-        result: "Phase 1: Get a byline somewhere in the climate tech space; build a public portfolio with a clear POV. Phase 2: Engage with their writing — add data, not 'great post'; attend one event where they're speaking. Phase 3: Publish original research touching their thesis. First contact: 'I wrote about [X trend] in your portfolio space — thought the data might be interesting.' Timing condition: they've engaged with something you published."
+        scenario: "You want to talk to a VC who invests in climate tech",
+        action: "Describe their focus, your own background in climate research, and what you'd actually want to discuss",
+        result: "Starting position: your research is the credible part; the gap is that none of it is public. Strengthen: write up one finding in plain language — worth doing for your own record either way. Genuine overlap: their thesis and your dataset touch the same question. Ready to say hello? Build first — one piece of public work makes the message land. First contact: what to say, and what not to. Do today: draft the first paragraph of that write-up."
       },
       tips: [
-        "90 days is a minimum — gravity builds slower for harder-to-reach people",
-        "The 'value offer' section tells you what to lead with — don't skip it",
-        "The 'what they avoid' section is as important as the positive strategy",
-        "Works for investors, mentors, potential employers, collaborators, and creative partners"
+        "The readiness verdict can say 'ready now' — a direct, specific, easy-to-decline message is often the whole answer",
+        "If a suggested step would only make sense because this person might notice it, the tool is supposed to reject it; treat one that slips through as a bug",
+        "Being specific about your own background is what separates a real overlap from a generic one",
+        "Works for mentors, collaborators, investors, employers, clients, and peers in your field"
       ],
           pitfalls: [
-      "The gravity score is illustrative, not a measurement — it reflects what the AI infers from your description, not an objective assessment",
-      "The 'First Step' action is calibrated to your current score; skipping straight to Phase 3 tactics before Phase 1 is complete usually backfires",
-      "Being vague about your background produces generic approach scripts — include one specific achievement or shared interest"
+      "It won't help you get someone's attention — no engineered proximity, no cultivating their contacts, no attending things because they'll be there",
+      "It won't invent facts about the person: if you don't say what they've published or care about, it won't guess",
+      "There are no scores, percentages, or timelines here on purpose — none of them would be measuring anything"
     ]
     }
 },
