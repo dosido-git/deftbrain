@@ -75,7 +75,13 @@ const LOCALIZED_TOOLS = [
   'src/tools/RoommateCourt.js',
   'src/tools/ResearchDecoder.js',
   'src/tools/PetWeirdnessDecoder.js',
-  'src/tools/GratitudeDebtClearer.js',
+  // TEMPORARILY OFF THE ALLOWLIST — 2026-08-28.
+  // The tool was rewritten front and back; the owner is holding translations
+  // until the design settles, which is the right order. Seven strings are still
+  // hardcoded English, listed in the commit that removed this line. Put it back
+  // the moment they are wrapped, or the gate stops protecting the other twelve
+  // languages here at all.
+  // 'src/tools/GratitudeDebtClearer.js',
   'src/tools/BragSheetBuilder.js',
   'src/tools/ComplaintEscalationWriter.js',
   'src/tools/NameStorm.js',

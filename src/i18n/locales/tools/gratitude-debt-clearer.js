@@ -6,6 +6,9 @@ export const gratitudeDebtClearer = {
   "en": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Turn your gratitude into heartfelt messages – without the writing paralysis",
+    "gdc_xref_pre": "Owe an apology rather than a thank-you?",
+    "gdc_xref_post": "If any of this needs an apology too:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Sent",
     "gdc_sent_title": "Sent Messages",
     "gdc_debt_ledger": "Debt Ledger",
@@ -162,6 +165,9 @@ export const gratitudeDebtClearer = {
   "es": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Convierte tu gratitud en mensajes sinceros, sin la parálisis de escribir",
+    "gdc_xref_pre": "¿Debes una disculpa en vez de un agradecimiento?",
+    "gdc_xref_post": "Si algo de esto también requiere una disculpa:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Enviado",
     "gdc_sent_title": "Mensajes enviados",
     "gdc_debt_ledger": "Libro de deudas",
@@ -318,6 +324,9 @@ export const gratitudeDebtClearer = {
   "zh": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "把你的感激化作真挚的话语——不再被写作卡住",
+    "gdc_xref_pre": "要说的是抱歉，而不是谢谢？",
+    "gdc_xref_post": "如果这件事也需要一句道歉：",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "已发送",
     "gdc_sent_title": "已发送的消息",
     "gdc_debt_ledger": "感恩账本",
@@ -474,6 +483,9 @@ export const gratitudeDebtClearer = {
   "hi": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "अपनी कृतज्ञता को दिल से निकले संदेशों में बदलें — बिना लिखने की झिझक के",
+    "gdc_xref_pre": "धन्यवाद नहीं, माफ़ी देनी है?",
+    "gdc_xref_post": "अगर इसमें माफ़ी भी बनती है:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "भेजा गया",
     "gdc_sent_title": "भेजे गए संदेश",
     "gdc_debt_ledger": "ऋण बही",
@@ -630,6 +642,9 @@ export const gratitudeDebtClearer = {
   "ar": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "حوّل امتنانك إلى رسائل صادقة من القلب — دون عجز الكتابة",
+    "gdc_xref_pre": "هل تدين باعتذار لا بشكر؟",
+    "gdc_xref_post": "إن كان الأمر يستدعي اعتذارًا أيضًا:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "أُرسلت",
     "gdc_sent_title": "الرسائل المُرسَلة",
     "gdc_debt_ledger": "سجل الديون",
@@ -786,6 +801,9 @@ export const gratitudeDebtClearer = {
   "pt": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Transforme sua gratidão em mensagens sinceras — sem a paralisia da escrita",
+    "gdc_xref_pre": "Deve um pedido de desculpas em vez de um obrigado?",
+    "gdc_xref_post": "Se algo disto também pede uma desculpa:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Enviada",
     "gdc_sent_title": "Mensagens enviadas",
     "gdc_debt_ledger": "Livro de dívidas",
@@ -942,6 +960,9 @@ export const gratitudeDebtClearer = {
   "fr": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Transformez votre gratitude en messages sincères — sans la paralysie de l'écriture",
+    "gdc_xref_pre": "Vous devez des excuses plutôt qu'un merci ?",
+    "gdc_xref_post": "Si tout cela appelle aussi des excuses :",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Envoyé",
     "gdc_sent_title": "Messages envoyés",
     "gdc_debt_ledger": "Registre des dettes",
@@ -1098,6 +1119,9 @@ export const gratitudeDebtClearer = {
   "de": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Verwandle deine Dankbarkeit in herzliche Nachrichten — ohne Schreibblockade",
+    "gdc_xref_pre": "Schulden Sie eher eine Entschuldigung als ein Danke?",
+    "gdc_xref_post": "Wenn dazu auch eine Entschuldigung gehört:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Gesendet",
     "gdc_sent_title": "Gesendete Nachrichten",
     "gdc_debt_ledger": "Schuldenbuch",
@@ -1254,6 +1278,9 @@ export const gratitudeDebtClearer = {
   "ja": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "あなたの感謝を、心のこもったメッセージに——書く手が止まることなく",
+    "gdc_xref_pre": "お礼ではなく、謝罪が必要ですか？",
+    "gdc_xref_post": "これに謝罪も必要なら：",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "送信済み",
     "gdc_sent_title": "送信したメッセージ",
     "gdc_debt_ledger": "感謝の負債帳",
@@ -1410,6 +1437,9 @@ export const gratitudeDebtClearer = {
   "ko": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "당신의 감사를 진심 어린 메시지로 — 글쓰기 막힘 없이",
+    "gdc_xref_pre": "감사가 아니라 사과가 필요한가요?",
+    "gdc_xref_post": "여기에 사과도 필요하다면:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "보냄",
     "gdc_sent_title": "보낸 메시지",
     "gdc_debt_ledger": "부채 장부",
@@ -1566,6 +1596,9 @@ export const gratitudeDebtClearer = {
   "ru": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Преврати свою благодарность в искренние сообщения — без писательского ступора",
+    "gdc_xref_pre": "Нужны извинения, а не благодарность?",
+    "gdc_xref_post": "Если здесь нужны ещё и извинения:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Отправлено",
     "gdc_sent_title": "Отправленные сообщения",
     "gdc_debt_ledger": "Книга долгов",
@@ -1722,6 +1755,9 @@ export const gratitudeDebtClearer = {
   "th": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "เปลี่ยนความรู้สึกขอบคุณของคุณให้เป็นข้อความจากใจ — โดยไม่ต้องติดขัดเรื่องการเขียน",
+    "gdc_xref_pre": "สิ่งที่ค้างอยู่คือคำขอโทษ ไม่ใช่คำขอบคุณ?",
+    "gdc_xref_post": "ถ้าเรื่องนี้ต้องมีคำขอโทษด้วย:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "ส่งแล้ว",
     "gdc_sent_title": "ข้อความที่ส่งแล้ว",
     "gdc_debt_ledger": "สมุดบันทึกหนี้",
@@ -1878,6 +1914,9 @@ export const gratitudeDebtClearer = {
   "vi": {
     "gdc_title": "Gratitude Debt Clearer",
     "gdc_tagline": "Biến lòng biết ơn của bạn thành những lời nhắn chân thành — không còn bí từ khi viết",
+    "gdc_xref_pre": "Bạn nợ một lời xin lỗi chứ không phải lời cảm ơn?",
+    "gdc_xref_post": "Nếu chuyện này cũng cần một lời xin lỗi:",
+    "gdc_xref_mend": "🩹 Mend",
     "gdc_sent": "Đã gửi",
     "gdc_sent_title": "Tin nhắn đã gửi",
     "gdc_debt_ledger": "Sổ nợ",

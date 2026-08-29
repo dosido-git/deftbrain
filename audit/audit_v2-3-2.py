@@ -856,7 +856,13 @@ for name, fpath in tools:
     # history would be a log of every time you needed help talking to a friend,
     # which is a thing to be shown as little as possible.
     _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus', 'FocusSoundArchitect',
-                         'FriendshipFadeAlerter'}
+                         'FriendshipFadeAlerter',
+                         # GratitudeDebtClearer joined on 2026-08-28. The rewrite
+                         # keeps the last result and nothing else, deliberately:
+                         # a stored list of who you have thanked, and what you
+                         # said, is a record most people would rather this tool
+                         # did not keep.
+                         'GratitudeDebtClearer'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 
