@@ -1,6 +1,6 @@
 // ContrastReport — cr_* keys for all 13 languages. Self-contained data.
 // No currency in this tool, so no {{sym}} interpolation.
-// Brand/tool names (The Contrast Report, Decision Coach, Belief Stress Test,
+// Brand/tool names (Which Life?, Decision Coach, Belief Stress Test,
 // Alternate Path, DeftBrain) stay identical across languages.
 export const contrastReport = {
   en: {
@@ -55,7 +55,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "WHAT I NOTICED",
     cr_copy_trading: "The tradeoff you described:",
     cr_copy_question: "A question to sit with:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   es: {
     cr_title: "Which Life?",
@@ -109,7 +109,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "LO QUE NOTÉ",
     cr_copy_trading: "El intercambio que describiste:",
     cr_copy_question: "Una pregunta para quedarte pensando:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   zh: {
     cr_title: "Which Life?",
@@ -163,7 +163,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "我注意到的",
     cr_copy_trading: "你描述的取舍：",
     cr_copy_question: "一个可以慢慢想的问题：",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   hi: {
     cr_title: "Which Life?",
@@ -217,7 +217,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "मैंने जो देखा",
     cr_copy_trading: "जो अदला-बदली आपने बताई:",
     cr_copy_question: "एक सवाल, जिसके साथ बैठिए:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   ar: {
     cr_title: "Which Life?",
@@ -271,7 +271,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "ما لاحظته",
     cr_copy_trading: "المقايضة التي وصفتها:",
     cr_copy_question: "سؤال تجلس معه:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   pt: {
     cr_title: "Which Life?",
@@ -325,7 +325,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "O QUE PERCEBI",
     cr_copy_trading: "A troca que você descreveu:",
     cr_copy_question: "Uma pergunta para ficar com você:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   fr: {
     cr_title: "Which Life?",
@@ -379,7 +379,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "CE QUE J'AI REMARQUÉ",
     cr_copy_trading: "L'arbitrage que vous avez décrit :",
     cr_copy_question: "Une question à laisser reposer :",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   de: {
     cr_title: "Which Life?",
@@ -433,7 +433,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "WAS MIR AUFGEFALLEN IST",
     cr_copy_trading: "Der Tausch, den du beschrieben hast:",
     cr_copy_question: "Eine Frage zum Sitzenlassen:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   ja: {
     cr_title: "Which Life?",
@@ -487,7 +487,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "私が気づいたこと",
     cr_copy_trading: "あなたが挙げたトレードオフ：",
     cr_copy_question: "しばらく置いておきたい問い：",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   ko: {
     cr_title: "Which Life?",
@@ -541,7 +541,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "내가 알아차린 것",
     cr_copy_trading: "당신이 말한 맞바꿈:",
     cr_copy_question: "곁에 두고 생각해 볼 질문:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   ru: {
     cr_title: "Which Life?",
@@ -595,7 +595,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "ЧТО Я ЗАМЕТИЛ",
     cr_copy_trading: "Компромисс, который вы описали:",
     cr_copy_question: "Вопрос, с которым стоит побыть:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   th: {
     cr_title: "Which Life?",
@@ -649,7 +649,7 @@ export const contrastReport = {
     cr_copy_what_noticed: "สิ่งที่ฉันสังเกตเห็น",
     cr_copy_trading: "สิ่งที่คุณต้องแลก ตามที่คุณเล่า:",
     cr_copy_question: "คำถามที่ควรอยู่กับมันสักพัก:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
   vi: {
     cr_title: "Which Life?",
@@ -703,6 +703,6 @@ export const contrastReport = {
     cr_copy_what_noticed: "ĐIỀU TÔI NHẬN THẤY",
     cr_copy_trading: "Sự đánh đổi bạn đã mô tả:",
     cr_copy_question: "Một câu hỏi để ngồi lại cùng:",
-    cr_default_title: "The Contrast Report",
+    cr_default_title: "Which Life?",
   },
 };
