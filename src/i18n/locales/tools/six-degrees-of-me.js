@@ -1311,7 +1311,7 @@ export const sixDegreesOfMe = {
     sdm_profile_details_summary: "{{count}} Details in {{filled}} Kategorien",
     sdm_profile_add_hint: "Ein paar Angaben über Sie legen tiefere Verbindungen frei",
     sdm_profile_get_ideas: "✨ Ideen holen",
-    sdm_profile_think_about: "✨ Denk nach über...",
+    sdm_profile_think_about: "✨ Denke nach über...",
     sdm_profile_freeform_ph: "Sonst noch etwas über dich...",
     sdm_profile_clear_confirm: "Dieses Profil löschen?",
     sdm_profile_clear: "Profil löschen",

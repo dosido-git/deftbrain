@@ -404,7 +404,7 @@ export const comebackCooker = {
     cbc_error: "Antwort konnte nicht generiert werden.",
     cbc_copy_header: "COMEBACK COOKER",
     cbc_copy_situation: "Situation:",
-    cbc_copy_theysaid: "Sie sagten:",
+    cbc_copy_theysaid: "Die andere Person sagte:",
     cbc_copy_mood: "Tonfall:",
     cbc_copy_comebacks: "ANTWORTEN",
     cbc_copy_nuclear: "DIE NUKLEARE OPTION",

@@ -1681,7 +1681,7 @@ export const debateMe = {
     "dm_concede_early": "Früh zugeben",
     "dm_hardest_questions": "Die 5 schwersten Fragen",
     "dm_why_hard": "Warum schwer:",
-    "dm_dont_say": "Sag nicht:",
+    "dm_dont_say": "Sage nicht:",
     "dm_start_with": "Beginne mit:",
     "dm_closing_move": "Schlusszug",
     "dm_worst_case": "Schlimmster Fall",

@@ -440,7 +440,7 @@ export const ticketTackler = {
     tt_math_pay: "Kosten des Zahlens",
     tt_math_fight: "Kosten des Einspruchs",
     tt_math_bottom: "Unterm Strich",
-    tt_dontsay_title: "Sag das nicht",
+    tt_dontsay_title: "Sage das nicht",
     tt_followup_label: "Nachfrage stellen",
     tt_followup_ph: "z. B. Was, wenn ich schon gezahlt habe?",
     tt_followup_send: "Fragen",

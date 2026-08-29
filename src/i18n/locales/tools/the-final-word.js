@@ -1597,7 +1597,7 @@ export const theFinalWord = {
   de: {
     tfw_tagline: "Streit beigelegt. Fakten geprüft. Keine Berufung.*",
     tfw_mode_question_label: "Schnelle Antwort",
-    tfw_mode_question_desc: "Frag alles",
+    tfw_mode_question_desc: "Frage alles",
     tfw_mode_dispute_label: "Beilegen",
     tfw_mode_dispute_desc: "Zwei Seiten, ein Urteil",
     tfw_mode_factcheck_label: "Faktencheck",
@@ -1788,7 +1788,7 @@ export const theFinalWord = {
     tfw_trivia_new_game: "⚡ Neues Spiel",
     tfw_challenge_title: "Glaubst du, wir lagen falsch?",
     tfw_challenge_label: "Warum hältst du das Urteil für falsch?",
-    tfw_challenge_ph: "Sag uns, warum...",
+    tfw_challenge_ph: "Sage uns, warum...",
     tfw_challenge_submit: "Einspruch einreichen",
     tfw_challenge_final: "Endgültige Antwort: {{answer}}",
     tfw_appeal_title: "Berufungsgericht",

@@ -573,7 +573,7 @@ export const fanTheory = {
     ft_bst: "Belief Stress Test",
     ft_xref_bst_tail: "unterzieht jede Behauptung einer harten Prüfung.",
     ft_now_you_try: "Jetzt bist du dran",
-    ft_grade_intro: "Hast du deine eigene Theorie zu {{title}}? Schreib sie unten auf, und der Professor bewertet sie nach Plausibilität, Kreativität und Beleg-Qualität.",
+    ft_grade_intro: "Hast du deine eigene Theorie zu {{title}}? Schreibe sie unten auf, und der Professor bewertet sie nach Plausibilität, Kreativität und Beleg-Qualität.",
     ft_grade_this: "das hier",
     ft_your_theory: "Deine Theorie",
     ft_theory_ph: "Meine Theorie ist, dass...",

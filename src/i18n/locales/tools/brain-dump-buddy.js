@@ -801,7 +801,7 @@ export const brainDumpBuddy = {
     bdb_ctx_creative: "Kreativ",
     bdb_ctx_grief_logistics: "Trauer / Verlust",
     bdb_mode_freetext_label: "Freies Auskippen",
-    bdb_mode_freetext_desc: "Schreib alles auf einmal",
+    bdb_mode_freetext_desc: "Schreibe alles auf einmal",
     bdb_mode_rapid_label: "Eins nach dem anderen",
     bdb_mode_rapid_desc: "Gedanken einzeln hinzufügen",
     bdb_mode_voice_label: "Sprach-Dump",

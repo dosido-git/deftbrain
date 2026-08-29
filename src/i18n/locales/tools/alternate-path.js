@@ -401,7 +401,7 @@ export const alternatePath = {
     ap_whatif_label: "Was wäre, wenn...",
     ap_whatif_ph: "z. B. Das Internet wurde 1920 erfunden...",
     ap_whatif_hint: "Ernst, albern, unmöglich — probier alles aus.",
-    ap_year_label: "Setz die Szene",
+    ap_year_label: "Setze die Szene",
     ap_optional: "(optional)",
     ap_year_ph: "Während des Ersten Weltkriegs · Im antiken Rom · Vor der Industriellen Revolution",
     ap_reach_label: "Wie weit sollen wir ihr folgen?",

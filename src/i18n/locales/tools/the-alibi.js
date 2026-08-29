@@ -509,7 +509,7 @@ export const theAlibi = {
     ta_audience_ph: "Beschreibe dein Publikum...",
     ta_tone_label: "Ton",
     ta_concerns_label: "Was befürchtest du, dass sie denken?",
-    ta_concerns_ph: "z. B. 'Sie halten mich für unzuverlässig', 'Es sieht aus, als wäre ich gefeuert worden'",
+    ta_concerns_ph: "z. B. 'Die anderen halten mich für unzuverlässig', 'Es sieht aus, als wäre ich gefeuert worden'",
     ta_context_label: "Zusätzlicher Kontext (optional)",
     ta_context_ph: "z. B. 'Bewerbung für eine Senior-Stelle', 'erstes Date', 'Hypothekenantrag'",
     ta_framing: "Deine Geschichte wird dargestellt...",

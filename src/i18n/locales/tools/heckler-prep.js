@@ -420,7 +420,7 @@ export const hecklerPrep = {
     hp_ex_topic: "Erhöhung des Sicherheitsbudgets für Q3",
     hp_ex_audience: "Top-Führungskräfte — CFO, COO und CTO",
     hp_ex_proposal: "Das Budget für Sicherheitstools und Personal im nächsten Quartal um 40 % erhöhen ({{sym}}1.2M insgesamt), um die im letzten Pentest aufgedeckten Lücken zu schließen.",
-    hp_ex_objections: "Sie werden nachhaken: Warum jetzt, warum so viel, warum wir es nicht früher bemerkt haben, ob wir günstigere Alternativen geprüft haben und wie der ROI in 12 Monaten aussieht.",
+    hp_ex_objections: "Nachgehakt wird zu: warum jetzt, warum so viel, warum wir es nicht früher bemerkt haben, ob wir günstigere Alternativen geprüft haben und wie der ROI in 12 Monaten aussieht.",
     hp_copy_opening: "🎯 Eröffnungszug:",
     hp_copy_concern: "Wahre Sorge:",
     hp_copy_answer: "Antwort:",

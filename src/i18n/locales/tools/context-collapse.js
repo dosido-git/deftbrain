@@ -703,7 +703,7 @@ export const contextCollapse = {
     ctc_biggest_risk: "Größtes Risiko:",
     ctc_feels: "Fühlt sich an:",
     ctc_trigger: "Was zu einer anderen Lesart führen könnte:",
-    ctc_they_might: "Sie könnten:",
+    ctc_they_might: "Mögliche Reaktion:",
     ctc_rewrites_title: "Vorgeschlagene Umformulierungen",
     ctc_tradeoff: "Kompromiss:",
     ctc_copy_rewrite: "Umformulierung kopieren",

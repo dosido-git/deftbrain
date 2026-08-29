@@ -329,7 +329,7 @@ export const crowdWisdom = {
     cw_copy_tension: "DER KONFLIKT",
     cw_copy_nobody: "Die Frage, die niemand gestellt hat:",
     cw_ex1_q: "Lohnt sich ein MBA mit 35?",
-    cw_ex1_ctx: "Mitten in der Karriere im Marketing, denke über einen Wechsel in die Strategieberatung nach",
+    cw_ex1_ctx: "Mitten in der Karriere im Marketing, denke über einen Wechsle in die Strategieberatung nach",
     cw_ex2_q: "Soll ich für eine Beziehung in eine andere Stadt ziehen?",
     cw_ex2_ctx: "2 Jahre zusammen, seit 6 Monaten Fernbeziehung, sie sind dort verwurzelt",
     cw_ex3_q: "Soll ich mich selbstständig machen oder angestellt bleiben?",

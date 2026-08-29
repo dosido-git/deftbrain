@@ -2319,7 +2319,7 @@ export const laundroMat = {
     lmt_advise_me: "Berate mich",
 
     lmt_ex1_load: "Gemischte Weißwäsche, ein Wollpullover, dunkle Jeans und eine Daunenjacke. Kann ich die zusammen waschen oder muss ich sie trennen?",
-    lmt_ex2_load: "Sportkleidung — Polyester-Leggings, ein feuchtigkeitsableitendes Shirt und ein Sport-BH. Sie riechen sogar nach dem Waschen.",
+    lmt_ex2_load: "Sportkleidung — Polyester-Leggings, ein feuchtigkeitsableitendes Shirt und ein Sport-BH. Die Sachen riechen sogar nach dem Waschen.",
     lmt_history_default: "Wäsche-Ratschlag",
 
     lmt_res_separate: "Diese trennen",
@@ -2386,7 +2386,7 @@ export const laundroMat = {
     lmt_stain_if_set_title: "🕐 Wenn der Fleck schon eingezogen ist",
 
     lmt_rescue_title: "🚑 Kleidungsrettung",
-    lmt_rescue_intro: "Beim Waschen ist etwas schiefgelaufen. Sag uns, was passiert ist, und wir sagen dir ehrlich, ob es zu retten ist — und genau wie.",
+    lmt_rescue_intro: "Beim Waschen ist etwas schiefgelaufen. Sage uns, was passiert ist, und wir sagen dir ehrlich, ob es zu retten ist — und genau wie.",
     lmt_rescue_what_happened: "Was ist passiert?",
     lmt_rescue_what_is_it: "Was ist es?",
     lmt_rescue_what_is_it_hint: "(z. B. Wollpullover, weißes Baumwollhemd)",

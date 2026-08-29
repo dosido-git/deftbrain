@@ -452,7 +452,7 @@ export const wrongAnswersOnly = {
   de: {
     wao_try_one: "Probiere eine",
     wao_q_label: "Deine Frage",
-    wao_ph: "Frag mich irgendwas — ich liege spektakulär daneben...",
+    wao_ph: "Frage mich irgendwas — ich liege spektakulär daneben...",
     wao_plottwist: "Plot Twist",
     wao_making: "Erfinde was...",
     wao_run: "Gib mir die falsche Antwort",

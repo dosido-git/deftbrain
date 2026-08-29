@@ -1323,7 +1323,7 @@ export const plantRescue = {
     pr_add_photos_hint: "Füge Fotos hinzu, um die Genesung zu verfolgen.",
     pr_followup: "💬 Nachfrage",
     pr_ask_followup_label: "Stelle eine Nachfrage",
-    pr_ask_anything_ph: "Frag irgendetwas...",
+    pr_ask_anything_ph: "Frage irgendetwas...",
     pr_no_answer: "Keine Antwort.",
     pr_related: "🔗 Verwandte Tools",
     pr_xref_doctor: "Doctor Visit Translator",

@@ -1586,7 +1586,7 @@ export const nameStorm = {
     ns_font_compact: "Kompakt",
     ns_refine_q: "🎯 WAS WÜRDE „{{name}}“ BESSER MACHEN?",
     ns_refine_help: "Beschreibe, was geändert werden soll — kürzer, weniger corporate, Aussprache korrigieren, funktioniert auf Spanisch, verspielter usw.",
-    ns_refine_input_ph: "z. B. Mach ihn kürzer und verspielter",
+    ns_refine_input_ph: "z. B. Mache ihn kürzer und verspielter",
     ns_refine_chip_shorter: "Kürzer machen",
     ns_refine_chip_less_corp: "Weniger corporate",
     ns_refine_chip_playful: "Verspielter",

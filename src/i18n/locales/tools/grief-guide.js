@@ -444,7 +444,7 @@ export const griefGuide = {
     gg_prev_sessions: "Frühere Sitzungen",
     gg_clear: "Löschen",
     gg_normal_title: "Was du erlebst, ist normal",
-    gg_say_this: "Sag das",
+    gg_say_this: "Sage das",
     gg_avoid_saying: "Vermeide es zu sagen",
     gg_seek_help_title: "Wann du mehr Unterstützung suchen solltest",
     gg_related: "Verwandte Tools",

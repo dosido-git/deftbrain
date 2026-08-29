@@ -467,7 +467,7 @@ export const truthBomb = {
     tb_tagline: "Das, was du weißt, aber nicht sagst — beleuchtet, mit Kosten beziffert und in drei Varianten formuliert",
     tb_hook: "Das ist privat. Kein Urteil hier — nur Klarheit.",
     tb_unsaid_label: "Das, was du weißt, aber nicht sagst",
-    tb_unsaid_ph: "Schreib auf, was du verbirgst — vor dir selbst oder jemand anderem. Sei ehrlich. Es bleibt hier.",
+    tb_unsaid_ph: "Schreibe auf, was du verbirgst — vor dir selbst oder jemand anderem. Sei ehrlich. Es bleibt hier.",
     tb_who_label: "Worum oder an wen es geht",
     tb_why_label: "Warum du es nicht gesagt hast",
     tb_why_ph: "Angst vor der Reaktion, noch nicht bereit, nicht sicher, ob es stimmt…",

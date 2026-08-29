@@ -2462,7 +2462,7 @@ export const layoverMaximizer = {
   de: {
     // ── Header / chrome ──
     lmx_title: "Zwischenstopp-Maximierer",
-    lmx_tagline: "Mach aus Wartezeit einen Teil der Reise, an den du dich erinnerst",
+    lmx_tagline: "Mache aus Wartezeit einen Teil der Reise, an den du dich erinnerst",
     lmx_analyzing: "Wird analysiert...",
 
     // ── Nav tabs (embedded emoji) ──
@@ -2522,7 +2522,7 @@ export const layoverMaximizer = {
     lmx_chk_precheck: "⚡ TSA PreCheck / Global Entry",
     lmx_field_travel_style: "Reisestil",
     lmx_btn_analyze: "Wofür reicht meine Zeit?",
-    lmx_end_gate: "Mach dich auf zum Gate",
+    lmx_end_gate: "Mache dich auf zum Gate",
     lmx_why_this: "Warum ich das empfehle",
     lmx_recommended_for_you: "Für dich empfohlen",
     lmx_useful_while_here: "Nützlich, solange du hier bist",
@@ -2575,7 +2575,7 @@ export const layoverMaximizer = {
     lmx_tm_before_unknowns: "vor den unten genannten Unbekannten",
     lmx_best_plan: "Wärst du mein Reisender, würde ich das tun",
     lmx_other_options: "Weitere gute Optionen",
-    lmx_leave_for_gate: "Mach dich auf zum Gate:",
+    lmx_leave_for_gate: "Mache dich auf zum Gate:",
     lmx_confirm_access: "Zugangsregeln ändern sich häufig — kläre es mit der Lounge, bevor du hingehst.",
     lmx_youre_set: "Du bist startklar.",
     lmx_prov_told: "von dir angegeben",
@@ -2658,7 +2658,7 @@ export const layoverMaximizer = {
     lmx_lounge_worst_prefix: "✕ Am schlechtesten: {{text}}",
     lmx_lounge_day_pass: "Tagespass: {{price}} — {{verdict}}",
     lmx_lounge_worth_it: "✅ Lohnt sich",
-    lmx_lounge_think_twice: "⚠️ Überleg es dir zweimal",
+    lmx_lounge_think_twice: "⚠️ Überlege es dir zweimal",
     lmx_lounge_no_lounge: "Keine Lounge? Versuch stattdessen das",
 
     // ── RISK CALCULATOR ──

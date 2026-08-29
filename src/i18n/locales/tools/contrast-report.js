@@ -410,7 +410,7 @@ export const contrastReport = {
     cr_tf_5y: "5 Jahre",
     cr_tf_10y: "10 Jahre",
     cr_writing: "Deine Zukünfte werden geschrieben…",
-    cr_show_both: "Zeig mir beide Leben",
+    cr_show_both: "Zeige mir beide Leben",
     cr_error: "Kontrastbericht konnte nicht erstellt werden. Bitte erneut versuchen.",
     cr_loading_title: "Beide Zukünfte werden vorgestellt…",
     cr_loading_sub: "Das dauert etwa 20 Sekunden",

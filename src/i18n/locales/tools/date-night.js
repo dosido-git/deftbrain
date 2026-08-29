@@ -1412,7 +1412,7 @@ export const dateNight = {
     dn_reflection_prompts: "Fragen zum Nachdenken",
     dn_conversation_starters: "Gesprächsthemen",
     dn_plan_b: "Plan B",
-    dn_make_better: "Mach es noch besser",
+    dn_make_better: "Mache es noch besser",
     dn_rate_this: "Wie haben wir uns geschlagen?",
     dn_saving: "Wird gespeichert...",
     dn_submit_rating: "Bewertung absenden",

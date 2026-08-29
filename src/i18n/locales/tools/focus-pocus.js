@@ -612,7 +612,7 @@ export const focusPocus = {
     fpo_leave_breadcrumb: 'Notiz für später',
     fpo_saving: 'Wird notiert…',
     fpo_done_title: 'Fertig ist fertig.',
-    fpo_done_body: 'Du hast die Grenze erreicht, die du gesetzt hast. Mach Pause, statt dir eine neue Aufgabe auszudenken.',
+    fpo_done_body: 'Du hast die Grenze erreicht, die du gesetzt hast. Mache Pause, statt dir eine neue Aufgabe auszudenken.',
     fpo_breadcrumb_label: 'Wo du weitermachst',
     fpo_err_task: 'Sag uns, woran du arbeitest.',
     fpo_err_generic: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',

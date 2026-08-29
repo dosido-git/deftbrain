@@ -1334,7 +1334,7 @@ export const dreamPatternSpotter = {
     dps_recommended_exploration: "Empfohlene Erkundung:",
     dps_priority_areas: "Prioritäre Bereiche:",
     dps_progress_indicators: "Fortschrittsindikatoren:",
-    dps_disclaimer_label: "Denk daran:",
+    dps_disclaimer_label: "Denke daran:",
     dps_disclaimer_body: "Träume sind persönlich, und Deutungen sollten zu DEINER Lebenserfahrung passen. Diese Muster sind Anregungen zur Selbstreflexion, keine endgültigen Wahrheiten. Erwäge, die Erkenntnisse mit einer Therapeutin oder einem Berater zu besprechen, um sie tiefer zu erkunden.",
     dps_xref_ego_pre: "KI-generierte Muster — vertraue dem, was sich stimmig anfühlt. Wiederkehrende Angst in Träumen?",
     dps_xref_egokiller: "Belief Stress Test",
