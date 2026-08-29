@@ -897,7 +897,7 @@ const EXAMPLES = [
 const BikeMedic = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency } = useClaudeAPI();
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
   // ── Safe date formatter — defensive against any library/browser that passes
@@ -1239,10 +1239,16 @@ const BikeMedic = ({ tool }) => {
   const getToolReadiness = useCallback((fixToolKeys) => {
     if (!fixToolKeys || myTools.length === 0) return null;
     const safeLC = (v) => (typeof v === 'string' ? v : String(v ?? '')).toLowerCase();
-    const ownedLabels = myTools.map(mt => t(TOOL_VALUE_TO_LABELKEY[mt] || mt));
-    const fixLabels = fixToolKeys.map(k => t(k));
-    const have = fixLabels.filter(fl => ownedLabels.some(ol => safeLC(fl).includes(safeLC(ol)) || safeLC(ol).includes(safeLC(fl))));
-    const missing = fixLabels.filter(fl => !have.includes(fl));
+    // Match in ENGLISH, display in the active language. The two label sets
+    // (bmd_inv_* and bmd_fix_*_tool_*) were authored to share substrings in
+    // English only; translators had no reason to preserve that overlap, and in
+    // ru/hi/th/vi they didn't — so a user who owned the tool was told it was
+    // missing. Nothing in the UI reveals why, and no gate can see it.
+    const ownedEn = myTools.map(mt => i18n.tEn(TOOL_VALUE_TO_LABELKEY[mt] || mt));
+    const matched = fixToolKeys.filter(k =>
+      ownedEn.some(ol => safeLC(i18n.tEn(k)).includes(safeLC(ol)) || safeLC(ol).includes(safeLC(i18n.tEn(k)))));
+    const have = matched.map(k => t(k));
+    const missing = fixToolKeys.filter(k => !matched.includes(k)).map(k => t(k));
     return { have, missing, ready: missing.length === 0 };
   }, [myTools, t]);
 

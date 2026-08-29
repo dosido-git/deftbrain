@@ -105,6 +105,20 @@ const i18n = {
     );
   },
 
+  // The English value for a key, whatever the active language is.
+  //
+  // For CODE that compares two strings rather than showing one. BikeMedic
+  // decides whether you own the tool a repair needs by substring-matching the
+  // inventory label against the fix's tool label — a comparison that only
+  // holds in the language the two labels were written to overlap in. In
+  // Russian, Hindi, Thai and Vietnamese the translations drifted apart and the
+  // tool told people they were missing a wrench they had told it they owned.
+  // Compare in English; display with t().
+  tEn(key) {
+    const v = RESOURCES.en?.[key];
+    return (v !== undefined && v !== '') ? v : key;
+  },
+
   // Set the active language (base code or full locale). Unsupported → 'en'.
   // Notifies subscribers so mounted t() consumers re-render.
   setLanguage(lang) {
