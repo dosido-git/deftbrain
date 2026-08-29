@@ -1134,7 +1134,7 @@ export const friendshipFadeAlerter = {
     ffa_copy: "نسخ",
     ffa_send_text: "رسالة",
     ffa_send_email: "بريد",
-    ffa_send_whatsapp: "واتساب",
+    ffa_send_whatsapp: "WhatsApp",
     ffa_view_archive: "عرض الأرشيف ({{n}})",
     ffa_archive_title: "الأرشيف",
     ffa_archive_hint: "أشخاص وضعتهم جانبًا. التعديل هنا يُبقيهم في الأرشيف؛ والاستعادة تعيدهم إلى قائمتك.",

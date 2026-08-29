@@ -167,7 +167,19 @@ function main() {
     }
 
     // 6. INVARIANT — English kept in most languages but translated in a few.
-    if (!eIsProse && e.length > 3) {
+    //
+    // Two classes look identical to a diff and are not defects, so they are
+    // excluded rather than reported forever:
+    //   - values whose only content is a placeholder plus punctuation
+    //     (" ({{why}})" becomes "（{{why}}）" in ja/zh — full-width brackets are
+    //     correct, not drift);
+    //   - currency exemplars ("{{sym}}145.00" → "{{sym}}145,00" in de/fr),
+    //     where the number format SHOULD differ by locale.
+    // What remains is the case worth seeing: a brand or product name that one
+    // language translated and the others kept — Arabic had WhatsApp as واتساب
+    // on a button whose whole job is naming the app you are about to open.
+    const isFormatOnly = /^[\s\p{P}]*(\{\{\w+\}\}[\s\p{P}]*)+$/u.test(e) || /\{\{sym\}\}/.test(e);
+    if (!eIsProse && !isFormatOnly && e.length > 3) {
       const kept = targets.filter(l => langs[l][k] === e).length;
       if (kept >= targets.length - 2 && kept < targets.length) {
         findings.invariant.push({ key: k, translated: targets.filter(l => langs[l][k] !== e) });
