@@ -101,6 +101,12 @@ const GratitudeDebtClearer = ({ tool }) => {
 
   useRegisterActions(copyText, tool?.title || 'Gratitude Debt Clearer');
 
+  const hasInput = !!(
+    recipientName.trim() || gratitudePoints.trim() || extraContext.trim() ||
+    relationship !== 'Friend' || tone !== 'Let DeftBrain choose' || length !== 'Moderate' ||
+    results
+  );
+
   const handleReset = () => {
     setRecipientName('');
     setGratitudePoints('');
@@ -209,9 +215,11 @@ const GratitudeDebtClearer = ({ tool }) => {
               ✨ {t('try_example')}
             </button>
           </div>
-          <button type="button" onClick={handleReset} className={`px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary}`}>
-            ↺ {t('start_over')}
-          </button>
+          {hasInput && (
+            <button type="button" onClick={handleReset} className={`px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary}`}>
+              ↺ {t('start_over')}
+            </button>
+          )}
         </div>
 
         <div className="space-y-5">
