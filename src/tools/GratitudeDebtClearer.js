@@ -116,7 +116,10 @@ const GratitudeDebtClearer = ({ tool }) => {
   };
 
   const loadExample = () => {
-    const ex = pickExample(EXAMPLES);
+    // pickExample(toolKey, list) — the key is what rotates the choice between
+    // visits. Called with one argument it returns undefined and the handler
+    // throws, so the button silently did nothing.
+    const ex = pickExample('GratitudeDebtClearer', EXAMPLES);
     setRecipientName(ex.recipientName);
     setGratitudePoints(ex.gratitudePoints);
     setRelationship(ex.relationship);
