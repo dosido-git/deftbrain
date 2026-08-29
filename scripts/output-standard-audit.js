@@ -158,7 +158,19 @@ for (const file of changed) {
   if (FROZEN_V1.has(slug)) continue;
   const full = path.join(ROOT, file);
   if (!fs.existsSync(full)) continue;
-  if (DECLARES_V2.test(fs.readFileSync(full, 'utf8'))) continue;
+  const touchedSrc = fs.readFileSync(full, 'utf8');
+  if (DECLARES_V2.test(touchedSrc)) continue;
+  // An output standard governs what the MODEL returns. Routes that never call
+  // the model have no output to govern — the metrics report renders HTML from
+  // the JSONL sink, /api/subscribe talks to Buttondown. Demanding a
+  // declaration there teaches people to reach for OUTPUT_STANDARD_SKIP=1 on
+  // edits that WERE reviewed, which is the exact habit this gate exists to
+  // prevent. Detected rather than listed, so a route that starts calling the
+  // model is caught on the commit that adds the call.
+  if (!/messages\.create|callClaudeWithRetry|callClaude\b/.test(touchedSrc)) {
+    notes.push(`backend/routes/${slug}.js changed but makes no model call — no output standard applies`);
+    continue;
+  }
   problems.push(
     `${file} was changed but declares no output standard, and is not among the 48 frozen tools.\n` +
     `     Review it against backend/lib/outputStandard.js, then add near the export:\n` +
