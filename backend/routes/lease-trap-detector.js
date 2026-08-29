@@ -374,6 +374,13 @@ ${criticalRules}`;
     if (!parsed.overall_assessment) {
       return res.status(500).json({ error: 'Could not analyze your lease. Please try again.' });
     }
+    // The header stat sits directly above the red-flag cards, and the copy
+    // export prints both numbers in the same block — a model-counted total that
+    // disagrees with the list under it reads as a missing card. red_flags is
+    // capped at 4 in the same schema, so the model's own count drifts past it.
+    if (Array.isArray(parsed.red_flags)) {
+      parsed.overall_assessment.major_concerns_count = parsed.red_flags.length;
+    }
     res.json(stripCites(parsed));
 
   } catch (error) {

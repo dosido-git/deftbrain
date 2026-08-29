@@ -170,6 +170,22 @@ function enforceSingleBucket(parsed) {
   return parsed;
 }
 
+// Half the nullable fields here are documented as "supplied deadline or null"
+// inside a quoted string, and the model answers some of them with the STRING
+// "null". Every card renders `x.deadline && ...`, and a non-empty string is
+// truthy — so the screen reads "Deadline: null · Waiting on: null". Observed in
+// one response that used real null elsewhere, so no prose rule closes it.
+// "null" is never a deadline, a person, or a date a visitor supplied.
+function nullifyNullStrings(node) {
+  if (Array.isArray(node)) { node.forEach(nullifyNullStrings); return node; }
+  if (!node || typeof node !== 'object') return node;
+  for (const [k, v] of Object.entries(node)) {
+    if (typeof v === 'string' && v.trim().toLowerCase() === 'null') node[k] = null;
+    else if (v && typeof v === 'object') nullifyNullStrings(v);
+  }
+  return node;
+}
+
 async function ask(prompt, userLanguage, label, max_tokens = 3000, guardCtx = null) {
   const result = await callClaudeWithRetry({
     model: MODELS.SMART,
@@ -180,7 +196,7 @@ async function ask(prompt, userLanguage, label, max_tokens = 3000, guardCtx = nu
     messages: [{ role: 'user', content: prompt }],
   }, { label });
   if (guardCtx) await guardResult(result, { ...guardCtx, label, userLanguage });
-  return result;
+  return nullifyNullStrings(result);
 }
 
 router.post('/crisis-prioritizer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
