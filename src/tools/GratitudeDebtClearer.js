@@ -3,6 +3,7 @@ import { useClaudeAPI } from '../hooks/useClaudeAPI';
 import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
+import { CopyBtn } from '../components/ActionButtons';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import Caret from '../components/Caret';
@@ -74,6 +75,14 @@ const GratitudeDebtClearer = ({ tool }) => {
   const [editedMessages, setEditedMessages] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [adjustingIndex, setAdjustingIndex] = useState(null);
+  // Refinements accumulate rather than reroll. Asking for less emotion and then
+  // more specificity must not quietly restore the emotion.
+  const [additionalFacts, setAdditionalFacts] = useState([]);
+  const [stylePreferences, setStylePreferences] = useState({});
+  const [stylePanelIndex, setStylePanelIndex] = useState(null);
+  const [styleFreeText, setStyleFreeText] = useState('');
+  const [clarify, setClarify] = useState(null);   // { index, question, reason }
+  const [clarifyAnswer, setClarifyAnswer] = useState('');
   const [error, setError] = useState('');
 
 
@@ -118,6 +127,12 @@ const GratitudeDebtClearer = ({ tool }) => {
     setResults(null);
     setEditedMessages({});
     setEditingIndex(null);
+    setAdditionalFacts([]);
+    setStylePreferences({});
+    setStylePanelIndex(null);
+    setStyleFreeText('');
+    setClarify(null);
+    setClarifyAnswer('');
     setError('');
   };
 
@@ -134,6 +149,8 @@ const GratitudeDebtClearer = ({ tool }) => {
     setExtraContext('');
     setResults(null);
     setEditedMessages({});
+    setAdditionalFacts([]);
+    setClarify(null);
     setError('');
   };
 
@@ -158,17 +175,24 @@ const GratitudeDebtClearer = ({ tool }) => {
       setResults(data);
       setEditedMessages({});
       setEditingIndex(null);
+      setAdditionalFacts([]);
+      setStylePanelIndex(null);
+      setClarify(null);
+      setClarifyAnswer('');
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     } catch (err) {
       setError(err?.message || t('gdc_err_failed'));
     }
   };
 
-  const adjust = async (index, adjustment) => {
+  const adjust = async (index, { action, extraFacts = [], style = null } = {}) => {
     const message = results?.thank_you_messages?.[index];
     if (!message) return;
     setAdjustingIndex(index);
     setError('');
+    setClarify(null);
+    const facts = extraFacts.length ? [...additionalFacts, ...extraFacts] : additionalFacts;
+    const prefs = style ? { ...stylePreferences, ...style } : stylePreferences;
     try {
       const data = await callToolEndpoint('gratitude-debt-clearer', {
         recipientName,
@@ -177,21 +201,49 @@ const GratitudeDebtClearer = ({ tool }) => {
         tone,
         length,
         extraContext,
-        adjustmentPrompt: adjustment,
+        action,
+        additionalFacts: facts,
+        stylePreferences: prefs,
         originalMessage: getMessageText(index, message.message_text),
         userLocale,
         userCurrency,
         userRegion,
       });
+      // A question is a real answer. Show it rather than treating it as a miss.
+      if (data?.type === 'clarify' && data.question) {
+        setClarify({ index, question: data.question, reason: data.reason || '' });
+        setClarifyAnswer('');
+        return;
+      }
       const adjusted = data?.thank_you_messages?.[0];
       if (adjusted?.message_text) {
         setEditedMessages(prev => ({ ...prev, [index]: adjusted.message_text }));
+        if (extraFacts.length) setAdditionalFacts(facts);
+        if (style) setStylePreferences(prefs);
       }
     } catch (err) {
       setError(err?.message || t('gdc_err_adjust'));
     } finally {
       setAdjustingIndex(null);
     }
+  };
+
+  // The visitor answered the one question we asked. Their answer is now a
+  // supplied fact, as authoritative as anything they typed at the start.
+  const answerClarify = () => {
+    const answer = clarifyAnswer.trim();
+    if (!answer || !clarify) return;
+    const index = clarify.index;
+    setClarify(null);
+    adjust(index, { action: 'more_specific', extraFacts: [answer] });
+  };
+
+  const applyStyle = (index, style, freeText) => {
+    const merged = { ...style };
+    if (freeText && freeText.trim()) merged.naturalLanguage = [...(stylePreferences.naturalLanguage || []), freeText.trim()];
+    setStylePanelIndex(null);
+    setStyleFreeText('');
+    adjust(index, { action: 'more_like_me', style: merged });
   };
 
   const fieldClass = `w-full rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-cyan-500/20 ${c.input}`;
@@ -353,19 +405,87 @@ const GratitudeDebtClearer = ({ tool }) => {
                 )}
 
                 <div className="flex flex-wrap gap-2 mt-4">
+                  <CopyBtn content={text} label={t('gdc_copy_message')} exact />
                   <button type="button" onClick={() => setEditingIndex(editing ? null : index)} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary}`}>
                     ✏ {editing ? t('gdc_done_editing') : t('gdc_edit')}
                   </button>
-                  <button type="button" disabled={adjusting} onClick={() => adjust(index, 'Make it less emotional and less mushy. Keep every factual detail grounded in the user input.')} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
+                  {/* One click is enough here: the click itself is the
+                      information. The other two are not, so they gather it. */}
+                  <button type="button" disabled={adjusting} onClick={() => adjust(index, { action: 'less_emotional' })} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
                     − {t('gdc_too_mushy')}
                   </button>
-                  <button type="button" disabled={adjusting} onClick={() => adjust(index, 'Make it more specific using ONLY details the user supplied. Do not invent any new facts, history, feelings, habits, or relationship details.')} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
+                  <button type="button" disabled={adjusting} onClick={() => adjust(index, { action: 'more_specific' })} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
                     + {t('gdc_more_specific')}
                   </button>
-                  <button type="button" disabled={adjusting} onClick={() => adjust(index, 'Make this sound more natural and conversational, like something an ordinary person would actually send. Preserve the meaning and do not invent details.')} className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
+                  <button type="button" disabled={adjusting} onClick={() => setStylePanelIndex(stylePanelIndex === index ? null : index)}
+                    aria-expanded={stylePanelIndex === index}
+                    className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
                     More like me
                   </button>
                 </div>
+
+                {/* Asked, not assumed. Without an answer here the tool has no
+                    idea what sounds like this person and would be inventing a
+                    voice for them. */}
+                {stylePanelIndex === index && (
+                  <div className={`mt-3 rounded-xl border p-4 ${c.border} ${c.cardAlt}`}>
+                    <p className={`font-semibold mb-2 ${c.text}`}>What doesn&apos;t sound like you?</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        ['Too polished', { lessPolished: true }],
+                        ['Too formal', { lessFormal: true }],
+                        ['Too emotional', { lessEmotional: true }],
+                        ['Too wordy', { shorter: true }],
+                        ["I'd say it more casually", { moreCasual: true }],
+                      ].map(([label, style]) => (
+                        <button key={label} type="button" disabled={adjusting}
+                          onClick={() => applyStyle(index, style)}
+                          className={`px-3 py-1.5 rounded-lg border text-sm ${c.btnSecondary} disabled:opacity-50`}>{label}</button>
+                      ))}
+                    </div>
+                    <label htmlFor={`gdc-style-${index}`} className="sr-only">Describe how you&apos;d say it</label>
+                    <input
+                      id={`gdc-style-${index}`}
+                      value={styleFreeText}
+                      onChange={(e) => setStyleFreeText(e.target.value)}
+                      placeholder="Or say it in your own words — e.g. I'm pretty dry and understated"
+                      className={`mt-3 ${fieldClass}`}
+                    />
+                    <button type="button" disabled={adjusting || !styleFreeText.trim()}
+                      onClick={() => applyStyle(index, {}, styleFreeText)}
+                      className={`mt-2 px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
+                      Rewrite with that
+                    </button>
+                  </div>
+                )}
+
+                {/* The tool ran out of facts and said so, rather than making one
+                    up. One question, one field. */}
+                {clarify?.index === index && (
+                  <div className={`mt-3 rounded-xl border p-4 ${c.border} ${c.accentSoft}`}>
+                    <p className={`font-semibold ${c.text}`}>One detail would help:</p>
+                    <p className={`mt-1 ${c.text}`}>{clarify.question}</p>
+                    {clarify.reason && <p className={`mt-1 text-sm ${c.textMuted}`}>{clarify.reason}</p>}
+                    <label htmlFor={`gdc-clarify-${index}`} className="sr-only">Your answer</label>
+                    <input
+                      id={`gdc-clarify-${index}`}
+                      value={clarifyAnswer}
+                      onChange={(e) => setClarifyAnswer(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') answerClarify(); }}
+                      className={`mt-3 ${fieldClass}`}
+                    />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button type="button" disabled={adjusting || !clarifyAnswer.trim()} onClick={answerClarify}
+                        className={`px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
+                        Use this
+                      </button>
+                      <button type="button" onClick={() => setClarify(null)}
+                        className={`px-4 py-2 rounded-lg border text-sm ${c.btnSecondary}`}>
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+                )}
               </article>
             );
           })}

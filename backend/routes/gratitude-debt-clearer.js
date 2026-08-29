@@ -22,6 +22,9 @@ async function guardMessages(parsed, body, startedAt) {
   });
   if (!fields.length) return;
 
+  const answered = (Array.isArray(body.additionalFacts) ? body.additionalFacts : [])
+    .filter(f => typeof f === 'string' && f.trim());
+
   await runOutputGuard(parsed, {
     label: 'gratitude-debt-clearer-v2',
     fields,
@@ -30,6 +33,7 @@ Recipient: ${(body.recipientName || '').trim() || '(not given)'}
 Relationship, in their words: ${body.relationship || '(not given)'}
 What actually happened, in their words: ${(body.gratitudePoints || '').trim() || '(not given)'}
 Anything else they added: ${(body.extraContext || '').trim() || 'nothing'}
+${answered.length ? `They were asked for more detail during this session and answered:\n${answered.map(f => `- ${f}`).join('\n')}\nThose answers are their own words. Treat them exactly like the account above.` : 'They were not asked for, and did not add, any further detail.'}
 
 Nothing is known about their history together, how close they are, what either
 of them felt, why the recipient helped, what it cost them, or what has passed
@@ -53,14 +57,65 @@ WHAT FAILS:
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value. Use plain wording or single quotes inside JSON string values.';
 
-const groundingRules = `GROUNDING — HARD REQUIREMENT:
-- Personalize from facts the user actually supplied.
-- Do NOT invent relationship history, closeness, shared habits, personality traits, motives, private feelings, inside jokes, routines, preferences, cultural identity, or emotional meaning.
-- Do NOT turn an action into a character judgment unless the user already made that judgment.
-- Specificity must not exceed the information supplied.
-- If a useful personal detail is missing, do not fill the gap. Write naturally around what is known.
-- Never claim the recipient felt, intended, worried, struggled, sacrificed, or behaved in a way the user did not state.
-- The user RECEIVED the favor, gift, kindness, or support and is the person saying thank you.`;
+// ════════════════════════════════════════════════════════════
+// GROUNDING AND PERSONALIZATION
+// ════════════════════════════════════════════════════════════
+// Owner-supplied, permanent, and shared by every mode this route serves —
+// initial generation and every refinement. The rule about asking instead of
+// guessing is only meaningful because the response contract below lets the
+// model return a question instead of prose; a prompt that forbids inventing
+// while the schema demands a message every time will produce invention.
+const groundingRules = `GROUNDING AND PERSONALIZATION — HARD REQUIREMENTS
+
+The user's supplied information is the only source of personal facts.
+
+You may:
+- paraphrase facts the user supplied;
+- combine supplied facts;
+- draw modest, directly supported conclusions about why an event mattered;
+- adjust wording, structure, warmth, directness, and length.
+
+You must NOT invent:
+- relationship history or duration;
+- shared memories;
+- inside jokes;
+- recipient habits, tastes, routines, or personality traits;
+- motives or intentions;
+- emotions the user did not express;
+- things the recipient supposedly always or never does;
+- cultural expectations not explicitly supplied;
+- details of what happened that the user did not provide.
+
+Do not create false intimacy in order to make a message sound personal.
+
+Personalization must come from using the user's real details well, not from
+adding plausible details.
+
+If a requested revision would require information you do not have, do not guess.
+Ask one concise, useful question instead.
+
+STYLE GROUNDING
+
+Do not claim to know what sounds like the user unless the user has supplied
+style preferences or writing examples.
+
+Use only explicit style information gathered in this interaction.
+
+A style preference changes HOW the message is written. It must never introduce
+new facts about WHAT happened.
+
+FINAL CHECK BEFORE RETURNING ANY MESSAGE
+
+Ask internally:
+1. Did every personal detail come from the user?
+2. Did I invent closeness, history, personality, motives, memories, or feelings?
+3. Did I add specificity that was not supplied?
+4. If I lacked information needed for the requested revision, should I ask instead?
+
+If any answer reveals unsupported content, revise before returning.
+
+The user RECEIVED the favour, gift, kindness or support and is the person saying
+thank you.`;
 
 router.post('/gratitude-debt-clearer', rateLimit(CREATIVE_LIMITS, 'gratitude-debt-clearer:'), async (req, res) => {
   const startedAt = Date.now();
@@ -74,6 +129,9 @@ router.post('/gratitude-debt-clearer', rateLimit(CREATIVE_LIMITS, 'gratitude-deb
       extraContext = '',
       adjustmentPrompt,
       originalMessage,
+      action,                 // more_specific | less_emotional | more_like_me
+      stylePreferences,       // only ever affects phrasing, never facts
+      additionalFacts,        // answers the visitor gave to earlier clarify questions
       userLanguage,
     } = req.body;
 
@@ -82,27 +140,111 @@ router.post('/gratitude-debt-clearer', rateLimit(CREATIVE_LIMITS, 'gratitude-deb
 
     let prompt;
 
-    if (adjustmentPrompt && originalMessage) {
+    // Facts the visitor has added since the first draft, by answering a clarify
+    // question. They are as authoritative as the original input — the visitor
+    // supplied them.
+    const addedFacts = Array.isArray(additionalFacts) ? additionalFacts.filter(f => typeof f === 'string' && f.trim()) : [];
+    const factBlock = `RECIPIENT: ${recipientName}
+RELATIONSHIP: ${relationship}
+WHAT ACTUALLY HAPPENED, IN THE USER'S WORDS:
+${gratitudePoints}${addedFacts.length ? `\n${addedFacts.map(f => `${f} (they added this when you asked — it is their own account, exactly as authoritative as the lines above, and it is available to you)`).join('\n')}` : ''}
+${extraContext ? `\nANYTHING ELSE THEY ADDED:\n${extraContext}` : ''}`;
+
+    // What the visitor told us about how they write. Never about what happened.
+    const sp = stylePreferences && typeof stylePreferences === 'object' ? stylePreferences : {};
+    const styleNotes = [
+      sp.lessPolished && 'Too polished. Let it be a little rougher — the phrasing a real person reaches for first, not the one they settle on after three drafts.',
+      sp.lessFormal && 'Too formal. Drop the register: plainer words, contractions, how they would actually address this person.',
+      sp.lessEmotional && 'Too emotional. Say the same thing with less feeling in it. Do not replace the feeling with distance.',
+      sp.shorter && 'Too wordy. Cut it down. Every fact stays; the padding goes.',
+      sp.moreCasual && 'They would say it more casually. Loosen the sentences toward speech.',
+      ...(Array.isArray(sp.naturalLanguage) ? sp.naturalLanguage.filter(Boolean).map(v => `In their own words, how they talk: ${v}. Write it that way.`) : []),
+    ].filter(Boolean);
+    const styleBlock = styleNotes.length
+      ? `\nHOW THEY SAY THEY WRITE — affects phrasing ONLY, never what happened:\n${styleNotes.map(n => `- ${n}`).join('\n')}`
+      : '\nHOW THEY SAY THEY WRITE: nothing supplied. Do not guess at their voice.';
+
+    // When the visitor has just answered a question, "be more specific" is no
+    // longer an open search — the answer IS the material, and returning a draft
+    // that omits it is the one outcome that makes asking pointless. Live-tested:
+    // with only the general brief the model dropped the supplied fact and
+    // returned a SHORTER message. A prompt branch, not a prose rule.
+    const moreSpecificBrief = addedFacts.length
+      ? `The visitor wants this more specific, and has just answered your question.
+
+Their answer is listed above under FACTS THEY SUPPLIED WHEN ASKED. That answer is
+the material you asked for. Work it into the message, in the sender's own register,
+so the thanks names what actually happened rather than gesturing at it.
+
+Do NOT return a message that omits it. Do NOT ask another question — you already
+have what you asked for. Do NOT shorten or flatten the message: the point of this
+revision is that it now carries a detail it did not carry before.
+
+Use only what they supplied. Do not extrapolate from their answer.`
+      : `The visitor wants this more specific.
+
+First look for material in the facts above that this message has NOT used, or
+has mentioned only in passing. Bring that forward. That is the whole job when
+such material exists.
+
+If the message already uses every material fact, do NOT invent a detail to
+satisfy the request. Return a clarify response instead, naming the ONE missing
+fact that would most improve this particular message. Ask for something small
+and answerable, about what actually happened.`;
+
+    const ACTION_BRIEF = {
+      more_specific: moreSpecificBrief,
+      less_emotional: `Reduce emotional intensity while preserving all important factual content.
+Prefer concrete appreciation over emotional amplification. Do not make the
+message colder, more formal, or less grateful than it needs to be. Do not
+introduce new facts. This request needs no clarification — the click told you
+what you needed to know.`,
+      more_like_me: styleNotes.length
+        ? `Rewrite in line with the style notes above, and nothing else.
+
+Those notes are the visitor's answer. Do NOT ask what they meant — they have
+already told you, and asking again for the same information is the one response
+this request cannot have. Act on what is there.
+
+Style changes phrasing, never facts. Keep every fact the message already carries.
+The result must be audibly different from the current message, or the click did
+nothing.`
+        : `No style information was supplied, so you do not know what sounds like
+them. Return a clarify response asking what does not sound like them, rather than
+guessing at a voice.`,
+    };
+
+    if ((adjustmentPrompt || action) && originalMessage) {
+      const brief = ACTION_BRIEF[action] || `REVISION REQUEST:\n${adjustmentPrompt}`;
+      const suppliedNote = addedFacts.length
+        ? `\n\nNOTE ON THE FINAL CHECK ABOVE: the user answered a question during this
+session. Their answer is in the account above. It is supplied information, not
+added specificity — using it is required, and omitting it fails the revision.`
+        : '';
       prompt = `You help people revise thank-you messages so they sound natural, specific, and sendable.
 
-RECIPIENT: ${recipientName}
-RELATIONSHIP: ${relationship}
-WHAT ACTUALLY HAPPENED:
-${gratitudePoints}
-${extraContext ? `\nUSER-SUPPLIED CONTEXT:\n${extraContext}` : ''}
+${factBlock}
+${styleBlock}
 
 CURRENT MESSAGE:
 ${originalMessage}
 
-REVISION REQUEST:
-${adjustmentPrompt}
+WHAT THEY ASKED FOR:
+${brief}
 
-${groundingRules}
+${groundingRules}${suppliedNote}
 
-Revise the message without adding any fact or implication that is not supported above.
+Revise without adding any fact or implication not supported above.
 
-Return ONLY valid JSON:
+YOU MAY RETURN A QUESTION INSTEAD OF A MESSAGE. That is not a failure — it is the
+correct answer when the revision they asked for would need something you have not
+been told. One question, concrete and answerable, about a fact rather than a
+feeling. Never ask more than one.
+
+Return ONLY valid JSON, in ONE of these two shapes:
+
 {
+  "type": "messages",
   "thank_you_messages": [
     {
       "version": "Adjusted",
@@ -111,6 +253,14 @@ Return ONLY valid JSON:
       "choose_if": "one short sentence about the effect of this version"
     }
   ]
+}
+
+or:
+
+{
+  "type": "clarify",
+  "question": "the one question that would most improve this message",
+  "reason": "one short sentence on why this detail is needed"
 }
 
 ${NO_QUOTE_RULE}`;
@@ -196,11 +346,23 @@ ${NO_QUOTE_RULE}`;
       messages: [{ role: 'user', content: wrappedPrompt }],
     }, { label: 'gratitude-debt-clearer' });
 
+    // A question is a valid answer, not a failed generation. Only refinements may
+    // return one — the first draft always has the visitor's own words to work
+    // from, so there is nothing it could need to ask for.
+    if (parsed?.type === 'clarify' && typeof parsed.question === 'string' && parsed.question.trim()) {
+      if (!originalMessage) {
+        return res.status(500).json({ error: 'Could not generate your messages. Please try again.' });
+      }
+      console.log(`[gratitude-debt-clearer] clarify (${action || 'freeform'}): ${parsed.question.slice(0, 80)}`);
+      return res.json({ type: 'clarify', question: parsed.question.trim(), reason: typeof parsed.reason === 'string' ? parsed.reason.trim() : '' });
+    }
+
     if (!Array.isArray(parsed?.thank_you_messages) || !parsed.thank_you_messages.length) {
       return res.status(500).json({ error: 'Could not generate your messages. Please try again.' });
     }
 
-    parsed.thank_you_messages = parsed.thank_you_messages.slice(0, adjustmentPrompt ? 1 : 3).map(m => ({
+    parsed.type = 'messages';
+    parsed.thank_you_messages = parsed.thank_you_messages.slice(0, (adjustmentPrompt || action) ? 1 : 3).map(m => ({
       ...m,
       length: typeof m.message_text === 'string' ? m.message_text.trim().split(/\s+/).filter(Boolean).length : 0,
     }));

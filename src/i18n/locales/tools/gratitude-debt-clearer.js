@@ -117,6 +117,7 @@ export const gratitudeDebtClearer = {
     "gdc_best_for": "Best for:",
     "gdc_done_editing": "Done Editing",
     "gdc_reset_original": "Reset to original",
+    "gdc_copy_message": "Copy this one",
     "gdc_edit": "Edit",
     "gdc_mark_sent": "Mark Sent",
     "gdc_adjusting": "Adjusting...",

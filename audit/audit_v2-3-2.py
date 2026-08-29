@@ -677,7 +677,12 @@ for name, fpath in tools:
     # separate thing the visitor sends to a person, so a single copy of the
     # whole result is not the action they want. It uses `exact` so the shared
     # DeftBrain header does not travel to the friend along with the message.
-    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft', 'DriveHome', 'FriendshipFadeAlerter'}
+    # GratitudeDebtClearer: the output is three alternative messages and the
+    # visitor sends exactly one, to a person, from their own phone. The shared
+    # action bar copies all three plus the DeftBrain footer — correct for a
+    # report, wrong for a thank-you note. Per-message CopyBtn with `exact`.
+    PF22_PER_ITEM_COPY = {'CaptionMagic', 'ColdOpenCraft', 'DriveHome', 'FriendshipFadeAlerter',
+                          'GratitudeDebtClearer'}
     _import_section_end = 0
     for _imp_m in re.finditer(r'^import\s', content, re.MULTILINE):
         _import_section_end = _imp_m.end()
