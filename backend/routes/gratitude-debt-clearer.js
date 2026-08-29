@@ -151,6 +151,18 @@ Do not imply or mention a delivery method — such as text, card, email, letter,
 
 When no delivery method is known, write the message so it works naturally across ordinary delivery methods.
 
+CARD DESCRIPTIONS ARE SUBJECT TO THE SAME GROUNDING RULES
+
+Titles, descriptors, and "Choose this if" text must obey the same
+grounding requirements as the message itself.
+
+Do not attribute motives, beliefs, intentions, personality traits,
+relationship history, risk, sacrifice, feelings, or other unsupported
+personal facts in card metadata.
+
+Describe the effect or rhetorical emphasis of the MESSAGE, not an
+inferred quality or internal state of the recipient.
+
 FINAL CHECK BEFORE RETURNING ANY MESSAGE
 
 Ask internally:
