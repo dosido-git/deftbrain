@@ -680,7 +680,7 @@ const FakeReviewDetective = ({ tool }) => {
         <div className="space-y-4">
           {analysis.manipulation_detected && analysis.manipulation_detected.type !== 'none' && (
             <div className={`${c.danger} border rounded-xl p-5 flex items-start gap-3`}><span className="text-lg">🎯</span><div>
-              <h4 className="text-sm font-bold mb-1">{analysis.manipulation_detected.type === 'positive_campaign' ? t('frd_manip_positive') : analysis.manipulation_detected.type === 'negative_bombing' ? t('frd_manip_negative') : t('frd_manip_mixed')} {t('frd_manip_detected_suffix')}
+              <h4 className="text-sm font-bold mb-1">{analysis.manipulation_detected.type === 'positive_campaign' ? t('frd_manip_positive') : analysis.manipulation_detected.type === 'negative_bombing' ? t('frd_manip_negative') : t('frd_manip_mixed')}
                 {analysis.manipulation_detected.confidence && <span className={`ms-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${analysis.manipulation_detected.confidence === 'high' ? (isDark ? 'bg-red-800 text-red-200' : 'bg-red-200 text-red-800') : (isDark ? 'bg-amber-800 text-amber-200' : 'bg-amber-200 text-amber-800')}`}>{analysis.manipulation_detected.confidence}</span>}
               </h4>
               {analysis.manipulation_detected.description && <p className="text-sm mb-2">{analysis.manipulation_detected.description}</p>}

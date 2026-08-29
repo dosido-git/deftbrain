@@ -146,6 +146,9 @@ const DifficultTalkCoach = ({ tool }) => {
     { value: 'Doctor/Provider', labelKey: 'dtc_rel_doctor', icon: '⚕️' },
     { value: 'Other', labelKey: 'dtc_rel_other', icon: '💬' },
   ];
+  // relationship is the English option value; never render it. The localized
+  // label is what the user picked and what every other surface shows.
+  const relLabel = () => { const r = relationships.find(x => x.value === relationship); return r ? t(r.labelKey) : t('dtc_them_generic'); };
 
   // Six, not eleven. The old list made the visitor classify their situation
   // before the tool would help with it, and the categories overlapped: "I am
@@ -1338,7 +1341,7 @@ const DifficultTalkCoach = ({ tool }) => {
                   <span className="text-lg">▶️</span> {t('dtc_practice_mode')}
                 </h3>
                 <p className={`text-sm ${c.textSecondary} mb-4`}>
-                  {t('dtc_practice_intro', { who: relationship.toLowerCase() || t('dtc_them_generic'), level: practiceResistance ?? resistanceLevel })}
+                  {t('dtc_practice_intro', { who: relLabel(), level: practiceResistance ?? resistanceLevel })}
                 </p>
 
                 {/* Adjustable resistance */}
@@ -1421,7 +1424,7 @@ const DifficultTalkCoach = ({ tool }) => {
                             <div className="flex justify-start">
                               <div className={`max-w-[80%] p-3 rounded-xl ${c.simThem} border`}>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <p className={`text-xs font-bold ${c.textMuted}`}>{relationship.toUpperCase()}</p>
+                                  <p className={`text-xs font-bold ${c.textMuted}`}>{relLabel()}</p>
                                   {msg.emotionalState && <span className={`text-xs ${c.textMuted}`}>({msg.emotionalState})</span>}
                                   {msg.health && <span className={`text-xs font-bold ${healthColors[msg.health] || c.textMuted}`}>• {msg.health.replace('_', ' ')}</span>}
                                   {msg.openness_shift != null && msg.openness_shift !== 0 && (
@@ -1815,7 +1818,7 @@ const DifficultTalkCoach = ({ tool }) => {
                     </p>
                     <div className={`p-3 rounded-lg ${c.cardAlt} mb-3 max-h-32 overflow-y-auto`}>
                       {simMessages.filter(m => m.role === 'user').slice(0, 6).map((m, i) => (
-                        <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>{t('dtc_you')} "{m.content.slice(0, 6)}{m.content.length > 80 ? '…' : ''}"</p>
+                        <p key={i} className={`text-xs ${c.textSecondary} mb-1`}>{t('dtc_you')} "{m.content.slice(0, 80)}{m.content.length > 80 ? '…' : ''}"</p>
                       ))}
                       {simMessages.filter(m => m.role === 'user').length > 5 && (
                         <p className={`text-xs ${c.textMuted}`}>{t('dtc_more_exchanges', { count: simMessages.filter(m => m.role === 'user').length - 5 })}</p>

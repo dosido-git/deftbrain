@@ -207,7 +207,7 @@ function ContractDecoder({ tool }) {
       lines.push('\nThings to clarify');
       results.things_to_clarify.forEach(item => {
         if (item.observation) lines.push(`• ${item.observation}`);
-        if (item.question) lines.push(`  {t('cd_ask')} ${item.question}`);
+        if (item.question) lines.push(`  ${t('cd_ask')} ${item.question}`);
       });
     }
     if (results.before_you_sign?.length) {
