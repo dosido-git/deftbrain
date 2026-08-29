@@ -63,7 +63,7 @@ const IMPORTANCE_COLORS = {
 const SPECIALIST_TOOLS = {
   OfferDissector: { labelKey: 'plt_spec_offer', emoji: '💼' },
   DoctorVisitTranslator: { labelKey: 'plt_spec_doctor', emoji: '🏥' },
-  BillGuiltEraser: { labelKey: 'plt_spec_bill', emoji: '💳' },
+  BillRescue: { labelKey: 'plt_spec_bill', emoji: '💳' },
   ComplaintEscalationWriter: { labelKey: 'plt_spec_complaint', emoji: '📨' },
   JargonAssassin: { labelKey: 'plt_spec_jargon', emoji: '🗡️' },
   FakeReviewDetective: { labelKey: 'plt_spec_fakereview', emoji: '🔎' },

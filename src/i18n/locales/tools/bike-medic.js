@@ -5488,7 +5488,7 @@ export const bikeMedic = {
     bmd_diff_easy_adv: "Einfach → Fortgeschritten",
     bmd_add_your_bike: "➕ Füge dein Rad hinzu",
     bmd_add_bike_suffix: " für eine persönliche Diagnose und Wartungsverfolgung.",
-    bmd_maint_due_count: "{{n}} fällige Wartungsaufgabe{{s}}",
+    bmd_maint_due_count: "{{n}} fällige Wartungsaufgabe",
     bmd_view_arrow: "Ansehen →",
     bmd_saved_by_diy_banner: "{{sym}}{{amount}} durch Selbermachen gespart",
     bmd_details_arrow: "Details →",
@@ -5643,7 +5643,7 @@ export const bikeMedic = {
     bmd_inv_pad_spreader: "Belagspreizer",
     bmd_inv_calipers: "Messschieber oder Maßband",
     bmd_maint_add_bike: "Füge im Garage-Tab ein Rad hinzu, um die Wartung pro Rad zu verfolgen.",
-    bmd_maint_tasks_due: "{{n}} fällige Aufgabe{{s}}",
+    bmd_maint_tasks_due: "{{n}} fällige Aufgabe",
     bmd_maint_intervals_note: "Siehe Plan unten. Die Intervalle basieren auf deinem Radprofil und den erfassten Kilometern.",
     bmd_maint_schedule_heading: "🗓️ Wartungsplan",
     bmd_maint_never_done: "Nie gemacht",
@@ -5668,7 +5668,7 @@ export const bikeMedic = {
     bmd_msch_cable_check: "Züge & Außenhüllen prüfen",
     bmd_msch_full_service: "Komplette Inspektion",
     bmd_hub_add_bike: "Füge im Garage-Tab ein Rad hinzu, um Wartungs- und Reparaturverlauf pro Rad zu verfolgen.",
-    bmd_hub_saved_by_diy: "durch Selbermachen gespart über {{n}} Reparatur{{s}}",
+    bmd_hub_saved_by_diy: "durch Selbermachen gespart über {{n}} Reparatur",
     bmd_hub_on_bike: " an {{name}}",
     bmd_hub_mileage_tracker: "Kilometerzähler",
     bmd_hub_miles_trigger: "Erfasste Kilometer lösen die Wartungserinnerungen unten aus",
@@ -5767,7 +5767,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "Anleitung gespeichert — finde sie in Meine Werkstatt",
     bmd_fix_tools_label: "Werkzeug:",
     bmd_fix_have_all_tools: "Du hast alle Werkzeuge!",
-    bmd_fix_missing_tools: "Es fehlen {{n}} Werkzeug{{s}}",
+    bmd_fix_missing_tools: "Es fehlen {{n}} Werkzeug",
     bmd_fix_progress: "Fortschritt",
     bmd_fix_step_by_step: "Schritt für Schritt",
     bmd_fix_mechanics_tip: "👀 Gut zu wissen",
@@ -6807,7 +6807,7 @@ export const bikeMedic = {
     bmd_diff_easy_adv: "Dễ → Nâng cao",
     bmd_add_your_bike: "➕ Thêm xe của bạn",
     bmd_add_bike_suffix: " để được chẩn đoán cá nhân hóa và theo dõi bảo dưỡng.",
-    bmd_maint_due_count: "{{n}} công việc bảo dưỡng đến hạn{{s}}",
+    bmd_maint_due_count: "{{n}} công việc bảo dưỡng đến hạn",
     bmd_view_arrow: "Xem →",
     bmd_saved_by_diy_banner: "Tiết kiệm {{sym}}{{amount}} nhờ tự làm",
     bmd_details_arrow: "Chi tiết →",
@@ -6962,7 +6962,7 @@ export const bikeMedic = {
     bmd_inv_pad_spreader: "Dụng cụ banh má phanh",
     bmd_inv_calipers: "Thước cặp hoặc thước dây",
     bmd_maint_add_bike: "Thêm một chiếc xe ở tab Nhà xe để theo dõi bảo dưỡng theo từng xe.",
-    bmd_maint_tasks_due: "{{n}} công việc đến hạn{{s}}",
+    bmd_maint_tasks_due: "{{n}} công việc đến hạn",
     bmd_maint_intervals_note: "Xem lịch bên dưới. Các khoảng thời gian dựa trên hồ sơ xe và số quãng đường đã ghi của bạn.",
     bmd_maint_schedule_heading: "🗓️ Lịch bảo dưỡng",
     bmd_maint_never_done: "Chưa từng làm",
@@ -6987,7 +6987,7 @@ export const bikeMedic = {
     bmd_msch_cable_check: "Kiểm tra dây và vỏ dây",
     bmd_msch_full_service: "Bảo dưỡng toàn bộ xe",
     bmd_hub_add_bike: "Thêm một chiếc xe ở tab Nhà xe để theo dõi lịch sử bảo dưỡng và sửa chữa theo từng xe.",
-    bmd_hub_saved_by_diy: "tiết kiệm nhờ tự làm qua {{n}} lần sửa chữa{{s}}",
+    bmd_hub_saved_by_diy: "tiết kiệm nhờ tự làm qua {{n}} lần sửa chữa",
     bmd_hub_on_bike: " trên {{name}}",
     bmd_hub_mileage_tracker: "Theo dõi quãng đường",
     bmd_hub_miles_trigger: "Số quãng đường đã ghi sẽ kích hoạt các nhắc nhở bảo dưỡng bên dưới",
@@ -7086,7 +7086,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "Đã lưu hướng dẫn — tìm trong Trung tâm xe của tôi",
     bmd_fix_tools_label: "Dụng cụ:",
     bmd_fix_have_all_tools: "Bạn có đủ dụng cụ!",
-    bmd_fix_missing_tools: "Thiếu {{n}} dụng cụ{{s}}",
+    bmd_fix_missing_tools: "Thiếu {{n}} dụng cụ",
     bmd_fix_progress: "Tiến độ",
     bmd_fix_step_by_step: "Từng bước",
     bmd_fix_mechanics_tip: "👀 Đáng biết",
@@ -8126,7 +8126,7 @@ export const bikeMedic = {
     bmd_diff_easy_adv: "简单 → 高级",
     bmd_add_your_bike: "➕ 添加你的车",
     bmd_add_bike_suffix: "，以获得个性化诊断和保养跟踪。",
-    bmd_maint_due_count: "{{n}} 项保养任务到期{{s}}",
+    bmd_maint_due_count: "{{n}} 项保养任务到期",
     bmd_view_arrow: "查看 →",
     bmd_saved_by_diy_banner: "自己动手省下 {{sym}}{{amount}}",
     bmd_details_arrow: "详情 →",
@@ -8281,7 +8281,7 @@ export const bikeMedic = {
     bmd_inv_pad_spreader: "刹车皮撑开器",
     bmd_inv_calipers: "卡尺或卷尺",
     bmd_maint_add_bike: "请在车库标签页添加一辆车，以按车辆跟踪保养。",
-    bmd_maint_tasks_due: "{{n}} 项任务到期{{s}}",
+    bmd_maint_tasks_due: "{{n}} 项任务到期",
     bmd_maint_intervals_note: "请见下方计划表。间隔基于你的车辆资料和已记录里程。",
     bmd_maint_schedule_heading: "🗓️ 保养计划表",
     bmd_maint_never_done: "从未做过",
@@ -8306,7 +8306,7 @@ export const bikeMedic = {
     bmd_msch_cable_check: "检查线缆与线管",
     bmd_msch_full_service: "整车全面保养",
     bmd_hub_add_bike: "请在车库标签页添加一辆车，以按车辆跟踪保养和维修历史。",
-    bmd_hub_saved_by_diy: "在 {{n}} 次维修{{s}}中自己动手共省下",
+    bmd_hub_saved_by_diy: "在 {{n}} 次维修中自己动手共省下",
     bmd_hub_on_bike: "（在 {{name}} 上）",
     bmd_hub_mileage_tracker: "里程记录器",
     bmd_hub_miles_trigger: "记录的里程会触发下方的保养提醒",
@@ -8405,7 +8405,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "指南已保存 — 可在我的车辆中心找到",
     bmd_fix_tools_label: "工具：",
     bmd_fix_have_all_tools: "你拥有所有工具！",
-    bmd_fix_missing_tools: "缺少 {{n}} 件工具{{s}}",
+    bmd_fix_missing_tools: "缺少 {{n}} 件工具",
     bmd_fix_progress: "进度",
     bmd_fix_step_by_step: "分步操作",
     bmd_fix_mechanics_tip: "👀 值得一提",
@@ -9458,7 +9458,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ अपनी बाइक जोड़ें",
     bmd_add_bike_suffix: " — वैयक्तिकृत डायग्नोसिस और रखरखाव ट्रैकिंग के लिए।",
-    bmd_maint_due_count: "{{n}} रखरखाव कार्य{{s}} बकाया",
+    bmd_maint_due_count: "{{n}} रखरखाव कार्य बकाया",
     bmd_view_arrow: "देखें →",
     bmd_saved_by_diy_banner: "DIY से {{sym}}{{amount}} बचाए",
     bmd_details_arrow: "विवरण →",
@@ -9639,7 +9639,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "प्रति बाइक रखरखाव ट्रैक करने के लिए गैराज टैब में एक बाइक जोड़ें।",
-    bmd_maint_tasks_due: "{{n}} कार्य{{s}} बकाया",
+    bmd_maint_tasks_due: "{{n}} कार्य बकाया",
     bmd_maint_intervals_note: "नीचे शेड्यूल देखें। अंतराल आपकी बाइक प्रोफ़ाइल और दर्ज माइलेज पर आधारित हैं।",
     bmd_maint_schedule_heading: "🗓️ रखरखाव शेड्यूल",
     bmd_maint_never_done: "कभी नहीं किया",
@@ -9668,7 +9668,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "प्रति बाइक रखरखाव और मरम्मत इतिहास ट्रैक करने के लिए गैराज टैब में एक बाइक जोड़ें।",
-    bmd_hub_saved_by_diy: "{{n}} मरम्मत{{s}} में DIY से बचाए",
+    bmd_hub_saved_by_diy: "{{n}} मरम्मत में DIY से बचाए",
     bmd_hub_on_bike: " {{name}} पर",
     bmd_hub_mileage_tracker: "माइलेज ट्रैकर",
     bmd_hub_miles_trigger: "दर्ज मील नीचे रखरखाव रिमाइंडर ट्रिगर करते हैं",
@@ -9781,7 +9781,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "गाइड सहेजी गई — इसे My Bike Hub में पाएँ",
     bmd_fix_tools_label: "औज़ार:",
     bmd_fix_have_all_tools: "आपके पास सभी औज़ार हैं!",
-    bmd_fix_missing_tools: "{{n}} औज़ार{{s}} कम हैं",
+    bmd_fix_missing_tools: "{{n}} औज़ार कम हैं",
     bmd_fix_progress: "प्रगति",
     bmd_fix_step_by_step: "चरण-दर-चरण",
     bmd_fix_mechanics_tip: "👀 जानने लायक",
@@ -10905,7 +10905,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ أضِف دراجتك",
     bmd_add_bike_suffix: " للحصول على تشخيص مخصّص وتتبّع الصيانة.",
-    bmd_maint_due_count: "{{n}} مهمة صيانة{{s}} مستحقة",
+    bmd_maint_due_count: "{{n}} مهمة صيانة مستحقة",
     bmd_view_arrow: "عرض →",
     bmd_saved_by_diy_banner: "وفّرت {{sym}}{{amount}} بالإصلاح الذاتي",
     bmd_details_arrow: "التفاصيل →",
@@ -11086,7 +11086,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "أضِف دراجة في تبويب الكراج لتتبّع الصيانة لكل دراجة.",
-    bmd_maint_tasks_due: "{{n}} مهمة{{s}} مستحقة",
+    bmd_maint_tasks_due: "{{n}} مهمة مستحقة",
     bmd_maint_intervals_note: "انظر الجدول أدناه. الفواصل الزمنية مبنية على ملف دراجتك والمسافة المسجّلة.",
     bmd_maint_schedule_heading: "🗓️ جدول الصيانة",
     bmd_maint_never_done: "لم تُنجَز قط",
@@ -11115,7 +11115,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "أضِف دراجة في تبويب الكراج لتتبّع الصيانة وسجلّ الإصلاحات لكل دراجة.",
-    bmd_hub_saved_by_diy: "وفّرتها بالإصلاح الذاتي عبر {{n}} إصلاح{{s}}",
+    bmd_hub_saved_by_diy: "وفّرتها بالإصلاح الذاتي عبر {{n}} إصلاح",
     bmd_hub_on_bike: " على {{name}}",
     bmd_hub_mileage_tracker: "متتبّع المسافة",
     bmd_hub_miles_trigger: "الأميال المسجّلة تُفعّل تذكيرات الصيانة أدناه",
@@ -11228,7 +11228,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "تم حفظ الدليل — اعثر عليه في My Bike Hub",
     bmd_fix_tools_label: "الأدوات:",
     bmd_fix_have_all_tools: "لديك كل الأدوات!",
-    bmd_fix_missing_tools: "ينقصك {{n}} أداة{{s}}",
+    bmd_fix_missing_tools: "ينقصك {{n}} أداة",
     bmd_fix_progress: "التقدّم",
     bmd_fix_step_by_step: "خطوة بخطوة",
     bmd_fix_mechanics_tip: "👀 يستحق المعرفة",
@@ -12352,7 +12352,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ 自転車を追加",
     bmd_add_bike_suffix: " — パーソナライズ診断とメンテナンス管理のために。",
-    bmd_maint_due_count: "メンテナンス{{n}}件{{s}}が期限到来",
+    bmd_maint_due_count: "メンテナンス{{n}}件が期限到来",
     bmd_view_arrow: "表示 →",
     bmd_saved_by_diy_banner: "DIYで{{sym}}{{amount}}節約",
     bmd_details_arrow: "詳細 →",
@@ -12533,7 +12533,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "自転車ごとにメンテナンスを管理するには、ガレージタブで自転車を追加してください。",
-    bmd_maint_tasks_due: "{{n}}件のタスク{{s}}が期限到来",
+    bmd_maint_tasks_due: "{{n}}件のタスクが期限到来",
     bmd_maint_intervals_note: "下のスケジュールを参照。間隔はあなたの自転車プロフィールと記録された走行距離に基づきます。",
     bmd_maint_schedule_heading: "🗓️ メンテナンススケジュール",
     bmd_maint_never_done: "未実施",
@@ -12562,7 +12562,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "自転車ごとにメンテナンスと修理履歴を管理するには、ガレージタブで自転車を追加してください。",
-    bmd_hub_saved_by_diy: "{{n}}件の修理{{s}}でDIYにより節約",
+    bmd_hub_saved_by_diy: "{{n}}件の修理でDIYにより節約",
     bmd_hub_on_bike: " {{name}}で",
     bmd_hub_mileage_tracker: "走行距離トラッカー",
     bmd_hub_miles_trigger: "記録された走行距離が下のメンテナンスリマインダーを起動します",
@@ -12675,7 +12675,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "ガイドを保存 — My Bike Hub で見つけられます",
     bmd_fix_tools_label: "工具：",
     bmd_fix_have_all_tools: "工具はすべて揃っています！",
-    bmd_fix_missing_tools: "工具が{{n}}点{{s}}不足",
+    bmd_fix_missing_tools: "工具が{{n}}点不足",
     bmd_fix_progress: "進捗",
     bmd_fix_step_by_step: "ステップバイステップ",
     bmd_fix_mechanics_tip: "👀 知っておくと役立つこと",
@@ -13799,7 +13799,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ 자전거 추가",
     bmd_add_bike_suffix: " — 맞춤 진단과 정비 추적을 위해.",
-    bmd_maint_due_count: "정비 작업 {{n}}건{{s}} 예정",
+    bmd_maint_due_count: "정비 작업 {{n}}건 예정",
     bmd_view_arrow: "보기 →",
     bmd_saved_by_diy_banner: "DIY로 {{sym}}{{amount}} 절약",
     bmd_details_arrow: "상세 →",
@@ -13980,7 +13980,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "자전거별로 정비를 추적하려면 차고 탭에서 자전거를 추가하세요.",
-    bmd_maint_tasks_due: "작업 {{n}}건{{s}} 예정",
+    bmd_maint_tasks_due: "작업 {{n}}건 예정",
     bmd_maint_intervals_note: "아래 일정을 참조하세요. 주기는 자전거 프로필과 기록된 주행거리에 기반합니다.",
     bmd_maint_schedule_heading: "🗓️ 정비 일정",
     bmd_maint_never_done: "수행한 적 없음",
@@ -14009,7 +14009,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "자전거별로 정비와 수리 이력을 추적하려면 차고 탭에서 자전거를 추가하세요.",
-    bmd_hub_saved_by_diy: "수리 {{n}}건{{s}}에서 DIY로 절약",
+    bmd_hub_saved_by_diy: "수리 {{n}}건에서 DIY로 절약",
     bmd_hub_on_bike: " {{name}}에서",
     bmd_hub_mileage_tracker: "주행거리 추적기",
     bmd_hub_miles_trigger: "기록된 주행거리가 아래 정비 알림을 작동시킵니다",
@@ -14122,7 +14122,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "가이드 저장됨 — My Bike Hub에서 찾을 수 있습니다",
     bmd_fix_tools_label: "공구:",
     bmd_fix_have_all_tools: "모든 공구를 갖추셨습니다!",
-    bmd_fix_missing_tools: "공구 {{n}}개{{s}} 부족",
+    bmd_fix_missing_tools: "공구 {{n}}개 부족",
     bmd_fix_progress: "진행률",
     bmd_fix_step_by_step: "단계별",
     bmd_fix_mechanics_tip: "👀 알아두면 좋은 것",
@@ -15246,7 +15246,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ Добавить велосипед",
     bmd_add_bike_suffix: " — для персональной диагностики и учёта обслуживания.",
-    bmd_maint_due_count: "{{n}} задача{{s}} обслуживания назрела",
+    bmd_maint_due_count: "{{n}} задача обслуживания назрела",
     bmd_view_arrow: "Открыть →",
     bmd_saved_by_diy_banner: "Сэкономлено {{sym}}{{amount}} своими руками",
     bmd_details_arrow: "Подробнее →",
@@ -15427,7 +15427,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "Добавьте велосипед во вкладке «Гараж», чтобы вести учёт обслуживания по каждому велосипеду.",
-    bmd_maint_tasks_due: "{{n}} задача{{s}} назрела",
+    bmd_maint_tasks_due: "{{n}} задача назрела",
     bmd_maint_intervals_note: "См. график ниже. Интервалы основаны на профиле велосипеда и записанном пробеге.",
     bmd_maint_schedule_heading: "🗓️ График обслуживания",
     bmd_maint_never_done: "Не выполнялось",
@@ -15456,7 +15456,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "Добавьте велосипед во вкладке «Гараж», чтобы вести учёт обслуживания и истории ремонтов по каждому велосипеду.",
-    bmd_hub_saved_by_diy: "сэкономлено своими руками за {{n}} ремонт{{s}}",
+    bmd_hub_saved_by_diy: "сэкономлено своими руками за {{n}} ремонт",
     bmd_hub_on_bike: " на «{{name}}»",
     bmd_hub_mileage_tracker: "Трекер пробега",
     bmd_hub_miles_trigger: "Записанный пробег запускает напоминания об обслуживании ниже",
@@ -15569,7 +15569,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "Руководство сохранено — найдите его в My Bike Hub",
     bmd_fix_tools_label: "Инструменты:",
     bmd_fix_have_all_tools: "У вас есть все инструменты!",
-    bmd_fix_missing_tools: "Не хватает {{n}} инструмент{{s}}",
+    bmd_fix_missing_tools: "Не хватает {{n}} инструмент",
     bmd_fix_progress: "Прогресс",
     bmd_fix_step_by_step: "Пошагово",
     bmd_fix_mechanics_tip: "👀 Стоит знать",
@@ -16693,7 +16693,7 @@ export const bikeMedic = {
     // ── Home screen ──
     bmd_add_your_bike: "➕ เพิ่มจักรยานของคุณ",
     bmd_add_bike_suffix: " เพื่อการวินิจฉัยเฉพาะตัวและติดตามการบำรุงรักษา",
-    bmd_maint_due_count: "งานบำรุงรักษา {{n}} รายการ{{s}}ถึงกำหนด",
+    bmd_maint_due_count: "งานบำรุงรักษา {{n}} รายการถึงกำหนด",
     bmd_view_arrow: "ดู →",
     bmd_saved_by_diy_banner: "ประหยัด {{sym}}{{amount}} จากการทำเอง",
     bmd_details_arrow: "รายละเอียด →",
@@ -16874,7 +16874,7 @@ export const bikeMedic = {
 
     // ── Maintenance section ──
     bmd_maint_add_bike: "เพิ่มจักรยานในแท็บโรงจอดเพื่อติดตามการบำรุงรักษารายคัน",
-    bmd_maint_tasks_due: "{{n}} งาน{{s}}ถึงกำหนด",
+    bmd_maint_tasks_due: "{{n}} งานถึงกำหนด",
     bmd_maint_intervals_note: "ดูตารางด้านล่าง ช่วงเวลาอิงตามโปรไฟล์จักรยานและระยะทางที่บันทึก",
     bmd_maint_schedule_heading: "🗓️ ตารางบำรุงรักษา",
     bmd_maint_never_done: "ยังไม่เคยทำ",
@@ -16903,7 +16903,7 @@ export const bikeMedic = {
 
     // ── Miles / Hub section ──
     bmd_hub_add_bike: "เพิ่มจักรยานในแท็บโรงจอดเพื่อติดตามการบำรุงรักษาและประวัติการซ่อมรายคัน",
-    bmd_hub_saved_by_diy: "ประหยัดจากการทำเองจาก {{n}} การซ่อม{{s}}",
+    bmd_hub_saved_by_diy: "ประหยัดจากการทำเองจาก {{n}} การซ่อม",
     bmd_hub_on_bike: " บน {{name}}",
     bmd_hub_mileage_tracker: "ตัวติดตามระยะทาง",
     bmd_hub_miles_trigger: "ระยะทางที่บันทึกจะกระตุ้นการแจ้งเตือนบำรุงรักษาด้านล่าง",
@@ -17016,7 +17016,7 @@ export const bikeMedic = {
     bmd_fix_guide_saved: "บันทึกคู่มือแล้ว — หาได้ใน My Bike Hub",
     bmd_fix_tools_label: "เครื่องมือ:",
     bmd_fix_have_all_tools: "คุณมีเครื่องมือครบแล้ว!",
-    bmd_fix_missing_tools: "ขาดเครื่องมือ {{n}} ชิ้น{{s}}",
+    bmd_fix_missing_tools: "ขาดเครื่องมือ {{n}} ชิ้น",
     bmd_fix_progress: "ความคืบหน้า",
     bmd_fix_step_by_step: "ทีละขั้น",
     bmd_fix_mechanics_tip: "👀 น่ารู้ไว้",
