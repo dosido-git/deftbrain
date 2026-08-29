@@ -429,20 +429,84 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
   if (!keyMatches(req.get('x-metrics-key'), KEY)) return res.status(404).end();
   try {
     // ── time-range filter (query param; key stays in the header) ──
+    //
+    // CALENDAR days in METRICS_TZ, not a rolling 24h window. Rolling meant two
+    // people loading the report an hour apart saw different numbers for the
+    // same label and neither was wrong, and it compared a window straddling
+    // one weekend against a window straddling another. Whole local days are
+    // reproducible and quotable, and they match the daily chart below, which
+    // has always bucketed by calendar date.
+    //
+    // TODAY IS EXCLUDED from every range: a partial day next to complete ones
+    // always reads as a crash. "So far today" is its own tile, compared with
+    // the same elapsed slice of yesterday so it is like-for-like.
+    //
+    // The zone is a real IANA zone, so spring-forward days are 23 hours and
+    // fall-back days 25. That is the cost of judging in local time and it is
+    // deliberate — set METRICS_TZ=UTC for ragged-free buckets instead.
+    const TZ = process.env.METRICS_TZ || 'America/New_York';
+    // Offset between wall clock in TZ and UTC at a given instant.
+    const tzOffset = (d) => {
+      const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+        timeZone: TZ, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      }).formatToParts(d).filter(x => x.type !== 'literal').map(x => [x.type, x.value]));
+      // Compare against whole seconds: the formatter has no ms field, so keeping
+      // d's milliseconds here smears every day boundary by up to 999ms.
+      return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second) - (d.getTime() - d.getMilliseconds());
+    };
+    // Midnight (local) of the day containing `d`. Two passes: the first uses the
+    // offset at `d`, the second corrects it if the boundary sits the other side
+    // of a DST change.
+    const dayStart = (d) => {
+      const off = tzOffset(d);
+      const local = new Date(d.getTime() + off);
+      const mid = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate());
+      return new Date(mid - tzOffset(new Date(mid - off)));
+    };
+    // n whole local days before `start`. Stepping 12h at a time from a midnight
+    // always lands inside the previous local day, whatever DST is doing.
+    const fmtDay = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+    const backDays = (start, n) => { let t = start; for (let i = 0; i < n; i++) t = dayStart(new Date(t.getTime() - 12 * 3600 * 1000)); return t; };
+
     const RANGE_DAYS = { '1d': 1, '7d': 7, '14d': 14, '30d': 30, '90d': 90 };
     const rangeParam = RANGE_DAYS[req.query.range] ? String(req.query.range)
       : (req.query.range === 'all' ? 'all' : '30d'); // default: past month
     const rangeDays = RANGE_DAYS[rangeParam] || null;
-    const rangeText = { '1d': 'past day', '7d': 'past week', '14d': 'past 2 weeks', '30d': 'past month', '90d': 'past 3 months', all: 'all time' }[rangeParam];
+    const rangeText = { '1d': 'yesterday', '7d': 'last 7 days', '14d': 'last 14 days', '30d': 'last 30 days', '90d': 'last 90 days', all: 'all time' }[rangeParam];
 
     const allRows = readMetrics();
-    const cutoffISO = rangeDays ? new Date(Date.now() - rangeDays * 86400000).toISOString() : null;
-    const rows = cutoffISO ? allRows.filter(r => (r.at || '') >= cutoffISO) : allRows;
+    const now = new Date();
+    const todayStart = dayStart(now);
+    const windowEnd = rangeDays ? todayStart : null;                    // exclusive
+    const windowStart = rangeDays ? backDays(todayStart, rangeDays) : null;
+    const cutoffISO = windowStart ? windowStart.toISOString() : null;
+    const endISO = windowEnd ? windowEnd.toISOString() : null;
+    const rows = cutoffISO
+      ? allRows.filter(r => { const t = r.at || ''; return t >= cutoffISO && t < endISO; })
+      : allRows;
     const events = rows.filter(r => r.kind === 'event');
+
+    // ── so far today: local midnight → now, against the same elapsed slice of
+    // yesterday. Comparing a part-day to a whole day is the mistake this avoids.
+    const elapsedMs = now.getTime() - todayStart.getTime();
+    const ystStart = backDays(todayStart, 1);
+    const todayISO = todayStart.toISOString();
+    const ystSliceEndISO = new Date(ystStart.getTime() + elapsedMs).toISOString();
+    const countIn = (from, to, pred) => allRows.filter(r => r.kind === 'event' && (r.at || '') >= from && (r.at || '') < to && pred(r)).length;
+    const todaySoFar = {
+      views: countIn(todayISO, now.toISOString(), e => e.event === 'page_view'),
+      sessions: countIn(todayISO, now.toISOString(), e => e.event === 'page_view' && e.props && e.props.newSession),
+      runs: countIn(todayISO, now.toISOString(), e => e.event === 'tool_run'),
+      prevViews: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'page_view'),
+      prevSessions: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'page_view' && e.props && e.props.newSession),
+      prevRuns: countIn(ystStart.toISOString(), ystSliceEndISO, e => e.event === 'tool_run'),
+      hours: Math.max(1, Math.round(elapsedMs / 3600000)),
+    };
 
     // ── previous equal-length window (for Δ). Only defined for a bounded range;
     // 'all time' has no prior window, so deltas are suppressed there. ──
-    const prevCutoffISO = rangeDays ? new Date(Date.now() - 2 * rangeDays * 86400000).toISOString() : null;
+    const prevCutoffISO = rangeDays ? backDays(windowStart, rangeDays).toISOString() : null;
     const prevRows = (rangeDays && cutoffISO)
       ? allRows.filter(r => { const t = r.at || ''; return t >= prevCutoffISO && t < cutoffISO; })
       : null;
@@ -793,7 +857,7 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e5e2da;border-radius:8px;font-size:13px}
     th,td{text-align:left;padding:6px 10px;border-bottom:1px solid #f0ede6} th{background:#faf8f5;font-weight:600}
     .cards{display:flex;gap:12px;flex-wrap:wrap}</style></head><body>
-    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${rows.length ? ' · ' + escH((rows[0].at || '').slice(0, 10)) + ' → today' : ' · no data in this range'}</span></h1>
+    <h1>DeftBrain metrics <span style="font-weight:400;font-size:13px;color:#888">${events.length} events · ${escH(rangeText)}${windowStart ? ` · ${escH(fmtDay(windowStart))} → ${escH(fmtDay(new Date(windowEnd.getTime() - 1)))} (${escH(TZ)}, complete days)` : ''}${rows.length ? '' : ' · no data in this range'}</span></h1>
     <p style="font-size:11px;color:${sinkStatus.ok ? '#888' : '#b91c1c'};margin:2px 0 0">sink: <code>${escH(LOG_FILE)}</code> · ${escH(sinkStatus.detail)}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
@@ -807,7 +871,13 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
-    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace('past ', ''))} (${prevMetrics.events} events in that window)</p>` : ''}
+    ${prevMetrics ? `<p style="font-size:11px;color:#888;margin:6px 0 0">▲▼ vs the previous ${escH(rangeText.replace(/^(last|yesterday)\s?/, ''))} (${prevMetrics.events} events in that window)</p>` : ''}
+    <h2>So far today <span style="font-weight:400;font-size:12px;color:#888">(${todaySoFar.hours}h into ${escH(TZ)} — not in the range above)</span></h2>
+    <div class="cards">
+      ${card('page views today', todaySoFar.views, `vs ${todaySoFar.prevViews} by this time yesterday`, deltaHtml(todaySoFar.views, todaySoFar.prevViews))}
+      ${card('sessions today', todaySoFar.sessions, `vs ${todaySoFar.prevSessions} by this time yesterday`, deltaHtml(todaySoFar.sessions, todaySoFar.prevSessions))}
+      ${card('tool runs today', todaySoFar.runs, `vs ${todaySoFar.prevRuns} by this time yesterday`, deltaHtml(todaySoFar.runs, todaySoFar.prevRuns))}
+    </div>
     <h2>Daily trend <span style="font-weight:400;font-size:12px;color:#888">(${escH(rangeText)})</span></h2>${days.length ? lineChart(days) : '<p style="color:#888">No data yet.</p>'}
     <h2>How far down the home page people get</h2>
     <p style="font-size:11px;color:#888;margin:0 0 6px">Each section reports once per page load, the first time any part of it appears on screen. Rows are in page order, so the fall between them is where attention stops; the amber drop is shown only where the row above has enough views to mean anything. Percentages are of the ${homeViews} home page view(s) <strong>since the markers went live</strong>${homeViewsBefore > 0 ? ` — the other ${homeViewsBefore} home view(s) in this range predate the instrumentation and cannot report` : ''}.</p>
