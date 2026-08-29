@@ -2952,8 +2952,8 @@ export const apologyCalibrator = {
 
     apc_level_1: "Pas besoin d'excuses",
     apc_level_2: "Brève reconnaissance",
-    apc_level_3: "Excuse simple",
-    apc_level_4: "Excuse complète avec prise de responsabilité",
+    apc_level_3: "Excuses simples",
+    apc_level_4: "Excuses complètes avec prise de responsabilité",
     apc_level_5: "Effort de réparation majeur",
 
     apc_rel_partner: "Partenaire/Conjoint(e)",
@@ -3062,7 +3062,7 @@ export const apologyCalibrator = {
     apc_txt_this_week: "CETTE SEMAINE : {{val}}",
     apc_txt_cultural_header: "CALIBRAGE CULTUREL — {{culture}}",
     apc_txt_whats_expected: "CE QUI EST ATTENDU : {{val}}",
-    apc_txt_adapted_apology: "EXCUSE ADAPTÉE",
+    apc_txt_adapted_apology: "EXCUSES ADAPTÉES",
     apc_txt_words: "Mots : {{val}}",
     apc_txt_delivery: "Présentation : {{val}}",
     apc_txt_gestures: "Gestes : {{val}}",
@@ -3093,7 +3093,7 @@ export const apologyCalibrator = {
     apc_txt_diagnosis: "DIAGNOSTIC : {{val}}",
     apc_txt_problems_found: "PROBLÈMES TROUVÉS",
     apc_txt_evidence: "  Preuve : \"{{val}}\"",
-    apc_txt_rebuilt_apology: "EXCUSE RECONSTRUITE",
+    apc_txt_rebuilt_apology: "EXCUSES RECONSTRUITES",
 
     apc_err_icon: "⚠️",
 
@@ -3223,7 +3223,7 @@ export const apologyCalibrator = {
     apc_cul_loading: "Calibrage...",
     apc_cul_section_norms: "Normes culturelles",
     apc_cul_surprise: "Ce qui pourrait vous surprendre",
-    apc_cul_adapted: "Excuse adaptée à la culture",
+    apc_cul_adapted: "Excuses adaptées à la culture",
     apc_cul_delivery: "Présentation :",
     apc_cul_gestures: "Gestes :",
     apc_cul_timing: "Moment :",
@@ -3295,7 +3295,7 @@ export const apologyCalibrator = {
     apc_for_sit_with: "Quelque chose à méditer",
 
     apc_road_heading: "Feuille de Route de Réparation",
-    apc_road_subtitle: "Quand une seule excuse ne suffit pas — un plan sur plusieurs semaines pour reconstruire la confiance.",
+    apc_road_subtitle: "Quand de simples excuses ne suffisent pas — un plan sur plusieurs semaines pour reconstruire la confiance.",
     apc_road_ph_what_happened: "Décrivez ce qui a endommagé la relation...",
     apc_road_current_label: "État actuel des choses (facultatif)",
     apc_road_ph_current: "p. ex. ils ne me parlent plus, on est tendus mais ça fonctionne...",
@@ -3350,7 +3350,7 @@ export const apologyCalibrator = {
     apc_fix_trying_to_do: "Ce que vous essayiez de faire",
     apc_fix_backfired: "Pourquoi ça s'est retourné contre vous",
     apc_fix_section_the_fix: "La réparation",
-    apc_fix_rebuilt: "Excuse reconstruite",
+    apc_fix_rebuilt: "Excuses reconstruites",
     apc_fix_what_changed: "Ce qui a changé et pourquoi",
     apc_fix_before: "❌ Avant",
     apc_fix_after: "✅ Après",
@@ -3369,10 +3369,10 @@ export const apologyCalibrator = {
     apc_pt_premature_move_on: "⏩ Passé trop vite",
     apc_pt_sorry_you_feel: "🙄 « Désolé que tu le prennes ainsi »",
     apc_pt_too_short: "🤏 Trop bref",
-    apc_pt_weaponized_apology: "💣 Excuse transformée en arme",
+    apc_pt_weaponized_apology: "💣 Excuses transformées en arme",
 
     apc_rep_heading: "Suivi des Réparations",
-    apc_rep_subtitle: "Une excuse, c'est l'étape 1. Suivez la concrétisation.",
+    apc_rep_subtitle: "Des excuses, c'est l'étape 1. Suivez la concrétisation.",
     apc_rep_cancel: "✕ Annuler",
     apc_rep_log_btn: "➕ Consigner une réparation",
     apc_rep_who_label: "Qui",
