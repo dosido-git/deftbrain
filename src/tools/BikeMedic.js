@@ -1980,7 +1980,7 @@ const BikeMedic = ({ tool }) => {
                 <div className="flex items-center gap-2 mb-2">
                   <span>🗓️</span>
                   <span className={`text-sm font-bold ${c.amberLabel}`}>
-                    {t('bmd_maint_tasks_due', { n: maintAlerts.length, s: maintAlerts.length !== 1 ? 's' : '' })}
+                    {t(maintAlerts.length === 1 ? 'bmd_maint_tasks_due_one' : 'bmd_maint_tasks_due', { n: maintAlerts.length })}
                   </span>
                 </div>
                 <p className={`text-xs ${c.textSecondary}`}>{t('bmd_maint_intervals_note')}</p>
@@ -2090,7 +2090,7 @@ const BikeMedic = ({ tool }) => {
             <span className="text-3xl block mb-1">💰</span>
             <div className={`text-2xl font-black ${c.greenText}`}>{sym}{bikeTotalSaved}</div>
             <div className={`text-xs ${c.textMuteded} mt-1`}>
-              {t('bmd_hub_saved_by_diy', { n: bikeRepairHistory.length, s: bikeRepairHistory.length !== 1 ? 's' : '' })}
+              {t(bikeRepairHistory.length === 1 ? 'bmd_hub_saved_by_diy_one' : 'bmd_hub_saved_by_diy', { n: bikeRepairHistory.length })}
               {activeBikeId && bikeProfile && <>{t('bmd_hub_on_bike', { name: bikeProfile.name || bikeProfile.bikeType })}</>}
             </div>
           </div>
@@ -2346,7 +2346,7 @@ const BikeMedic = ({ tool }) => {
             className={`mb-5 w-full flex items-center gap-2 p-3 rounded-xl border-2 ${c.amberBanner} text-start hover:opacity-90 transition-opacity`}>
             <span>🗓️</span>
             <span className={`text-sm font-bold ${c.amberLabel}`}>
-              {t('bmd_maint_due_count', { n: maintAlerts.length, s: maintAlerts.length !== 1 ? 's' : '' })}
+              {t(maintAlerts.length === 1 ? 'bmd_maint_due_count_one' : 'bmd_maint_due_count', { n: maintAlerts.length })}
             </span>
             <span className={`ms-auto text-xs ${c.textMuteded}`}>{t('bmd_view_arrow')}</span>
           </button>
@@ -2624,7 +2624,7 @@ const BikeMedic = ({ tool }) => {
                   <div className="flex items-center gap-2 mb-1">
                     <span>{readiness.ready ? '✅' : '⚠️'}</span>
                     <span className={`text-xs font-bold ${readiness.ready ? c.greenText : c.amberLabel}`}>
-                      {readiness.ready ? t('bmd_fix_have_all_tools') : t('bmd_fix_missing_tools', { n: readiness.missing.length, s: readiness.missing.length > 1 ? 's' : '' })}
+                      {readiness.ready ? t('bmd_fix_have_all_tools') : t(readiness.missing.length === 1 ? 'bmd_fix_missing_tools_one' : 'bmd_fix_missing_tools', { n: readiness.missing.length })}
                     </span>
                   </div>
                   {readiness.missing.length > 0 && (

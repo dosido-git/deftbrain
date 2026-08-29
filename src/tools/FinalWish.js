@@ -505,7 +505,7 @@ const FinalWish = ({ tool }) => {
       const newAccounts = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: a.priority || 'important', accessNotes: a.accessNotes || '', isSocialMedia: a.isSocialMedia || false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
       setAccounts(prev => [...prev, ...newAccounts]);
       setAccountDump(''); setShowFollowUps(true);
-      addToast(t('fws_toast_accounts_added', { n: newAccounts.length, s: newAccounts.length !== 1 ? 's' : '' }), 'success');
+      addToast(t(newAccounts.length === 1 ? 'fws_toast_accounts_added_one' : 'fws_toast_accounts_added', { n: newAccounts.length }), 'success');
     }
   }, [accountDump, callAI, trustedPerson, accounts, addToast, t]);
 
@@ -530,7 +530,7 @@ const FinalWish = ({ tool }) => {
       const items = res.financials.map((f, i) => ({ id: `fin_${Date.now()}_${i}`, name: f.name || 'Unknown', type: f.type || 'bank', institution: f.institution || '', notes: f.notes || '', visibleTo: 'all' }));
       setFinancialAccounts(prev => [...prev, ...items]);
       setFinancialDump('');
-      addToast(t('fws_toast_financial_added', { n: items.length, s: items.length !== 1 ? 's' : '' }), 'success');
+      addToast(t(items.length === 1 ? 'fws_toast_financial_added_one' : 'fws_toast_financial_added', { n: items.length }), 'success');
     }
   }, [financialDump, callAI, addToast, t]);
 
@@ -593,12 +593,12 @@ const FinalWish = ({ tool }) => {
       if (mode === 'parse-accounts' && res?.accounts?.length) {
         const newItems = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: a.priority || 'important', accessNotes: a.accessNotes || '', isSocialMedia: a.isSocialMedia || false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
         setAccounts(prev => [...prev, ...newItems]);
-        addToast(t('fws_toast_accounts_from_interview', { n: newItems.length, s: newItems.length !== 1 ? 's' : '' }), 'success');
+        addToast(t(newItems.length === 1 ? 'fws_toast_accounts_from_interview_one' : 'fws_toast_accounts_from_interview', { n: newItems.length }), 'success');
       }
       if (mode === 'parse-financial' && res?.financials?.length) {
         const newItems = res.financials.map((f, i) => ({ id: `fin_${Date.now()}_${i}`, name: f.name || 'Unknown', type: f.type || 'bank', institution: f.institution || '', notes: f.notes || '', visibleTo: 'all' }));
         setFinancialAccounts(prev => [...prev, ...newItems]);
-        addToast(t('fws_toast_financial_added', { n: newItems.length, s: newItems.length !== 1 ? 's' : '' }), 'success');
+        addToast(t(newItems.length === 1 ? 'fws_toast_financial_added_one' : 'fws_toast_financial_added', { n: newItems.length }), 'success');
       }
     }
     setInterviewAnswer('');
@@ -1421,7 +1421,7 @@ async function decrypt(){
             const res = await callAI('parse-accounts', { text: emergencyDump, trustedPerson });
             if (res?.accounts) {
               const newAccounts = res.accounts.map((a, i) => ({ id: `acc_${Date.now()}_${i}`, name: a.name || 'Unknown', category: a.category || 'other', priority: 'critical', accessNotes: a.accessNotes || '', isSocialMedia: false, socialWish: 'decide', socialCustom: '', visibleTo: 'all' }));
-              setAccounts(prev => [...prev, ...newAccounts]); setEmergencyDump(''); addToast(t('fws_toast_accounts_added', { n: newAccounts.length, s: newAccounts.length !== 1 ? 's' : '' }), 'success');
+              setAccounts(prev => [...prev, ...newAccounts]); setEmergencyDump(''); addToast(t(newAccounts.length === 1 ? 'fws_toast_accounts_added_one' : 'fws_toast_accounts_added', { n: newAccounts.length }), 'success');
             }
           }} disabled={loading || !emergencyDump.trim()}
             className={`px-5 py-2.5 rounded-xl text-sm font-bold ${emergencyDump.trim() && !loading ? c.btnPrimary : `${c.btnSecondary} opacity-50 cursor-not-allowed`} disabled:opacity-40`}>
