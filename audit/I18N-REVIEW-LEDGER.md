@@ -50,13 +50,17 @@ TipOfTongue · WaitingModeLiberator · DoctorVisitTranslator · BatchFlow ·
 DreamPatternSpotter · DateNight · EmailUrgencyTriager · VirtualBodyDouble ·
 RentersDepositSaver · BrainRoulette
 
+**Batch 4 (12)** — 126 keys — AnalogyEngine · BeforeTheCrash · CultureBriefing ·
+ConflictCoach · FutureProof · DriveHome · AlternatePath · CrisisPrioritizer ·
+CaptionMagic · FocusPocus (FocusSoundArchitect and GriefGuide were already
+covered — see the note below)
+
 **Reviewed as part of their own rewrite** — BeforeHello (`f1252d6d`)
+
 
 ## In progress
 
-**Batch 4 (12)** — FocusSoundArchitect · AnalogyEngine · BeforeTheCrash ·
-CultureBriefing · GriefGuide · ConflictCoach · FutureProof · DriveHome ·
-AlternatePath · CrisisPrioritizer · CaptionMagic · FocusPocus
+_Nothing in flight._
 
 ## Remaining (27)
 
@@ -89,6 +93,35 @@ FocusSoundArchitect and GriefGuide were reviewed in batch 4 but are **not** on
 the list — extra coverage, no harm. GriefGuide was rewritten the same day.
 
 ## Carried forward, not yet fixed
+
+Found during batch 4, deliberately left for their own change:
+
+- **226 dead `cpr_*` keys** in `crash-predictor.js`. The BeforeTheCrash v2
+  rewrite moved the UI to `cpv2_*`; only 17 `cpr_*` keys are still reached
+  (the chip labels behind `CHIP_LABELS` plus two xrefs). 226 × 13 languages is
+  roughly 2,900 dead strings, and they are what produces that tool's 34 smoke
+  warnings. Deleting them is a separate, reviewable change.
+- **`FeedbackTap` is hardcoded English.** "Was this helpful? / Yes / No"
+  (`src/components/FeedbackTap.js:68`) renders in English under every tool in
+  every language. Same shape as the ActionBar Copy/Print/Share gap: shared
+  chrome, so no per-tool review can see it. Needs base-chrome keys.
+- **15 European-Portuguese keys survive outside batch 4** — decision-coach (7),
+  contract-decoder (3), gentle-push-generator (2), contrast-report (1),
+  truth-bomb (1). The catalog-wide pt sweep (`01ead7df`) predates the rewrites,
+  so anything a rewrite added after it was never swept. Batch 4's own pt blocks
+  were EP throughout and are now Brazilian.
+- **Arabic imperatives are still masculine-default in prose and errors.** The
+  reviewed batches applied the verbal-noun recast to buttons and labels but not
+  to sentences ("أضف مهمة واحدة على الأقل"), which is defensible — MSA prose has
+  to pick a gender — but it is an unstated line. Worth settling explicitly.
+- **Japanese あなた in UI labels** (`cp2_fact_answer_ph`, `cp2_schedule_title`)
+  is the same unnatural-address class the Korean 당신 ban covers, but the
+  convention table says nothing about it. Settle, then sweep.
+- **French apostrophes are mixed** in crash-predictor (4 curly) and focus-pocus
+  (7 curly). The catalog is 3,751 straight to 58 curly, so straight is the house
+  style; the fr blocks in those two files are single-quoted, so the swap needs
+  escaping rather than a blind replace.
+
 
 - "Voice" rendered as an audible voice in de/ru/hi/zh/ja/ko.
 - Hand-rolled `_one`/`_many` key pairs elsewhere in the catalog
