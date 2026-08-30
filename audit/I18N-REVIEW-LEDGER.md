@@ -96,15 +96,11 @@ the list — extra coverage, no harm. GriefGuide was rewritten the same day.
 
 Found during batch 4, deliberately left for their own change:
 
-- **226 dead `cpr_*` keys** in `crash-predictor.js`. The BeforeTheCrash v2
-  rewrite moved the UI to `cpv2_*`; only 17 `cpr_*` keys are still reached
-  (the chip labels behind `CHIP_LABELS` plus two xrefs). 226 × 13 languages is
-  roughly 2,900 dead strings, and they are what produces that tool's 34 smoke
-  warnings. Deleting them is a separate, reviewable change.
-- **`FeedbackTap` is hardcoded English.** "Was this helpful? / Yes / No"
-  (`src/components/FeedbackTap.js:68`) renders in English under every tool in
-  every language. Same shape as the ActionBar Copy/Print/Share gap: shared
-  chrome, so no per-tool review can see it. Needs base-chrome keys.
+- ~~226 dead `cpr_*` keys~~ — **fixed `ab3f1e30`.** crash-predictor.js went
+  4,077 → 1,139 lines; that tool's smoke warnings went 34 → 5.
+- ~~`FeedbackTap` is hardcoded English~~ — **fixed `e9ab9825`.** Eight `fb_*`
+  keys in base.js, all thirteen languages. The ActionBar Copy/Print/Share
+  labels are still English and still invisible to a per-tool review.
 - **15 European-Portuguese keys survive outside batch 4** — decision-coach (7),
   contract-decoder (3), gentle-push-generator (2), contrast-report (1),
   truth-bomb (1). The catalog-wide pt sweep (`01ead7df`) predates the rewrites,
