@@ -478,7 +478,7 @@ export const crisisPrioritizer = {
   pt: {
     cp2_tagline: "Descobre o que importa agora — e o que pode esperar",
     cp2_input_title: "O que precisa da tua atenção?",
-    cp2_input_sub: "Acrescenta o que está a competir pela tua atenção. Não ordenes primeiro.",
+    cp2_input_sub: "Adicione o que está competindo pela sua atenção. Não ordene primeiro.",
     cp2_paste_dump: "Colar um despejo mental",
     cp2_use_list: "Usar lista de tarefas",
     cp2_show_details: "Adicionar prazos ou consequências",
@@ -539,7 +539,7 @@ export const crisisPrioritizer = {
     cp2_split_title: "Dividir esta tarefa",
     cp2_delegate_title: "Delegar esta tarefa",
     cp2_choose_task: "Escolhe uma tarefa",
-    cp2_delegate_to_ph: "A quem estás a delegar? (opcional)",
+    cp2_delegate_to_ph: "Para quem você está delegando? (opcional)",
     cp2_split_cta: "Dividir",
     cp2_delegate_cta: "Redigir a passagem",
     cp2_working: "A trabalhar…",

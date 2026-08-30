@@ -1278,7 +1278,7 @@ export const doctorVisitTranslator = {
     dvt_exp_recent: "الأخيرة:",
   },
   pt: {
-    dvt_cmd_enter: "Prima ⌘↵ (Ctrl+Enter) para ler",
+    dvt_cmd_enter: "Pressione ⌘↵ (Ctrl+Enter) para ler",
     dvt_avg: "méd.",
     dvt_title: "Doctor Visit Translator",
     dvt_tagline: "Entenda consultas, exames, receitas e contas em linguagem simples",
@@ -1330,7 +1330,7 @@ export const doctorVisitTranslator = {
     dvt_ph_doctor: "Dr. Smith",
     dvt_concerns: "O que mais o preocupa?",
     dvt_ph_concerns: "O que mais te preocupa?",
-    dvt_medications: "Está a tomar outros medicamentos?",
+    dvt_medications: "Está tomando outros medicamentos?",
     dvt_auto_included: "💊 Incluídos automaticamente ({{count}}):",
     dvt_checked_interactions: "Incluídos com o que escrever abaixo",
     dvt_ph_meds: "Adicione medicamentos que não estão na sua lista...",

@@ -479,7 +479,7 @@ export const decoderRing = {
     dr_ex2_context: "Como disse no meu último e-mail — ele respondeu a uma conversa em que eu não tinha feito algo que ele enviou há três semanas.",
     dr_surface_prefix: "Na superfície:",
     dr_first_matters: "Primeiro, isto importa",
-    dr_fm_1: "Mensagens ambíguas geram stress porque é impossível saber se está a exagerar ou se lhe está a escapar algo importante.",
+    dr_fm_1: "Mensagens ambíguas geram estresse porque é impossível saber se você está exagerando ou se está deixando passar algo importante.",
     dr_todays_job: "Sua única tarefa de hoje",
     dr_job_1: "Ainda não responda à mensagem.",
     dr_job_2: "Separe o que foi escrito do que pode ter sido a intenção.",

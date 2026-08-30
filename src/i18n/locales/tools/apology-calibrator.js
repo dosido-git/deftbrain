@@ -2654,7 +2654,7 @@ export const apologyCalibrator = {
     apc_cal_fu_when: "Quando:",
     apc_cal_fu_change: "Mudança:",
     apc_cal_track_repair: "🔧 Acompanhar esta reparação →",
-    apc_cal_major_prompt: "Precisa de uma grande reparação? ",
+    apc_cal_major_prompt: "Precisa de um grande reparo? ",
     apc_cal_major_link: "Relationship Repair Roadmap",
     apc_cal_major_suffix: " cria um plano de recuperação passo a passo.",
     apc_cal_recent: "🕐 Calibrações recentes",

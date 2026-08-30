@@ -1327,7 +1327,7 @@ export const gentlePushGenerator = {
     gpg_ex7_comfort: "Abro quase toda a correspondência, mas tem uma gaveta de coisas que evito há meses",
     gpg_ex7_growth: "Quero resolver uma das coisas que fico adiando",
     gpg_seed_comfort: "Mantenho as conversas na superfície com gente nova e nunca digo o que realmente penso.",
-    gpg_seed_growth: "Ser um pouco mais sincero nas conversas: compartilhar uma opinião ou um sentimento que costumo guardar para mim.",
+    gpg_seed_growth: "Ter mais sinceridade nas conversas: compartilhar uma opinião ou um sentimento que costumo guardar para mim.",
     gpg_title: "Gerador de Empurrãozinho Gentil",
     gpg_tagline: "Microdesafios logo além da sua zona de conforto",
     gpg_start_over: "↩ Começar de novo",

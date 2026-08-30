@@ -1606,7 +1606,7 @@ export const roomReader = {
   },
   pt: {
     rr_example2_event_details: "Dia de Natal em casa do meu irmão. Catorze pessoas, três gerações, das 11h até à hora que for.",
-    rr_example2_people: "A minha mãe, que não fala com a minha tia desde um funeral em 2019 e não diz porquê. O meu irmão, que recebe e quer mais do que ninguém que corra bem. O novo companheiro da minha prima, que não conhece nenhum de nós. Duas crianças com menos de seis anos.",
+    rr_example2_people: "Minha mãe, que não fala com minha tia desde um funeral em 2019 e não diz por quê. Meu irmão, que vai receber todo mundo e quer mais do que ninguém que dê certo. O novo companheiro da minha prima, que não conhece nenhum de nós. Duas crianças com menos de seis anos.",
     rr_example2_concerns: "Acabo sempre por ser eu a acalmar as coisas e, por uma vez, gostava de não ser. Mas também não quero que corra mal só para provar alguma coisa.",
     rr_tagline: "Leia o ambiente. Diga a coisa certa.",
     rr_event_work_happy_hour: "Happy hour do trabalho",

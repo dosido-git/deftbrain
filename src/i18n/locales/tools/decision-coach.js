@@ -1170,7 +1170,7 @@ export const decisionCoach = {
     dc_onefact_title: "Uma coisa podia mudar a minha resposta",
     dc_onefact_ph: "A tua resposta",
     dc_onefact_cta: "Responder e decidir de novo",
-    dc_whatdecide_hint: "Diz-me o que estás a tentar decidir. Uma ou duas frases chegam.",
+    dc_whatdecide_hint: "Me diga o que você está tentando decidir. Uma ou duas frases bastam.",
     dc_tackle_label: "Como posso ajudar?",
     dc_open_group: "Decidir com outras pessoas",
     dc_open_history: "Histórico",

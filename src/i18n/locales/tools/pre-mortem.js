@@ -324,9 +324,9 @@ export const preMortem = {
     pm_copy_one_thing: "الشيء الوحيد:",
   },
   pt: {
-    pm_ex2_plan: "Fundir as duas equipas de suporte numa única fila sob um só responsável, daqui a seis semanas.",
+    pm_ex2_plan: "Fundir os dois times de suporte em uma única fila sob um só responsável, daqui a seis semanas.",
     pm_ex2_stakes: "O trabalho de onze pessoas muda de forma. Dois responsáveis passam a um. Se correr mal, os tempos de resposta caem à frente dos clientes que acabámos de assinar, e quem não ficar como responsável provavelmente sai.",
-    pm_ex2_assumptions: "Que os processos das duas equipas são suficientemente próximos para fundir. Que quem não for promovido fica. Que seis semanas chegam como aviso. Que os clientes não vão notar a transição. Que me contaram as razões verdadeiras da fusão.",
+    pm_ex2_assumptions: "Que os processos dos dois times são próximos o suficiente para fundir. Que quem não for promovido vai ficar. Que seis semanas bastam como aviso. Que os clientes não vão notar a transição. Que me contaram as razões verdadeiras da fusão.",
     pm_title: "Pre-Mortem",
     pm_tagline: "O obituário do seu plano — escrito antes de você executá-lo.",
     pm_xref_pre: "Ainda decidindo?",

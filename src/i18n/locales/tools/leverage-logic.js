@@ -929,7 +929,7 @@ export const leverageLogic = {
   },
   pt: {
     llog_ex2_situation: "Pedir à empresa que me mantenha em remoto. Anunciaram quatro dias de escritório a partir de janeiro. Mudei-me para 90 minutos de distância há dois anos, com acordo escrito do meu chefe de que a função era remote-first.",
-    llog_ex2_leverage: "O acordo escrito, e o facto de eu ser a única pessoa que conhece a integração de faturação. Contra: não lhes faltam candidatos, dois colegas já aceitaram ir, e eu não posso mesmo dar-me ao luxo de sair.",
+    llog_ex2_leverage: "O acordo escrito, e o fato de eu ser a única pessoa que conhece a integração de faturamento. Contra: não faltam candidatos para eles, dois colegas já aceitaram ir, e eu não posso mesmo me dar ao luxo de sair.",
     llog_ex2_desired: "Manter dois dias em remoto em permanência, por escrito. Aceitaria um período experimental de seis meses com data de revisão em vez de um não seco.",
     llog_tagline: "Vença qualquer negociação com a estratégia certa",
     llog_type_salary: "Salário / Aumento",

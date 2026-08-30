@@ -688,7 +688,7 @@ export const doctorVisitPrep = {
     dvp_out_pain_relief: "Alívio da dor",
     dvp_out_treatment: "Um plano de tratamento",
     dvp_out_referral: "Um encaminhamento",
-    dvp_cmd_enter: "Prima ⌘↵ (Ctrl+Enter) para preparar",
+    dvp_cmd_enter: "Pressione ⌘↵ (Ctrl+Enter) para preparar",
     dvp_title: "Doctor Visit Prep",
     dvp_tagline: "Chegue preparado — para não desperdiçar a consulta",
     dvp_start_over: "Recomeçar",
