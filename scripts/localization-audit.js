@@ -81,7 +81,7 @@ const LOCALIZED_TOOLS = [
   // hardcoded English, listed in the commit that removed this line. Put it back
   // the moment they are wrapped, or the gate stops protecting the other twelve
   // languages here at all.
-  // 'src/tools/GratitudeDebtClearer.js',
+  'src/tools/GratitudeDebtClearer.js',
   'src/tools/BragSheetBuilder.js',
   'src/tools/ComplaintEscalationWriter.js',
   'src/tools/NameStorm.js',

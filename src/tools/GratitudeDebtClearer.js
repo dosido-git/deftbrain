@@ -23,9 +23,25 @@ const EXAMPLES = [
   },
 ];
 
-const RELATIONSHIPS = ['Friend', 'Family', 'Coworker / professional', 'Neighbor / community', 'Other'];
-const TONES = ['Let DeftBrain choose', 'Warm & casual', 'Heartfelt', 'Professional', 'Brief'];
-const LENGTHS = ['Short', 'Moderate', 'Detailed'];
+const RELATIONSHIPS = [
+  { value: 'Friend', labelKey: 'gdc_rel_friend' },
+  { value: 'Family', labelKey: 'gdc_rel_family' },
+  { value: 'Coworker / professional', labelKey: 'gdc_rel_coworker' },
+  { value: 'Neighbor / community', labelKey: 'gdc_rel_neighbor' },
+  { value: 'Other', labelKey: 'gdc_rel_other' },
+];
+const TONES = [
+  { value: 'Let DeftBrain choose', labelKey: 'gdc_tone_auto' },
+  { value: 'Warm & casual', labelKey: 'gdc_tone_warm' },
+  { value: 'Heartfelt', labelKey: 'gdc_tone_heartfelt' },
+  { value: 'Professional', labelKey: 'gdc_tone_professional' },
+  { value: 'Brief', labelKey: 'gdc_tone_brief' },
+];
+const LENGTHS = [
+  { value: 'Short', labelKey: 'gdc_len_short' },
+  { value: 'Moderate', labelKey: 'gdc_len_moderate' },
+  { value: 'Detailed', labelKey: 'gdc_len_detailed' },
+];
 
 const GratitudeDebtClearer = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -300,7 +316,7 @@ const GratitudeDebtClearer = ({ tool }) => {
           <div>
             <label className={`block font-semibold mb-2 ${c.text}`}>{t('gdc_your_relationship')}</label>
             <select value={relationship} onChange={e => setRelationship(e.target.value)} className={fieldClass}>
-              {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+              {RELATIONSHIPS.map(r => <option key={r.value} value={r.value}>{t(r.labelKey)}</option>)}
             </select>
           </div>
 
@@ -309,7 +325,7 @@ const GratitudeDebtClearer = ({ tool }) => {
             onClick={() => setShowOptions(v => !v)}
             className={`text-sm font-semibold ${c.accentTxt}`}
           >
-            <Caret open={showOptions} /> Optional: make it fit better
+            <Caret open={showOptions} /> {t('gdc_optional_fit')}
           </button>
 
           {showOptions && (
@@ -317,23 +333,23 @@ const GratitudeDebtClearer = ({ tool }) => {
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${c.text}`}>{t('gdc_tone_preference')}</label>
                 <select value={tone} onChange={e => setTone(e.target.value)} className={fieldClass}>
-                  {TONES.map(v => <option key={v} value={v}>{v}</option>)}
+                  {TONES.map(v => <option key={v.value} value={v.value}>{t(v.labelKey)}</option>)}
                 </select>
               </div>
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${c.text}`}>{t('gdc_msg_length')}</label>
                 <select value={length} onChange={e => setLength(e.target.value)} className={fieldClass}>
-                  {LENGTHS.map(v => <option key={v} value={v}>{v}</option>)}
+                  {LENGTHS.map(v => <option key={v.value} value={v.value}>{t(v.labelKey)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${c.text}`}>Anything else that should shape the message?</label>
+                <label className={`block text-sm font-semibold mb-2 ${c.text}`}>{t('gdc_extra_q')}</label>
                 <textarea
                   value={extraContext}
                   onChange={e => setExtraContext(e.target.value)}
                   rows={3}
                   className={fieldClass}
-                  placeholder="e.g., Keep it low-key; we don't usually get emotional. Or: This is for a formal note after an interview."
+                  placeholder={t('gdc_ph_extra')}
                 />
               </div>
             </div>
@@ -373,7 +389,7 @@ const GratitudeDebtClearer = ({ tool }) => {
         <section ref={resultsRef} className="space-y-4 scroll-mt-4">
           <div>
             <h2 className={`text-2xl font-bold ${c.text}`}>{t('gdc_your_messages')}</h2>
-            <p className={`mt-1 ${c.textSecondary}`}>Three different ways to say the same true thing. Pick the one that sounds most like you.</p>
+            <p className={`mt-1 ${c.textSecondary}`}>{t('gdc_three_ways')}</p>
           </div>
 
           {(results.thank_you_messages || []).map((message, index) => {
@@ -389,7 +405,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
                 {message.choose_if && (
                   <div className={`rounded-lg border px-3 py-2 mb-4 text-sm ${c.accentSoft} ${c.textSecondary}`}>
-                    <strong className={c.text}>Choose this if:</strong> {message.choose_if}
+                    <strong className={c.text}>{t('gdc_choose_if')}</strong> {message.choose_if}
                   </div>
                 )}
 
@@ -420,7 +436,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                   <button type="button" disabled={adjusting} onClick={() => setStylePanelIndex(stylePanelIndex === index ? null : index)}
                     aria-expanded={stylePanelIndex === index}
                     className={`px-3 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
-                    More like me
+                    {t('gdc_more_like_me')}
                   </button>
                 </div>
 
@@ -429,7 +445,7 @@ const GratitudeDebtClearer = ({ tool }) => {
                     voice for them. */}
                 {stylePanelIndex === index && (
                   <div className={`mt-3 rounded-xl border p-4 ${c.border} ${c.cardAlt}`}>
-                    <p className={`font-semibold mb-2 ${c.text}`}>What doesn&apos;t sound like you?</p>
+                    <p className={`font-semibold mb-2 ${c.text}`}>{t('gdc_what_not_you')}</p>
                     <div className="flex flex-wrap gap-2">
                       {[
                         ['Too polished', { lessPolished: true }],
@@ -443,18 +459,18 @@ const GratitudeDebtClearer = ({ tool }) => {
                           className={`px-3 py-1.5 rounded-lg border text-sm ${c.btnSecondary} disabled:opacity-50`}>{label}</button>
                       ))}
                     </div>
-                    <label htmlFor={`gdc-style-${index}`} className="sr-only">Describe how you&apos;d say it</label>
+                    <label htmlFor={`gdc-style-${index}`} className="sr-only">{t('gdc_describe_voice')}</label>
                     <input
                       id={`gdc-style-${index}`}
                       value={styleFreeText}
                       onChange={(e) => setStyleFreeText(e.target.value)}
-                      placeholder="Or say it in your own words — e.g. I'm pretty dry and understated"
+                      placeholder={t('gdc_ph_own_words')}
                       className={`mt-3 ${fieldClass}`}
                     />
                     <button type="button" disabled={adjusting || !styleFreeText.trim()}
                       onClick={() => applyStyle(index, {}, styleFreeText)}
                       className={`mt-2 px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
-                      Rewrite with that
+                      {t('gdc_rewrite_with_that')}
                     </button>
                   </div>
                 )}
@@ -463,10 +479,10 @@ const GratitudeDebtClearer = ({ tool }) => {
                     up. One question, one field. */}
                 {clarify?.index === index && (
                   <div className={`mt-3 rounded-xl border p-4 ${c.border} ${c.accentSoft}`}>
-                    <p className={`font-semibold ${c.text}`}>One detail would help:</p>
+                    <p className={`font-semibold ${c.text}`}>{t('gdc_one_detail')}</p>
                     <p className={`mt-1 ${c.text}`}>{clarify.question}</p>
                     {clarify.reason && <p className={`mt-1 text-sm ${c.textMuted}`}>{clarify.reason}</p>}
-                    <label htmlFor={`gdc-clarify-${index}`} className="sr-only">Your answer</label>
+                    <label htmlFor={`gdc-clarify-${index}`} className="sr-only">{t('gdc_your_answer')}</label>
                     <input
                       id={`gdc-clarify-${index}`}
                       value={clarifyAnswer}
@@ -477,11 +493,11 @@ const GratitudeDebtClearer = ({ tool }) => {
                     <div className="mt-2 flex flex-wrap gap-2">
                       <button type="button" disabled={adjusting || !clarifyAnswer.trim()} onClick={answerClarify}
                         className={`px-4 py-2 rounded-lg border text-sm font-semibold ${c.btnSecondary} disabled:opacity-50`}>
-                        Use this
+                        {t('gdc_use_this')}
                       </button>
                       <button type="button" onClick={() => setClarify(null)}
                         className={`px-4 py-2 rounded-lg border text-sm ${c.btnSecondary}`}>
-                        Skip
+                        {t('gdc_skip')}
                       </button>
                     </div>
                   </div>
@@ -492,7 +508,7 @@ const GratitudeDebtClearer = ({ tool }) => {
 
           {results.personalization_prompt && (
             <details className={`rounded-xl border p-4 ${c.border} ${c.card}`}>
-              <summary className={`cursor-pointer font-semibold ${c.text}`}>Make it even more personal</summary>
+              <summary className={`cursor-pointer font-semibold ${c.text}`}>{t('gdc_make_more_personal')}</summary>
               <p className={`mt-3 ${c.textSecondary}`}>{results.personalization_prompt}</p>
             </details>
           )}
