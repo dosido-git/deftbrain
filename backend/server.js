@@ -280,7 +280,6 @@ const LEGACY_REDIRECTS = {
   // Renamed tools (existing)
   '/SayItRight':                 '/PronounceItRight',
   '/WhatIfMachine':              '/WhichLife',
-  '/PlotHole':                   '/PlotTwist',
   '/RoommateCourtroom':          '/RoommateCourt',
   '/FridgeAlchemy':              '/MiseEnPlace',
   '/FoodSwap':                   '/MiseEnPlace',

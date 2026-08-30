@@ -119,14 +119,13 @@ with nothing in flight.
 
 Found during batch 6:
 
-- **`/PlotHole` 301-redirects to `/PlotTwist`, but they are different tools.**
-  PlotHole is the narrative-logic analyst ("Something in the plot bothered you");
-  PlotTwist is a decision tool ("A hard decision you keep circling"). Both have
-  a catalog entry, a component, a backend route and a 13-language locale block,
-  but `LEGACY_REDIRECTS` in `backend/server.js:283` sends every visitor to
-  PlotHole away — so a live, fully localized tool is unreachable, and
-  WrongAnswersOnly's "🕳️ Plot Hole" link lands people on a decision tool. The
-  RENAMES row claiming the rename is what looks wrong. Not a translation fix.
+- ~~`/PlotHole` 301-redirects to `/PlotTwist`~~ — **fixed 2026-08-30.** They are
+  two separate tools, confirmed by the user: a narrative-logic analyst and a
+  decision tool, each with its own catalog entry, component, backend route and
+  13-language locale block. Only two places implemented the "rename" — the
+  `LEGACY_REDIRECTS` line and the RENAMES row — and both are gone. Verified
+  against the real server: `/PlotHole` now 200s, `/plothole` still canonicalises
+  to it, and a genuine rename still redirects.
 - **The RENAMED audit check is case-sensitive.** It does spell out the spaced
   form of each old name, but matches it literally, so `cr_copy_header` sat at
   "THE CONTRAST REPORT" — the name retired 2026-07-10 — in all thirteen
