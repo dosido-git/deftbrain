@@ -71,7 +71,7 @@ const HecklerPrep = ({ tool }) => {
   const [error, setError] = useState('');
   const [topic, setTopic] = usePersistentState('hp-topic', '');
   const [sessionHistory, setSessionHistory] = usePersistentState('hecklerprep-history', []);
-  const [results, setResults] = usePersistentState('hp-results', null);
+  const [results, setResults] = usePersistentState('hp-results-v2', null);
   const resultsRef = React.useRef(null);
   const [expandedQ, setExpandedQ] = useState(null);
 
@@ -116,7 +116,7 @@ const HecklerPrep = ({ tool }) => {
     if (r.opening_move) text += `\n${t('hp_copy_opening')} ${r.opening_move}\n`;
     if (r.questions?.length) {
       r.questions.forEach(q => {
-        text += `\n#${q.number} [${q.difficulty}] ${q.question}\n${t('hp_copy_concern')} ${q.real_concern}\n${t('hp_copy_answer')} ${q.model_answer}\n`;
+        text += `\n#${q.number} [${q.difficulty}] ${q.question}\n${t('hp_copy_concern')} ${q.real_concern}\n${t('hp_copy_answer')} ${q.model_answer}\n${q.if_you_dont_know ? `${t('hp_if_dont_know')} ${q.if_you_dont_know}\n` : ''}`;
       });
     }
     if (r.the_curveball) text += `\n${t('hp_copy_curveball')} ${r.the_curveball.question}\n${t('hp_copy_handle')} ${r.the_curveball.how_to_handle}`;
@@ -304,6 +304,12 @@ const HecklerPrep = ({ tool }) => {
                           <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hp_model_answer')}</p>
                           <p className={`text-xs ${c.text} leading-relaxed`}>{q.model_answer}</p>
                         </div>
+                        {q.if_you_dont_know && (
+                          <div className={`${c.cardAlt} rounded-lg p-4`}>
+                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hp_if_dont_know')}</p>
+                            <p className={`text-xs ${c.text} leading-relaxed`}>{q.if_you_dont_know}</p>
+                          </div>
+                        )}
                         {q.dont_say && (
                           <div className={`${c.danger} border rounded-lg p-3`}>
                             <p className="text-[10px] font-bold mb-0.5">{t('hp_dont_say')}</p>

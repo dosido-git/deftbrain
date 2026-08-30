@@ -2,9 +2,9 @@
   "_meta": {
     "tool": "HecklerPrep",
     "generated": "2026-07-13",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
-    "baseline_commit": "hecklerprep-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden heckler-prep) and diff for QUALITY not exact match: HTTP 200, situation_read + questions (non-empty) present, no truncation. The high-de-truncation-guard case (stakes=high = 10 questions, German) GUARDS the max_tokens-by-stakes fix: 10 questions x 6 fields truncated at the old high=3000 in German; now high=5000 (+ moderate 2500, low 1500). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) maxTokensByStakes = {low:1500, moderate:2500, high:5000}; (3) NO annotation suffixes (situation_read/question/model_answer had self-contradictory '2 sentences … — one sentence'). Guard keys on !parsed.questions.length (top-level array)."
+    "model": "claude-sonnet-4-6 (MODELS.SMART), parallel split — two calls, analytical + human",
+    "baseline_commit": "hecklerprep-v2",
+    "how_to_regression_diff": "Re-run (npm run check:golden heckler-prep) and diff for QUALITY not exact match: HTTP 200, situation_read + questions (non-empty) present, every question carrying if_you_dont_know, no truncation. The high-de-truncation-guard case (stakes=high = 10 questions, German) GUARDS the token budget. NOTE: the pre-2026-08 note here named {low:1500, moderate:2500, high:5000} for a SINGLE call; commit 6069dfaa split the route into two parallel calls, so the budget is now PER HALF — {low:1400, moderate:2000, high:3200}, plus 600 on the human half — which is more in total, not less. Do not 'restore' the old numbers onto the split. Measured 2026-08-30 with the v2 schema (which added if_you_dont_know): high-stakes human half runs ~7.9k chars en / ~7.1k de / ~5.3k ar against 3800 tokens, all complete. DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) the per-half budgets above; (3) NO annotation suffixes; (4) the NO-double-quote rule in the system suffix. Guard keys on !parsed.questions.length (top-level array). opening_move is nullable by design — the frontend guards it."
   },
   "cases": [
     {
