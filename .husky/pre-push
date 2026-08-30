@@ -68,3 +68,15 @@ node scripts/check-renames.js
 # carefully and shipped it missing a standard adopted weeks earlier, because
 # nothing could say so. Mechanical sweeps pass with OUTPUT_STANDARD_SKIP=1.
 node scripts/output-standard-audit.js
+
+# Gate 10 — per-language conventions (audit/I18N-REVIEW-LEDGER.md, executable).
+# Gate 5 proves a key exists in thirteen languages and i18n-quality-audit proves
+# it is not stale; neither can see that a translation says 당신, or 您, or "o teu",
+# all of which the review campaign banned. Reading for that by hand does not
+# scale and demonstrably missed things — 您 survived in two tools through a batch
+# marked reviewed, and the 2026-08-30 sweep found 700 violations in 80 of 125
+# tools. Baseline in src/data/i18n-conventions.json, so the existing debt does
+# not block work and only a NEW violation fails; the baseline must travel with
+# the content it describes. Accept a deliberate one (sample dialogue is not us
+# addressing the reader) with --write-state.
+node scripts/i18n-convention-audit.js --strict

@@ -90,9 +90,30 @@ before:
 | TheWholeStory | `the-alibi.js` | `ta_` | 68 |
 | WhichLife | `contrast-report.js` | `cr_` | 52 |
 | BrainStateDeejay | `brainstate-deejay.js` | `bsd_` | 146 |
+| SocialBatteryAdvisor | `social-energy-audit.js` | `sea_` | — |
+| SubscriptionTamer | `sub-sweep.js` | `ss_` | — |
+| TheCrux | `recall.js` | `rec_` | — |
 
 FocusSoundArchitect and GriefGuide were reviewed in batch 4 but are **not** on
 the list — extra coverage, no harm. GriefGuide was rewritten the same day.
+
+## The conventions are now a gate
+
+`scripts/i18n-convention-audit.js` is the table above, executable, and Gate 10
+of the pre-push hook. It exists because reading for these by hand does not
+scale and demonstrably missed things — 您 survived in LeaseTrapDetector and
+LayoverMaximizer through a batch marked reviewed, and the first full run found
+**700 violations in 80 of 125 tools**.
+
+Baseline in `src/data/i18n-conventions.json`: only a NEW violation fails, so
+the existing debt blocks nobody. A deliberate one — sample dialogue is a
+character addressing someone, not us addressing the reader — is accepted with
+`--write-state`. The baseline must travel with the content it describes.
+
+Of the 700, **342 sit in tools queued for rewrite** and should not be swept:
+the rewrite replaces that copy, and the gate checks the new translations as
+they land. The **273 outside the queue** are the real sweep, and they collide
+with nothing in flight.
 
 ## Carried forward, not yet fixed
 
@@ -106,12 +127,12 @@ Found during batch 6:
   PlotHole away — so a live, fully localized tool is unreachable, and
   WrongAnswersOnly's "🕳️ Plot Hole" link lands people on a decision tool. The
   RENAMES row claiming the rename is what looks wrong. Not a translation fix.
-- **The RENAMED audit check misses spaced display names.** It builds its regex
-  from the CamelCase id column, so `cr_copy_header` sat at "THE CONTRAST
-  REPORT" — the name retired 2026-07-10 — in all thirteen languages, in the
-  string the user copies to their clipboard, and the check never saw it. The
-  smoke test caught it instead, by accident. Batch 6 fixed the string; the
-  check still has the gap.
+- **The RENAMED audit check is case-sensitive.** It does spell out the spaced
+  form of each old name, but matches it literally, so `cr_copy_header` sat at
+  "THE CONTRAST REPORT" — the name retired 2026-07-10 — in all thirteen
+  languages, in the string the user copies to their clipboard, and the check
+  never saw it. The smoke test caught it instead, by accident. Batch 6 fixed
+  the string; the check still needs the `i` flag.
 - **`wao_plothole` is a false positive** in the 38 remaining retired-name
   findings, for the reason above: PlotHole is a real tool.
 
@@ -131,8 +152,9 @@ Found during batch 4, deliberately left for their own change:
 - ~~226 dead `cpr_*` keys~~ — **fixed `ab3f1e30`.** crash-predictor.js went
   4,077 → 1,139 lines; that tool's smoke warnings went 34 → 5.
 - ~~`FeedbackTap` is hardcoded English~~ — **fixed `e9ab9825`.** Eight `fb_*`
-  keys in base.js, all thirteen languages. The ActionBar Copy/Print/Share
-  labels are still English and still invisible to a per-tool review.
+  keys in base.js, all thirteen languages. (The ActionBar Copy/Print/Share labels, long listed
+  here beside it, turned out to be fine — `ActionButtons.js` already uses
+  `t('copy')`/`t('print')`/`t('share')` and no tool passes a literal label.)
 - **15 European-Portuguese keys survive outside batch 4** — decision-coach (7),
   contract-decoder (3), gentle-push-generator (2), contrast-report (1),
   truth-bomb (1). The catalog-wide pt sweep (`01ead7df`) predates the rewrites,

@@ -52,7 +52,8 @@
     "build:locales": "node scripts/build-locales.js",
     "predev:frontend": "node scripts/build-locales.js",
     "gates": "npm run check:syntax && npm run audit && node scripts/scan-guard-keys.js && node scripts/localization-audit.js && node scripts/primer-audit.js && node scripts/generate-sitemap.js --check && node scripts/check-renames.js",
-    "audit:i18n": "node scripts/i18n-quality-audit.js"
+    "audit:i18n": "node scripts/i18n-quality-audit.js",
+    "audit:i18n-conventions": "node scripts/i18n-convention-audit.js"
   },
   "eslintConfig": {
     "extends": [
