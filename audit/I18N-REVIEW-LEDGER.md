@@ -50,7 +50,7 @@ TipOfTongue · WaitingModeLiberator · DoctorVisitTranslator · BatchFlow ·
 DreamPatternSpotter · DateNight · EmailUrgencyTriager · VirtualBodyDouble ·
 RentersDepositSaver · BrainRoulette
 
-**Batch 4 (12)** — 126 keys — AnalogyEngine · BeforeTheCrash · CultureBriefing ·
+**Batch 4 (12)** — commit `cc0ea83c`, 126 keys — AnalogyEngine · BeforeTheCrash · CultureBriefing ·
 ConflictCoach · FutureProof · DriveHome · AlternatePath · CrisisPrioritizer ·
 CaptionMagic · FocusPocus (FocusSoundArchitect and GriefGuide were already
 covered — see the note below)
