@@ -60,7 +60,15 @@ export const base = {
     "best_match": "Best match",
     "submit_shortcut_hint": "⌘↵ to submit",
     "open_full_toolfinder": "Open full Tool Finder →",
-    "try_again": "Try again"
+    "try_again": "Try again",
+    "fb_helpful": "Was this helpful?",
+    "fb_yes": "👍 Yes",
+    "fb_no": "👎 No",
+    "fb_glad": "Glad it helped. Anything that would make it better?",
+    "fb_sorry": "Sorry it missed. What were you hoping for?",
+    "fb_ph": "One line is plenty…",
+    "fb_send": "Send",
+    "fb_thanks": "🙏 Thanks — this directly shapes what we build next."
   },
   "es": {
     "cmd_enter": "Pulsa ⌘↵ (Ctrl+Intro) para enviar",
@@ -120,7 +128,15 @@ export const base = {
     "best_match": "Mejor coincidencia",
     "submit_shortcut_hint": "⌘↵ para enviar",
     "open_full_toolfinder": "Abrir Tool Finder completo →",
-    "try_again": "Intentar de nuevo"
+    "try_again": "Intentar de nuevo",
+    "fb_helpful": "¿Te sirvió?",
+    "fb_yes": "👍 Sí",
+    "fb_no": "👎 No",
+    "fb_glad": "Me alegra. ¿Algo que lo mejoraría?",
+    "fb_sorry": "Lamento que no. ¿Qué esperabas encontrar?",
+    "fb_ph": "Con una línea basta…",
+    "fb_send": "Enviar",
+    "fb_thanks": "🙏 Gracias — esto define directamente lo que construimos después."
   },
   "zh": {
     "cmd_enter": "按 ⌘↵（Ctrl+Enter）提交",
@@ -180,7 +196,15 @@ export const base = {
     "best_match": "最佳匹配",
     "submit_shortcut_hint": "⌘↵ 提交",
     "open_full_toolfinder": "打开完整 Tool Finder →",
-    "try_again": "重试"
+    "try_again": "重试",
+    "fb_helpful": "这个有帮助吗？",
+    "fb_yes": "👍 有",
+    "fb_no": "👎 没有",
+    "fb_glad": "很高兴有用。还有什么可以做得更好？",
+    "fb_sorry": "抱歉没帮上。你原本想找到什么？",
+    "fb_ph": "一行就够了……",
+    "fb_send": "发送",
+    "fb_thanks": "🙏 谢谢 — 这直接决定我们接下来做什么。"
   },
   "hi": {
     "cmd_enter": "भेजने के लिए ⌘↵ (Ctrl+Enter) दबाएँ",
@@ -240,7 +264,15 @@ export const base = {
     "best_match": "सर्वश्रेष्ठ मिलान",
     "submit_shortcut_hint": "⌘↵ सबमिट करने के लिए",
     "open_full_toolfinder": "पूर्ण Tool Finder खोलें →",
-    "try_again": "फिर से प्रयास करें"
+    "try_again": "फिर से प्रयास करें",
+    "fb_helpful": "क्या यह काम आया?",
+    "fb_yes": "👍 हाँ",
+    "fb_no": "👎 नहीं",
+    "fb_glad": "अच्छा लगा। इसे और बेहतर क्या बनाता?",
+    "fb_sorry": "माफ़ करें, यह चूक गया। आप क्या उम्मीद कर रहे थे?",
+    "fb_ph": "एक पंक्ति काफ़ी है…",
+    "fb_send": "भेजें",
+    "fb_thanks": "🙏 धन्यवाद — इससे तय होता है कि हम आगे क्या बनाएँ।"
   },
   "ar": {
     "cmd_enter": "اضغط ⌘↵ (Ctrl+Enter) للإرسال",
@@ -300,7 +332,15 @@ export const base = {
     "best_match": "الأفضل تطابقاً",
     "submit_shortcut_hint": "⌘↵ للإرسال",
     "open_full_toolfinder": "افتح Tool Finder الكامل →",
-    "try_again": "حاول مرة أخرى"
+    "try_again": "حاول مرة أخرى",
+    "fb_helpful": "هل كان هذا مفيداً؟",
+    "fb_yes": "👍 نعم",
+    "fb_no": "👎 لا",
+    "fb_glad": "سعداء بذلك. ما الذي قد يجعله أفضل؟",
+    "fb_sorry": "نأسف لأنه لم يفِ بالغرض. ما الذي كان متوقعاً؟",
+    "fb_ph": "سطر واحد يكفي…",
+    "fb_send": "إرسال",
+    "fb_thanks": "🙏 شكراً — هذا يحدد مباشرة ما سنبنيه لاحقاً."
   },
   "pt": {
     "cmd_enter": "Pressione ⌘↵ (Ctrl+Enter) para enviar",
@@ -360,7 +400,15 @@ export const base = {
     "best_match": "Melhor correspondência",
     "submit_shortcut_hint": "⌘↵ para enviar",
     "open_full_toolfinder": "Abrir Tool Finder completo →",
-    "try_again": "Tentar novamente"
+    "try_again": "Tentar novamente",
+    "fb_helpful": "Isso ajudou?",
+    "fb_yes": "👍 Sim",
+    "fb_no": "👎 Não",
+    "fb_glad": "Que bom. Algo que deixaria melhor?",
+    "fb_sorry": "Desculpe não ter ajudado. O que você esperava?",
+    "fb_ph": "Uma linha já basta…",
+    "fb_send": "Enviar",
+    "fb_thanks": "🙏 Obrigado — isso define diretamente o que vamos construir em seguida."
   },
   "fr": {
     "cmd_enter": "Appuyez sur ⌘↵ (Ctrl+Entrée) pour envoyer",
@@ -420,7 +468,15 @@ export const base = {
     "best_match": "Meilleure correspondance",
     "submit_shortcut_hint": "⌘↵ pour envoyer",
     "open_full_toolfinder": "Ouvrir le Tool Finder complet →",
-    "try_again": "Réessayer"
+    "try_again": "Réessayer",
+    "fb_helpful": "Est-ce que ça vous a été utile ?",
+    "fb_yes": "👍 Oui",
+    "fb_no": "👎 Non",
+    "fb_glad": "Tant mieux. Qu'est-ce qui l'améliorerait ?",
+    "fb_sorry": "Dommage. Qu'attendiez-vous ?",
+    "fb_ph": "Une ligne suffit…",
+    "fb_send": "Envoyer",
+    "fb_thanks": "🙏 Merci — cela oriente directement la suite."
   },
   "de": {
     "cmd_enter": "Mit ⌘↵ (Strg+Enter) absenden",
@@ -480,7 +536,15 @@ export const base = {
     "best_match": "Beste Übereinstimmung",
     "submit_shortcut_hint": "⌘↵ zum Absenden",
     "open_full_toolfinder": "Vollständigen Tool Finder öffnen →",
-    "try_again": "Erneut versuchen"
+    "try_again": "Erneut versuchen",
+    "fb_helpful": "Hat dir das geholfen?",
+    "fb_yes": "👍 Ja",
+    "fb_no": "👎 Nein",
+    "fb_glad": "Freut uns. Was würde es besser machen?",
+    "fb_sorry": "Schade, dass es danebenlag. Was hattest du erwartet?",
+    "fb_ph": "Eine Zeile reicht…",
+    "fb_send": "Senden",
+    "fb_thanks": "🙏 Danke — das bestimmt direkt, was wir als Nächstes bauen."
   },
   "ja": {
     "cmd_enter": "⌘↵（Ctrl+Enter）で送信",
@@ -540,7 +604,15 @@ export const base = {
     "best_match": "最適",
     "submit_shortcut_hint": "⌘↵ で送信",
     "open_full_toolfinder": "フル版Tool Finderを開く →",
-    "try_again": "もう一度試す"
+    "try_again": "もう一度試す",
+    "fb_helpful": "役に立ちましたか？",
+    "fb_yes": "👍 はい",
+    "fb_no": "👎 いいえ",
+    "fb_glad": "よかったです。もっとよくするには？",
+    "fb_sorry": "お役に立てず残念です。何をお探しでしたか？",
+    "fb_ph": "一行で十分です…",
+    "fb_send": "送信",
+    "fb_thanks": "🙏 ありがとうございます — 次に作るものを直接決める材料になります。"
   },
   "ko": {
     "cmd_enter": "⌘↵ (Ctrl+Enter)를 누르면 전송됩니다",
@@ -600,7 +672,15 @@ export const base = {
     "best_match": "최적 일치",
     "submit_shortcut_hint": "⌘↵ 제출",
     "open_full_toolfinder": "전체 Tool Finder 열기 →",
-    "try_again": "다시 시도"
+    "try_again": "다시 시도",
+    "fb_helpful": "도움이 되었나요?",
+    "fb_yes": "👍 예",
+    "fb_no": "👎 아니요",
+    "fb_glad": "다행이에요. 더 나아지려면 무엇이 필요할까요?",
+    "fb_sorry": "기대에 못 미쳐 죄송해요. 무엇을 찾고 있었나요?",
+    "fb_ph": "한 줄이면 충분해요…",
+    "fb_send": "보내기",
+    "fb_thanks": "🙏 고맙습니다 — 다음에 만들 것을 정하는 데 그대로 반영돼요."
   },
   "ru": {
     "cmd_enter": "Нажмите ⌘↵ (Ctrl+Enter), чтобы отправить",
@@ -660,7 +740,15 @@ export const base = {
     "best_match": "Лучшее совпадение",
     "submit_shortcut_hint": "⌘↵ для отправки",
     "open_full_toolfinder": "Открыть полный Tool Finder →",
-    "try_again": "Попробовать снова"
+    "try_again": "Попробовать снова",
+    "fb_helpful": "Это помогло?",
+    "fb_yes": "👍 Да",
+    "fb_no": "👎 Нет",
+    "fb_glad": "Рады слышать. Что сделало бы лучше?",
+    "fb_sorry": "Жаль, что не подошло. Что вы искали?",
+    "fb_ph": "Хватит одной строки…",
+    "fb_send": "Отправить",
+    "fb_thanks": "🙏 Спасибо — это напрямую определяет, что мы сделаем дальше."
   },
   "th": {
     "cmd_enter": "กด ⌘↵ (Ctrl+Enter) เพื่อส่ง",
@@ -720,7 +808,15 @@ export const base = {
     "best_match": "ตรงที่สุด",
     "submit_shortcut_hint": "⌘↵ เพื่อส่ง",
     "open_full_toolfinder": "เปิด Tool Finder แบบเต็ม →",
-    "try_again": "ลองใหม่"
+    "try_again": "ลองใหม่",
+    "fb_helpful": "สิ่งนี้ช่วยได้ไหม?",
+    "fb_yes": "👍 ใช่",
+    "fb_no": "👎 ไม่",
+    "fb_glad": "ดีใจที่ช่วยได้ อะไรจะทำให้ดีขึ้นอีก?",
+    "fb_sorry": "ขออภัยที่ยังไม่ตรงจุด กำลังมองหาอะไรอยู่?",
+    "fb_ph": "บรรทัดเดียวก็พอ…",
+    "fb_send": "ส่ง",
+    "fb_thanks": "🙏 ขอบคุณ — สิ่งนี้กำหนดโดยตรงว่าเราจะสร้างอะไรต่อไป"
   },
   "vi": {
     "cmd_enter": "Nhấn ⌘↵ (Ctrl+Enter) để gửi",
@@ -780,6 +876,14 @@ export const base = {
     "best_match": "Phù hợp nhất",
     "submit_shortcut_hint": "⌘↵ để gửi",
     "open_full_toolfinder": "Mở Tool Finder đầy đủ →",
-    "try_again": "Thử lại"
+    "try_again": "Thử lại",
+    "fb_helpful": "Điều này có hữu ích không?",
+    "fb_yes": "👍 Có",
+    "fb_no": "👎 Không",
+    "fb_glad": "Rất vui vì đã giúp được. Điều gì sẽ làm nó tốt hơn?",
+    "fb_sorry": "Xin lỗi vì chưa trúng. Bạn đang mong tìm điều gì?",
+    "fb_ph": "Một dòng là đủ…",
+    "fb_send": "Gửi",
+    "fb_thanks": "🙏 Cảm ơn — điều này trực tiếp định hình những gì chúng tôi làm tiếp theo."
   }
 };

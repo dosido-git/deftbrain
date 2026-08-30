@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { useTranslation } from '../i18n/useTranslation';
 
 /**
  * FeedbackTap — a tiny "Was this helpful?" prompt for the bottom of a tool's
@@ -14,6 +15,7 @@ import { useTheme } from '../hooks/useTheme';
  */
 export default function FeedbackTap({ tool = 'unknown', className = '' }) {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [choice, setChoice] = useState(null);   // null | 'yes' | 'no'
   const [comment, setComment] = useState('');
   const [done, setDone] = useState(false);
@@ -56,7 +58,7 @@ export default function FeedbackTap({ tool = 'unknown', className = '' }) {
   if (done) {
     return (
       <div className={`mt-6 pt-4 border-t text-center text-xs ${c.wrap} ${className}`}>
-        <span>🙏 Thanks — this directly shapes what we build next.</span>
+        <span>{t('fb_thanks')}</span>
       </div>
     );
   }
@@ -65,15 +67,15 @@ export default function FeedbackTap({ tool = 'unknown', className = '' }) {
     <div className={`mt-6 pt-4 border-t ${c.wrap} ${className}`}>
       {!choice ? (
         <div className="flex items-center justify-center gap-3 text-xs">
-          <span className="font-medium">Was this helpful?</span>
-          <button onClick={() => pick(true)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold min-h-[32px] ${c.btn}`}>👍 Yes</button>
-          <button onClick={() => pick(false)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold min-h-[32px] ${c.btn}`}>👎 No</button>
+          <span className="font-medium">{t('fb_helpful')}</span>
+          <button onClick={() => pick(true)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold min-h-[32px] ${c.btn}`}>{t('fb_yes')}</button>
+          <button onClick={() => pick(false)} className={`px-3 py-1.5 rounded-lg border text-xs font-semibold min-h-[32px] ${c.btn}`}>{t('fb_no')}</button>
         </div>
       ) : (
         <div className="max-w-md mx-auto">
           <p className="text-xs text-center mb-2 font-medium">
-            {choice === 'yes' ? 'Glad it helped. Anything that would make it better?' : 'Sorry it missed. What were you hoping for?'}
-            <span className={`font-normal ${c.muted}`}> (optional)</span>
+            {choice === 'yes' ? t('fb_glad') : t('fb_sorry')}
+            <span className={`font-normal ${c.muted}`}> ({t('optional')})</span>
           </p>
           <div className="flex gap-2">
             <input
@@ -81,11 +83,11 @@ export default function FeedbackTap({ tool = 'unknown', className = '' }) {
               value={comment}
               onChange={e => setComment(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') submitNote(); }}
-              placeholder="One line is plenty…"
+              placeholder={t('fb_ph')}
               autoFocus
               className={`flex-1 px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 ${c.input}`}
             />
-            <button onClick={submitNote} className={`${c.send} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>Send</button>
+            <button onClick={submitNote} className={`${c.send} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}>{t('fb_send')}</button>
           </div>
         </div>
       )}
