@@ -55,7 +55,7 @@ ConflictCoach · FutureProof · DriveHome · AlternatePath · CrisisPrioritizer 
 CaptionMagic · FocusPocus (FocusSoundArchitect and GriefGuide were already
 covered — see the note below)
 
-**Batch 5 (12)** — 56 keys — AwkwardSilenceFiller · BeliefStressTest ·
+**Batch 5 (12)** — commit `26df15a7`, 56 keys — AwkwardSilenceFiller · BeliefStressTest ·
 ChaosPilot · ContextCollapse · DecoderRing · GhostWriter · HistoryToday ·
 MarkupDetective · MentalHealthNavigator · MiseEnPlace · NotSoFast ·
 ProcedureProbe. HistoryToday came through clean — no corrections at all, the
