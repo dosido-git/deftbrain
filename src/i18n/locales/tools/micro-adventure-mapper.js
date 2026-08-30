@@ -820,7 +820,7 @@ export const microAdventureMapper = {
     mam_xref_party_pre: "代わりに集まりを開く？",
     mam_xref_party: "Party Architect",
     mam_xref_party_suffix: "がすべてを計画します。",
-    mam_your_adventure: "あなたの冒険",
+    mam_your_adventure: "冒険",
     mam_min: "分",
     mam_swapping: "入れ替え中...",
     mam_swap_stop: "この立ち寄り先を変える",

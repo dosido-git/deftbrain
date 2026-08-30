@@ -1164,7 +1164,7 @@ export const safeWalk = {
     sw_ph_phone: "電話（任意）",
     sw_add_contact: "連絡先を追加",
     sw_primary: "★ メイン",
-    sw_contacts_empty: "あなたが歩いていることを知っておくべき人を追加しましょう。フェイク着信やチェックインの通知に使われます。",
+    sw_contacts_empty: "歩いていることを知っておくべき人を追加しましょう。フェイク着信やチェックインの通知に使われます。",
     sw_safety_overview: "安全の概要",
     sw_watch_for: "注意すべきこと",
     sw_checklist: "出発前チェックリスト",

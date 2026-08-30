@@ -1143,7 +1143,7 @@ export const doctorVisitPrep = {
     dvp_xref_pre_suffix: "がリスクや代替案について、より踏み込んだ質問をします。",
     dvp_save_history: "💾 履歴に保存",
     dvp_sec_red_flags: "これを最初に伝える",
-    dvp_red_flags_intro: "あなたの説明をもとに、これらは受診の冒頭で伝える価値があります：",
+    dvp_red_flags_intro: "説明をもとに、これらは受診の冒頭で伝える価値があります：",
     dvp_sec_opener: "最初のひとこと",
     dvp_say_first_minute: "最初の1分でこう言いましょう",
     dvp_clinical_ready: "診察向けの説明（読み上げるか言い換えて）",

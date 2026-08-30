@@ -452,7 +452,7 @@ export const ideaAutopsy = {
   },
   ja: {
     ia_title: "Idea Autopsy",
-    ia_tagline: "時間やお金を投じる前に、あなたのビジネスアイデアをストレステストしましょう。",
+    ia_tagline: "時間やお金を投じる前に、ビジネスアイデアをストレステストしましょう。",
     ia_stage_label: "このアイデアはどの段階ですか？",
     ia_stage_idea: "まだアイデアだけ",
     ia_stage_exploring: "初期の検討中",
@@ -460,7 +460,7 @@ export const ideaAutopsy = {
     ia_stage_launched: "ローンチ済み / 運用中",
     ia_desc_label: "アイデアを説明してください",
     ia_desc_ph: "それは何ですか？誰のためのもの？どう機能する？どうやって稼ぐ？何が違いますか？詳しく書くほど、この解剖は役立ちます。",
-    ia_founder_label: "あなたについて",
+    ia_founder_label: "自分について",
     ia_founder_hint: "（任意ですが有用）",
     ia_founder_ph: "関連する経験、スキル、人脈、リソース。創業者としての適性と実行リスクの評価に役立ちます。",
     ia_focus_label: "重点領域",

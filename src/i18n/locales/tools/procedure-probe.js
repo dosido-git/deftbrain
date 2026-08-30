@@ -811,7 +811,7 @@ export const procedureProbe = {
     pp_cost_title: "だいたいの費用",
     pp_cost_typical: "保険適用前の相場",
     pp_cost_insurance: "保険はふつうどうなるか",
-    pp_cost_oop: "あなたの場合",
+    pp_cost_oop: "場合",
     pp_expect_title: "想定される流れ",
     pp_expect_duration: "⏱️ 所要時間",
     pp_expect_recovery: "🔄 回復",

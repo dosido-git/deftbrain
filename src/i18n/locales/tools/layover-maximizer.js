@@ -2874,7 +2874,7 @@ export const layoverMaximizer = {
     lmx_btn_analyze: "何をする時間がある？",
     lmx_end_gate: "ゲートへ向かい始める",
     lmx_why_this: "この提案の理由",
-    lmx_recommended_for_you: "あなたへのおすすめ",
+    lmx_recommended_for_you: "おすすめ",
     lmx_useful_while_here: "滞在中に役立つこと",
     lmx_end_plan: "おすすめのプラン",
     lmx_end_next: "次にすること",
@@ -2923,12 +2923,12 @@ export const layoverMaximizer = {
     lmx_err_enter_delay: "何分遅れているか入力してください。",
     lmx_err_replan_failed: "乗り継ぎを計画し直せませんでした。もう一度お試しください。",
     lmx_tm_before_unknowns: "下記の不明分を差し引く前",
-    lmx_best_plan: "私があなたなら、こうします",
+    lmx_best_plan: "私だったら、こうします",
     lmx_other_options: "ほかの良い選択肢",
     lmx_leave_for_gate: "ゲートへ向かい始める時刻：",
     lmx_confirm_access: "入室条件は頻繁に変わります。向かう前にラウンジに確認を。",
     lmx_youre_set: "これで準備完了です。",
-    lmx_prov_told: "あなたの入力",
+    lmx_prov_told: "入力",
     lmx_prov_estimated: "控えめな見積もり",
     lmx_tm_need_landing: "着陸時刻を入力すれば、戻るべき時刻を正確にお伝えします。",
     lmx_need_title: "まだ知りたいこと",
@@ -2989,7 +2989,7 @@ export const layoverMaximizer = {
 
     // ── LOUNGE FINDER ──
     lmx_lounge_title: "🛋️ ラウンジ検索",
-    lmx_lounge_subtitle: "あなたの空港のすべてのラウンジ。利用できるラウンジと、その価値があるかどうか。",
+    lmx_lounge_subtitle: "空港のすべてのラウンジ。利用できるラウンジと、その価値があるかどうか。",
     lmx_lounge_field_terminal: "ターミナル",
     lmx_lounge_field_airline: "航空会社",
     lmx_lounge_field_cards: "クレジットカード（カンマ区切り）",
@@ -3085,7 +3085,7 @@ export const layoverMaximizer = {
     lmx_delay_lost: "{{n}}分失いましたが計画はまだ有効です",
     lmx_delay_impact_scale: "遅延影響スケール",
     lmx_delay_at_threshold: "{{n}}分の遅延で：街歩きの計画は断念してください。",
-    lmx_delay_can_absorb: "あなたの乗り継ぎは最大2時間の遅延まで吸収できます。",
+    lmx_delay_can_absorb: "乗り継ぎは最大2時間の遅延まで吸収できます。",
 
     // ── COMPARE ──
     lmx_cmp_title: "⚖️ 乗り継ぎ比較",

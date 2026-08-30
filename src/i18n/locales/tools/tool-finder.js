@@ -299,7 +299,7 @@ export const toolFinder = {
     tf_input_ph: "例：大家が敷金を返してくれようとせず、納得がいかないのですが……",
     tf_id_start_with: "私なら「{{title}}」から始めます",
     tf_not_what_you_meant: "ちょっと違う？ どこが違うか教えてください",
-    tf_whats_different: "あなたの状況はどこが違いますか？",
+    tf_whats_different: "状況はどこが違いますか？",
     tf_refine_ph: "どこを取り違えたか、何を見落としたか教えてください…",
     tf_find_better: "もっと合うものを探す",
     tf_tagline: "いま困っていることを教えてください。合う道具を探します。",

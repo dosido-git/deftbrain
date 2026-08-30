@@ -1639,7 +1639,7 @@ export const wardrobeChaosHelper = {
     wch_buywise: "BuyWise",
     wch_adjust: "調整",
     wch_start_over: "やり直す",
-    wch_your_outfits: "あなたのコーデ",
+    wch_your_outfits: "コーデ",
     wch_n_items: "{{count}} 着",
     wch_n_outfits: "{{count}} コーデ",
     wch_outfit_n: "コーデ #{{n}}",

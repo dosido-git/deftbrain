@@ -123,9 +123,10 @@ Found during batch 4, deliberately left for their own change:
 - ~~Arabic imperatives in prose~~ — **settled 2026-08-30: not a defect.** The
   line the reviewed batches were already drawing by instinct is now written into
   the table above. 870 imperatives across 113 tools stay as they are.
-- ~~Japanese あなた~~ — **settled 2026-08-30: banned**, and swept catalog-wide
-  rather than batch by batch (556 occurrences in 107 of 125 tools; handling it
-  per batch would have left Japanese inconsistent for ten more batches).
+- ~~Japanese あなた~~ — **settled and swept 2026-08-30.** 556 occurrences in
+  107 of 125 tools, now 4: the quarrel dialogue in ConflictCoach and
+  DecoderRing and the lecture transcript in Recap, where あなた is a character
+  speaking rather than us addressing the reader.
 - **French apostrophes are mixed** in crash-predictor (4 curly) and focus-pocus
   (7 curly). The catalog is 3,751 straight to 58 curly, so straight is the house
   style; the fr blocks in those two files are single-quoted, so the swap needs

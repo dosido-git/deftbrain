@@ -394,7 +394,7 @@ export const cultureBriefing = {
     cb_purpose_remote: "リモートワーク",
     cb_duration: "期間",
     cb_duration_ph: "例：1週間、3か月",
-    cb_home_country: "あなたの母国",
+    cb_home_country: "母国",
     cb_home_country_ph: "例：アメリカ、ドイツ、インド",
     cb_layover: "Layover Maximizer",
     cb_money_diplomat: "Money Diplomat",

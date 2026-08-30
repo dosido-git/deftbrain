@@ -486,7 +486,7 @@ export const gravityWell = {
     bh_type_connector: "紹介役",
     bh_why_label: "なぜこの人なのですか？",
     bh_why_ph: "話したいこと、学びたいこと — なぜその人なのか…",
-    bh_bring_label: "あなたが差し出せるものは何ですか？",
+    bh_bring_label: "差し出せるものは何ですか？",
     bh_bring_ph: "関連する経験、仕事、視点、役に立てそうなこと…",
     bh_thinking: "じっくり考えています…",
     bh_build_plan: "プランを作ります",

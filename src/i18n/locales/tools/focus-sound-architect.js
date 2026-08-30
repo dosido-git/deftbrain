@@ -3196,7 +3196,7 @@ export const focusSoundArchitect = {
     fsa_avoid: "避けたい音",
     fsa_energy: "エネルギー：",
     fsa_duration_hint: "長めのセッションでは、アーキテクトはミックスをシンプルに保ち、時間とともに穏やかな変化を提案できます。",
-    fsa_built_for_you: "あなた用に作りますか？",
+    fsa_built_for_you: "自分用に作りますか？",
     fsa_closest_fit: "いちばん近いものを選んでください。",
     fsa_very_calm: "とても穏やか",
     fsa_energized: "元気に",
@@ -3205,7 +3205,7 @@ export const focusSoundArchitect = {
     fsa_design_btn: "サウンドスケープを設計する",
     // ── Header ──
     fsa_title: "Focus Sound Architect",
-    fsa_tagline: "あなたの状況に合わせてつくる音響 — しかも実際に再生できます",
+    fsa_tagline: "状況に合わせてつくる音響 — しかも実際に再生できます",
     fsa_start_over: "↺ 最初からやり直す",
 
     // ── Layer type labels ──
@@ -3393,7 +3393,7 @@ export const focusSoundArchitect = {
     // ── AI Scene generator ──
     fsa_design_custom_ai_scene: "🤖 カスタムAIシーンを設計",
     fsa_ai_scene_designer: "🤖 AIシーンデザイナー",
-    fsa_ai_scene_designer_hint: "下のタスク・環境・好みをもとに、あなた専用の移ろうサウンドスケープを設計します",
+    fsa_ai_scene_designer_hint: "下のタスク・環境・好みをもとに、専用の移ろうサウンドスケープを設計します",
     fsa_session_duration: "セッションの長さ",
     fsa_duration_30: "30分",
     fsa_duration_45: "45分",
@@ -3419,7 +3419,7 @@ export const focusSoundArchitect = {
 
     // ── FocusPocus correlation ──
     fsa_sound_focus_score: "🎯 音 × 集中スコア",
-    fsa_correlation_intro: "あなたのサウンドスケープと集中パフォーマンスの相関（{{count}}件の一致したセッションより）",
+    fsa_correlation_intro: "サウンドスケープと集中パフォーマンスの相関（{{count}}件の一致したセッションより）",
     fsa_avg_focus_score: "平均集中スコア",
     fsa_best_score: "最高：スコア {{score}}",
     fsa_best_performing_sounds: "成績の良かった音",
@@ -3453,7 +3453,7 @@ export const focusSoundArchitect = {
     fsa_design_my_soundscape: "私のサウンドスケープを設計",
 
     // ── Player / transport ──
-    fsa_your_soundscape: "あなたのサウンドスケープ",
+    fsa_your_soundscape: "サウンドスケープ",
     fsa_playing_remaining: "再生中 · 残り {{time}}",
     fsa_tap_play: "▶ 再生をタップしてサウンドスケープを開始",
     fsa_master: "マスター",
@@ -3463,7 +3463,7 @@ export const focusSoundArchitect = {
     fsa_share: "🔗 共有",
     fsa_unmute_all: "🔊 すべてミュート解除",
     fsa_shareable_link: "🔗 共有リンク",
-    fsa_share_link_note: "このリンクを知っている人は誰でもあなたのサウンドスケープを読み込めます",
+    fsa_share_link_note: "このリンクを知っている人は誰でもサウンドスケープを読み込めます",
     fsa_adaptive_listening_note: "🎙️ 周囲の音を聞き取り中 — 話し声を検知すると音量が自動調整されます",
 
     // ── Scene progress ──

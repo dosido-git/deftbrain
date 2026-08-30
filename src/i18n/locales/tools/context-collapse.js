@@ -778,7 +778,7 @@ export const contextCollapse = {
     ctc_err_failed: "メッセージを分析できませんでした。",
     ctc_safe_to_send: "誤解されにくい",
     ctc_review_first: "まず確認を",
-    ctc_your_message: "あなたのメッセージ",
+    ctc_your_message: "メッセージ",
     ctc_tone_detected: "全体の印象",
     ctc_likely_hear: "相手が受け取りそうなこと",
     ctc_risk_safe: "誤解されにくい",

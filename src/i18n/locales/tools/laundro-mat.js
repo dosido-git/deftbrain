@@ -2535,7 +2535,7 @@ export const laundroMat = {
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
     lmt_xref_advisor_prefix: "洗濯は片づいたけど、ぐったり疲れている？ ",
-    lmt_xref_advisor_suffix: " があなたのエネルギーに合わせて計画を立てるのを助けます。",
+    lmt_xref_advisor_suffix: " がエネルギーに合わせて計画を立てるのを助けます。",
     lmt_xref_post_prefix: "エネルギー切れ？ ",
     lmt_xref_post_suffix: " がそれに合わせて計画を立てるのを助けます。",
     lmt_xref_rescue_prefix: "もう救えない一着？ ",

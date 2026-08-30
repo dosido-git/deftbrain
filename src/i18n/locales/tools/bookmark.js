@@ -866,7 +866,7 @@ export const bookmark = {
     bk_must_watch: "必見の試合",
     bk_watch_blind: "🔒 予備知識なしで観る",
     bk_conversation_ready: "🗣️ 会話に使える話題",
-    bk_your_questions: "あなたの質問",
+    bk_your_questions: "質問",
     bk_question_prefix: "Q：{{question}}",
     bk_worth_continuing: "🤔 続ける価値ある？",
     bk_getting_back_in: "💡 復帰のコツ",

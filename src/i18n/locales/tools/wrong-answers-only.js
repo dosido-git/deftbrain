@@ -514,7 +514,7 @@ export const wrongAnswersOnly = {
   },
   ja: {
     wao_try_one: "1つ試す",
-    wao_q_label: "あなたの質問",
+    wao_q_label: "質問",
     wao_ph: "何でも聞いてください — 見事に間違えてみせます……",
     wao_plottwist: "Plot Twist",
     wao_making: "でっち上げ中……",
@@ -536,7 +536,7 @@ export const wrongAnswersOnly = {
     wao_how_wrong: "どれくらい間違える？",
     wao_previously_wrong: "これまでの間違い",
     wao_error: "間違った答えすら失敗しました",
-    wao_you_asked: "あなたの質問：",
+    wao_you_asked: "質問：",
     wao_wrongness: "間違い度",
     wao_expert_answer: "専門家の回答",
     wao_evidence: "裏付けの「証拠」",

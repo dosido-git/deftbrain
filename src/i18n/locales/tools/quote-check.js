@@ -834,7 +834,7 @@ export const quoteCheck = {
     qc_example2_breakdown: "内訳あり：フロントのディスクとパッド、リアのディスクとパッド、タイヤ二本（装着・バランス込み）、リアショックアブソーバー一本、冷却ホース、工賃四時間、再検査手数料。",
     qc_example2_age: "9年",
     qc_title: "Quote Check",
-    qc_your_situation: "あなたが教えてくれたこと",
+    qc_your_situation: "教えてくれたこと",
     qc_tagline: "修理の見積もりを貼り付けて — ぼったくられていないか確認",
 
     qc_type_label: "どんな修理ですか?",

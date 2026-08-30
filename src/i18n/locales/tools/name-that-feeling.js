@@ -377,7 +377,7 @@ export const nameThatFeeling = {
     ntf_xref_pre: "考えがぐるぐるしていますか？",
     ntf_spiralstopper: "Spiral Stopper",
     ntf_xref_post: "がまず落ち着く手助けになります。",
-    ntf_the_word: "あなたが探している言葉",
+    ntf_the_word: "探している言葉",
     ntf_close_matches: "近い言葉",
     ntf_missing: "足りないもの：",
     ntf_other_langs: "他の言語にあるこの気持ちを表す言葉",

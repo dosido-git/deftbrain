@@ -12446,10 +12446,10 @@ export const bikeMedic = {
     bmd_ai_disclaimer: "⚠️ AI生成の診断 — 安全に関わる修理は、走行前に必ず資格のあるメカニックに確認してください。",
 
     // ── Quick Check section ──
-    bmd_quick_run_checklist: "あなたの状況に合わせたチェックリストを実行します。",
+    bmd_quick_run_checklist: "状況に合わせたチェックリストを実行します。",
     bmd_quick_items_count: "{{n}}項目",
     bmd_other_situation: "その他の状況",
-    bmd_ai_generated_scenario: "あなたのシナリオ向けにAI生成",
+    bmd_ai_generated_scenario: "シナリオ向けにAI生成",
     bmd_quick_pre_ride: "走行前チェック（2分）",
     bmd_quick_after_crash: "転倒後",
     bmd_quick_after_rain: "雨天走行後",
@@ -12499,7 +12499,7 @@ export const bikeMedic = {
 
     // ── Custom situation ──
     bmd_custom_header: "✏️ 自分の状況",
-    bmd_custom_describe: "ライドや状況を説明すれば、あなた向けのチェックリストを生成します。 ",
+    bmd_custom_describe: "ライドや状況を説明すれば、自分向けのチェックリストを生成します。 ",
     bmd_custom_shortcut: "（⌘/Ctrl+Enterで送信）",
     bmd_custom_ph: "例：「今季初のグラベルレース — 60マイル、路面混在、雨予報」または「自転車を冬の間ずっと小屋に置いていた。明日が春の初ライド」",
     bmd_generating: "生成中...",
@@ -12512,7 +12512,7 @@ export const bikeMedic = {
     bmd_season_summer: "夏",
     bmd_season_fall: "秋",
     bmd_season_winter: "冬",
-    bmd_seasonal_intro: "あなたの自転車、季節、走行条件に基づくAI搭載チェックリスト。",
+    bmd_seasonal_intro: "自転車、季節、走行条件に基づくAI搭載チェックリスト。",
     bmd_seasonal_add_bike: "パーソナライズされたアドバイスのため、まずガレージに自転車を追加してください。",
     bmd_season_label: "季節",
     bmd_season_now: "· 現在",
@@ -12572,7 +12572,7 @@ export const bikeMedic = {
     bmd_maint_add_bike: "自転車ごとにメンテナンスを管理するには、ガレージタブで自転車を追加してください。",
     bmd_maint_tasks_due: "{{n}}件のタスクが期限到来",
     bmd_maint_tasks_due_one: "{{n}}件のタスクが期限到来",
-    bmd_maint_intervals_note: "下のスケジュールを参照。間隔はあなたの自転車プロフィールと記録された走行距離に基づきます。",
+    bmd_maint_intervals_note: "下のスケジュールを参照。間隔は自転車プロフィールと記録された走行距離に基づきます。",
     bmd_maint_schedule_heading: "🗓️ メンテナンススケジュール",
     bmd_maint_never_done: "未実施",
     bmd_maint_days_ago: "{{n}}日前",

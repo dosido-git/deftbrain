@@ -388,7 +388,7 @@ export const scamRadar = {
     scam_error: "Etwas ist schiefgelaufen. Bitte versuch es erneut.",
   },
   ja: {
-    scam_your_situation: "あなたが教えてくれたこと",
+    scam_your_situation: "教えてくれたこと",
     scam_title: "Scam Radar",
     scam_tagline: "怪しいメッセージを貼り付けるだけ — 詐欺かどうか数秒でわかります。",
     scam_disclaimer: "これは自動診断であり、金融・法律の助言ではありません。行動する前に必ずご自身で確認してください。",

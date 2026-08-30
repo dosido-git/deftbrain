@@ -1355,7 +1355,7 @@ export const plantRescue = {
     pr_mode_care: "🌱 ケアガイド",
     pr_mode_identify: "🔍 識別",
     pr_desc_rescue: "弱っている植物の写真をアップロード。診断、レスキュープラン、回復スケジュールが得られます。",
-    pr_desc_care: "あなた専用のケアスケジュール、水やりガイド、季節カレンダーが得られます。",
+    pr_desc_care: "専用のケアスケジュール、水やりガイド、季節カレンダーが得られます。",
     pr_desc_identify: "写真をアップロードして植物を識別し、完全なケアプロフィールを取得しましょう。",
     pr_plant_name: "🏷️ 植物の名前",
     pr_plant_name_ph: "例：キッチンのシダ",

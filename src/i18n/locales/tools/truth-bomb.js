@@ -570,7 +570,7 @@ export const truthBomb = {
     tb_silence_okay: "沈黙していい場合：",
     tb_silence_legit: "✓ ここでの沈黙は正当です",
     tb_silence_costs: "⚠️ 沈黙には実際の代償があります",
-    tb_cost_accepting: "あなたが受け入れている代償：",
+    tb_cost_accepting: "受け入れている代償：",
     tb_ready_to_say: "言う準備はできましたか？",
     tb_magicmouth: "MagicMouth——会話全体のスクリプトを作成",
     tb_related: "関連ツール",
