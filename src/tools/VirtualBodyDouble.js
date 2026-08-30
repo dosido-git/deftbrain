@@ -656,7 +656,7 @@ const VirtualBodyDouble = ({ tool }) => {
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 {sessionLog.length > 0 && (<span className={`text-sm font-medium ${c.text}`}>
-                    <span>📊</span> {t('vbd_sessions_count', { count: sessionLog.length, plural: sessionLog.length !== 1 ? 's' : '' })} ·{' '} <span className={`text-xs ${c.textMuted}`}>
+                    <span>📊</span> {t(sessionLog.length === 1 ? 'vbd_sessions_count_one' : 'vbd_sessions_count', { count: sessionLog.length })} ·{' '} <span className={`text-xs ${c.textMuted}`}>
                       {t('vbd_hours_total', { hours: Math.round(sessionLog.reduce((sum, s) => sum + (s.minutesWorked || 0), 0) / 60 * 10) / 10 })}
                     </span>
                   </span>
