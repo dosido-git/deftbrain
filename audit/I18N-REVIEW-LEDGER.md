@@ -61,7 +61,7 @@ MarkupDetective · MentalHealthNavigator · MiseEnPlace · NotSoFast ·
 ProcedureProbe. HistoryToday came through clean — no corrections at all, the
 first tool in the campaign to do so.
 
-**Batch 6 (15)** — 109 keys — RoastMe · MissingLink · TheWholeStory ·
+**Batch 6 (15)** — commit `eb5089ca`, 109 keys — RoastMe · MissingLink · TheWholeStory ·
 ToolFinder · WhichLife · WrongAnswersOnly · BikeMedic · Bookmark ·
 BrainDumpBuddy · BrainStateDeejay · ColdOpenCraft · ComebackCooker ·
 CrowdWisdom · FanTheory · Giftology
