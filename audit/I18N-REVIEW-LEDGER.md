@@ -115,7 +115,38 @@ the rewrite replaces that copy, and the gate checks the new translations as
 they land. The **273 outside the queue** are the real sweep, and they collide
 with nothing in flight.
 
+## Two tools carry two key prefixes
+
+A v2 rewrite that introduces a new prefix and keeps live keys under the old one
+leaves the tool split across both, and every per-prefix tool — the smoke test
+especially — then has to be run twice. Only two tools do this:
+
+| Tool | Prefixes |
+| --- | --- |
+| BeforeTheCrash | `cpv2_` (68) + `cpr_` (17) |
+| GriefGuide | `gg_` (43) + `gg2_` (14) |
+
+`node scripts/localization-smoke.js gg2` looks like it covers GriefGuide and
+covers fourteen of its fifty-seven keys. Run both. The prefixes stay as they
+are — renaming an i18n prefix is against the naming rule, which moves route
+files and endpoints on a rename but never the catalog keys.
+
 ## Carried forward, not yet fixed
+
+Found while auditing GriefGuide against the locale requirements, 2026-08-30:
+
+- **Nothing gates dead keys.** Gate 5 proves a key exists in thirteen languages
+  and never asks whether any component reads it, which is how 226 orphaned
+  `cpr_*` keys survived a v2 rewrite and how thirteen `gg_*` keys survived
+  GriefGuide's. Both are now deleted, but only because someone looked. A first
+  pass over the catalog suggests a lot more, and the number is not yet
+  trustworthy: keys built dynamically — `tPlural('dn_about_hours')`,
+  ``t(`eut2_${role}`)`` — read as dead to a literal search and are not. A real
+  detector has to resolve those two forms before its output means anything.
+- **Gate 10 grandfathers what already exists**, by design, so "the conventions
+  are gated" and "the catalog obeys the conventions" are different statements.
+  GriefGuide's six 당신 findings sat inside the accepted baseline, three of them
+  on strings a Korean user was reading.
 
 Found during batch 6:
 
