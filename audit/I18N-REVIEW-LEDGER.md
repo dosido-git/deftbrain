@@ -26,11 +26,11 @@ Reviewers are told the settled conventions rather than left to guess:
 | French | `vous` |
 | Portuguese | **Brazilian**, `você` — never European enclisis |
 | Spanish | `tú` |
-| Japanese | です/ます throughout |
+| Japanese | です/ます throughout; **あなた is banned** — drop the pronoun, the topic is understood |
 | Korean | 해요체, and **당신 is banned** |
 | Chinese | 你, never 您 |
 | Russian | вы |
-| Arabic | MSA; forced gender fixed by recasting to the verbal noun |
+| Arabic | MSA. Buttons and labels take the verbal noun (إضافة, not أضف); **sentences keep the masculine imperative** — MSA has no genderless one, and the recast turns an instruction into a fragment |
 | Hindi | आप-level with **-एँ** (not -इए, not तुम/-ओ) |
 | Thai | polite, without ครับ/ค่ะ |
 | Vietnamese | bạn |
@@ -120,13 +120,12 @@ Found during batch 4, deliberately left for their own change:
   truth-bomb (1). The catalog-wide pt sweep (`01ead7df`) predates the rewrites,
   so anything a rewrite added after it was never swept. Batch 4's own pt blocks
   were EP throughout and are now Brazilian.
-- **Arabic imperatives are still masculine-default in prose and errors.** The
-  reviewed batches applied the verbal-noun recast to buttons and labels but not
-  to sentences ("أضف مهمة واحدة على الأقل"), which is defensible — MSA prose has
-  to pick a gender — but it is an unstated line. Worth settling explicitly.
-- **Japanese あなた in UI labels** (`cp2_fact_answer_ph`, `cp2_schedule_title`)
-  is the same unnatural-address class the Korean 당신 ban covers, but the
-  convention table says nothing about it. Settle, then sweep.
+- ~~Arabic imperatives in prose~~ — **settled 2026-08-30: not a defect.** The
+  line the reviewed batches were already drawing by instinct is now written into
+  the table above. 870 imperatives across 113 tools stay as they are.
+- ~~Japanese あなた~~ — **settled 2026-08-30: banned**, and swept catalog-wide
+  rather than batch by batch (556 occurrences in 107 of 125 tools; handling it
+  per batch would have left Japanese inconsistent for ten more batches).
 - **French apostrophes are mixed** in crash-predictor (4 curly) and focus-pocus
   (7 curly). The catalog is 3,751 straight to 58 curly, so straight is the house
   style; the fr blocks in those two files are single-quoted, so the swap needs
