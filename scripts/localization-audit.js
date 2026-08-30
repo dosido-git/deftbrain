@@ -244,6 +244,7 @@ function scanFile(file, catalog) {
 
   const findings = [];
   const usedKeys = [];          // { key, line }
+  const pluralKeys = [];        // { key, line } — tPlural(), checked per CLDR category
   let dynamicKeys = 0;
 
   walk(ast.program, (n) => {
@@ -304,6 +305,19 @@ function scanFile(file, catalog) {
         if (a0.type === 'StringLiteral') usedKeys.push({ key: a0.value, line });
         else dynamicKeys++;
       }
+      // tPlural('key', count) resolves key_<CLDR category> at runtime, so the
+      // key-existence check above cannot see what it actually needs. A missing
+      // category is invisible until a Russian visitor hits a count of 5 and
+      // gets English.
+      const isTP =
+        (callee.type === 'Identifier' && callee.name === 'tPlural') ||
+        ((callee.type === 'MemberExpression' || callee.type === 'OptionalMemberExpression') &&
+          callee.property && callee.property.name === 'tPlural');
+      if (isTP && n.arguments.length) {
+        const a0 = n.arguments[0];
+        if (a0.type === 'StringLiteral') pluralKeys.push({ key: a0.value, line });
+        else dynamicKeys++;
+      }
     }
   });
 
@@ -318,7 +332,46 @@ function scanFile(file, catalog) {
     }
   }
 
-  return { file, findings, dynamicKeys, usedCount: usedKeys.length };
+  // ── plural completeness ──
+  // Not every category Intl declares is reachable: Spanish, Portuguese and
+  // French list `many`, but it only fires at 10^6 and in compact notation,
+  // which no count in this catalog reaches. Demanding it would mean thirteen
+  // strings nobody will ever see. So the requirement is empirical — the
+  // categories a real count can actually produce, sampled over the integers a
+  // counter plausibly shows plus the halves that a duration does.
+  for (const { key, line } of pluralKeys) {
+    for (const l of langs) {
+      const need = reachableCategories(l);
+      const missing = [...need].filter(cat => !(catalog.RESOURCES[l] && `${key}_${cat}` in catalog.RESOURCES[l]));
+      if (missing.length) {
+        findings.push({
+          type: 'catalog',
+          line,
+          detail: `tPlural('${key}') missing ${l} form(s): ${missing.map(c => `${key}_${c}`).join(', ')}`,
+        });
+      }
+    }
+  }
+
+  return { file, findings, dynamicKeys, usedCount: usedKeys.length + pluralKeys.length };
+}
+
+const PLURAL_SAMPLE = [
+  ...Array.from({ length: 201 }, (_, i) => i),   // 0–200: what a counter shows
+  0.5, 1.5, 2.5, 3.5,                            // durations: "About 2½ hours"
+];
+const catCache = new Map();
+function reachableCategories(lang) {
+  if (catCache.has(lang)) return catCache.get(lang);
+  let set;
+  try {
+    const pr = new Intl.PluralRules(lang);
+    set = new Set(PLURAL_SAMPLE.map(n => pr.select(n)));
+  } catch {
+    set = new Set(['one', 'other']);
+  }
+  catCache.set(lang, set);
+  return set;
 }
 
 function resolveTargets(root, args) {

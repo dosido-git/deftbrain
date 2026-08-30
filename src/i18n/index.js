@@ -105,6 +105,42 @@ const i18n = {
     );
   },
 
+  // Count-aware lookup. t() alone cannot do this: a single string per key
+  // forces one grammatical form on every count, which is merely slightly off
+  // in English ("1 sessions") and outright ungrammatical in Russian, where
+  // 2 and 5 take different noun forms, or Arabic, which has six.
+  //
+  // Resolves <key>_<CLDR category> for the ACTIVE language's own category
+  // set — ru needs one/few/many/other, ar all six, zh/ja/ko/th/vi only
+  // other — then falls back within that language to _other, then to the bare
+  // key. If the language has none of them, the English fallback re-selects
+  // using ENGLISH's categories, because ru's `_few` has no English counterpart.
+  //
+  // Callers pass the raw number; `vars` still carries whatever the string
+  // interpolates, which is not always named `count` (dn_about_hours uses {{n}}
+  // and can be fractional — Intl handles that, and it is why ru keeps _other).
+  tPlural(key, count, vars) {
+    const n = Number(count);
+    const pick = (lang) => {
+      let cat = 'other';
+      try {
+        cat = new Intl.PluralRules(lang).select(Number.isFinite(n) ? n : 0);
+      } catch {
+        cat = n === 1 ? 'one' : 'other';
+      }
+      for (const k of [`${key}_${cat}`, `${key}_other`, key]) {
+        const v = RESOURCES[lang]?.[k];
+        if (v !== undefined && v !== '') return v;
+      }
+      return null;
+    };
+    const str = pick(i18n.language) ?? pick('en') ?? key;
+    if (!vars) return str;
+    return str.replace(/\{\{(\w+)\}\}/g, (_, k) =>
+      vars[k] !== undefined ? vars[k] : `{{${k}}}`
+    );
+  },
+
   // The English value for a key, whatever the active language is.
   //
   // For CODE that compares two strings rather than showing one. BikeMedic
@@ -165,3 +201,4 @@ ensureLanguage(i18n.language);
 
 export default i18n;
 export const t = (key, vars) => i18n.t(key, vars);
+export const tPlural = (key, count, vars) => i18n.tPlural(key, count, vars);

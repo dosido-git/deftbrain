@@ -100,7 +100,7 @@ const START_TIMES = ['5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:3
 const DateNight = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, tPlural } = useTranslation();
 
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
@@ -289,7 +289,10 @@ const DateNight = ({ tool }) => {
     const h = Math.floor(mins / 60);
     if (h < 1) return '';
     const frac = { 0: '', 15: '¼', 30: '½', 45: '¾' }[mins % 60] || '';
-    return t('dn_about_hours', { n: `${h}${frac}` });
+    // The displayed value is a vulgar fraction ("2½"); the plural category has
+    // to come from the real number, because 2½ hours is not the 2-hour form in
+    // Russian and is not the 2-hour form in Arabic either.
+    return tPlural('dn_about_hours', mins / 60, { n: `${h}${frac}` });
   })();
   const isAnni = dateType === 'anniversary';
   const isFuture = !!plannedDate && plannedDate > new Date().toISOString().slice(0, 10);
@@ -1024,7 +1027,7 @@ const DateNight = ({ tool }) => {
                   onChange={e => setPlannedDate(e.target.value)}
                   className={`px-3 py-1.5 border rounded-lg text-xs ${c.input}`}
                 />
-                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : t('dn_days_away', { count: daysUntil })}</span>}
+                {isFuture && <span className={`text-xs font-semibold ${c.roseText}`}>{daysUntil === 1 ? t('dn_tomorrow') : tPlural('dn_days_away', daysUntil, { count: daysUntil })}</span>}
                 <button onClick={() => setShowTiming(!showTiming)} className={`text-xs font-bold ${c.textSecondary} uppercase`}>
                   🕐 {t('dn_timing_details')} <Caret open={showTiming} />
                 </button>
@@ -1077,7 +1080,7 @@ const DateNight = ({ tool }) => {
             {isAnni && (
               <div className="mt-3 flex items-center gap-2">
                 <input type="number" min={1} max={75} value={yearsTogether} onChange={e => setYearsTogether(Math.max(1, parseInt(e.target.value) || 1))} className={`w-20 px-3 py-2 rounded-lg border text-sm text-center ${c.input}`} />
-                <span className={`text-xs ${c.textMuteded}`}>{yearsTogether > 1 ? t('dn_years') : t('dn_year')}</span>
+                <span className={`text-xs ${c.textMuteded}`}>{tPlural('dn_years', yearsTogether)}</span>
               </div>
             )}
           </div>
@@ -1229,7 +1232,7 @@ const DateNight = ({ tool }) => {
         {journal.length > 0 && <button onClick={() => setShowJournal(!showJournal)} className={`text-xs font-bold ${c.journalText}`}>📔 {t('dn_history', { count: journal.length })}</button>}
         {journal.length >= 3 && <button onClick={handleRutDetect} disabled={rutLoading} className={`text-xs font-bold ${c.rutText} disabled:opacity-40`}>{rutLoading ? <><span className="animate-spin inline-block">{tool?.icon ?? '💘'}</span></> : <>🔍 {t('dn_rut_check')}</>}</button>}
         <button onClick={() => { setShowJar(!showJar); if (!dateJar.length && location.trim()) handleDateJar(); }} className={`text-xs font-bold ${c.jarBtnText}`}>🫙 {t('dn_date_jar')}</button>
-        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {t('dn_prefs_count', { count: prefs.liked.length })}</span>}
+        {prefs.liked?.length > 0 && <span className={`text-xs ${c.textMuteded}`}>🧠 {tPlural('dn_prefs_count', prefs.liked.length, { count: prefs.liked.length })}</span>}
       </div>
 
       {/* Rut result */}

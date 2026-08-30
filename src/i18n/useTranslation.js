@@ -23,6 +23,10 @@ export const useTranslation = () => {
   useSyncExternalStore(i18n.subscribe, i18n.snapshot, i18n.snapshot);
   return {
     t: (key, vars) => i18n.t(key, vars),
+    // Count-aware sibling of t(). Pass the raw number:
+    //   tPlural('dn_days_away', daysUntil, { count: daysUntil })
+    // See the note on i18n.tPlural for why a bare t() cannot do this.
+    tPlural: (key, count, vars) => i18n.tPlural(key, count, vars),
     i18n,
   };
 };
