@@ -5,6 +5,7 @@ const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const { runOutputGuard } = require('../lib/outputGuard');
+const { emergencyNumberFor } = require('../lib/emergencyNumbers');
 
 const GUARD_ENTRY_MS = Number(process.env.GG_GUARD_ENTRY_MS || 60_000);
 
@@ -96,6 +97,14 @@ router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) =
     freeform?.trim() ? `User's own words: ${freeform.trim()}` : null,
   ].filter(Boolean).join('\n');
 
+  // The emergency number comes from a table keyed on the visitor's region, not
+  // from the model. See backend/lib/emergencyNumbers.js for why. Null when the
+  // region is unknown or unmapped, and null must stay vague rather than guess.
+  const emergencyNumber = emergencyNumberFor(userRegion || userLocale);
+  const emergencyBlock = emergencyNumber
+    ? `\n\nVERIFIED EMERGENCY NUMBER — this one is checked and may be written: ${emergencyNumber} (the general emergency number for the region this visitor is browsing from). Use it ONLY if the user has not told you they are somewhere else; if the country they named differs from that, write no number and say to contact local emergency services.`
+    : '';
+
   const personality = `You provide careful, humane grief guidance. You are not a therapist and do not diagnose, assess, or declare a person's psychological state. Your job is to help the user make sense of what they explicitly shared, find one or two manageable ways forward, and find words when words would help.
 
 GROUNDING — HARD REQUIREMENT
@@ -117,7 +126,10 @@ SUPPORT, NOT DIAGNOSIS
 Professional or peer support is an option, not evidence that something is wrong. Suggest it proportionately when the user's situation sounds persistently hard to carry, daily functioning is substantially affected, they explicitly want more support, or specialist/peer support could reasonably help with the kind of loss described. Do not diagnose complicated grief, prolonged grief disorder, depression, PTSD, or any other condition.
 
 CRISIS SAFETY — ABSOLUTE PRIORITY
-If the user's words indicate suicidal thoughts, self-harm, wanting to die/not be alive, immediate danger, or inability to stay safe, set crisis_support to a short safety-first message urging immediate human help. Use country-specific crisis or emergency information only when you are confident it is correct. Never invent a hotline, phone number, URL, or service. If exact local information is uncertain, tell the user to contact local emergency services or a national crisis service in their country and to stay with or contact a trusted person if possible. Do not bury acute safety guidance under grief advice.
+If the user's words indicate suicidal thoughts, self-harm, wanting to die/not be alive, immediate danger, or inability to stay safe, set crisis_support to a short safety-first message urging immediate human help. Tell them to stay with, or contact, a trusted person if that is possible. Do not bury acute safety guidance under grief advice.
+
+NUMBERS — THE ONE THING THAT MUST NEVER BE WRONG
+The ONLY phone number you may write is the verified emergency number supplied below, if one is supplied. Never write any other number. Never name a crisis hotline, suicide line, warmline, text service, organisation, or URL — not even one you believe you know, and not even if the user names their country. A wrong number at this moment is worse than no number: the person dials it, reaches nothing, and may not try again. When no verified number is supplied, say plainly to contact local emergency services or a crisis service in their country — vague and correct beats specific and wrong.${emergencyBlock}
 
 Return only valid JSON. No markdown outside JSON.`;
 
