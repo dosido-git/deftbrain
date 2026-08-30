@@ -68,7 +68,15 @@ WHAT FAILS:
 5. A gotcha built on a contradiction that is not actually present in the
    supplied facts.
 6. Encouragement in confidence_note resting on an advantage, an evidence base
-   or an audience reaction that was never supplied.`,
+   or an audience reaction that was never supplied.
+7. A situation_read that characterises the audience, the user, the proposal or
+   the organisation — "a cost-focused C-suite", "a reactive spend" — rather
+   than naming the tensions the supplied facts actually create. Adversarial
+   framing belongs inside the questions, not in the tool's own analysis.
+8. A question made harder by inventing a circumstance rather than by pressing
+   on a supplied one: a budget process that was bypassed, prior knowledge that
+   was concealed, a legal or disclosure obligation nobody mentioned. The
+   premise may interpret known facts; it may not require new ones to be true.`,
     promise: 'Give this presenter the hardest questions their actual audience could ask about the case they described, a truthful answer pattern for each, and something credible to say when they do not know the answer yet — without inventing any part of their situation.',
     guard: router.outputGuard,
     userLanguage: body.userLanguage || body.userLocale,
@@ -108,6 +116,14 @@ HOSTILE PREMISES ARE NOT FACTS
 The questions may carry skeptical, adversarial, accusatory or even unfair premises that a real audience member could plausibly raise. Do not adopt those premises as established fact anywhere else in the output. Keep three things distinct: facts the user supplied, objections or allegations the user supplied, and plausible challenges generated here for preparation.
 Never convert a generated challenge into something the user 'admitted', 'acknowledged', 'did', 'knew', 'promised' or 'decided' unless their input establishes it. A hard question may ask 'Isn't this consultation already a done deal?'. It may not say 'You have admitted this consultation is a done deal' unless the user actually supplied that admission.
 
+SCENARIO DIAGNOSIS MUST REMAIN NEUTRAL
+situation_read is the tool's own analysis, not an adversarial voice. It may name tensions the supplied facts actually create, likely areas of scrutiny, and how the ask relates to the objections the user already expects. It may not characterise the audience, the user, the proposal, the organisation or the situation with an interpretation the user did not supply. Keep adversarial framing inside the generated questions.
+Do not write "You are asking a cost-focused C-suite to approve a reactive spend." Write "You are asking the CFO, COO and CTO to approve a 40% increase next quarter, and you already expect questions about timing, size, accountability, alternatives and ROI."
+
+INVENT THE CHALLENGE, NOT THE BACKSTORY
+A hard question may challenge, accuse, doubt, pressure or test the user — but it has to build that challenge out of the facts and objections actually supplied. Do not make a question harder by inventing additional circumstances, procedures, history, obligations, promises, events or decisions. The adversarial premise may be an interpretation of known facts; it may not require new facts to be true.
+Ask "Why is this coming to us now rather than earlier?" — not "Why did you bypass the normal budget process?", unless a normal process and its bypass were supplied. Ask "What responsibility does your team take for not identifying these gaps sooner?" — not "Who knew about these gaps and concealed them?", unless prior knowledge was supplied. The same bar applies to legal, regulatory, contractual or disclosure obligations: do not invent one to raise the stakes.
+
 DO NOT SCRIPT COMMITMENTS THE USER CANNOT VERIFY
 Never put a factual claim, promise, concession, commitment, procedural assurance or guarantee into the user's mouth unless their input supports it. Be especially careful with what has or has not been decided, what remains negotiable, what authority the user holds, what data exists, what the organisation will do, what can be guaranteed, and what the audience's input can actually change. Where the information is missing, write language that acknowledges the issue without pretending to know the answer.
 
@@ -119,7 +135,8 @@ ANSWER COACHING
 - if_you_dont_know gives a short, credible response for the room: acknowledge the gap, say what you can answer now, and state the specific follow-up needed. Do not invent a follow-up deadline unless the user supplied one.
 - dont_say identifies a tempting response pattern to avoid; do not put words or attitudes in the user's mouth.
 
-QUESTION QUALITY
+QUESTION QUALITY BEFORE CATEGORY COVERAGE
+- Write the strongest realistic question first, then assign its type. Never distort a question to fill a category — Emotional, Political, Values, Practical, Gotcha. If a scenario naturally yields several strong Data/Logic questions and no credible Emotional one, that is the better output; a manufactured Emotional question ("walk me through how you would feel standing here in six months") is one no real executive asks, and it wastes a slot the room would have used on something sharper.
 - Questions should be distinct, specific to the supplied case, and decision-relevant.
 - Make them challenging without turning them into theatrical hostility.
 - Gotcha questions may expose a real tension or contradiction in the supplied facts; never manufacture a contradiction.
@@ -136,6 +153,12 @@ CURVEBALL
 CONFIDENCE NOTE
 - Base encouragement only on something actually present in the user's input or generated prep. Never invent an advantage, document, evidence base, or audience reaction.`;
 
+    // Partitioned by SUBJECT ANGLE, not by schema category. Category-based
+    // halves made the label dictate the question — half B had to produce an
+    // "Emotional" question whether or not the scenario had one, which is how
+    // "walk me through how you would feel standing here in six months" reached
+    // a CFO. Angles are just as disjoint, so the halves still cannot collide,
+    // and the type is assigned after the question is written.
     // The questions array is the whole cost — at high stakes it is 10 entries of
     // 7 fields, and the golden case measured 64-69s, past the ~60s where Safari
     // abandons the fetch. A key-wise split cannot help (everything else is four
@@ -163,7 +186,7 @@ You are producing ONE PART of the prep. Another sparring partner is producing th
     const questionShape = `    {
       "number": 1,
       "difficulty": "moderate | hard | brutal",
-      "type": "One of the question types assigned to you",
+      "type": "A short label for what kind of question this is, written after the question — e.g. Data/Logic, Practical, Political, Trust, Accountability, Values, Gotcha. Describe the question you wrote; never write a question to fit a label.",
       "question": "Exact question in audience voice. Blunt and specific.",
       "real_concern": "What this question tests, exposes, or requires you to address, in one sentence. Not the questioner motive, feeling or strategy.",
       "model_answer": "2-3 sentences. A truthful answer pattern using only supplied facts; use [bracketed placeholders] for missing facts.",
@@ -174,7 +197,7 @@ You are producing ONE PART of the prep. Another sparring partner is producing th
     // ── Part A: the questions that come at the argument itself ──
     const analyticalPrompt = `${brief}
 
-YOUR PART: exactly ${splitA} questions, and ONLY of these types: Data/Logic, Practical, Political.
+YOUR PART: exactly ${splitA} questions, and ONLY about THE CASE ITSELF — whether the proposal stands up. Its numbers, evidence, cost, feasibility, timing, scope, execution and the alternatives to it.
 
 Return ONLY valid JSON with EXACTLY this one top-level key:
 {
@@ -183,14 +206,14 @@ ${questionShape}
   ]
 }
 
-Generate exactly ${splitA} questions, escalating in difficulty.${brutalA > 0 ? ` At least ${brutalA} must be 'brutal'.` : ''} Every question must be a Data/Logic, Practical or Political question — never Emotional, Gotcha or Values. Number them 1 to ${splitA}.
+Generate exactly ${splitA} questions, escalating in difficulty.${brutalA > 0 ? ` At least ${brutalA} must be 'brutal'.` : ''} Every question must be about the case itself, never about accountability, precedent, trust or consequences — another pass covers those. Write the strongest realistic question first and label its type afterwards; the label describes the question, it does not choose it. Number them 1 to ${splitA}.
 
 ${DIFFICULTY_RULE}`;
 
     // ── Part B: the questions that come at the person, plus the framing ──
     const humanPrompt = `${brief}
 
-YOUR PART: exactly ${splitB} questions, and ONLY of these types: Emotional, Gotcha, Values — plus the framing around the whole session.
+YOUR PART: exactly ${splitB} questions, and ONLY about WHAT FOLLOWS FROM IT — accountability, decision rights, precedent, trust, what happens if it goes wrong, and what approving it signals. Plus the framing around the whole session.
 
 At least one of your questions must be a Gotcha that tests a real tension in the supplied case without inventing a contradiction, and at least one must be Emotional (about trust, accountability, or values rather than data).
 
@@ -208,7 +231,7 @@ ${questionShape}
   "confidence_note": "One sentence of grounded encouragement based only on the user's supplied facts or the preparation completed here."
 }
 
-Generate exactly ${splitB} questions, escalating in difficulty.${brutalB > 0 ? ` At least ${brutalB} must be 'brutal'.` : ''} Every question must be an Emotional, Gotcha or Values question — never Data/Logic, Practical or Political. Number them 1 to ${splitB}.
+Generate exactly ${splitB} questions, escalating in difficulty.${brutalB > 0 ? ` At least ${brutalB} must be 'brutal'.` : ''} Every question must be about what follows from the proposal, never about its numbers, feasibility or execution — another pass covers those. A question in this half may still be evidential in character: "if we spend this and are breached anyway, how will we know it reduced our risk?" belongs here and is not an Emotional question. Write the strongest realistic question first and label its type afterwards; the label describes the question, it does not choose it. Number them 1 to ${splitB}.
 
 ${DIFFICULTY_RULE}`;
 
@@ -268,6 +291,8 @@ router.outputGuard = {
     'writes_real_concern_as_hidden_motive_or_psychology_rather_than_what_the_question_tests',
     'treats_a_generated_challenge_as_something_the_user_admitted_did_promised_or_decided',
     'scripts_a_claim_promise_concession_commitment_or_guarantee_the_input_does_not_support',
+    'situation_read_characterises_the_audience_user_or_organisation_beyond_the_supplied_facts',
+    'a_question_invents_a_procedure_obligation_event_or_prior_decision_to_raise_the_stakes',
     'builds_a_gotcha_on_a_contradiction_not_present_in_the_supplied_facts',
     'coaches_bluffing_evasion_or_unsupported_reassurance',
   ],

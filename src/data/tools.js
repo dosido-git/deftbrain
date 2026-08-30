@@ -1379,9 +1379,9 @@ export const tools = [
   icon: "🎤",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "About to present, pitch, or propose something? Describe your topic and audience, and HecklerPrep generates the 10 hardest questions they'll ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, the psychology behind the question, and what to do if you don't know the answer.",
+  description: "About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, gotchas, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.",
   guide: {
-    overview: "HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, the underlying concern the questioner has, and a bail-out strategy if you're caught off guard.",
+    overview: "HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, what the question is testing, and something credible to say if you don't know yet.",
     howToUse: [
       "Describe what you're presenting, pitching, or proposing",
       "Describe your audience — who they are and what they care about",
@@ -1396,7 +1396,7 @@ export const tools = [
     },
     tips: [
       "The questions get harder as the list goes on — if you can handle #10, you're ready",
-      "The 'real concern' behind each question tells you what they actually want to hear",
+      "The 'what this tests' line tells you what the question is really about, so you answer that rather than the words",
       "Practice answering out loud, not just reading the model answers",
       "The bail-out strategies are for genuine unknowns — don't fake answers"
     ],
