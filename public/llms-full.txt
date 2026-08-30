@@ -19,10 +19,10 @@ This file carries the substance behind https://deftbrain.com/llms.txt: what each
 ### Bike Medic
 
 URL: https://deftbrain.com/BikeMedic
-Tagline: A trailside mechanic in your pocket
+Tagline: Figure out what's wrong with your bike — and what to do next.
 Categories: The Grind
 
-AI-enhanced bicycle troubleshooting with interactive step-by-step fixes, animated visual demos, and expert follow-up when standard repairs don't work.
+Something wrong with your bike? Describe what you notice—or choose the part that's giving you trouble. Bike Medic starts with safe checks and helps you narrow down likely causes and work through what to try next, including when not to ride and when it's time for a bike shop.
 
 **What it does.** Bike Medic walks you through diagnosing and fixing common bicycle problems with animated visual demos, interactive step tracking, and AI-powered deeper diagnosis when standard fixes fail. Set up your bike profile to skip irrelevant questions and get tailored advice.
 
@@ -118,7 +118,7 @@ Output: Cut to the Chase finds: 1 action required (new pet registration form due
 ### Doctor Visit Prep
 
 URL: https://deftbrain.com/DoctorVisitPrep
-Tagline: Walk in prepared — so you don't waste the visit
+Tagline: Walk in prepared — because fifteen minutes goes by quickly.
 Categories: The Grind
 
 Turn your scattered worries and symptoms into a focused script for your next doctor visit — a clear opener, prioritized questions, things to mention even if the doctor doesn't ask, and a pre-visit checklist.
@@ -154,7 +154,7 @@ URL: https://deftbrain.com/DoctorVisitTranslator
 Tagline: Turn medical jargon into plain English
 Categories: The Grind
 
-Paste any medical document — visit notes, lab results, prescription labels, or billing statements — and get a plain-English summary, prioritized action checklist, medication explanations, and questions to ask at your next appointment.
+Medical conversations often make perfect sense while you're sitting in the exam room and almost no sense once you get home. Paste your visit notes, lab results, or the instructions they sent you home with, and DeftBrain will translate them into plain English.
 
 **What it does.** The Doctor Visit Translator helps you understand your doctor visits by translating medical terminology into clear, actionable language. Paste your visit notes or describe what the doctor said, and get a plain English summary, medical term definitions, action checklist with priorities, medication explanations with side effects, test result interpretations, follow-up requirements, and questions to ask next time.
 
@@ -182,35 +182,35 @@ Output: You receive a plain English summary, definition of 'hypertension' and wh
 ### Drive Home
 
 URL: https://deftbrain.com/DriveHome
-Tagline: Your safety net for every drive
+Tagline: A clearer call before you get behind the wheel
 Categories: The Grind
 
-AI safety companion for solo drives — assess your route and conditions before you leave, then activate the check-in timer so someone always knows you made it.
+Tell it about the drive and how you're feeling, and it gives you one clear call — go, pause, or don't start — plus what makes this drive harder and what to do instead. It has no live traffic or weather data and never claims to: it reasons only from what you report.
 
-**What it does.** DriveHome is a safety net for solo drives, not a navigation app. Setup tab: enter your from/to locations, select conditions, road type, and how you're feeling — the AI assesses your specific drive with watch-for items, a pre-drive checklist, and an honest take if you're tired or anxious. Then set a check-in timer and copy a Watch-For-Me message to send before you leave. Drive tab: the timer counts down and asks 'Are you safe?' when it expires. If you don't respond within 30 seconds, the emergency alarm triggers automatically. Share Location and one-tap Emergency are always available. Emergency contacts are shared with SafeWalk — set once, used in both.
+**What it does.** Drive Home answers one question: should you start this drive right now? You give it the length of the drive, the time of day, the conditions you can see, the road type, and an honest word about your own state. It comes back with go, pause, or do not start — a headline, what makes the drive harder, what is in your favour, and, if the answer is anything but go, what to do instead. It does not score your risk, it does not certify a drive as safe, and it has no live traffic, weather, or road data. Place names are context only; it will not tell you about a road it cannot see. If the call is go, you can set an arrival reminder that runs in your own browser and copy a message to send someone before you leave.
 
 **How to use it.**
 
-1. SETUP TAB: Enter where you're driving from and to (include city and state). Select time of day, road conditions, road type, and how you're feeling. Tap 'Assess My Drive' for a tailored safety briefing.
-2. Review the checklist and check off items. If you're tired or anxious, read the Honest Take — it's there for a reason.
-3. Set your check-in timer (how long the drive should take), copy the Watch-For-Me message and send it to your primary contact, then tap 'Start Drive'.
-4. DRIVE TAB: The timer counts down. When it expires, tap 'I'm Safe' to confirm you arrived. If you need more time, tap +15 or +30 min. If you don't respond within 30 seconds, the alarm triggers automatically.
-5. Use Share Location to copy your GPS coordinates into a ready-to-send text at any point during the drive.
-6. SETTINGS: Add emergency contacts — the primary contact's name appears in alerts and the Watch-For-Me message. Contacts are shared with SafeWalk.
+1. Say roughly how long the drive is. The presets cover most trips; type a number for anything else.
+2. Pick the time of day, tick any conditions that apply, and choose the road type. From and To are optional — they add context, not route knowledge.
+3. Answer 'How are you doing right now?' literally. 'Very tired' always returns do-not-start; that is a fixed boundary, not an opinion.
+4. Add anything making you hesitate. One concrete sentence changes the answer more than any other field.
+5. Read the call. If it says pause, 'Before you decide' names the one fact that would settle it.
+6. If the call is go, optionally set the arrival reminder and copy the departure message before you start the engine.
 
 **Tips.**
 
-- Add a primary emergency contact in Settings — their name appears in the Watch-For-Me message and emergency alerts
-- Set the timer slightly longer than your expected drive — you can always tap 'I'm Safe' early
-- The 30-second auto-alarm countdown appears when the timer expires — tap any button to stop it
-- Share Location copies your GPS as a Google Maps link — paste it into any messaging app in one tap
-- Contacts set in DriveHome are also available in SafeWalk, and vice versa
+- Answer the condition question about now, not about the forecast — it reasons from what you report, so a stale answer gives a stale call
+- The hesitation box is the highest-value field on the form; a specific worry gets a specific answer
+- A go call is not a safety guarantee — it means nothing you reported gave a clear reason to wait
+- If the answer is pause and you resolve the missing fact, run it again rather than talking yourself past it
+- Walking home instead? SafeWalk covers that trip
 
 **Example.**
 
-Input: Driving home from a friend's house at midnight in a snowstorm, about 45 minutes on the highway.
+Input: Leaving a friend's birthday dinner much later than you meant to. Twenty minutes home on city streets, clear night, and you feel fine.
 
-Output: AI flags reduced visibility and longer stopping distances on the specific highway, recommends a checklist item for tires and wipers, and generates an ETA message. You copy the Watch-For-Me message to your partner, set a 55-minute timer (buffer built in), and start the drive. When the timer expires, you tap 'I'm Safe' from the parking lot.
+Output: A go call that says so plainly — nothing you reported gives a reason to wait — with the late hour named as the thing that makes it harder, a short list to do before you pull out, and the signs that should make you stop and reassess on the way. Then, if you want it, a twenty-five-minute arrival reminder and a message to send before you leave.
 
 ### Final Wish
 
@@ -218,9 +218,9 @@ URL: https://deftbrain.com/FinalWish
 Tagline: Organize what matters. Say what needs to be said.
 Categories: The Grind, Humans, Me
 
-Guided digital legacy planner that helps you organize accounts, documents, finances, and personal messages into a single printable document for your trusted person.
+One day, someone you care about may need to find your accounts, understand your finances, locate important documents, or simply know what mattered to you. Final Wish helps you put it all in one place.
 
-**What it does.** FinalWish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.
+**What it does.** Final Wish walks you through an AI-guided interview to build a comprehensive digital legacy package — covering accounts, documents, finances, personal messages, and practical wishes. Everything exports as a self-contained, printable HTML document you hand to someone you trust. Nothing is stored.
 
 **How to use it.**
 
@@ -322,7 +322,7 @@ URL: https://deftbrain.com/LeaseTrapDetector
 Tagline: Find predatory clauses hiding in your lease
 Categories: The Grind, Loot
 
-Analyze rental agreements and identify predatory clauses, illegal provisions, unusual fees, and missing tenant protections. Upload your lease (PDF or text), get color-coded red/yellow/green flags with plain language explanations, negotiation scripts, and comparison to local housing laws. Flags concerning clauses, explains your rights, provides negotiation strategies, and connects you to tenant resources. Built for first-time renters and tenant protection.
+Leases are full of language most renters never question until something goes wrong. Upload your lease, and DeftBrain will flag unusual clauses, explain them in plain English, and help you spot problems before they become expensive surprises.
 
 **What it does.** Lease Trap Detector analyzes rental agreements to protect tenants from predatory practices. Upload your lease or paste the text, specify your location (for local law comparison), and get comprehensive analysis: RED flags for serious concerns (illegal clauses, landlord overreach, exploitative fees), YELLOW flags for questionable provisions (vague language, missing details), GREEN flags for good tenant protections. Each flag includes the actual clause text, plain-language explanation of the problem, legal status (illegal/unenforceable/exploitative), your rights under local law, and specific negotiation strategies. Also identifies missing protections, unusual fees, and provides negotiation scripts plus local tenant rights resources.
 
@@ -341,7 +341,7 @@ Analyze rental agreements and identify predatory clauses, illegal provisions, un
 
 **Tips.**
 
-- LOCATION IS CRITICAL - tenant laws vary dramatically by state and city. 'San Francisco, CA' gets different analysis than 'Dallas, TX'.
+- LOCATION IS CRITICAL - renting law varies sharply between regions and even between neighbouring cities, so name the city and the region or country it is in.
 - UPLOAD FULL LEASE - don't just paste concerning clauses, the tool needs full context to spot patterns and missing protections.
 - READ ALL FLAGS - even green flags are important (they show what protections you DO have).
 - DON'T IGNORE YELLOW FLAGS - 'questionable' clauses often hide problems. Ask landlord for clarification on every yellow flag.
@@ -361,10 +361,10 @@ Output: RED FLAGS: (1) 'Landlord may enter at any time' - ILLEGAL in California.
 ### Mise en Place
 
 URL: https://deftbrain.com/MiseEnPlace
-Tagline: Turn whatever's in your kitchen into a meal — with a battle plan
+Tagline: The hard part isn't the cooking. It's deciding.
 Categories: The Grind
 
-List your ingredients or snap a photo of your fridge. AI builds a minute-by-minute cooking battle plan with parallel task sequencing, critical timing alerts, technique tips calibrated to your skill level, a quick shopping list, and a leftovers transformation strategy for tomorrow.
+Dinner is rarely difficult because of the cooking. It's difficult because you're hungry, short on time, juggling multiple dishes, and trying not to waste what's already in the refrigerator.
 
 **What it does.** Mise en Place is a meal prep strategist, not a recipe finder. It solves the hard part of cooking at home: taking random ingredients and building an optimally sequenced plan that tells you what to do, when, and what to prep during downtime. Like having a sous chef in your ear.
 
@@ -374,7 +374,7 @@ List your ingredients or snap a photo of your fridge. AI builds a minute-by-minu
 2. Set your time available, skill level, and dietary needs
 3. Choose your meal type and available equipment
 4. Get meal recommendations ranked by how well they use your ingredients
-5. Follow the minute-by-minute battle plan with parallel tasks and timing alerts
+5. Follow the timeline minute by minute, with what to do while things cook and a nudge at the moments that matter
 
 **Tips.**
 
@@ -388,6 +388,37 @@ List your ingredients or snap a photo of your fridge. AI builds a minute-by-minu
 Input: You have chicken thighs, rice, bell peppers, garlic, soy sauce, and some wilting spinach. You want dinner in 45 minutes and you're an intermediate cook.
 
 Output: Mise en Place recommends teriyaki chicken bowls, provides a timeline starting with rice (longest cook time), then searing chicken during the first 10 minutes while prepping vegetables as a parallel task. Checkpoints tell you when rice should be absorbing, when to flip chicken. Leftovers strategy: tomorrow's fried rice.
+
+### Not So Fast!
+
+URL: https://deftbrain.com/NotSoFast
+Tagline: The overlooked options, key conversations, and escalation paths nobody ever explains
+Categories: The Grind, Loot
+
+We'll help you understand the appeals process, identify overlooked options, find the right escalation path, and prepare for conversations with the people who can actually make decisions.
+
+**What it does.** Every formal system has informal architecture. Not So Fast! maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.
+
+**How to use it.**
+
+1. Name the system — Comcast, health insurance, HOA, landlord, university, IRS, airline
+2. Describe the specific problem and the outcome you want
+3. Note what you've already tried — this changes the recommended path
+4. Follow the escalation ladder in order — don't jump to nuclear options prematurely
+5. Use magic phrases exactly as written — small wording changes reduce their effectiveness
+
+**Tips.**
+
+- The 'magic phrases' section is literal — use the exact wording provided
+- The regulatory angle works even if the complaint goes nowhere — it signals seriousness
+- The win-likelihood assessment tells you if this battle is worth the time investment
+- Pair with MagicMouth to script the actual phone calls
+
+**Example.**
+
+Input: Health insurance denied a claim for a procedure the doctor says was medically necessary
+
+Output: How it works: first-level denials are automated; human review happens at second appeal. Ladder: (1) Request denial code and ask for 'peer-to-peer review' between your doctor and their medical director; (2) File with your state Insurance Commissioner; (3) Request Independent Medical Review via your state's external appeals process. Magic phrases: 'peer-to-peer review,' 'external independent review,' 'medical necessity criteria per your utilization management guidelines.'
 
 ### Paperwork Path
 
@@ -501,7 +532,7 @@ URL: https://deftbrain.com/ProcedureProbe
 Tagline: Be an informed patient before you say yes.
 Categories: The Grind, Loot
 
-A doctor or dentist just recommended a procedure. Before you schedule, get the briefing: is this standard for your situation? What questions should you ask? What does it typically cost, and what does insurance cover? What are the red flags? What's recovery really like? Empowers you to be an informed patient — not medical advice, but medical literacy.
+A procedure was recommended. Before you schedule it, get the briefing. We'll help you understand the procedure, what questions to ask, what it might cost, what recovery looks like, and what to watch for. Not medical advice—just medical literacy.
 
 **What it does.** Procedure Probe helps you understand what you're agreeing to before a medical or dental procedure. It explains the procedure in plain language, tells you whether it's standard for your situation, generates the exact questions to ask your provider, breaks down typical costs and insurance coverage, flags red flags to watch for, and gives you an honest picture of recovery.
 
@@ -570,7 +601,7 @@ URL: https://deftbrain.com/RentersDepositSaver
 Tagline: Protect your security deposit on move-in day
 Categories: The Grind, Loot
 
-Walk through your apartment room by room on move-in day. Generates a formal condition report, landlord cover letter, photo shot list, and your state-specific deposit rights.
+Don't get charged later for damage that was already there. Walk through your apartment once. We'll help you document its condition, take the right photos, and create a record you can send your landlord.
 
 **What it does.** Renter's Deposit Saver is your move-in documentation coach. It walks you through every room with a detailed checklist so you can note the condition of walls, floors, appliances, and fixtures before you unpack. Then it generates a formal condition report, a professional cover letter to send your landlord, a prioritized photo shot list, and a breakdown of your state's security deposit laws. When move-out day comes, you'll have irrefutable proof of what was already there.
 
@@ -629,37 +660,6 @@ Two tools in one: AI-powered dispute mediation that analyzes fault, surfaces the
 Input: Your roommate keeps leaving dishes in the sink and you've brought it up twice but nothing changed. Also need to assign weekly chores fairly.
 
 Output: Dispute tab: AI acknowledges your frustration but flags that repeated nagging without consequences isn't a strategy — gives you a specific conversation script with boundaries ('If dishes aren't done within 24 hours, I'll put them in a bin in your room'). Chore tab: assigns dishes to your roommate this round since history shows you've had them more, balances total effort points, and explains why.
-
-### Rulebook Breaker
-
-URL: https://deftbrain.com/RulebookBreaker
-Tagline: The loopholes, magic words, and escalation ladder nobody tells you about
-Categories: The Grind, Loot
-
-Maps the undocumented paths through any bureaucratic system — the loopholes nobody advertises, the escalation ladder that actually works, the magic phrases that trigger different handling, and the regulatory bodies that have real teeth. For when the official answer is 'nothing we can do' and you know that's wrong.
-
-**What it does.** Every formal system has informal architecture. RulebookBreaker maps it — the exceptions that exist but aren't advertised, the phrases that route your call differently, the regulatory agency that actually investigates, and the escalation path that reaches someone with real authority. Legal leverage only.
-
-**How to use it.**
-
-1. Name the system — Comcast, health insurance, HOA, landlord, university, IRS, airline
-2. Describe the specific problem and the outcome you want
-3. Note what you've already tried — this changes the recommended path
-4. Follow the escalation ladder in order — don't jump to nuclear options prematurely
-5. Use magic phrases exactly as written — small wording changes reduce their effectiveness
-
-**Tips.**
-
-- The 'magic phrases' section is literal — use the exact wording provided
-- The regulatory angle works even if the complaint goes nowhere — it signals seriousness
-- The win-likelihood assessment tells you if this battle is worth the time investment
-- Pair with MagicMouth to script the actual phone calls
-
-**Example.**
-
-Input: Health insurance denied a claim for a procedure the doctor says was medically necessary
-
-Output: How it works: first-level denials are automated; human review happens at second appeal. Ladder: (1) Request denial code and ask for 'peer-to-peer review' between your doctor and their medical director; (2) File with your state Insurance Commissioner; (3) Request Independent Medical Review via your state's external appeals process. Magic phrases: 'peer-to-peer review,' 'external independent review,' 'medical necessity criteria per your utilization management guidelines.'
 
 ### Safe Walk
 
@@ -738,7 +738,7 @@ URL: https://deftbrain.com/CultureBriefing
 Tagline: Know before you go — cultural intelligence for any destination
 Categories: Out & About
 
-Get a real cultural intelligence briefing before traveling anywhere — greetings, taboos, dining, dress, tipping, business etiquette, religion, safety, and the insider tips guidebooks miss. Tailored to your trip purpose.
+A practical cultural briefing before you travel — greetings, taboos, dining, dress, tipping, business etiquette, religion and safety. It separates the practices that are widely observed from the ones that vary by region, generation or setting, and flags what is worth checking locally rather than taking on trust. Tailored to your trip purpose.
 
 **What it does.** Most travel guides tell you to 'be respectful of local customs' without telling you what that means. CultureBriefing gives you specific, actionable cultural intelligence: what to do, what to never do, how to greet people correctly, what not to wear, how tipping actually works, what gestures to avoid, and the things most travelers learn the hard way. Tailored by trip purpose — tourism, business, family visits, living abroad — so you get what actually matters for your situation. Works for 190+ countries and major cities.
 
@@ -750,7 +750,7 @@ Get a real cultural intelligence briefing before traveling anywhere — greeting
 4. Click 'Get My Briefing' — get a full cultural briefing organized by topic
 5. Navigate topics using the pill buttons — tap any section to expand it
 6. Review ✅ DOs, 🚫 DON'Ts, and ℹ️ context notes for each area
-7. Check insider tips and key phrases before you land
+7. Read the practical tips and key phrases before you land, and note anything marked as worth checking locally
 
 **Tips.**
 
@@ -765,7 +765,7 @@ Get a real cultural intelligence briefing before traveling anywhere — greeting
 
 Input: An American businessperson traveling to Japan for the first time selects 'Business' and enters 'United States' as home country and '1 week' as duration.
 
-Output: Overview: Japan's business culture is built on hierarchy, relationship-building, and non-verbal communication — directness that works in the US can read as aggressive here. Sections include: Greetings (bow at 15°, exchange business cards with both hands and study them before pocketing); Taboos (never write in red ink, don't tip — it's considered insulting); Business etiquette (silence is respect, not discomfort; decisions happen before meetings, not during them); Dining (never stick chopsticks upright in rice; wait to be seated); plus 6 insider tips and 5 key phrases with pronunciation guides.
+Output: Overview: Japanese business culture leans on hierarchy, relationship-building and non-verbal communication, and directness that works in the US can read as aggressive. Greetings: a bow and a two-handed business-card exchange are widely observed; depth of bow and whether a handshake accompanies it varies by generation and how international the firm is. Taboos: chopsticks upright in rice and names written in red are widely avoided. Tipping: not customary in most settings — flagged as worth checking for your specific context. Business etiquette: silence in meetings often reads as consideration rather than discomfort. Plus practical tips and key phrases.
 
 ### Date Night
 
@@ -971,7 +971,7 @@ URL: https://deftbrain.com/AwkwardSilenceFiller
 Tagline: Context-appropriate conversation rescues on demand
 Categories: Humans, Discourse
 
-Context-appropriate conversation fillers for awkward silences. 5-7 safe options from environmental observations to light questions. Matched to setting (work/party/date/family). Includes body language tips, exit strategies, and what NOT to say.
+Not every silence needs rescuing. But when it does, we'll help you find something natural to say.
 
 **What it does.** Awkward silences happen. This tool provides 5-7 conversation fillers appropriate for your specific context - safe, low-risk things to say that restart conversation without forcing it. Ranges from environmental observations to light questions to polite exits.
 
@@ -998,90 +998,108 @@ Input: You're at a work happy hour. Made small talk with someone from another de
 
 Output: Fillers: 1. Environmental (low risk): 'This place has a great vibe' â†’ Follow-up: They might share their favorite spots. 2. Work-appropriate question (low risk): 'How long have you been with the company?' â†’ Opens to their history. 3. Weekend plans (medium risk): 'Any plans for the weekend?' â†’ Safe, relatable topic. 4. Shared experience (low risk): 'These team events are nice, aren't they?' â†’ Bonds over shared context. 5. Department question (low risk): 'What's your team working on lately?' â†’ Shows interest, work-appropriate. Exit strategies: 'I'm going to grab another drink, great chatting!' or 'I should say hi to [person], but nice talking to you!' What NOT to say: Politics, religion, gossip about coworkers, anything too personal. Body language: Maintain open posture, smile, don't check phone. Silence acceptance: Brief silence (5-10 seconds) is normal. Don't panic-fill immediately.
 
-### Comeback Cooker
+### Before Hello
 
-URL: https://deftbrain.com/ComebackCooker
-Tagline: The perfect response you thought of 3 hours too late.
-Categories: Humans, Discourse, Diversions
+URL: https://deftbrain.com/BeforeHello
+Tagline: Become worth knowing before you ask to be known.
+Categories: Humans, Pursuits
 
-Describe the moment that's been living rent-free in your head. AI generates the perfect comebacks you wish you'd said — from surgical precision to unbothered royalty. Purely cathartic. No intent to send.
+Want to connect with someone in your professional world, but don't want to show up as a stranger with an ask? Build a practical plan to become more visible, relevant, and useful first—then recognize when there's a genuine reason to reach out.
 
-**What it does.** Comeback Cooker is for that moment playing on loop in your brain — the thing someone said, and the devastating response you only thought of hours later. Describe the situation, pick a mood (surgical, witty, petty, or dignified), and get 5 comebacks using different techniques, plus a high road option and a nuclear option kept safely in the fantasy drawer. Each comeback comes with delivery notes so you can rehearse the fantasy properly.
+**What it does.** Before Hello is built on one test: every step it suggests has to be worth taking even if the other person never sees it. So it works on your side of the introduction — what you actually bring, where the overlap is real, and whether there is already a good enough reason to send the message. Sometimes the answer is that there is, and you should send it today.
 
 **How to use it.**
 
-1. Describe what happened — the more specific, the better the comebacks
-2. Optionally include exactly what they said (exact words help a lot)
-3. Pick your comeback mood: Surgical, Witty, Petty, or Dignified
-4. Read the 5 comebacks — tap each for delivery notes
-5. Check the high road option and dare to reveal the nuclear option
+1. Describe the person — their role, their field, and what they work on
+2. Pick the kind of connection: mentor, collaborator, investor, employer, client, or professional peer
+3. Say why this person specifically, and what you already bring
+4. Read the readiness verdict first — it may tell you to reach out now rather than prepare
+5. Use the first-contact draft as a starting point, and keep the ask small enough to be easy to decline
 
 **Tips.**
 
-- Exact quotes from the other person produce much sharper comebacks
-- Try the same situation with different moods — Surgical and Petty hit very differently
-- The delivery notes matter as much as the words themselves
-- The high road option often hits harder than any clever insult
+- The readiness verdict can say 'ready now' — a direct, specific, easy-to-decline message is often the whole answer
+- If a suggested step would only make sense because this person might notice it, the tool is supposed to reject it; treat one that slips through as a bug
+- Being specific about your own background is what separates a real overlap from a generic one
+- Works for mentors, collaborators, investors, employers, clients, and peers in your field
 
 **Example.**
 
-Input: Your coworker took credit for your idea in a meeting, saying 'I was actually the one who suggested that approach.'
+Input: You want to talk to a VC who invests in climate tech
 
-Output: Five precision comebacks using different techniques — deadpan, reframe, rhetorical question — each with delivery notes. Plus a devastating high road response and a nuclear option labeled 'fantasy drawer only.'
+Output: Starting position: your research is the credible part; the gap is that none of it is public. Strengthen: write up one finding in plain language — worth doing for your own record either way. Genuine overlap: their thesis and your dataset touch the same question. Ready to say hello? Build first — one piece of public work makes the message land. First contact: what to say, and what not to. Do today: draft the first paragraph of that write-up.
+
+### Comeback Cooker
+
+URL: https://deftbrain.com/ComebackCooker
+Tagline: For the response that arrived three hours too late.
+Categories: Humans, Discourse, Diversions
+
+Still replaying something someone said? Tell us what happened, what they said if you remember it, and who you were dealing with. Comeback Cooker gives you several ways you could have answered — from satisfying to sharp to actually useful.
+
+**What it does.** Comeback Cooker is for the remark that keeps replaying after the moment has passed. Describe what happened, quote the exact words if you remember them, say who the person is to you, and choose a mood: Surgical, Witty, Petty, or Dignified. It gives you five comeback ideas, a High Road option, and an intentionally over-the-top Nuclear Option kept in the fantasy drawer so the tool can be satisfying as well as useful.
+
+**How to use it.**
+
+1. Describe what happened
+2. Add the exact words if you remember them and the relationship if it changes what would land
+3. Choose Surgical, Witty, Petty, or Dignified
+4. Read the five comeback ideas and the High Road option
+5. Reveal the Nuclear Option only when you want the cathartic version that is better enjoyed than sent
+
+**Tips.**
+
+- Exact quotes give the tool more to play with than a general description of the insult
+- Try the same situation in another mood if the first batch is too sharp or too tame
+- Treat the High Road as a separate option, not a moral judgment about the funnier lines
+- Comebacks can invent attitude and comic voice; they should not invent facts about your life to make the line work
+
+**Example.**
+
+Input: At a family gathering, an in-law makes the same intrusive comment they have made before.
+
+Output: You get five different comeback ideas grounded in the comment, a short High Road response that may be more usable in real life, and an optional fantasy-drawer line that is allowed to go much further for comic relief.
 
 ### Conflict Coach
 
 URL: https://deftbrain.com/ConflictCoach
-Tagline: Stop, breathe, and craft the right response
+Tagline: Respond to the message — not the heat of the moment.
 Categories: Humans, Discourse
 
-Received a tense message? Don't respond reactively. Get de-escalating response suggestions, emotional analysis, and thoughtful strategies. Prevents regrettable texts.
+A tense message can make the first reply feel urgent. Paste what you received, tell us the relationship and what you want the response to accomplish, and Conflict Coach lays out several ways to answer so you can choose deliberately before you send anything.
 
-**What it does.** The Conflict Coach helps you respond to tense, upsetting, or confrontational messages without escalating. Paste the message you received, and get emotional analysis, multiple response strategies (validate, set boundaries, disengage gracefully), and warnings about what NOT to say. Built for people who freeze during conflict, escalate when defensive, or struggle to read tone. Includes cooling-off timers and repair strategies.
+**What it does.** Conflict Coach helps you answer a specific tense message without turning a few words into a diagnosis of the person who sent them. Paste the message, identify your relationship, and choose what you want your response to accomplish. The tool briefly points out wording that materially affects how the message can be answered, then gives you four complete, ready-to-send strategies that pursue your selected goal in different ways.
 
 **How to use it.**
 
-1. Paste the tense/upsetting message you received
-2. Select your relationship to the sender (Partner, Family, Friend, etc.)
-3. Check how you're feeling right now (Angry, Hurt, Defensive, etc.)
-4. Select what you want to achieve (Resolve, Set boundary, Disengage, etc.)
-5. Optional: Show what you're tempted to say (we'll analyze why not to send it)
-6. Click 'Help Me Respond Thoughtfully'
-7. Get emotional temperature reading of their message
-8. Review 3-5 different response strategies with pros/cons
-9. See reflection questions before sending
-10. Copy the response that feels right
-11. Optional: Start 20-minute cooling-off timer
-12. Get repair strategy for reconnecting later
+1. Choose your relationship to the sender
+2. Paste the message you received, or add earlier messages if the current one needs context
+3. Optionally paste the response you are tempted to send so you can compare it with calmer alternatives
+4. Choose one goal: fix the problem, set a limit, step away, acknowledge without agreeing, or take the conversation off text
+5. Compare four ready-to-send responses, adjust the tone if needed, and use Follow-up Coaching if the person replies
 
 **Tips.**
 
-- Use the 'What I want to say' field - writing it out helps process emotions
-- Read ALL response strategies before choosing - different approaches for different goals
-- Pay attention to the 'risks' section - no response is perfect
-- Start the cooling-off timer if you're feeling reactive
-- Check 'What NOT to say' section before sending anything
-- Copy the response but read it again before sending - make sure it feels authentic
-- If emotional temperature is HIGH, wait before responding
-- Remember: Goal is to respond thoughtfully, not to 'win'
-- Save drafted responses in your notes app to review later
-- Use repair strategies after conflict cools down
+- Use the exact message rather than paraphrasing when possible; wording is often what changes the response
+- Pick the outcome you actually want before choosing a tone
+- A good strategy should be sendable as written and should not depend on guessing what the other person feels or intends
+- If the reply changes the situation, use Follow-up Coaching with what they actually said rather than predicting the next move
 
 **Example.**
 
-Input: Your partner texts: 'I can't believe you did that again. You never think about how your actions affect me. This is exactly why we have problems. I'm so sick of this.' You're feeling defensive and hurt.
+Input: Your partner sends a short message that can be read as sarcastic but does not state a clear concern or request.
 
-Output: Get analysis showing HIGH emotional temperature, anger/hurt detected, triggers identified ('never', 'exactly why'). Receive 4 response options: 1) Validate: 'I hear that you're really upset. I want to understand. Can we talk when we're both calmer?' 2) Boundary: 'I'm willing to talk about this, but not when we're attacking each other.' 3) Disengage: 'I need time to process this. Let's talk tomorrow.' 4) Schedule: 'This feels too big for text. Can we talk in person tonight?' Plus warnings about NOT saying 'You're overreacting' or 'That's not true', cooling-off time recommendation, and repair strategy for later.
+Output: Conflict Coach notes the specific wording and ambiguity without assigning a hidden motive, then gives four complete responses that set a limit in different ways — for example asking for directness, naming what you need from the exchange, or keeping the reply short and firm.
 
 ### Decoder Ring
 
 URL: https://deftbrain.com/DecoderRing
-Tagline: Decode what they actually mean beneath what they said
+Tagline: Explore what might be happening beneath the words
 Categories: Humans
 
-Paste any confusing message and get a layer-by-layer breakdown of the subtext, emotional undercurrent, what they actually want, red/green flags, and 3 response strategies with copyable examples.
+Confusing messages rarely come with a translation. Paste a message and DeftBrain will help you separate what was said from what may have been meant.
 
-**What it does.** Decoder Ring uses AI to analyze the pragmatics, subtext, and emotional undercurrent beneath any message. It identifies passive aggression, hedging, power moves, emotional bids, non-answers, and genuine warmth — then generates response strategies tailored to your situation.
+**What it does.** Decoder Ring looks at the pragmatics, subtext, and emotional undercurrent of a message and lays out how it could reasonably be read — often more than one way. It doesn't tell you what the sender meant; nobody can know that from a message. It widens the range of readings you're considering, rates how ambiguous the message actually is, and gives you three different ways to reply.
 
 **How to use it.**
 
@@ -1093,16 +1111,16 @@ Paste any confusing message and get a layer-by-layer breakdown of the subtext, e
 
 **Tips.**
 
-- Paste the EXACT wording — paraphrasing loses the tone cues AI analyzes
-- Adding relationship context dramatically improves accuracy for ambiguous messages
-- Confidence ratings help you know when to trust the read vs. take it with a grain of salt
+- Paste the EXACT wording — paraphrasing loses the tone cues the read depends on
+- Adding relationship context makes a much bigger difference than people expect on an ambiguous message
+- Check the ambiguity score first. A high one means the message genuinely supports several readings, and no tool can narrow it further
 - Response strategies include risk assessments — check the downsides before sending
 
 **Example.**
 
 Input: You receive a text from your partner: 'Hey! So I was thinking about what you said and I totally get where you're coming from. I just think maybe we should take some time to think about things separately.'
 
-Output: Decoder Ring identifies hedging + emotional distancing, reveals the subtext is a request for space without wanting to say it directly, flags the 'totally fine either way' as people-pleasing masking anxiety, and generates 3 responses: 'give space gracefully', 'ask directly what they need', and 'acknowledge and reconnect'.
+Output: Decoder Ring scores the message 8/10 for ambiguity and says so plainly: it could be a request for breathing room, or a first step toward more distance, and the message alone doesn't settle it. It walks through each line with both readings side by side, notes that 'totally fine either way' could be genuine or could be withdrawal, and gives you 3 ways to reply — ask directly, give space, or address the decision that started it — each with its own downside.
 
 ### Difficult Talk Coach
 
@@ -1110,7 +1128,7 @@ URL: https://deftbrain.com/DifficultTalkCoach
 Tagline: Practice hard conversations before they happen
 Categories: Humans, Discourse
 
-Generates multiple strategic approaches with exact scripts, predicted pushback, and counter-responses for any hard conversation — setting boundaries, giving feedback, saying no, or addressing disrespect. Includes a live practice mode where AI responds in character with real-time coaching.
+Some conversations become difficult long before they actually happen. Tell DeftBrain what's weighing on you, and we'll help you plan the conversation, practice it, and prepare for what might happen next.
 
 **What it does.** The Difficult Talk Coach helps you prepare for hard conversations by generating multiple strategic approaches with exact scripts, predicted pushback, and counter-responses. Whether you need to set a boundary, request a change, address conflict, or give feedback, you'll get concrete phrases to use, body language tips, and emotional regulation strategies.
 
@@ -1141,10 +1159,10 @@ Output: You get a Situation Reading, 4 emotional landmines with strategic respon
 ### Friendship Fade Alerter
 
 URL: https://deftbrain.com/FriendshipFadeAlerter
-Tagline: Never lose touch with people you care about
+Tagline: Stay connected to the people you care about
 Categories: Humans
 
-Never lose touch with people you care about due to time-blindness. Track important relationships, get alerts when it's been too long, and generate personalized conversation starters. Visual color-coded urgency (red/yellow/green), configurable contact frequencies, snooze for busy periods, and guilt-free reconnection scripts. Maintain connections without shame.
+Choose a comfortable rhythm for the people you care about. Friendship Fade Alerter gently shows when it may be worth saying hello, and helps you reconnect when time has slipped by — without guilt or awkwardness.
 
 **What it does.** Friendship Fade Alerter helps individuals maintain relationships despite time-blindness. Add important people with their ideal contact frequency (weekly, monthly, etc.), and the tool tracks days since last contact, alerts when overdue, and generates personalized conversation starters when you're ready to reach out. Color-coded visual indicators (red = overdue, yellow = coming due, green = recently contacted) remove guesswork. One-click conversation starter generation removes the 'what do I say?' barrier. Guilt-free framing acknowledges that time got away from you - that's okay. Snooze relationships during busy periods. Track successful reconnections. Low-friction design makes maintaining friendships actually doable.
 
@@ -1181,7 +1199,7 @@ URL: https://deftbrain.com/Giftology
 Tagline: The perfect gift for the hardest person to shop for.
 Categories: Humans, Loot
 
-Describe whoever you're shopping for — relationship, interests, personality, constraints — and AI finds specific, personal gift ideas that feel thoughtful, not algorithmic. Every suggestion includes why it works for THIS person, where to get it, a presentation tip, and what to write in the card. Includes a wildcard option and a last-minute save if you need something today.
+Tell us a little about who you're shopping for. Giftology turns what you know about them into thoughtful gift ideas—with help choosing, finding, and making each one feel personal.
 
 **What it does.** Giftology connects scattered things you know about a person into gift ideas that feel like you paid attention. The AI moment isn't 'here are popular gifts' — it's the reasoning chain from a specific detail about them to a specific gift that proves you notice things. Every pick includes a card message that makes even a simple gift feel intentional. Wildcard option for something unexpected, last-minute save for panic mode.
 
@@ -1209,10 +1227,10 @@ Output: Top pick: a specific heirloom seed collection from Baker Creek matched t
 ### Gratitude Debt Clearer
 
 URL: https://deftbrain.com/GratitudeDebtClearer
-Tagline: Helps you convert bullet points into polished thank yous.
+Tagline: Turn what happened into the thank-you you've been meaning to send.
 Categories: Humans, Discourse
 
-Turn your feelings of gratitude into heartfelt, authentic thank-you messages — without the writing paralysis. Perfect for when you genuinely appreciate someone but freeze when trying to express it formally.
+Tell us who you want to thank and what they did. Get a few natural ways to say it—so your message feels specific, sincere, and like something you would actually send.
 
 **What it does.** The Gratitude Debt Clearer helps you convert bullet points of appreciation into polished thank-you messages. Instead of staring at a blank page wondering how to start, just list what you're grateful for and let AI craft 2-3 message options that sound like you, not a greeting card. Built specifically for people who feel gratitude deeply but struggle with the formality of expressing it in writing.
 
@@ -1237,37 +1255,6 @@ Turn your feelings of gratitude into heartfelt, authentic thank-you messages —
 Input: Your friend Sarah helped you move apartments last weekend. She spent 6 hours packing, drove the truck, brought snacks, and made you laugh when you were stressed. You want to thank her but don't know how to say it without sounding awkward or over-the-top.
 
 Output: You get 2-3 message options like a warm text ('Sarah! I seriously can't thank you enough for yesterday. Six hours of packing and you never once complained — plus those donuts were clutch. You made what could've been a nightmare actually kind of fun. I owe you big time.') You can copy it directly, make it less intense, or add more specifics with one click.
-
-### Gravity Well
-
-URL: https://deftbrain.com/GravityWell
-Tagline: A 90-day plan to pull someone into your orbit — before you ever reach out
-Categories: Humans, Pursuits
-
-A 90-day plan to naturally enter someone's orbit before you ever reach out. Not cold outreach — gravitational pull. Three phases: become findable, enter their periphery, make the connection natural. Ends with the exact first contact message, the timing condition, and the one thing to do today.
-
-**What it does.** GravityWell is built on one insight: cold outreach fails because there's no warm surface. The solution isn't better cold messaging — it's eliminating cold entirely. By building proximity, visibility, and value over 90 days, the first contact feels earned rather than intrusive.
-
-**How to use it.**
-
-1. Describe the person you want in your life — their role, world, and what they're known for
-2. Select the relationship type — mentor, collaborator, investor, employer, client
-3. Add why this person specifically and what you genuinely bring to the relationship
-4. Follow the three phases in order — don't skip to Phase 3 early
-5. Use the first contact template only when the timing condition is met
-
-**Tips.**
-
-- 90 days is a minimum — gravity builds slower for harder-to-reach people
-- The 'value offer' section tells you what to lead with — don't skip it
-- The 'what they avoid' section is as important as the positive strategy
-- Works for investors, mentors, potential employers, collaborators, and creative partners
-
-**Example.**
-
-Input: Want to connect with a VC who invests in climate tech
-
-Output: Phase 1: Get a byline somewhere in the climate tech space; build a public portfolio with a clear POV. Phase 2: Engage with their writing — add data, not 'great post'; attend one event where they're speaking. Phase 3: Publish original research touching their thesis. First contact: 'I wrote about [X trend] in your portfolio space — thought the data might be interesting.' Timing condition: they've engaged with something you published.
 
 ### Luck Surface
 
@@ -1321,7 +1308,7 @@ Not every mistake needs the same apology, and getting the size wrong in either d
 
 **Tips.**
 
-- Level 1-2 are much more common than people think - most interactions don't need apologies
+- Small misses are far more common than people think — most interactions don't need an apology at all
 - Templates scale to relationship (different wording for boss vs close friend)
 - The 'what NOT to say' section prevents common apology mistakes
 - Over-apologizing trains people to expect apologies for normal interactions
@@ -1507,10 +1494,10 @@ Output: You get three options: Collaborative ('I wanted to address some concerns
 ### Buy Wise
 
 URL: https://deftbrain.com/BuyWise
-Tagline: The research you'd do if you had an hour — done in seconds
+Tagline: Make the purchase with your eyes open.
 Categories: Loot, Veer, Do It!
 
-Pre-purchase research assistant. Enter what you're buying and get fair price analysis, timing advice, total cost of ownership, cheaper alternatives, regret predictions, negotiation scripts, and an impulse check. Like having a knowledgeable friend who stops you from overpaying.
+Thinking about a purchase? Tell Buy Wise what you're considering, the price you found, and what matters to you. It helps you judge the tradeoffs, think through the real cost, spot reasons to buy or wait, and identify what you should verify before you pay.
 
 **What it does.** BuyWise gives you everything you'd learn from an hour of research in seconds. Enter any product, and it tells you if the price is fair, whether to buy now or wait, the true total cost of ownership (including consumables and maintenance), cheaper alternatives that do 90% of the job, common buyer regrets, where to buy, and negotiation scripts when haggling is realistic. Comparison mode lets you evaluate two products side by side weighted by your priorities. The impulse check is an honest gut-check for purchases you're not sure about.
 
@@ -1543,10 +1530,10 @@ Output: Verdict: 'Good mixer, but overpaying — and you might not need it.' Fai
 ### Complaint Escalation Writer
 
 URL: https://deftbrain.com/ComplaintEscalationWriter
-Tagline: Full escalation campaigns that companies can't ignore
+Tagline: A clear plan for when a company stops answering
 Categories: Loot, Discourse
 
-Builds a complete multi-stage escalation campaign when a company won't make things right. Identifies your legal leverage, writes ready-to-send letters for every stage — from direct complaint to regulatory filing to executive escalation to public pressure to chargeback — with specific laws cited, evidence coaching, and a tactical timeline. Not just a letter writer — a full consumer advocacy strategy.
+When a company ignores you, the problem isn't always the complaint. It's knowing what to do next. Tell DeftBrain what happened, and we'll build a step-by-step escalation plan — from your next email to regulatory complaints and executive outreach if necessary.
 
 **What it does.** Most consumer complaints fail because people don't know what leverage they actually have. This tool analyzes your situation, identifies applicable consumer protection laws, and builds a 5-stage escalation campaign — each stage increasing pressure while maintaining professionalism. Every letter, regulatory complaint, social media post, and legal filing is pre-written and ready to copy-paste-send. You start at Stage 1 and only escalate if needed.
 
@@ -1557,17 +1544,17 @@ Builds a complete multi-stage escalation campaign when a company won't make thin
 3. Note previous resolution attempts, desired outcome, amount at stake, and what documentation you have
 4. Review the Situation Assessment to understand your legal position and likelihood of success
 5. Check the Evidence Checklist and gather documentation before sending anything
-6. Start with Stage 1 (Direct Complaint) — copy the letter and send it
-7. If Stage 1 fails, move to Stage 2 (Regulatory Filing) and continue up the ladder as needed
-8. Follow the Campaign Timeline for when to execute each stage
+6. Start with step 1 — copy the letter and send it today
+7. If there is no answer, step 2 is the regulatory complaint — and only if you need it
+8. The timeline tells you when each step is due
 
 **Tips.**
 
 - The more specific your description, the stronger every stage of the campaign will be — include dates, amounts, names, reference numbers
-- Always gather your evidence BEFORE sending Stage 1 — the Evidence Checklist tells you exactly what to collect
+- Gather your evidence before you send step 1 — the checklist tells you exactly what to collect
 - The tool identifies specific laws that apply to your situation — these are referenced in the letters to signal you know your rights
-- Stage 2 (Regulatory Filing) is often the most powerful — companies are required to respond to regulatory complaints within specific timelines
-- Don't skip straight to Stage 5 — the escalation ladder builds a documented trail that strengthens each subsequent stage
+- The regulatory complaint is often the step that moves things — companies are required to respond to regulatory complaints within specific timelines
+- There is no need to jump ahead — each step leaves a record that makes the next one easier
 
 **Example.**
 
@@ -1578,38 +1565,38 @@ Output: You get: a Situation Assessment showing strong legal position under Magn
 ### Contract Decoder
 
 URL: https://deftbrain.com/ContractDecoder
-Tagline: Paste any contract — know exactly what you're signing
+Tagline: Understand what you're agreeing to before you sign.
 Categories: Loot
 
-Paste any contract and get a plain-English breakdown of every clause that matters — flagged by risk level, with specific negotiation asks and a before-you-sign checklist.
+Paste a contract — or upload the file — and get a plain-English breakdown of important terms, questions to consider, and possible points to clarify or negotiate before you sign.
 
-**What it does.** Most people sign contracts without understanding what they're agreeing to. ContractDecoder reads any contract — employment agreement, NDA, freelance deal, SaaS terms, lease, service agreement — and flags every clause worth knowing about, ordered by risk. For each clause you get plain-English explanation, the exact contract language, why it matters, what to do about it, and a specific negotiation ask. It also surfaces missing protections that are standard for your contract type but absent from yours.
+**What it does.** Contract Decoder helps you understand a contract without pretending to deliver a legal verdict. It identifies important terms in the document, quotes the language it is explaining, translates that language into plain English, describes its apparent practical effect, and surfaces questions that may be worth clarifying. When a point looks negotiable, it can suggest a possible ask. It also collects document-specific gaps and ambiguities into a short 'Things to clarify' section and finishes with a concrete before-you-sign checklist.
 
 **How to use it.**
 
-1. Select the contract type to give the AI the right context for what's standard vs. unusual
-2. Optionally select focus areas — IP, exit terms, liability, auto-renewal, etc. — to prioritize
-3. Paste the full contract text — the more complete, the better
-4. Add your situation if relevant: 'First job offer, no leverage' or 'Freelancer, 3-month project'
-5. Click 'Decode This Contract' — get an overall risk verdict plus clause-by-clause breakdown
-6. Review high-risk clauses first — each one includes a specific negotiation ask
-7. Check 'Missing protections' for what the contract doesn't say but should
-8. Use 'Before you sign' checklist before putting pen to paper
+1. Paste the contract text or upload the contract file
+2. Optionally add the country and state/province that govern the agreement, if known
+3. Optionally describe your situation or a concern you want the explanation to keep in mind
+4. Click 'Decode This Contract'
+5. Start with the plain-English overview, then review the important terms that are grounded in quoted contract language
+6. Use 'Things to clarify' for gaps or ambiguities the supplied document does not resolve
+7. Use 'If you want to negotiate this' as optional language for raising a point — not as a verdict that the term must be changed
+8. Finish with the before-you-sign checklist for document-specific next steps
 
 **Tips.**
 
-- Paste the full contract, not just sections you're worried about — the most dangerous clauses are often the ones you didn't think to look at
-- The 'Your situation' field changes the analysis: a clause that's acceptable for a large company may be unacceptable for a solo freelancer
-- Focus areas help when you're pressed for time — select what matters most and the AI prioritizes accordingly
-- LOW RISK doesn't mean ignore it — it means standard and fair for this contract type; still worth reading
-- The negotiate field gives you a specific ask, not just 'try to negotiate' — use the exact language when pushing back
-- Works across 12 languages — paste contracts in any language for analysis
+- Use the full agreement when you can. An extract may omit definitions, notice provisions, exceptions, schedules, or riders that change how a clause reads
+- If the contract names a governing law or jurisdiction, enter that location rather than your own physical location
+- Use 'Your situation' for context the document cannot know — for example, a renewal invoice you received, a deadline, or a practical constraint
+- Treat quoted contract language as the anchor. If an explanation seems broader than the quoted text, check the surrounding section in the original document
+- Questions to clarify are especially useful when the document refers to something it does not define, leaves a field blank, or depends on another document you have not supplied
+- Possible negotiation asks are optional starting points. Choose only the ones that matter to you and fit the actual relationship
 
 **Example.**
 
-Input: A freelance designer pastes a 9-clause service agreement before signing. She includes context: 'First project with this client, startup, no lawyer.' She selects IP and Payment as focus areas.
+Input: A company uploads an extract from a software subscription agreement after receiving a 40% renewal increase. The agreement renews annually unless written notice is given 90 days before the term ends.
 
-Output: Overall risk: HIGH. Red flags: 3 high-risk clauses. IP Assignment (HIGH) — all work including unpaid concepts assigned to client permanently, even if contract is terminated. Non-Compete (HIGH) — 24-month ban on design work in all of tech. Payment (HIGH) — 60-day payment terms with 6-month waiver if not claimed. Before you sign: request IP revert to you if terminated without payment; strike non-compete or limit to direct competitors only; reduce payment terms to 30 days.
+Output: The overview identifies the renewal window, uncapped renewal pricing, mid-term seat restrictions, amendment terms, and data-export provisions. Each important term includes the exact contract language, a plain-English explanation, its apparent practical effect, and a question to consider. 'Things to clarify' asks how written non-renewal notice must be delivered and where the provider's current price list is published. The before-you-sign checklist tells the user to calculate the 90-day deadline, obtain the current price list, confirm the notice method, and verify export format and migration rates.
 
 ### Fake Review Detective
 
@@ -1617,7 +1604,7 @@ URL: https://deftbrain.com/FakeReviewDetective
 Tagline: Spot fake reviews before you get burned
 Categories: Loot
 
-Import reviews from a URL or paste them manually. Computes real statistics, then AI scores each review individually and detects manipulation patterns.
+Five stars doesn't always mean five-star quality. Paste reviews or import them from a product page, and DeftBrain will help you separate genuine experiences from marketing disguised as customer feedback.
 
 **What it does.** Fake Review Detective uses a two-phase approach: first, JavaScript computes real statistics from your pasted reviews (star distribution, verified %, date clusters, language flags) — instant, no AI needed. Then AI scores each review individually for authenticity (0-100 with red/green flags) and analyzes cross-review patterns (manipulation detection, genuine consensus, purchase recommendation). Every number you see is computed, not hallucinated.
 
@@ -1685,7 +1672,7 @@ URL: https://deftbrain.com/MarkupDetective
 Tagline: Why does this cost that? Follow the money.
 Categories: Loot, Diversions
 
-Ever wonder why a $5 coffee costs $5 or hospital aspirin is $25? Describe any product or service and MarkupDetective breaks down the actual cost structure — raw materials, labor, overhead, margin, and the psychological pricing tactics at play. See the markup multiplier, industry secrets, the fair price, and how to pay less.
+Ever wonder why a $5 coffee costs $5 or hospital aspirin costs $25? Describe any product or service, and Markup Detective will show you where the money goes and why the price may be much higher than you expected.
 
 **What it does.** MarkupDetective is pricing forensics for everyday life. Pick any product or service, and it shows you exactly where your money goes — what percentage is raw materials vs. labor vs. brand premium vs. pure profit. Includes the psychological pricing tactics being used on you, industry secrets about how things are really priced, and specific ways to get the same thing for less.
 
@@ -1695,13 +1682,13 @@ Ever wonder why a $5 coffee costs $5 or hospital aspirin is $25? Describe any pr
 2. Optionally add the specific price you saw and where
 3. Or tap a popular mystery to jump in
 4. Review the cost breakdown with visual bars showing where money goes
-5. Check the fair price comparison and money-saving tips
+5. Check what it typically costs elsewhere, and the money-saving tips
 
 **Tips.**
 
 - Adding the specific price and context gets more precise breakdowns
-- The 'industry secrets' section reveals things companies don't want you to know
-- Fair price comparison shows what insiders actually pay
+- The pricing-practice section explains how the industry actually sets its prices
+- The comparison shows what the same thing usually costs away from this particular venue or channel
 - Save money tips are specific to each item, not generic advice
 
 **Example.**
@@ -1882,10 +1869,10 @@ Output: Maps out: they'll anchor high ($22k), use 'monthly payment' framing to h
 ### Brag Sheet Builder
 
 URL: https://deftbrain.com/BragSheetBuilder
-Tagline: Turn humble descriptions into a complete career advancement toolkit
+Tagline: Remember your work. Recognize your strengths. Tell your story with confidence.
 Categories: Pursuits, The Office
 
-Transforms humble work descriptions into polished achievement statements, then goes further with Strength Radar scoring, JD tailoring, Interview Prep Matrix, Voice Match, raise ammunition, and a meeting script.
+Most people remember their mistakes more easily than their accomplishments. Tell DeftBrain what you've been working on, and we'll help you recognize, organize, and communicate the value you've already created.
 
 **What it does.** Most people chronically understate their work. This tool fixes that — and then takes it five steps further. The core loop: add accomplishments in your own words, get them transformed into power statements with verb upgrades, then answer metrics questions to replace estimates with real numbers. But the real power is what comes after. The Strength Radar scores your sheet against role expectations and finds gaps. JD Tailoring rewrites bullets to match a specific job posting's language. The Interview Matrix maps everything to likely behavioral questions. Voice Match rewrites outputs to sound like you, not AI. And the Accomplishment Journal lets you log wins weekly so you never have to remember six months of work at once.
 
@@ -1922,76 +1909,74 @@ Output: Before/After: 'helped improve onboarding' → 'Redesigned user onboardin
 ### Caption Magic
 
 URL: https://deftbrain.com/CaptionMagic
-Tagline: Turn any photo into engaging social media captions
+Tagline: Find the words that fit the photo.
 Categories: Pursuits, Discourse
 
-Turn any photo into engaging social media captions with AI vision. Upload or paste an image, pick your platform and tone, and get 3 distinct caption options with smart hashtags (categorized by reach), character counts, alt text, and engagement tips. Refine any caption with one tap, adapt your winner to every platform at once, remix the best parts of multiple captions, and build a personal brand voice profile that gets smarter over time. Supports Instagram, LinkedIn, Facebook, Twitter/X, TikTok, and Threads.
+A good photo doesn’t always come with the right words. Share the image, and tell us the part it can’t show — who’s in it, what was happening, the joke behind it. Caption Magic gives you six captions to pick from, from plainly useful to genuinely strange, and you can keep asking for funnier, warmer, drier or weirder until one of them makes you laugh.
 
-**What it does.** Caption Magic uses AI vision to look at your actual photo and craft social media captions that sound like a real person, not a brand. Upload any image (drag-and-drop, paste, or describe it), choose your platform and tone, and get 3 distinct caption options with categorized hashtags (trending, niche, branded), character counts against platform limits, alt text, posting schedule recommendations, and engagement tips. Refine any caption instantly with 5 one-tap options. Adapt your winner to all platforms at once. Remix the best parts of multiple captions into a perfect hybrid. After 3+ uses, Caption Magic learns your brand voice and can auto-apply your preferred style. Track which captions perform best with built-in A/B testing insights.
+**What it does.** Caption Magic turns a photo into a small set of caption ideas without making you explain the picture back to yourself. Upload an image or describe it, then add anything the image cannot know — who is there, what was happening, an inside joke, or something to avoid. You get six captions with real range, from straightforward to warm, clever, funny, dry, or unexpectedly strange. From there you can ask for funnier, warmer, drier, more unhinged, a surprise, or six more, and refine a caption you like.
 
 **How to use it.**
 
-1. Upload, drag-and-drop, or paste an image — or describe what's in the photo if you don't have one handy
-2. Select your platform (Instagram, LinkedIn, Facebook, Twitter/X, TikTok, Threads) — character limits adjust automatically
-3. Choose 1-3 tones and a caption length (short/medium/long), optionally add context about the moment
-4. Generate captions, then refine with one-tap: Less try-hard, More engaging, Shorter, Longer, or Professional
-5. Use 'Adapt to all platforms' to instantly get versions for every network, or 'Remix' to blend your favorites
+1. Upload, paste, or describe the photo
+2. Add optional context the image cannot show, especially relationships, backstory, or an inside joke that would make the caption better
+3. Say if there is anything the captions should avoid mentioning
+4. Choose the platform and preferred caption length
+5. Pick from six captions, then ask for a different direction or refine one you like
 
 **Tips.**
 
-- Mix tones for variety — combining 'funny' with 'reflective' often yields the most authentic-feeling options
-- After 3+ generations, your Brand Voice profile unlocks — toggle it on to auto-apply your preferred style
-- Use 'Adapt to all platforms' to cross-post efficiently — each version is rewritten for its platform, not just trimmed
-- The Remix feature is great for combining the opening of one caption with the tone of another
-- Mark winners with '📊 This one won' to build audience insights that improve your future captions
+- A short piece of real context often gives the captions more personality than adding more style instructions
+- If the first six all feel too similar, use Surprise me or Six more rather than over-editing the form
+- Use Funnier, Warmer, Drier, or More unhinged when you know the direction you want
+- The playful captions may invent a comic voice or metaphor, but concrete backstory about real people should come from you
 
 **Example.**
 
-Input: You took a photo of your coffee mug on your desk with your laptop in the background — the millionth 'working from home' photo.
+Input: You have a photo from a family gathering where one person's expression is funny, but the picture alone cannot show the running joke behind it.
 
-Output: You get 3 options with smart hashtags color-coded by category (🔥 trending, 🎯 niche, 🏷️ branded). One caption is perfect for Instagram, so you tap 'Adapt to all platforms' and instantly get versions for LinkedIn, Twitter, TikTok, Threads, and Facebook — each one native to its platform. You mark the witty option as 'This one won' to build your audience insights over time.
+Output: Caption Magic returns six different caption ideas rather than six rewrites of the same joke. You can copy one immediately, ask for a funnier or drier batch, or work further on a caption that is close.
 
 ### Cold Open Craft
 
 URL: https://deftbrain.com/ColdOpenCraft
-Tagline: First messages that actually get responses.
+Tagline: Make the first message easier to send — and easier to answer.
 Categories: Pursuits, Discourse
 
-Reaching out to someone you don't know — for networking, a job, a collaboration, or a favor? Describe who and why, and ColdOpenCraft generates 3 openers ranked by boldness (safe, balanced, bold), explains the psychology behind each, includes a follow-up plan, and warns you what NOT to say. Channel-specific for email, LinkedIn, DM, or in-person.
+Reaching out to someone you don’t know can make even a simple message feel awkward. Tell us who you’re contacting, why you’re reaching out, and what you know about them. Cold Open Craft gives you three ready-to-send ways to begin — each opening differently and asking for something different — plus a follow-up for when nobody replies.
 
-**What it does.** ColdOpenCraft is for anyone who needs to reach out to a stranger and doesn't want to sound like spam. It generates three openers at different boldness levels, each with the psychology explained, estimated response rates, and guidance on when to use which version. Includes a follow-up plan with timing, a backup message, and the 'power move' nuclear option.
+**What it does.** Cold Open Craft helps when you need to contact someone you do not know well and the first sentence is the hardest part. Tell it who you are contacting, why you are reaching out, the channel, and any real connection points you have. It returns three complete messages that open differently while staying grounded in what you actually supplied, plus a simple follow-up if the first message gets no reply.
 
 **How to use it.**
 
-1. Describe who you're reaching out to and their role/context
-2. Explain why — what you want from this connection
-3. Pick the channel (email, LinkedIn, DM, text, in-person)
-4. Add what you know about them for much more specific openers
-5. Choose your boldness level preference
-6. Pick your favorite opener and copy it
+1. Say who you are reaching out to and why you want to contact them
+2. Choose the channel: email, LinkedIn, Twitter/X DM, Instagram DM, or text
+3. Add any specific facts you genuinely know about the person that could make the opener more natural
+4. Add the part of your own background that is relevant to this outreach
+5. Compare the three ready-to-send approaches, choose the one that sounds most like you, and personalize it before sending
 
 **Tips.**
 
-- The 'what you know about them' field is crucial — specificity is what separates you from spam
-- Read the 'what NOT to say' section before sending — it's tailored to your exact situation
-- The follow-up plan includes when to give up — that's important too
-- For high-stakes outreach, try all three boldness levels and sleep on it
+- Specific real details make outreach feel more natural; invented familiarity does the opposite
+- Include only the parts of your background that help explain why this connection makes sense
+- Choose the version whose voice you could plausibly use yourself, not simply the most polished one
+- Before sending, check names, titles, links, dates, and any other detail that would be awkward to get wrong
 
 **Example.**
 
-Input: You want to pitch your startup to a podcast host for a guest appearance.
+Input: You want to contact a hiring manager who posted a role, and you have relevant experience plus one piece of their public work you genuinely follow.
 
-Output: Three openers: a safe professional pitch, a balanced one that leads with a specific episode reference, and a bold one that opens with a contrarian take on their recent topic. Plus subject line, follow-up timing, and what NOT to say.
+Output: Cold Open Craft gives you three grounded messages that lead differently — for example with the role, the shared topic, or your relevant background — plus a brief follow-up you can use later if needed.
 
 ### Future Proof
 
 URL: https://deftbrain.com/FutureProof
-Tagline: The 5-year trajectory on any skill, career, or bet — before you go all in
+Tagline: Stress-test a career, skill, technology, investment or long-term bet — before you go all in
 Categories: Pursuits, Veer
 
-5-year trajectory analysis for a skill, career path, investment, technology, or commitment. Get tailwinds, headwinds, automation risk, adjacent pivot moves, and three scenarios — bull, base, and bear case. Ends with the one action worth taking now.
+Stress-test a career, skill, technology, investment, or long-term bet. See what's working for it, what's working against it, what could change, and what you can do now without betting everything on one forecast. Choose a 1, 3, 5 or 10 year horizon; get tailwinds, headwinds, three conditional scenarios, and one low-regret action.
 
-**What it does.** FutureProof runs a 5-year trajectory analysis on anything you're betting on — a skill, a career path, a technology, or a major commitment. It identifies the structural forces working for and against it, assesses automation risk, maps adjacent moves, and delivers three honest scenarios.
+**What it does.** Future Proof stress-tests anything you are betting years on — a skill, a career path, a technology, an investment or a major commitment. It separates what can be observed now from what is only projected, names the assumptions the analysis rests on, maps adjacent moves, and gives three genuinely different conditional scenarios rather than one forecast at three volumes.
 
 **How to use it.**
 
@@ -2017,10 +2002,10 @@ Output: Trajectory: Transforming. Tailwinds: AI tools increasing design output s
 ### Ghost Writer
 
 URL: https://deftbrain.com/GhostWriter
-Tagline: Turn rough notes into polished recommendation letters in seconds
+Tagline: You know why they deserve it. This helps you say it.
 Categories: Pursuits, Discourse
 
-Input who you're recommending, your relationship, their qualities, and a few rough bullet points. Get 3 letter versions (narrative, structured, concise) calibrated to the formality level and context. Each version highlights placeholders to personalize, power phrases to keep, and refinement options to dial in the tone.
+You already know why this person deserves your recommendation. The difficult part is turning years of experience, impressions, and memories into a letter that does them justice.
 
 **What it does.** Ghost Writer solves one of the most procrastinated writing tasks: recommendation letters. It takes your rough knowledge of someone and produces polished letters that sound like YOU wrote them thoughtfully, with specific anecdotes and persuasive structure that actually moves reviewers.
 
@@ -2152,7 +2137,7 @@ URL: https://deftbrain.com/NameStorm
 Tagline: Name anything. Know it works before you commit.
 Categories: Pursuits, What If?
 
-AI-powered name generation with linguistic problem flagging, live domain and social handle availability checks, and 'More Like This' variations. Generates names across 15 style categories — from Clever Wordplay to Mythic to Mashup — each with pronunciation guides, Name DNA explaining why it works, and flags for unintended meanings in other languages, phonetic issues, and brand conflicts.
+Names are deceptively hard. They need to sound right, fit your audience, be easy to remember, and still feel right six months from now. Describe what you're naming, and DeftBrain will help you find a name that works before you commit.
 
 **What it does.** Naming things is hard because you need creativity, cultural awareness, and practical validation all at once. NameStorm generates 25-35 names across the style categories most relevant to what you're naming, then gives you tools to evaluate them: pronunciation guides, Name DNA explaining the linguistic psychology behind each name, problem flags for issues in other languages or phonetic traps, AI-curated Top 5 picks, a Say It Out Loud test, live domain and social handle availability checks, and a 'More Like This' button that generates 8-10 variations of any name you almost love.
 
@@ -2213,38 +2198,6 @@ Input: You're a marketing coordinator who wants to become a product manager. You
 
 Output: You get 6 prioritized skill gaps (SQL, wireframing, A/B testing, technical communication, roadmapping, user research) with effort bars and urgency ratings. Expand SQL for a deep dive with free courses and a portfolio project. Generate a 6-month timeline. Click Day in Life to see what a PM's Tuesday actually looks like. Decode a real PM job posting to see you're already 65% qualified. Run a mock interview round where the AI asks 'How would you prioritize these three features?' and coaches your answer.
 
-### The Alibi
-
-URL: https://deftbrain.com/TheAlibi
-Tagline: Frame your real story for any audience — honest but strategic
-Categories: Pursuits, Discourse
-
-Tell the real story — messy, complicated, unflattering — and get 2-3 strategically framed versions tailored to your audience, each with an exact script, follow-up prep, trap warnings, and a nuclear option if it goes sideways. Truthful framing, not fiction.
-
-**What it does.** The Alibi takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.
-
-**How to use it.**
-
-1. Write out the real story — be as honest and detailed as possible (this stays between you and the tool)
-2. Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience
-3. Pick your preferred tone: professional, casual, warm, or confident
-4. Add what you're worried they'll think and any extra context about the situation
-5. Review 2-3 strategically different versions, each with scripts, risks, and best-use scenarios
-
-**Tips.**
-
-- The messier and more honest your input, the better the framing — don't self-censor
-- Each version has a genuinely different strategic approach, not just different words for the same thing
-- Follow-up prep includes 'trap to avoid' warnings — things that sound natural but hurt your case
-- Body language tips are tailored to your specific situation and audience, not generic advice
-- Try the same story with different audiences to see how framing shifts — it's eye-opening
-
-**Example.**
-
-Input: You left your last job after only 4 months. The company was chaotic, management was toxic, and they misrepresented the role. You're now interviewing for a senior position at a competitor.
-
-Output: Three versions: 'The Growth Story' (emphasizes what you learned about what you need in a workplace), 'The Standards Story' (frames it as knowing your worth and not settling), and 'Own It' (brief and confident, redirects to what you bring). Each includes a ready-to-use script, follow-up prep for 'Why so short?' and 'Were you fired?', delivery tips, and a redirect line if things get uncomfortable.
-
 ### The Run-Through
 
 URL: https://deftbrain.com/TheRunthrough
@@ -2276,15 +2229,47 @@ Input: You have a 20-minute investor pitch that runs about 35 minutes.
 
 Output: Cut mode trims it to 19 minutes, telling you exactly what was removed and why. Anticipate mode surfaces 6 tough questions investors will ask, with draft answers and traps to avoid.
 
+### The Whole Story
+
+URL: https://deftbrain.com/TheWholeStory
+Tagline: Frame your real story for any audience — honest but strategic
+Categories: Pursuits, Discourse
+
+Some stories are hard to tell. Share the real story—even the messy parts—and we'll help you explain it honestly and strategically.
+
+**What it does.** The Whole Story takes your real, messy, complicated story and helps you tell it honestly but strategically to a specific audience. The same resume gap told to an interviewer emphasizes growth; told to a date, it emphasizes life experience; told to a lender, it emphasizes current stability. You get multiple versions with different strategic approaches — not just different tones — plus follow-up prep so your story holds up under gentle probing.
+
+**How to use it.**
+
+1. Write out the real story — be as honest and detailed as possible (this stays between you and the tool)
+2. Select who you're telling: job interviewer, landlord, date, in-laws, lender, coworker, or custom audience
+3. Pick your preferred tone: professional, conversational, warm, or direct
+4. Add what you're worried they'll think and any extra context about the situation
+5. Review 2-3 strategically different versions, each with scripts, risks, and best-use scenarios
+
+**Tips.**
+
+- The messier and more honest your input, the better the framing — don't self-censor
+- Each version has a genuinely different strategic approach, not just different words for the same thing
+- Follow-up prep includes 'trap to avoid' warnings — things that sound natural but hurt your case
+- Body language tips are tailored to your specific situation and audience, not generic advice
+- Try the same story with different audiences to see how framing shifts — it's eye-opening
+
+**Example.**
+
+Input: You left your last job after only 4 months. The company was chaotic, management was toxic, and they misrepresented the role. You're now interviewing for a senior position at a competitor.
+
+Output: Three versions: 'The Growth Story' (emphasizes what you learned about what you need in a workplace), 'The Standards Story' (frames it as knowing your worth and not settling), and 'Own It' (brief and confident, redirects to what you bring). Each includes a ready-to-use script, follow-up prep for 'Why so short?' and 'Were you fired?', delivery tips, and a redirect line if things get uncomfortable.
+
 ## The Office
 
 ### Batch Flow
 
 URL: https://deftbrain.com/BatchFlow
-Tagline: Batch similar tasks to protect your focus and minimize mental gear-shifting
+Tagline: Your tasks, grouped so the day stops fighting you
 Categories: The Office, Do It!
 
-Batch similar tasks by cognitive mode to minimize context switching and protect your focus. Includes weekly rhythms, A/B schedule comparison, time calibration, location-aware batching, resistance detection, and focus environment presets.
+A scattered day can feel busy without accomplishing much. Tell DeftBrain what's on your plate, and we'll group your tasks into a schedule that works with your energy instead of against it.
 
 **What it does.** BatchFlow groups your tasks by how your brain needs to work — not just by topic or deadline. Every time you switch between creative thinking, analytical work, social communication, or physical tasks, your brain pays a recovery tax of 15–25 minutes. BatchFlow eliminates unnecessary switches by sorting your tasks into coherent batches, scheduling them around your energy curve and fixed commitments, and giving you a ready-to-execute plan. Add your tasks, tell it what kind of day you're having and when your energy peaks, and get a complete batched schedule — with focus environment tips, break suggestions, and time estimates — in seconds.
 
@@ -2482,10 +2467,10 @@ Output: The memo: 'We failed because we optimized for content quality instead of
 ### The Debrief
 
 URL: https://deftbrain.com/TheDebrief
-Tagline: Paste a meeting transcript — get decisions, actions, and follow-ups
+Tagline: The meeting ended. Now figure out what actually happened.
 Categories: The Office, Do It!
 
-Paste any meeting transcript and get decisions, action items with owners and deadlines, follow-up drafts, and cross-meeting pattern analysis — without digging through the notes yourself.
+What did we actually decide? Who's doing what? And what still needs follow-up? Paste your meeting transcript or notes. We'll pull out the decisions, commitments, deadlines, and loose ends.
 
 **What it does.** The Debrief is The Crux's professional sibling — same core mechanic (long transcript → extract what matters), but purpose-built for meetings instead of talks and long reads. Where lectures need concepts and testable material, meetings need decisions, owners, deadlines, and accountability. The tool distinguishes between 'someone said we should' (not a decision) and 'we agreed to' (a decision), flags action items with no owner or deadline, detects tensions, and grades meeting health. Series mode is the killer feature — paste your last 3 weekly standups and see which action items disappeared without resolution.
 
@@ -2514,80 +2499,78 @@ Output: Distill produces: 3 decisions (with who drove each), 7 action items (2 f
 
 ## Energy
 
+### Before the Crash
+
+URL: https://deftbrain.com/BeforeTheCrash
+Tagline: Learn what tends to happen before you run out of steam
+Categories: Energy, Me
+
+Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.
+
+**What it does.** Before the Crash tracks daily signals (energy, sleep, stress, activities, physical symptoms, warning signs) and compares them against your own history. It shows what tended to happen in the days before the ones you marked as a crash — your indicators, not generic burnout symptoms. It does not diagnose burnout and does not predict when a crash will happen; it shows you your own pattern and leaves the reading to you. Designed for people who push through everything and want something more objective than their 'I'm fine' instinct.
+
+**How to use it.**
+
+1. Daily check-in: rate energy, sleep and stress, and tick any activities, physical symptoms or warning signs that fit. Takes about a minute.
+2. Save it. Everything stays on your device. Do it every day, including — especially — the days you feel fine.
+3. Mark the bad days: when a day ends with you out of steam, tick the box that says so. That mark is what everything else is measured against.
+4. After a few days, compare: the tool lines up the days before the ones you marked against your ordinary days, and shows what tended to differ.
+5. Read it yourself. It shows you your own pattern; what it means, and what to do about it, is yours to decide.
+
+**Tips.**
+
+- Check in every day, including the good ones — the ordinary days are the baseline the bad ones get compared against
+- Be honest about the ratings; nobody else sees them
+- Mark the bad days as they happen. A pattern with nothing to compare against is just a chart
+- A few days won't show much. Two or three weeks will
+- Autistic users: count masking as energy spent, even when it doesn't feel like effort
+- ADHD users: medication can mask fatigue — log the sleep and rest you actually got, not how alert you feel
+- A pattern is not a diagnosis and not a schedule. It shows you what has tended to come first, not what will happen next
+
+**Example.**
+
+Input: You've been checking in for two weeks. Stress has sat high for six days, sleep has been poor, energy has drifted from 7 down to 3, and you haven't had a day off. You feel fine and plan to keep going.
+
+Output: What comes back is a comparison, not a verdict: in the three days before the days you marked, sleep was consistently lower and stress higher than on your ordinary days, and 'skipped lunch' appeared each time. It doesn't tell you a crash is coming on Thursday, because it can't know that. It tells you what has come first before, so you can decide whether this week is starting to look like those ones.
+
 ### Brain State Deejay
 
 URL: https://deftbrain.com/BrainStateDeejay
-Tagline: Science-backed playlists for your brain state
+Tagline: Music that moves you from where you are to where you need to be.
 Categories: Energy, Me
 
-Get science-backed music playlists tailored to your current brain state and where you need to be. Goes beyond generic 'focus music' with tempo, complexity, and sensory preference tuning.
+Changing mental state is a transition, not a switch. Tell us where your head is now and where it needs to be, and we’ll lay out a listening plan in phases — what each one should sound like, and search terms you can use in your music service.
 
-**What it does.** Music affects cognitive states through tempo, complexity, and familiarity. This tool creates progressive playlists that transition you from anxious to calm, scattered to focused, or low-energy to motivated. Considers sensory sensitivities like sudden sounds, vocal distraction, bass sensitivity, and need for predictable patterns.
+**What it does.** Brain State Deejay helps you use music as a transition between how you feel now and the state you want to move toward. It builds a phased listening plan, describes what each phase should sound like, and gives you search terms you can open in common music services. The plan can reflect your task, genre preferences, and listening sensitivities without pretending there is one scientifically correct soundtrack for a mental state.
 
 **How to use it.**
 
-1. Select your current state (anxious, scattered, low energy, overwhelmed, foggy)
-2. Select your desired state (focused, calm, energized, creative, grounded)
-3. Optionally add task context and music preferences
-4. Expand Listening Sensitivities to flag sounds or patterns that don't work for you
-5. Get a 3-phase playlist strategy with specific genres, artists, and Spotify search terms
+1. Choose your current state and the state you want to move toward
+2. Optionally add the task you are doing, such as writing, studying, exercise, chores, or unwinding
+3. Add genres you tend to like and any listening sensitivities that matter to you
+4. Use the phased listening plan as a starting point rather than a prescription
+5. Open a phase's search in your preferred music service, then adjust if the sound feels too sleepy, busy, intense, or distracting
 
 **Tips.**
 
-- Start the playlist BEFORE starting work — music helps prime your brain for the transition
-- Let the phases play through in order; don't shuffle, the progression is intentional
-- Use the 'Not quite right?' panel to adjust without starting over
-- If you find yourself noticing the music, that's a signal to switch to a lower-complexity phase
-- Headphones help isolate you from competing sounds and strengthen the focus cue
+- Treat the first plan as a starting point; your own response to the music matters more than the label on a phase
+- If a phase is distracting, simplify it rather than forcing yourself through it
+- If the plan is making you sleepy when you need energy, try a clearer beat or a little more movement
+- Remember what works for a particular state and task so future plans can start closer to your preferences
 
 **Example.**
 
-Input: You're scattered and can't focus on writing a report. You need auditory stimulation but lyrics pull your attention away.
+Input: You feel scattered but need to settle into an hour of writing, and vocals tend to pull your attention away.
 
-Output: 3-phase playlist: (1) Familiar upbeat instrumentals (10 min) to build momentum, (2) Lo-fi or post-rock at 90-95 BPM (60 min) for sustained focus, (3) Minimal ambient (30 min) to maintain flow without effort. Includes Spotify search terms and alternatives if the energy level is off.
-
-### Crash Predictor
-
-URL: https://deftbrain.com/CrashPredictor
-Tagline: Spot your burnout patterns before the crash
-Categories: Energy, Me
-
-Track daily energy, sleep, and stress to identify YOUR personal burnout patterns before you crash. For people who push through warning signs, mask symptoms, or have poor interoception (can't sense body signals). The tool uses objective data to warn you when a crash is coming - because your feelings might say 'I'm fine' even when the pattern shows you're not. Get specific, actionable interventions prioritized by urgency. Built especially for people who can't trust their own assessment.
-
-**What it does.** Crash Predictor tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.
-
-**How to use it.**
-
-1. Daily check-in: Rate energy (1-10), sleep quality (1-10), stress level (1-10), check activities, physical symptoms, and warning signs. Takes 60 seconds.
-2. Save entry: Data stored locally. Do this every day, even (especially) when you 'feel fine'.
-3. After 3+ days: Click 'Analyze Patterns' to see burnout risk assessment, your specific crash pattern, warning signs, and preventive actions.
-4. Follow interventions: Sorted by urgency (urgent/high/medium/low). Do the urgent ones even if you don't feel like you need to.
-5. Trust the data, not your feelings: If analysis says you're at high risk but you 'feel fine', the data is right. This is what poor interoception means.
-
-**Tips.**
-
-- Log EVERY day, even when things are good - you need baseline data
-- Be honest about ratings - this is for you, not performance
-- If you think 'I don't need this today', that's when you need it most
-- Show analysis to someone who knows you - external validation helps
-- Autistic users: Count masking as energy drain even if it doesn't 'feel' draining
-- ADHD users: Medication can mask fatigue - log actual sleep/rest, not perceived energy
-- If analysis says urgent intervention but you disagree, do it anyway - trust the pattern
-- Recovery from ignoring warnings: 2-4 weeks. Prevention from following warnings: 2-4 days.
-
-**Example.**
-
-Input: You've been logging for 2 weeks. Stress has been 8+ for 6 days, sleep averaging 4.5/10, energy declined from 7 to 3, zero rest days. You 'feel fine' and think you can keep going.
-
-Output: Analysis shows: 'Your pattern: crash 2-4 days after stress hits 9 while sleep is below 6. Current status: BOTH thresholds met. Interventions: URGENT - Cancel tomorrow evening plans, call in sick if needed. HIGH - Delegate this week's project. Your current capacity: 30% below normal (can do 1-2 things today, not 5). Even if you feel fine, your logs show sleep deficit accumulating, no rest in 12 days, 4 warning signs present. Trust the data.' You cancel plans, take sick day, avoid the crash that would have forced shutdown for 2+ weeks.
+Output: Brain State Deejay lays out a progression from an easier-entry sound toward steadier instrumental focus and then a simpler sustained phase. Each phase includes a sound profile and music-service search terms, plus easy adjustments if the plan feels too stimulating or too flat.
 
 ### Crisis Prioritizer
 
 URL: https://deftbrain.com/CrisisPrioritizer
-Tagline: Separate real urgency from anxiety urgency
+Tagline: Figure out what matters now — and what can wait
 Categories: Energy, Do It!
 
-Separates real urgency from anxiety urgency using consequence-based triage — ranks tasks by what actually breaks if you skip them. Three timeframes, brain dump mode, time-blocked schedules, task splitting, delegation drafts, pattern tracking, and a 'Just One Thing' panic button.
+When several things are competing for your attention, work out a defensible order. Crisis Prioritizer uses the deadlines, consequences and dependencies you actually supply — plus the time and energy you have — and where a missing detail would change the order, it asks for that one fact instead of guessing.
 
 **What it does.** Anxiety inflates urgency. This tool objectively analyzes deadlines, consequences, and who's actually waiting to show what needs attention now vs what can safely wait. Three timeframes (today, this week, multi-week), brain dump extraction, time-blocked schedules, accountability sharing, task splitting, pattern tracking across sessions, and a panic-mode 'Just One Thing' button for when you can't process a full list.
 
@@ -2625,7 +2608,7 @@ URL: https://deftbrain.com/DreamPatternSpotter
 Tagline: Find recurring themes and emotional patterns in your dreams
 Categories: Energy, Me
 
-Analyzes your dreams using Jungian, Freudian, and neuroscience frameworks to surface recurring themes, emotional patterns, symbolic imagery, and life correlations — with reflection questions to make the insights actionable. Not fortune-telling or mysticism: it's pattern recognition for self-reflection and insight.
+Spots notable elements, possible associations, and recurring patterns in your dreams — then gives you thoughtful questions to explore what, if anything, they mean to you. Includes optional Jungian, Freudian, and dream-science perspectives for additional ways of looking at them.
 
 **What it does.** The Dream Pattern Spotter applies psychological frameworks to find patterns in your dream life. Single Dream mode provides deep analysis of one dream. Pattern mode analyzes 2-6 dreams together to find recurring themes, emotional signatures, and correlations to waking life. Not mysticism — pattern recognition for self-reflection.
 
@@ -2652,34 +2635,34 @@ Output: Pattern analysis surfaces: core theme of 'being unprepared or inadequate
 ### Focus Pocus
 
 URL: https://deftbrain.com/FocusPocus
-Tagline: Lock in. Get pulled out. Take care of yourself.
+Tagline: Get something done without disappearing into it
 Categories: Energy, Do It!
 
-A focus session timer that keeps you on task, then pulls you out when time's up — with escalating urgency if you ignore it.
+Turn an open-ended task into a clear stopping point, work toward one concrete result, and stop without losing your place. Focus Pocus helps define what “enough for now” means, gives you one next move if you get stuck, and saves a restart breadcrumb when time is up.
 
-**What it does.** Focus Pocus manages both sides of attention: it keeps you locked in during your session (FocusWall), then interrupts you when time's up (HyperfocusInterrupter). If you try to quit early, it pushes back. If you go overtime, it escalates. When you finally break, it generates a personalized recovery plan based on what you were doing and how long you went.
+**What it does.** Most timers only help you start. Focus Pocus is built around the other half: stopping. Before the clock runs you name one concrete thing that would make the session enough — not the whole project, a place to stop — and it will help you make that concrete if what you typed is vague. While it runs you can ask for the smallest next move if you are stuck, or say you finished early rather than filling the time. When the session ends it asks whether you reached the target. If you did, it says so and sends you off. If you did not, it writes the note that lets you close the laptop without carrying the task around. Extensions exist, but there are three of them and then there are none.
 
 **How to use it.**
 
-1. Name what you're focusing on and pick a session length (or use a Pomodoro preset)
-2. Optionally add context — upcoming obligations, skipped meals — for smarter breaks
-3. Hit Start. The timer runs even if you close the tab
-4. If you want to quit early, the tool pushes back — but won't trap you
-5. When time's up, take the break or snooze (max 3 times). Urgency escalates
-6. Get a personalized break plan with mandatory actions and a re-entry strategy
+1. Say what you are working on and how long you want to focus.
+2. Write what would make this session enough. A stopping point, not the finish line — and if yours is vague, ask it to make that concrete.
+3. Start. The countdown runs in your browser; the session itself is held on the server, so a refresh or a closed tab does not lose it.
+4. If you stall, 'I'm stuck' gives you one small next move rather than a page of advice.
+5. If you get there before the timer does, say you finished early. Filling the remaining time is not the point.
+6. At the end, answer honestly. 'Almost' and 'I got stuck' both leave you a note about where to pick up.
 
 **Tips.**
 
-- The 25-minute Pomodoro preset is great for getting started — extend once you build the habit
-- Fill in the optional context for much better break plans (especially upcoming obligations)
-- If you keep hitting snooze, that's data — try shorter sessions next time
-- Your session persists even if you close the tab, so don't worry about losing progress
+- Pick the stopping point before you start; it is much harder to judge once you are absorbed
+- 'Enough for now' should be something you can answer yes or no to when the timer ends
+- Finishing early is a real outcome — the session is a boundary, not a quota
+- The three extensions are the whole budget; when they are gone that is the answer
 
 **Example.**
 
-Input: You're 2 hours into coding a new feature. You set a 60-min session but snoozed twice.
+Input: A budget proposal you have been avoiding, and forty-five minutes before your next meeting.
 
-Output: You take a real break, come back sharper, and your next session is more productive because you're not running on fumes.
+Output: A session that ends at a place you chose rather than when you run out of steam. If the headcount section is still open at the end, you leave with a sentence telling you exactly where to start next time, instead of the vague dread of an unfinished thing.
 
 ### Focus Sound Architect
 
@@ -2719,7 +2702,7 @@ URL: https://deftbrain.com/GentlePushGenerator
 Tagline: Micro-challenges just outside your comfort zone
 Categories: Energy, Me
 
-Micro-challenges slightly outside comfort zone, calibrated to current capacity. Achievable but slightly scary. Not aggressive motivation - gentle expansion. Celebrates attempts regardless of outcome. Growth without pressure.
+Turn something you'd like to get better at into a small, doable challenge just beyond what's comfortable today. No pep talks, no pressure—the attempt counts.
 
 **What it does.** Growth happens at the edge of comfort, but pushing too hard backfires. This tool creates micro-challenges sized to your current capacity - achievable but slightly scary. Success = attempting, not outcome. Gentle expansion, not forced change.
 
@@ -2751,9 +2734,9 @@ URL: https://deftbrain.com/GriefGuide
 Tagline: Compassionate guidance for navigating loss — yours or someone else's
 Categories: Energy, Me
 
-Guidance for navigating grief — whether you're grieving yourself, supporting someone who is, or both. Covers what's normal, how to be with the pain, what to say (and not say), and when to seek more support.
+Guidance for a loss — whether you're grieving yourself, supporting someone who is, or both. It stays close to what you tell it: what it heard, a few things that may help, words if you need them, and one gentle next step.
 
-**What it does.** Grief is one of the most universal human experiences and one of the least understood. People often don't know what they're feeling is normal, or feel pressure to grieve 'correctly.' Those trying to help often don't know what to say and end up saying things that hurt. GriefGuide offers warm, non-prescriptive guidance tailored to your specific situation — the type of loss, when it happened, and what you're experiencing. It works for the grieving person, for someone trying to support a grieving friend or family member, or for both.
+**What it does.** Grief is one of the most universal human experiences and one of the least understood, and much of what gets offered in response is either a script or a verdict. GriefGuide does neither. It stays anchored to what you actually tell it — it will not name an emotion you did not mention, decide that what you are experiencing is normal or abnormal, or place you at a stage. What it returns is short by design: what it heard, one or two things that may help make sense of it, at most three proportionate suggestions, words you could actually say if language would help, and exactly one gentle next step. It works for the person grieving, for someone trying to support them without making it worse, or for both at once.
 
 **How to use it.**
 
@@ -2762,21 +2745,21 @@ Guidance for navigating grief — whether you're grieving yourself, supporting s
 3. Select when it happened — guidance shifts depending on timeline
 4. Share as much or as little as you're comfortable with in the text field — the more context, the more personal the guidance
 5. Add your country for locally-relevant support resources
-6. Click 'Get Guidance' — the response is tailored to what you shared
+6. Get your guidance — it is built from what you shared, and stops there
 
 **Tips.**
 
 - You don't have to share everything — even minimal input gets useful guidance
-- The 'Helping someone grieve' mode includes specific phrases to use and common phrases to avoid — these are more useful than general advice
+- The 'Helping someone grieve' mode gives you phrases to use and phrases to avoid, built only from what you told it — it will not invent a memory to make a line sound personal
 - Grief over non-death losses (relationships, jobs, health, identity) is just as real and often less validated — this tool treats all loss seriously
-- The 'When to seek more support' section normalizes professional help — it's not a flag that something is wrong
+- More support is offered as an option, not as evidence that something is wrong with how you are grieving
 - If you're in crisis right now, please reach out to a crisis line in your area directly
 
 **Example.**
 
 Input: Someone shares that their father died suddenly three weeks ago. They're functional at work but cry at home. They keep thinking they need to call him. Family is telling them to be strong for their mom.
 
-Output: Opening: Three weeks after a sudden loss like this, what you're describing — staying functional in public while the grief surfaces when you're alone — is one of the most common patterns, and one of the loneliest. That moment of reaching for the phone is something many people describe after losing a parent... Guidance: 'On sudden loss' — sudden deaths don't give us time to prepare, and the shock can delay grief in ways that feel disorienting; 'On being strong for others' — being there for your mom and grieving your own father are not mutually exclusive, but you can't do either well if you're suppressing everything; practical suggestions: let yourself have the cry when it comes, consider finding one person who you don't have to be strong for.
+Output: What I hear: your father died suddenly three weeks ago, you are getting through the working day, and it arrives when you get home. You keep reaching for the phone. Your family has asked you to be strong for your mother. Making sense of it: reaching for the phone is not a mistake you are making — it is a habit that was built over decades and has not caught up yet. Being there for your mother and grieving your own father are not the same task, and being asked for the first does not cancel the second. What may help: let the crying at home be the thing that happens rather than the thing you manage; consider one person you do not have to be strong in front of. One gentle next step: pick that one person, and tell them only that you would rather not be strong around them. Note what it does not do — it does not tell you that what you feel is normal, name an emotion you did not mention, or guess what your father would have wanted.
 
 ### Lazy Workout Adapter
 
@@ -3059,10 +3042,10 @@ Output: Get 25 micro-tasks starting with: Task 1: 'Stand in garage doorway (don'
 ### Virtual Body Double
 
 URL: https://deftbrain.com/VirtualBodyDouble
-Tagline: A quiet coworking partner for solo tasks
+Tagline: Work together. Even when you're working alone.
 Categories: Energy, Do It!
 
-An AI coworking companion that stays with you through a focus session — checking in, cheering you on, and helping you get unstuck. Pick from 6 modes (Deep Work, Sprint, Grind, Creative, Avoidance Buster, or Standard) and it adapts its whole personality to match. Like having someone else in the room, without the small talk.
+Working alone is hard. Working near someone else is easier. That's body doubling — the focus effect of another person's presence. This tool simulates it with an AI companion who checks in, cheers you on, and stays with you until the timer ends. Say what you're working on, pick a companion, and you're not alone anymore.
 
 **What it does.** Working near another person helps you focus — that's why coffee shops, libraries, and coworking spaces exist. Virtual Body Double recreates that effect digitally with a twist: you pick a session mode that changes your buddy's entire personality. Deep Work mode is a silent library companion. Sprint mode is a high-energy burst partner. Grind mode commiserates with dark humor. Creative mode never judges tangents. Avoidance Buster is extra-gentle for tasks you've been putting off. After each session, generate a shareable accountability card — a visual summary designed to screenshot and text to a friend.
 
@@ -3078,7 +3061,7 @@ An AI coworking companion that stays with you through a focus session — checki
 
 **Tips.**
 
-- Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Grind for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off
+- Match the mode to the task: Deep Work for writing, Sprint for email blitzes, Long Haul for data entry, Creative for brainstorming, Avoidance Buster for that thing you keep putting off
 - The accountability card is designed for screenshots — use it to build social momentum
 - 25-45 minute sessions tend to work better than marathons. Start short, extend if you're in flow.
 - Invite a real friend to cowork using the built-in message generator
@@ -3095,7 +3078,7 @@ URL: https://deftbrain.com/WaitingModeLiberator
 Tagline: Break free when upcoming events freeze your day
 Categories: Energy, Do It!
 
-Maps your free windows around appointments and matches tasks to your energy level so 'I have a thing later' doesn't freeze your whole day. Includes a guided launch to get you started on any block, and tracks pre-appointment anxiety against reality so you can see — over time — how much your brain overprepares for nothing.
+Got a thing later and can't start anything? That frozen feeling is real. This tool shows you how much free time you actually have, helps you decide what to do with it, and lets you stop thinking about the appointment until it's time.
 
 **What it does.** You have a dentist at 2pm and a dinner at 7pm. It's 10am. You know you should do things, but you're frozen because 'I have stuff later.' This tool does the math you won't: you have 3 free hours across 2 windows, your first prep alarm is at 1:25pm, and until then the dentist doesn't exist. Enter your tasks and energy level — it assigns each one to a window it can actually fit. After the appointment, a 3-tap debrief compares your pre-appointment anxiety to how it actually went. Over sessions, the pattern becomes undeniable.
 
@@ -3132,7 +3115,7 @@ URL: https://deftbrain.com/AnalogyEngine
 Tagline: Explain anything to anyone — using their world.
 Categories: Discourse, Go Deep!
 
-Describe a concept and who you're explaining it to. Analogy Engine generates tailored analogies using their world. Each one includes why it works, where it breaks down, accuracy ratings, and a teaching tip for delivery.
+The right explanation doesn't begin with the subject. It begins with the listener. Tell DeftBrain what you're trying to explain and who you're explaining it to, and we'll translate it into their world.
 
 **What it does.** AnalogyEngine creates analogies so tailored that complex ideas become instantly obvious. Tell it what you need to explain and who the audience is — especially their interests and world — and it generates multiple analogies that use concepts your audience already understands. Every analogy shows its accuracy, memorability, where it breaks down, and how to deliver it.
 
@@ -3160,10 +3143,10 @@ Output: Generates analogies like 'The Recipe Refinement' — ML is like a chef w
 ### Argue Smarter
 
 URL: https://deftbrain.com/ArgueSmarter
-Tagline: State your position. Face the strongest opposing case.
+Tagline: Test your ideas against the strongest criticism you can find
 Categories: Discourse, Diversions
 
-The complete intellectual sparring system. State any position and face the steelman — the strongest possible opposing case, not a strawman. Multi-turn debate with fallacy flags, coaching angles, source checks, and strategic concession. Five formats (Freeform, Lincoln-Douglas, Cross-Exam, Oxford, Socratic). Devil's Advocate Prep drills you for real meetings. Fallacy Gym trains pattern recognition. Rematch targets your documented blind spots. Highlight Reel analyzes patterns across all debates and assigns a Debater Type.
+The strongest arguments are usually the ones we haven't heard yet. State your position and you'll get the strongest case against it — not to prove you wrong, but to help you think more clearly.
 
 **What it does.** Argue Smarter is a complete system for sharpening how you think. At its core: state any position and face the strongest possible counter-argument — not a caricature, but what a thoughtful, well-informed person who genuinely disagrees would actually say. Around that core: five structured debate formats (including Socratic method where the AI only asks questions), a coaching system that suggests angles without writing your arguments, source-checking for any claim, audience judgment that scores persuasiveness rather than correctness, and an argument map that visualizes the structure of your thinking. Outside of debates: Devil's Advocate Prep drills you for real-world meetings with audience-specific objections, and Fallacy Gym trains you to spot logical errors. Everything compounds — your debate log feeds a Highlight Reel that reveals persistent patterns, assigns a Debater Type, and prescribes specific exercises for your weaknesses.
 
@@ -3196,7 +3179,7 @@ URL: https://deftbrain.com/ContextCollapse
 Tagline: See how different people will read the same message — before you send it
 Categories: Discourse
 
-About to send a text, post something, or make an announcement that multiple people will see? Context Collapse previews how each audience interprets it. Your boss reads it as professional boundary-setting. Your coworker reads it as passive-aggressive. Your mom reads it as a cry for help. See the gaps between your intent and each audience's reading, get risk ratings per audience, and rewrite suggestions that thread the needle. The tool that prevents the social media post that gets you fired and the group chat message that starts a war.
+A message doesn't mean the same thing to everyone who reads it. Tell DeftBrain what you're about to send, and we'll show you where your intent and your audience's interpretation may not match.
 
 **What it does.** Context Collapse is named after the communication phenomenon where a single message lands completely differently depending on who reads it. It's DecoderRing in reverse — instead of decoding what someone sent you, it previews how your message will be received by each audience before you send it. You define who will see it, and the tool shows you the emotional interpretation, risk level, key triggers, and likely reactions for each person or group.
 
@@ -3321,15 +3304,15 @@ Input: 'Everything in moderation'
 
 Output: Where it holds: prevents extremes, reduces anxiety. Fatal stress test: doesn't apply to genuinely harmful things — moderate heroin use isn't wisdom. Significant: some goods require full commitment, not moderation. Hidden structure: it's really a rule against anxiety, not a guide to quantity. Upgrade: 'Moderation is a useful default for diminishing-return activities. For things requiring mastery or commitment, replace moderation with intentionality.'
 
-### HistoryToday
+### History Today
 
 URL: https://deftbrain.com/HistoryToday
 Tagline: Find the structural historical parallel — not the obvious one
 Categories: Go Deep!, Diversions
 
-Enter any current event and get 2–3 structural historical parallels — not surface-level analogies, but deep matches based on power dynamics, institutional behavior, and how similar situations actually played out. Each parallel shows what happened, how people at the time understood it (and how they were wrong), what came next, and exactly where the comparison breaks down. Dig deeper for full timelines, turning points, and quotes that echo today. Get a counter-example showing when similar conditions led somewhere different. Synthesis, predictions, and further reading included.
+Today's headlines rarely happen for the first time. Enter a current event, and DeftBrain will find historical situations that unfolded for similar reasons — including where the comparison succeeds and where it fails.
 
-**What it does.** Most historical analogies are lazy: 'This is just like the fall of Rome.' HistoryToday goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.
+**What it does.** Most historical analogies are lazy: 'This is just like the fall of Rome.' History Today goes deeper. It finds structural parallels — situations where the underlying mechanisms (regulatory capture, information asymmetry, institutional decay, public sentiment shifts) match the current moment. For each parallel, you get the full picture: what happened, how people at the time understood it, what they got wrong, what happened next, and crucially — where the analogy breaks down. That last part is the most valuable: every parallel is imperfect, and the differences predict what will be different this time. Dig Deeper expands any parallel into a full timeline with turning points, echoing quotes, and lessons. The Counter-Example finds a case where similar starting conditions produced a completely different outcome.
 
 **How to use it.**
 
@@ -3358,7 +3341,41 @@ Input: You want to understand the current wave of tech layoffs happening alongsi
 
 Output: Parallel 1: The Railroad Consolidation of the 1890s (82% match) — railroads laid off workers while posting record revenues during consolidation. Contemporary view: 'efficiency gains.' Actual cause: monopolistic extraction. What happened next: labor organizing, eventual antitrust. Breaks down because: tech workers are individually more mobile than railroad workers were. Parallel 2: British textile automation 1810s (67% match). Counter-example: Post-WWII corporate compact where record profits led to voluntary wage increases (different because of union density and Cold War pressure to prove capitalism works).
 
-### Plain Talk — Document Analyst
+### Missing Link
+
+URL: https://deftbrain.com/MissingLink
+Tagline: Stuck on a concept? We'll find where your understanding broke.
+Categories: Go Deep!
+
+Name the concept you're stuck on. Missing Link traces backwards through everything it depends on and finds the exact point where your understanding broke — the missing building block, not the hard part you keep re-reading.
+
+**What it does.** Missing Link solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. Missing Link traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.
+
+**How to use it.**
+
+1. Enter the concept you're stuck on — be specific ('integration by parts' not just 'calculus')
+2. Add subject, your level (high school through grad), and what you DO understand to help calibrate
+3. Review the prerequisite chain — each node has a quick self-test and gap-likelihood rating
+4. Click any node and answer honestly: Can't answer / Unsure / Got it
+5. Review the likely gap, its refresher, and the 3-step study plan
+6. Use Deep Dive for worked examples and practice problems on the specific gap
+
+**Tips.**
+
+- The 'What do you understand?' field is gold — it lets the tool skip prerequisites you already have
+- Gap types matter: a conceptual gap needs explanation, a procedural gap needs practice, a definitional gap just needs a definition
+- Quick tests at each node are honest diagnostics — don't skip them, they're how you find the real gap
+- The likely gap is usually 2-3 steps back from where you think the problem is
+- Deep Dive practice problems go easy → hard — if you nail the easy one, the gap is probably elsewhere
+- Works for any subject: STEM, humanities, social sciences, languages — anything with prerequisite knowledge
+
+**Example.**
+
+Input: You're in Calculus II and can't understand integration by parts. You've watched three YouTube videos and it still doesn't click.
+
+Output: Missing Link builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click.
+
+### Plain Talk
 
 URL: https://deftbrain.com/PlainTalk
 Tagline: See through any text — plain language plus structural X-ray
@@ -3489,40 +3506,6 @@ Input: You just watched a 20-minute TED talk on behavioral economics and want th
 
 Output: Distill produces 8 ranked points — #1 is the talk's central claim (tagged 'framework, memorable'), flagging the line the speaker repeated three times and the story used to anchor it. Each point notes how to remember it, and the summary strips the anecdotes down to the idea they were illustrating. Run Connect across several saved transcripts and it surfaces the threads that span them.
 
-### The Gap
-
-URL: https://deftbrain.com/TheGap
-Tagline: Stuck on a concept? We'll find where your understanding broke.
-Categories: Go Deep!
-
-Enter any concept you're struggling with and The Gap traces backwards through the prerequisite chain to find the exact point where your understanding broke.  Four gap types diagnosed: conceptual (don't get why), procedural (can't do the steps), definitional (don't know what it means), notational (symbols blocking you).
-
-**What it does.** The Gap solves the #1 study mistake: when you're stuck on something, you try to re-read the hard material. But the problem is almost never the hard material itself — it's a prerequisite you're missing. Someone struggling with integrals usually has a limits gap. Someone struggling with limits usually has a functions gap. The Gap traces the dependency chain, diagnoses the gap type, and gives you a focused fix for the specific hole.
-
-**How to use it.**
-
-1. Enter the concept you're stuck on — be specific ('integration by parts' not just 'calculus')
-2. Add subject, your level (high school through grad), and what you DO understand to help calibrate
-3. Review the prerequisite chain — each node has a quick self-test and gap-likelihood rating
-4. Click any node and answer honestly: Can't answer / Unsure / Got it
-5. Review the likely gap, its refresher, and the 3-step study plan
-6. Use Deep Dive for worked examples and practice problems on the specific gap
-
-**Tips.**
-
-- The 'What do you understand?' field is gold — it lets the tool skip prerequisites you already have
-- Gap types matter: a conceptual gap needs explanation, a procedural gap needs practice, a definitional gap just needs a definition
-- Quick tests at each node are honest diagnostics — don't skip them, they're how you find the real gap
-- The likely gap is usually 2-3 steps back from where you think the problem is
-- Deep Dive practice problems go easy → hard — if you nail the easy one, the gap is probably elsewhere
-- Works for any subject: STEM, humanities, social sciences, languages — anything with prerequisite knowledge
-
-**Example.**
-
-Input: You're in Calculus II and can't understand integration by parts. You've watched three YouTube videos and it still doesn't click.
-
-Output: The Gap builds a chain: Algebra → Functions → Limits → Derivatives → Product Rule → Integration by Parts. The likely gap is flagged at Product Rule (high likelihood) — you never internalized WHY the product rule works, so you can't reverse it into integration by parts. Quick refresher explains the connection, practice problems confirm the fix, and the forward connection shows exactly how understanding the product rule makes integration by parts click.
-
 ## Diversions
 
 ### Bookmark
@@ -3531,7 +3514,7 @@ URL: https://deftbrain.com/Bookmark
 Tagline: Pick up where you left off — without spoilers
 Categories: Diversions
 
-Abandoned a show, book, game, or sports season? Get a spoiler-free recap calibrated to exactly where you stopped — character refreshers, active plot threads, vibe checks, and must-watch game flags.
+Coming back to a book, show, game, or sports season after time away? Tell Bookmark where you stopped and get the context you need to jump back in—without spoiling what comes next.
 
 **What it does.** Bookmark solves the problem Google can't: getting caught up on something you abandoned without stumbling into spoilers. Wikis, Reddit threads, and search results are landmines. Bookmark gives you a precision recap — vivid enough to trigger your memory, careful enough to protect everything after your stopping point. Four modes cover TV shows, books, video games, and sports seasons.
 
@@ -3560,10 +3543,10 @@ Output: Bookmark delivers a present-tense recap of the power struggle up to that
 ### Brain Roulette
 
 URL: https://deftbrain.com/BrainRoulette
-Tagline: Personalized rabbit holes you can't resist
+Tagline: Follow your curiosity somewhere unexpected.
 Categories: Diversions
 
-Spin for fascinating rabbit holes tuned to YOUR interests. AI finds the surprising intersections between topics you love — the kind of stuff you can't stop thinking about.
+Follow your curiosity somewhere unexpected. Choose a few things that interest you—or leave it to chance—and Brain Roulette finds surprising connections, questions, and rabbit holes worth exploring.
 
 **What it does.** Brain Roulette is an AI-powered discovery engine that generates fascinating, personalized rabbit holes. Unlike random fact generators, it finds the unexpected INTERSECTIONS between your interests — where history meets food, where psychology meets technology, where space meets philosophy. Each spin is unique, and a secret wildcard topic gets woven in to keep things unpredictable.
 
@@ -3593,10 +3576,10 @@ Output: You get a fascinating piece about how Roman gladiators were mostly veget
 ### Crowd Wisdom
 
 URL: https://deftbrain.com/CrowdWisdom
-Tagline: Five real perspectives on the choice you can't stop thinking about
+Tagline: Five different ways to look at the choice you can't stop thinking about
 Categories: Diversions, Veer
 
-Five life archetypes — the Pragmatist, the Risk-Taker, the one who Did It and Regretted It, the one who Didn't, and the Contrarian — each respond to your question from their own experience. See the tension between their views and find the question nobody thought to ask.
+See your question through five deliberately different lenses: the Pragmatist, the Risk-Taker, the person who tried it and regretted it, the person who chose not to, and the Contrarian. See where their arguments clash—and what each perspective notices that the others miss.
 
 **What it does.** Crowd Wisdom channels five distinct life archetypes — each shaped by different values and different outcomes. The goal isn't consensus. It's to surface the tension, the blind spots, and the question you haven't thought to ask yet.
 
@@ -3654,10 +3637,10 @@ Output: Swiss Cheese Rating: 4/10. Holes include 'The Hospital Escape' (how did 
 ### Roast Me
 
 URL: https://deftbrain.com/RoastMe
-Tagline: Paste anything — get a personalized comedy roast
+Tagline: Find the clichés, buzzwords, humblebrags, and cringeworthy phrases you stopped noticing long ago.
 Categories: Diversions
 
-Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched Earth. Every roast line targets SPECIFIC content you submitted — zero generic insults. AI detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Includes a 'One Nice Thing' plus a screenshot-worthy 'Share Line' for maximum social media damage.
+Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and get a personalized comedy roast. Three heat levels: Gentle, Medium, and Scorched. Every roast line targets specific content you submitted — zero generic insults. DeftBrain detects content type automatically and targets the right things: buzzwords in resumes, clichés in dating profiles, humblebrags on LinkedIn. Every roast includes one genuinely nice observation, plus a shareable one-liner you'll either laugh at or immediately regret showing your friends. The roast is the mechanism; noticing what you actually wrote is the point.
 
 **What it does.** RoastMe is a comedy writer that reads your content and finds what's specifically, uniquely roastable about it. Not generic insults — targeted humor that lands because it's true.
 
@@ -3671,7 +3654,7 @@ Paste your resume, dating profile, LinkedIn bio, email, tweet, or any text and g
 
 **Tips.**
 
-- Scorched Earth is funniest on content that takes itself too seriously
+- Scorched is funniest on content that takes itself too seriously
 - Try roasting the same content at different heat levels
 - Hit 'Roast Again' to get completely different lines on the same content
 
@@ -3684,10 +3667,13 @@ Output: Roast lines target 'passionate thought leader' (everyone who calls thems
 ### Six Degrees of Me
 
 URL: https://deftbrain.com/SixDegreesOfMe
-Tagline: The hidden chain between any two parts of your life
+Tagline: Discover the surprising threads that connect your experiences
 Categories: Diversions, Me
 
-Find the hidden connections between any two seemingly unrelated parts of your life. Your college major and your career, your childhood hobby and your friend group, your biggest fear and your favorite food. The chain is always there -- you just can't see it yet.
+Find the hidden connections between seemingly unrelated parts of your life.
+Your favorite movie and your career. Your childhood hobby and your closest friendship.
+
+The chain is always there. You just can't see it yet.
 
 **What it does.** Everything in your life is connected by threads you've never noticed. This tool traces the chain between any two things -- your philosophy degree and your coding career, your fear of flying and your love of sushi. Build a profile once, then play endlessly.
 
@@ -3745,33 +3731,33 @@ Output: A period-authentic 1920s newspaper article about mysterious horseless ca
 ### Tip of Tongue
 
 URL: https://deftbrain.com/TipOfTongue
-Tagline: Describe it from memory — I'll figure out what it is.
+Tagline: Describe it from memory — DeftBrain will figure out what it is.
 Categories: Diversions
 
-You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever fragment you remember and AI cross-references sensory details, context, and vibes to identify it. Works for food, music, films, products, scents, colors, places, fabrics, and anything else. Refine mode narrows results based on your feedback.
+You know the thing — you can almost see it, taste it, hear it — but you can't name it. Describe whatever you remember—even if it's incomplete. DeftBrain will use those clues to figure it out.
 
-**What it does.** TipOfTongue takes fragmentary, vibes-based descriptions and identifies what you're thinking of. Pick a category (food, music, film, product, scent, color, place, fabric, or other), describe what you remember however you can, and AI cross-references sensory details, time/place context, and elimination clues to find ranked matches. Each match includes why it fits, a memory trigger to confirm it, how to verify, and where to find it. If the first round is close but not right, refine mode uses your yes/no/close feedback to dramatically narrow the search.
+**What it does.** Tip of Tongue helps when you remember pieces of something but not its name. Describe whatever you still have — a flavor, lyric fragment, packaging color, scene, scent, place, texture, era, or just the general feel. DeftBrain uses those clues to suggest the strongest matches, explain why each one fits, and give you an easy way to verify them. If none is quite right, tell it what was close or wrong and keep narrowing the search.
 
 **How to use it.**
 
-1. Pick a category — or leave it on 'other' and let the AI figure it out
-2. Describe what you remember: sensory details, vibes, fragments, partial facts — anything helps
-3. Optionally add 'it's NOT this' eliminators, time/place context, or extra clues
-4. Review ranked matches — each shows confidence level, why it fits, and a memory trigger
-5. If a match is close but not quite right, use refine mode to narrow down further
+1. Pick a category if you know it — otherwise choose Something Else.
+2. Describe whatever you remember — sensory details, vibes, fragments, partial facts, even details you aren't completely sure about.
+3. Add what you know it isn't, where or when you encountered it, or any odd detail that might help.
+4. Check the strongest matches and the clues behind them. Use the memory trigger and verification suggestion to see whether one clicks.
+5. If none is right, mark what was close, add anything else you remember, and narrow it down again.
 
 **Tips.**
 
-- Sensory details are more useful than facts — 'it felt creamy and had a green label' beats 'I think it was organic'
-- The 'it's NOT this' field is powerful — eliminating wrong answers narrows the search fast
-- Time and place context helps enormously — 'heard on the radio in 2015' or 'bought at a farmers market'
-- If the first round gets close, use refine mode — marking matches as 'close' gives the AI the most signal
+- Sensory details can be surprisingly useful — 'it felt creamy and came in a green jar' may be more distinctive than a vague factual description.
+- Say what it definitely isn't. Ruling out an obvious near-match can narrow the search quickly.
+- When and where you encountered it can be especially useful — a coffee shop, TV episode, vacation, store, or approximate year.
+- If one result is close, say so. Knowing what almost fits often reveals which direction to search next.
 
 **Example.**
 
-Input: You ate something incredible at a restaurant two years ago — it was a cold noodle dish, slightly sweet and nutty, with crispy things on top. Asian but you're not sure which cuisine.
+Input: You remember a cold noodle dish from a restaurant a few years ago. It was slightly sweet and nutty, with something crispy on top, and you think it may have been Chinese.
 
-Output: Top match: Sichuan cold sesame noodles (liang mian) — confidence 75%. The nutty flavor is tahini/sesame paste, crispy things likely fried shallots or peanuts. Memory trigger: 'If the sauce was thick and clung to the noodles rather than pooling at the bottom, this is it.' How to find: Dan Dan Noodles at Xi'an Famous Foods, or recipe with 3 tbsp tahini + soy + chili oil + rice vinegar.
+Output: Tip of Tongue suggests a few plausible dishes, explains which remembered details point toward each one, and gives you something concrete to check — such as the sauce, toppings, or typical preparation. Mark the closest match and refine from there.
 
 ## Me
 
@@ -3781,7 +3767,7 @@ URL: https://deftbrain.com/BrainDumpBuddy
 Tagline: Everything in your head → one clear next step
 Categories: Me, Do It!
 
-Dump everything swirling in your head — typed, rapid-fire, or voice — and AI sorts the chaos into action items, decisions, worries, and things you can drop. Most overwhelm turns out to be 8 real tasks hiding under a lot of noise.
+When everything in your head feels like one big pile, put it here exactly as it comes. Brain Dump Buddy sorts out what needs action, what needs a decision, what can wait, and what doesn't require anything from you—then helps you find a manageable next step.
 
 **What it does.** Your head is full. Work tasks blurring into personal worries blurring into vague anxiety. This tool takes the whole mess — no structure required — and sorts it into clear buckets. The key insight: most people in overwhelm have far fewer actual tasks than they think. Then it goes further: Shrink the List negotiates your tasks shorter. Map to My Day turns the list into a schedule. Worry Excavator digs into anxieties to find hidden actionable tasks. Reclassify lets you fix anything the AI miscategorized. Emergency mode strips everything to just 3 things when you can barely function.
 
@@ -3943,7 +3929,7 @@ URL: https://deftbrain.com/AlternatePath
 Tagline: What if history went differently?
 Categories: What If?
 
-Pick any moment in history and change one detail. Watch the consequences cascade — politics, technology, culture, daily life — all the way to today.
+One small change can rewrite centuries. Name the moment you'd change, and follow what happens next — politics, technology, culture, ordinary life — for fifty years or five hundred.
 
 **What it does.** Alternate Path takes a real historical event, changes one key detail, and traces the ripple effects forward through a plausible alternate timeline. Each consequence cascades into the next, showing how one pivot point can reshape politics, culture, technology, and daily life in ways you wouldn't expect.
 
@@ -3966,15 +3952,15 @@ Pick any moment in history and change one detail. Watch the consequences cascade
 
 Input: You're curious what would have happened if the internet was never invented.
 
-Output: AI traces cascading consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, with each consequence logically building on the last.
+Output: A chain of consequences — how communication, commerce, entertainment, politics, and daily life would look today without it, each step following from the one before.
 
 ### Chaos Pilot
 
 URL: https://deftbrain.com/ChaosPilot
-Tagline: One calculated disruption. Not random — strategically chaotic.
+Tagline: One calculated disruption. Small change. Big ripple.
 Categories: What If?, Veer
 
-Diagnoses the invisible rut you're stuck in — the behavioral pattern producing stagnation — and designs one specific, strategically uncomfortable disruption to break it. Not random novelty. One surgical intervention with exact timing, a full instruction, and a pre-empted excuse for when you want to skip it.
+When every week starts to look exactly like the last one, it's easy to mistake routine for progress. Tell DeftBrain what life looks like right now, and we'll identify one carefully chosen disruption designed to shake something loose.
 
 **What it does.** ChaosPilot diagnoses the pattern producing your stagnation before prescribing anything. The disruption it designs is specific enough to execute today, slightly uncomfortable enough to produce a reaction, and targeted at the exact constraint making your world small.
 
@@ -4005,7 +3991,7 @@ URL: https://deftbrain.com/FanTheory
 Tagline: Wild but defensible fan theories about anything
 Categories: What If?
 
-Name any movie, show, book, or game — AI generates a wild but internally-consistent fan theory with cited evidence. Six theory directions: Surprise Me, Secret Villain, Shared Universe, Timeline Twist, Dead or Alive, and It's a Simulation. Each theory comes with evidence rated from Compelling to Pure Delusion, a Smoking Gun, counterarguments, and plausibility/mind-blown ratings. Second mode: Grade My Theory — paste your own fan theory and get an academic grade with strengths, weaknesses, and a Reddit performance prediction.
+Create a wild but defensible fan theory about any movie, show, book, or game—or put your own theory to the test.
 
 **What it does.** FanTheory generates conspiracy theories for fiction — the kind that make you go 'wait... actually?' Every theory cites specific plot details as evidence and is internally consistent, even when it's a stretch.
 
@@ -4065,7 +4051,7 @@ URL: https://deftbrain.com/WhichLife
 Tagline: Feel both futures before you choose.
 Categories: What If?, Veer
 
-Describe two paths you're considering. Instead of a pro/con list, AI writes a vivid 'day in the life' narrative for each path — a plausible Tuesday, set in your future. Your gut reacts before your brain does.
+Describe two paths you're considering. Instead of another pro/con list, Which Life? imagines an ordinary day in each future so you can see how each one feels to live.
 
 **What it does.** Which Life? replaces pro/con lists with emotional simulation. Describe two life paths you're weighing — stay vs. leave, job A vs. job B, city vs. suburbs — and AI writes a vivid, specific 'day in the life' for each future. Not fairy tales or horror stories. Plausible Tuesdays, with sensory detail, mundane moments, honest costs, and the small satisfactions that make a life. Finishes with what the AI noticed: which path carried more energy, what you'd be trading, and the real question underneath.
 
@@ -4096,7 +4082,7 @@ URL: https://deftbrain.com/WrongAnswersOnly
 Tagline: Ask anything — get a confidently, beautifully wrong answer
 Categories: What If?
 
-Ask any real question and get a beautifully structured, internally consistent, completely incorrect answer with full expert confidence. Fake studies, invented researchers, nonsense equations that look real. Three seriousness levels: Deadpan, Playful, Unhinged. Includes real answer toggle for when you want to actually learn something.
+Ask a real question. Get an impressively wrong answer, delivered with total confidence. There is a button for the real answer afterwards, if you want it.
 
 **What it does.** Wrong Answers Only is the world's most confidently incorrect expert. Every answer is internally consistent, impressively structured, and completely, beautifully wrong.
 
@@ -4155,13 +4141,13 @@ Output: DECISION: Order veggie burrito bowl from Chipotle. Why: Meets all constr
 
 ## Do It!
 
-### Start Here
+### Tool Finder
 
 URL: https://deftbrain.com/ToolFinder
 Tagline: Tell me what you're dealing with — I'll find the right tool.
 Categories: Do It!
 
-With 100+ tools, how can you find the right one? Describe what you need in plain language and ToolFinder employs AI to find the best DeftBrain tools for your situation, explains why each one fits, and tells you exactly what to enter when you get there. Recommends workflows when multiple tools work together.
+Not sure where to start? Describe what's going on in your own words. We'll find the best match and show you what comes next.
 
 **What it does.** ToolFinder is the front door to DeftBrain. Instead of browsing the dashboard, describe your problem — a difficult conversation, a money question, something that broke, a decision you're stuck on — and it matches you with the right tools. Reads between the lines, recommends 1-5 tools ranked by relevance, and explains the fastest path to a solution.
 

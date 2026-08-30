@@ -96,10 +96,10 @@ export const tools = [
   primer: {
     when: "Someone died, or someone you love is grieving and you don't know what to say.",
     give: "Who it's for, what kind of loss, and roughly when it happened.",
-    get: "What you're feeling, named and normalized, plus what actually helps and what to stop saying.",
+    get: "What you said, reflected back — plus a few things that may help and one gentle next step.",
     edge: "It works in both directions — for the person grieving and for the person trying to help without making it worse.",
   },
-  seoDescription: "Get compassionate, free guidance for navigating grief — whether you're grieving or supporting someone. Learn what's normal, what to say, and when to get help.",
+  seoDescription: "Free, careful guidance for a loss — whether you're grieving or supporting someone. It stays close to what you tell it: what may help, words if you need them, one next step.",
   seoTitle: "Grief Support Guide: Coping With Loss",
   title: "GriefGuide",
   tagline: "Compassionate guidance for navigating loss — yours or someone else's",
@@ -107,9 +107,9 @@ export const tools = [
   icon: "💙",
   categories: ['Energy', 'Me'],
   headerColor: "#c0cce0",
-  description: "Guidance for navigating grief — whether you're grieving yourself, supporting someone who is, or both. Covers what's normal, how to be with the pain, what to say (and not say), and when to seek more support.",
+  description: "Guidance for a loss — whether you're grieving yourself, supporting someone who is, or both. It stays close to what you tell it: what it heard, a few things that may help, words if you need them, and one gentle next step.",
   guide: {
-    overview: "Grief is one of the most universal human experiences and one of the least understood. People often don't know what they're feeling is normal, or feel pressure to grieve 'correctly.' Those trying to help often don't know what to say and end up saying things that hurt. GriefGuide offers warm, non-prescriptive guidance tailored to your specific situation — the type of loss, when it happened, and what you're experiencing. It works for the grieving person, for someone trying to support a grieving friend or family member, or for both.",
+    overview: "Grief is one of the most universal human experiences and one of the least understood, and much of what gets offered in response is either a script or a verdict. GriefGuide does neither. It stays anchored to what you actually tell it — it will not name an emotion you did not mention, decide that what you are experiencing is normal or abnormal, or place you at a stage. What it returns is short by design: what it heard, one or two things that may help make sense of it, at most three proportionate suggestions, words you could actually say if language would help, and exactly one gentle next step. It works for the person grieving, for someone trying to support them without making it worse, or for both at once.",
 
     howToUse: [
       "Select who this is for — yourself, someone you're trying to help, or both",
@@ -117,20 +117,20 @@ export const tools = [
       "Select when it happened — guidance shifts depending on timeline",
       "Share as much or as little as you're comfortable with in the text field — the more context, the more personal the guidance",
       "Add your country for locally-relevant support resources",
-      "Click 'Get Guidance' — the response is tailored to what you shared",
+      "Get your guidance — it is built from what you shared, and stops there",
     ],
 
     tips: [
       "You don't have to share everything — even minimal input gets useful guidance",
-      "The 'Helping someone grieve' mode includes specific phrases to use and common phrases to avoid — these are more useful than general advice",
+      "The 'Helping someone grieve' mode gives you phrases to use and phrases to avoid, built only from what you told it — it will not invent a memory to make a line sound personal",
       "Grief over non-death losses (relationships, jobs, health, identity) is just as real and often less validated — this tool treats all loss seriously",
-      "The 'When to seek more support' section normalizes professional help — it's not a flag that something is wrong",
+      "More support is offered as an option, not as evidence that something is wrong with how you are grieving",
       "If you're in crisis right now, please reach out to a crisis line in your area directly",
     ],
 
     example: {
       scenario: "Someone shares that their father died suddenly three weeks ago. They're functional at work but cry at home. They keep thinking they need to call him. Family is telling them to be strong for their mom.",
-      result: "Opening: Three weeks after a sudden loss like this, what you're describing — staying functional in public while the grief surfaces when you're alone — is one of the most common patterns, and one of the loneliest. That moment of reaching for the phone is something many people describe after losing a parent... Guidance: 'On sudden loss' — sudden deaths don't give us time to prepare, and the shock can delay grief in ways that feel disorienting; 'On being strong for others' — being there for your mom and grieving your own father are not mutually exclusive, but you can't do either well if you're suppressing everything; practical suggestions: let yourself have the cry when it comes, consider finding one person who you don't have to be strong for."
+      result: "What I hear: your father died suddenly three weeks ago, you are getting through the working day, and it arrives when you get home. You keep reaching for the phone. Your family has asked you to be strong for your mother. Making sense of it: reaching for the phone is not a mistake you are making — it is a habit that was built over decades and has not caught up yet. Being there for your mother and grieving your own father are not the same task, and being asked for the first does not cancel the second. What may help: let the crying at home be the thing that happens rather than the thing you manage; consider one person you do not have to be strong in front of. One gentle next step: pick that one person, and tell them only that you would rather not be strong around them. Note what it does not do — it does not tell you that what you feel is normal, name an emotion you did not mention, or guess what your father would have wanted."
     },
   },
 },
@@ -4589,10 +4589,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You've burned out before and don't want to again.",
     give: "A sixty-second daily check-in: energy, sleep, stress, symptoms, warning signs.",
-    get: "Your own pattern before a crash, and how far out you are now.",
+    get: "Your own pattern in the days before you run out of steam — what tends to come first.",
     edge: "It learns your indicators rather than generic burnout symptoms — which is why it needs a few days before it's useful.",
   },
-  seoDescription: "Track energy, sleep, and stress to spot YOUR personal burnout pattern before you crash. Get a days-to-crash warning and the urgent fixes. Free.",
+  seoDescription: "Track energy, sleep, and stress to spot YOUR own pattern in the days before you run out of steam. See what tends to come first, and what to change. Free.",
   seoTitle: "Spot Your Own Burnout Warning Signs Early",
   title: "Before the Crash",
   tagline: "Learn what tends to happen before you run out of steam",
@@ -4602,31 +4602,30 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   headerColor: "#b8dcd8",
   description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
-      overview: "Before the Crash tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
+      overview: "Before the Crash tracks daily signals (energy, sleep, stress, activities, physical symptoms, warning signs) and compares them against your own history. It shows what tended to happen in the days before the ones you marked as a crash — your indicators, not generic burnout symptoms. It does not diagnose burnout and does not predict when a crash will happen; it shows you your own pattern and leaves the reading to you. Designed for people who push through everything and want something more objective than their 'I'm fine' instinct.",
       
       howToUse: [
-        "Daily check-in: Rate energy (1-10), sleep quality (1-10), stress level (1-10), check activities, physical symptoms, and warning signs. Takes 60 seconds.",
-        "Save entry: Data stored locally. Do this every day, even (especially) when you 'feel fine'.",
-        "After 3+ days: Click 'Analyze Patterns' to see burnout risk assessment, your specific crash pattern, warning signs, and preventive actions.",
-        "Follow interventions: Sorted by urgency (urgent/high/medium/low). Do the urgent ones even if you don't feel like you need to.",
-        "Trust the data, not your feelings: If analysis says you're at high risk but you 'feel fine', the data is right. This is what poor interoception means."
+        "Daily check-in: rate energy, sleep and stress, and tick any activities, physical symptoms or warning signs that fit. Takes about a minute.",
+        "Save it. Everything stays on your device. Do it every day, including — especially — the days you feel fine.",
+        "Mark the bad days: when a day ends with you out of steam, tick the box that says so. That mark is what everything else is measured against.",
+        "After a few days, compare: the tool lines up the days before the ones you marked against your ordinary days, and shows what tended to differ.",
+        "Read it yourself. It shows you your own pattern; what it means, and what to do about it, is yours to decide."
       ],
       
       example: {
-        scenario: "You've been logging for 2 weeks. Stress has been 8+ for 6 days, sleep averaging 4.5/10, energy declined from 7 to 3, zero rest days. You 'feel fine' and think you can keep going.",
-        action: "Click 'Analyze Patterns'. System detects high crash risk, 2-3 days until likely crash.",
-        result: "Analysis shows: 'Your pattern: crash 2-4 days after stress hits 9 while sleep is below 6. Current status: BOTH thresholds met. Interventions: URGENT - Cancel tomorrow evening plans, call in sick if needed. HIGH - Delegate this week's project. Your current capacity: 30% below normal (can do 1-2 things today, not 5). Even if you feel fine, your logs show sleep deficit accumulating, no rest in 12 days, 4 warning signs present. Trust the data.' You cancel plans, take sick day, avoid the crash that would have forced shutdown for 2+ weeks."
+        scenario: "You've been checking in for two weeks. Stress has sat high for six days, sleep has been poor, energy has drifted from 7 down to 3, and you haven't had a day off. You feel fine and plan to keep going.",
+        action: "Open the comparison. It looks at the days you marked as running out of steam and lines them up against the rest.",
+        result: "What comes back is a comparison, not a verdict: in the three days before the days you marked, sleep was consistently lower and stress higher than on your ordinary days, and 'skipped lunch' appeared each time. It doesn't tell you a crash is coming on Thursday, because it can't know that. It tells you what has come first before, so you can decide whether this week is starting to look like those ones."
       },
       
       tips: [
-        "Log EVERY day, even when things are good - you need baseline data",
-        "Be honest about ratings - this is for you, not performance",
-        "If you think 'I don't need this today', that's when you need it most",
-        "Show analysis to someone who knows you - external validation helps",
-        "Autistic users: Count masking as energy drain even if it doesn't 'feel' draining",
-        "ADHD users: Medication can mask fatigue - log actual sleep/rest, not perceived energy",
-        "If analysis says urgent intervention but you disagree, do it anyway - trust the pattern",
-        "Recovery from ignoring warnings: 2-4 weeks. Prevention from following warnings: 2-4 days."
+        "Check in every day, including the good ones — the ordinary days are the baseline the bad ones get compared against",
+        "Be honest about the ratings; nobody else sees them",
+        "Mark the bad days as they happen. A pattern with nothing to compare against is just a chart",
+        "A few days won't show much. Two or three weeks will",
+        "Autistic users: count masking as energy spent, even when it doesn't feel like effort",
+        "ADHD users: medication can mask fatigue — log the sleep and rest you actually got, not how alert you feel",
+        "A pattern is not a diagnosis and not a schedule. It shows you what has tended to come first, not what will happen next"
       ]
     }
 },
