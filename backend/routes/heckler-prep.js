@@ -3,11 +3,76 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+// Two model calls already ran. If they were slow, the visitor has waited long
+// enough — return the prep unguarded rather than spend another check budget.
+const GUARD_ENTRY_MS = Number(process.env.HP_GUARD_ENTRY_MS || 70_000);
+
+// Guards the text the presenter will say out loud or lean on in the room. The
+// failure mode here is not an unanswerable question — it is a fluent, confident
+// answer built on a fact nobody supplied: a prior promise, a past overrun, a
+// board's opinion, a document that does not exist. A presenter who repeats one
+// of those in front of the people who know better is worse off than if the tool
+// had said nothing.
+async function guardHecklerPrep(parsed, body, startedAt) {
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[heckler-prep] v2 guard: skipped — out of time, prep returned unguarded');
+    return;
+  }
+  const fields = [];
+  const long = v => typeof v === 'string' && v.trim().length > 12;
+  if (long(parsed.situation_read)) fields.push(['situation_read', parsed.situation_read]);
+  if (long(parsed.opening_move)) fields.push(['opening_move', parsed.opening_move]);
+  if (long(parsed.confidence_note)) fields.push(['confidence_note', parsed.confidence_note]);
+  (parsed.questions || []).forEach((q, i) => {
+    if (long(q?.real_concern)) fields.push([`questions[${i}].real_concern`, q.real_concern]);
+    if (long(q?.model_answer)) fields.push([`questions[${i}].model_answer`, q.model_answer]);
+    if (long(q?.if_you_dont_know)) fields.push([`questions[${i}].if_you_dont_know`, q.if_you_dont_know]);
+  });
+  if (!fields.length) return;
+
+  await runOutputGuard(parsed, {
+    label: 'heckler-prep-v2',
+    fields,
+    supplied: `WHAT THE USER TOLD US, IN FULL — nothing else about their organisation, their history, their audience or their evidence is known:
+Topic: ${(body.topic || '').trim() || '(not given)'}
+Audience: ${(body.audience || '').trim() || '(not given)'}
+What they are asking for: ${(body.proposal || body.askingFor || '').trim() || '(not given)'}
+Objections they already expect: ${(body.knownObjections || body.objections || '').trim() || '(not given)'}
+Stakes: ${(body.stakes || '').trim() || '(not given)'}
+
+Nothing is known about past projects, prior promises, budget history, vendor
+relationships, test scope, internal politics, what this audience believes, how
+they have reacted before, or what evidence and documents the presenter holds.
+
+WHAT FAILS:
+1. A fact about the organisation, its history, its finances or its people that
+   the user did not supply — a previous overrun, an earlier commitment, a
+   headcount, a deadline, a named system or vendor.
+2. A claim about what the audience thinks, fears, wants or will do, stated as
+   known rather than as what a question tests.
+3. A model answer or if_you_dont_know that asserts evidence, a document, a
+   figure or a timeline the user never mentioned, instead of marking it with a
+   bracketed placeholder.
+4. A real_concern written as hidden psychology or motive rather than as what
+   the question is testing.
+5. A gotcha built on a contradiction that is not actually present in the
+   supplied facts.
+6. Encouragement in confidence_note resting on an advantage, an evidence base
+   or an audience reaction that was never supplied.`,
+    promise: 'Give this presenter the hardest questions their actual audience could ask about the case they described, a truthful answer pattern for each, and something credible to say when they do not know the answer yet — without inventing any part of their situation.',
+    guard: router.outputGuard,
+    userLanguage: body.userLanguage || body.userLocale,
+    locale: body.userLocale || '',
+  });
+}
 
 // ════════════════════════════════════════════════════════════
 // POST /heckler-prep — Anticipate the Hard Questions
 // ════════════════════════════════════════════════════════════
 router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
     const { topic, audience, proposal, knownObjections, stakes, userLanguage } = req.body;
 
@@ -163,6 +228,7 @@ ${DIFFICULTY_RULE}`;
     if (!parsed.questions || !parsed.questions.length) {
       return res.status(500).json({ error: 'Could not generate your prep questions. Please try again.' });
     }
+    await guardHecklerPrep(parsed, req.body, startedAt);
     return res.json(parsed);
 
   } catch (error) {
@@ -170,5 +236,27 @@ ${DIFFICULTY_RULE}`;
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// Reviewed against backend/lib/outputStandard.js on 2026-08-30, as part of the
+// v2 rewrite. The clauses this tool leans on hardest are §3 (progress under
+// uncertainty) and §5 (a recovery path): if_you_dont_know and the bracketed
+// placeholders are what let a presenter act on a question they cannot fully
+// answer yet. See PF-39.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'states_a_fact_about_the_organisation_history_or_finances_the_user_did_not_supply',
+    'claims_what_the_audience_thinks_fears_wants_or_will_do_as_known',
+    'asserts_evidence_a_document_a_figure_or_a_timeline_that_was_never_mentioned',
+    'writes_real_concern_as_hidden_motive_or_psychology_rather_than_what_the_question_tests',
+    'builds_a_gotcha_on_a_contradiction_not_present_in_the_supplied_facts',
+    'coaches_bluffing_evasion_or_unsupported_reassurance',
+  ],
+  require: [
+    'every_question_carries_if_you_dont_know',
+    'missing_facts_marked_with_bracketed_placeholders',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
