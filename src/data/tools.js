@@ -4589,10 +4589,10 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   primer: {
     when: "You've burned out before and don't want to again.",
     give: "A sixty-second daily check-in: energy, sleep, stress, symptoms, warning signs.",
-    get: "Your own pattern before a crash, and how far out you are now.",
+    get: "Your own pattern before a crash — what tended to change in the days before it.",
     edge: "It learns your indicators rather than generic burnout symptoms — which is why it needs a few days before it's useful.",
   },
-  seoDescription: "Track energy, sleep, and stress to spot YOUR personal burnout pattern before you crash. Get a days-to-crash warning and the urgent fixes. Free.",
+  seoDescription: "Track energy, sleep, and stress to spot YOUR personal burnout pattern before you crash. See what tended to change in the days beforehand. Free.",
   seoTitle: "Spot Your Own Burnout Warning Signs Early",
   title: "Before the Crash",
   tagline: "Learn what tends to happen before you run out of steam",
@@ -4602,7 +4602,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   headerColor: "#b8dcd8",
   description: "Track a few daily signals and look for patterns in the days when your energy drops or life starts feeling harder. Over time, Before the Crash helps you compare what changed beforehand — sleep, stress, workload, symptoms, routines, and anything else you choose to track.",
   guide: {
-      overview: "Before the Crash tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and predicts how many days until likely crash at current trajectory. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
+      overview: "Before the Crash tracks daily metrics (energy, sleep, stress, activities, physical symptoms, warning signs) to identify patterns that precede burnout. It analyzes YOUR specific crash indicators and shows what tended to change in the days before the ones you marked. Provides prioritized interventions with scripts for what to say/do. Designed for people who push through everything and need objective data to override their 'I'm fine' instinct.",
       
       howToUse: [
         "Daily check-in: Rate energy (1-10), sleep quality (1-10), stress level (1-10), check activities, physical symptoms, and warning signs. Takes 60 seconds.",
@@ -4614,7 +4614,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
       
       example: {
         scenario: "You've been logging for 2 weeks. Stress has been 8+ for 6 days, sleep averaging 4.5/10, energy declined from 7 to 3, zero rest days. You 'feel fine' and think you can keep going.",
-        action: "Click 'Analyze Patterns'. System detects high crash risk, 2-3 days until likely crash.",
+        action: "Compare your check-ins. It lines up the days before the ones you marked against your ordinary days.",
         result: "Analysis shows: 'Your pattern: crash 2-4 days after stress hits 9 while sleep is below 6. Current status: BOTH thresholds met. Interventions: URGENT - Cancel tomorrow evening plans, call in sick if needed. HIGH - Delegate this week's project. Your current capacity: 30% below normal (can do 1-2 things today, not 5). Even if you feel fine, your logs show sleep deficit accumulating, no rest in 12 days, 4 warning signs present. Trust the data.' You cancel plans, take sick day, avoid the crash that would have forced shutdown for 2+ weeks."
       },
       
