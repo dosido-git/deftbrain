@@ -250,7 +250,7 @@ export const rulebookBreaker = {
     rb_goal_ph: "रिफंड, उलटाव, छूट, माफी…",
     rb_optional: "(वैकल्पिक)",
     rb_finding: "रास्ते तलाश रहे हैं…",
-    rb_find_leverage: "रास्ते दिखाइए",
+    rb_find_leverage: "रास्ते दिखाएँ",
     rb_disclaimer: "केवल वैध रास्ते। यह कानूनी सलाह नहीं है।",
     rb_error: "इस मामले का नक्शा नहीं बन सका।",
     rb_xref_pre: "नतीजा सामने रखना है?",

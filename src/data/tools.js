@@ -887,8 +887,7 @@ export const tools = [
       tips: [
         "The 'psychological function' section is often the most revealing part",
         "Severity ratings on stress tests help you prioritize what's worth acting on",
-        "Most useful for beliefs you've held so long you've stopped examining them",
-        "Pair with Ego Killer when you want a full demolition-and-rebuild"
+        "Most useful for beliefs you've held so long you've stopped examining them"
       ]
     }
 },

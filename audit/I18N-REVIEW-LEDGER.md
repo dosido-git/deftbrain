@@ -55,6 +55,12 @@ ConflictCoach · FutureProof · DriveHome · AlternatePath · CrisisPrioritizer 
 CaptionMagic · FocusPocus (FocusSoundArchitect and GriefGuide were already
 covered — see the note below)
 
+**Batch 5 (12)** — 56 keys — AwkwardSilenceFiller · BeliefStressTest ·
+ChaosPilot · ContextCollapse · DecoderRing · GhostWriter · HistoryToday ·
+MarkupDetective · MentalHealthNavigator · MiseEnPlace · NotSoFast ·
+ProcedureProbe. HistoryToday came through clean — no corrections at all, the
+first tool in the campaign to do so.
+
 **Reviewed as part of their own rewrite** — BeforeHello (`f1252d6d`)
 
 
@@ -62,7 +68,7 @@ covered — see the note below)
 
 _Nothing in flight._
 
-## Remaining (27)
+## Remaining (15)
 
 Reconciled 2026-08-29 against the authoritative list the user supplied — 69
 unique tools (the list read 70; "Which Life?" and "WhichLife?" are one tool).
@@ -70,12 +76,9 @@ The repository cannot reproduce this list on its own: locale files all predate
 the rewrites, and a diff-size heuristic over `src/tools/*.js` finds 27 of them,
 not 69. **The list below is the scope. Do not re-derive it.**
 
-AwkwardSilenceFiller · BeliefStressTest · ChaosPilot · ContextCollapse ·
-DecoderRing · GhostWriter · HistoryToday · MarkupDetective ·
-MentalHealthNavigator · MiseEnPlace · NotSoFast · ProcedureProbe · RoastMe ·
-MissingLink · TheWholeStory · ToolFinder · WhichLife · WrongAnswersOnly ·
-BikeMedic · Bookmark · BrainDumpBuddy · BrainStateDeejay · ColdOpenCraft ·
-ComebackCooker · CrowdWisdom · FanTheory · Giftology
+RoastMe · MissingLink · TheWholeStory · ToolFinder · WhichLife ·
+WrongAnswersOnly · BikeMedic · Bookmark · BrainDumpBuddy · BrainStateDeejay ·
+ColdOpenCraft · ComebackCooker · CrowdWisdom · FanTheory · Giftology
 
 **Five of these have a locale file whose name no longer matches the tool** —
 renamed display names, prefixes deliberately left alone. Look them up here
@@ -93,6 +96,17 @@ FocusSoundArchitect and GriefGuide were reviewed in batch 4 but are **not** on
 the list — extra coverage, no harm. GriefGuide was rewritten the same day.
 
 ## Carried forward, not yet fixed
+
+Found during batch 5:
+
+- **38 findings of a retired tool name in a user-facing value**, in four keys:
+  `dm_argument_simulator`, `plh_title` (+ `plh_copy_defense_header`),
+  `wao_plothole`, and `sdm_whatif_header` / `ss_whatif_title`. The audit's
+  RENAMED check has been reporting these; nobody has acted on them. Batch 5
+  cleared the fifth, `bst_egokiller` — a cross-reference from BeliefStressTest
+  to Ego Killer, which was folded *into* BeliefStressTest in July 2026, so the
+  tool was pointing at itself under a dead name in thirteen languages. The
+  matching tip in `src/data/tools.js` went with it.
 
 Found during batch 4, deliberately left for their own change:
 
