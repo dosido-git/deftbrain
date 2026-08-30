@@ -1,128 +1,232 @@
-// grief-guide.js
+// grief-guide.js — GriefGuide rewrite
 const express = require('express');
 const router = express.Router();
 const { callClaudeWithRetry, withLanguage, withLocaleContext } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+const GUARD_ENTRY_MS = Number(process.env.GG_GUARD_ENTRY_MS || 60_000);
 
 const LOSS_LABELS = {
-  death_person:  'death of a person',
-  death_pet:     'death of a pet',
-  relationship:  'end of a relationship',
-  job:           'job or career loss',
-  health:        'health loss or diagnosis',
-  pregnancy:     'pregnancy or fertility loss',
-  identity:      'loss of identity or a life chapter',
-  friendship:    'loss of a friendship or community',
-  home:          'loss of a home or place',
-  other:         'loss',
+  death_person: 'death of a person', death_pet: 'death of a pet', relationship: 'end of a relationship',
+  job: 'job or career loss', health: 'health loss or diagnosis', pregnancy: 'pregnancy or fertility loss',
+  identity: 'loss of identity or a life chapter', friendship: 'loss of a friendship or community',
+  home: 'loss of a home or place', other: 'loss',
 };
-
 const TIMELINE_LABELS = {
-  just:   'just happened (hours ago)',
-  days:   'a few days ago',
-  weeks:  'a few weeks ago',
-  months: 'several months ago',
-  years:  'a year or more ago',
+  just: 'just happened', days: 'a few days ago', weeks: 'a few weeks ago', months: 'several months ago', years: 'a year or more ago',
 };
-
 const MODE_LABELS = {
-  myself:  'themselves',
-  helping: 'someone they care about',
-  both:    'themselves and someone they care about',
+  myself: 'the user is grieving', helping: 'the user is supporting someone who is grieving', both: 'the user is grieving while also supporting someone else',
 };
 
-router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { mode, lossType, timeline, freeform, country, userLanguage, userLocale, userCurrency, userRegion } = req.body;
-
-  if (!freeform?.trim() && !lossType && !timeline) {
-    return res.status(400).json({ error: 'Please share a little about your situation.' });
+// Guards the fields a grieving person acts on or repeats aloud. Deliberately
+// NOT crisis_support: that text is safety-critical and time-critical, and a
+// repair pass that softens or reshapes it is a worse outcome than any
+// grounding slip it might contain. When crisis_support is set the guard is
+// skipped entirely — the answer goes out now.
+async function guardGriefGuide(parsed, body, startedAt) {
+  if (parsed.crisis_support) return;
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[grief-guide] v2 guard: skipped — out of time, answer returned unguarded');
+    return;
   }
+  const fields = [];
+  if (typeof parsed.reflection === 'string' && parsed.reflection.trim().length > 12) fields.push(['reflection', parsed.reflection]);
+  (parsed.understanding || []).forEach((u, i) => {
+    if (typeof u === 'string' && u.trim().length > 12) fields.push([`understanding[${i}]`, u]);
+  });
+  (parsed.suggestions || []).forEach((s, i) => {
+    if (s && typeof s.body === 'string' && s.body.trim().length > 12) fields.push([`suggestions[${i}].body`, s.body]);
+  });
+  (parsed.words || []).forEach((w, i) => {
+    if (typeof w === 'string' && w.trim().length > 12) fields.push([`words[${i}]`, w]);
+  });
+  if (typeof parsed.next_step === 'string' && parsed.next_step.trim().length > 12) fields.push(['next_step', parsed.next_step]);
+  if (!fields.length) return;
 
-  const lossLabel     = LOSS_LABELS[lossType] ?? 'loss';
-  const timelineLabel = TIMELINE_LABELS[timeline] ?? null;
-  const modeLabel     = MODE_LABELS[mode] ?? 'themselves';
-  const isHelping     = mode === 'helping' || mode === 'both';
+  await runOutputGuard(parsed, {
+    label: 'grief-guide-v2',
+    fields,
+    supplied: `WHAT THE USER TOLD US, IN FULL — nothing else about them, their loss, or the person who died is known:
+Who this is for: ${MODE_LABELS[body.mode] || MODE_LABELS.myself}
+Type of loss: ${LOSS_LABELS[body.lossType] || '(not given)'}
+Timing: ${TIMELINE_LABELS[body.timeline] || '(not given)'}
+Country or region: ${(body.country || '').trim() || '(not given)'}
+Their own words: ${(body.freeform || '').trim() || '(not given)'}
 
-  const systemPrompt = withLanguage(
-    `You are a compassionate grief counselor and educator. You help people understand grief, normalize what they're experiencing, and find their way through loss. You are warm, non-clinical, and non-prescriptive — you don't tell people how to feel or how long grief should last. You acknowledge that grief is not linear and that there is no right way to grieve. You are careful not to project emotions onto people or assume what they're feeling.
+Nothing is known about their emotional state, their coping, their relationships,
+their household, their beliefs, their diagnosis, or what anyone else in the
+situation feels or wants.
 
-SAFETY OVERRIDE (absolute priority): If anything the person shares mentions suicidal thoughts, wanting to die or "not be here" / "no point in living", thoughts of self-harm, or being in danger, you MUST populate the "crisis_support" field with a warm safety-first message and concrete crisis resources, and your "opening" must lead with care and safety. Err on the side of INCLUDING crisis_support whenever there is any hint of this — never leave it null when the person hints at not wanting to live. This overrides the "non-alarmist" tone.
-
-You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object.`,
-    userLanguage
-  );
-
-  const context = [
-    `This person is seeking guidance for: ${modeLabel}`,
-    lossType    ? `Type of loss: ${lossLabel}` : null,
-    timelineLabel ? `When it happened: ${timelineLabel}` : null,
-    country?.trim() ? `Country: ${country.trim()}` : null,
-    freeform?.trim() ? `What they shared: ${freeform.trim()}` : null,
-  ].filter(Boolean).join('\n');
-
-  const prompt = `Provide compassionate, personalized grief guidance based on this person's situation:
-
-${context}
-
-Return ONLY valid JSON with this exact structure:
-{
-  "crisis_support": <If what they shared hints at ANY suicidal thoughts, wanting to die or "not be here", self-harm, or immediate danger — a warm, non-judgmental 2-3 sentence message that gently but clearly urges them to reach out for support RIGHT NOW, naming concrete crisis help FOR THE USER'S OWN COUNTRY: their national suicide/crisis hotline and local emergency number (e.g. US/Canada 988, UK/Ireland Samaritans 116 123, Germany Telefonseelsorge 0800 111 0 111, mainland China 12356, Saudi Arabia 920033360 — pick what matches their country; if unsure of the exact national line, name the local emergency number and say to search for the national crisis line). NEVER give a US number to a non-US user. ONLY null when there is genuinely no hint of acute risk.>,
-  "opening": <2-3 sentence warm, empathetic acknowledgment of what they've shared — reflect what they said, don't project emotions they didn't mention>,
-  "what_is_normal": [<specific experience that is normal to grieve this way — grounded in what they described if possible — max 5>],
-  "guidance": [
-    {
-      "title": <short, warm heading — e.g. "On the waves of grief", "Giving yourself permission">,
-      "body": <2-3 paragraph compassionate guidance on this aspect — specific to their situation>,
-      "practical": [<optional concrete suggestion — max 3 — only include if genuinely helpful, never prescriptive>]
-    }
-  ],
-  ${isHelping ? `"what_to_say": [<specific phrase or sentence to say to the grieving person — warm, genuine, not clichéd — max 4>],
-  "what_not_to_say": [<common phrase to avoid and brief note why — e.g. "Everything happens for a reason — this dismisses their pain" — max 4>],` : '"what_to_say": [], "what_not_to_say": [],'}
-  "when_to_seek_help": <1-2 sentences on signs that talking to a professional might help — non-alarmist, normalizing>,
-  "support_resources": [<specific, real resource relevant to their country and type of loss if known — e.g. "The National Alliance for Eating Disorders" is NOT a grief resource — only include if genuinely applicable — max 3 — empty array if unsure. NEVER state a URL or phone number you are not certain is real: name the organization and how to find it instead>]
+WHAT FAILS:
+1. An emotion, motive, or psychological state attributed to the user that they
+   did not state — lonely, exhausted, in denial, healing, resilient, guilty.
+2. A claim about what the person who died, or the person being supported,
+   felt, wanted, or would have wanted.
+3. A verdict that an experience is normal, abnormal, a stage, or evidence of
+   grieving correctly or incorrectly.
+4. A biographical detail — a relationship history, a memory, a wish — invented
+   to make a suggested phrase sound personal.
+5. A named hotline, phone number, URL, or local service that was not supplied
+   and cannot be known with confidence.`,
+    promise: 'Help this person make sense of what they actually shared about a loss, offer at most three proportionate ideas and exactly one gentle next step, and give words only when words would help — without diagnosing them or telling them how grief works.',
+    guard: router.outputGuard,
+    userLanguage: body.userLanguage || body.userLocale,
+    locale: body.userLocale || '',
+  });
 }
 
-Guidelines:
-- ACUTE RISK (overrides everything below): if what they shared signals suicidal thoughts, self-harm, wanting to die, or immediate danger, set "crisis_support" (above) with concrete crisis resources and make the "opening" lead with warmth and safety FIRST — do NOT bury it under grief-processing guidance. The "non-alarmist, normalizing" tone below applies ONLY to ordinary grief, NEVER to acute risk.
-- opening: reflect their words back — if they mentioned a specific detail (e.g. "I keep thinking I need to call him"), acknowledge it directly
-- what_is_normal: normalize the specific experiences they described, not generic grief symptoms
-- guidance: AT MOST 4 sections (aim for 3-4), ordered by what seems most relevant to their situation. Include at least one section specifically relevant to their type of loss and timeline. Keep each "body" to 1-2 short paragraphs.
-- ${isHelping ? 'what_to_say: phrases that are genuine and specific, not platitudes. "I\'m here" is better than "Let me know if you need anything"' : 'Omit what_to_say and what_not_to_say sections (not applicable for self-grief mode)'}
-- when_to_seek_help: normalize professional support; don't make it feel like something is wrong with them
-- Tone throughout: warm, human, not clinical. Never use terms like "the grieving process" or "healing journey." Write like a wise, caring friend who happens to know a lot about grief.
-- Return ONLY the JSON object`;
+router.post('/grief-guide/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
+  const { mode = 'myself', lossType, timeline, freeform, country, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+
+  if (!freeform?.trim() && !lossType && !timeline) {
+    return res.status(400).json({ error: 'Please share a little about the situation.' });
+  }
+
+  const isHelping = mode === 'helping';
+  const isBoth = mode === 'both';
+  const context = [
+    MODE_LABELS[mode] || MODE_LABELS.myself,
+    lossType ? `Type of loss: ${LOSS_LABELS[lossType] || 'loss'}` : null,
+    timeline ? `Timing: ${TIMELINE_LABELS[timeline] || timeline}` : null,
+    country?.trim() ? `Country or region supplied by user: ${country.trim()}` : null,
+    freeform?.trim() ? `User's own words: ${freeform.trim()}` : null,
+  ].filter(Boolean).join('\n');
+
+  const personality = `You provide careful, humane grief guidance. You are not a therapist and do not diagnose, assess, or declare a person's psychological state. Your job is to help the user make sense of what they explicitly shared, find one or two manageable ways forward, and find words when words would help.
+
+GROUNDING — HARD REQUIREMENT
+Stay anchored to the user's words. You may gently interpret an evident tension, practical implication, or kind of loss when it follows directly from what they supplied, but never convert an interpretation into a fact about their emotions, motives, relationships, diagnosis, coping, personality, or inner state. Do not tell them they are lonely, exhausted, traumatized, depressed, in denial, healing, resilient, or similar unless they said so. Do not infer what another person feels or needs.
+
+NO NORMALITY VERDICTS
+Never say that what the user is experiencing is 'normal', 'abnormal', a stage of grief, or proof that they are grieving correctly. You may say an experience can occur in grief or that other people report similar experiences, but only when useful and without presenting a universal rule.
+
+NO THERAPY VOICE
+Avoid therapeutic performance, sentimental flourishes, inspirational language, grief clichés, and repeated validation. Do not say 'healing journey', 'grief journey', 'hold space', 'your grief is valid', 'you are allowed to', 'there is no right way to grieve', or 'you don't have to figure this out alone' unless the user's situation specifically makes one of those ideas necessary. Prefer plain, warm language.
+
+LOW COGNITIVE LOAD
+Grieving users may have limited attention. Be concise. Do not produce an essay. Give at most 3 useful ideas and ONE gentle next step. Do not turn every observation into homework.
+
+WORDS WITHOUT INVENTION
+When giving language the user could say, use only facts and feelings the user supplied. Do not invent memories, relationship history, wishes, motives, or emotional states to make the words sound personal.
+
+SUPPORT, NOT DIAGNOSIS
+Professional or peer support is an option, not evidence that something is wrong. Suggest it proportionately when the user's situation sounds persistently hard to carry, daily functioning is substantially affected, they explicitly want more support, or specialist/peer support could reasonably help with the kind of loss described. Do not diagnose complicated grief, prolonged grief disorder, depression, PTSD, or any other condition.
+
+CRISIS SAFETY — ABSOLUTE PRIORITY
+If the user's words indicate suicidal thoughts, self-harm, wanting to die/not be alive, immediate danger, or inability to stay safe, set crisis_support to a short safety-first message urging immediate human help. Use country-specific crisis or emergency information only when you are confident it is correct. Never invent a hotline, phone number, URL, or service. If exact local information is uncertain, tell the user to contact local emergency services or a national crisis service in their country and to stay with or contact a trusted person if possible. Do not bury acute safety guidance under grief advice.
+
+Return only valid JSON. No markdown outside JSON.`;
+
+  const modeInstructions = isHelping ? `
+MODE: HELPING SOMEONE
+The output should primarily help the user support the other person without claiming to know what that person feels or needs.
+- reflection: briefly identify what makes the situation difficult for the USER as a supporter, based only on what they supplied.
+- understanding: 1-2 careful observations about grief/support that help the user avoid overinterpreting or fixing.
+- suggestions: 2-3 concrete ways to show up; favor specific, low-pressure help over vague offers.
+- words: 2-3 natural phrases the user could actually say. Avoid platitudes.
+- avoid: up to 2 phrases/behaviors to avoid, each with a short reason.
+- next_step: ONE small action the user can take now.` : isBoth ? `
+MODE: BOTH
+Acknowledge that the user is carrying their own loss while supporting someone else, without assuming burden, resentment, exhaustion, or role conflict unless stated.
+Balance the response: do not let advice about helping the other person erase the user's own grief.
+- understanding: 1-2 observations grounded in what they shared.
+- suggestions: 2-3 total, divided sensibly between their own needs and supporting the other person.
+- words: only if language would genuinely help.
+- avoid: only if there is a clear support-related mistake worth preventing.
+- next_step: ONE action that does not require them to solve both people's grief.` : `
+MODE: I'M GRIEVING
+The output should help the user understand and live with what they described without diagnosing or prescribing a grief process.
+- reflection: 2-4 sentences reflecting the specific loss/tension in their words.
+- understanding: 1-2 careful observations that may help make sense of it. Do not label them as normal.
+- suggestions: 2-3 practical or reflective possibilities, only those that fit the user's situation.
+- words: 1-3 phrases only when the user appears to need language for telling someone what is happening or what they need; otherwise [].
+- avoid: usually [].
+- next_step: ONE gentle, specific action for today or the next conversation.`;
+
+  const prompt = `Create a concise GriefGuide response for this situation:\n\n${context}\n${modeInstructions}\n
+Return ONLY this JSON shape:
+{
+  "crisis_support": null,
+  "reflection": "2-4 sentences maximum",
+  "understanding": ["careful observation", "optional second observation"],
+  "suggestions": [
+    {"title":"short practical heading","body":"1-3 sentences maximum"}
+  ],
+  "words": ["natural phrase the user could say"],
+  "avoid": [
+    {"phrase":"phrase or behavior to avoid","why":"brief reason"}
+  ],
+  "next_step": "one small, specific, non-prescriptive next step",
+  "more_support": {
+    "when": "brief conditional guidance; empty string if unnecessary",
+    "options": ["real, relevant support option; no invented contact details"]
+  }
+}
+
+FINAL CHECK BEFORE RETURNING:
+- Did I add any emotion, motive, relationship fact, diagnosis, or psychological state the user did not supply? Remove it.
+- Did I declare anything normal or abnormal? Rewrite it.
+- Is any sentence mainly comforting-sounding rather than useful? Cut it.
+- Are there more than 3 suggestions? Reduce them.
+- Is there exactly one next step?
+- If I named a resource, am I confident it is real and relevant? If not, describe the category of support instead.
+- If acute safety risk is present, did crisis_support come first in substance and contain no invented contact information?`;
 
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5500,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted phrases or things-to-say plainly or with single quotes, or it breaks the JSON.',
+      max_tokens: 2600,
+      system: withLanguage(personality, userLanguage || userLocale) + withLocaleContext(userLocale, userCurrency, userRegion) + ' Never place a double-quote character inside a JSON string value; use single quotes if quotation is needed.',
       messages: [{ role: 'user', content: prompt }],
     }, { label: 'grief-guide' });
 
-    if (!parsed?.opening || !Array.isArray(parsed?.guidance)) {
+    if (!parsed?.reflection || !Array.isArray(parsed?.suggestions) || !parsed?.next_step) {
       return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
     }
 
-    res.json({
-      opening:           parsed.opening,
-      what_is_normal:    Array.isArray(parsed.what_is_normal)    ? parsed.what_is_normal    : [],
-      guidance:          parsed.guidance,
-      what_to_say:       Array.isArray(parsed.what_to_say)       ? parsed.what_to_say       : [],
-      what_not_to_say:   Array.isArray(parsed.what_not_to_say)   ? parsed.what_not_to_say   : [],
-      when_to_seek_help: parsed.when_to_seek_help ?? '',
-      support_resources: Array.isArray(parsed.support_resources) ? parsed.support_resources : [],
-      // SAFETY: the prompt's "absolute priority" field — the frontend renders a
-      // crisis banner from this, but it was omitted here (three-way-sync break),
-      // so acute-risk flags could never reach the user. Audit 2026-07-19.
-      crisis_support:    parsed.crisis_support ?? null,
-    });
+    const out = {
+      crisis_support: parsed.crisis_support || null,
+      reflection: parsed.reflection,
+      understanding: Array.isArray(parsed.understanding) ? parsed.understanding.slice(0, 2) : [],
+      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3) : [],
+      words: Array.isArray(parsed.words) ? parsed.words.slice(0, 3) : [],
+      avoid: Array.isArray(parsed.avoid) ? parsed.avoid.slice(0, 2) : [],
+      next_step: parsed.next_step,
+      more_support: {
+        when: parsed.more_support?.when || '',
+        options: Array.isArray(parsed.more_support?.options) ? parsed.more_support.options.slice(0, 3) : [],
+      },
+    };
+
+    await guardGriefGuide(out, req.body, startedAt);
+    res.json(out);
   } catch (err) {
-    if (!res.headersSent) {
-      res.status(500).json({ error: 'Something went wrong. Please try again.' });
-    }
+    if (!res.headersSent) res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+// grief-guide. The tool's failure mode is not a wrong answer — it is a warm,
+// fluent one that tells a grieving person what they feel, declares their
+// experience normal, or invents a memory to make a suggested phrase land.
+router.outputGuard = {
+  prohibit: [
+    'states_an_emotion_or_psychological_state_the_user_did_not_report',
+    'declares_an_experience_normal_abnormal_or_a_stage_of_grief',
+    'claims_what_the_deceased_or_supported_person_felt_or_wanted',
+    'invents_a_memory_relationship_fact_or_wish_to_personalise_a_phrase',
+    'names_a_hotline_number_url_or_local_service_not_supplied',
+    'diagnoses_grief_depression_trauma_or_any_condition',
+  ],
+  require: [
+    'exactly_one_next_step',
+    'at_most_three_suggestions',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

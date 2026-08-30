@@ -15,42 +15,26 @@ const GRIEF_MODES = [
 ];
 
 const LOSS_TYPES = [
-  { id: 'death_person',  labelKey: 'gg_loss_death_person' },
-  { id: 'death_pet',     labelKey: 'gg_loss_death_pet' },
-  { id: 'relationship',  labelKey: 'gg_loss_relationship' },
-  { id: 'job',           labelKey: 'gg_loss_job' },
-  { id: 'health',        labelKey: 'gg_loss_health' },
-  { id: 'pregnancy',     labelKey: 'gg_loss_pregnancy' },
-  { id: 'identity',      labelKey: 'gg_loss_identity' },
-  { id: 'friendship',    labelKey: 'gg_loss_friendship' },
-  { id: 'home',          labelKey: 'gg_loss_home' },
-  { id: 'other',         labelKey: 'gg_loss_other' },
-];
+  ['death_person', 'gg_loss_death_person'], ['death_pet',   'gg_loss_death_pet'],
+  ['relationship', 'gg_loss_relationship'], ['job',         'gg_loss_job'],
+  ['health',       'gg_loss_health'],       ['pregnancy',   'gg_loss_pregnancy'],
+  ['identity',     'gg_loss_identity'],     ['friendship',  'gg_loss_friendship'],
+  ['home',         'gg_loss_home'],         ['other',       'gg_loss_other'],
+].map(([id, labelKey]) => ({ id, labelKey }));
 
 const TIMELINE = [
-  { id: 'just',     labelKey: 'gg_tl_just' },
-  { id: 'days',     labelKey: 'gg_tl_days' },
-  { id: 'weeks',    labelKey: 'gg_tl_weeks' },
-  { id: 'months',   labelKey: 'gg_tl_months' },
-  { id: 'years',    labelKey: 'gg_tl_years' },
-];
+  ['just', 'gg_tl_just'], ['days', 'gg_tl_days'], ['weeks', 'gg_tl_weeks'],
+  ['months', 'gg_tl_months'], ['years', 'gg_tl_years'],
+].map(([id, labelKey]) => ({ id, labelKey }));
 
+// The freeform text is a locale key, not a literal — a visitor reading the tool
+// in Spanish should not be handed an English account of someone's father dying
+// to "try". Resolved through t() at click time in loadExample.
 const EXAMPLES = [
-  {
-  mode: 'myself',
-  lossType: 'death_person',
-  timeline: 'weeks',
-  freeform: "My dad died three weeks ago. It was sudden — a heart attack. I keep thinking I need to call him, then remembering he's gone. I'm functional at work but I cry when I get home. I don't know if what I'm feeling is normal or if there's something wrong with me. My family keeps saying I need to be strong for my mom.",
-  country: '',
-},
-  {
-  mode: 'myself',
-  lossType: 'health',
-  timeline: 'months',
-  freeform: "I was diagnosed eight months ago and I've adjusted to the practical side — the appointments, the medication, all of it. What I haven't adjusted to is that I don't recognise the plans I used to have. People keep telling me how well I'm coping and I don't know how to say that I'm not grieving a person, I'm grieving the version of my life I assumed I'd get.",
-  country: '',
-},
-];;
+  { mode: 'myself',  lossType: 'death_person', timeline: 'weeks',  freeformKey: 'gg2_ex1', country: '' },
+  { mode: 'myself',  lossType: 'health',       timeline: 'months', freeformKey: 'gg2_ex2', country: '' },
+  { mode: 'helping', lossType: 'death_person', timeline: 'days',   freeformKey: 'gg2_ex3', country: '' },
+];
 
 function GriefGuide({ tool }) {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -66,7 +50,6 @@ function GriefGuide({ tool }) {
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
     textMuted:     isDark ? 'text-zinc-400' : 'text-gray-500',
     labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
-    accentTxt:     isDark ? 'text-cyan-400' : 'text-cyan-600',
     btnPrimary:    isDark ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
                           : 'bg-cyan-600 hover:bg-cyan-700 text-white',
     // Waiting for input: an outline, not a smudge. Empty fill keeps "filled"
@@ -83,12 +66,12 @@ function GriefGuide({ tool }) {
                           : 'border-cyan-600 bg-cyan-100 text-cyan-900',
     pillInactive:  isDark ? 'border-zinc-600 text-zinc-400 hover:border-zinc-500'
                           : 'border-gray-300 text-gray-500 hover:border-gray-400',
+    softBox:       isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-700',
+    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'   : 'bg-red-50 border-red-200 text-red-800',
     required:      isDark ? 'text-amber-400' : 'text-amber-700',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
-    infoBox:       isDark ? 'bg-sky-900/20 border-sky-700 text-sky-200'   : 'bg-sky-50 border-sky-200 text-sky-800',
-    softBox:       isDark ? 'bg-zinc-700/40 border-zinc-600 text-zinc-200' : 'bg-slate-100 border-slate-200 text-slate-700',
-    danger:        isDark ? 'bg-red-900/20 border-red-700 text-red-200'   : 'bg-red-50 border-red-200 text-red-800',
+    step:          isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-100' : 'bg-emerald-50 border-emerald-200 text-emerald-900',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -102,9 +85,12 @@ function GriefGuide({ tool }) {
   const [timeline, setTimeline] = useState('');
   const [freeform, setFreeform] = useState('');
   const [country, setCountry]   = useState('');
-  const [results, setResults]   = usePersistentState('griefguide-results', null);
-  const [sessionHistory, setSessionHistory]   = usePersistentState('griefguide-history', []);
   const [error, setError]       = useState('');
+  // v2: the response shape changed with the rewrite, so a stored v1 result
+  // would render into empty cards. A new key retires them rather than
+  // migrating a shape nobody will see again.
+  const [results, setResults]   = usePersistentState('griefguide-results-v2', null);
+  const [sessionHistory, setSessionHistory] = usePersistentState('griefguide-history', []);
 
   const resultsRef   = useRef(null);
   const handleRef    = useRef(null);
@@ -113,13 +99,13 @@ function GriefGuide({ tool }) {
   const canSubmit = freeform.trim().length >= 20 || (lossType && timeline);
 
   const handleReset = useCallback(() => {
-    setResults(null);
-    setError('');
     setMode('myself');
     setLossType('');
     setTimeline('');
     setFreeform('');
     setCountry('');
+    setResults(null);
+    setError('');
   }, [setResults]);
 
   const loadExample = useCallback(() => {
@@ -127,11 +113,11 @@ function GriefGuide({ tool }) {
     setMode(ex.mode);
     setLossType(ex.lossType);
     setTimeline(ex.timeline);
-    setFreeform(ex.freeform);
+    setFreeform(t(ex.freeformKey));
     setCountry(ex.country);
     setResults(null);
     setError('');
-  }, [setResults]);
+  }, [setResults, t]);
 
   const handleGuide = useCallback(async () => {
     if (!canSubmit || loading) return;
@@ -149,16 +135,13 @@ function GriefGuide({ tool }) {
         userCurrency,
         userRegion,
       });
-      setResults({ ...parsed, _input: { freeform: freeform.trim(), lossType, timeline } });
+      setResults({ ...parsed, _input: { mode, freeform: freeform.trim(), lossType, timeline } });
+
       const lossEntry = LOSS_TYPES.find(l => l.id === lossType);
-      const lossLabel = lossEntry ? t(lossEntry.labelKey) : (lossType || '');
-      const tlEntry = TIMELINE.find(tl => tl.id === timeline);
-      const previewText = `${lossLabel} · ${tlEntry ? t(tlEntry.labelKey) : ''}`;
+      const tlEntry   = TIMELINE.find(tl => tl.id === timeline);
+      const previewText = `${lossEntry ? t(lossEntry.labelKey) : (lossType || '')} · ${tlEntry ? t(tlEntry.labelKey) : ''}`;
       // PF-25 exception: 50 is a preview-text length, not a history cap.
-      setSessionHistory(prev => [{
-        preview: previewText.slice(0, 50),
-        ts: Date.now(),
-      }, ...prev].slice(0, 5));
+      setSessionHistory(prev => [{ preview: previewText.slice(0, 50), ts: Date.now() }, ...prev].slice(0, 5));
     } catch (err) {
       setError(err.message || t('gg_error'));
     }
@@ -169,28 +152,19 @@ function GriefGuide({ tool }) {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [t('gg_copy_header'), ''];
-    if (results?.opening) lines.push(results?.opening, '');
-    if (results?.what_is_normal?.length) {
-      lines.push(t('gg_copy_normal'));
-      results?.what_is_normal.forEach(n => lines.push(`• ${n}`));
+    const lines = [];
+    if (results.crisis_support) lines.push(results.crisis_support, '');
+    if (results.reflection) lines.push(t('gg2_what_i_hear'), results.reflection);
+    if (results.understanding?.length) lines.push('', t('gg2_understanding'), ...results.understanding.map(x => `• ${x}`));
+    if (results.suggestions?.length) {
+      lines.push('', t(results._input?.mode === 'helping' ? 'gg2_show_up' : 'gg2_may_help'));
+      results.suggestions.forEach(x => lines.push(x.title, x.body));
     }
-    if (results?.guidance?.length) {
-      lines.push(`\n${t('gg_copy_guidance')}`);
-      results?.guidance.forEach(g => {
-        lines.push(`\n${g.title}`);
-        lines.push(g.body);
-      });
-    }
-    if (results?.what_to_say?.length) {
-      lines.push(`\n${t('gg_copy_say')}`);
-      results?.what_to_say.forEach(s => lines.push(`• ${s}`));
-    }
-    if (results?.what_not_to_say?.length) {
-      lines.push(`\n${t('gg_copy_avoid')}`);
-      results?.what_not_to_say.forEach(s => lines.push(`• ${s}`));
-    }
-    if (results?.when_to_seek_help) lines.push(`\n${t('gg_copy_seek')}\n${results?.when_to_seek_help}`);
+    if (results.words?.length) lines.push('', t('gg2_words'), ...results.words.map(x => `• ${x}`));
+    if (results.avoid?.length) lines.push('', t('gg2_avoid'), ...results.avoid.map(x => `• ${x.phrase} — ${x.why}`));
+    if (results.next_step) lines.push('', t('gg2_next_step'), results.next_step);
+    if (results.more_support?.when) lines.push('', t('gg2_more_support'), results.more_support.when);
+    if (results.more_support?.options?.length) lines.push(...results.more_support.options.map(x => `• ${x}`));
     lines.push(BRAND);
     return lines.join('\n');
   }, [results, t]);
@@ -199,9 +173,8 @@ function GriefGuide({ tool }) {
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
-    return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    return () => clearTimeout(timer);
   }, [results]);
 
   useEffect(() => {
@@ -211,94 +184,189 @@ function GriefGuide({ tool }) {
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  const renderResults = () => {
+    if (!results) return null;
+    // The mode the answer was BUILT for, not whatever the form holds now — a
+    // reload resets the form to 'myself' while the stored result stays.
+    const answeredMode = results._input?.mode ?? mode;
+
+    return (
+      <div ref={resultsRef} className={`space-y-4 ${c.text}`}>
+        {results?.crisis_support && (
+          <div className={`${c.danger} border-2 rounded-xl p-5`}>
+            <p className="text-sm font-semibold leading-relaxed">🆘 {results?.crisis_support}</p>
+          </div>
+        )}
+
+        {results._input?.freeform && (
+          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${c.textMuted}`}>📝 {t('gg_your_situation')}</p>
+            <p className={`text-sm ${c.textSecondary}`}>{results._input.freeform}</p>
+          </div>
+        )}
+
+        <div className={`${c.softBox} border rounded-xl p-5`}>
+          <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${c.textMuted}`}>💙 {t('gg2_what_i_hear')}</p>
+          <p className="text-sm leading-relaxed">{results?.reflection}</p>
+        </div>
+
+        {results?.understanding?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>🧭 {t('gg2_understanding')}</p>
+            <ul className="space-y-2">
+              {results?.understanding?.map((x, i) => (
+                <li key={i} className={`text-sm ${c.textSecondary} flex gap-2`}><span>•</span><span>{x}</span></li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {results?.suggestions?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>
+              🌿 {t(answeredMode === 'helping' ? 'gg2_show_up' : 'gg2_may_help')}
+            </p>
+            <div className="space-y-3">
+              {results?.suggestions?.map((x, i) => (
+                <div key={i}>
+                  <p className="text-sm font-semibold">{x.title}</p>
+                  <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{x.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {results?.words?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>💬 {t('gg2_words')}</p>
+            <ul className="space-y-2">
+              {results?.words?.map((x, i) => (
+                <li key={i} className={`text-sm ${c.textSecondary} border ${c.border} rounded-lg px-3 py-2`}>“{x}”</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {results?.avoid?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-3 ${c.textMuted}`}>↘ {t('gg2_avoid')}</p>
+            <div className="space-y-2">
+              {results?.avoid?.map((x, i) => (
+                <p key={i} className={`text-sm ${c.textSecondary}`}><strong>{x.phrase}</strong> — {x.why}</p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className={`${c.step} border rounded-xl p-5`}>
+          <p className="text-xs font-bold uppercase tracking-wide mb-2">→ {t('gg2_next_step')}</p>
+          <p className="text-sm font-semibold leading-relaxed">{results?.next_step}</p>
+        </div>
+
+        {(results?.more_support?.when || results?.more_support?.options?.length > 0) && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+            <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${c.textMuted}`}>🤝 {t('gg2_more_support')}</p>
+            {results?.more_support?.when && <p className={`text-sm ${c.textSecondary}`}>{results?.more_support?.when}</p>}
+            {results?.more_support?.options?.length > 0 && (
+              <ul className={`mt-2 space-y-1 text-xs ${c.textSecondary}`}>
+                {results?.more_support?.options?.map((x, i) => <li key={i}>• {x}</li>)}
+              </ul>
+            )}
+          </div>
+        )}
+
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-[10px] font-bold uppercase mb-2 ${c.textMuted}`}>🔗 {t('gg_related')}</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('gg_difficult_talk_coach')}</a>
+            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('gg_spiral_stopper')}</a>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderInput = () => (
     <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
+      <p className={`text-sm ${c.textSecondary}`}>{t('gg2_intro')}</p>
 
-      {/* Gentle intro */}
-      <div className={`${c.softBox} border rounded-xl px-4 py-3`}>
-        <p className="text-sm">{t('gg_intro')}</p>
-      </div>
-
-      {/* Mode */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('gg_who_label')}</label>
+        <label className={`block text-sm font-medium ${c.label} mb-2`}>{t('gg_who_label')}</label>
         <div className="space-y-2">
-          {GRIEF_MODES.map(m => (
-            <button key={m.id} onClick={() => setMode(m.id)}
-              className={`w-full text-start px-4 py-3 rounded-xl border transition-colors ${mode === m.id ? c.pillActive : c.pillInactive}`}>
-              <span className="me-2">{m.icon}</span>
-              <span className="font-medium text-sm">{t(m.labelKey)}</span>
-              <span className={`ms-2 text-xs ${c.textMuted}`}>{t(m.descKey)}</span>
+          {GRIEF_MODES.map(x => (
+            <button key={x.id} onClick={() => setMode(x.id)}
+              className={`w-full text-start px-4 py-3 rounded-xl border ${mode === x.id ? c.pillActive : c.pillInactive}`}>
+              <span className="me-2">{x.icon}</span>
+              <span className="font-medium text-sm">{t(x.labelKey)}</span>
+              <span className={`ms-2 text-xs ${c.textMuted}`}>{t(x.descKey)}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Loss type */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('gg_loss_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_optional')}</span></label>
+        <label className={`block text-sm font-medium ${c.label} mb-2`}>
+          {t('gg_loss_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_optional')}</span>
+        </label>
         <div className="flex flex-wrap gap-2">
-          {LOSS_TYPES.map(l => (
-            <button key={l.id} onClick={() => setLossType(lossType === l.id ? '' : l.id)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${lossType === l.id ? c.pillActive : c.pillInactive}`}>
-              {t(l.labelKey)}
+          {LOSS_TYPES.map(x => (
+            <button key={x.id} onClick={() => setLossType(lossType === x.id ? '' : x.id)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium ${lossType === x.id ? c.pillActive : c.pillInactive}`}>
+              {t(x.labelKey)}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Timeline */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-2`}>{t('gg_timeline_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_optional')}</span></label>
+        <label className={`block text-sm font-medium ${c.label} mb-2`}>
+          {t('gg_timeline_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_optional')}</span>
+        </label>
         <div className="flex flex-wrap gap-2">
-          {TIMELINE.map(tl => (
-            <button key={tl.id} onClick={() => setTimeline(timeline === tl.id ? '' : tl.id)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${timeline === tl.id ? c.pillActive : c.pillInactive}`}>
-              {t(tl.labelKey)}
+          {TIMELINE.map(x => (
+            <button key={x.id} onClick={() => setTimeline(timeline === x.id ? '' : x.id)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium ${timeline === x.id ? c.pillActive : c.pillInactive}`}>
+              {t(x.labelKey)}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Freeform */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label className={`block text-sm font-medium ${c.label} mb-1`}>
           {t('gg_share_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_share_hint')}</span>
         </label>
-        <textarea value={freeform} onChange={e => setFreeform(e.target.value)}
-          placeholder={t('gg_share_ph')}
-          rows={5}
+        <textarea value={freeform} onChange={e => setFreeform(e.target.value)} placeholder={t('gg_share_ph')} rows={5}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
       </div>
 
-      {/* Country */}
       <div>
-        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+        <label className={`block text-sm font-medium ${c.label} mb-1`}>
           {t('gg_country_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('gg_country_hint')}</span>
         </label>
-        <input type="text" value={country} onChange={e => setCountry(e.target.value)}
-          placeholder={t('gg_country_ph')}
+        <input value={country} onChange={e => setCountry(e.target.value)} placeholder={t('gg_country_ph')}
           className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${c.input}`} />
       </div>
 
       {error && <p className={`text-sm ${c.danger} border rounded-lg px-3 py-2`}>{error}</p>}
 
-
       <button title={t('cmd_enter')} onClick={handleGuide} disabled={!canSubmit || loading}
-        className={`relative w-full ${(!canSubmit) ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
+        className={`relative w-full ${!canSubmit ? c.btnIdle : c.btnPrimary} font-bold py-3 rounded-lg flex items-center justify-center gap-2 min-h-[48px]`}>
         {loading
           ? <><span className="inline-block animate-spin">{tool?.icon ?? '💙'}</span> {t('gg_finding')}</>
           : <><span className="me-1">{tool?.icon ?? '💙'}</span> {t('gg_get_guidance')}</>}
-      {!loading && (
-        <kbd aria-hidden="true"
-          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-          ⌘↵
-        </kbd>
-      )}
+        {!loading && (
+          <kbd aria-hidden="true"
+            className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+            ⌘↵
+          </kbd>
+        )}
       </button>
+
+      <p className={`text-xs ${c.textMuted}`}>{t('gg2_safety_note')}</p>
 
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
@@ -316,161 +384,42 @@ function GriefGuide({ tool }) {
     </div>
   );
 
-  const renderResults = () => {
-    if (!results) return null;
-    return (
-      <div className="space-y-4" ref={resultsRef}>
-
-        {/* Persistent safety note (always visible on results too, carries crisis resources) */}
-        <div className={`${c.softBox} border rounded-xl px-4 py-2.5`}>
-          <p className="text-xs">{t('gg_intro')}</p>
-        </div>
-
-        {/* Crisis support — shown FIRST and prominently when acute risk is detected */}
-        {results?.crisis_support && (
-          <div className={`${c.danger} border-2 rounded-xl px-5 py-4 flex items-start gap-3`}>
-            <span className="text-xl flex-shrink-0" aria-hidden="true">🆘</span>
-            <p className="text-sm font-semibold leading-relaxed">{results.crisis_support}</p>
-          </div>
-        )}
-
-        {/* Recap of what the user told us — anchors persisted results on revisits */}
-        {results?._input && (results._input.freeform || results._input.lossType || results._input.timeline) && (
-          <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-1.5 ${c.textMuted}`}>📝 {t('gg_your_situation')}</p>
-            {results._input.freeform && <p className={`text-sm ${c.textSecondary}`}>{results._input.freeform}</p>}
-            {(results._input.lossType || results._input.timeline) && (
-              <p className={`text-xs mt-1.5 ${c.textMuted}`}>
-                {[
-                  results._input.lossType && (() => { const l = LOSS_TYPES.find(x => x.id === results._input.lossType); return l ? t(l.labelKey) : results._input.lossType; })(),
-                  results._input.timeline && (() => { const tl = TIMELINE.find(x => x.id === results._input.timeline); return tl ? t(tl.labelKey) : results._input.timeline; })(),
-                ].filter(Boolean).join(' · ')}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Opening */}
-        {results?.opening && (
-          <div className={`${c.softBox} border rounded-xl px-5 py-4`}>
-            <p className={`text-sm leading-relaxed ${c.textSecondary}`}>{results?.opening}</p>
-          </div>
-        )}
-
-        {/* What is normal */}
-        {results?.what_is_normal?.length > 0 && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>💙 {t('gg_normal_title')}</p>
-            <ul className="space-y-2">
-              {results?.what_is_normal.map((n, i) => (
-                <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2 flex gap-2`}>
-                  <span className="flex-shrink-0">✓</span><span>{n}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Guidance sections */}
-        {results?.guidance?.length > 0 && (
-          <div className="space-y-3">
-            {results?.guidance.map((g, i) => (
-              <div key={i} className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`font-bold text-sm ${c.text} mb-2`}>{g.title}</p>
-                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{g.body}</p>
-                {g.practical?.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {g.practical.map((p, j) => (
-                      <li key={j} className={`text-xs ${c.textSecondary} flex gap-2`}>
-                        <span className={`flex-shrink-0 ${c.accentTxt}`}>→</span><span>{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* What to say / not say (for helping mode) */}
-        {(results?.what_to_say?.length > 0 || results?.what_not_to_say?.length > 0) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {results?.what_to_say?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>✅ {t('gg_say_this')}</p>
-                <ul className="space-y-2">
-                  {results?.what_to_say.map((s, i) => (
-                    <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2`}>"{s}"</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {results?.what_not_to_say?.length > 0 && (
-              <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-                <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-3`}>🚫 {t('gg_avoid_saying')}</p>
-                <ul className="space-y-2">
-                  {results?.what_not_to_say.map((s, i) => (
-                    <li key={i} className={`text-sm ${c.warning} border rounded-lg px-3 py-2`}>"{s}"</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* When to seek professional help */}
-        {results?.when_to_seek_help && (
-          <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-            <p className={`text-xs font-bold ${c.textMuted} uppercase tracking-wide mb-2`}>🧭 {t('gg_seek_help_title')}</p>
-            <p className={`text-sm ${c.textSecondary}`}>{results?.when_to_seek_help}</p>
-            {results?.support_resources?.length > 0 && (
-              <ul className="mt-3 space-y-1.5">
-                {results?.support_resources.map((r, i) => (
-                  <li key={i} className={`text-xs ${c.infoBox} border rounded-lg px-3 py-2`}>{r}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* Post-result cross-refs */}
-        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('gg_related')}</p>
-          <div className="flex flex-wrap gap-3">
-            <a href="/DifficultTalkCoach" className={`text-xs ${linkStyle}`}>🗣️ {t('gg_difficult_talk_coach')}</a>
-            <a href="/SpiralStopper" className={`text-xs ${linkStyle}`}>🌀 {t('gg_spiral_stopper')}</a>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className={`space-y-4 ${c.text}`}>
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
-                <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '💙'}</span>{t('gg_tagline')}
-                </p>
-                <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-              </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(results || country.trim() || freeform.trim() || lossType.trim() || timeline.trim()) ? (
-                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  ↺ {t('start_over')}
-                </button>
-              ) : null}
-            </div>
+            {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '💙'}</span>{t('gg2_tagline')}
+            </p>
+            <button onClick={loadExample} disabled={loading}
+              style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }}
+              className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">
+              ✨ {t('try_example')}
+            </button>
           </div>
+          {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
+          {(country || freeform || lossType || timeline || results) && (
+            <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+              ↺ {t('start_over')}
+            </button>
+          )}
         </div>
       </div>
-      {!results && <p className={`text-xs ${c.textMuted} px-1`}>{t('gg_header_xref')} <a href="/DifficultTalkCoach" className={linkStyle}>🗣️ {t('gg_difficult_talk_coach')}</a> {t('gg_header_xref_after')}</p>}
-      {!results && renderInput()}
-      {results && renderResults()}
+
+      {results ? renderResults() : renderInput()}
+
+      {/* S5.5 — at the foot, so it never interrupts the way to the one action. */}
+      {!results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs ${c.textMuted}`}>
+            {t('gg_header_xref')}{' '}
+            <a href="/MentalHealthNavigator" className={linkStyle}>{t('gg_mental_health_navigator')}</a>{' '}
+            {t('gg_header_xref_after')}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
