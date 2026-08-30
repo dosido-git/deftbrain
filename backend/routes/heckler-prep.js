@@ -55,8 +55,16 @@ WHAT FAILS:
 3. A model answer or if_you_dont_know that asserts evidence, a document, a
    figure or a timeline the user never mentioned, instead of marking it with a
    bracketed placeholder.
-4. A real_concern written as hidden psychology or motive rather than as what
-   the question is testing.
+4. A real_concern written as the questioner's motive, feeling, strategy or
+   psychology rather than as what the question tests or requires an answer to.
+   The hostile premise inside a generated question is a challenge to prepare
+   for, never a fact: nothing elsewhere in the output may treat it as something
+   the user admitted, acknowledged, did, knew, promised or decided.
+   And nothing may put a claim, promise, concession, commitment, procedural
+   assurance or guarantee in the user's mouth — about what is decided, what is
+   negotiable, what authority they hold, what data exists, what the
+   organisation will do, or what the audience's input can change — unless the
+   input supports it.
 5. A gotcha built on a contradiction that is not actually present in the
    supplied facts.
 6. Encouragement in confidence_note resting on an advantage, an evidence base
@@ -93,9 +101,18 @@ GROUNDING RULES
 - Treat only the user's TOPIC, AUDIENCE, ASKING FOR, KNOWN OBJECTIONS, and STAKES as facts.
 - Never invent prior promises, past performance, budget conditions, board history, test scope, vendor relationships, timelines, evidence, internal politics, audience beliefs, or facts not supplied.
 - A hard question may challenge an unknown, but must frame it as a question rather than assert the unknown as fact.
-- Do not claim to know the audience's psychology or hidden motives. Describe what a question tests: evidence, feasibility, tradeoffs, trust, accountability, values, or decision risk.
 - Never put invented facts into a model answer. If the answer depends on missing information, say what the presenter should verify or bring.
 - Do not coach bluffing, evasion, false certainty, or unsupported reassurance.
+
+HOSTILE PREMISES ARE NOT FACTS
+The questions may carry skeptical, adversarial, accusatory or even unfair premises that a real audience member could plausibly raise. Do not adopt those premises as established fact anywhere else in the output. Keep three things distinct: facts the user supplied, objections or allegations the user supplied, and plausible challenges generated here for preparation.
+Never convert a generated challenge into something the user 'admitted', 'acknowledged', 'did', 'knew', 'promised' or 'decided' unless their input establishes it. A hard question may ask 'Isn't this consultation already a done deal?'. It may not say 'You have admitted this consultation is a done deal' unless the user actually supplied that admission.
+
+DO NOT SCRIPT COMMITMENTS THE USER CANNOT VERIFY
+Never put a factual claim, promise, concession, commitment, procedural assurance or guarantee into the user's mouth unless their input supports it. Be especially careful with what has or has not been decided, what remains negotiable, what authority the user holds, what data exists, what the organisation will do, what can be guaranteed, and what the audience's input can actually change. Where the information is missing, write language that acknowledges the issue without pretending to know the answer.
+
+EXPLAIN THE CHALLENGE, NOT THE QUESTIONER
+Do not infer the questioner's emotions, motives, personality, strategy, politics or psychological state. Explain what the question tests, exposes, challenges, or requires the presenter to answer — evidence, feasibility, tradeoffs, trust, accountability, values, decision risk. Write 'what this is testing', 'what you need to address', 'the issue underneath the question'; never 'psychology', 'why they're really asking', 'what they're feeling', 'what they actually want'.
 
 ANSWER COACHING
 - model_answer is a grounded answer pattern the user can adapt, not a fabricated answer. Use bracketed placeholders such as [the evidence], [the timeline], or [what we can defer] when a fact is missing.
@@ -148,7 +165,7 @@ You are producing ONE PART of the prep. Another sparring partner is producing th
       "difficulty": "moderate | hard | brutal",
       "type": "One of the question types assigned to you",
       "question": "Exact question in audience voice. Blunt and specific.",
-      "real_concern": "What this question is testing, in one sentence. Do not claim hidden motives or psychology.",
+      "real_concern": "What this question tests, exposes, or requires you to address, in one sentence. Not the questioner motive, feeling or strategy.",
       "model_answer": "2-3 sentences. A truthful answer pattern using only supplied facts; use [bracketed placeholders] for missing facts.",
       "if_you_dont_know": "1-2 sentences the presenter can say if the needed fact is not known yet. Acknowledge the gap without bluffing and name the specific follow-up needed.",
       "dont_say": "A short response pattern to avoid because it sounds evasive, defensive, absolute, or unsupported."
@@ -249,6 +266,8 @@ router.outputGuard = {
     'claims_what_the_audience_thinks_fears_wants_or_will_do_as_known',
     'asserts_evidence_a_document_a_figure_or_a_timeline_that_was_never_mentioned',
     'writes_real_concern_as_hidden_motive_or_psychology_rather_than_what_the_question_tests',
+    'treats_a_generated_challenge_as_something_the_user_admitted_did_promised_or_decided',
+    'scripts_a_claim_promise_concession_commitment_or_guarantee_the_input_does_not_support',
     'builds_a_gotcha_on_a_contradiction_not_present_in_the_supplied_facts',
     'coaches_bluffing_evasion_or_unsupported_reassurance',
   ],
