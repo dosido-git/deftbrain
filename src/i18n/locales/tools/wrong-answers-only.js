@@ -577,7 +577,7 @@ export const wrongAnswersOnly = {
   },
   ko: {
     wao_try_one: "하나 해보기",
-    wao_q_label: "당신의 질문",
+    wao_q_label: "내 질문",
     wao_ph: "무엇이든 물어보세요 — 멋지게 틀려 드리겠습니다...",
     wao_plottwist: "Plot Twist",
     wao_making: "지어내는 중...",

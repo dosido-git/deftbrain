@@ -1425,7 +1425,7 @@ export const brainStateDeejay = {
     bsd_q_music_hint: "좋아하는 장르를 최대 4개 고르세요",
     bsd_music_taste_ph: "좋아하는 아티스트, 예: 'Tycho, Nils Frahm, Bonobo'...",
     bsd_sensitivities: "🧠 청취 민감도",
-    bsd_sensitivities_hint: "당신에게 맞지 않는 소리를 피하도록 알려주세요",
+    bsd_sensitivities_hint: "맞지 않는 소리를 피하도록 알려주세요",
     bsd_provider: "🎵 음악 서비스",
     bsd_provider_hint: "Spotify와 YouTube Music은 계정 없이 작동합니다. 다른 서비스는 재생 시 로그인이 필요할 수 있습니다.",
     bsd_creating: "플레이리스트를 만드는 중...",

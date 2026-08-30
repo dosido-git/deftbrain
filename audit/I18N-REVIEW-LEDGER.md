@@ -61,6 +61,11 @@ MarkupDetective · MentalHealthNavigator · MiseEnPlace · NotSoFast ·
 ProcedureProbe. HistoryToday came through clean — no corrections at all, the
 first tool in the campaign to do so.
 
+**Batch 6 (15)** — 109 keys — RoastMe · MissingLink · TheWholeStory ·
+ToolFinder · WhichLife · WrongAnswersOnly · BikeMedic · Bookmark ·
+BrainDumpBuddy · BrainStateDeejay · ColdOpenCraft · ComebackCooker ·
+CrowdWisdom · FanTheory · Giftology
+
 **Reviewed as part of their own rewrite** — BeforeHello (`f1252d6d`)
 
 
@@ -68,21 +73,15 @@ first tool in the campaign to do so.
 
 _Nothing in flight._
 
-## Remaining (15)
+## Remaining
 
-Reconciled 2026-08-29 against the authoritative list the user supplied — 69
-unique tools (the list read 70; "Which Life?" and "WhichLife?" are one tool).
-The repository cannot reproduce this list on its own: locale files all predate
-the rewrites, and a diff-size heuristic over `src/tools/*.js` finds 27 of them,
-not 69. **The list below is the scope. Do not re-derive it.**
+_None. The campaign is complete — all 69 rewritten tools reviewed in 12
+languages across six batches, 2026-08-29 to 2026-08-30._
 
-RoastMe · MissingLink · TheWholeStory · ToolFinder · WhichLife ·
-WrongAnswersOnly · BikeMedic · Bookmark · BrainDumpBuddy · BrainStateDeejay ·
-ColdOpenCraft · ComebackCooker · CrowdWisdom · FanTheory · Giftology
-
-**Five of these have a locale file whose name no longer matches the tool** —
-renamed display names, prefixes deliberately left alone. Look them up here
-rather than guessing, which has cost a batch before:
+Five tools have a locale file whose name no longer matches the tool — renamed
+display names, prefixes deliberately left alone. Kept here because the mismatch
+outlives the campaign; look them up rather than guessing, which has cost a batch
+before:
 
 | Tool | Locale file | Prefix | Keys/lang |
 | --- | --- | --- | --- |
@@ -96,6 +95,25 @@ FocusSoundArchitect and GriefGuide were reviewed in batch 4 but are **not** on
 the list — extra coverage, no harm. GriefGuide was rewritten the same day.
 
 ## Carried forward, not yet fixed
+
+Found during batch 6:
+
+- **`/PlotHole` 301-redirects to `/PlotTwist`, but they are different tools.**
+  PlotHole is the narrative-logic analyst ("Something in the plot bothered you");
+  PlotTwist is a decision tool ("A hard decision you keep circling"). Both have
+  a catalog entry, a component, a backend route and a 13-language locale block,
+  but `LEGACY_REDIRECTS` in `backend/server.js:283` sends every visitor to
+  PlotHole away — so a live, fully localized tool is unreachable, and
+  WrongAnswersOnly's "🕳️ Plot Hole" link lands people on a decision tool. The
+  RENAMES row claiming the rename is what looks wrong. Not a translation fix.
+- **The RENAMED audit check misses spaced display names.** It builds its regex
+  from the CamelCase id column, so `cr_copy_header` sat at "THE CONTRAST
+  REPORT" — the name retired 2026-07-10 — in all thirteen languages, in the
+  string the user copies to their clipboard, and the check never saw it. The
+  smoke test caught it instead, by accident. Batch 6 fixed the string; the
+  check still has the gap.
+- **`wao_plothole` is a false positive** in the 38 remaining retired-name
+  findings, for the reason above: PlotHole is a real tool.
 
 Found during batch 5:
 
