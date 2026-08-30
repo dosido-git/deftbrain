@@ -58,22 +58,35 @@ RentersDepositSaver · BrainRoulette
 CultureBriefing · GriefGuide · ConflictCoach · FutureProof · DriveHome ·
 AlternatePath · CrisisPrioritizer · CaptionMagic · FocusPocus
 
-## Scope, and what is uncertain about it
+## Remaining (27)
 
-The user scoped the campaign to the **68 tools rewritten since 2026-08-12**
-(the first was DateNight), with the rest folded into future rewrites. That list
-was given in conversation and is **not reproducible from the repository** —
-locale files all predate the rewrites (June), and a diff-size heuristic over
-`src/tools/*.js` since Aug 11 finds 27 tools, not 68, because later formatting
-commits obscure the original rewrite.
+Reconciled 2026-08-29 against the authoritative list the user supplied — 69
+unique tools (the list read 70; "Which Life?" and "WhichLife?" are one tool).
+The repository cannot reproduce this list on its own: locale files all predate
+the rewrites, and a diff-size heuristic over `src/tools/*.js` finds 27 of them,
+not 69. **The list below is the scope. Do not re-derive it.**
 
-Batch 4 was therefore assembled from tools that are *demonstrably* rewritten:
-a commit whose subject says rewrite/redesign/replace, or a single commit
-changing ≥150 lines of the tool file. **Confirm the remaining set against the
-original list of 68 before declaring the campaign complete.**
+AwkwardSilenceFiller · BeliefStressTest · ChaosPilot · ContextCollapse ·
+DecoderRing · GhostWriter · HistoryToday · MarkupDetective ·
+MentalHealthNavigator · MiseEnPlace · NotSoFast · ProcedureProbe · RoastMe ·
+MissingLink · TheWholeStory · ToolFinder · WhichLife · WrongAnswersOnly ·
+BikeMedic · Bookmark · BrainDumpBuddy · BrainStateDeejay · ColdOpenCraft ·
+ComebackCooker · CrowdWisdom · FanTheory · Giftology
 
-BrainStateDeejay was excluded — it has no locale file, so it is not localized
-at all and belongs to the rollout, not this review.
+**Five of these have a locale file whose name no longer matches the tool** —
+renamed display names, prefixes deliberately left alone. Look them up here
+rather than guessing, which has cost a batch before:
+
+| Tool | Locale file | Prefix | Keys/lang |
+| --- | --- | --- | --- |
+| NotSoFast | `rulebook-breaker.js` | `rb_` | 75 |
+| MissingLink | `the-gap.js` | `tg_` | 101 |
+| TheWholeStory | `the-alibi.js` | `ta_` | 68 |
+| WhichLife | `contrast-report.js` | `cr_` | 52 |
+| BrainStateDeejay | `brainstate-deejay.js` | `bsd_` | 146 |
+
+FocusSoundArchitect and GriefGuide were reviewed in batch 4 but are **not** on
+the list — extra coverage, no harm. GriefGuide was rewritten the same day.
 
 ## Carried forward, not yet fixed
 
