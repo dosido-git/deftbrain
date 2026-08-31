@@ -374,6 +374,14 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
     // that collides with a main pick is. A wildcard that shares one is not a
     // wildcard, and the field is optional by design, so it goes rather than
     // occupying the slot with a sixth version of the same activity.
+    // The slot is optional in content, never in shape. When the model declined
+    // it, it sometimes omitted the key rather than returning it empty, and the
+    // golden reads an absent key as a missing section — so the check failed on
+    // roughly one run in three while the tool was behaving correctly. A flaky
+    // gate is worse than no gate: it trains you to re-run until it passes.
+    if (!parsed.wildcard || typeof parsed.wildcard !== 'object') {
+      parsed.wildcard = { name: '', why: '' };
+    }
     if (parsed.wildcard && parsed.wildcard.name) {
       const wm = pick(parsed.wildcard.activity_mode, MODES);
       const mainModes = new Set((parsed.hobbies || []).map(h => h && h.activity_mode).filter(Boolean));
