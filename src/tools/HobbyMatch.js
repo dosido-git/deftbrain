@@ -28,6 +28,12 @@ const LOOKING_FOR = [
   { value: 'weird', labelKey: 'hm_look_weird', emoji: '🦑' },
 ];
 
+// The backend returns cost and session_fit as fixed English enums so no price
+// range or duration can ever reach this component. The label is looked up here
+// and translated; the enum itself is never shown.
+const COST_KEY = { free: 'hm_cost_free', low: 'hm_cost_low', moderate: 'hm_cost_moderate', higher: 'hm_cost_higher' };
+const FIT_KEY = { short_sessions: 'hm_fit_short', longer_block: 'hm_fit_long', either: 'hm_fit_either' };
+
 const HobbyMatch = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
@@ -146,7 +152,9 @@ const HobbyMatch = ({ tool }) => {
     if (results?.hobbies?.length) {
       results?.hobbies?.forEach((h, i) => {
         text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.why_it_made_the_list || ''}\n${h.what_its_like || ''}`;
-        text += `\n⏱ ${h.session_fit || ''} | 💰 ${h.startup_cost || ''}`;
+        const fit = FIT_KEY[h.session_fit] ? t(FIT_KEY[h.session_fit]) : '';
+        const cost = COST_KEY[h.cost] ? t(COST_KEY[h.cost]) : '';
+        if (fit || cost) text += `\n${[fit && `⏱ ${fit}`, cost && `💰 ${cost}`].filter(Boolean).join(' | ')}`;
         text += `\n🚀 ${t('hm_copy_try_once')} ${h.try_it_once || ''}`;
         if (h.where_to_look) text += `\n👥 ${t('hm_copy_where_to_look')} ${h.where_to_look}`;
         if (h.watch_for) text += `\n⚠️ ${t('hm_copy_watch_for')} ${h.watch_for}`;
@@ -363,12 +371,16 @@ const HobbyMatch = ({ tool }) => {
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                               {hobby.energy_type === 'solo' ? `🎧 ${t('hm_badge_solo')}` : hobby.energy_type === 'social' ? `👥 ${t('hm_badge_social')}` : `🔄 ${t('hm_badge_either')}`}
                             </span>
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
-                              💰 {hobby.startup_cost}
-                            </span>
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
-                              ⏱ {hobby.session_fit}
-                            </span>
+                            {COST_KEY[hobby.cost] && (
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                                💰 {t(COST_KEY[hobby.cost])}
+                              </span>
+                            )}
+                            {FIT_KEY[hobby.session_fit] && (
+                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
+                                ⏱ {t(FIT_KEY[hobby.session_fit])}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <Caret open={isExpanded} className="flex-shrink-0" />

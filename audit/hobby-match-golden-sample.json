@@ -1,10 +1,10 @@
 {
   "_meta": {
     "tool": "HobbyMatch",
-    "generated": "2026-08-30",
+    "generated": "2026-08-31",
     "model": "claude-haiku-4-5 (MODELS.FAST), single endpoint",
-    "baseline_commit": "hobbymatch-v2",
-    "how_to_regression_diff": "Re-recorded 2026-08-30 against the v2 rewrite, which replaced the schema: profile_read/pattern_noticed became matching_for/pattern_in_matches, and each hobby lost one_liner, the_hook, why_you, time_required, first_step and find_your_people in favour of why_it_made_the_list, what_its_like, session_fit, try_it_once, where_to_look and watch_for. The de-eur case guards two things at once: startup_cost must come back in the LOCAL currency (never a US dollar figure), and the response must not truncate at 4000 tokens in German. INVARIANTS the rewrite exists to hold — no promise a hobby will stick, become addictive or produce a feeling; no invented price, club, app or facility; no prescribed practice frequency; matching_for states selection criteria and never characterises the person. wildcard and pattern_in_matches are OPTIONAL by design and may legitimately come back empty; the route guards on matching_for and hobbies, which are not."
+    "baseline_commit": "hobbymatch-v3",
+    "how_to_regression_diff": "Re-recorded 2026-08-31. The schema now CONSTRAINS what could previously be invented: startup_cost (free text, which produced \"£15-30\") is replaced by cost, an enum of free|low|moderate|higher, and session_fit is an enum of short_sessions|longer_block|either — both pinned to lowercase English and rendered through label maps in the component, so no price range or duration can reach a screen by construction. backend coerces both after parse (see pick()); anything unrecognisable becomes null and the chip does not render. Each hobby also carries user_facts_used, the users own words that put it on the list — generated for traceability, not displayed. INVARIANTS: every cost and session_fit value is in its enum or null; NO currency amount, duration or completion-time estimate appears anywhere in the response; every user_facts_used entry is findable in the input; a stated physical limitation is never argued around, and pass 2 may DROP a hobby that does not clearly satisfy it, so a list shorter than five is correct and not a regression. wildcard and pattern_in_matches remain optional."
   },
   "cases": [
     {
@@ -22,74 +22,99 @@
         "userRegion": "DE"
       },
       "output": {
-        "matching_for": "Sie brauchen etwas, das sich in kurze Abende und Wochenendblöcke einfügt, ohne großes Budget. Die Aktivität sollte handwerklich sein, ruhig verlaufen und entspannend wirken — mit Raum für Kreativität und Ihr Interesse an Geschichte.",
+        "matching_for": "Sie suchen etwas, das Sie am Schreibtisch abwechslung gibt — ruhig und kreativ, mit den Händen zu arbeiten. Das passt zu Abenden und Wochenenden, ohne dass es viel Platz oder Budget braucht. Ihre Interesse für Geschichte gibt mehreren Hobbys eine natürliche Richtung.",
         "hobbies": [
           {
-            "name": "Handschriftliche Kalligrafie und Schönschreiben",
+            "name": "Kalligrafie und Handschrift-Lettering",
             "icon": "✒️",
-            "why_it_made_the_list": "Arbeiten mit den Händen, konzentriert und ruhig, mit unmittelbarem visuellen Ergebnis. Passt zu Ihrem Schreibtisch-Setup und benötigt wenig Platz.",
-            "what_its_like": "Sie üben verschiedene Schriftstile mit Feder, Tinte und Papier. Eine Sitzung könnte eine einzelne Zeile sein, die Sie immer wieder verfeinern, oder ein kleines Zitat abschreiben. Der Fokus liegt auf dem Rhythmus und der Kontrolle, nicht auf einem fertigen Produkt.",
+            "why_it_made_the_list": "Sie arbeiten gerne mit den Händen und suchen etwas Entspannendes und Kreatives. Kalligrafie ist handwerklich und erfordert Konzentration.",
+            "what_its_like": "Sie üben Buchstabenstile mit Feder und Tinte, schreiben einzelne Buchstaben oder kleine Sprüche immer wieder. Sie sehen sofort, ob eine Linie gelungen ist. Nach einigen Wochen entsteht genug Sicherheit, um etwas Fertiges herzustellen — eine Postkarte, ein Zitat auf Papier.",
             "energy_type": "solo",
-            "session_fit": "Perfekt für kurze Abende. Sie können jederzeit anfangen und aufhören; eine Stunde reicht aus, um etwas Sinnvolles zu üben.",
-            "startup_cost": "low",
-            "try_it_once": "Kaufen Sie eine einfache Feder und schwarze Tinte (zusammen unter 10 EUR) und kopieren Sie ein historisches Zitat oder eine alte Schriftstil-Vorlage aus dem Internet. Das zeigt Ihnen, ob der Fokus und die Handbewegung Sie ansprechen.",
-            "where_to_look": "Online-Tutorials auf YouTube, Anfänger-Workbooks zum Selbstlernen, Kunsthandlungen für Materialien.",
-            "watch_for": ""
+            "session_fit": "short_sessions",
+            "cost": "low",
+            "user_facts_used": [
+              "arbeite gerne mit den Händen",
+              "ruhige Aktivitäten",
+              "etwas Entspannendes und Kreatives"
+            ],
+            "try_it_once": "Kaufen Sie eine Kalligrafie-Anfängerfeder (rund 5–8 EUR) und etwas Papier. Folgen Sie einem kostenlosen YouTube-Tutorial für die Grundstriche eines einfachen Stils wie Copperplate. 30 Minuten üben zeigt, ob der Rhythmus der wiederholten Bewegungen Ihnen liegt.",
+            "where_to_look": "Online-Kurse (Skillshare, YouTube), lokale Volkshochschulen, spezialisierte Schreibwarenshops.",
+            "watch_for": "Gute Federn und Papier machen einen großen Unterschied — billiges Material frustriert schnell. Mit wenig Geld anfangen, dann bewusst besseres Material kaufen."
           },
           {
-            "name": "Modelismus — historische Gebäude oder Miniaturen im Maßstab",
-            "icon": "🏛️",
-            "why_it_made_the_list": "Handwerklich, konzentriert, Geschichte im Fokus. Sie bauen etwas Kleines Stück für Stück auf, was entspannend wirkt und am Schreibtisch Platz hat.",
-            "what_its_like": "Sie arbeiten mit vorgegebenen Teilen (Karton, Kunststoff oder Holz), kleben, schneiden und bemalen sie. Eine Sitzung ist eine einzelne Komponente — ein Fenster, eine Wand, ein Detail. Der Fortschritt ist sichtbar, aber kein Zeitdruck.",
-            "energy_type": "solo",
-            "session_fit": "Einfach zu unterbrechen und wieder aufzugreifen. Perfekt für Abende, wenn Sie 30 Minuten bis zwei Stunden haben.",
-            "startup_cost": "moderate",
-            "try_it_once": "Suchen Sie ein einfaches Karton-Modellbausatz-Set eines historischen Gebäudes (oft ab 15–25 EUR). Eine oder zwei Abende zeigen Ihnen, ob das Tempo und die Details Ihnen zusagen.",
-            "where_to_look": "Modellbau-Läden, Online-Modellingshops, spezialisierte Museumsshops.",
-            "watch_for": "Einige Bausätze erfordern spezielle Werkzeuge (scharfe Messer, Klebstoffe) — überprüfen Sie das vor dem Kauf. Gute Belüftung ist wichtig, wenn Sie mit Klebstoffen oder Farben arbeiten."
-          },
-          {
-            "name": "Schreiben von Geschichtsfiktion oder historischen Kurzgeschichten",
+            "name": "Antiquarische Buchbindung / Näh-Bindung",
             "icon": "📖",
-            "why_it_made_the_list": "Kreativ, am Schreibtisch, kombiniert Ihr Geschichtsinteresse mit kreativer Arbeit. Kein Budget, einfach zu beginnen.",
-            "what_its_like": "Sie schreiben kurze Szenen, Dialog oder Erzählungen in einem historischen Setting, das Sie interessiert. Eine Sitzung könnte eine einzelne Szene sein — keine langen Verpflichtungen. Sie recherchieren Details, die Sie neugierig machen, und lassen die Geschichte entstehen.",
+            "why_it_made_the_list": "Sie interessieren sich für Geschichte und arbeiten gerne mit den Händen. Handgebundene Bücher verbinden beide — Sie schaffen etwas Funktionstüchtiges und lernen dabei ein altes Handwerk.",
+            "what_its_like": "Sie falten Papierlagen, nähen sie zusammen, kleben den Rücken und beziehen das Ganze mit Stoff oder Papier. Ein Notizbuch oder kleines Buch entsteht in mehreren Schritten über eine oder zwei Sitzungen. Es ist präzise, aber keine ständige Korrektheit nötig — kleine Unebenheiten gehören zum Charakter.",
             "energy_type": "solo",
-            "session_fit": "Sehr flexibel. 20 Minuten oder zwei Stunden funktionieren gleich gut.",
-            "startup_cost": "free",
-            "try_it_once": "Wählen Sie einen historischen Moment oder eine Figur, die Sie fasziniert, und schreiben Sie eine einzige Szene (500–1000 Wörter) aus der Perspektive einer Person, die dort war. Das zeigt Ihnen, ob das Recherchieren und Schreiben zusammen befriedigend ist.",
-            "where_to_look": "Writing-Communities online (z.B. Wattpad, NaNoWriMo), historische Gesellschaften, die schreibende Mitglieder haben, Blogs über historisches Schreiben.",
+            "session_fit": "either",
+            "cost": "low",
+            "user_facts_used": [
+              "arbeite gerne mit den Händen",
+              "interessiere mich für Geschichte",
+              "etwas Entspannendes und Kreatives"
+            ],
+            "try_it_once": "Kaufen Sie ein einfaches Buchbinde-Starterkit (rund 15–20 EUR) oder schauen Sie, ob Ihre Stadtbibliothek einen Workshop anbietet. Ein einfaches Notizbuch zu nähen dauert etwa 90 Minuten und zeigt, ob die Handgriffe befriedigend sind.",
+            "where_to_look": "Volkshochschulen, Makerspaces, YouTube-Tutorials von etablierten Buchbindern, Online-Kurse.",
+            "watch_for": "Echte Buchbindung braucht etwas mehr Platz als andere Hobbys und bestimmte Werkzeuge (Nadel, Faden, Falzbein). Überprüfen Sie, ob Sie das am Schreibtisch unterbringen können."
+          },
+          {
+            "name": "Skizzieren und Zeichnen von Architektur oder historischen Objekten",
+            "icon": "🏛️",
+            "why_it_made_the_list": "Sie interessieren sich für Geschichte und mögen ruhige, handwerkliche Aktivitäten. Historische Gebäude, Möbel oder Artefakte zu zeichnen verbindet beides und braucht nur Papier und Stift.",
+            "what_its_like": "Sie suchen sich ein historisches Gebäude, Möbelstück oder Kunstobjekt aus und zeichnen es in der Realität, aus Fotos oder aus dem Gedächtnis. Der Fokus liegt auf den Linien, Proportionen und Details — nicht auf künstlerischer Perfektion. Jede Skizze dauert 20 Minuten bis über eine Stunde, je nach Komplexität.",
+            "energy_type": "solo",
+            "session_fit": "short_sessions",
+            "cost": "free",
+            "user_facts_used": [
+              "interessiere mich für Geschichte",
+              "arbeite gerne mit den Händen",
+              "ruhige Aktivitäten"
+            ],
+            "try_it_once": "Nehmen Sie Papier und einen Bleistift. Suchen Sie sich online ein historisches Gebäude oder Möbelstück mit klaren Linien aus und zeichnen Sie es. 30 Minuten zeigt, ob die Fokussierung auf Details befriedigend ist.",
+            "where_to_look": "YouTube-Tutorials zu Perspektivzeichnung und Architekturskizzen, Online-Galerien historischer Bauten, lokale Museen.",
             "watch_for": ""
           },
           {
-            "name": "Nadelfilzen oder Trockenfilzen",
-            "icon": "🧵",
-            "why_it_made_the_list": "Handwerklich, meditativ, schnelle sichtbare Ergebnisse. Sie benötigen wenig Platz und können einfache Formen in wenigen Sitzungen fertigstellen.",
-            "what_its_like": "Sie nehmen Wolle, stechen wiederholt mit einer speziellen Nadel hinein, bis sich die Fasern verfestigen und eine Form entsteht. Es ist wiederholend und beruhigend. Sie können kleine Figuren, Ornamente oder Dekorationen machen — nicht größer als Ihre Handfläche.",
+            "name": "Miniatur-Modellbau (historische Gebäude oder Dioramen)",
+            "icon": "🏗️",
+            "why_it_made_the_list": "Sie arbeiten gerne mit den Händen und interessieren sich für Geschichte. Historische Miniaturmodelle bauen bedeutet, Handwerk und historische Details zusammenzubringen und etwas Fertiges zu schaffen.",
+            "what_its_like": "Sie folgen einer Anleitung, um ein Miniaturgebäude, eine Szene oder ein Diorama zu bauen — von einer römischen Villa bis zu einem Mittelalter-Marktstand. Sie schneiden, kleben, malen und montieren in mehreren Schritten. Das fertige Stück bleibt — es ist ein Objekt, das Sie zeigen können.",
             "energy_type": "solo",
-            "session_fit": "Ideal für kurze Abende. Eine halbe Stunde Nadelarbeit zeigt deutliche Fortschritte; Sie können jederzeit aufhören.",
-            "startup_cost": "low",
-            "try_it_once": "Kaufen Sie ein Anfänger-Set mit vorgestanzter Wolle und Nadeln (ab etwa 12 EUR). Machen Sie eine einfache kleine Kugel oder ein flaches Ornament in einer Sitzung. Das zeigt Ihnen sofort, ob die Bewegung und das taktile Gefühl Ihnen zusagen.",
-            "where_to_look": "Bastel- und Wollläden, Online-Handwerkmarktplätze, YouTube-Anfänger-Tutorials.",
-            "watch_for": "Die Nadel ist spitz — Sie werden sich gelegentlich piksen. Achten Sie auf Ihre Finger und arbeiten Sie konzentriert."
+            "session_fit": "either",
+            "cost": "moderate",
+            "user_facts_used": [
+              "arbeite gerne mit den Händen",
+              "interessiere mich für Geschichte",
+              "etwas Kreatives"
+            ],
+            "try_it_once": "Kaufen Sie ein einfaches Miniatur-Modellbau-Set zum Thema einer historischen Epoche, die Sie anzieht (rund 15–25 EUR). Bauen Sie eine oder zwei Komponenten, um zu erfahren, ob der Aufwand und die Detailfülle Ihnen liegt.",
+            "where_to_look": "Spezialisierte Modellbau-Shops, Online-Kurse, Modelleisenbahn-Clubs (die oft auch architektonische Dioramen bauen).",
+            "watch_for": "Gute Modelle brauchen Kleber, kleine Werkzeuge und ggfs. Farbe — prüfen Sie, ob Sie das sicher am Schreibtisch lagern und nutzen können."
           },
           {
-            "name": "Naturbasierte Kunsthandwerk — Pressen, Sammeln und Anordnen",
-            "icon": "🍃",
-            "why_it_made_the_list": "Handwerklich, ruhig, Kreativität ohne Verpflichtung. Sie kombinieren Beobachtung mit Gestaltung und können dies mit ruhigen Spaziergängen verbinden.",
-            "what_its_like": "Sie sammeln Blätter, Blüten, Zweige — pressen oder trocknen sie — und arrangieren sie zu Bildern, in Rahmen oder in Collagen. Eine Sitzung könnte einfach das Sammeln sein, oder das Anordnen bereits gepresster Materialien auf Papier und Fixieren mit Klebstoff.",
+            "name": "Collage und Papiercrafts mit historischen Materialien",
+            "icon": "✂️",
+            "why_it_made_the_list": "Sie interessieren sich für Geschichte und suchen etwas Entspannendes mit den Händen. Collagen aus historischen Druck, alten Zeitschriften, Landkarten oder Postkarten zu schaffen verbindet Handwerk mit historischer Recherche.",
+            "what_its_like": "Sie sammeln Bilder, Text und Papier aus historischen Quellen — alte Zeitschriften, Postkarten, Noten, Kunstdrucke — und schneiden, arrangieren und kleben sie zu einem neuen Bild. Es ist offen und fehlerverzeihend; jede Kombination funktioniert. Eine Arbeit entsteht in 45 Minuten bis zwei Stunden.",
             "energy_type": "solo",
-            "session_fit": "Extrem flexibel. Das Sammeln kann eine kurze Aktivität sein; das Arrangieren passt in jede Abendstunde.",
-            "startup_cost": "free",
-            "try_it_once": "Sammeln Sie ein paar schöne Blätter oder Blüten, pressen Sie sie unter schweren Büchern für zwei Wochen, und kleben Sie sie dann auf Karton oder in ein Notizbuch. Zwei Euro Klebstoff, sonst nichts. Das zeigt Ihnen, ob die Einfachheit und das visuelle Ergebnis Ihnen ansprechen.",
-            "where_to_look": "Online-Tutorials zu Blütenpressen, Kunsthandwerk-Blogs, Naturkundemuseen mit Workshop-Angeboten.",
+            "session_fit": "short_sessions",
+            "cost": "low",
+            "user_facts_used": [
+              "arbeite gerne mit den Händen",
+              "interessiere mich für Geschichte",
+              "etwas Entspannendes und Kreatives"
+            ],
+            "try_it_once": "Sammeln Sie alte Zeitschriften, Zeitungen und Postkarten — auch gratis von Flohmärkten oder online. Nehmen Sie eine Schere, Kleber und leeres Papier und machen Sie eine erste Collage ohne Plan. 60 Minuten zeigt, ob die Spielerei und das Material-Arrangement Sie reizt.",
+            "where_to_look": "YouTube-Tutorials zu Collage-Techniken, Online-Communitys, lokale Kunstwerkstätten.",
             "watch_for": ""
           }
         ],
         "wildcard": {
-          "name": "Tintenspekulationen und Experimentielles Schreiben mit Kalligrafie",
-          "why": "Eine Variation der Kalligrafie, die Geschichte und Kreativität direkt verbindet: Sie experimentieren mit historischen Tintentechniken, beschäftigen sich mit alten Schreibmaterialien und Schriftstilen, während Sie gleichzeitig Ihren eigenen Text verfassen. Dies wendet das handwerkliche Interesse auf eine historiografische Neugierde an."
+          "name": "Dokumentation von lokalen historischen Orten (Fotografie + Recherche)",
+          "why": "Das ändert den Modus von Herstellung zu Beobachtung und Sammlung — Sie erforschen Geschichte und dokumentieren sie fotografisch statt etwas von Hand zu schaffen. Es braucht nur ein Smartphone und passt zu Ihrem Interesse für Geschichte, bleibt aber ruhig und nachdenktlich."
         },
-        "pattern_in_matches": "Mehrere dieser Aktivitäten funktionieren wunderbar in kurzen Sitzungen, bieten ein unmittelbares handwerkliches Feedback, und Sie benötigen keine teuren Anfangsinvestitionen oder spezialisierten Orte — sie alle funktionieren an Ihrem Schreibtisch oder zuhause."
+        "pattern_in_matches": "Mehrere dieser Hobbys arbeiten mit Geschichte als Quelle oder Thema und lassen Sie etwas Fertiges mit den Händen schaffen — das entspricht dem, was Sie gesagt haben. Alle passen in kurze oder längere Abende am Schreibtisch und brauchen wenig oder sehr begrenzte Anfangsmittel."
       }
     }
   ]

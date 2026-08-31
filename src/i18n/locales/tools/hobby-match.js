@@ -4,6 +4,13 @@
 // Six Degrees of Me) stay identical across languages.
 export const hobbyMatch = {
   en: {
+    hm_cost_free: "Free",
+    hm_cost_low: "Low cost",
+    hm_cost_moderate: "Moderate cost",
+    hm_cost_higher: "Higher cost",
+    hm_fit_short: "Works in short sessions",
+    hm_fit_long: "Needs a longer block",
+    hm_fit_either: "Flexible session length",
     hm_ex2_personality: "Sociable but exhausted. Likes finishing things. Hates anything that needs a group at a fixed time.",
     hm_ex2_schedule: "Twenty minutes after bedtime, most nights. Occasionally a whole Saturday morning if my partner takes the toddler.",
     hm_ex2_physical: "Fine, just permanently tired. Nothing that needs leaving the flat after 7pm.",
@@ -68,6 +75,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Watch for:"
   },
   es: {
+    hm_cost_free: "Gratis",
+    hm_cost_low: "Coste bajo",
+    hm_cost_moderate: "Coste medio",
+    hm_cost_higher: "Coste alto",
+    hm_fit_short: "Funciona en ratos cortos",
+    hm_fit_long: "Necesita un rato largo",
+    hm_fit_either: "Duración flexible",
     hm_ex2_personality: "Sociable pero agotada. Le gusta terminar las cosas. Odia cualquier cosa que exija un grupo a una hora fija.",
     hm_ex2_schedule: "Veinte minutos después de acostarla, casi todas las noches. De vez en cuando un sábado por la mañana entero si mi pareja se lleva a la peque.",
     hm_ex2_physical: "Bien, solo permanentemente cansada. Nada que implique salir de casa después de las 7.",
@@ -132,6 +146,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Ten en cuenta:"
   },
   zh: {
+    hm_cost_free: "免费",
+    hm_cost_low: "花费低",
+    hm_cost_moderate: "花费中等",
+    hm_cost_higher: "花费较高",
+    hm_fit_short: "适合短时进行",
+    hm_fit_long: "需要整块时间",
+    hm_fit_either: "时长灵活",
     hm_ex2_personality: "喜欢与人相处，但很累。喜欢把事情做完。讨厌任何需要一群人在固定时间到场的活动。",
     hm_ex2_schedule: "多数晚上哄睡之后有二十分钟。偶尔如果伴侣带孩子出去，能空出整个周六上午。",
     hm_ex2_physical: "身体没问题，只是长期疲惫。不要任何晚上七点以后需要出门的活动。",
@@ -196,6 +217,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "需要留意："
   },
   hi: {
+    hm_cost_free: "मुफ़्त",
+    hm_cost_low: "कम ख़र्च",
+    hm_cost_moderate: "मध्यम ख़र्च",
+    hm_cost_higher: "ज़्यादा ख़र्च",
+    hm_fit_short: "छोटे सत्रों में हो जाता है",
+    hm_fit_long: "लंबा समय चाहिए",
+    hm_fit_either: "समय लचीला",
     hm_ex2_personality: "मिलनसार पर थकी हुई। चीज़ें पूरी करना पसंद है। ऐसी कोई चीज़ नहीं चाहिए जिसमें तय समय पर पूरा ग्रुप जुटना पड़े।",
     hm_ex2_schedule: "ज़्यादातर रातों को सुलाने के बाद बीस मिनट। कभी-कभार पूरा शनिवार सुबह, अगर साथी बच्चे को संभाल ले।",
     hm_ex2_physical: "ठीक हूँ, बस हमेशा थकी रहती हूँ। शाम सात बजे के बाद घर से निकलने वाली कोई चीज़ नहीं।",
@@ -260,6 +288,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "ध्यान रखें:"
   },
   ar: {
+    hm_cost_free: "مجاني",
+    hm_cost_low: "تكلفة منخفضة",
+    hm_cost_moderate: "تكلفة متوسطة",
+    hm_cost_higher: "تكلفة أعلى",
+    hm_fit_short: "يناسب الجلسات القصيرة",
+    hm_fit_long: "يحتاج وقتاً متصلاً أطول",
+    hm_fit_either: "مدة مرنة",
     hm_ex2_personality: "اجتماعية لكنها منهكة. تحب أن تُنهي ما تبدأه. تكره أي نشاط يتطلب مجموعة في وقت محدد.",
     hm_ex2_schedule: "عشرون دقيقة بعد نوم الطفل، في معظم الليالي. وأحياناً صباح سبت كامل إن أخذ شريكي الصغير.",
     hm_ex2_physical: "بخير، لكنني متعبة على الدوام. لا شيء يتطلب الخروج من البيت بعد السابعة مساءً.",
@@ -324,6 +359,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "انتبه إلى:"
   },
   pt: {
+    hm_cost_free: "Grátis",
+    hm_cost_low: "Custo baixo",
+    hm_cost_moderate: "Custo médio",
+    hm_cost_higher: "Custo mais alto",
+    hm_fit_short: "Funciona em sessões curtas",
+    hm_fit_long: "Precisa de um bloco maior",
+    hm_fit_either: "Duração flexível",
     hm_ex2_personality: "Sociável mas exausta. Gosta de acabar as coisas. Detesta o que exige um grupo a uma hora marcada.",
     hm_ex2_schedule: "Vinte minutos depois de a deitar, quase todas as noites. De vez em quando uma manhã de sábado inteira se o meu companheiro levar a pequena.",
     hm_ex2_physical: "Bem, só permanentemente cansada. Nada que obrigue a sair de casa depois das 19h.",
@@ -388,6 +430,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Fique atento a:"
   },
   fr: {
+    hm_cost_free: "Gratuit",
+    hm_cost_low: "Coût faible",
+    hm_cost_moderate: "Coût moyen",
+    hm_cost_higher: "Coût plus élevé",
+    hm_fit_short: "Convient aux sessions courtes",
+    hm_fit_long: "Demande un créneau plus long",
+    hm_fit_either: "Durée flexible",
     hm_ex2_personality: "Sociable mais épuisée. Aime terminer ce qu'elle commence. Déteste tout ce qui impose un groupe à heure fixe.",
     hm_ex2_schedule: "Vingt minutes après le coucher, la plupart des soirs. De temps en temps tout un samedi matin si mon conjoint prend la petite.",
     hm_ex2_physical: "Ça va, juste fatiguée en permanence. Rien qui oblige à sortir après 19h.",
@@ -452,6 +501,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "À prendre en compte :"
   },
   de: {
+    hm_cost_free: "Kostenlos",
+    hm_cost_low: "Geringe Kosten",
+    hm_cost_moderate: "Mittlere Kosten",
+    hm_cost_higher: "Höhere Kosten",
+    hm_fit_short: "Geht in kurzen Einheiten",
+    hm_fit_long: "Braucht einen längeren Block",
+    hm_fit_either: "Flexible Dauer",
     hm_ex2_personality: "Gesellig, aber erschöpft. Bringt Dinge gern zu Ende. Hasst alles, wofür eine Gruppe zu einer festen Zeit nötig ist.",
     hm_ex2_schedule: "Zwanzig Minuten nach dem Zubettbringen, an den meisten Abenden. Gelegentlich ein ganzer Samstagvormittag, wenn mein Partner die Kleine nimmt.",
     hm_ex2_physical: "Körperlich in Ordnung, nur dauerhaft müde. Nichts, wofür ich nach 19 Uhr aus der Wohnung müsste.",
@@ -516,6 +572,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Achte darauf:"
   },
   ja: {
+    hm_cost_free: "無料",
+    hm_cost_low: "低コスト",
+    hm_cost_moderate: "中程度のコスト",
+    hm_cost_higher: "高めのコスト",
+    hm_fit_short: "短時間でもできる",
+    hm_fit_long: "まとまった時間が必要",
+    hm_fit_either: "時間は自由",
     hm_ex2_personality: "人と過ごすのは好きだけれど、とにかく疲れている。物事を完成させるのが好き。決まった時間に集まる必要があるものは苦手。",
     hm_ex2_schedule: "たいていの夜、寝かしつけたあとの二十分。パートナーが子どもを見てくれる日は、土曜の午前がまるごと空くこともあります。",
     hm_ex2_physical: "体は問題ありませんが、慢性的に疲れています。夜七時以降に外へ出るものは無理です。",
@@ -580,6 +643,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "注意する点："
   },
   ko: {
+    hm_cost_free: "무료",
+    hm_cost_low: "비용 적음",
+    hm_cost_moderate: "비용 보통",
+    hm_cost_higher: "비용 높음",
+    hm_fit_short: "짧게도 할 수 있음",
+    hm_fit_long: "긴 시간이 필요",
+    hm_fit_either: "시간 자유로움",
     hm_ex2_personality: "사람은 좋아하지만 지쳐 있습니다. 뭔가를 끝내는 걸 좋아합니다. 정해진 시간에 여럿이 모여야 하는 건 질색입니다.",
     hm_ex2_schedule: "대부분의 밤, 재우고 난 뒤 20분. 가끔 배우자가 아이를 봐주면 토요일 오전 전체.",
     hm_ex2_physical: "몸은 괜찮고, 그냥 늘 피곤합니다. 저녁 7시 이후에 집을 나서야 하는 건 안 됩니다.",
@@ -644,6 +714,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "유의할 점:"
   },
   ru: {
+    hm_cost_free: "Бесплатно",
+    hm_cost_low: "Недорого",
+    hm_cost_moderate: "Средние затраты",
+    hm_cost_higher: "Дороже",
+    hm_fit_short: "Подходит для коротких занятий",
+    hm_fit_long: "Нужен непрерывный отрезок",
+    hm_fit_either: "Гибкая длительность",
     hm_ex2_personality: "Общительная, но вымотанная. Любит доводить до конца. Терпеть не может всё, что требует группы в фиксированное время.",
     hm_ex2_schedule: "Двадцать минут после укладывания, почти каждый вечер. Иногда целое субботнее утро, если партнёр забирает малышку.",
     hm_ex2_physical: "Со здоровьем нормально, просто постоянно уставшая. Ничего, ради чего надо выходить из дома после семи.",
@@ -708,6 +785,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "На что обратить внимание:"
   },
   th: {
+    hm_cost_free: "ฟรี",
+    hm_cost_low: "ค่าใช้จ่ายต่ำ",
+    hm_cost_moderate: "ค่าใช้จ่ายปานกลาง",
+    hm_cost_higher: "ค่าใช้จ่ายสูงกว่า",
+    hm_fit_short: "ทำได้ในช่วงสั้น ๆ",
+    hm_fit_long: "ต้องใช้เวลาต่อเนื่อง",
+    hm_fit_either: "ยืดหยุ่นเรื่องเวลา",
     hm_ex2_personality: "เข้ากับคนได้ดีแต่เหนื่อยมาก ชอบทำอะไรให้จบ เกลียดกิจกรรมที่ต้องรวมกลุ่มตามเวลาที่กำหนด",
     hm_ex2_schedule: "ยี่สิบนาทีหลังกล่อมลูกนอน แทบทุกคืน บางครั้งได้ทั้งเช้าวันเสาร์ถ้าคู่ของฉันพาลูกออกไป",
     hm_ex2_physical: "ร่างกายปกติ แค่เหนื่อยตลอดเวลา ไม่เอากิจกรรมที่ต้องออกจากบ้านหลังหนึ่งทุ่ม",
@@ -772,6 +856,13 @@ export const hobbyMatch = {
     hm_copy_watch_for: "สิ่งที่ควรระวัง:"
   },
   vi: {
+    hm_cost_free: "Miễn phí",
+    hm_cost_low: "Chi phí thấp",
+    hm_cost_moderate: "Chi phí vừa",
+    hm_cost_higher: "Chi phí cao hơn",
+    hm_fit_short: "Làm được trong buổi ngắn",
+    hm_fit_long: "Cần khoảng thời gian dài",
+    hm_fit_either: "Thời lượng linh hoạt",
     hm_personality_hint: "Sở thích, những việc bạn thích làm, thứ thường giữ được sự chú ý của bạn, hoặc bất cứ điều gì hữu ích.",
     hm_matching_for: "Đang tìm theo tiêu chí gì",
     hm_whats_it_like: "Nó như thế nào",

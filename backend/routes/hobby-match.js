@@ -49,13 +49,13 @@ STEP 1 — CONSTRAINT. If they stated anything affecting what will work, remove 
 STEP 2 — GROUNDING. In everything that remains, for each sentence explaining why a hobby fits, check the connection holds without inventing a fact about their psychology, body, motivation or likely reaction. Remove or rewrite:
 - predictions: will stick, will keep you interested, will get you out of your head, satisfies your need for
 - ordinary language rendered clinical: "hates being a beginner in public" is not anxiety — say "lets you learn privately"
-- explanations of why a past hobby ended, or one experience generalised into a rule about them
+- explanations of why a past hobby ended, or one experience generalised into a rule about them — including a comparison that implies it: "progress that does not plateau the way chess does" both explains why chess ended and ranks two hobbies on evidence nobody has. Say what this hobby offers; do not rank it against the one they mentioned.
 - invented durations, costs, comparisons or availability — no "takes 20-40 minutes", no "often free online"
 - therapy-sounding description — "channels mental energy into construction" is a claim about them; say what the activity involves
 - a pattern about the PERSON rather than about the recommendations, or any comparison with other people
 ${prohibited}
 
-Do not replace a removed detail with a different invented detail. Keep every remaining hobby's name and icon exactly as they are.
+Do not replace a removed detail with a different invented detail. Keep every remaining hobby's name and icon exactly as they are. Leave cost and session_fit exactly as they are — they are enum values the interface renders, not prose to improve. Leave user_facts_used alone except to DELETE an entry that is not in the text above.
 
 FINAL TEST: could every user-specific statement be highlighted in the text above? Could someone with the stated limitation do each remaining hobby without argument, adaptation or a caveat? If not, fix it.
 
@@ -134,8 +134,14 @@ WHEN OPTIONS ARE PLENTIFUL, DON'T TEST A CONSTRAINT
 Where many viable recommendations exist — and they almost always do — prefer the ones that clearly satisfy what the user said over ones needing interpretation, qualification, modification or assumption to fit. A constraint is not a puzzle to solve around. If the user says anything seated or low-impact is fine, that is an open door, not an invitation to find the edge of it.
 
 FACTUAL CLAIMS
-Do not fabricate prices, schedules, membership fees, equipment costs, availability, local clubs, communities, competitions, apps or facilities. NO FALSE PRECISION. Do not invent exact or narrow estimates for how long a project takes, how much fits in one session, startup or equipment costs, learning time, or the frequency needed to progress — unless that is reliably established. Not "a bracelet takes 20-40 minutes", not "a few figures and paints cost 15-20", not "a simple design is complete in twenty minutes". This holds even when the number came from the user: they said their evenings are about half an hour, so "fits a short evening" is matching their constraint, while "a small painting is genuinely finished in thirty minutes" is an estimate of the ACTIVITY that nobody established. Say "small projects can be broken across short sessions" and "basic materials can be inexpensive". Their available time is a constraint to match against, never a reason to manufacture a duration.
-A rough cost range is allowed only where it is genuinely useful and defensible, and must be labelled as approximate — "typical starter cost: roughly...", "often possible for under...". Never imply current pricing or local availability.
+Do not fabricate prices, schedules, membership fees, equipment costs, availability, local clubs, communities, competitions, apps or facilities.
+
+HARD OUTPUT RULES
+COST is one of free, low, moderate, higher. Nothing else — no currency symbol, no range, no equipment estimate, no current-looking price.
+SESSION FIT is one of short_sessions, longer_block, either. Nothing else. Do not estimate how long a project takes, how long a session should be, how many sessions are needed, or how quickly someone progresses.
+WHY IT FITS uses exactly three ingredients: a fact the user supplied, a property of the hobby, and the connection between them. Never a prediction of how it will make them feel. Not "this will be relaxing", "this should reduce your exhaustion", "this will keep you interested". Instead: "can be done alone at home and paused between steps", "offers small self-contained projects", "does not require a fixed group schedule".
+USER FACTS USED lists the user's own words that put this hobby on the list. Every entry must be findable in their input.
+Never imply current pricing or local availability.
 Do not tell the user where to "find their people". Describe useful places to look — local clubs, community classes, maker spaces, libraries, recreation departments, relevant online communities, hobby-specific organisations. Name a specific organisation, app, service, club or website only where you have reliable grounds.
 
 TIME
@@ -152,6 +158,15 @@ A wildcard differs in the EXPERIENCE, not merely the materials. If most of the l
 
 QUALITY OVER QUANTITY
 Do not pad the list to hit a number. Five strong, distinct recommendations beat six with filler, and fewer than five is correct when the input does not support five. Recommendations must differ in what the person actually DOES, not merely in name.
+
+BEFORE RETURNING EACH RECOMMENDATION, VERIFY
+1. Every item in user_facts_used appears in the user's input.
+2. why_it_made_the_list adds no psychological claim.
+3. why_it_made_the_list adds no medical or physical-suitability claim.
+4. cost is one of free, low, moderate, higher.
+5. session_fit is one of short_sessions, longer_block, either.
+6. No currency amount, duration or completion-time estimate appears anywhere in the recommendation.
+If any check fails, rewrite that recommendation before returning it.
 
 MATCHING CLAIM AUDIT — RUN THIS BEFORE RETURNING
 For every sentence that explains why a hobby fits, name three things to yourself:
@@ -187,8 +202,9 @@ Return ONLY valid JSON:
       "why_it_made_the_list": "1-2 sentences connecting it directly to something they supplied.",
       "what_its_like": "2-3 sentences on what a person actually does. Concrete enough to picture a session.",
       "energy_type": "solo | social | either",
-      "session_fit": "A SHORT phrase for a metadata chip — at most about six words, naming a PROPERTY: 'short sessions, easy to pause', 'finishes in one sitting', 'needs a longer block', 'easy to put down mid-step'. Never a duration, never a practice frequency, never a sentence, and do not echo their stated minutes back at them — every chip then reads the same. Qualifications belong in what_its_like or watch_for.",
-      "startup_cost": "free | low | moderate | higher, plus a rough range ONLY where defensible, clearly marked approximate and in their local currency",
+      "session_fit": "EXACTLY one of: short_sessions | longer_block | either. Lowercase English, never translated — the interface renders the label. Never a duration, never a frequency, never a sentence.",
+      "cost": "EXACTLY one of: free | low | moderate | higher. Lowercase English, never translated. No currency symbol, no price range, no equipment estimate, no current-looking price.",
+      "user_facts_used": ["The user's own words that put this hobby on the list — quote or closely paraphrase, one per entry. Every entry must be findable in their input. This is checked."],
       "try_it_once": "The smallest realistic experiment that lets them experience the hobby before buying significant equipment or committing. It tests the hobby; it does not start a new identity.",
       "where_to_look": "Kinds of places to look for instruction, equipment or people. Name a specific organisation only where you have reliable grounds. Empty string if there is nothing useful to say.",
       "watch_for": "A material constraint, cost, safety, accessibility, equipment or participation consideration worth knowing before starting. Empty string when there is none."
@@ -215,6 +231,30 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
     // Guard on the two fields that are always present. matching_for opens every
     // response and hobbies is the response; wildcard and pattern_in_matches are
     // both optional by design and would 500 every call keyed on either.
+    // The enums are enforced in code, not just asked for. A model that answers
+    // "low (£15-30)" or "short sessions, easy to pause" gets normalised to the
+    // allowed value; anything unrecognisable becomes null and the chip simply
+    // does not render. That is what makes "£15-30" impossible to display rather
+    // than merely discouraged.
+    const COSTS = ['free', 'low', 'moderate', 'higher'];
+    const FITS = ['short_sessions', 'longer_block', 'either'];
+    const pick = (raw, allowed) => {
+      const v = String(raw ?? '').toLowerCase();
+      return allowed.find(a => v === a)
+          || allowed.find(a => v.includes(a))
+          || allowed.find(a => v.includes(a.replace('_', ' ')))
+          || null;
+    };
+    (parsed.hobbies || []).forEach(h => {
+      if (!h) return;
+      h.cost = pick(h.cost ?? h.startup_cost, COSTS);
+      h.session_fit = pick(h.session_fit, FITS);
+      delete h.startup_cost;
+      h.user_facts_used = Array.isArray(h.user_facts_used)
+        ? h.user_facts_used.filter(x => typeof x === 'string' && x.trim()).slice(0, 5)
+        : [];
+    });
+
     if (!parsed.matching_for || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
