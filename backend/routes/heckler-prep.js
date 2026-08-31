@@ -3,11 +3,14 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
-const { runOutputGuard } = require('../lib/outputGuard');
 
 // Two model calls already ran. If they were slow, the visitor has waited long
 // enough — return the prep unguarded rather than spend another check budget.
-const GUARD_ENTRY_MS = Number(process.env.HP_GUARD_ENTRY_MS || 70_000);
+// Two generation calls already ran. Past this, the visitor has waited long
+// enough that a third is worse than an unedited draft.
+const EDIT_ENTRY_MS = Number(process.env.HP_EDIT_ENTRY_MS || 75_000);
+// The editor returns the WHOLE response, so it needs the generation's headroom.
+const EDIT_MAX_TOKENS = Number(process.env.HP_EDIT_MAX_TOKENS || 8000);
 
 // Guards the text the presenter will say out loud or lean on in the room. The
 // failure mode here is not an unanswerable question — it is a fluent, confident
@@ -15,88 +18,106 @@ const GUARD_ENTRY_MS = Number(process.env.HP_GUARD_ENTRY_MS || 70_000);
 // board's opinion, a document that does not exist. A presenter who repeats one
 // of those in front of the people who know better is worse off than if the tool
 // had said nothing.
-async function guardHecklerPrep(parsed, body, startedAt) {
-  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
-    console.log('[heckler-prep] v2 guard: skipped — out of time, prep returned unguarded');
-    return;
+// PASS 2 — the grounding edit.
+//
+// One pass cannot both invent ten hostile questions and police every premise it
+// invented to land them. Tested repeatedly: sometimes the audit holds, and on
+// the next generation the creative mandate wins and the output asserts a
+// reporter's motives, an affected group nobody mentioned, alternatives that were
+// "formally assessed", or something the presenter will have said later tonight.
+// The capability that makes this tool worth using is exactly what makes it
+// unsafe to ground in the same breath.
+//
+// So the heckler swings hard in pass 1, and a separate, colder call removes
+// whatever it had to invent to land the punch. The editor is told it is NOT
+// making anything sharper — that instruction is the whole point, because
+// "improve this" is what produced the invention in the first place.
+//
+// It returns the edited object or nothing: a malformed or truncated edit falls
+// back to the draft, which is grounded imperfectly rather than broken entirely.
+async function enforceSuppliedFacts(draft, body, startedAt, half) {
+  if (Date.now() - startedAt > EDIT_ENTRY_MS) {
+    console.log(`[heckler-prep] grounding edit (${half}): skipped — out of time, draft returned unedited`);
+    return draft;
   }
-  const fields = [];
-  const long = v => typeof v === 'string' && v.trim().length > 12;
-  if (long(parsed.situation_read)) fields.push(['situation_read', parsed.situation_read]);
-  if (long(parsed.opening_move)) fields.push(['opening_move', parsed.opening_move]);
-  if (long(parsed.confidence_note)) fields.push(['confidence_note', parsed.confidence_note]);
-  (parsed.questions || []).forEach((q, i) => {
-    if (long(q?.real_concern)) fields.push([`questions[${i}].real_concern`, q.real_concern]);
-    if (long(q?.model_answer)) fields.push([`questions[${i}].model_answer`, q.model_answer]);
-    if (long(q?.if_you_dont_know)) fields.push([`questions[${i}].if_you_dont_know`, q.if_you_dont_know]);
-  });
-  if (!fields.length) return;
+  const prohibited = (router.outputGuard.prohibit || []).map(x => `- ${x.replace(/_/g, ' ')}`).join('\n');
 
-  await runOutputGuard(parsed, {
-    label: 'heckler-prep-v2',
-    fields,
-    supplied: `WHAT THE USER TOLD US, IN FULL — nothing else about their organisation, their history, their audience or their evidence is known:
-Topic: ${(body.topic || '').trim() || '(not given)'}
-Audience: ${(body.audience || '').trim() || '(not given)'}
-What they are asking for: ${(body.proposal || body.askingFor || '').trim() || '(not given)'}
-Objections they already expect: ${(body.knownObjections || body.objections || '').trim() || '(not given)'}
-Stakes: ${(body.stakes || '').trim() || '(not given)'}
+  const editorSystem = `You are a grounding editor. You are NOT trying to make this output sharper, more dramatic, more specific or more persuasive — that impulse is what put the errors in. You remove what the writer had to invent, and you change nothing else.
 
-Nothing is known about past projects, prior promises, budget history, vendor
-relationships, test scope, internal politics, what this audience believes, how
-they have reacted before, or what evidence and documents the presenter holds.
+Return the SAME JSON object with the same keys, the same number of questions, and the same question numbering. Never place a double-quote (") character inside a JSON string value. Return ONLY the JSON.`;
 
-WHAT FAILS:
-1. A fact about the organisation, its history, its finances or its people that
-   the user did not supply — a previous overrun, an earlier commitment, a
-   headcount, a deadline, a named system or vendor.
-2. A claim about what the audience thinks, fears, wants or will do, stated as
-   known rather than as what a question tests.
-3. A model answer or if_you_dont_know that asserts evidence, a document, a
-   figure or a timeline the user never mentioned, instead of marking it with a
-   bracketed placeholder.
-4. A real_concern written as the questioner's motive, feeling, strategy or
-   psychology rather than as what the question tests or requires an answer to.
-   The hostile premise inside a generated question is a challenge to prepare
-   for, never a fact: nothing elsewhere in the output may treat it as something
-   the user admitted, acknowledged, did, knew, promised or decided.
-   And nothing may put a claim, promise, concession, commitment, procedural
-   assurance or guarantee in the user's mouth — about what is decided, what is
-   negotiable, what authority they hold, what data exists, what the
-   organisation will do, or what the audience's input can change — unless the
-   input supports it.
-5. A gotcha built on a contradiction that is not actually present in the
-   supplied facts.
-6. Encouragement in confidence_note resting on an advantage, an evidence base
-   or an audience reaction that was never supplied.
-7. A situation_read that characterises the audience, the user, the proposal or
-   the organisation — "a cost-focused C-suite", "a reactive spend" — rather
-   than naming the tensions the supplied facts actually create. Adversarial
-   framing belongs inside the questions, not in the tool's own analysis.
-8. A question made harder by inventing a circumstance rather than by pressing
-   on a supplied one: a budget process that was bypassed, prior knowledge that
-   was concealed, a legal or disclosure obligation nobody mentioned. The
-   premise may interpret known facts; it may not require new ones to be true.
-9. A hypothetical is NOT a violation. "If we approve this and a breach still
-   occurs..." is the tool working; do not flag a condition openly introduced by
-   IF. What fails is a specific smuggled inside one — "in the next 12 months",
-   "by the end of Q3", "within two years" — when no such period was supplied.
-10. ANY concrete factual detail that did not come from the input and is not
-   presented as an unknown to find out — a duration, a frequency, a distance,
-   a cost, a quantity, a policy, a legal right, a precedent, what the
-   organisation normally does, what happened somewhere comparable. "During its
-   two-hour visit" is a violation when no duration was supplied; asking how
-   long each visit lasts is not. Questions may be invented. Facts may not.`,
-    promise: 'Give this presenter the hardest questions their actual audience could ask about the case they described, a truthful answer pattern for each, and something credible to say when they do not know the answer yet — without inventing any part of their situation.',
-    guard: router.outputGuard,
-    userLanguage: body.userLanguage || body.userLocale,
-    locale: body.userLocale || '',
-  });
+  const editorPrompt = `THE USER'S ACTUAL INPUT — the complete set of established facts:
+PRESENTING / PROPOSING: ${(body.topic || '').trim() || '(not given)'}
+AUDIENCE: ${(body.audience || '').trim() || '(not given)'}
+ASK: ${(body.proposal || body.askingFor || '').trim() || '(not given)'}
+KNOWN OBJECTIONS — things the user EXPECTS TO FACE, not things they believe or admit: ${(body.knownObjections || body.objections || '').trim() || '(none given)'}
+STAKES: ${(body.stakes || '').trim() || '(not given)'}
+
+Nothing else about their organisation, its history, its finances, its people, this audience, or what anyone thinks or intends is known.
+
+Compare EVERY sentence of the draft below against that input. For every user-specific claim or concrete detail, classify it:
+
+SUPPORTED — directly supplied above.
+OBJECTION — supplied only under KNOWN OBJECTIONS.
+HYPOTHETICAL — clearly introduced as an invented "if" condition.
+UNSUPPORTED — anything else.
+
+Then rewrite by these rules:
+- SUPPORTED may remain factual.
+- OBJECTION must remain attributed, conditional or interrogative. Never convert it into the user's knowledge, admission, belief or a fact. "The audience already expects the decision is made" is fine; "you came in here knowing the branch is closing" is not.
+- HYPOTHETICAL may remain only where it is visibly hypothetical and useful. Strip unnecessary invented specificity — "in a year's time", "up to fourteen days", "in the next 12 months" — when no such period was supplied.
+- UNSUPPORTED: remove it, or turn the missing information into a question.
+
+REMOVE ALL INVENTED:
+- people or affected groups (residents without cars, older residents, children travelling alone)
+- audience beliefs, feelings, motives or intentions (a reporter who "has every reason to", a room that "is sceptical")
+- reasons or rationales
+- costs, durations, schedules, distances, quantities
+- alternatives supposedly considered, or said to have been "formally assessed"
+- procedures, precedents, legal or formal claims
+- future conversation history — anything the user will have said tonight, any answer to another question, any commitment they will make
+- promises or commitments in the user's mouth
+${prohibited}
+
+Do not replace a removed detail with a different invented detail. Preserve the difficulty by attacking what IS known, or by asking about what is not.
+
+FINAL TEST — apply to your edited version:
+1. Could every declarative user-specific statement be highlighted in the user's input above? If not, rewrite it.
+2. Could every known objection still be recognised as an objection rather than a fact? If not, rewrite it.
+3. Could this be handed to the user BEFORE the event without pretending anything has already happened? If not, rewrite it.
+
+DRAFT TO EDIT:
+${JSON.stringify(draft)}`;
+
+  try {
+    const edited = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: EDIT_MAX_TOKENS,
+      temperature: 0,
+      system: withLanguage(editorSystem, body.userLanguage),
+      messages: [{ role: 'user', content: editorPrompt }],
+    }, { label: `heckler-prep:grounding-edit:${half}`, maxRetries: 0 });
+
+    // An edit that lost questions, or came back the wrong shape, is worse than
+    // the draft. Only accept a result that still looks like the same response.
+    const ok = edited
+      && Array.isArray(edited.questions)
+      && edited.questions.length === (draft.questions || []).length
+      && edited.questions.every(q => q && typeof q.question === 'string' && q.question.trim())
+      // the framing lives on one half only; if the draft had it, the edit must too
+      && (typeof draft.situation_read !== 'string' || typeof edited.situation_read === 'string');
+    if (!ok) {
+      console.log(`[heckler-prep] grounding edit (${half}): rejected — shape changed, draft returned`);
+      return draft;
+    }
+    console.log(`[heckler-prep] grounding edit (${half}): applied over ${edited.questions.length} question(s)`);
+    return edited;
+  } catch (err) {
+    console.log(`[heckler-prep] grounding edit (${half}): failed — ${err.message} — draft returned`);
+    return draft;
+  }
 }
 
-// ════════════════════════════════════════════════════════════
-// POST /heckler-prep — Anticipate the Hard Questions
-// ════════════════════════════════════════════════════════════
 router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   const startedAt = Date.now();
   try {
@@ -280,19 +301,22 @@ ${DIFFICULTY_RULE}`;
     const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted questions or phrases plainly or with single quotes, or it breaks the JSON.';
     const maxTokensByStakes = { low: 1400, moderate: 2000, high: 3200 };
     const halfBudget = maxTokensByStakes[stakes] || 1600;
+    // Each half is edited the moment it resolves, so pass 2 overlaps the other
+    // half's generation instead of waiting for both. Half the output per editor
+    // call, and the two run concurrently.
     const [analytical, human] = await Promise.all([
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: halfBudget,
         system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
         messages: [{ role: 'user', content: analyticalPrompt }],
-      }, { label: 'heckler-prep:analytical' }),
+      }, { label: 'heckler-prep:analytical' }).then(d => enforceSuppliedFacts(d, req.body, startedAt, 'analytical')),
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: halfBudget + 600,
         system: withLanguage(systemPrompt, userLanguage) + systemSuffix,
         messages: [{ role: 'user', content: humanPrompt }],
-      }, { label: 'heckler-prep:human' }),
+      }, { label: 'heckler-prep:human' }).then(d => enforceSuppliedFacts(d, req.body, startedAt, 'human')),
     ]);
 
     // Both halves number from 1, and each escalates on its own. Restore the
@@ -310,7 +334,6 @@ ${DIFFICULTY_RULE}`;
     if (!parsed.questions || !parsed.questions.length) {
       return res.status(500).json({ error: 'Could not generate your prep questions. Please try again.' });
     }
-    await guardHecklerPrep(parsed, req.body, startedAt);
     return res.json(parsed);
 
   } catch (error) {
