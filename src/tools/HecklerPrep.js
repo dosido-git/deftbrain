@@ -73,6 +73,22 @@ const HecklerPrep = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('hecklerprep-history', []);
   const [results, setResults] = usePersistentState('hp-results-v2', null);
   const resultsRef = React.useRef(null);
+
+  // Restoring a past run puts the results above the Recent list, so without a
+  // scroll the click looks like it did nothing.
+  //
+  // Not requestAnimationFrame: it does not fire at all in a hidden tab, so the
+  // scroll would silently never happen — and it cannot be tested in one either.
+  // Two calls instead, because there are two cases. When results are already on
+  // screen the container node exists and the first call scrolls immediately;
+  // when they are not, setState mounts it and the 0ms timeout runs after React
+  // has committed, by which point the ref is populated. Neither waits on paint.
+  const scrollToResults = React.useCallback(() => {
+    const go = () => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    go();
+    setTimeout(go, 0);
+  }, []);
+
   const [expandedQ, setExpandedQ] = useState(null);
 
   const generate = useCallback(async () => {
@@ -88,7 +104,14 @@ const HecklerPrep = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data);
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: '' }, ...prev].slice(0, 6));
+      // See HobbyMatch: an empty preview rendered six identical "Session"
+      // rows, which is what the printed report showed at the foot of page four.
+      setSessionHistory(prev => [{
+        id: Date.now(),
+        date: new Date().toISOString(),
+        preview: (topic || '').trim().slice(0, 40), // Exception: preview slice(0,40) is string truncation; actual history cap is 6
+        result: data,
+      }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('hp_error')); }
   }, [topic, audience, proposal, knownObjections, stakes, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
@@ -356,13 +379,22 @@ const HecklerPrep = ({ tool }) => {
       )}
       {sessionHistory.length > 0 && (
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
-          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('hp_recent')}</p>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('hp_recent')} ({sessionHistory.length})</p>
           <div className="space-y-1">
             {sessionHistory.map(s => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hp_session')}</span>
-                <span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span>
-              </div>
+              s.result ? (
+                <button key={s.id} type="button"
+                  onClick={() => { setResults(s.result); scrollToResults(); }}
+                  className={`w-full flex items-center justify-between text-start rounded-lg px-2 py-1 -mx-2 ${c.btnSecondary} border-0 hover:opacity-80 transition-opacity min-h-[32px]`}>
+                  <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hp_session')}</span>
+                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                </button>
+              ) : (
+                <div key={s.id} className="flex items-center justify-between px-2 py-1 -mx-2 min-h-[32px]">
+                  <span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('hp_session')}</span>
+                  <span className={`text-xs ${c.textMuted} ms-2 shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+                </div>
+              )
             ))}
           </div>
         </div>
