@@ -106,11 +106,25 @@ export const PRINT_CSS = `
            half is not redundant: the session log sets its height and overflow
            inline, and a CSS !important is the only thing that outranks an
            inline style. 37 tools have at least one of these. */
+        [data-print-section],
         [data-print-section] [style*="overflow"],
         [data-print-section] [class*="overflow-"] {
           overflow: visible !important;
           max-height: none !important;
         }
+        /* The first line above is the card ITSELF, and it is the whole reason a
+           Firefox printout opened with three-quarters of page one blank.
+           ToolPageWrapper renders the card as
+             <section data-print-section class="... overflow-hidden ...">
+           and the two selectors under it are DESCENDANT selectors — they freed
+           every box inside the card and never the card. Firefox will not
+           fragment an element whose overflow is hidden: it establishes a block
+           formatting context, so the engine moves the whole card to the next
+           page rather than splitting it, and the page it came from stays empty.
+           Chrome fragments it regardless, which is why this reproduced for
+           nobody testing in Chrome and why the break-inside: auto rule below —
+           correct, and aimed at the same symptom — never fixed it. The blocker
+           was never break-inside. */
         /* This used to read [data-print-main] > header, aimed at Firefox
            breaking between the title and the tool card. It matched nothing —
            on every tool page the header element is a SIBLING of
