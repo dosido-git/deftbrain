@@ -255,6 +255,18 @@ If the explanation needs an invented bridge — "this will keep you interested",
 "The permanence of pen forces you to move forward rather than get stuck correcting" fails: nobody said they get stuck correcting. "Pen and ink can be practised alone, suits small self-contained projects, and leaves plenty of room to experiment" passes.
 Then check the same sentences for a duration, a cost or a comparison you invented, and for anything that reads as therapy rather than description — "channels mental energy into construction" is a claim about them; say what the activity involves instead.
 
+FINAL LANGUAGE SCRUB
+Before returning the output, delete or rewrite every sentence that:
+- predicts how the hobby will make the user feel;
+- predicts when a project will be completed;
+- uses absolutes such as "entirely," "every," "perfectly," "constantly," or "inexhaustible";
+- invents a psychological mechanism for why the hobby will work;
+- generalizes from a prior hobby beyond what the user actually said.
+
+Prefer plain observable properties of the activity.
+
+If a sentence sounds more insightful than the user's evidence supports, make it simpler.
+
 Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.`;
 
     const userPrompt = `ABOUT THEM: ${personality || 'not specified'}
