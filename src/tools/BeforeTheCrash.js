@@ -247,14 +247,21 @@ export default function BeforeTheCrash() {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  submitRef.current = save;
-  canSubmitRef.current = view === 'checkin' && !loading;
 
   const analyze = async () => {
     if (logs.length < 2) return;
     const data = await callToolEndpoint('crash-predictor-analyze', { logs: logs.slice(0, 60) });
     setAnalysis(data);
   };
+
+  // Each view has one primary action, and Cmd+Enter runs whichever is on
+  // screen: the check-in saves, the dashboard compares. Compare is the
+  // dashboard's primary — long-term patterns is a second, deliberate ask — and
+  // it stays inert below two logs, exactly as its button does.
+  submitRef.current = view === 'checkin' ? save : analyze;
+  canSubmitRef.current = !loading && (
+    view === 'checkin' || (view === 'dashboard' && logs.length >= 2)
+  );
 
   const analyzePatterns = async () => {
     if (logs.length < 7) return;
@@ -407,9 +414,20 @@ export default function BeforeTheCrash() {
                     </p>
                     <button
                       type="button" onClick={analyze} disabled={loading || logs.length < 2}
-                      className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40"
+                      className="relative mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40 flex items-center justify-center gap-2"
                     >
-                      {loading ? t('cpv2_comparing') : t('cpv2_compare_cta')}
+                      {loading
+                        ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_comparing')}</>
+                        : t('cpv2_compare_cta')}
+                      {/* The chip inherits the button's own ink rather than
+                          introducing a colour — this is an outlined button, not
+                          the filled primary the house chip was written for. */}
+                      {!loading && logs.length >= 2 && (
+                        <kbd aria-hidden="true"
+                          className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-current opacity-60 text-[10px] font-bold tracking-wide">
+                          ⌘↵
+                        </kbd>
+                      )}
                     </button>
                   </>
                 )}
@@ -444,8 +462,11 @@ export default function BeforeTheCrash() {
                       <p className={c.textMuted}>
                         {t('cpv2_longterm_sub')}{markedCrashCount ? ' ' + (markedCrashCount === 1 ? t('cpv2_crash_days_1') : t('cpv2_crash_days_n', { n: markedCrashCount })) : ''}
                       </p>
-                      <button type="button" onClick={analyzePatterns} disabled={loading} className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40">
-                        {t('cpv2_longterm_cta')}
+                      <button type="button" onClick={analyzePatterns} disabled={loading}
+                        className="mt-4 w-full min-h-[48px] rounded-lg border font-semibold disabled:opacity-40 flex items-center justify-center gap-2">
+                        {loading
+                          ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_longterm_cta')}</>
+                          : t('cpv2_longterm_cta')}
                       </button>
                     </>
                   )}
@@ -532,10 +553,16 @@ export default function BeforeTheCrash() {
               )}
 
               <button type="button" onClick={save} disabled={loading}
-                className={`w-full min-h-[48px] rounded-lg font-semibold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
+                className={`relative w-full min-h-[48px] rounded-lg font-semibold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
                 {loading
                   ? <><span className="animate-spin inline-block">{tool?.icon ?? '⚡'}</span> {t('cpv2_save')}</>
                   : t('cpv2_save')}
+                {!loading && (
+                  <kbd aria-hidden="true"
+                    className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                    ⌘↵
+                  </kbd>
+                )}
               </button>
             </div>
           </Section>
