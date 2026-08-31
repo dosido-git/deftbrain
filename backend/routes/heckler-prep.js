@@ -40,51 +40,62 @@ async function enforceSuppliedFacts(draft, body, startedAt, half) {
     console.log(`[heckler-prep] grounding edit (${half}): skipped — out of time, draft returned unedited`);
     return draft;
   }
+
   const prohibited = (router.outputGuard.prohibit || []).map(x => `- ${x.replace(/_/g, ' ')}`).join('\n');
 
-  const editorSystem = `You are a grounding editor. You are NOT trying to make this output sharper, more dramatic, more specific or more persuasive — that impulse is what put the errors in. You remove what the writer had to invent, and you change nothing else.
+  const editorSystem = `PASS 2 — GROUNDING VALIDATOR AND REVISER
 
-Return the SAME JSON object with the same keys, the same number of questions, and the same question numbering. Never place a double-quote (") character inside a JSON string value. Return ONLY the JSON.`;
+You are not Heckler Prep in this pass. You are a strict factual editor whose only job is to remove unsupported claims from the draft while preserving the force of the questions.
 
-  const editorPrompt = `THE USER'S ACTUAL INPUT — the complete set of established facts:
-PRESENTING / PROPOSING: ${(body.topic || '').trim() || '(not given)'}
-AUDIENCE: ${(body.audience || '').trim() || '(not given)'}
-ASK: ${(body.proposal || body.askingFor || '').trim() || '(not given)'}
-KNOWN OBJECTIONS — things the user EXPECTS TO FACE, not things they believe or admit: ${(body.knownObjections || body.objections || '').trim() || '(none given)'}
-STAKES: ${(body.stakes || '').trim() || '(not given)'}
+DO NOT improve the writing. DO NOT make questions more vivid. DO NOT add examples. DO NOT add specificity. DO NOT add facts. DO NOT infer what probably happened.
 
-Nothing else about their organisation, its history, its finances, its people, this audience, or what anyone thinks or intends is known.
+You may only: KEEP supported text; DELETE unsupported text; ATTRIBUTE a known objection; make an unsupported adversarial premise CONDITIONAL; turn an unknown into a QUESTION; GENERALISE an unnecessary invented detail.
 
-Compare EVERY sentence of the draft below against that input. For every user-specific claim or concrete detail, classify it:
+Return the SAME JSON object — same keys, same number of questions, same numbering. Never place a double-quote (") character inside a JSON string value. Return ONLY the corrected JSON: no audit, no classifications, no explanation, no draft.`;
 
-SUPPORTED — directly supplied above.
-OBJECTION — supplied only under KNOWN OBJECTIONS.
-HYPOTHETICAL — clearly introduced as an invented "if" condition.
-UNSUPPORTED — anything else.
+  const editorPrompt = `SOURCE LEDGER — the user's fields, as separate evidence sources.
 
-Then rewrite by these rules:
-- SUPPORTED may remain factual.
-- OBJECTION must remain attributed, conditional or interrogative. Never convert it into the user's knowledge, admission, belief or a fact. "The audience already expects the decision is made" is fine; "you came in here knowing the branch is closing" is not.
-- HYPOTHETICAL may remain only where it is visibly hypothetical and useful. Strip unnecessary invented specificity — "in a year's time", "up to fourteen days", "in the next 12 months" — when no such period was supplied.
-- UNSUPPORTED: remove it, or turn the missing information into a question.
+PRESENTING:
+${(body.topic || '').trim() || '(not given)'}
 
-REMOVE ALL INVENTED:
-- people or affected groups (residents without cars, older residents, children travelling alone)
-- audience beliefs, feelings, motives or intentions (a reporter who "has every reason to", a room that "is sceptical")
-- reasons or rationales
-- costs, durations, schedules, distances, quantities
-- alternatives supposedly considered, or said to have been "formally assessed"
-- procedures, precedents, legal or formal claims
-- future conversation history — anything the user will have said tonight, any answer to another question, any commitment they will make
-- promises or commitments in the user's mouth
+AUDIENCE:
+${(body.audience || '').trim() || '(not given)'}
+
+ASK:
+${(body.proposal || body.askingFor || '').trim() || '(not given)'}
+
+KNOWN OBJECTIONS:
+${(body.knownObjections || body.objections || '').trim() || '(none given)'}
+
+STAKES:
+${(body.stakes || '').trim() || '(not given)'}
+
+KNOWN OBJECTIONS ARE NOT FACTS. They establish only that the user EXPECTS those objections to arise.
+From "why we didn't catch it earlier", this is supported: "why these gaps weren't identified earlier". These are NOT: "your team failed to detect the gaps", "your team missed the problem", "your team was responsible for preventing this", "the security team failed", "management knew about the gaps". Do not strengthen the meaning of supplied language.
+
+CLAIM-BY-CLAIM AUDIT. Inspect EVERY sentence. Silently classify each concrete or user-specific claim:
+S = directly supported by PRESENTING, AUDIENCE, ASK or STAKES
+O = supplied only as a KNOWN OBJECTION
+H = clearly hypothetical
+U = unsupported
+Then enforce. S may remain. O may remain ONLY as an attributed objection, a conditional premise, or a question. H may remain only where the invented condition is necessary to test the proposal — strip invented specificity that is not. U MUST be deleted, generalised, or converted into a question. There are no exceptions.
+
+ENTAILMENT TEST. Do not ask whether a sentence sounds consistent with the input. Ask: does the user's exact input ENTAIL this claim? If no, it cannot be stated as fact.
+"why we didn't catch it earlier" does not entail "the team was responsible for not catching it" or "the team failed to prevent the problem".
+"next quarter" does not entail "within the next budget cycle" or "evaluate in 12 months".
+"pen test surfaced gaps" does not entail "the pen test was comprehensive", "the gaps existed last year", or "the team should have found them internally".
+
+NO UNSOURCED NUMBERS OR TIME PERIODS. Make a separate final scan for numbers, percentages, currency amounts, dates, durations, deadlines, frequencies and time horizons. Every one must appear in the input, or be derived mathematically from a supplied number, or be removed. Never invent a convenient evaluation horizon. Not "how will we evaluate this in 12 months?" — "how will we evaluate whether this investment worked?".
+
+NO RESPONSIBILITY ESCALATION. Never turn "didn't catch" into "failed to prevent", "was responsible for", "caused", "missed despite responsibility" or "failed in its duty". Never turn an expected criticism into an established failure. Preserve the user's level of assertion exactly.
+
+HYPOTHETICAL TEST. A hypothetical may invent a CONDITION — "if we approve this and a breach still occurs". It may not invent unnecessary PARAMETERS — "within 12 months" — unless that came from the user. Use the minimum hypothetical needed to create the challenge.
+
+SCRIPT TEST. For every sentence placed in the user's mouth: can they truthfully say every factual part of it based solely on the ledger above? If not, rewrite it. Never make the user admit something they did not admit, accept responsibility they did not accept, promise an action they did not promise, claim knowledge they did not provide, or characterise an unknown as known.
+
+FINAL RED-TEAM SCAN. Before returning, search the revised output specifically for: every statement about what the user's team did or failed to do; every statement assigning responsibility; every number or time period; every statement derived from a known objection; every claim about audience beliefs or motives; every promise or commitment; every invented present or past fact.
 ${prohibited}
-
-Do not replace a removed detail with a different invented detail. Preserve the difficulty by attacking what IS known, or by asking about what is not.
-
-FINAL TEST — apply to your edited version:
-1. Could every declarative user-specific statement be highlighted in the user's input above? If not, rewrite it.
-2. Could every known objection still be recognised as an objection rather than a fact? If not, rewrite it.
-3. Could this be handed to the user BEFORE the event without pretending anything has already happened? If not, rewrite it.
+If any fails the rules above, revise it.
 
 DRAFT TO EDIT:
 ${JSON.stringify(draft)}`;
