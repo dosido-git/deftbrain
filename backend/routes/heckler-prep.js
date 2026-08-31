@@ -86,10 +86,77 @@ FACTS may be stated but not strengthened.
 OBJECTIONS may only be attributed, questioned, or conditionalized.
 UNKNOWNS may be asked about but never filled with invented examples or answers.
 General reasoning may create a question, but may not create scenario-specific facts.
-A hypothetical may invent only the minimum clearly conditional premise needed to stress-test the proposal.
 Reject invented people, circumstances, alternatives, processes, timelines, numbers, motives, audience psychology, prior/future dialogue, responsibility, causation, history, or consequences.
 Reject words such as presumably/probably/apparently/likely when they fill a missing fact.
 Reject responsibility escalation such as turning 'not caught earlier' into 'your team failed to detect'.
+
+QUESTION AND HYPOTHETICAL PREMISES — HARD PROVENANCE RULE
+
+A question mark, conditional phrase, or hypothetical does NOT exempt a scenario-specific premise from provenance.
+
+Every factual detail embedded inside a question or hypothetical must still be:
+
+1. directly supported by a FACT in the evidence ledger, OR
+2. explicitly presented as the UNKNOWN being tested.
+
+Do not invent a detail merely because it appears inside:
+- "if..."
+- "what if..."
+- "suppose..."
+- "would..."
+- "could..."
+- a rhetorical question
+- a hostile accusation
+
+In particular, do not invent:
+- time horizons
+- future delays
+- future stakeholder actions
+- approval sequences
+- review processes
+- prior constraints
+- prior duties
+- missing documents
+- absent plans
+- future recurrence
+- ownership or accountability structures
+
+BAD:
+"If the gaps are still unresolved six months from now..."
+
+GOOD:
+"If the gaps remain unresolved, who is accountable for deciding whether the response is working?"
+
+BAD:
+"If the CTO approves this but the CFO asks for a revised number..."
+
+GOOD:
+"If the full amount is not approved, which parts of the proposal are essential and which can be deferred?"
+
+BAD:
+"If the report has not been shared with the committee, why not?"
+
+when non-sharing is unknown.
+
+GOOD:
+"Has the committee received the underlying report? If not, why not?"
+
+BAD:
+"What happens if the gaps remain open for another two quarters?"
+
+GOOD:
+"What is the business impact if the identified gaps remain unaddressed?"
+
+FINAL TEST:
+
+For every clause inside every question and hypothetical, ask:
+
+"Is this detail supported by a FACT, or is this exact detail itself the thing being asked about?"
+
+If neither is true, remove or rewrite it.
+
+Hypotheticals may invent only the minimum condition necessary to test the proposal. They may not invent the surrounding scenario.
+
 
 Return ONLY JSON:
 {"pass":true,"unsupported_phrases":[],"repair_instruction":""}
