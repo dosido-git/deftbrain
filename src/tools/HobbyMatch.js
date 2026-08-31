@@ -148,7 +148,8 @@ const HobbyMatch = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = `🧬 ${t('hm_copy_header')}\n`;
-    if (results?.matching_for) text += `\n${t('hm_matching_for')}\n${results?.matching_for}\n`;
+    const crit = Array.isArray(results?.matching_for) ? results.matching_for : (results?.matching_for ? [results.matching_for] : []);
+    if (crit.length) text += `\n${t('hm_matching_for')}\n${t('hm_matching_lead')}\n${crit.map(x => `• ${x}`).join('\n')}\n`;
     if (results?.hobbies?.length) {
       results?.hobbies?.forEach((h, i) => {
         text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.why_it_made_the_list || ''}\n${h.what_its_like || ''}`;
@@ -346,7 +347,14 @@ const HobbyMatch = ({ tool }) => {
           {r.matching_for && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
               <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-1.5`}>{t('hm_matching_for')}</p>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.matching_for}</p>
+              {/* The lead-in is ours, in the visitor's language. The model supplies
+                  only the criteria, so it cannot open with "You need...". */}
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{t('hm_matching_lead')}</p>
+              <ul className={`mt-1.5 space-y-1 text-sm ${c.textSecondary} leading-relaxed`}>
+                {(Array.isArray(r.matching_for) ? r.matching_for : [r.matching_for]).map((x, i) => (
+                  <li key={i}>• {x}</li>
+                ))}
+              </ul>
             </div>
           )}
 

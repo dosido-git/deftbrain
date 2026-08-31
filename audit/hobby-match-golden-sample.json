@@ -3,8 +3,8 @@
     "tool": "HobbyMatch",
     "generated": "2026-08-31",
     "model": "claude-haiku-4-5 (MODELS.FAST), single endpoint",
-    "baseline_commit": "hobbymatch-v4",
-    "how_to_regression_diff": "Re-recorded 2026-08-31. The schema now CONSTRAINS what could previously be invented: startup_cost (free text, which produced \"£15-30\") is replaced by cost, an enum of free|low|moderate|higher, and session_fit is an enum of short_sessions|longer_block|either — both pinned to lowercase English and rendered through label maps in the component, so no price range or duration can reach a screen by construction. backend coerces both after parse (see pick()); anything unrecognisable becomes null and the chip does not render. Each hobby also carries user_facts_used, the users own words that put it on the list — generated for traceability, not displayed. INVARIANTS: every cost and session_fit value is in its enum or null; NO currency amount, duration or completion-time estimate appears anywhere in the response; every user_facts_used entry is findable in the input; a stated physical limitation is never argued around, and pass 2 may DROP a hobby that does not clearly satisfy it, so a list shorter than five is correct and not a regression. wildcard and pattern_in_matches remain optional. 2026-08-31: each hobby also carries activity_mode, an enum of making|solving|collecting|performing|exploring|competing|observing|repairing|writing|moving|social|digital_creation, coerced in code like cost and session_fit. The WILDCARD is DROPPED in code when its mode matches any main pick — a wildcard sharing a mode is not a wildcard, and the field is optional, so an empty wildcard is CORRECT and not a regression."
+    "baseline_commit": "hobbymatch-v5",
+    "how_to_regression_diff": "Re-recorded 2026-08-31. The schema now CONSTRAINS what could previously be invented: startup_cost (free text, which produced \"£15-30\") is replaced by cost, an enum of free|low|moderate|higher, and session_fit is an enum of short_sessions|longer_block|either — both pinned to lowercase English and rendered through label maps in the component, so no price range or duration can reach a screen by construction. backend coerces both after parse (see pick()); anything unrecognisable becomes null and the chip does not render. Each hobby also carries user_facts_used, the users own words that put it on the list — generated for traceability, not displayed. INVARIANTS: every cost and session_fit value is in its enum or null; NO currency amount, duration or completion-time estimate appears anywhere in the response; every user_facts_used entry is findable in the input; a stated physical limitation is never argued around, and pass 2 may DROP a hobby that does not clearly satisfy it, so a list shorter than five is correct and not a regression. wildcard and pattern_in_matches remain optional. 2026-08-31: each hobby also carries activity_mode, an enum of making|solving|collecting|performing|exploring|competing|observing|repairing|writing|moving|social|digital_creation, coerced in code like cost and session_fit. The WILDCARD is DROPPED in code when its mode matches any main pick — a wildcard sharing a mode is not a wildcard, and the field is optional, so an empty wildcard is CORRECT and not a regression. 2026-08-31 (v5): matching_for is now an ARRAY of short criteria, not a paragraph — the interface owns the lead-in (hm_matching_lead, translated), so the model cannot open with \"You need...\". Prices and durations are found in code across every free-text field and handed to pass 2 by name. NOTE the bug this replaced: the pass-2 shape validator still required matching_for to be a string after the field became an array, so EVERY edit was silently rejected and the raw draft shipped — which is why prices kept surviving a rule that named them. If prices reappear, check that validator first."
   },
   "cases": [
     {
@@ -22,104 +22,113 @@
         "userRegion": "DE"
       },
       "output": {
-        "matching_for": "Gesucht sind entspannende, kreative Tätigkeiten, die sich abends und am Wochenende in kurzen oder längeren Blöcken durchführen lassen. Handwerkliches Arbeiten steht im Fokus, mit Raum für historische Interessen. Das Budget ist begrenzt, daher sollten die Einstiegskosten niedrig sein.",
+        "matching_for": [
+          "kann allein zu Hause durchgeführt werden",
+          "passt zu Abenden und Wochenenden",
+          "arbeitet mit den Händen",
+          "verbindet Kreativität mit Geschichte"
+        ],
         "hobbies": [
           {
-            "name": "Holzschnitzerei",
-            "icon": "🪵",
-            "why_it_made_the_list": "Handwerkliche Arbeit mit den Händen. Lässt sich am Schreibtisch durchführen und braucht nur wenige Werkzeuge zum Einstieg.",
-            "what_its_like": "Du arbeitest mit Schnitzwerkzeugen an Holz, um Muster oder Figuren herauszuarbeiten. Du siehst direkt, wie sich die Form entwickelt.",
+            "name": "Kalligrafie und Handschrift",
+            "icon": "✍️",
+            "why_it_made_the_list": "Ruhige, handwerkliche Tätigkeit, die Sie allein durchführen können. Verbindet Kreativität mit historischen Schriftstilen — von mittelalterlichen Stilen bis zu modernen Interpretationen.",
+            "what_its_like": "Sie üben verschiedene Schriftstile mit speziellen Federn und Tinten. Eine Session könnte Alphabetübungen, einfache Zitate oder dekorative Rahmen sein. Sichtbare Ergebnisse entstehen unmittelbar.",
             "energy_type": "solo",
-            "session_fit": "either",
+            "session_fit": "short_sessions",
             "cost": "low",
             "activity_mode": "making",
             "user_facts_used": [
-              "sitze viel am Schreibtisch",
+              "mag ruhige Aktivitäten",
               "arbeite gerne mit den Händen",
-              "begrenzt"
+              "interessiere mich für Geschichte",
+              "Etwas Entspannendes und Kreatives"
             ],
-            "try_it_once": "Kaufe ein einfaches Schnitzset (unter 15 EUR) und einen Holzblock aus dem Bastelbedarf. Folge einer kurzen Online-Anleitung.",
-            "where_to_look": "Bastelläden, YouTube, Volkshochschulen",
-            "watch_for": "Sichere Handposition und stabiler Arbeitsplatz sind wichtig."
+            "try_it_once": "Kaufen Sie ein einfaches Kalligrafie-Startset (Feder, Tinte, Papier) online oder im Kunsthandel. Schreiben Sie ein kurzes Zitat in drei verschiedenen Stilen auf.",
+            "where_to_look": "Kunsthandel und Online-Shops für Material; Volkshochschulen bieten oft Anfängerkurse.",
+            "watch_for": ""
           },
           {
             "name": "Buchbinderei",
             "icon": "📖",
-            "why_it_made_the_list": "Handwerkliche, konzentrierte Arbeit ohne Lärm oder Platzbedarf. Du kannst historische Bindungstechniken erforschen und kleine Projekte selbst herstellen.",
-            "what_its_like": "Du bindest ein Buch von Hand mit Papier, Faden, Leim und Werkzeugen. Falten, Heften, Kleben und Schneiden erfolgen schrittweise. Jeder Schritt lässt sich unterbrechen.",
-            "energy_type": "solo",
-            "session_fit": "either",
-            "cost": "low",
-            "activity_mode": "making",
-            "user_facts_used": [
-              "arbeite gerne mit den Händen",
-              "mag ruhige Aktivitäten",
-              "interessiere mich für Geschichte"
-            ],
-            "try_it_once": "Suche ein Anfänger-Tutorial für Coptic Binding und probiere es mit Papier, das du bereits hast, und Nadel und Faden aus.",
-            "where_to_look": "Volkshochschulen, Kunsthandwerkskurse, YouTube, Bibliotheken",
-            "watch_for": ""
-          },
-          {
-            "name": "Miniaturmalerei",
-            "icon": "🎨",
-            "why_it_made_the_list": "Kreativ und handwerklich, erfordert wenig Platz. Kleine, abgeschlossene Projekte lassen sich abends durchführen.",
-            "what_its_like": "Du malst kleine Objekte mit feinen Pinseln und Farben. Jede Figur ist ein kleines, sichtbares Projekt. Du kannst mit einer Grundierung anfangen, dann Details hinzufügen, trocknen lassen, weitermachen.",
-            "energy_type": "solo",
-            "session_fit": "short_sessions",
-            "cost": "low",
-            "activity_mode": "making",
-            "user_facts_used": [
-              "arbeite gerne mit den Händen",
-              "sitze viel am Schreibtisch"
-            ],
-            "try_it_once": "Kaufe ein einfaches Miniatur-Starter-Set (unter 25 EUR) und male eine Figur von Grund auf.",
-            "where_to_look": "Spielwarenläden, Modellbaubedarf, YouTube, Reddit /r/minipainting",
-            "watch_for": ""
-          },
-          {
-            "name": "Kalligraphie",
-            "icon": "✍️",
-            "why_it_made_the_list": "Handwerkliche Tätigkeit am Schreibtisch mit wenig Platz und Material. Verschiedene Schriftstile aus verschiedenen Epochen können erforscht werden.",
-            "what_its_like": "Du schreibst mit speziellen Federn oder Pinseln Buchstaben und Wörter. Jede Linie ist bewusst und kontrolliert. Es ist Schreiben und Zeichnen zugleich. Eine Sitzung kann aus Übungsseiten bestehen oder aus einem kleinen Projekt wie einer Postkarte.",
-            "energy_type": "solo",
-            "session_fit": "short_sessions",
-            "cost": "low",
-            "activity_mode": "making",
-            "user_facts_used": [
-              "mag ruhige Aktivitäten",
-              "arbeite gerne mit den Händen",
-              "sitze viel am Schreibtisch",
-              "interessiere mich für Geschichte"
-            ],
-            "try_it_once": "Kaufe eine einfache Kalligraphie-Feder oder einen Brush-Pen (unter 10 EUR) und kopiere ein paar Zeilen in verschiedenen Stilen.",
-            "where_to_look": "Kunstbedarf, Schreibwarenläden, YouTube, Volkshochschulen",
-            "watch_for": ""
-          },
-          {
-            "name": "Historische Textilfärbung (Pflanzenfärben)",
-            "icon": "🧵",
-            "why_it_made_the_list": "Handwerkliche Arbeit, die historische Techniken nutzt. Braucht wenig spezielle Ausstattung.",
-            "what_its_like": "Du sammelst Pflanzenmaterial, bereitest einen Sud vor, legst Stoffe oder Wolle ein und beobachtest, wie sie sich färben. Der Prozess ist meditativ mit viel Zeit zum Beobachten. Du lernst historische Rezepte kennen und experimentierst mit verschiedenen Farbtönen.",
+            "why_it_made_the_list": "Handwerk mit Geschichte — Buchbindung hat Jahrhunderte alte Techniken. Passt zu ruhigen Abenden, erfordert Präzision, und jedes fertige Buch ist ein greifbares Objekt.",
+            "what_its_like": "Sie nähen Seiten zusammen, kaschieren Papiere, kleben Deckel auf. Einfache Projekte wie Notizbücher oder Tagebücher sind guter Anfang. Der Prozess ist strukturiert — Sie folgen klaren Schritten und sehen das Ergebnis wachsen.",
             "energy_type": "solo",
             "session_fit": "longer_block",
-            "cost": "low",
+            "cost": "moderate",
             "activity_mode": "making",
             "user_facts_used": [
               "arbeite gerne mit den Händen",
-              "interessiere mich für Geschichte"
+              "interessiere mich für Geschichte",
+              "mag ruhige Aktivitäten",
+              "Etwas Entspannendes und Kreatives"
             ],
-            "try_it_once": "Sammle Zwiebelschalen, koche sie mit Wasser, tauche ein weißes Baumwolltuch ein und beobachte die Färbung.",
-            "where_to_look": "Volkshochschulen, Online-Blogs zu historischen Färbetechniken, Textilkunst-Communities",
+            "try_it_once": "Viele Volkshochschulen bieten Schnupperkurse an. Dort lernen Sie die Grundlagen und arbeiten an einem echten Projekt — meist ein einfaches Notizbuch — ohne Material kaufen zu müssen.",
+            "where_to_look": "Volkshochschulen und Kunstschulen; spezialisierte Buchbindereien bieten manchmal offene Werkstätten.",
+            "watch_for": "Anfangs brauchen Sie Werkzeug. Ein Basis-Set wird aber nur mit echtem Interesse genutzt — deshalb ein Kurs zum Testen sinnvoll."
+          },
+          {
+            "name": "Numismatik (Münzsammeln)",
+            "icon": "🪙",
+            "why_it_made_the_list": "Sammeln verbindet historische Faszination mit handwerklicher Wertschätzung. Kann völlig privat betrieben werden und passt in kleine Zeitfenster.",
+            "what_its_like": "Sie recherchieren, erwerben und katalogisieren Münzen — moderne, antike oder thematische Serien. Eine Session kann Recherche am Schreibtisch sein, eine Münze erwerben, sie in der Hand studieren und dokumentieren.",
+            "energy_type": "solo",
+            "session_fit": "short_sessions",
+            "cost": "moderate",
+            "activity_mode": "collecting",
+            "user_facts_used": [
+              "interessiere mich für Geschichte",
+              "mag ruhige Aktivitäten",
+              "arbeite viel am Schreibtisch",
+              "begrenzt Budget"
+            ],
+            "try_it_once": "Beginnen Sie mit Münzen aus Ihrer eigenen Geldbörse oder Umlauf — deutsche Euromünzen mit verschiedenen Prägestätten kosten nichts. Dokumentieren Sie sie und recherchieren Sie ihre Geschichte online.",
+            "where_to_look": "Münzhandel in Ihrer Stadt; Online-Plattformen; Numismatische Vereine; Bibliotheken für Kataloge und Fachliteratur.",
+            "watch_for": "Mit begrenztem Budget sollten Sie sich auf eine Kategorie beschränken — etwa deutsche Münzen der letzten 30 Jahre oder eine bestimmte Zeitepoche."
+          },
+          {
+            "name": "Miniaturmalerei (historische Figuren oder Dioramen)",
+            "icon": "🎨",
+            "why_it_made_the_list": "Handwerklich präzise, sehr kreativ, und kann historische Interessen direkt einbinden — Sie malen historische Uniformen, Szenen oder Perioden.",
+            "what_its_like": "Sie grundieren kleine Figuren aus Kunststoff oder Metall, bemalen Details mit feinen Pinseln und Acrylfarben, versiegeln die Ergebnisse. Jede Figur ist ein fertiges Objekt. Sie können damit auch kleine Dioramen bauen — historische Szenen in Miniaturgröße aufbauen.",
+            "energy_type": "solo",
+            "session_fit": "short_sessions",
+            "cost": "moderate",
+            "activity_mode": "making",
+            "user_facts_used": [
+              "arbeite gerne mit den Händen",
+              "mag ruhige Aktivitäten",
+              "interessiere mich für Geschichte",
+              "Etwas Entspannendes und Kreatives"
+            ],
+            "try_it_once": "Kaufen Sie ein günstiges Anfänger-Set mit wenigen historischen Figuren und Acrylfarben. Bemalen Sie eine Figur.",
+            "where_to_look": "Spielwarengeschäfte mit Tabletop-Abteilung; spezialisierte Hobby-Shops; Online-Plattformen.",
+            "watch_for": "Benötigt stabile Beleuchtung und einen ruhigen Arbeitsplatz. An Ihrem Schreibtisch können Sie eine kleine Mal-Ecke einrichten."
+          },
+          {
+            "name": "Handschriftliches Tagebuch oder Journal",
+            "icon": "📔",
+            "why_it_made_the_list": "Ruhig, persönlich, kreativ und kostengünstig. Lässt sich in kurzen Abendblöcken üben. Kann mit historischen Interessen verflochten sein.",
+            "what_its_like": "Sie schreiben handschriftlich in ein Notizbuch — freier Text, Skizzen, Wortsammlungen oder strukturierte Einträge. Kein Druck auf Qualität oder Länge. Es ist eine stille Praxis auf dem Papier.",
+            "energy_type": "solo",
+            "session_fit": "short_sessions",
+            "cost": "low",
+            "activity_mode": "writing",
+            "user_facts_used": [
+              "mag ruhige Aktivitäten",
+              "Etwas Entspannendes und Kreatives",
+              "arbeite viel am Schreibtisch"
+            ],
+            "try_it_once": "Nehmen Sie ein Notizbuch, das Sie haben, und schreiben Sie drei Einträge — egal zu welchen Themen. Schreiben Sie, ohne zu editieren.",
+            "where_to_look": "Jedes Schreibwarengeschäft; Bibliotheken und Buchhandlungen für Bücher über Journaling-Techniken.",
             "watch_for": ""
           }
         ],
         "wildcard": {
-          "name": "Numismatik (Münzsammlung mit historischem Fokus)",
-          "activity_mode": "collecting",
-          "why": "Passt zu deinem Interesse an Geschichte. Ermöglicht Recherche und Geschichtsentdeckung. Kostet im Einstieg nichts und passt zu abendlichen Sessionen am Schreibtisch."
+          "name": "",
+          "why": ""
         },
-        "pattern_in_matches": "Alle diese Tätigkeiten lassen sich allein, im eigenen Tempo und am Schreibtisch durchführen. Sie alle produzieren etwas Sichtbares und Greifbares — kleine fertige Objekte oder Ergebnisse, die du in die Hand nehmen kannst. Mehrere bieten auch Raum, historische Interessen zu vertiefen oder historische Techniken zu erforschen."
+        "pattern_in_matches": "Diese Hobbys lassen sich allein zu Hause durchführen, liefern fertige Objekte oder messbare Fortschritte und passen in kurze Abendblöcke — was zu Ihrer Wunsch nach Entspannung und Kreativität passt. Sie verbinden handwerkliche Arbeit mit Geschichte oder visueller Gestaltung."
       }
     }
   ]

@@ -4,7 +4,10 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const EDIT_ENTRY_MS = Number(process.env.HM_EDIT_ENTRY_MS || 45_000);
+// Generation alone runs ~30s, so a 45s gate was rejecting the edit on any slow
+// draft. The edit is the only thing enforcing the physical constraint, so it is
+// worth waiting for.
+const EDIT_ENTRY_MS = Number(process.env.HM_EDIT_ENTRY_MS || 90_000);
 const EDIT_MAX_TOKENS = Number(process.env.HM_EDIT_MAX_TOKENS || 6000);
 
 // Guards the prose a person reads and acts on. The failure mode here is not a
@@ -12,6 +15,31 @@ const EDIT_MAX_TOKENS = Number(process.env.HM_EDIT_MAX_TOKENS || 6000);
 // or practice schedule nobody supplied. session_fit and startup_cost are left
 // out on purpose: they are near-enumerations, and checking thirty-three fields
 // instead of twenty-three buys a slower repair for no additional catch.
+// Prices and durations are the one class here that needs no reasoning to spot,
+// and the prose rule kept failing to hold them: the enums removed them from the
+// metadata chips and they reappeared inside what_its_like and watch_for as
+// "£1", "£5", "materials for 0-20". So they are found in code and the offending
+// sentences are handed to pass 2 by name.
+const MONEY_OR_TIME = /[£$€¥₹]\s?\d|\b\d+\s*(?:[-–—]\s*\d+\s*)?(?:minutes?|mins?|hours?|weeks?|months?|sessions?|quid|dollars?|euros?|pounds?)\b|\b(?:one|two|three|four|five|ten|fifteen|twenty|thirty|forty|sixty|ninety)\s+(?:minutes?|hours?|sessions?|weeks?|months?)\b|\bfinished in one (?:session|sitting)\b|\btakes a few sessions\b/gi;
+
+function numericLeaks(draft) {
+  const hits = [];
+  const scan = (path, v) => {
+    if (typeof v !== 'string' || !v.trim()) return;
+    const m = v.match(MONEY_OR_TIME);
+    if (m) hits.push({ path, found: [...new Set(m)].join(', '), sentence: v.slice(0, 160) });
+  };
+  (draft.matching_for || []).forEach((x, i) => scan(`matching_for[${i}]`, x));
+  (draft.hobbies || []).forEach((h, i) => {
+    if (!h) return;
+    ['why_it_made_the_list', 'what_its_like', 'try_it_once', 'where_to_look', 'watch_for']
+      .forEach(f => scan(`hobbies[${i}].${f}`, h[f]));
+  });
+  scan('wildcard.why', draft.wildcard && draft.wildcard.why);
+  scan('pattern_in_matches', draft.pattern_in_matches);
+  return hits;
+}
+
 // PASS 2 — the constraint and grounding edit.
 //
 // runOutputGuard repairs FIELDS. It cannot remove a recommendation, and that is
@@ -30,6 +58,11 @@ async function enforceSuppliedFacts(draft, body, startedAt) {
     console.log('[hobby-match] grounding edit: skipped — out of time, draft returned unedited');
     return draft;
   }
+  const numbers = numericLeaks(draft);
+  const numberBlock = numbers.length ? `
+PRICES OR DURATIONS FOUND — remove each; cost and session_fit already carry this categorically:
+${numbers.map(h => `- ${h.path}: ${h.found}`).join('\n')}
+` : '';
   const prohibited = (router.outputGuard.prohibit || []).map(x => `- ${x.replace(/_/g, ' ')}`).join('\n');
 
   const editorSystem = `You are a grounding editor for a hobby recommender. You are NOT making anything more appealing, more specific or better argued — that impulse is what put the errors in. You remove what the writer had to invent or argue around, and you change nothing else.
@@ -50,7 +83,7 @@ STEP 2 — GROUNDING. In everything that remains, for each sentence explaining w
 - predictions: will stick, will keep you interested, will get you out of your head, satisfies your need for
 - ordinary language rendered clinical: "hates being a beginner in public" is not anxiety — say "lets you learn privately"
 - explanations of why a past hobby ended, or one experience generalised into a rule about them — including a comparison that implies it: "progress that does not plateau the way chess does" both explains why chess ended and ranks two hobbies on evidence nobody has. Say what this hobby offers; do not rank it against the one they mentioned.
-- invented durations, costs, comparisons or availability — no "takes 20-40 minutes", no "often free online"
+- invented durations, costs, comparisons or availability in ANY field — no "takes 20-40 minutes", no "£5", no "finished in one session", no "often free online". cost and session_fit already carry this categorically; prose must not restate it numerically
 - therapy-sounding description — "channels mental energy into construction" is a claim about them; say what the activity involves
 - a pattern about the PERSON rather than about the recommendations, or any comparison with other people
 ${prohibited}
@@ -59,6 +92,7 @@ Do not replace a removed detail with a different invented detail. Keep every rem
 
 FINAL TEST: could every user-specific statement be highlighted in the text above? Could someone with the stated limitation do each remaining hobby without argument, adaptation or a caveat? If not, fix it.
 
+${numberBlock}
 DRAFT TO EDIT:
 ${JSON.stringify(draft)}`;
 
@@ -74,7 +108,7 @@ ${JSON.stringify(draft)}`;
     // It may shorten the list; it may not empty it, grow it, or change shape.
     const n = (draft.hobbies || []).length;
     const ok = edited
-      && typeof edited.matching_for === 'string'
+      && (Array.isArray(edited.matching_for) ? edited.matching_for.length > 0 : typeof edited.matching_for === 'string')
       && Array.isArray(edited.hobbies)
       && edited.hobbies.length >= 1
       && edited.hobbies.length <= n
@@ -83,8 +117,12 @@ ${JSON.stringify(draft)}`;
       console.log('[hobby-match] grounding edit: rejected — shape changed, draft returned');
       return draft;
     }
+    const stillNumeric = numericLeaks(edited);
     const dropped = n - edited.hobbies.length;
-    console.log(`[hobby-match] grounding edit: applied${dropped ? `, ${dropped} hobby(ies) dropped for the stated constraint` : ''}`);
+    console.log(`[hobby-match] grounding edit: applied`
+      + (dropped ? `, ${dropped} hobby(ies) dropped for the stated constraint` : '')
+      + (numbers.length ? `, ${numbers.length} price/duration flagged` : '')
+      + (stillNumeric.length ? `, ${stillNumeric.length} STILL PRESENT: ${stillNumeric.map(x => x.path).join(', ')}` : numbers.length ? ', all removed' : ''));
     return edited;
   } catch (err) {
     console.log('[hobby-match] grounding edit: failed —', err.message, '— draft returned');
@@ -173,12 +211,24 @@ Avoid universal claims about how a hobby works. Not "all painting happens solo",
 QUALITY OVER QUANTITY
 Do not pad the list to hit a number. Five strong, distinct recommendations beat six with filler, and fewer than five is correct when the input does not support five. Recommendations must differ in what the person actually DOES, not merely in name.
 
+FINAL COMPLIANCE RULES
+MATCHING LANGUAGE — describe what makes a hobby a strong match, not what the user "needs". Never strengthen their words into a psychological, emotional or physical claim.
+NO FALSE PRECISION, ALL FIELDS — never state or estimate project completion times, number of sessions needed, prices or price ranges, or learning and progress timelines. This applies to EVERY user-facing field, not only the metadata chips. "Works in short sessions" and "can be paused and resumed" are fine. "Can be finished in one session" and "takes a few sessions" are not.
+RECOMMENDATIONS MUST EARN THEIR PLACE — each main pick connects to a positive goal, interest or preference they supplied AND respects every constraint. Avoiding their constraints is not enough on its own.
+NO ABSOLUTE ACTIVITY CLAIMS — prefer "can be", "some forms", "can be pursued" over "always", "all", "requires only", "needs no".
+SAFETY — meaningful risk (blades, machinery, heat, chemicals, heights, water, traffic, strenuous activity) gets a brief watch_for. Never reason around a physical limitation to keep a recommendation.
+SET DIVERSITY — judge the five as a set. Fit comes first, but where candidates are similarly strong, prefer different activity modes over several near neighbours.
+WILDCARD — changes the experience, not the name: materially different in underlying activity from every main pick, still inside every constraint.
+PATTERN — patterns in the recommendations, never hidden patterns in the person, each tied to a supplied fact.
+
 FINAL HOBBY MATCH CHECK — run over every recommendation before returning
 - connects to at least one positive user goal or interest
 - respects every hard constraint
 - makes no medical or physical-suitability claim
 - cost and session_fit each use only an allowed value
-- no exact price, duration, completion time or progress estimate anywhere
+- no exact price, duration, completion time, session count or progress estimate anywhere in ANY user-facing field
+- no unnecessary absolute claim about how the hobby works
+- the wildcard does not substantially duplicate a main recommendation
 - no emotional effect predicted
 - no preference strengthened into a psychological trait
 - watch_for present wherever meaningful safety risk exists
@@ -221,7 +271,7 @@ Rock climbing, badminton, tennis, running and similar are NOT low-impact for som
 
 Return ONLY valid JSON:
 {
-  "matching_for": "2-4 sentences naming the practical matching criteria that follow from their answers — what the hobby has to offer, fit around, or avoid. Selection criteria only. Never characterise their personality.",
+  "matching_for": ["2-4 SHORT criteria, each a property a strong match would have — 'can be done alone at home', 'fits short evenings', 'no running or jumping'. The interface supplies the lead-in, so do NOT write a sentence, do not start with a verb phrase about the user, and never characterise them. Each entry follows from something they said."],
   "hobbies": [
     {
       "name": "The hobby, specifically — not a vague category",
@@ -274,6 +324,20 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
           || allowed.find(a => v.includes(a.replace('_', ' ')))
           || null;
     };
+    // A model that answers with a paragraph gets split rather than rejected; the
+    // interface owns the lead-in either way, so "You need..." cannot survive.
+    if (typeof parsed.matching_for === 'string') {
+      parsed.matching_for = parsed.matching_for
+        .split(/(?<=[.;])\s+/).map(x => x.replace(/^[^\p{L}]+/u, '').replace(/[.;]\s*$/, '').trim())
+        .filter(Boolean).slice(0, 4);
+    }
+    if (Array.isArray(parsed.matching_for)) {
+      parsed.matching_for = parsed.matching_for
+        .filter(x => typeof x === 'string' && x.trim())
+        .map(x => x.replace(/^(you (need|should|want|are looking for)|the right hobby for you is)\s*/i, '').trim())
+        .slice(0, 4);
+    }
+
     const MODES = ['making','solving','collecting','performing','exploring','competing','observing','repairing','writing','moving','social','digital_creation'];
     (parsed.hobbies || []).forEach(h => {
       if (!h) return;
@@ -301,7 +365,7 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
       }
     }
 
-    if (!parsed.matching_for || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
+    if (!parsed.matching_for || !parsed.matching_for.length || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
     const grounded = await enforceSuppliedFacts(parsed, req.body, startedAt);
