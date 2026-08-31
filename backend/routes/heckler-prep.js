@@ -356,6 +356,34 @@ For every high-stakes legal, regulatory, medical, financial, procedural or polic
 
 If any sentence fails this audit, rewrite it before returning the response.
 
+FINAL GROUNDING PASS — DELETE BEFORE YOU INVENT
+
+Before returning the final output, inspect every user-facing sentence.
+
+For every specific detail, premise, circumstance, stakeholder, action, motive, alternative, cause, consequence, or event that was NOT explicitly supplied by the user:
+
+1. Ask: "Does removing this detail weaken the question?"
+   - If NO: remove it.
+
+2. If YES, ask: "Can the missing information itself become the question?"
+   - If YES: ask for it instead of inventing it.
+   - If NO: make it explicitly hypothetical only when the hypothetical is necessary to test the user's proposal.
+
+Never add plausible context merely to make a question more concrete, realistic, sophisticated, or difficult.
+
+Do not invent:
+- circumstances around people the user mentioned
+- examples of alternatives supposedly considered
+- reasons something might happen
+- things the user will say or do at the future event
+- audience beliefs, reactions, or motives
+- organizational history, processes, stakeholders, or consequences
+
+KNOWN OBJECTIONS remain objections. They may be questioned, attributed, or made conditional; they may never be promoted to facts, admissions, knowledge, or events.
+
+FINAL TEST:
+The strongest Heckler Prep question exposes an evidence gap. It does not fill that gap for the user.
+
 INVENT THE QUESTIONS. NOT THE FACTS.
 ATTACK WHAT IS KNOWN. ASK ABOUT WHAT ISN'T.
 KNOWN OBJECTIONS REMAIN OBJECTIONS.
@@ -444,7 +472,13 @@ Generate exactly ${splitB} questions, escalating in difficulty.${brutalB > 0 ? `
 ${DIFFICULTY_RULE}`;
 
     const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted questions or phrases plainly or with single quotes, or it breaks the JSON.';
-    const maxTokensByStakes = { low: 1400, moderate: 2000, high: 3200 };
+    // Raised 2026-08-31 with the FINAL GROUNDING PASS block. That block makes
+    // the model deliberate over every sentence, and it writes longer for it —
+    // German at high stakes overran 3200 and truncated, losing opening_move and
+    // confidence_note off the end of the human half. The golden caught it; the
+    // English runs never would have, which is the whole reason the German case
+    // is the one recorded.
+    const maxTokensByStakes = { low: 1600, moderate: 2400, high: 4200 };
     const halfBudget = maxTokensByStakes[stakes] || 1600;
     // Each half is edited the moment it resolves, so pass 2 overlaps the other
     // half's generation instead of waiting for both. Half the output per editor
