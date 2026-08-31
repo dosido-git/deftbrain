@@ -1379,7 +1379,7 @@ export const tools = [
   icon: "🎤",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, gotchas, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.",
+  description: "About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.",
   guide: {
     overview: "HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, what the question is testing, and something credible to say if you don't know yet.",
     howToUse: [
