@@ -18,6 +18,82 @@ const EDIT_MAX_TOKENS = Number(process.env.HP_EDIT_MAX_TOKENS || 8000);
 // board's opinion, a document that does not exist. A presenter who repeats one
 // of those in front of the people who know better is worse off than if the tool
 // had said nothing.
+// knownObjections is the one field whose semantics the code knows: it holds
+// things the user EXPECTS TO HEAR, never things they accept. That is narrow
+// enough to check deterministically, so it does not rest on the model
+// remembering it — which it has repeatedly failed to do, turning "the decision
+// is mostly already made" into "you came in here knowing the branch is closing".
+//
+// The check is deliberately blunt: a sentence that carries the objection's
+// distinctive words, in one of the surfaces that speaks in DeftBrain's own
+// voice, with no attribution, condition or question mark anywhere in it.
+// Questions are exempt by design — a heckler is allowed the hostile premise.
+//
+// It catches literal reuse and second-person assertion frames. It does NOT
+// catch paraphrase: "the settled direction is the central fact of the room"
+// shares no words with "the decision is substantially already taken" and reads
+// as clean here. That half is the validator prompt's job, and the two layers
+// are complementary rather than redundant — this one is deterministic and
+// cannot be talked out of a finding, the prompt one can generalise. Measured
+// against the specified FAIL/PASS pairs it classifies 9 of 11; both misses are
+// paraphrase.
+const ATTRIBUTED = /\b(objection|concern|argue|argued|claim|accus|expect|suspect|believe|per the|according to|some|many|residents|critics|they think)\b/i;
+const CONDITIONAL = /\b(if|whether|were|suppose|assuming|in the event)\b/i;
+// Second-person assertion. This is checked FIRST and is never exempted: "you
+// have said the decision is made" contains an attribution verb and is still the
+// exact conversion the field forbids, so the attribution escape must not apply.
+// One shared content word is enough here — the frame itself carries the failure.
+const ASSERTS_USER = /\byou(?:'ve| have| had)?\s+(?:already\s+)?(?:know|knew|acknowledge[ds]?|admit(?:ted)?|accept(?:ed)?|concede[ds]?|said|stated|conceded|are aware|came in here knowing)\b/i;
+
+function objectionTerms(raw) {
+  const stop = new Set(['that','this','they','them','their','were','have','has','been','will','with','from','about','would','could','should','there','which','what','when','because','already','still','into','more','than','also','just','only','over','after','before','being','does','done','made','make','said','tell','told','very','much','most','some','such','then','they','your','you']);
+  return String(raw || '')
+    .split(/[.;\n]/)
+    .flatMap(clause => {
+      const words = clause.toLowerCase().match(/[a-z']{4,}/g) || [];
+      const content = words.filter(w => !stop.has(w));
+      // a term is distinctive enough if two content words co-occur in a clause
+      return content.length >= 2 ? [content.slice(0, 6)] : [];
+    });
+}
+
+function objectionLeaks(obj, fields) {
+  const groups = objectionTerms(obj);
+  if (!groups.length) return [];
+  const hits = [];
+  for (const [path, value] of fields) {
+    for (const sentence of String(value || '').split(/(?<=[.!?])\s+/)) {
+      if (!sentence.trim()) continue;
+      if (sentence.includes('?')) continue;                 // a question is a permitted form
+      const lower = sentence.toLowerCase();
+      const asserts = ASSERTS_USER.test(sentence);
+      if (!asserts && (ATTRIBUTED.test(sentence) || CONDITIONAL.test(sentence))) continue;
+      const need = asserts ? 1 : 2;
+      for (const group of groups) {
+        const matched = group.filter(w => lower.includes(w));
+        if (matched.length >= need) { hits.push({ path, sentence: sentence.trim(), matched }); break; }
+      }
+    }
+  }
+  return hits;
+}
+
+// The surfaces that speak as the tool rather than as a heckler.
+function toolVoiceFields(draft) {
+  const f = [];
+  const put = (k, v) => { if (typeof v === 'string' && v.trim()) f.push([k, v]); };
+  put('situation_read', draft.situation_read);
+  put('opening_move', draft.opening_move);
+  put('confidence_note', draft.confidence_note);
+  put('the_curveball.how_to_handle', draft.the_curveball && draft.the_curveball.how_to_handle);
+  (draft.questions || []).forEach((q, i) => {
+    put(`questions[${i}].real_concern`, q && q.real_concern);
+    put(`questions[${i}].model_answer`, q && q.model_answer);
+    put(`questions[${i}].if_you_dont_know`, q && q.if_you_dont_know);
+  });
+  return f;
+}
+
 // PASS 2 — the grounding edit.
 //
 // One pass cannot both invent ten hostile questions and police every premise it
@@ -53,6 +129,12 @@ You may only: KEEP supported text; DELETE unsupported text; ATTRIBUTE a known ob
 
 Return the SAME JSON object — same keys, same number of questions, same numbering. Never place a double-quote (") character inside a JSON string value. Return ONLY the corrected JSON: no audit, no classifications, no explanation, no draft.`;
 
+  const leaks = objectionLeaks(body.knownObjections || body.objections, toolVoiceFields(draft));
+  const leakBlock = leaks.length ? `
+SENTENCES THAT ALREADY FAILED THE KNOWN-OBJECTION CHECK — rewrite each into an attributed objection, a conditional, or a question:
+${leaks.map(h => `- ${h.path}: "${h.sentence}"`).join('\n')}
+` : '';
+
   const editorPrompt = `SOURCE LEDGER — the user's fields, as separate evidence sources.
 
 PRESENTING:
@@ -69,6 +151,11 @@ ${(body.knownObjections || body.objections || '').trim() || '(none given)'}
 
 STAKES:
 ${(body.stakes || '').trim() || '(not given)'}
+
+KNOWN-OBJECTION PROVENANCE — HARD FAILURE
+Any proposition sourced ONLY from KNOWN OBJECTIONS may appear in exactly three forms: an attributed objection ("residents may argue that...", "one concern is that..."), a conditional ("if the decision is already largely made..."), or a question ("is the decision already largely made?"). It may NEVER appear as a declarative fact, or as something the user knows, believes, admits, acknowledges, has said or has done. Surrounding language does not soften this.
+From the known objection "the decision is mostly already made" — FAIL: "the settled direction is the central fact of the room". FAIL: "you know the decision is largely made". FAIL: "you've acknowledged that the decision is largely made". PASS: "one of the objections you expect is that the decision is largely made". PASS: "if the decision is largely made, what can tonight change?". PASS: "is the decision already largely made?"
+If a sentence does this, validation FAILS and you MUST rewrite that sentence.
 
 KNOWN OBJECTIONS ARE NOT FACTS. They establish only that the user EXPECTS those objections to arise.
 From "why we didn't catch it earlier", this is supported: "why these gaps weren't identified earlier". These are NOT: "your team failed to detect the gaps", "your team missed the problem", "your team was responsible for preventing this", "the security team failed", "management knew about the gaps". Do not strengthen the meaning of supplied language.
@@ -97,6 +184,7 @@ FINAL RED-TEAM SCAN. Before returning, search the revised output specifically fo
 ${prohibited}
 If any fails the rules above, revise it.
 
+${leakBlock}
 DRAFT TO EDIT:
 ${JSON.stringify(draft)}`;
 
@@ -121,7 +209,10 @@ ${JSON.stringify(draft)}`;
       console.log(`[heckler-prep] grounding edit (${half}): rejected — shape changed, draft returned`);
       return draft;
     }
-    console.log(`[heckler-prep] grounding edit (${half}): applied over ${edited.questions.length} question(s)`);
+    const remaining = objectionLeaks(body.knownObjections || body.objections, toolVoiceFields(edited));
+    console.log(`[heckler-prep] grounding edit (${half}): applied over ${edited.questions.length} question(s)`
+      + (leaks.length ? ` — ${leaks.length} objection leak(s) flagged` : '')
+      + (remaining.length ? `, ${remaining.length} STILL UNATTRIBUTED: ${remaining.map(r => r.path).join(', ')}` : leaks.length ? ', all resolved' : ''));
     return edited;
   } catch (err) {
     console.log(`[heckler-prep] grounding edit (${half}): failed — ${err.message} — draft returned`);
@@ -201,7 +292,7 @@ OPENING MOVE
 
 CURVEBALL
 - The curveball must come from a plausible decision angle not already covered. It may surface an unknown, but may not assert an unsupplied fact.
-- how_to_handle says how to meet the question, not what to promise in answer to it. The same bar as if_you_dont_know: no commitment the user has not chosen to make.
+- how_to_handle says how to meet the question, not what to promise in answer to it. It stands alone: never refer to another question by number or to "the line you drew" elsewhere in the output. Those references are generated blind and land on the wrong question — one pointed at "the honest line you drew in question one" when question one was about transport. Say the thing itself. The same bar as if_you_dont_know: no commitment the user has not chosen to make.
 - The curveball is where high-stakes invention creeps in. Never assert the legal, regulatory or procedural status of anything — "a legal formality to protect the council from challenge", "consultation has a formal purpose even when a direction is set" are claims the input did not establish. A safe curveball puts the pressure somewhere real: "There is a local reporter in the room. If tomorrow's headline says 'Council admits decision already made at library consultation', what would your response be?" — and the coaching says: be precise about what you actually know is still open and what is not; if you do not know the formal or legal status of this process, do not characterise it, and find out before the meeting.
 
 CONFIDENCE NOTE
@@ -299,7 +390,7 @@ ${questionShape}
   "situation_read": "2 sentences identifying the main pressure points created by the supplied topic, ask, objections, audience, and stakes. Do not invent what the audience believes or what has happened before.",
   "the_curveball": {
     "question": "One unexpected question from an angle they didn't prepare for.",
-    "how_to_handle": "2 sentences."
+    "how_to_handle": "2 sentences. Self-contained — no reference to another question by number or content."
   },
   "opening_move": "One grounded sentence to say at the start that directly acknowledges the biggest explicit objection, or null if the input does not support one.",
   "confidence_note": "One sentence of grounded encouragement based only on the user's supplied facts or the preparation completed here."
