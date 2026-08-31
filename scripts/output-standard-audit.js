@@ -59,12 +59,16 @@ for (const slug of onDisk) {
 // router.outputGuard — and calls the validator, or says out loud that it does
 // not need one. Without this, "reviewed under v2" means the prompt got longer.
 const DECLARES_GUARD = /(?:^|\n)\s*router\.outputGuard\s*=/;
+// HobbyMatch v2's deterministicViolations() is the strongest of these: it is
+// regex, not a model, it runs after the repair pass, and the route refuses to
+// respond while it still finds something. A check that can only be satisfied,
+// not talked around, is exactly what the standard is asking for.
 // validateAndRepair is HecklerPrep v3's equivalent, and it is a stricter one:
 // it checks every user-facing component against an extracted evidence ledger
 // and repairs only the components that fail. Recognised by name for the same
 // reason enforceSuppliedFacts is — a tool's own check counts, provided it runs
 // after generation and can change what ships.
-const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelope\s*\(|enforceSuppliedFacts\s*\(|validateAndRepair\s*\(/;
+const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelope\s*\(|enforceSuppliedFacts\s*\(|validateAndRepair\s*\(|deterministicViolations\s*\(/;
 // Routes exempt from needing a guard, by name and with a reason. Empty today.
 const GUARD_EXEMPT = new Map([]);
 
