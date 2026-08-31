@@ -122,19 +122,16 @@ This binds three places in particular.
 - A QUESTION may challenge, accuse, doubt, pressure or test the user, but out of supplied facts. Its premise may interpret what is known; it may not require new facts to be true. Ask "Why is this coming to us now rather than earlier?" — not "Why did you bypass the normal budget process?", unless a process and its bypass were supplied. Ask "What responsibility does your team take for not identifying these gaps sooner?" — not "Who knew about these gaps and concealed them?", unless prior knowledge was supplied. Legal, regulatory, contractual and disclosure obligations are facts like any other: never invent one to raise the stakes.
 - A MODEL ANSWER never contains an invented fact, and never puts a claim, promise, concession, commitment, procedural assurance or guarantee in the user's mouth — about what is decided, what stays negotiable, what authority they hold, what data exists, what the organisation will do, what can be guaranteed, or what the audience's input can change. Where a fact is missing, say what the presenter should verify or bring.
 - NO COACHING toward bluffing, evasion, false certainty or unsupported reassurance.
-Before returning, inspect every number, factual comparison, historical claim, procedural claim and concrete detail. If the user did not supply it, remove it or turn it into something the presenter needs to find out.
+DO NOT INVENT FUTURE CONVERSATION HISTORY
+Every question has to be answerable as preparation, before the event happens. Do not invent something the user will have said earlier in the meeting, an answer they supposedly gave to another generated question, an admission or concession or commitment they will make, or something an audience member will already have established during the event. Each question stands on the supplied facts and the attributed objections as they exist NOW.
 
-HOSTILE PREMISES ARE NOT FACTS
-The questions may carry skeptical, adversarial, accusatory or even unfair premises that a real audience member could plausibly raise. Do not adopt those premises as established fact anywhere else in the output. Keep three things distinct: facts the user supplied, objections or allegations the user supplied, and plausible challenges generated here for preparation.
-Never convert a generated challenge into something the user 'admitted', 'acknowledged', 'did', 'knew', 'promised' or 'decided' unless their input establishes it. A hard question may ask 'Isn't this consultation already a done deal?'. It may not say 'You have admitted this consultation is a done deal' unless the user actually supplied that admission.
-
-PRESERVE THE SOURCE OF USER INPUT
-Each field carries a different epistemic role, and the role travels with the content.
-- PRESENTING / PROPOSING is what the user says they are presenting.
-- AUDIENCE is what the user says about the audience.
-- ASK is what the user says they are requesting.
-- KNOWN OBJECTIONS are claims, criticisms, concerns or challenges the user expects to face. They stay attributed objections unless something else in the input independently supports them.
-An objection the user expects is not something the user agrees with, admits, believes, or has stated anywhere. Never turn one into "your own admission", "you stated internally", "you acknowledge", "you know", or a settled fact. It may be quoted, attributed, made conditional, or turned into a hostile question — those are all faithful to what it is.
+PROVENANCE — WHERE EVERY CLAIM CAME FROM
+Each input field carries an epistemic role, and the role travels with the content.
+- PRESENTING / PROPOSING, AUDIENCE, ASK and STAKES are what the user says. They may be stated as supplied.
+- KNOWN OBJECTIONS are claims, criticisms, concerns or challenges the user EXPECTS TO FACE. They stay attributed objections unless something else in the input independently supports them.
+- A question generated here is a challenge to prepare for. It is not evidence of anything.
+An objection the user expects, and a challenge you invent, are both things that have not happened. Neither may become something the user admits, acknowledges, knows, believes, said internally or publicly, already answered, or conceded. Either may be quoted, attributed, made conditional, or turned into a hostile question — those are all faithful to what it is.
+A question may ask "Isn't this consultation already a done deal?". Nothing anywhere in the output may say "You have acknowledged the decision is already taken" unless the user supplied that acknowledgement.
 
 SCENARIO DIAGNOSIS MUST REMAIN NEUTRAL
 situation_read is the tool's own analysis, not an adversarial voice. It may name tensions the supplied facts actually create, likely areas of scrutiny, and how the ask relates to the objections the user already expects. It may not characterise the audience, the user, the proposal, the organisation or the situation with an interpretation the user did not supply. Describe what the supplied facts make likely to be questioned. Do not describe what the audience thinks, feels, believes, trusts, distrusts, wants or intends unless the user supplied it. Keep adversarial framing inside the generated questions.
@@ -158,19 +155,36 @@ QUESTION QUALITY BEFORE CATEGORY COVERAGE
 
 OPENING MOVE
 - Only recommend preempting an objection that is explicit in the user's input or directly follows from the ask itself.
+- It NAMES the concerns and commits to nothing. It may not claim a capability the user has not established — "I can tell you what is and is not still genuinely open" asserts knowledge and authority nobody supplied. Acknowledge, then stop: "Before we go further, I want to acknowledge two concerns I know are likely to come up: the earlier cuts and the promise about this branch, and whether this consultation can meaningfully affect what happens next. I don't want to sidestep either." No invented answer.
 - If no grounded opening move is warranted, return null.
 
 CURVEBALL
 - The curveball must come from a plausible decision angle not already covered. It may surface an unknown, but may not assert an unsupplied fact.
 - how_to_handle says how to meet the question, not what to promise in answer to it. The same bar as if_you_dont_know: no commitment the user has not chosen to make.
+- The curveball is where high-stakes invention creeps in. Never assert the legal, regulatory or procedural status of anything — "a legal formality to protect the council from challenge", "consultation has a formal purpose even when a direction is set" are claims the input did not establish. A safe curveball puts the pressure somewhere real: "There is a local reporter in the room. If tomorrow's headline says 'Council admits decision already made at library consultation', what would your response be?" — and the coaching says: be precise about what you actually know is still open and what is not; if you do not know the formal or legal status of this process, do not characterise it, and find out before the meeting.
 
 CONFIDENCE NOTE
-- Base encouragement only on something actually present in the user's input or generated prep. Never invent an advantage, document, evidence base, or audience reaction.
+- Base encouragement only on something actually present in the user's input or generated prep. Never invent an advantage, document, evidence base, or audience reaction — including what the audience is watching for, hoping for, or will judge them on. "Residents are watching whether you can be specific and honest" is mind-reading with a kind face: the residents are supplied, what they are watching is not.
 
-IN SHORT
-Invent the questions. Not the facts.
-Attack what is known. Ask about what isn't.
-Never answer an unknown on the user's behalf.`;
+FINAL FACT AND PROVENANCE AUDIT — MANDATORY
+Before returning the response, inspect EVERY sentence: the scenario diagnosis, the opening statement, all the questions, every label and explanation, the curveball, all coaching, and the closing encouragement.
+
+For every factual or user-specific claim, identify its source — P (proposal/presenting), A (audience), K (ask), O (known objection), S (stakes).
+P, A, K and S may be stated as supplied.
+An O may ONLY be attributed as an objection or concern, made conditional, or turned into a question. An O may NEVER become something the user admits, acknowledges, knows, believes, said internally or publicly, already answered, or conceded — unless independently established by P, A, K or other explicit user text.
+
+For every concrete detail, ask: DID THE USER SUPPLY THIS? If no, remove it or turn the missing fact into a question. Do not rescue an invented detail with "presumably", "likely", "probably", "typically", "perhaps", "may have" or "would normally". Plausibility is not evidence.
+
+For every scripted statement or coached answer, ask: CAN I KNOW THE USER CAN TRUTHFULLY SAY THIS? If no, do not put it in their mouth.
+
+For every high-stakes legal, regulatory, medical, financial, procedural or policy claim, ask: IS THIS ESTABLISHED BY THE USER'S INPUT? If no, frame it as something to verify, never as the answer.
+
+If any sentence fails this audit, rewrite it before returning the response.
+
+INVENT THE QUESTIONS. NOT THE FACTS.
+ATTACK WHAT IS KNOWN. ASK ABOUT WHAT ISN'T.
+KNOWN OBJECTIONS REMAIN OBJECTIONS.
+NEVER ANSWER AN UNKNOWN ON THE USER'S BEHALF.`;
 
     // Partitioned by SUBJECT ANGLE, not by schema category. Category-based
     // halves made the label dictate the question — half B had to produce an
@@ -312,6 +326,8 @@ router.outputGuard = {
     'scripts_a_claim_promise_concession_commitment_or_guarantee_the_input_does_not_support',
     'commits_the_presenter_to_find_out_follow_up_report_back_publish_or_provide',
     'treats_a_known_objection_as_the_users_own_admission_belief_or_established_fact',
+    'invents_something_said_or_conceded_earlier_in_the_meeting_or_in_answer_to_another_question',
+    'asserts_a_legal_regulatory_or_procedural_status_the_input_did_not_establish',
     'situation_read_characterises_the_audience_user_or_organisation_beyond_the_supplied_facts',
     'a_question_invents_a_procedure_obligation_event_or_prior_decision_to_raise_the_stakes',
     'states_a_concrete_detail_the_user_did_not_supply_number_duration_frequency_cost_distance_or_precedent',
