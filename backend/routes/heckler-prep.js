@@ -46,6 +46,34 @@ Do not ASSERT people, stakeholders, organizations, teams, boards, auditors, repo
 
 Do not use 'presumably', 'probably', 'apparently', 'likely', 'obviously', or 'clearly' to turn an unknown into a premise.
 
+KNOWN OBJECTIONS MAY BE VOICED, NOT PROMOTED
+
+A known objection authorizes Heckler Prep to prepare the user for that argument. It does not make the factual premise inside the objection true.
+
+The question may state the objection as something the audience may allege, challenge, or ask about.
+
+Do not rewrite an objection as established scenario history.
+
+Example:
+
+KNOWN OBJECTION:
+"why we didn't catch it earlier"
+
+ALLOWED:
+"You're going to be asked why these gaps weren't caught earlier. What's your answer?"
+
+ALLOWED:
+"If these gaps could have been identified internally earlier, why weren't they?"
+
+NOT ALLOWED:
+"Your team missed these gaps."
+
+NOT ALLOWED:
+"The external test found gaps your team failed to identify."
+
+unless independently supported by a FACT.
+
+
 TWO SUPPORTED FACTS DO NOT ESTABLISH A RELATIONSHIP BETWEEN THEM. Joining them may not add chronology, causation, responsibility, motivation, dependency or consequence that the evidence does not carry. Watch the connectives: 'then', 'after', 'before', 'because', 'therefore', 'as a result', 'which led to', 'in response to'.
 Given 'hours were cut twice' and 'a promise was made that the branch would not close', write 'Hours were cut twice, and a promise was also made that the branch would not close.' — not 'Hours were cut twice and residents were then promised the branch would not close', which dates one against the other.
 Whenever you join two facts into one proposition, ask: did I add a relationship the evidence does not establish? If so, remove the relationship and keep both facts.
@@ -96,6 +124,34 @@ Given ONE generated component and the complete evidence ledger, decide whether e
 FACTS may be stated but not strengthened.
 OBJECTIONS may only be attributed, questioned, or conditionalized.
 UNKNOWNS may be asked about but never filled with invented examples or answers.
+KNOWN OBJECTIONS MAY BE VOICED, NOT PROMOTED
+
+A known objection authorizes Heckler Prep to prepare the user for that argument. It does not make the factual premise inside the objection true.
+
+The question may state the objection as something the audience may allege, challenge, or ask about.
+
+Do not rewrite an objection as established scenario history.
+
+Example:
+
+KNOWN OBJECTION:
+"why we didn't catch it earlier"
+
+ALLOWED:
+"You're going to be asked why these gaps weren't caught earlier. What's your answer?"
+
+ALLOWED:
+"If these gaps could have been identified internally earlier, why weren't they?"
+
+NOT ALLOWED:
+"Your team missed these gaps."
+
+NOT ALLOWED:
+"The external test found gaps your team failed to identify."
+
+unless independently supported by a FACT.
+
+
 Classify every scenario-specific element into one of three, and judge it on that:
 A. A SCENARIO-SPECIFIC FACTUAL PREMISE — asserted as true of this situation. Must be supported by the ledger.
 B. A REASONABLE DOMAIN-SPECIFIC POSSIBILITY — named inside a question, an alternative, a possibility or a hypothetical. ALLOWED without a FACT ID. Do not reject a question merely because a possibility it raises has no ID.
