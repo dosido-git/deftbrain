@@ -55,7 +55,7 @@ STEP 2 — GROUNDING. In everything that remains, for each sentence explaining w
 - a pattern about the PERSON rather than about the recommendations, or any comparison with other people
 ${prohibited}
 
-Do not replace a removed detail with a different invented detail. Keep every remaining hobby's name and icon exactly as they are. Leave cost and session_fit exactly as they are — they are enum values the interface renders, not prose to improve. Leave user_facts_used alone except to DELETE an entry that is not in the text above.
+Do not replace a removed detail with a different invented detail. Keep every remaining hobby's name and icon exactly as they are. Leave cost, session_fit and activity_mode exactly as they are — they are enum values the interface renders, not prose to improve. Leave user_facts_used alone except to DELETE an entry that is not in the text above.
 
 FINAL TEST: could every user-specific statement be highlighted in the text above? Could someone with the stated limitation do each remaining hobby without argument, adaptation or a caveat? If not, fix it.
 
@@ -117,6 +117,10 @@ DO NOT EXPLAIN PRIOR HOBBIES FOR THE USER
 A hobby they tried is evidence only as far as they explained it. "Tried chess, loved it but plateaued" establishes that they tried chess, that they loved it, and that they reached a point they call a plateau. It does NOT establish why they stopped, that plateauing is what ended it, that they need a deeper learning curve, or that they abandon things when progress slows. Do not generalise one prior experience into a rule about the person unless they did.
 Say "you loved chess, so another strategy game with plenty of room to learn may be worth trying". Do not say "Go does not plateau as quickly", which is both an unsourced comparison and a diagnosis of why chess ended.
 
+MATCHING LANGUAGE
+Describe what you are looking for, not what the user "needs". Not "you need", "you should", "the right hobby for you is". Write "the strongest matches will", "I'm looking for hobbies that", "this fits because".
+Preserve their own constraint wording literally where you can. If they said "seated or low-impact is fine", do not restate it as "comfortable for your knees" — say "can be done seated or without running and jumping".
+
 MATCHING
 Weigh what they explicitly say they want, the interests and qualities they mention, their available time, their startup budget, their physical and practical constraints, what they have already tried, and the reasons they gave for those working or not.
 Constraints outrank novelty. Never recommend something merely because it is unusual. Do not recommend a hobby they have already tried unless there is a materially different version that directly addresses the stated reason it did not work.
@@ -151,13 +155,36 @@ SAFETY
 Do not romanticise a hazardous activity. Where a hobby involves blades, tools, heat, chemicals, water, heights, traffic, machinery or strenuous exercise, note the relevant basic safety consideration plainly, without turning the recommendation into a lecture. Never write a line like "turning dull blades into surgical tools".
 
 PATTERN IN THE MATCHES
-Describe a pattern in the RECOMMENDATIONS, never a pattern "about the user". Never compare their preferences with other people's. Not "that matters to you more than most people", not "you seem to need", not "you're someone who", not "the pattern I notice about you", not "these will stick because". Trace it explicitly back to what they supplied: "several of these produce something visibly finished, because you said you like finishing things — and they can be done at home without a fixed group schedule, which fits the constraints you gave."
+Describe a pattern in the RECOMMENDATIONS, never a pattern "about the user". Never compare their preferences with other people's. Not "that matters to you more than most people", not "you seem to need", not "you're someone who", not "the pattern I notice about you", not "these will stick because". Never create tension with a stated preference: if they said they like finishing things, write "several give you clear projects or milestones to finish while leaving room to keep learning", not "several offer progress without a hard stopping point". Trace it explicitly back to what they supplied: "several of these produce something visibly finished, because you said you like finishing things — and they can be done at home without a fixed group schedule, which fits the constraints you gave."
 
-WILDCARD MUST CHANGE THE MODE
-A wildcard differs in the EXPERIENCE, not merely the materials. If most of the list is making small visual or physical objects, another small visual or physical craft is not a wildcard. Look for a different route to the same supplied goals — making versus solving, visual versus verbal, physical versus digital, collecting versus creating, observing versus producing, structured challenge versus open-ended creativity. It still respects every supplied constraint.
+WILDCARD MUST CHANGE THE EXPERIENCE
+The wildcard must differ meaningfully from EVERY main recommendation. Do not judge difference by name — compare the underlying activity mode: making, solving, collecting, performing, exploring, competing, observing, repairing, writing, moving, social, digital_creation.
+If a main pick is model building or miniature painting, then miniature wargaming, figure painting and terrain building are NOT wildcards; they share the core activity. The wildcard satisfies every constraint while reaching their goals through a substantially different mode.
 
+RECOMMENDATIONS MUST EARN THEIR PLACE
+A hobby is not a strong recommendation merely because it avoids the user's constraints. Each main pick must connect BOTH to at least one positive goal, interest or preference they supplied — likes learning, likes finishing things, wants creativity, competition, people, the outdoors, something unusual — AND to their practical constraints.
+A candidate that only satisfies constraints (can be done alone, inexpensive, fits short sessions) without connecting to something they positively want gets replaced by a stronger one. Five strong matches beat five filled slots.
+
+SAFETY-SENSITIVE HOBBIES
+Where a hobby involves blades, sharp tools, heat, chemicals, machinery, heights, water, traffic or meaningful physical risk, watch_for must be present and must name the practical consideration without becoming a tutorial or a medical warning. Woodcarving: "uses sharp carving tools; basic tool handling and a stable work setup matter." If a hobby carries meaningful risk and no useful short note can be given, recommend something safer instead.
+
+NO ABSOLUTE ACTIVITY CLAIMS
+Avoid universal claims about how a hobby works. Not "all painting happens solo", "games always fit short sessions", "this never requires a group". Write "painting and assembly can be done independently", "some formats work well in short sessions", "this can be pursued without a fixed group schedule".
 QUALITY OVER QUANTITY
 Do not pad the list to hit a number. Five strong, distinct recommendations beat six with filler, and fewer than five is correct when the input does not support five. Recommendations must differ in what the person actually DOES, not merely in name.
+
+FINAL HOBBY MATCH CHECK — run over every recommendation before returning
+- connects to at least one positive user goal or interest
+- respects every hard constraint
+- makes no medical or physical-suitability claim
+- cost and session_fit each use only an allowed value
+- no exact price, duration, completion time or progress estimate anywhere
+- no emotional effect predicted
+- no preference strengthened into a psychological trait
+- watch_for present wherever meaningful safety risk exists
+Then the wildcard: its activity_mode differs from every main pick, it respects all constraints, and it is not a variant or extension of another recommendation.
+Then the summary and pattern: they describe matching criteria rather than user "needs", use only supplied information, and make no comparative or psychological claim about the person.
+If any check fails, revise before returning the JSON.
 
 BEFORE RETURNING EACH RECOMMENDATION, VERIFY
 1. Every item in user_facts_used appears in the user's input.
@@ -204,6 +231,7 @@ Return ONLY valid JSON:
       "energy_type": "solo | social | either",
       "session_fit": "EXACTLY one of: short_sessions | longer_block | either. Lowercase English, never translated — the interface renders the label. Never a duration, never a frequency, never a sentence.",
       "cost": "EXACTLY one of: free | low | moderate | higher. Lowercase English, never translated. No currency symbol, no price range, no equipment estimate, no current-looking price.",
+      "activity_mode": "EXACTLY one of: making | solving | collecting | performing | exploring | competing | observing | repairing | writing | moving | social | digital_creation. Lowercase English, never translated. The underlying MODE of the activity, not its subject — this is compared in code.",
       "user_facts_used": ["The user's own words that put this hobby on the list — quote or closely paraphrase, one per entry. Every entry must be findable in their input. This is checked."],
       "try_it_once": "The smallest realistic experiment that lets them experience the hobby before buying significant equipment or committing. It tests the hobby; it does not start a new identity.",
       "where_to_look": "Kinds of places to look for instruction, equipment or people. Name a specific organisation only where you have reliable grounds. Empty string if there is nothing useful to say.",
@@ -212,6 +240,7 @@ Return ONLY valid JSON:
   ],
   "wildcard": {
     "name": "Optional. A hobby that satisfies every constraint but changes the MODE, not the materials — making vs solving, visual vs verbal, physical vs digital, collecting vs creating, observing vs producing, structured challenge vs open-ended. If the five are all small hand-made objects, another small hand-made object is not a wildcard however different the medium. Empty string if none earns the slot.",
+    "activity_mode": "EXACTLY one of the same twelve values. It MUST differ from every main recommendation's activity_mode — a wildcard that shares a mode is DROPPED in code and the slot is wasted.",
     "why": "Why it earned the wildcard slot. Do not claim they will enjoy it."
   },
   "pattern_in_matches": "Optional. A pattern in the RECOMMENDATIONS, supported by several things they supplied — 'several of these can be practised privately, offer measurable progress and fit short sessions'. Never a pattern in the person, and never a prediction about which will stick. Empty string unless clearly supported."
@@ -245,15 +274,32 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
           || allowed.find(a => v.includes(a.replace('_', ' ')))
           || null;
     };
+    const MODES = ['making','solving','collecting','performing','exploring','competing','observing','repairing','writing','moving','social','digital_creation'];
     (parsed.hobbies || []).forEach(h => {
       if (!h) return;
       h.cost = pick(h.cost ?? h.startup_cost, COSTS);
       h.session_fit = pick(h.session_fit, FITS);
       delete h.startup_cost;
+      h.activity_mode = pick(h.activity_mode, MODES);
       h.user_facts_used = Array.isArray(h.user_facts_used)
         ? h.user_facts_used.filter(x => typeof x === 'string' && x.trim()).slice(0, 5)
         : [];
     });
+
+    // "Make the wildcard more different" is not a checkable instruction; a mode
+    // that collides with a main pick is. A wildcard that shares one is not a
+    // wildcard, and the field is optional by design, so it goes rather than
+    // occupying the slot with a sixth version of the same activity.
+    if (parsed.wildcard && parsed.wildcard.name) {
+      const wm = pick(parsed.wildcard.activity_mode, MODES);
+      const mainModes = new Set((parsed.hobbies || []).map(h => h && h.activity_mode).filter(Boolean));
+      if (wm && mainModes.has(wm)) {
+        console.log(`[hobby-match] wildcard dropped — mode "${wm}" already covered by a main recommendation`);
+        parsed.wildcard = { name: '', why: '' };
+      } else if (parsed.wildcard) {
+        parsed.wildcard.activity_mode = wm;
+      }
+    }
 
     if (!parsed.matching_for || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
