@@ -1936,4 +1936,177 @@ export const toolFinderMetadata = {
     whenToRecommend: "Recommend when the user explicitly wants an incorrect answer for entertainment.",
     whenNotToRecommend: "Do not recommend when the user wants factual guidance, intends to deceive others, or asks for unsafe actionable misinformation.",
   },
+
+  BeforeHello: {
+    problems: [
+      "There is someone in my professional world I would like to know, but I do not want to show up as a stranger asking for something",
+      "I am not sure whether I have a genuine reason to contact a mentor, investor, employer, client, collaborator, or professional peer yet",
+      "I want to become more relevant or credible before I make first contact without manufacturing familiarity",
+    ],
+    capabilities: [
+      "assesses whether there is already a legitimate reason to reach out now",
+      "identifies useful work the user can strengthen before contact even if the target never sees it",
+      "finds genuine overlap from facts the user supplies rather than inventing shared interests or target preferences",
+      "distinguishes worthwhile professional visibility from engineered exposure or familiarity",
+      "drafts a grounded first-contact message when the user is ready",
+    ],
+    accepts: [
+      "who the person is and their professional role or field",
+      "why this person specifically matters to the user",
+      "the kind of professional connection the user hopes for",
+      "what the user already brings, has done, or can credibly offer",
+      "optional known overlap or public work supplied by the user",
+    ],
+    notFor: [
+      "tracking, monitoring, repeatedly appearing around, or engineering encounters with a person",
+      "finding private access routes, third-party pressure, or ways around silence, decline, blocking, or no-contact signals",
+      "writing only a cold outreach message when the user already has a legitimate reason to contact the person",
+      "romantic pursuit or personal relationship strategy",
+    ],
+    handoffs: [
+      { when: "the user already has a legitimate reason to contact the person and mainly needs the first message written", toolId: "ColdOpenCraft" },
+      { when: "the user wants to prepare for a consequential live conversation with someone they already know", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "decide what should be true before making professional first contact with a specific person and whether it is already appropriate to reach out",
+    whenToRecommend: "Recommend when the user wants to build toward a legitimate professional connection without manufacturing familiarity, and needs help deciding what to strengthen, where the real overlap is, or whether they are ready to say hello.",
+    whenNotToRecommend: "Do not recommend for romantic pursuit, surveillance or engineered exposure, attempts to bypass a person's boundaries, or a straightforward first-message writing request when the reason to contact is already established.",
+  },
+
+  GratitudeDebtClearer: {
+    problems: [
+      "I owe someone a thank-you and keep putting off writing it",
+      "I know what I am grateful for but cannot turn it into a natural message",
+      "I want a thank-you note that feels specific and sincere rather than generic or overly sentimental",
+    ],
+    capabilities: [
+      "turns user-supplied details about what happened into several distinct thank-you messages",
+      "keeps every message grounded in the relationship, actions, and feelings the user actually supplied",
+      "offers meaningfully different ways to express the same gratitude rather than cosmetic rewrites",
+      "supports refinement when the user wants the message less mushy, more specific, or more like their own voice",
+      "keeps card copy and message framing consistent with the facts the user provided",
+    ],
+    accepts: [
+      "who the user wants to thank",
+      "what the person did or what the user appreciates",
+      "the relationship or context",
+      "optional details that should make the message more personal",
+    ],
+    notFor: [
+      "writing an apology after the user caused harm",
+      "inventing memories, relationship history, motives, or feelings to make a thank-you sound more personal",
+      "writing a recommendation or reference letter for another person",
+      "choosing a gift for someone before a thank-you message is the main need",
+    ],
+    handoffs: [
+      { when: "the user primarily needs to apologize for harm they caused rather than express thanks", toolId: "Mend" },
+      { when: "the user has been asked to write a recommendation or reference for someone", toolId: "GhostWriter" },
+      { when: "the user is choosing a gift and wants ideas before writing the card message", toolId: "Giftology" },
+    ],
+    primaryIntent: "turn real details about someone's help, kindness, gift, support, or contribution into a natural ready-to-send thank-you message",
+    whenToRecommend: "Recommend when the user genuinely wants to thank a specific person or group and knows what they appreciate but is stuck on wording.",
+    whenNotToRecommend: "Do not recommend for apologies, recommendation letters, generic greeting-card copy detached from real details, or gift selection before the thank-you itself is the task.",
+  },
+
+  GriefGuide: {
+    problems: [
+      "Someone died and I do not know what to do with what I am feeling",
+      "Someone I care about is grieving and I do not know what to say or how to help",
+      "I need a small, manageable next step after a loss without being told what stage I am in or how I should feel",
+    ],
+    capabilities: [
+      "reflects back only the loss, circumstances, and feelings the user actually supplied",
+      "offers a small number of proportionate things that may help right now without prescribing stages or timelines",
+      "provides grounded words the user can say to another person when language would help",
+      "supports the person grieving, the person helping, or both at once",
+      "adds more-support guidance while reserving urgent crisis escalation for explicit acute-risk signals",
+    ],
+    accepts: [
+      "whether the guidance is for the user, someone they are supporting, or both",
+      "the kind of loss and roughly when it happened",
+      "what has been hardest or what the user wants help with",
+      "optional country or locale for terminology and appropriate resources",
+    ],
+    notFor: [
+      "diagnosing a mental-health condition or deciding whether grief is normal or abnormal",
+      "assigning grief stages, recovery timelines, or predictions about how someone will feel later",
+      "inventing emotions, motives, relationship dynamics, or hidden meaning from a short description",
+      "replacing emergency or crisis services when the user describes immediate danger or acute self-harm risk",
+    ],
+    handoffs: [
+      { when: "the user's main need is identifying or naming an emotion rather than support around a loss", toolId: "NameThatFeeling" },
+      { when: "the user needs to prepare for a difficult live conversation with someone affected by the loss", toolId: "DifficultTalkCoach" },
+    ],
+    primaryIntent: "provide careful, grounded support after a loss for someone grieving, someone trying to help, or both",
+    whenToRecommend: "Recommend when a death or other supported loss is the central issue and the user wants practical, compassionate guidance, words to use, or one manageable next step.",
+    whenNotToRecommend: "Do not recommend for diagnosis, grief-stage classification, promises about recovery, or emergencies that require immediate crisis support.",
+  },
+
+  HecklerPrep: {
+    problems: [
+      "I am about to present, pitch, or propose something and want to know the hardest questions I may face",
+      "I know the likely objections but need to rehearse credible answers before a skeptical audience",
+      "I want to pressure-test a presentation instead of practicing only the easy questions",
+    ],
+    capabilities: [
+      "generates ten difficult audience-specific questions from the proposal, audience, known objections, and stakes",
+      "distinguishes supplied facts, anticipated objections, and important unknowns before generating challenges",
+      "uses reasonable domain knowledge to raise plausible alternatives and hypotheticals without presenting them as scenario facts",
+      "provides coached answers, what each question is testing, and what to say when the answer is not yet known",
+      "adds a preemptive opening, a curveball, and a final preparation priority for high-stakes Q&A",
+    ],
+    accepts: [
+      "what the user is presenting, pitching, or proposing",
+      "who the audience is",
+      "optional ask or desired approval",
+      "optional known objections or sensitive areas",
+      "stakes level",
+    ],
+    notFor: [
+      "inventing facts, history, stakeholder actions, motives, timelines, or organizational processes that the user did not supply",
+      "treating anticipated objections as established facts",
+      "general decision analysis without an upcoming presentation, pitch, proposal, or defense",
+    ],
+    handoffs: [
+      { when: "the user wants to rehearse the presentation itself rather than generate adversarial questions", toolId: "TheRunthrough" },
+    ],
+    primaryIntent: "pressure-test an upcoming presentation, pitch, proposal, or defense by generating the hardest credible questions the actual audience may ask",
+    whenToRecommend: "Recommend when the user has something they expect to present or defend and wants realistic skeptical, hostile, or gotcha questions plus preparation for answering them.",
+    whenNotToRecommend: "Do not recommend when the user only needs a general decision framework or unsupported speculation about what specific people secretly think.",
+  },
+
+  HobbyMatch: {
+    problems: [
+      "I want a new hobby but the usual suggestions do not feel like they fit me",
+      "I need hobby ideas that work with my schedule, budget, physical limits, and preference for solo or social activity",
+      "I keep trying hobbies that sound good in theory but do not match the way I actually spend my time",
+    ],
+    capabilities: [
+      "matches hobbies to positive interests or goals as well as practical constraints supplied by the user",
+      "returns four to five strong main recommendations plus a genuinely different wildcard activity mode",
+      "explains why each hobby fits without inventing personality traits, biography, or guaranteed emotional outcomes",
+      "uses categorical cost, session-length, social-energy, and activity-mode information instead of false precision",
+      "avoids hobbies the user already tried and adds short safety cautions when a recommendation involves meaningful physical or tool risk",
+    ],
+    accepts: [
+      "interests, activities, and things that tend to hold the user's attention",
+      "what the user wants more of from a hobby",
+      "optional free-time pattern",
+      "startup budget level",
+      "optional physical, practical, or access constraints",
+      "hobbies the user already tried and does not want repeated",
+    ],
+    notFor: [
+      "diagnosing personality or predicting that a hobby will make the user relaxed, happy, confident, or fulfilled",
+      "ignoring a stated physical or practical constraint because a risky activity could theoretically be adapted",
+      "live price, inventory, class availability, or local-business lookup",
+      "recommending something the user explicitly said they already tried when the purpose is to find something new",
+    ],
+    handoffs: [
+      { when: "the user cannot yet identify what interests or energizes them and needs to unload possibilities first", toolId: "BrainDumpBuddy" },
+      { when: "the user has narrowed the choice to concrete options and wants one everyday decision made for them", toolId: "DecisionCoach" },
+    ],
+    primaryIntent: "discover a short list of new hobbies that genuinely fit the user's interests, goals, time, budget, and stated constraints",
+    whenToRecommend: "Recommend when the user wants hobby discovery rather than a generic activity list and can provide at least some interests, goals, or constraints for matching.",
+    whenNotToRecommend: "Do not recommend for local class or store lookup, current pricing or availability, personality diagnosis, or choosing among already-known options when discovery is no longer the problem.",
+  },
 };
