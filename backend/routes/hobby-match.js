@@ -569,20 +569,22 @@ function collectText(result) {
   return fields;
 }
 
+// The four text rules, in one place, so a candidate can be judged before it is
+// accepted rather than only after it has been written into the result.
+function textFaults(value) {
+  const faults = [];
+  if (MONEY.test(value)) faults.push('contains a price or price-like amount');
+  if (FORBIDDEN_COMPLETION.some(r => r.test(value))) faults.push('contains a completion-time/session-count claim');
+  if (FEELING_WORDS.test(value)) faults.push('predicts an experience such as relaxing/calming/rewarding');
+  if (ABSOLUTES.test(value)) faults.push('contains an unnecessary absolute');
+  return faults;
+}
+
 function deterministicViolations(result) {
   const violations = [];
 
   for (const { path, value } of collectText(result)) {
-    if (MONEY.test(value)) violations.push(`${path}: contains a price or price-like amount`);
-    if (FORBIDDEN_COMPLETION.some(r => r.test(value))) {
-      violations.push(`${path}: contains a completion-time/session-count claim`);
-    }
-    if (FEELING_WORDS.test(value)) {
-      violations.push(`${path}: predicts an experience such as relaxing/calming/rewarding`);
-    }
-    if (ABSOLUTES.test(value)) {
-      violations.push(`${path}: contains an unnecessary absolute`);
-    }
+    for (const fault of textFaults(value)) violations.push(`${path}: ${fault}`);
   }
 
   const modes = new Set((result.hobbies || []).map(h => h && h.activity_mode).filter(Boolean));
@@ -742,6 +744,69 @@ Return 4-5 strong main hobbies and one wildcard.
 Return ONLY the corrected JSON in the identical schema.`;
 }
 
+// The architecture is 4-5 main recommendations PLUS a wildcard whose activity
+// mode differs from all of them. When the wildcard slot fails the gate there
+// are three possible answers, and for a while this route picked the worst two:
+// refuse the whole response (a 500 over a garnish, two runs in five), or drop
+// the wildcard and ship (which silenced the gate for the one thing it was
+// guarding). The third is to go and get a wildcard.
+//
+// A dedicated call, because it is a small, well-specified job: the modes
+// already used and the constraints in, one hobby in a free mode out. Cheap
+// enough to be worth trying before either of the bad answers.
+async function generateWildcard(evidence, result, userLanguage, localeSuffix) {
+  const usedModes = new Set((result.hobbies || []).map(h => h && h.activity_mode).filter(Boolean));
+  const freeModes = MODES.filter(m => !usedModes.has(m));
+  if (!freeModes.length) return null;
+
+  const system = withLanguage(`You choose ONE wildcard hobby for a recommendation set.
+
+The wildcard satisfies every constraint the main recommendations satisfy — it is not a place to relax them. It changes the MODE of the activity, not the materials: if the main picks are all small hand-made objects, another small hand-made object is not a wildcard however different the medium.
+
+Its activity_mode MUST be one of the free modes given, exactly as spelled. Describe observable properties of the activity. Do not predict how it will feel, do not promise an emotional effect, do not state how long anything takes, do not give a price, and do not use absolutes.
+
+Return ONLY valid JSON: {"name":"...","activity_mode":"one of the free modes","why":"two or three sentences on why it earns the slot, grounded in what they told you"}`, userLanguage) + localeSuffix;
+
+  const prompt = `WHAT THEY TOLD YOU:
+${JSON.stringify(evidence, null, 2)}
+
+HARD CONSTRAINTS — the wildcard must satisfy these as written, with no adaptation, no caveat and no argument:
+${evidence.constraints || '(none stated)'}
+
+MAIN RECOMMENDATIONS ALREADY CHOSEN (do not duplicate these, or their modes):
+${(result.hobbies || []).map(h => `- ${h.name} [${h.activity_mode}]`).join('\n')}
+
+FREE MODES — pick exactly one of these for activity_mode: ${freeModes.join(', ')}`;
+
+  // Two attempts, and the second is told what the first got wrong. The first
+  // version of this returned null through three different paths without saying
+  // which, so a run that refused the whole response left no trace of why.
+  let rejected = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const w = await callClaudeWithRetry({
+      model: MODELS.FAST,
+      max_tokens: 700,
+      temperature: 0,
+      system,
+      messages: [{ role: 'user', content: rejected ? `${prompt}\n\nYour previous answer was rejected: ${rejected}. Choose a different hobby whose activity_mode is one of the free modes listed.` : prompt }],
+    }, { label: `hobby-match-wildcard:${attempt}` });
+
+    if (!w || !w.name) { rejected = 'no hobby was returned'; console.warn(`[hobby-match] wildcard attempt ${attempt}: empty response`); continue; }
+    const mode = normalizeEnum(w.activity_mode, MODES);
+    if (!mode) { rejected = `"${w.activity_mode}" is not one of the twelve modes`; console.warn(`[hobby-match] wildcard attempt ${attempt}: invalid mode "${w.activity_mode}"`); continue; }
+    if (usedModes.has(mode)) { rejected = `mode "${mode}" is already used by a main recommendation`; console.warn(`[hobby-match] wildcard attempt ${attempt}: mode "${mode}" duplicates a main pick`); continue; }
+    // The prose faces the gate's own rules here rather than after it has been
+    // written into the result. A regenerated wildcard whose why-text used an
+    // absolute was refusing the whole response one run in eight — detected,
+    // never scrubbed, and by then too late to ask for another.
+    const faults = [...textFaults(String(w.name || '')), ...textFaults(String(w.why || ''))];
+    if (faults.length) { rejected = faults.join('; '); console.warn(`[hobby-match] wildcard attempt ${attempt}: ${faults.join('; ')}`); continue; }
+    return { name: String(w.name), activity_mode: mode, why: String(w.why || '') };
+  }
+  console.warn('[hobby-match] wildcard regeneration exhausted both attempts');
+  return null;
+}
+
 router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const {
@@ -759,8 +824,8 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       personality, schedule, budget, physical, triedBefore, lookingFor
     });
 
-    const localeSystem = withLanguage(GENERATOR_SYSTEM, userLanguage)
-      + withLocaleContext(userLocale, userCurrency, userRegion);
+    const localeSuffix = withLocaleContext(userLocale, userCurrency, userRegion);
+    const localeSystem = withLanguage(GENERATOR_SYSTEM, userLanguage) + localeSuffix;
 
     // PASS 1 — generate from the closed evidence set.
     let draft = await callClaudeWithRetry({
@@ -814,17 +879,30 @@ router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     let unresolved = deterministicViolations(result);
 
-    // The wildcard is a garnish, not the deliverable, and it is optional by
-    // design — so a wildcard problem is recoverable, not fatal. Refusing the
-    // whole response over one turned two runs in five into a 500 while four
-    // good recommendations sat in the object, which is a worse outcome for the
-    // visitor than the empty slot the schema already allows. Drop the wildcard
-    // and ship; anything wrong with the recommendations themselves still stops
-    // the response, because that is what the visitor came for.
+    // A failed wildcard slot is repaired, not waived. Filtering these violations
+    // out — which this did until 2026-08-31 — silenced the gate for the single
+    // thing it was there to guard, and a missing wildcard shipped as a normal
+    // result. One targeted attempt to fill the slot; whatever it returns faces
+    // the same gate, and if it still fails the response is refused as designed.
     if (unresolved.some(v => v.startsWith('wildcard'))) {
-      console.warn('[hobby-match] wildcard dropped —', unresolved.filter(v => v.startsWith('wildcard')).join('; '));
-      result.wildcard = { name: '', activity_mode: null, why: '' };
-      unresolved = deterministicViolations(result).filter(v => !v.startsWith('wildcard'));
+      console.warn('[hobby-match] wildcard failed the gate —', unresolved.filter(v => v.startsWith('wildcard')).join('; '));
+      try {
+        const replacement = await generateWildcard(evidence, result, userLanguage, localeSuffix);
+        if (replacement) {
+          result.wildcard = replacement;
+          result = hardScrub(result);
+          console.log(`[hobby-match] wildcard regenerated — ${replacement.name} [${replacement.activity_mode}]`);
+        }
+        else {
+          // Nothing valid came back. Clear the offending wildcard rather than
+          // shipping a known-duplicate one; the gate below then refuses on an
+          // honest "missing", which is the architecture's own requirement.
+          result.wildcard = { name: '', activity_mode: null, why: '' };
+        }
+      } catch (err) {
+        console.error('[hobby-match] wildcard regeneration failed:', err.message);
+      }
+      unresolved = deterministicViolations(result);
     }
 
     // Do not show a knowingly noncompliant result.
