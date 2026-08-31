@@ -80,3 +80,15 @@ node scripts/output-standard-audit.js
 # the content it describes. Accept a deliberate one (sample dialogue is not us
 # addressing the reader) with --write-state.
 node scripts/i18n-convention-audit.js --strict
+
+# Gate 11 — the golden of any route this push changes. check:golden is the only
+# thing that reads what a tool actually RETURNS, and it was not a gate. That cost
+# showed on 2026-08-30: GriefGuide's golden had been failing since its rewrite
+# replaced the output schema the day before, and nothing said so. Compounding it,
+# a stale dev backend left running on :3001 answered three golden runs with the
+# previous day's code, so the check reported PASS while testing nothing current.
+# Scoped to changed route files — running all ~120 locked tools would be that
+# many live model calls. Skips loudly, and exits 0, when no backend is answering:
+# a push should not hang on a dev server nobody promised to run. It never reports
+# a pass it did not observe.
+node scripts/golden-for-push.js
