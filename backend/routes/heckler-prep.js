@@ -77,7 +77,11 @@ WHAT FAILS:
    on a supplied one: a budget process that was bypassed, prior knowledge that
    was concealed, a legal or disclosure obligation nobody mentioned. The
    premise may interpret known facts; it may not require new ones to be true.
-9. ANY concrete factual detail that did not come from the input and is not
+9. A hypothetical is NOT a violation. "If we approve this and a breach still
+   occurs..." is the tool working; do not flag a condition openly introduced by
+   IF. What fails is a specific smuggled inside one — "in the next 12 months",
+   "by the end of Q3", "within two years" — when no such period was supplied.
+10. ANY concrete factual detail that did not come from the input and is not
    presented as an unknown to find out — a duration, a frequency, a distance,
    a cost, a quantity, a policy, a legal right, a precedent, what the
    organisation normally does, what happened somewhere comparable. "During its
@@ -124,6 +128,11 @@ This binds three places in particular.
 - NO COACHING toward bluffing, evasion, false certainty or unsupported reassurance.
 DO NOT INVENT FUTURE CONVERSATION HISTORY
 Every question has to be answerable as preparation, before the event happens. Do not invent something the user will have said earlier in the meeting, an answer they supposedly gave to another generated question, an admission or concession or commitment they will make, or something an audience member will already have established during the event. Each question stands on the supplied facts and the attributed objections as they exist NOW.
+
+HYPOTHETICALS MAY INVENT CONDITIONS, NOT FACTS
+A hostile question may create a clearly hypothetical future condition in order to test the proposal, and should. "If we approve this and a breach still occurs, how would you evaluate whether this investment succeeded?" is a good question: the hypothetical is visibly introduced by IF.
+What it may not do is smuggle specifics in with it. Do not attach invented dates, deadlines, quantities, procedures or outcomes unless the detail is necessary to the hypothetical. Not "if we're breached in the next 12 months" when no twelve-month period was supplied. Not "if the gaps aren't closed by the end of Q3" when no Q3 deadline exists. Not "if it is cut within two years" when no horizon was given — a number spelled as a word is still a number.
+And never use "presumably", "probably" or the like to introduce an invented present-day fact; that is not a hypothetical, it is a guess wearing one. Where the missing fact itself matters, ask for it.
 
 PROVENANCE — WHERE EVERY CLAIM CAME FROM
 Each input field carries an epistemic role, and the role travels with the content.
@@ -173,7 +182,7 @@ For every factual or user-specific claim, identify its source — P (proposal/pr
 P, A, K and S may be stated as supplied.
 An O may ONLY be attributed as an objection or concern, made conditional, or turned into a question. An O may NEVER become something the user admits, acknowledges, knows, believes, said internally or publicly, already answered, or conceded — unless independently established by P, A, K or other explicit user text.
 
-For every concrete detail, ask: DID THE USER SUPPLY THIS? If no, remove it or turn the missing fact into a question. Do not rescue an invented detail with "presumably", "likely", "probably", "typically", "perhaps", "may have" or "would normally". Plausibility is not evidence.
+For every concrete detail, ask: DID THE USER SUPPLY THIS? If no, remove it or turn the missing fact into a question. A hypothetical condition openly introduced by IF is not a supplied fact and does not need to be one — but any date, deadline, quantity or procedure inside it does, unless the detail is genuinely necessary to the hypothetical. Do not rescue an invented detail with "presumably", "likely", "probably", "typically", "perhaps", "may have" or "would normally". Plausibility is not evidence.
 
 For every scripted statement or coached answer, ask: CAN I KNOW THE USER CAN TRUTHFULLY SAY THIS? If no, do not put it in their mouth.
 
@@ -330,6 +339,7 @@ router.outputGuard = {
     'asserts_a_legal_regulatory_or_procedural_status_the_input_did_not_establish',
     'situation_read_characterises_the_audience_user_or_organisation_beyond_the_supplied_facts',
     'a_question_invents_a_procedure_obligation_event_or_prior_decision_to_raise_the_stakes',
+    'attaches_an_invented_date_deadline_quantity_or_horizon_to_a_hypothetical',
     'states_a_concrete_detail_the_user_did_not_supply_number_duration_frequency_cost_distance_or_precedent',
     'describes_what_the_audience_thinks_feels_believes_trusts_wants_or_intends',
     'builds_a_gotcha_on_a_contradiction_not_present_in_the_supplied_facts',
