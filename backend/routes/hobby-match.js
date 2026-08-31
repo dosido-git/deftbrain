@@ -3,11 +3,80 @@ const router = express.Router();
 const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib/claude');
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
+const { runOutputGuard } = require('../lib/outputGuard');
+
+const GUARD_ENTRY_MS = Number(process.env.HM_GUARD_ENTRY_MS || 45_000);
+
+// Guards the prose a person reads and acts on. The failure mode here is not a
+// bad hobby — it is a confident sentence about who they are, or a price, club
+// or practice schedule nobody supplied. session_fit and startup_cost are left
+// out on purpose: they are near-enumerations, and checking thirty-three fields
+// instead of twenty-three buys a slower repair for no additional catch.
+async function guardHobbyMatch(parsed, body, startedAt) {
+  if (Date.now() - startedAt > GUARD_ENTRY_MS) {
+    console.log('[hobby-match] v2 guard: skipped — out of time, matches returned unguarded');
+    return;
+  }
+  const long = v => typeof v === 'string' && v.trim().length > 12;
+  const fields = [];
+  if (long(parsed.matching_for)) fields.push(['matching_for', parsed.matching_for]);
+  (parsed.hobbies || []).forEach((h, i) => {
+    if (long(h?.why_it_made_the_list)) fields.push([`hobbies[${i}].why_it_made_the_list`, h.why_it_made_the_list]);
+    if (long(h?.what_its_like)) fields.push([`hobbies[${i}].what_its_like`, h.what_its_like]);
+    if (long(h?.try_it_once)) fields.push([`hobbies[${i}].try_it_once`, h.try_it_once]);
+    if (long(h?.where_to_look)) fields.push([`hobbies[${i}].where_to_look`, h.where_to_look]);
+    if (long(h?.watch_for)) fields.push([`hobbies[${i}].watch_for`, h.watch_for]);
+  });
+  if (long(parsed.wildcard?.why)) fields.push(['wildcard.why', parsed.wildcard.why]);
+  if (long(parsed.pattern_in_matches)) fields.push(['pattern_in_matches', parsed.pattern_in_matches]);
+  if (!fields.length) return;
+
+  await runOutputGuard(parsed, {
+    label: 'hobby-match-v2',
+    fields,
+    supplied: `WHAT THE USER TOLD US, IN FULL — nothing else about them is known:
+About them: ${(body.personality || '').trim() || '(not given)'}
+What they want more of: ${(body.lookingFor || '').trim() || '(not given)'}
+Free time: ${(body.schedule || '').trim() || '(not given)'}
+Startup budget: ${(body.budget || '').trim() || '(not given)'}
+Things that affect what will work: ${(body.physical || '').trim() || '(none given)'}
+Already tried: ${(body.triedBefore || '').trim() || '(not given)'}
+
+Nothing is known about their personality, psychological needs, fears,
+motivations, social confidence, learning style, attention span, physical
+ability beyond what is written above, or why any past hobby actually ended.
+
+WHAT FAILS:
+1. A personality trait, disposition, need or emotional state attributed to
+   them that they did not state — "you crave mastery", "you learn best when",
+   "you thrive on", "you are the kind of person who". Restating their own
+   words back is fine; naming what kind of person they are is not.
+2. A prediction about how a hobby will land: that it will stick, become
+   addictive, be perfect for them, get them out of their head, or make them
+   feel any particular way. "You will feel the difference" is a violation;
+   "one session shows you whether the feedback loop suits you" is not.
+3. A fabricated price, membership fee, equipment cost, schedule, club,
+   community, competition, app or facility. A rough range is allowed only when
+   marked approximate; a specific named organisation only on reliable grounds.
+4. A prescribed practice frequency — "2-4 times a week to see real progress".
+   How it fits the time they described is the question; how often they should
+   do it is not ours to set.
+5. A recommendation that conflicts with a stated limitation, or that assumes
+   equipment, transport, space, noise tolerance or accessibility they never
+   mentioned, rather than naming that dependency.
+6. A claim about what they have never heard of or never considered.`,
+    promise: 'Return hobbies that plausibly fit the interests, time, budget, constraints and history this person actually described — with a reason each one is on the list and the smallest way to try it — without telling them who they are or predicting how it will feel.',
+    guard: router.outputGuard,
+    userLanguage: body.userLanguage || body.userLocale,
+    locale: body.userLocale || '',
+  });
+}
 
 // ════════════════════════════════════════════════════════════
 // POST /hobby-match — hobbies that fit the life described
 // ════════════════════════════════════════════════════════════
 router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  const startedAt = Date.now();
   try {
     const { personality, schedule, budget, physical, triedBefore, lookingFor, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
@@ -98,6 +167,7 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
     if (!parsed.matching_for || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
+    await guardHobbyMatch(parsed, req.body, startedAt);
     return res.json(parsed);
 
   } catch (error) {
@@ -105,5 +175,28 @@ Recommend up to 5 hobbies, fewer if the input does not support five. Keep every 
     res.status(500).json({ error: 'Something went wrong. Please try again.'});
   }
 });
+
+// Reviewed against backend/lib/outputStandard.js on 2026-08-30, as part of the
+// v2 rewrite. It leans hardest on §4 (respect the visitor's agency) — the whole
+// rewrite is "recommend things worth trying, not things you predict they will
+// love" — and §5 (a recovery path), which is what try_it_once is for. See PF-39.
+router.outputStandard = 'v2';
+// The failure mode is a confident sentence about who this person is, or a fact
+// about the world that nobody checked.
+router.outputGuard = {
+  prohibit: [
+    'attributes_a_personality_trait_disposition_need_or_emotional_state_not_stated',
+    'predicts_that_a_hobby_will_stick_suit_them_or_make_them_feel_something',
+    'fabricates_a_price_fee_schedule_club_community_app_or_facility',
+    'prescribes_a_practice_frequency_rather_than_describing_session_fit',
+    'ignores_a_stated_limitation_or_assumes_unmentioned_equipment_transport_or_space',
+    'claims_the_user_has_never_heard_of_or_never_considered_something',
+  ],
+  require: [
+    'every_hobby_states_why_it_made_the_list_from_supplied_information',
+    'matching_for_states_selection_criteria_not_personality',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
