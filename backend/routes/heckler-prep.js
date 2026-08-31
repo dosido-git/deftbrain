@@ -31,13 +31,24 @@ OBJECTIONS ARE NOT FACTS. An objection may appear only as: (1) attributed — 'o
 
 UNKNOWNS ARE QUESTIONS, NOT BLANKS TO FILL. Never fill an unknown with a plausible answer, example, circumstance, stakeholder, process, timeline, motive, or consequence. Ask about it instead.
 
-GENERAL REASONING may generate a question. GENERAL KNOWLEDGE may not supply a scenario-specific premise. A closure can prompt a question about savings; it does not authorize assuming staffing, opening hours, internet terminals, leases, or costs.
+REASONING IS ALLOWED. ASSERTION IS NOT. Ordinary domain knowledge may enrich a question; it may not silently become a fact about this scenario. You MAY name plausible possibilities when they are clearly framed as a question, an alternative to investigate, a possibility, or a hypothetical.
+
+ALLOWED: 'What alternatives were assessed — reduced hours, co-location, community management, or something else?' It asks whether they were considered; it does not claim they were.
+NOT ALLOWED: 'The council rejected reduced hours and co-location.' — unless a FACT says so.
+ALLOWED, when children are a supplied affected group: 'How would the proposed replacement affect children using the library after school?'
+NOT ALLOWED: 'Children currently depend on this branch every afternoon after school.' — unless a FACT says so.
+
+Do not be so literal that you merely restate the ledger. Your value is reasoning ABOUT the evidence to find the credible challenges this person will face. A good question may introduce a possibility; it may not disguise that possibility as something that already happened.
 
 DELETE BEFORE YOU INVENT. For every detail not supported by a FACT: if removing it does not weaken the question, delete it. If it matters, make the missing information the question. Use a hypothetical only when necessary to stress-test the proposal, and use the minimum condition necessary.
 
-Do not invent people, stakeholders, organizations, teams, boards, auditors, reporters, demographic or transport circumstances, schedules, dates, durations, prices, costs, percentages, contracts, policies, processes, prior/future conversations, alternatives considered, motives, beliefs, reactions, trust/distrust, responsibility, accountability structures, causation, history, consequences, or future events.
+Do not ASSERT people, stakeholders, organizations, teams, boards, auditors, reporters, demographic or transport circumstances, schedules, dates, durations, prices, costs, percentages, contracts, policies, processes, prior/future conversations, alternatives that were considered, motives, beliefs, reactions, trust/distrust, responsibility, accountability structures, causation, history, consequences, or future events that no FACT establishes. Naming one of these inside a question as a possibility to investigate is not asserting it.
 
 Do not use 'presumably', 'probably', 'apparently', 'likely', 'obviously', or 'clearly' to turn an unknown into a premise.
+
+TWO SUPPORTED FACTS DO NOT ESTABLISH A RELATIONSHIP BETWEEN THEM. Joining them may not add chronology, causation, responsibility, motivation, dependency or consequence that the evidence does not carry. Watch the connectives: 'then', 'after', 'before', 'because', 'therefore', 'as a result', 'which led to', 'in response to'.
+Given 'hours were cut twice' and 'a promise was made that the branch would not close', write 'Hours were cut twice, and a promise was also made that the branch would not close.' — not 'Hours were cut twice and residents were then promised the branch would not close', which dates one against the other.
+Whenever you join two facts into one proposition, ask: did I add a relationship the evidence does not establish? If so, remove the relationship and keep both facts.
 
 RESPONSIBILITY ESCALATION IS FORBIDDEN. 'We did not catch/know/identify X earlier' does not mean 'your team failed to find X', 'your team was responsible for detecting X', 'your team should have prevented X', or 'an external process found what your team failed to find'.
 
@@ -60,7 +71,7 @@ CLOSING
 Give one grounded preparation insight. No generic congratulations such as 'you've got this', 'you're ready', or 'you've done the hard work'.
 
 PROVENANCE
-Every user-facing component must carry hidden fact_ids, objection_ids, and unknown_ids. Cite only IDs that actually support the component. Do not invent IDs.
+Every user-facing component must carry hidden fact_ids, objection_ids, and unknown_ids. IDs go in those arrays and NOWHERE else: never write F3, O2 or U1 into a question, an answer, a placeholder or any other sentence a person reads. They are internal bookkeeping and mean nothing to the visitor. Cite only IDs that actually support the component. Do not invent IDs.
 
 FINAL CHECK
 For every scenario-specific factual premise ask: Which FACT ID entails this? If none, delete it, turn it into a question, attribute it to an OBJECTION, or make it explicitly conditional when necessary. Then check that no FACT was strengthened, no OBJECTION became fact, no UNKNOWN was filled, and nothing was imported from another scenario.
@@ -85,8 +96,20 @@ Given ONE generated component and the complete evidence ledger, decide whether e
 FACTS may be stated but not strengthened.
 OBJECTIONS may only be attributed, questioned, or conditionalized.
 UNKNOWNS may be asked about but never filled with invented examples or answers.
-General reasoning may create a question, but may not create scenario-specific facts.
-Reject invented people, circumstances, alternatives, processes, timelines, numbers, motives, audience psychology, prior/future dialogue, responsibility, causation, history, or consequences.
+Classify every scenario-specific element into one of three, and judge it on that:
+A. A SCENARIO-SPECIFIC FACTUAL PREMISE — asserted as true of this situation. Must be supported by the ledger.
+B. A REASONABLE DOMAIN-SPECIFIC POSSIBILITY — named inside a question, an alternative, a possibility or a hypothetical. ALLOWED without a FACT ID. Do not reject a question merely because a possibility it raises has no ID.
+C. AN INVENTED SCENARIO-SPECIFIC FACT — presented as already true. Reject.
+
+PASS: 'What alternatives were considered — reduced hours, co-location, community management, or something else?'
+FAIL unless supported: 'The council considered reduced hours and co-location.'
+PASS when children are a supplied affected group: 'If children use the library after school, how would closure affect their access?'
+FAIL unless supported: 'Children currently use this library every weekday after school.'
+
+Protect provenance without suppressing useful reasoning. Grounding outranks cleverness, but grounding does not mean paraphrase-only. A question that reasons beyond the user's words is doing its job; a question that pretends to know beyond the user's evidence is not.
+
+Reject a relationship between two supported facts that the evidence does not establish — added chronology, causation, responsibility, motivation, dependency or consequence. 'Hours were cut twice and residents were THEN promised the branch would not close' dates one fact against the other; 'and a promise was ALSO made' does not.
+Reject people, circumstances, alternatives, processes, timelines, numbers, motives, audience psychology, prior/future dialogue, responsibility, causation, history or consequences that are ASSERTED as true of this scenario without support. The same nouns raised as possibilities inside a question are category B and pass.
 Reject words such as presumably/probably/apparently/likely when they fill a missing fact.
 Reject responsibility escalation such as turning 'not caught earlier' into 'your team failed to detect'.
 
@@ -167,15 +190,133 @@ function ledgerText(ledger) {
   return `FACTS:\n${(ledger.facts || []).map(x => `${x.id}: ${x.text}`).join('\n') || '(none)'}\n\nOBJECTIONS:\n${(ledger.objections || []).map(x => `${x.id}: ${x.text}`).join('\n') || '(none)'}\n\nUNKNOWNS:\n${(ledger.unknowns || []).map(x => `${x.id}: ${x.text}`).join('\n') || '(none)'}`;
 }
 
+// The public/internal boundary, enforced in code rather than by asking the
+// model nicely. The ledger and every provenance key are infrastructure: they
+// steer generation and validation and must never reach a visitor.
+const INTERNAL_KEYS = [
+  'evidence_ledger', 'facts', 'objections', 'unknowns',
+  'fact_ids', 'objection_ids', 'unknown_ids',
+  'provenance', 'validation',
+  'hypothetical', 'hypothetical_premise',
+];
+
+// Keys are not the only way the ledger leaks. The model cites its own IDs
+// INSIDE the bracketed placeholders it writes for the presenter — "[who, when
+// — U3]", "[the building-cost pressure described in F3]" — which is internal
+// vocabulary sitting in visitor-facing coaching.
+//
+// Scoped to bracket spans on purpose. A blanket strip of /\b[FOU]\d\b/ would
+// eat "F1 racing" and "U2" out of somebody's real topic; inside a placeholder
+// the token can only be a citation. If removing it would empty the placeholder,
+// the placeholder goes with it rather than leaving "[]" on the page.
+const LEDGER_CITATION = /\s*(?:[—–-]|,)?\s*(?:described in|referenced in|per|from|see|ref\.?)?\s*\b[FOU][0-9]{1,2}\b/g;
+
+function stripLedgerCitations(text) {
+  if (typeof text !== 'string') return text;
+  if (!text.includes('[') && !text.includes('(')) return text;
+  const clean = (whole, inner, open, close) => {
+    if (!/\b[FOU][0-9]{1,2}\b/.test(inner)) return whole;
+    const cleaned = inner.replace(LEDGER_CITATION, '').replace(/\s{2,}/g, ' ').replace(/[\s,;—–-]+$/, '').trim();
+    return cleaned ? `${open}${cleaned}${close}` : '';
+  };
+  return text
+    // Placeholders the presenter fills in: "[who, when — U3]".
+    .replace(/\[([^\]]*)\]/g, (w, inner) => clean(w, inner, '[', ']'))
+    // Citations appended to prose: "a prior promise (F7)", "the savings (U2)".
+    .replace(/\(([^)]*)\)/g, (w, inner) => clean(w, inner, '(', ')'))
+    .replace(/\s{2,}/g, ' ').replace(/\s+([.,;:!?])/g, '$1').trim();
+}
+
 function stripProvenance(value) {
   if (Array.isArray(value)) return value.map(stripProvenance);
   if (!value || typeof value !== 'object') return value;
   const out = {};
   for (const [k, v] of Object.entries(value)) {
-    if (['fact_ids', 'objection_ids', 'unknown_ids', 'hypothetical', 'hypothetical_premise'].includes(k)) continue;
-    out[k] = stripProvenance(v);
+    if (INTERNAL_KEYS.includes(k)) continue;
+    out[k] = typeof v === 'string' ? stripLedgerCitations(v) : stripProvenance(v);
   }
   return out;
+}
+
+// Strip is total and recursive, so this can only fire if someone edits it or
+// routes a response around it. That is exactly when a silent leak would ship,
+// which is why the check is here and not in a test: the assertion travels with
+// the code that has to keep holding.
+function assertNoInternalKeys(value, path = 'response') {
+  if (Array.isArray(value)) { value.forEach((v, i) => assertNoInternalKeys(v, `${path}[${i}]`)); return; }
+  if (!value || typeof value !== 'object') return;
+  for (const [k, v] of Object.entries(value)) {
+    if (INTERNAL_KEYS.includes(k)) throw new Error(`internal key "${k}" reached the public response at ${path}`);
+    assertNoInternalKeys(v, `${path}.${k}`);
+  }
+}
+
+// Rule 2 — no unsupported relationship between two supported facts — is in the
+// generator and in the validator, and one run in four still produced the exact
+// shape the spec names as a failure: "Hours were cut twice, residents were then
+// told the branch would not close." Both facts are supported; the chronology
+// joining them is not.
+//
+// So the connectives that carry it are matched in code and handed to the
+// validator by name. Deliberately narrow: bare "then" is legitimate constantly
+// ("if X, then Y", "what happens then"), so only the constructions that date
+// one clause against another are listed. A judge decides whether a premise is
+// supported; a regex is better at spotting the word that smuggled it in.
+const CHRONOLOGY_CONNECTIVES = /\b(?:were|was|residents were|they were)\s+then\s+\w+|\band then (?:told|promised|assured|informed|decided|cut|closed)\b|\bwhich led to\b|\bin response to\b|\bafter which\b|\bas a result of the\b/gi;
+
+function chronologyLeaks(component) {
+  const found = new Set();
+  (function walk(v) {
+    if (Array.isArray(v)) return v.forEach(walk);
+    if (v && typeof v === 'object') return Object.values(v).forEach(walk);
+    if (typeof v === 'string') {
+      const m = v.match(CHRONOLOGY_CONNECTIVES);
+      if (m) m.forEach(x => found.add(x.trim()));
+    }
+  })(component);
+  return [...found];
+}
+
+// The model cites its own ledger IDs in prose, in three shapes seen in testing:
+// inside a placeholder ("[who, when — U3]"), appended in parentheses ("a prior
+// promise (F7)"), and bare ("U5 is the key unknown here", "named in O3").
+// Rewriting the third with a regex means editing sentences, so it goes to the
+// repair pass instead — a rewrite is what it needs — and only what survives
+// that gets cut mechanically.
+const LEDGER_ID = /\b[FOU][0-9]{1,2}\b/;
+
+function ledgerIdLeaks(component) {
+  const found = new Set();
+  (function walk(v) {
+    if (Array.isArray(v)) return v.forEach(walk);
+    if (v && typeof v === 'object') {
+      for (const [k, val] of Object.entries(v)) {
+        if (INTERNAL_KEYS.includes(k)) continue;   // the id arrays are meant to hold ids
+        walk(val);
+      }
+      return;
+    }
+    if (typeof v === 'string') {
+      const m = v.match(new RegExp(LEDGER_ID.source, 'g'));
+      if (m) m.forEach(x => found.add(x));
+    }
+  })(component);
+  return [...found];
+}
+
+// Last net. A sentence that still names an internal ID after the repair pass is
+// removed whole: a visitor reading "U5 is the key unknown here" learns nothing,
+// and losing one sentence beats shipping the machinery.
+function dropSentencesWithIds(value) {
+  if (Array.isArray(value)) return value.map(dropSentencesWithIds);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = dropSentencesWithIds(v);
+    return out;
+  }
+  if (typeof value !== 'string' || !LEDGER_ID.test(value)) return value;
+  const kept = value.split(/(?<=[.!?])\s+/).filter(sentence => !LEDGER_ID.test(sentence));
+  return kept.join(' ').trim();
 }
 
 async function validateAndRepair(component, ledger, userLanguage, localeSuffix, label) {
@@ -189,10 +330,23 @@ async function validateAndRepair(component, ledger, userLanguage, localeSuffix, 
       messages: [{ role: 'user', content: prompt }],
     }, { label: `heckler-prep:validate:${label}`, maxRetries: 0 });
 
-    if (verdict?.pass !== false) return component;
+    // A clean verdict is not the end of it: the deterministic chronology check
+    // runs regardless, and a hit sends the component to the same repair path
+    // the validator would have used, with the offending phrase named.
+    const chrono = chronologyLeaks(component);
+    const idLeaks = ledgerIdLeaks(component);
+    if (verdict?.pass !== false && !chrono.length && !idLeaks.length) return component;
+    const notes = [];
+    if (chrono.length) notes.push(`These phrases add chronology, causation or sequence between facts that the ledger does not establish: ${chrono.join('; ')}. Keep both facts and remove the relationship — "and a promise was ALSO made", not "were THEN promised".`);
+    if (idLeaks.length) notes.push(`Internal evidence IDs appear in text a person reads: ${idLeaks.join(', ')}. Say the thing in plain words instead — "the promise not to close" rather than "O3" — or drop the reference. Never print an ID.`);
+    const finding = notes.length
+      ? { pass: false, unsupported_phrases: [...chrono, ...idLeaks], repair_instruction: `${notes.join(' ')}${verdict?.pass === false ? ' Also: ' + (verdict.repair_instruction || '') : ''} Change nothing else.` }
+      : verdict;
+    if (chrono.length) console.log(`[heckler-prep] chronology connective in ${label}: ${chrono.join('; ')}`);
+    if (idLeaks.length) console.log(`[heckler-prep] ledger ID in prose in ${label}: ${idLeaks.join(', ')}`);
 
     const repairSystem = `You are a surgical provenance editor. Rewrite ONLY the supplied Heckler Prep component to satisfy the validator. Preserve its JSON shape and purpose. Do not add replacement facts, examples, specificity, or new evidence IDs. When information is missing, ask about it instead. Facts may be stated but not strengthened. Objections must remain attributed, questioned, or conditional. Unknowns must remain unknown. Return ONLY the corrected JSON component. Never place a double-quote character inside a JSON string value.`;
-    const repairPrompt = `${ledgerText(ledger)}\n\nVALIDATOR FINDING:\n${JSON.stringify(verdict)}\n\nCOMPONENT:\n${JSON.stringify(component)}`;
+    const repairPrompt = `${ledgerText(ledger)}\n\nVALIDATOR FINDING:\n${JSON.stringify(finding)}\n\nCOMPONENT:\n${JSON.stringify(component)}`;
     const repaired = await callClaudeWithRetry({
       model: MODELS.FAST,
       max_tokens: 1600,
@@ -289,7 +443,12 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       console.log('[heckler-prep] provenance output', JSON.stringify({ questions, situationObj, openingObj, curveballObj, confidenceObj }));
     }
 
-    return res.json(stripProvenance(final));
+    // Public response boundary. `final` is assembled field by field from the
+    // validated components — an allowlist, so a new internal field cannot
+    // arrive by accident — then stripped recursively, then checked.
+    const publicResult = dropSentencesWithIds(stripProvenance(final));
+    assertNoInternalKeys(publicResult);
+    return res.json(publicResult);
   } catch (error) {
     console.error('HecklerPrep error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
