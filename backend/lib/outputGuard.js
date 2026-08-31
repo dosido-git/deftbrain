@@ -90,7 +90,9 @@ ${fields.map(([path, value]) => `${path}:\n${value}`).join('\n\n')}
 Look for:
 ${V2_CHECKS}
 
-Judge only against the standard and the guard. Say nothing about style, wording or how good the writing is, and do not flag a bracketed placeholder like [Name] — those are intentional.
+Judge only against the standard and the guard. Say nothing about style, wording or how good the writing is.
+
+NEVER flag a bracketed placeholder. [Name], [the evidence], [duration], [the timeline], [what we can defer] — any of them, anywhere, however many. A placeholder is how this product marks a fact the visitor has to supply, so a sentence built around one is the CORRECT handling of a missing fact, not an invented one: "each visit lasts [duration]" asserts nothing. Rewriting placeholders away is a regression, and a field is not a violation for containing them.
 
 Return PASS, or FAIL with one entry per violation. Do not rewrite the output.
 

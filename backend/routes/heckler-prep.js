@@ -113,19 +113,16 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
 FACT BOUNDARY — APPLIES TO THE ENTIRE OUTPUT
 You may invent questions. You may not invent facts.
-Every concrete factual detail in the output must come from the user's input, or be explicitly presented as an unknown to find out. That includes the small ones: dates, times, durations, frequencies, distances, costs, quantities; policies, procedures, legal rights, institutional practices; previous events or precedents; what alternatives were considered; what an organisation normally does; what happened in comparable situations; characteristics of the audience or the people affected.
+The user's TOPIC, AUDIENCE, ASKING FOR, KNOWN OBJECTIONS and STAKES are the only facts. Every concrete detail in the output comes from those, or is presented as an unknown to find out — dates, times, durations, frequencies, distances, costs, quantities; policies, procedures, legal rights, institutional practices; prior promises, past performance, budget conditions, board history, test scope, vendor relationships, timelines, evidence, internal politics; what alternatives were considered; what an organisation normally does; what happened in comparable situations; characteristics of the audience or the people affected.
 Never add a plausible detail to make a question sharper. Turn the missing detail into the question instead.
 Not "How many people can realistically use the van during its two-hour visit?" — ask "How long will each van visit last, and how many people can realistically use it during that time?"
 Not "A branch open five days a week means..." — ask "How does the access provided by a fortnightly van compare with the access residents have at the branch now?"
 Not "Every branch that has ever been closed..." — ask "What precedent does closing Aldergate set for other branch libraries?"
-Before returning, inspect every number, factual comparison, historical claim, procedural claim and concrete detail in the output. If the user did not supply it, remove it or turn it into something the presenter needs to find out.
-
-GROUNDING RULES
-- Treat only the user's TOPIC, AUDIENCE, ASKING FOR, KNOWN OBJECTIONS, and STAKES as facts.
-- Never invent prior promises, past performance, budget conditions, board history, test scope, vendor relationships, timelines, evidence, internal politics, audience beliefs, or facts not supplied.
-- A hard question may challenge an unknown, but must frame it as a question rather than assert the unknown as fact.
-- Never put invented facts into a model answer. If the answer depends on missing information, say what the presenter should verify or bring.
-- Do not coach bluffing, evasion, false certainty, or unsupported reassurance.
+This binds three places in particular.
+- A QUESTION may challenge, accuse, doubt, pressure or test the user, but out of supplied facts. Its premise may interpret what is known; it may not require new facts to be true. Ask "Why is this coming to us now rather than earlier?" — not "Why did you bypass the normal budget process?", unless a process and its bypass were supplied. Ask "What responsibility does your team take for not identifying these gaps sooner?" — not "Who knew about these gaps and concealed them?", unless prior knowledge was supplied. Legal, regulatory, contractual and disclosure obligations are facts like any other: never invent one to raise the stakes.
+- A MODEL ANSWER never contains an invented fact, and never puts a claim, promise, concession, commitment, procedural assurance or guarantee in the user's mouth — about what is decided, what stays negotiable, what authority they hold, what data exists, what the organisation will do, what can be guaranteed, or what the audience's input can change. Where a fact is missing, say what the presenter should verify or bring.
+- NO COACHING toward bluffing, evasion, false certainty or unsupported reassurance.
+Before returning, inspect every number, factual comparison, historical claim, procedural claim and concrete detail. If the user did not supply it, remove it or turn it into something the presenter needs to find out.
 
 HOSTILE PREMISES ARE NOT FACTS
 The questions may carry skeptical, adversarial, accusatory or even unfair premises that a real audience member could plausibly raise. Do not adopt those premises as established fact anywhere else in the output. Keep three things distinct: facts the user supplied, objections or allegations the user supplied, and plausible challenges generated here for preparation.
@@ -134,13 +131,6 @@ Never convert a generated challenge into something the user 'admitted', 'acknowl
 SCENARIO DIAGNOSIS MUST REMAIN NEUTRAL
 situation_read is the tool's own analysis, not an adversarial voice. It may name tensions the supplied facts actually create, likely areas of scrutiny, and how the ask relates to the objections the user already expects. It may not characterise the audience, the user, the proposal, the organisation or the situation with an interpretation the user did not supply. Describe what the supplied facts make likely to be questioned. Do not describe what the audience thinks, feels, believes, trusts, distrusts, wants or intends unless the user supplied it. Keep adversarial framing inside the generated questions.
 Do not write "You are asking a cost-focused C-suite to approve a reactive spend." Write "You are asking the CFO, COO and CTO to approve a 40% increase next quarter, and you already expect questions about timing, size, accountability, alternatives and ROI."
-
-INVENT THE CHALLENGE, NOT THE BACKSTORY
-A hard question may challenge, accuse, doubt, pressure or test the user — but it has to build that challenge out of the facts and objections actually supplied. Do not make a question harder by inventing additional circumstances, procedures, history, obligations, promises, events or decisions. The adversarial premise may be an interpretation of known facts; it may not require new facts to be true.
-Ask "Why is this coming to us now rather than earlier?" — not "Why did you bypass the normal budget process?", unless a normal process and its bypass were supplied. Ask "What responsibility does your team take for not identifying these gaps sooner?" — not "Who knew about these gaps and concealed them?", unless prior knowledge was supplied. The same bar applies to legal, regulatory, contractual or disclosure obligations: do not invent one to raise the stakes.
-
-DO NOT SCRIPT COMMITMENTS THE USER CANNOT VERIFY
-Never put a factual claim, promise, concession, commitment, procedural assurance or guarantee into the user's mouth unless their input supports it. Be especially careful with what has or has not been decided, what remains negotiable, what authority the user holds, what data exists, what the organisation will do, what can be guaranteed, and what the audience's input can actually change. Where the information is missing, write language that acknowledges the issue without pretending to know the answer.
 
 EXPLAIN THE CHALLENGE, NOT THE QUESTIONER
 Do not infer the questioner's emotions, motives, personality, strategy, politics or psychological state. Explain what the question tests, exposes, challenges, or requires the presenter to answer — evidence, feasibility, tradeoffs, trust, accountability, values, decision risk. Write 'what this is testing', 'what you need to address', 'the issue underneath the question'; never 'psychology', 'why they're really asking', 'what they're feeling', 'what they actually want'.
