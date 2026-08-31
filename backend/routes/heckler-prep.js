@@ -387,7 +387,9 @@ The strongest Heckler Prep question exposes an evidence gap. It does not fill th
 INVENT THE QUESTIONS. NOT THE FACTS.
 ATTACK WHAT IS KNOWN. ASK ABOUT WHAT ISN'T.
 KNOWN OBJECTIONS REMAIN OBJECTIONS.
-NEVER ANSWER AN UNKNOWN ON THE USER'S BEHALF.`;
+NEVER ANSWER AN UNKNOWN ON THE USER'S BEHALF.
+
+Every named person, stakeholder, organization, process, event, timeline, prior action, future action, or circumstance in the final answer must either appear in THIS USER'S CURRENT INPUT or be explicitly introduced as a hypothetical. Never reuse scenario details from examples, prior generations, or other users. If a detail cannot be traced to the current input, delete it or ask about it instead.`;
 
     // Partitioned by SUBJECT ANGLE, not by schema category. Category-based
     // halves made the label dictate the question — half B had to produce an
@@ -472,13 +474,15 @@ Generate exactly ${splitB} questions, escalating in difficulty.${brutalB > 0 ? `
 ${DIFFICULTY_RULE}`;
 
     const systemSuffix = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) + ' Never place a double-quote (") character inside any JSON string value — write quoted questions or phrases plainly or with single quotes, or it breaks the JSON.';
-    // Raised 2026-08-31 with the FINAL GROUNDING PASS block. That block makes
-    // the model deliberate over every sentence, and it writes longer for it —
-    // German at high stakes overran 3200 and truncated, losing opening_move and
-    // confidence_note off the end of the human half. The golden caught it; the
-    // English runs never would have, which is the whole reason the German case
-    // is the one recorded.
-    const maxTokensByStakes = { low: 1600, moderate: 2400, high: 4200 };
+    // Raised twice on 2026-08-31, both times by a grounding rule. Each one makes
+    // the model deliberate over every sentence and write longer for it, and the
+    // human half carries five questions of seven fields PLUS the four framing
+    // strings — so the framing is what falls off the end. German runs ~30%
+    // longer than English, overran 3200, then overran 4200 intermittently,
+    // losing opening_move and confidence_note. The English runs never showed
+    // either failure, which is the whole reason the recorded case is German.
+    // The ceiling costs nothing when unused; only truncation is expensive.
+    const maxTokensByStakes = { low: 1600, moderate: 2400, high: 5200 };
     const halfBudget = maxTokensByStakes[stakes] || 1600;
     // Each half is edited the moment it resolves, so pass 2 overlaps the other
     // half's generation instead of waiting for both. Half the output per editor
