@@ -78,6 +78,34 @@ function objectionLeaks(obj, fields) {
   return hits;
 }
 
+// The other half of the invented-context habit is narrow enough to catch in
+// code: named third parties. "The board", "our auditors", "the regulator" are
+// common nouns the model reaches for to make a question sound executive-level,
+// and they are trivially checkable — either the user mentioned them or nobody
+// did. Paraphrase is not a risk here the way it is with objections, because
+// there is no paraphrase of "auditors" that is still "auditors".
+const THIRD_PARTIES = ['board', 'auditor', 'auditors', 'regulator', 'regulators', 'shareholder', 'shareholders',
+  'investor', 'investors', 'insurer', 'insurers', 'compliance team', 'legal team', 'procurement',
+  'the press', 'the media', 'union', 'trustees', 'ombudsman', 'inspectorate'];
+
+function inventedStakeholders(body, fields) {
+  const supplied = [body.topic, body.audience, body.proposal, body.askingFor,
+                    body.knownObjections, body.objections, body.stakes]
+    .map(x => String(x || '').toLowerCase()).join(' ');
+  const unsupplied = THIRD_PARTIES.filter(t => !supplied.includes(t));
+  if (!unsupplied.length) return [];
+  const hits = [];
+  for (const [path, value] of fields) {
+    // "across the board" is an idiom, not a stakeholder. Caught this as a false
+    // positive on a real run before it could produce a spurious rewrite.
+    const lower = String(value || '').toLowerCase().replace(/across the board/g, '');
+    for (const t of unsupplied) {
+      if (new RegExp(`\\b${t}\\b`).test(lower)) { hits.push({ path, term: t }); break; }
+    }
+  }
+  return hits;
+}
+
 // The surfaces that speak as the tool rather than as a heckler.
 function toolVoiceFields(draft) {
   const f = [];
@@ -129,7 +157,16 @@ You may only: KEEP supported text; DELETE unsupported text; ATTRIBUTE a known ob
 
 Return the SAME JSON object — same keys, same number of questions, same numbering. Never place a double-quote (") character inside a JSON string value. Return ONLY the corrected JSON: no audit, no classifications, no explanation, no draft.`;
 
-  const leaks = objectionLeaks(body.knownObjections || body.objections, toolVoiceFields(draft));
+  const voice = toolVoiceFields(draft);
+  const allFields = voice.concat((draft.questions || [])
+    .map((q, i) => [`questions[${i}].question`, q && q.question])
+    .filter(([, v]) => typeof v === 'string' && v.trim()));
+  const leaks = objectionLeaks(body.knownObjections || body.objections, voice);
+  const strangers = inventedStakeholders(body, allFields);
+  const strangerBlock = strangers.length ? `
+NAMED THIRD PARTIES THE USER NEVER MENTIONED — remove each, or turn it into what is being asked:
+${strangers.map(h => `- ${h.path}: "${h.term}"`).join('\n')}
+` : '';
   const leakBlock = leaks.length ? `
 SENTENCES THAT ALREADY FAILED THE KNOWN-OBJECTION CHECK — rewrite each into an attributed objection, a conditional, or a question:
 ${leaks.map(h => `- ${h.path}: "${h.sentence}"`).join('\n')}
@@ -167,6 +204,11 @@ H = clearly hypothetical
 U = unsupported
 Then enforce. S may remain. O may remain ONLY as an attributed objection, a conditional premise, or a question. H may remain only where the invented condition is necessary to test the proposal — strip invented specificity that is not. U MUST be deleted, generalised, or converted into a question. There are no exceptions.
 
+SOPHISTICATION MUST COME FROM THE QUESTION, NOT INVENTED CONTEXT
+Do not make a question sound more expert by adding plausible facts, stakeholders, processes, alternatives, history or organisational consequences the user did not supply. Before retaining any named stakeholder, process, alternative, historical condition or organisational consequence, ask: DID THE USER SUPPLY THIS? If no, remove it or turn it into the thing being asked about.
+"Phased spend, managed security services, narrowing scope to the highest-severity findings" invents the alternatives; ask what alternatives were evaluated, what each would have cost, and why they were rejected. "You are effectively telling us the organisation has been under-invested in security until now" invents a history; ask what changed — the understanding of the risk, the risk itself, or the protection proposed. "The board" and "our auditors" invent stakeholders. "Before your internal process did" invents a process.
+A strong question exposes what is unknown. It does not fill the unknown with plausible business context.
+
 ENTAILMENT TEST. Do not ask whether a sentence sounds consistent with the input. Ask: does the user's exact input ENTAIL this claim? If no, it cannot be stated as fact.
 "why we didn't catch it earlier" does not entail "the team was responsible for not catching it" or "the team failed to prevent the problem".
 "next quarter" does not entail "within the next budget cycle" or "evaluate in 12 months".
@@ -184,7 +226,7 @@ FINAL RED-TEAM SCAN. Before returning, search the revised output specifically fo
 ${prohibited}
 If any fails the rules above, revise it.
 
-${leakBlock}
+${leakBlock}${strangerBlock}
 DRAFT TO EDIT:
 ${JSON.stringify(draft)}`;
 
@@ -212,6 +254,7 @@ ${JSON.stringify(draft)}`;
     const remaining = objectionLeaks(body.knownObjections || body.objections, toolVoiceFields(edited));
     console.log(`[heckler-prep] grounding edit (${half}): applied over ${edited.questions.length} question(s)`
       + (leaks.length ? ` — ${leaks.length} objection leak(s) flagged` : '')
+      + (strangers.length ? `, ${strangers.length} invented stakeholder(s) flagged` : '')
       + (remaining.length ? `, ${remaining.length} STILL UNATTRIBUTED: ${remaining.map(r => r.path).join(', ')}` : leaks.length ? ', all resolved' : ''));
     return edited;
   } catch (err) {
