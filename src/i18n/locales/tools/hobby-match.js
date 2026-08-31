@@ -4,7 +4,7 @@
 // Six Degrees of Me) stay identical across languages.
 export const hobbyMatch = {
   en: {
-    hm_matching_lead: "The strongest matches will:",
+    hm_matching_lead: "The strongest matches:",
     hm_cost_free: "Free",
     hm_cost_low: "Low cost",
     hm_cost_moderate: "Moderate cost",
@@ -76,7 +76,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Watch for:"
   },
   es: {
-    hm_matching_lead: "Las mejores opciones serán las que:",
+    hm_matching_lead: "Las mejores opciones:",
     hm_cost_free: "Gratis",
     hm_cost_low: "Coste bajo",
     hm_cost_moderate: "Coste medio",
@@ -148,7 +148,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Ten en cuenta:"
   },
   zh: {
-    hm_matching_lead: "最合适的爱好会：",
+    hm_matching_lead: "最合适的爱好：",
     hm_cost_free: "免费",
     hm_cost_low: "花费低",
     hm_cost_moderate: "花费中等",
@@ -220,7 +220,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "需要留意："
   },
   hi: {
-    hm_matching_lead: "सबसे उपयुक्त विकल्प वे होंगे जो:",
+    hm_matching_lead: "सबसे उपयुक्त विकल्प:",
     hm_cost_free: "मुफ़्त",
     hm_cost_low: "कम ख़र्च",
     hm_cost_moderate: "मध्यम ख़र्च",
@@ -292,7 +292,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "ध्यान रखें:"
   },
   ar: {
-    hm_matching_lead: "أفضل الخيارات ستكون التي:",
+    hm_matching_lead: "أفضل الخيارات:",
     hm_cost_free: "مجاني",
     hm_cost_low: "تكلفة منخفضة",
     hm_cost_moderate: "تكلفة متوسطة",
@@ -364,7 +364,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "انتبه إلى:"
   },
   pt: {
-    hm_matching_lead: "As melhores opções serão as que:",
+    hm_matching_lead: "As melhores opções:",
     hm_cost_free: "Grátis",
     hm_cost_low: "Custo baixo",
     hm_cost_moderate: "Custo médio",
@@ -436,7 +436,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "Fique atento a:"
   },
   fr: {
-    hm_matching_lead: "Les meilleures options seront celles qui :",
+    hm_matching_lead: "Les meilleures options :",
     hm_cost_free: "Gratuit",
     hm_cost_low: "Coût faible",
     hm_cost_moderate: "Coût moyen",
@@ -508,7 +508,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "À prendre en compte :"
   },
   de: {
-    hm_matching_lead: "Die besten Treffer werden:",
+    hm_matching_lead: "Die besten Treffer:",
     hm_cost_free: "Kostenlos",
     hm_cost_low: "Geringe Kosten",
     hm_cost_moderate: "Mittlere Kosten",
@@ -724,7 +724,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "유의할 점:"
   },
   ru: {
-    hm_matching_lead: "Самые подходящие варианты будут:",
+    hm_matching_lead: "Самые подходящие варианты:",
     hm_cost_free: "Бесплатно",
     hm_cost_low: "Недорого",
     hm_cost_moderate: "Средние затраты",
@@ -796,7 +796,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "На что обратить внимание:"
   },
   th: {
-    hm_matching_lead: "ตัวเลือกที่เข้ากันที่สุดจะ:",
+    hm_matching_lead: "ตัวเลือกที่เข้ากันที่สุด:",
     hm_cost_free: "ฟรี",
     hm_cost_low: "ค่าใช้จ่ายต่ำ",
     hm_cost_moderate: "ค่าใช้จ่ายปานกลาง",
@@ -868,7 +868,7 @@ export const hobbyMatch = {
     hm_copy_watch_for: "สิ่งที่ควรระวัง:"
   },
   vi: {
-    hm_matching_lead: "Những lựa chọn hợp nhất sẽ:",
+    hm_matching_lead: "Những lựa chọn hợp nhất:",
     hm_cost_free: "Miễn phí",
     hm_cost_low: "Chi phí thấp",
     hm_cost_moderate: "Chi phí vừa",

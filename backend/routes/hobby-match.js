@@ -77,7 +77,7 @@ Startup budget: ${(body.budget || '').trim() || '(not given)'}
 Things that affect what will work: ${(body.physical || '').trim() || '(none given)'}
 Already tried: ${(body.triedBefore || '').trim() || '(not given)'}
 
-STEP 1 — CONSTRAINT. If they stated anything affecting what will work, remove every hobby that does not clearly satisfy it AS WRITTEN. A hobby fails if its case relies on judging how the activity loads a joint, on a gentler or modified version existing, on technique, or on a caveat to ask an instructor. "Low-impact", "easy on", "gentle on", "at your own pace", "you could adapt" appearing in its favour means it fails. Rock climbing, badminton, tennis, running and the like do not satisfy a stated knee problem, whatever technique exists. Remove them. Do not replace them — a shorter list is the correct answer.
+STEP 1 — CONSTRAINT. If they stated anything affecting what will work, remove every hobby that does not clearly satisfy it AS WRITTEN. A hobby fails if its case relies on judging how the activity loads a joint, on a gentler or modified version existing, on technique, or on a caveat to ask an instructor. "Low-impact", "easy on", "gentle on", "at your own pace", "you could adapt" appearing in its favour means it fails. Rock climbing, badminton, tennis, running and the like do not satisfy a stated knee problem, whatever technique exists. Remove them. Do not replace them — a shorter list is the correct answer. The WILDCARD gets the SAME test — the objective one above, not your general opinion of it. It fails only if it requires the excluded movement, or if its own text argues past a stated limitation with "low-impact", "gentle on", "you could adapt" or a caveat about technique: geology FIELDWORK fails a stated knee problem, and a hobby whose case rests on visiting a venue fails short evenings at home. Clear it by setting name and why to empty strings ONLY on that objective test. A wildcard that satisfies the constraints STAYS, even if you would have chosen a different one — an empty wildcard is a loss, not a safe default, and clearing a compliant one is a worse error than leaving it.
 
 STEP 2 — GROUNDING. In everything that remains, for each sentence explaining why a hobby fits, check the connection holds without inventing a fact about their psychology, body, motivation or likely reaction. Remove or rewrite:
 - predictions: will stick, will keep you interested, will get you out of your head, satisfies your need for
@@ -273,6 +273,8 @@ Prefer plain observable properties of the activity.
 
 If a sentence sounds stronger or more insightful than the evidence supports, make it simpler.
 
+The wildcard must obey every hard constraint that applies to the main recommendations. "Wildcard" permits a different activity mode, not a weaker fit. Never predict that an activity will prevent boredom or produce another desired emotional/psychological effect. Remove unnecessary absolutes such as "constant," "every," and "far more."
+
 Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.`;
 
     const userPrompt = `ABOUT THEM: ${personality || 'not specified'}
@@ -289,7 +291,7 @@ Rock climbing, badminton, tennis, running and similar are NOT low-impact for som
 
 Return ONLY valid JSON:
 {
-  "matching_for": ["2-4 SHORT criteria, each a property a strong match would have — 'can be done alone at home', 'fits short evenings', 'no running or jumping'. The interface supplies the lead-in, so do NOT write a sentence, do not start with a verb phrase about the user, and never characterise them. Each entry follows from something they said."],
+  "matching_for": ["2-4 SHORT criteria. The interface prints the heading 'The strongest matches:' above this list, so each entry must complete that heading as a PLURAL predicate — 'can be done alone at home', 'fit short evening sessions', 'offer visible progress', 'allow private learning'. Plural agreement: 'fit', not 'fits'; 'offer', not 'offers'. Do NOT write a full sentence, do not start with a verb phrase about the user, and never characterise them. Each entry follows from something they said."],
   "hobbies": [
     {
       "name": "The hobby, specifically — not a vague category",
@@ -307,7 +309,7 @@ Return ONLY valid JSON:
     }
   ],
   "wildcard": {
-    "name": "Optional. A hobby that satisfies every constraint but changes the MODE, not the materials — making vs solving, visual vs verbal, physical vs digital, collecting vs creating, observing vs producing, structured challenge vs open-ended. If the five are all small hand-made objects, another small hand-made object is not a wildcard however different the medium. Empty string if none earns the slot.",
+    "name": "EXPECTED, not optional — fill this slot. A hobby that satisfies every constraint the five satisfy but changes the MODE, not the materials — making vs solving, visual vs verbal, physical vs digital, collecting vs creating, observing vs producing, structured challenge vs open-ended. If the five are all small hand-made objects, another small hand-made object is not a wildcard however different the medium. Obeying the constraints is what makes finding one WORK, not a reason to skip it: there are twelve modes and the five occupy at most five, so a mode is always free. Empty string ONLY if you genuinely cannot find one that satisfies every stated constraint.",
     "activity_mode": "EXACTLY one of the same twelve values. It MUST differ from every main recommendation's activity_mode — a wildcard that shares a mode is DROPPED in code and the slot is wasted.",
     "why": "Why it earned the wildcard slot. Do not claim they will enjoy it."
   },
