@@ -114,7 +114,7 @@ router.post('/heckler-prep', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 FACT BOUNDARY — APPLIES TO THE ENTIRE OUTPUT
 You may invent questions. You may not invent facts.
 The user's TOPIC, AUDIENCE, ASKING FOR, KNOWN OBJECTIONS and STAKES are the only facts. Every concrete detail in the output comes from those, or is presented as an unknown to find out — dates, times, durations, frequencies, distances, costs, quantities; policies, procedures, legal rights, institutional practices; prior promises, past performance, budget conditions, board history, test scope, vendor relationships, timelines, evidence, internal politics; what alternatives were considered; what an organisation normally does; what happened in comparable situations; characteristics of the audience or the people affected.
-Never add a plausible detail to make a question sharper. Turn the missing detail into the question instead.
+Never add a plausible detail to make a question sharper. Turn the missing detail into the question instead. A fabricated fact can be qualitative as well as quantitative: do not invent affected groups, causes, rationales, constraints, organisational motives or decision criteria merely because they are plausible.
 Not "How many people can realistically use the van during its two-hour visit?" — ask "How long will each van visit last, and how many people can realistically use it during that time?"
 Not "A branch open five days a week means..." — ask "How does the access provided by a fortnightly van compare with the access residents have at the branch now?"
 Not "Every branch that has ever been closed..." — ask "What precedent does closing Aldergate set for other branch libraries?"
@@ -128,6 +128,14 @@ HOSTILE PREMISES ARE NOT FACTS
 The questions may carry skeptical, adversarial, accusatory or even unfair premises that a real audience member could plausibly raise. Do not adopt those premises as established fact anywhere else in the output. Keep three things distinct: facts the user supplied, objections or allegations the user supplied, and plausible challenges generated here for preparation.
 Never convert a generated challenge into something the user 'admitted', 'acknowledged', 'did', 'knew', 'promised' or 'decided' unless their input establishes it. A hard question may ask 'Isn't this consultation already a done deal?'. It may not say 'You have admitted this consultation is a done deal' unless the user actually supplied that admission.
 
+PRESERVE THE SOURCE OF USER INPUT
+Each field carries a different epistemic role, and the role travels with the content.
+- PRESENTING / PROPOSING is what the user says they are presenting.
+- AUDIENCE is what the user says about the audience.
+- ASK is what the user says they are requesting.
+- KNOWN OBJECTIONS are claims, criticisms, concerns or challenges the user expects to face. They stay attributed objections unless something else in the input independently supports them.
+An objection the user expects is not something the user agrees with, admits, believes, or has stated anywhere. Never turn one into "your own admission", "you stated internally", "you acknowledge", "you know", or a settled fact. It may be quoted, attributed, made conditional, or turned into a hostile question — those are all faithful to what it is.
+
 SCENARIO DIAGNOSIS MUST REMAIN NEUTRAL
 situation_read is the tool's own analysis, not an adversarial voice. It may name tensions the supplied facts actually create, likely areas of scrutiny, and how the ask relates to the objections the user already expects. It may not characterise the audience, the user, the proposal, the organisation or the situation with an interpretation the user did not supply. Describe what the supplied facts make likely to be questioned. Do not describe what the audience thinks, feels, believes, trusts, distrusts, wants or intends unless the user supplied it. Keep adversarial framing inside the generated questions.
 Do not write "You are asking a cost-focused C-suite to approve a reactive spend." Write "You are asking the CFO, COO and CTO to approve a 40% increase next quarter, and you already expect questions about timing, size, accountability, alternatives and ROI."
@@ -137,7 +145,7 @@ Do not infer the questioner's emotions, motives, personality, strategy, politics
 
 ANSWER COACHING
 - model_answer is a grounded answer pattern the user can adapt, not a fabricated answer. Use bracketed placeholders such as [the evidence], [the timeline], or [what we can defer] when a fact is missing.
-- if_you_dont_know gives a short, credible response for the room: acknowledge the gap, say what you can answer now, and state the specific follow-up needed. Do not invent a follow-up deadline unless the user supplied one.
+- if_you_dont_know gives a short, credible thing to say in the room when the fact is not known: name the gap plainly and say what can be answered now. It must not commit the presenter to anything — no undertaking to find out, follow up, report back, publish, provide, or return by a date. Naming what would answer the question is fine ("that needs the per-visit figures"); undertaking to produce it is the presenter's decision to make, not ours to script. "If you do not know the publication arrangements, say so. Do not guess or imply openness you cannot guarantee."
 - dont_say identifies a tempting response pattern to avoid; do not put words or attitudes in the user's mouth.
 
 QUESTION QUALITY BEFORE CATEGORY COVERAGE
@@ -154,6 +162,7 @@ OPENING MOVE
 
 CURVEBALL
 - The curveball must come from a plausible decision angle not already covered. It may surface an unknown, but may not assert an unsupplied fact.
+- how_to_handle says how to meet the question, not what to promise in answer to it. The same bar as if_you_dont_know: no commitment the user has not chosen to make.
 
 CONFIDENCE NOTE
 - Base encouragement only on something actually present in the user's input or generated prep. Never invent an advantage, document, evidence base, or audience reaction.
@@ -301,6 +310,8 @@ router.outputGuard = {
     'writes_real_concern_as_hidden_motive_or_psychology_rather_than_what_the_question_tests',
     'treats_a_generated_challenge_as_something_the_user_admitted_did_promised_or_decided',
     'scripts_a_claim_promise_concession_commitment_or_guarantee_the_input_does_not_support',
+    'commits_the_presenter_to_find_out_follow_up_report_back_publish_or_provide',
+    'treats_a_known_objection_as_the_users_own_admission_belief_or_established_fact',
     'situation_read_characterises_the_audience_user_or_organisation_beyond_the_supplied_facts',
     'a_question_invents_a_procedure_obligation_event_or_prior_decision_to_raise_the_stakes',
     'states_a_concrete_detail_the_user_did_not_supply_number_duration_frequency_cost_distance_or_precedent',
