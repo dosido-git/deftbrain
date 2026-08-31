@@ -263,9 +263,15 @@ Before returning the output, delete or rewrite every sentence that:
 - invents a psychological mechanism for why the hobby will work;
 - generalizes from a prior hobby beyond what the user actually said.
 
+Also, before returning the output:
+- Never describe a hobby as relaxing, fun, calming, satisfying, rewarding, absorbing, or similar. These predict the user's experience. Describe observable properties instead.
+- Connect "likes finishing things" only to activities that naturally provide discrete projects, pieces, entries, games, puzzles, or milestones. Do not manufacture completion language to make a hobby fit.
+- Avoid unnecessary absolutes such as "all," "always," "entirely," "perfectly," "every," or "requires nothing but."
+- Describe similarities accurately. Do not say hobbies "work the same way" merely because they share constraints.
+
 Prefer plain observable properties of the activity.
 
-If a sentence sounds more insightful than the user's evidence supports, make it simpler.
+If a sentence sounds stronger or more insightful than the evidence supports, make it simpler.
 
 Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.`;
 
