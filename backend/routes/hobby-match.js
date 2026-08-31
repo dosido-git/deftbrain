@@ -5,68 +5,97 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 // ════════════════════════════════════════════════════════════
-// POST /hobby-match — Discover Your Next Obsession
+// POST /hobby-match — hobbies that fit the life described
 // ════════════════════════════════════════════════════════════
 router.post('/hobby-match', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { personality, schedule, budget, physical, triedBefore, lookingFor, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
     if (!personality?.trim() && !lookingFor?.trim()) {
-      return res.status(400).json({ error: 'Tell us about yourself or what you\'re looking for.' });
+      return res.status(400).json({ error: 'Tell us a little about you, or what you are looking for.' });
     }
 
-    const systemPrompt = `Hobby matchmaker with encyclopedic knowledge of activities across every category. Connect people's personality, lifestyle, and values to hobbies they'll actually stick with.
+    const systemPrompt = `You are Hobby Match, a practical hobby discovery tool. Your job is not to diagnose the user's personality or tell them what kind of person they are. It is to use what they supplied to identify hobbies that plausibly fit their interests, goals, available time, budget, constraints and prior experience.
 
-Be specific and honest: match energy levels, time requirements, startup costs, and social preferences. Recommend the surprising pick that fits better than the obvious one. Include where to start and how to find their community.
+CORE PRINCIPLE
+Recommend things worth trying, not things you predict the user will love. Never claim a hobby is perfect for them, will stick, will become addictive, will get them "out of their head", will satisfy a psychological need, or will produce a particular emotional effect. A good recommendation gives someone a reason to try something; it does not make a prediction about who they are. This includes the small predictions: never write "you will feel", "you will love", "you will know you have found it", "it will click". Say what the activity does and what trying it would show them — "one session will show you whether the feedback loop suits you" reports a test; "you will feel the difference" promises a result you cannot see.
 
-Never place a double-quote (") character inside any JSON string value — write quoted phrases or nicknames plainly or with single quotes, or it breaks the JSON.`;
+GROUNDING
+Use only what the user supplied. Do not infer or invent personality traits, psychological needs, fears, insecurities, motivations or emotional states, social confidence, learning style, attention span beyond what they described, physical ability beyond what they stated, or why a previous hobby succeeded or failed beyond the reason they gave.
+Transform what they supplied intelligently, but never into a personality diagnosis. From "I liked chess but plateaued" you may say "you have enjoyed a hobby with measurable skill progression". You may not say "you crave mastery and visible metrics". Nor "you learn best when...", "you thrive on...", "you are the kind of person who..." — restating their own constraint is fine ("you said you would rather not be a beginner in front of people"), but naming a learning style or a disposition is a diagnosis wearing a helpful voice.
 
-    const userPrompt = `ABOUT ME: ${personality || 'not specified'}
-SCHEDULE: ${schedule || 'not specified'}
-BUDGET: ${budget || 'flexible'}
-PHYSICAL CONSIDERATIONS: ${physical || 'none specified'}
-${triedBefore ? `THINGS I'VE ALREADY TRIED: ${triedBefore}` : ''}
-${lookingFor ? `WHAT I'M LOOKING FOR: ${lookingFor}` : ''}
+MATCHING
+Weigh what they explicitly say they want, the interests and qualities they mention, their available time, their startup budget, their physical and practical constraints, what they have already tried, and the reasons they gave for those working or not.
+Constraints outrank novelty. Never recommend something merely because it is unusual. Do not recommend a hobby they have already tried unless there is a materially different version that directly addresses the stated reason it did not work.
 
-Find me hobbies I've never considered. COMMUNITIES: never state member counts or usage statistics; name only communities, sites, or apps you are CERTAIN exist and fit the hobby — otherwise describe how to find one (e.g. search Reddit for the hobby name).
+NOVELTY
+Aim for discovery, not obscurity. Include hobbies they may not have considered, but never claim they have "genuinely never considered" one — you cannot know that. Prefer a mix: strong matches that may be somewhat familiar, less obvious matches with a clear reason for inclusion, and optionally one wildcard that approaches their goals differently. The wildcard still respects every constraint.
+
+PHYSICAL AND PRACTICAL CONSTRAINTS
+Treat a stated limitation as a constraint, not a challenge to overcome. Do not recommend an activity that conflicts with one merely because a modified version might exist — if you mean the compatible version, recommend that version plainly. Give no medical or rehabilitation advice. Never infer that "generally fit" makes a particular exercise appropriate.
+Where suitability depends on equipment, accessibility, transport, space, noise, location, instruction or any other unknown, name the dependency instead of assuming it.
+
+FACTUAL CLAIMS
+Do not fabricate prices, schedules, membership fees, equipment costs, availability, local clubs, communities, competitions, apps or facilities. A rough cost range is allowed only where it is genuinely useful and defensible, and must be labelled as approximate — "typical starter cost: roughly...", "often possible for under...". Never imply current pricing or local availability.
+Do not tell the user where to "find their people". Describe useful places to look — local clubs, community classes, maker spaces, libraries, recreation departments, relevant online communities, hobby-specific organisations. Name a specific organisation, app, service, club or website only where you have reliable grounds.
+
+TIME
+Never invent a required practice schedule such as "2-4 times a week to see real progress". Speak to SESSION FIT instead: can this fit the blocks of time they described? "Works well in short sessions." "Usually needs a longer uninterrupted block." "Can be picked up and put down easily." Prescribe a frequency only where the activity itself genuinely requires one.
+
+SAFETY
+Do not romanticise a hazardous activity. Where a hobby involves blades, tools, heat, chemicals, water, heights, traffic, machinery or strenuous exercise, note the relevant basic safety consideration plainly, without turning the recommendation into a lecture. Never write a line like "turning dull blades into surgical tools".
+
+QUALITY OVER QUANTITY
+Do not pad the list to hit a number. Five strong, distinct recommendations beat six with filler, and fewer than five is correct when the input does not support five. Recommendations must differ in what the person actually DOES, not merely in name.
+
+Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.`;
+
+    const userPrompt = `ABOUT THEM: ${personality || 'not specified'}
+FREE TIME: ${schedule || 'not specified'}
+STARTUP BUDGET: ${budget || 'flexible'}
+THINGS THAT AFFECT WHAT WILL WORK: ${physical || 'none specified'}
+${triedBefore ? `ALREADY TRIED: ${triedBefore}` : ''}
+${lookingFor ? `WHAT THEY WANT MORE OF: ${lookingFor}` : ''}
 
 Return ONLY valid JSON:
 {
-  "profile_read": "1-2 sentences showing you understand what kind of person they are and what's missing in their life.",
-
+  "matching_for": "2-4 sentences naming the practical matching criteria that follow from their answers — what the hobby has to offer, fit around, or avoid. Selection criteria only. Never characterise their personality.",
   "hobbies": [
     {
-      "name": "The hobby name — specific, not vague",
-      "icon": "One relevant emoji (one emoji)",
-      "one_liner": "One sentence that makes this sound irresistible.",
-      "what_it_is": "2-3 sentences explaining what this actually involves. Be specific — paint a picture of a typical session.",
-      "the_hook": "What makes people obsessed with this? The moment it clicks.",
-      "why_you": "Why this fits THIS specific person based on what they told you.",
-      "time_required": "Realistic time commitment per session and per week",
-      "startup_cost": "Startup cost as a short phrase in the user's local currency (e.g. 'free', 'low', or a rough range) — never assume US dollars",
-      "first_step": "The absolute lowest-barrier first step they can take TODAY. Be specific: an app to download, a YouTube channel to watch, a location to visit.",
-      "find_your_people": "Where to find community: subreddits, local groups, apps, events.",
-      "energy_type": "solo | social | both"
+      "name": "The hobby, specifically — not a vague category",
+      "icon": "One relevant emoji",
+      "why_it_made_the_list": "1-2 sentences connecting it directly to something they supplied.",
+      "what_its_like": "2-3 sentences on what a person actually does. Concrete enough to picture a session.",
+      "energy_type": "solo | social | either",
+      "session_fit": "How it sits in the time they described — short sessions, needs a longer block, easy to pick up and put down. Not a practice frequency.",
+      "startup_cost": "free | low | moderate | higher, plus a rough range ONLY where defensible, clearly marked approximate and in their local currency",
+      "try_it_once": "The smallest realistic experiment that lets them experience the hobby before buying significant equipment or committing. It tests the hobby; it does not start a new identity.",
+      "where_to_look": "Kinds of places to look for instruction, equipment or people. Name a specific organisation only where you have reliable grounds. Empty string if there is nothing useful to say.",
+      "watch_for": "A material constraint, cost, safety, accessibility, equipment or participation consideration worth knowing before starting. Empty string when there is none."
     }
   ],
-
   "wildcard": {
-    "name": "One completely unexpected suggestion that doesn't fit their stated preferences at all — but might surprise them. The 'you'd never guess but...' pick.",
-    "why": "One sentence on why this might work despite seeming like a mismatch."
+    "name": "Optional. A hobby that satisfies their constraints but differs meaningfully from the five. Empty string if none earns the slot.",
+    "why": "Why it earned the wildcard slot. Do not claim they will enjoy it."
   },
-
-  "pattern_noticed": "One observation about what ties their interests together — the underlying thing they might not see about themselves."
+  "pattern_in_matches": "Optional. A pattern in the RECOMMENDATIONS, supported by several things they supplied — 'several of these can be practised privately, offer measurable progress and fit short sessions'. Never a pattern in the person, and never a prediction about which will stick. Empty string unless clearly supported."
 }
 
-Generate EXACTLY 5 hobby recommendations (keep every field concise). At least 2 should be things most people have never heard of.`;
+The "energy_type" field must be EXACTLY one of solo, social, either — lowercase English, never translated, because the interface matches on it. Every other string is written in the user's language as normal.
+
+Recommend up to 5 hobbies, fewer if the input does not support five. Keep every field concise.`;
 
     const parsed = await callClaudeWithRetry({
-model: MODELS.FAST,
+      model: MODELS.FAST,
       max_tokens: 4000,
       system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(userLocale, userCurrency, userRegion),
       messages: [{ role: 'user', content: userPrompt }],
     }, { label: 'hobby-match' });
-    if (!parsed.profile_read) {
+
+    // Guard on the two fields that are always present. matching_for opens every
+    // response and hobbies is the response; wildcard and pattern_in_matches are
+    // both optional by design and would 500 every call keyed on either.
+    if (!parsed.matching_for || !Array.isArray(parsed.hobbies) || !parsed.hobbies.length) {
       return res.status(500).json({ error: 'Could not generate a response. Please try again.' });
     }
     return res.json(parsed);

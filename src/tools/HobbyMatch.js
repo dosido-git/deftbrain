@@ -142,17 +142,19 @@ const HobbyMatch = ({ tool }) => {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     let text = `🧬 ${t('hm_copy_header')}\n`;
-    if (results?.profile_read) text += `\n${results?.profile_read}\n`;
+    if (results?.matching_for) text += `\n${t('hm_matching_for')}\n${results?.matching_for}\n`;
     if (results?.hobbies?.length) {
       results?.hobbies?.forEach((h, i) => {
-        text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.one_liner}\n${h.what_it_is}`;
-        text += `\n⏱ ${h.time_required} | 💰 ${h.startup_cost}`;
-        text += `\n🚀 ${t('hm_copy_first_step')} ${h.first_step}`;
-        text += `\n👥 ${t('hm_copy_community')} ${h.find_your_people}\n`;
+        text += `\n${i + 1}. ${h.icon || '🎯'} ${h.name}\n${h.why_it_made_the_list || ''}\n${h.what_its_like || ''}`;
+        text += `\n⏱ ${h.session_fit || ''} | 💰 ${h.startup_cost || ''}`;
+        text += `\n🚀 ${t('hm_copy_try_once')} ${h.try_it_once || ''}`;
+        if (h.where_to_look) text += `\n👥 ${t('hm_copy_where_to_look')} ${h.where_to_look}`;
+        if (h.watch_for) text += `\n⚠️ ${t('hm_copy_watch_for')} ${h.watch_for}`;
+        text += '\n';
       });
     }
-    if (results?.wildcard) text += `\n🃏 ${t('hm_copy_wildcard')} ${results?.wildcard?.name} — ${results?.wildcard?.why}`;
-    if (results?.pattern_noticed) text += `\n\n💡 ${results?.pattern_noticed}`;
+    if (results?.wildcard?.name) text += `\n🃏 ${t('hm_copy_wildcard')} ${results?.wildcard?.name} — ${results?.wildcard?.why}`;
+    if (results?.pattern_in_matches) text += `\n\n💡 ${results?.pattern_in_matches}`;
     return text + BRAND;
   }, [results, t]);
 
@@ -207,7 +209,8 @@ const HobbyMatch = ({ tool }) => {
 
         {/* Personality */}
         <div className="mb-4">
-          <label className={`text-sm font-bold ${c.text} block mb-1.5`}>{t('hm_personality_label')} <span className={c.required}>*</span></label>
+          <label className={`text-sm font-bold ${c.text} block mb-0.5`}>{t('hm_personality_label')} <span className={c.required}>*</span></label>
+          <p className={`text-xs ${c.textMuteded} mb-1.5`}>{t('hm_personality_hint')}</p>
           <textarea
             value={personality}
             onChange={e => setPersonality(e.target.value)}
@@ -331,10 +334,11 @@ const HobbyMatch = ({ tool }) => {
       {results && (
         <div data-copy-results ref={resultsRef} className="space-y-4">
 
-          {/* ── PROFILE READ ── */}
-          {r.profile_read && (
+          {/* ── WHAT I'M MATCHING FOR ── selection criteria, not a personality read */}
+          {r.matching_for && (
             <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
-              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.profile_read}</p>
+              <p className={`text-[10px] font-bold ${c.textMuteded} uppercase tracking-wide mb-1.5`}>{t('hm_matching_for')}</p>
+              <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{r.matching_for}</p>
             </div>
           )}
 
@@ -354,16 +358,16 @@ const HobbyMatch = ({ tool }) => {
                         <span className="text-2xl flex-shrink-0">{hobby.icon || '🎯'}</span>
                         <div className="flex-1 min-w-0">
                           <h4 className={`text-sm font-bold ${c.text}`}>{hobby.name}</h4>
-                          <p className={`text-xs ${c.textSecondary} mt-0.5`}>{hobby.one_liner}</p>
+                          <p className={`text-xs ${c.textSecondary} mt-0.5`}>{hobby.why_it_made_the_list}</p>
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
-                              {hobby.energy_type === 'solo' ? `🎧 ${t('hm_badge_solo')}` : hobby.energy_type === 'social' ? `👥 ${t('hm_badge_social')}` : `🔄 ${t('hm_badge_both')}`}
+                              {hobby.energy_type === 'solo' ? `🎧 ${t('hm_badge_solo')}` : hobby.energy_type === 'social' ? `👥 ${t('hm_badge_social')}` : `🔄 ${t('hm_badge_either')}`}
                             </span>
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
                               💰 {hobby.startup_cost}
                             </span>
                             <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${c.badgeNeutral}`}>
-                              ⏱ {hobby.time_required}
+                              ⏱ {hobby.session_fit}
                             </span>
                           </div>
                         </div>
@@ -375,29 +379,23 @@ const HobbyMatch = ({ tool }) => {
                     {isExpanded && (
                       <div className={`px-5 pb-5 border-t ${c.border} pt-4 space-y-3`}>
                         <div>
-                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hm_what_it_is')}</p>
-                          <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.what_it_is}</p>
+                          <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hm_whats_it_like')}</p>
+                          <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.what_its_like}</p>
                         </div>
-                        {hobby.the_hook && (
-                          <div className={`${c.warning} border rounded-lg p-3`}>
-                            <p className="text-[10px] font-bold mb-0.5">🪝 {t('hm_the_hook')}</p>
-                            <p className="text-xs leading-relaxed">{hobby.the_hook}</p>
-                          </div>
-                        )}
-                        {hobby.why_you && (
-                          <div>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>{t('hm_why_you')}</p>
-                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.why_you}</p>
-                          </div>
-                        )}
                         <div className={`${c.success} border rounded-lg p-3`}>
-                          <p className="text-[10px] font-bold mb-0.5">🚀 {t('hm_start_today')}</p>
-                          <p className="text-xs leading-relaxed">{hobby.first_step}</p>
+                          <p className="text-[10px] font-bold mb-0.5">🚀 {t('hm_try_it_once')}</p>
+                          <p className="text-xs leading-relaxed">{hobby.try_it_once}</p>
                         </div>
-                        {hobby.find_your_people && (
+                        {hobby.where_to_look && (
                           <div>
-                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>👥 {t('hm_find_people')}</p>
-                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.find_your_people}</p>
+                            <p className={`text-[10px] font-bold ${c.textMuteded} mb-1`}>👥 {t('hm_where_to_look')}</p>
+                            <p className={`text-xs ${c.textSecondary} leading-relaxed`}>{hobby.where_to_look}</p>
+                          </div>
+                        )}
+                        {hobby.watch_for && (
+                          <div className={`${c.warning} border rounded-lg p-3`}>
+                            <p className="text-[10px] font-bold mb-0.5">⚠️ {t('hm_watch_for')}</p>
+                            <p className="text-xs leading-relaxed">{hobby.watch_for}</p>
                           </div>
                         )}
                       </div>
@@ -409,7 +407,7 @@ const HobbyMatch = ({ tool }) => {
           )}
 
           {/* ── WILDCARD ── */}
-          {r.wildcard && (
+          {r.wildcard?.name && (
             <div className={`${c.warning} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5 text-lg">🃏</span>
               <div>
@@ -421,12 +419,12 @@ const HobbyMatch = ({ tool }) => {
           )}
 
           {/* ── PATTERN ── */}
-          {r.pattern_noticed && (
+          {r.pattern_in_matches && (
             <div className={`${c.success} border rounded-xl p-4 flex items-start gap-3`}>
               <span className="flex-shrink-0 mt-0.5">💡</span>
               <div>
                 <p className="text-xs font-bold mb-1">{t('hm_pattern_title')}</p>
-                <p className="text-sm leading-relaxed">{r.pattern_noticed}</p>
+                <p className="text-sm leading-relaxed">{r.pattern_in_matches}</p>
               </div>
             </div>
           )}

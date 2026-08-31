@@ -1231,11 +1231,11 @@ export const tools = [
   icon: "🧭 ",
   categories: ['Out & About'],
   headerColor: "#ccdfc4",
-  description: "Bored of the usual suggestions? Describe your personality, schedule, budget, and physical situation, and HobbyMatch recommends 5-6 hobbies you've genuinely never considered — with the hook that makes each one addictive, the absolute lowest-barrier first step you can take today, startup costs, and where to find your people.",
+  description: "Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.",
   guide: {
-    overview: "HobbyMatch goes beyond yoga and painting to find hobbies you didn't know existed. It matches your personality, schedule, budget, and physical situation against an enormous range of activities — from urban sketching to historical fencing to mycology. Each recommendation includes what makes it addictive, a first step you can take tonight, realistic costs, and where to find community.",
+    overview: "Hobby Match works from what you supply — interests, how much free time you have, what you can spend, what already has to work around, and what you have tried — and returns a short list of hobbies worth a look. Each one says why it made the list, what you would actually be doing, how it fits the time you have, roughly what it costs to start, and the smallest way to try it before committing to anything.",
     howToUse: [
-      "Describe your personality and what you're like",
+      "Describe your interests and what tends to hold your attention",
       "Pick what you're looking for — relaxation, social, creative, physical, etc.",
       "Add your schedule constraints and budget level",
       "List anything you've already tried so it's excluded",
@@ -1249,13 +1249,13 @@ export const tools = [
     example: {
       scenario: "Introverted night owl, $50 budget, bad knees, loves building things, already tried woodworking and model kits.",
       action: "Enter all the details and generate matches.",
-      result: "Suggests bookbinding (meditative, solo, $20 starter kit), PCB design (build electronics from home at 2am), mushroom cultivation (grow kits are $30, oddly satisfying), amateur radio (build your own equipment, massive online community), and fountain pen restoration (combines mechanical tinkering with history)."
+      result: "Suggests bookbinding (solo, works in short sessions, low startup), amateur radio (build and repair your own equipment, licence required in most places), and fountain pen restoration (mechanical tinkering with a history angle) — each with what a session actually involves and the smallest way to try it first."
     },
     tips: [
-      "List things you've tried so they're excluded — this forces more creative suggestions",
+      "List what you have tried, and why it did or did not work — the reason matters more than the hobby",
       "Tap 'Something weird' in the goals for the most unexpected recommendations",
-      "The 'first step' for each hobby is designed to be doable tonight",
-      "The wildcard pick at the bottom is intentionally off-script — give it a chance"
+      "The 'try it once' step is meant to test the hobby before you buy equipment",
+      "The wildcard, when there is one, approaches what you asked for from a different angle"
     ]
   }
 },
