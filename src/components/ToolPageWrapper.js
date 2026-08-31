@@ -202,15 +202,23 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         <div className="lg:col-start-1 lg:col-span-8 lg:row-start-1">
 
           {/* Print-only header */}
-          <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'6px',paddingBottom:'14px',marginBottom:'16px',borderBottom:'2px solid #e5e7eb'}}>
+          {/* Height matters here, not style. Measured 2026-08-31: this block was
+              172px, the tool card is 794px, and the gap between them 16px —
+              982px against the 960px a Letter page gives you at half-inch
+              margins. It missed fitting by 22px, and an engine that will not
+              fragment the card answers a 22px overflow by moving all 794px to
+              page two, which is the almost-blank first page. Chrome's default
+              margins are narrower, so Chrome fragments and never showed it.
+              Every number below is trimmed to buy back that page. */}
+          <div data-print-show-flex style={{display:'none',flexDirection:'column',gap:'2px',paddingBottom:'8px',marginBottom:'10px',borderBottom:'2px solid #e5e7eb'}}>
             <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-              <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'40px',width:'auto'}} />
+              <img src="/pBrain-r.png" alt="DeftBrain" style={{height:'32px',width:'auto'}} />
               <div><div style={{fontFamily:'Georgia,serif',fontSize:'20px',fontWeight:'bold',color:'#1a1a1a'}}><span style={{color:'#c8872e'}}>D</span>eftBrain</div><div style={{fontSize:'11px',color:'#6b7280',fontStyle:'italic'}}>deft (adj.) — skillful, nimble, clever. · deftbrain.com</div></div>
             </div>
             {detectedTool && (
-              <div style={{marginTop:'8px'}}>
-                <div style={{fontSize:'22px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
-                <div style={{fontSize:'13px',color:'#4b5563',marginTop:'4px',lineHeight:'1.5',whiteSpace:'pre-line'}}>{detectedTool.description}</div>
+              <div style={{marginTop:'4px'}}>
+                <div style={{fontSize:'20px',fontWeight:'700',color:'#1a1a1a'}}>{detectedTool.title}</div>
+                <div style={{fontSize:'11px',color:'#4b5563',marginTop:'3px',lineHeight:'1.35',whiteSpace:'pre-line'}}>{detectedTool.description}</div>
               </div>
             )}
           </div>
@@ -288,8 +296,6 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
               ...(detectedTool?.headerColor ? {
                 background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
               } : { background: isDark ? '#27272a' : '#ffffff' }),
-              breakBefore: 'avoid',
-              pageBreakBefore: 'avoid',
             }}>
             <div className={`${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
               {children}
