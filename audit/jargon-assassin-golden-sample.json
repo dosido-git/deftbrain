@@ -4,7 +4,7 @@
     "generated": "2026-07-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 12 endpoints (translate split into 2 parallel calls)",
     "baseline_commit": "jargonassassin-v2",
-    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden jargon-assassin) and diff for QUALITY not exact match: HTTP 200 / no error, expected top-level fields present, non-empty arrays stay non-empty, no truncation. The redline + template cases GUARD the guard-vs-schema fix: /jargon-assassin-redline and /jargon-assassin-template BOTH guarded `!parsed.translation && !parsed.plain_version && !parsed.score` (copy-pasted from Route 1) but their schemas emit overview/redlines and overall_assessment/comparisons — so the guard ALWAYS fired -> HTTP 500 on EVERY Red-line and vs-Normal click (both DOWN). Guards now key on the real top-level fields. redline was ALSO truncating at max_tokens 2500 in German (guard + truncation, doubly broken) -> now 6000 + redlines<=8 cap. The translate case guards the max-schema truncation (max_tokens 4000->6000 + array caps). DO NOT silently reverse: (1) all 11 endpoints sonnet-4-6 via callClaudeWithRetry; (2) guards: translate !translation, redline !overview&&!redlines, template !overall_assessment&&!comparisons (NOT the phantom translation/plain_version/score); (3) translate max_tokens 6000 + caps (key_sections<=8/glossary<=10/jargon_highlights<=12/checklist<=6/suggested_questions<=6); redline 6000 + redlines<=8; template 4000 + comparisons<=8; (4) NO annotation suffixes on reading_level (badge) / key_sections.title / glossary.term (kept legit — 2-4 sentences on 2 body fields). Frontend-only: loadExample docType 'lease'->'legal' (invalid id highlighted no pill). enum values (danger_score.level, priority, verdict) already clean. 2026-09-01: translate schema changed. danger_score is GONE — the safe/caution/warning/danger rating implied a severity judgement the tool could not substantiate; its explanation survives as attention.explanation under \"What deserves your attention\". Added for_your_goal, present ONLY when the reader supplies a question in the new input field and absent otherwise — if a diff shows it on a run with no userGoal, the conditional broke. Prompt also now separates what the DOCUMENT SAYS from what is legally true of the reader.",
+    "how_to_regression_diff": "Re-run each case against the live backend (npm run check:golden jargon-assassin) and diff for QUALITY not exact match: HTTP 200 / no error, expected top-level fields present, non-empty arrays stay non-empty, no truncation. The redline + template cases GUARD the guard-vs-schema fix: /jargon-assassin-redline and /jargon-assassin-template BOTH guarded `!parsed.translation && !parsed.plain_version && !parsed.score` (copy-pasted from Route 1) but their schemas emit overview/redlines and overall_assessment/comparisons — so the guard ALWAYS fired -> HTTP 500 on EVERY Red-line and vs-Normal click (both DOWN). Guards now key on the real top-level fields. redline was ALSO truncating at max_tokens 2500 in German (guard + truncation, doubly broken) -> now 6000 + redlines<=8 cap. The translate case guards the max-schema truncation (max_tokens 4000->6000 + array caps). DO NOT silently reverse: (1) all 11 endpoints sonnet-4-6 via callClaudeWithRetry; (2) guards: translate !translation, redline !overview&&!redlines, template !overall_assessment&&!comparisons (NOT the phantom translation/plain_version/score); (3) translate max_tokens 6000 + caps (key_sections<=8/glossary<=10/jargon_highlights<=12/checklist<=6/suggested_questions<=6); redline 6000 + redlines<=8; template 4000 + comparisons<=8; (4) NO annotation suffixes on reading_level (badge) / key_sections.title / glossary.term (kept legit — 2-4 sentences on 2 body fields). Frontend-only: loadExample docType 'lease'->'legal' (invalid id highlighted no pill). enum values (danger_score.level, priority, verdict) already clean. 2026-09-01: translate schema changed. danger_score is GONE — the safe/caution/warning/danger rating implied a severity judgement the tool could not substantiate; its explanation survives as attention.explanation under \"What deserves your attention\". Added for_your_goal, present ONLY when the reader supplies a question in the new input field and absent otherwise — if a diff shows it on a run with no userGoal, the conditional broke. Prompt also now separates what the DOCUMENT SAYS from what is legally true of the reader. Also 2026-09-01: checklist_title added — the checklist heading is now derived from the document (\"Before you sign\" for a lease, \"What to do next\" for a benefits notice), NOT from documentType, which defaults to unsure. The i18n fallback jarg_before_sign was neutralised to \"What to do next\" so a missing title is never wrong. reading_level is still returned but nothing renders it: the grade badge was removed from the UI and the copy text, because showing an achieved grade re-frames the tool as a readability scorer.",
     "v2_changes": "2026-07-19: translate route split into two parallel calls (translation vs extraction, merged response — same keys); max_tokens 6000→8000+4000; doc caps raised to 40K everywhere (Q&A missed content past 8K chars — real user bug); Q&A/Letter fall back to translation for PDF uploads; new /jargon-assassin-personalize endpoint (For You tab, userSituation threaded into ask + action-plan); all 11+1 frontend handlers wrapped in try/catch (silent-failure fix); 15s slow-translate banner; Q&A callout on Translation tab; stale error cleared on tab switch."
   },
   "cases": [
@@ -21,165 +21,176 @@
         "userRegion": "DE"
       },
       "output": {
-        "summary": "Dieser Mietvertragsauszug enthält drei wichtige Regelungen zu Kaution, Renovierungspflichten und Kündigung. Einige Klauseln sind auffällig mieterfeindlich formuliert – ob sie rechtlich wirksam sind, hängt vom geltenden Recht ab und sollte im Zweifel fachlich geprüft werden.",
-        "translation": "§7 Kaution: Als Mieter zahlst du zu Beginn eine Kaution in Höhe von drei Monatsmieten. Du bekommst das Geld spätestens sechs Monate nach deinem Auszug zurück – aber nur, wenn der Vermieter keine eigenen Forderungen gegen dich hat. Achtung: Der Vertrag erlaubt dem Vermieter ausdrücklich, die Kaution für beliebige Kosten einzubehalten. Wie weit dieses Recht reicht, regelt letztlich das Gesetz, nicht allein dieser Vertrag. §12 Schönheitsreparaturen (das sind Renovierungsarbeiten wie Streichen, Tapezieren usw.): Du bist laut Vertrag verpflichtet, alle drei Jahre auf eigene Kosten zu renovieren – und zwar unabhängig davon, ob die Wohnung das überhaupt braucht. Dieser starre Zeitplan ohne Rücksicht auf den tatsächlichen Zustand der Wohnung ist ein wichtiges Detail, das du kennen solltest. §18 Kündigung: Als Mieter musst du zwölf Monate im Voraus kündigen, und zwar immer zum Ende eines Quartals (also zum 31. März, 30. Juni, 30. September oder 31. Dezember). Der Vermieter dagegen darf laut diesem Vertrag jederzeit und ohne Frist kündigen. Diese sehr unterschiedliche Behandlung beider Seiten ist auffällig – ob eine solche Klausel vor Gericht standhält, ist eine Rechtsfrage, die dieser Text nicht beantworten kann.",
-        "reading_level": "Einfache Alltagssprache (ca. 6. Klasse)",
+        "summary": "Dieser Mietvertragsauszug enthält drei wichtige Abschnitte: Kaution, Renovierungspflichten und Kündigung. Einige Klauseln sind für Mieter ungünstig formuliert und könnten rechtlich problematisch sein – das sollte ein Fachmann prüfen.",
+        "translation": "Paragraf 7 – Kaution: Du musst beim Einzug eine Kaution in Höhe von drei Monatsmieten bezahlen. Der Vermieter gibt dir das Geld frühestens sechs Monate nach deinem Auszug zurück – und nur dann, wenn er keine eigenen Forderungen gegen dich hat. Der Vertrag erlaubt dem Vermieter außerdem, die Kaution für beliebige Kosten einzubehalten. Ob diese weite Formulierung rechtlich wirksam ist, hängt von Umständen ab, die außerhalb des Dokuments liegen – ein Mieterrechtsexperte kann das beurteilen. | Paragraf 12 – Renovierungspflichten (sogenannte Schönheitsreparaturen): Du bist laut Vertrag verpflichtet, die Wohnung alle drei Jahre auf eigene Kosten zu renovieren – zum Beispiel streichen oder tapezieren. Diese Frist gilt starr, egal ob die Wohnung tatsächlich abgenutzt aussieht oder nicht. Solche starren Fristen (Fachbegriff: starre Fristenpläne) werden von deutschen Gerichten häufig als unwirksam eingestuft – ob das hier zutrifft, ist eine rechtliche Frage, die das Dokument allein nicht beantwortet. | Paragraf 18 – Kündigung: Wenn du als Mieter ausziehen möchtest, musst du zwölf Monate im Voraus kündigen, und zwar immer zum Ende eines Quartals (also zum 31. März, 30. Juni, 30. September oder 31. Dezember). Der Vermieter hingegen kann laut diesem Vertrag jederzeit und ohne Frist kündigen. Ob diese Ungleichbehandlung rechtlich zulässig ist, sollte ebenfalls fachlich geprüft werden.",
+        "reading_level": "Einfache Alltagssprache (ca. Klasse 6–7)",
         "jargon_highlights": [
           {
             "original": "Kaution",
-            "replaced_with": "Sicherheitszahlung zu Beginn des Mietverhältnisses",
-            "location": "§7"
+            "replaced_with": "Sicherheitszahlung, die du beim Einzug hinterlegst und nach dem Auszug zurückbekommst",
+            "location": "Paragraf 7"
           },
           {
-            "original": "Ansprüche des Vermieters",
-            "replaced_with": "Forderungen, die der Vermieter gegen dich hat",
-            "location": "§7"
+            "original": "Rückzahlung erfolgt spätestens sechs Monate nach Auszug",
+            "replaced_with": "Du bekommst das Geld frühestens sechs Monate nach deinem Auszug zurück",
+            "location": "Paragraf 7"
           },
           {
-            "original": "behält sich vor",
-            "replaced_with": "hat das Recht (laut Vertrag)",
-            "location": "§7"
+            "original": "sofern keine Ansprüche des Vermieters bestehen",
+            "replaced_with": "nur wenn der Vermieter keine eigenen Forderungen gegen dich hat",
+            "location": "Paragraf 7"
           },
           {
             "original": "Schönheitsreparaturen",
             "replaced_with": "Renovierungsarbeiten wie Streichen oder Tapezieren",
-            "location": "§12"
+            "location": "Paragraf 12"
           },
           {
             "original": "starrer Fristenplan",
-            "replaced_with": "fester Zeitplan, der unabhängig vom Zustand der Wohnung gilt",
-            "location": "§12"
+            "replaced_with": "feste Zeitvorgabe, die unabhängig vom tatsächlichen Zustand der Wohnung gilt",
+            "location": "Paragraf 12"
+          },
+          {
+            "original": "auf eigene Kosten",
+            "replaced_with": "du bezahlst das selbst",
+            "location": "Paragraf 12"
           },
           {
             "original": "Kündigung zum Quartalsende",
-            "replaced_with": "Kündigung nur zum Ende eines Vierteljahres (31.03., 30.06., 30.09. oder 31.12.)",
-            "location": "§18"
+            "replaced_with": "Kündigung nur zum Ende eines Kalendervierteljahres (31. März, 30. Juni, 30. September oder 31. Dezember)",
+            "location": "Paragraf 18"
+          },
+          {
+            "original": "Frist von zwölf Monaten",
+            "replaced_with": "du musst ein ganzes Jahr vorher Bescheid geben",
+            "location": "Paragraf 18"
           },
           {
             "original": "fristlos kündigen",
-            "replaced_with": "ohne jede Vorankündigungsfrist kündigen",
-            "location": "§18"
+            "replaced_with": "sofort und ohne Vorankündigung kündigen",
+            "location": "Paragraf 18"
+          },
+          {
+            "original": "behält sich vor",
+            "replaced_with": "beansprucht das Recht dazu",
+            "location": "Paragraf 7"
           }
         ],
         "key_sections": [
           {
             "type": "red_flag",
-            "title": "§7 Kaution – vage Einbehaltungsklausel",
+            "title": "§7 Kaution – Einbehalt für beliebige Kosten",
             "original_text": "Der Vermieter behält sich vor, die Kaution zur Deckung beliebiger Kosten einzubehalten.",
-            "simplified": "Der Vermieter kann laut Vertragstext die Kaution für irgendwelche Kosten einbehalten – ohne genauere Einschränkung.",
-            "why_it_matters": "Das Wort beliebiger lässt dem Vermieter nach Wortlaut des Vertrags sehr weiten Spielraum und macht es schwer vorherzusagen, wann und ob man die Kaution zurückbekommt.",
-            "enforceability_note": "Klauseln, die dem Vermieter unbegrenzten Ermessensspielraum beim Einbehalt der Kaution geben, sind nach deutschem Mietrecht häufig Gegenstand von Streitigkeiten und werden von Gerichten oft eingeschränkt. Aktuelle Rechtslage durch einen Mieterrechtsverein oder Anwalt prüfen lassen."
-          },
-          {
-            "type": "important",
-            "title": "§7 Kaution – Höhe und Rückzahlungsfrist",
-            "original_text": "Der Mieter hinterlegt eine Kaution in Höhe von drei Monatsmieten. Die Rückzahlung erfolgt spätestens sechs Monate nach Auszug, sofern keine Ansprüche des Vermieters bestehen.",
-            "simplified": "Man zahlt drei Monatsmieten als Sicherheit. Der Vermieter hat bis zu sechs Monate nach Auszug Zeit zur Rückzahlung, falls er keine Forderungen hat.",
-            "why_it_matters": "Sechs Monate ist eine lange Wartezeit; man sollte sicherstellen, dass man diese Zeit finanziell überbrücken kann.",
-            "enforceability_note": "Drei Monatsmieten als Kaution entspricht der gesetzlichen Höchstgrenze nach § 551 BGB. Die Sechs-Monats-Frist ist vertraglich vereinbart; ob sie zulässig ist, sollte geprüft werden, da gesetzlich kürzere Fristen diskutiert werden."
+            "simplified": "Der Vermieter kann laut diesem Vertrag die Kaution für jede Art von Kosten einbehalten – nicht nur für konkrete Schäden.",
+            "why_it_matters": "Das Wort beliebiger lässt dem Vermieter nach dem Vertragstext sehr weiten Spielraum beim Einbehalt – das kann erhebliche finanzielle Auswirkungen haben.",
+            "enforceability_note": "Klauseln, die den Einbehalt der Kaution nicht auf konkrete, nachweisbare Ansprüche beschränken, werden in der deutschen Rechtsprechung häufig als unwirksam angesehen. Eine Prüfung durch eine Rechtsberatung oder den Mieterverein ist empfehlenswert."
           },
           {
             "type": "red_flag",
-            "title": "§12 Schönheitsreparaturen – starrer Fristenplan",
+            "title": "§7 Kaution – Rückzahlungsfrist sechs Monate",
+            "original_text": "Die Rückzahlung erfolgt spätestens sechs Monate nach Auszug, sofern keine Ansprüche des Vermieters bestehen.",
+            "simplified": "Der Vermieter hat bis zu sechs Monate Zeit, die Kaution zurückzuzahlen – das ist länger als in vielen Mietverträgen üblich.",
+            "why_it_matters": "Sechs Monate Wartezeit auf die Kaution kann bei einem Umzug finanziell belastend sein.",
+            "enforceability_note": "Die gesetzlich zulässige Höchstfrist für die Kautionsrückzahlung ist nicht starr geregelt; Gerichte beurteilen die Angemessenheit im Einzelfall. Aktuellen Rechtsstand prüfen."
+          },
+          {
+            "type": "red_flag",
+            "title": "§12 Schönheitsreparaturen – Starrer Fristenplan",
             "original_text": "Der Mieter verpflichtet sich, sämtliche Schönheitsreparaturen auf eigene Kosten in einem starren Fristenplan (alle drei Jahre) durchzuführen, unabhängig vom tatsächlichen Zustand.",
-            "simplified": "Man muss alle drei Jahre renovieren – egal ob die Wohnung tatsächlich abgenutzt aussieht oder nicht.",
-            "why_it_matters": "Starre Fristenpläne, die den tatsächlichen Zustand der Wohnung nicht berücksichtigen, sind nach ständiger Rechtsprechung des Bundesgerichtshofs regelmäßig unwirksam. Der Vertrag enthält genau eine solche Formulierung.",
-            "enforceability_note": "Starre Renovierungsklauseln ohne Rücksicht auf den tatsächlichen Zustand hat der Bundesgerichtshof in mehreren Urteilen für unwirksam erklärt. Ob dies auf diesen konkreten Vertrag zutrifft, sollte ein Anwalt oder Mieterrechtsverein prüfen."
+            "simplified": "Der Mieter muss alle drei Jahre Renovierungsarbeiten bezahlen – egal ob die Wohnung tatsächlich abgenutzt aussieht oder nicht.",
+            "why_it_matters": "Das kann regelmäßig hohe Kosten verursachen, selbst wenn keine sichtbaren Schäden vorhanden sind.",
+            "enforceability_note": "Starre Fristenpläne für Schönheitsreparaturen ohne Berücksichtigung des tatsächlichen Zustands wurden vom Bundesgerichtshof wiederholt für unwirksam erklärt. Aktuellen Rechtsstand und konkrete Formulierung anwaltlich prüfen lassen."
           },
           {
             "type": "red_flag",
-            "title": "§18 Kündigungsasymmetrie",
+            "title": "§18 Kündigungsfrist – Stark asymmetrisch",
             "original_text": "Eine Kündigung durch den Mieter ist nur mit einer Frist von zwölf Monaten zum Quartalsende zulässig. Der Vermieter kann jederzeit fristlos kündigen.",
-            "simplified": "Der Mieter muss zwölf Monate im Voraus zum Quartalsende kündigen; der Vermieter kann dem Vertrag zufolge jederzeit ohne Frist kündigen.",
-            "why_it_matters": "Diese Regelung belastet den Mieter mit einer sehr langen Kündigungsfrist, während sie dem Vermieter laut Vertragstext eine fristlose Kündigung ohne Begründung erlaubt – ein deutliches Ungleichgewicht.",
-            "enforceability_note": "Zwölf Monate Kündigungsfrist für den Mieter und gleichzeitig unbegrenzte fristlose Kündigung für den Vermieter dürfte mit den gesetzlichen Regelungen des BGB (§§ 573 ff.) schwer vereinbar sein. Dringend durch einen Anwalt oder Mieterrechtsverein prüfen lassen."
+            "simplified": "Der Mieter muss zwölf Monate im Voraus zum Quartalsende kündigen; der Vermieter kann laut Vertragstext jederzeit ohne Frist kündigen.",
+            "why_it_matters": "Diese Regelung belastet den Mieter stark: sehr lange Bindung, während der Vermieter sich sofortige Flexibilität vorbehält.",
+            "enforceability_note": "Eine fristlose Kündigung durch den Vermieter ohne gesetzlich anerkannten Grund ist nach deutschem Mietrecht in der Regel nicht zulässig. Die Klausel im Vertrag ist so formuliert, beschreibt aber möglicherweise nicht das tatsächlich geltende Recht. Rechtsberatung einholen."
           },
           {
             "type": "deadline",
-            "title": "§7 Rückzahlungsfrist Kaution",
-            "original_text": "Die Rückzahlung erfolgt spätestens sechs Monate nach Auszug.",
-            "simplified": "Die Kaution wird frühestens nach Auszug, spätestens sechs Monate danach zurückgezahlt.",
-            "why_it_matters": "Dieses Datum sollte man sich nach Auszug notieren, um die Frist aktiv verfolgen zu können.",
-            "enforceability_note": null
+            "title": "§18 Kündigungsfrist Mieter – 12 Monate zum Quartalsende",
+            "original_text": "Eine Kündigung durch den Mieter ist nur mit einer Frist von zwölf Monaten zum Quartalsende zulässig.",
+            "simplified": "Wer ausziehen möchte, muss genau ein Jahr vorher zum Quartalsende (31.03., 30.06., 30.09. oder 31.12.) kündigen.",
+            "why_it_matters": "Wer diese Frist verpasst, bleibt möglicherweise deutlich länger als gewünscht an den Vertrag gebunden.",
+            "enforceability_note": "Die gesetzliche Kündigungsfrist für Mieter beträgt nach §573c BGB in der Regel drei Monate. Eine vertraglich verlängerte Frist zulasten des Mieters kann unwirksam sein – rechtlich prüfen lassen."
           },
           {
-            "type": "decision",
-            "title": "§18 Zwölfmonatige Kündigungsfrist",
-            "original_text": "Eine Kündigung durch den Mieter ist nur mit einer Frist von zwölf Monaten zum Quartalsende zulässig.",
-            "simplified": "Wer ausziehen möchte, muss dies zwölf Monate vorher zum Ende eines Quartals ankündigen – das schränkt die eigene Flexibilität erheblich ein.",
-            "why_it_matters": "Wer möglicherweise bald umziehen, den Job wechseln oder anderweitig flexibel sein muss, sollte diese Bindung sorgfältig abwägen, bevor er unterschreibt.",
-            "enforceability_note": null
+            "type": "important",
+            "title": "§7 Kaution – Höhe drei Monatsmieten",
+            "original_text": "Der Mieter hinterlegt eine Kaution in Höhe von drei Monatsmieten.",
+            "simplified": "Bei Einzug muss der Mieter eine Sicherheitsleistung in Höhe von drei Nettokaltmieten hinterlegen.",
+            "why_it_matters": "Das entspricht dem gesetzlichen Höchstbetrag nach §551 BGB – die konkrete Summe hängt von der Miethöhe ab und sollte vor Unterzeichnung bekannt sein.",
+            "enforceability_note": "Drei Monatsmieten ist die gesetzliche Obergrenze nach §551 BGB. Übersteigt der vereinbarte Betrag diese Grenze, wäre die Klausel insoweit unwirksam."
           }
         ],
         "glossary": [
           {
             "term": "Kaution",
-            "definition": "Geldbetrag, den der Mieter als Sicherheit hinterlegt; wird nach Auszug zurückgezahlt, wenn keine berechtigten Forderungen des Vermieters bestehen.",
+            "definition": "Geldbetrag, den der Mieter dem Vermieter als Sicherheit hinterlegt – wird bei Auszug zurückgezahlt, sofern keine Schäden oder offene Forderungen bestehen.",
             "context": "§7"
           },
           {
             "term": "Schönheitsreparaturen",
-            "definition": "Renovierungsarbeiten wie Streichen oder Tapezieren, die normale Abnutzung beseitigen sollen.",
+            "definition": "Kleinere Renovierungsarbeiten wie Streichen von Wänden oder Decken, die den normalen Abnutzungserscheinungen vorbeugen sollen.",
             "context": "§12"
           },
           {
             "term": "Starrer Fristenplan",
-            "definition": "Festgelegte Renovierungsfristen, die unabhängig davon gelten, ob die Wohnung tatsächlich renovierungsbedürftig ist.",
+            "definition": "Feste zeitliche Vorgabe für Renovierungen, die unabhängig davon gilt, ob die Wohnung tatsächlich abgenutzt ist.",
             "context": "§12"
           },
           {
             "term": "Fristlose Kündigung",
-            "definition": "Kündigung ohne Einhaltung einer Kündigungsfrist, sofort wirksam.",
+            "definition": "Beendigung des Mietverhältnisses ohne Einhaltung einer Kündigungsfrist – nach deutschem Recht nur bei schwerwiegendem Grund zulässig.",
             "context": "§18"
           },
           {
             "term": "Quartalsende",
             "definition": "Ende eines Kalendervierteljahres: 31. März, 30. Juni, 30. September oder 31. Dezember.",
             "context": "§18"
-          },
-          {
-            "term": "Ansprüche des Vermieters",
-            "definition": "Forderungen des Vermieters, z. B. für Schäden oder ausstehende Mietzahlungen, die er gegen die Kaution aufrechnen möchte.",
-            "context": "§7"
           }
         ],
+        "checklist_title": "Vor der Unterschrift",
         "checklist": [
-          "Prüfen, ob die Sechs-Monats-Rückzahlungsfrist für die Kaution nach aktuellem deutschen Mietrecht zulässig ist.",
-          "Klären lassen, ob der starre Drei-Jahres-Renovierungsplan in diesem Vertrag wirksam vereinbart werden kann.",
-          "Die Kündigungsklausel (zwölf Monate für Mieter, fristlos für Vermieter) durch einen Anwalt oder Mieterrechtsverein prüfen lassen.",
-          "Den Begriff beliebiger Kosten in §7 konkretisieren lassen – schriftlich festhalten, welche Kosten gemeint sind.",
-          "Ausrechnen, wie viel drei Monatsmieten in Euro betragen, und sicherstellen, dass man diesen Betrag aufbringen kann.",
-          "Vor Unterzeichnung einen Mieterrechtsverein oder Anwalt kontaktieren, da mehrere Klauseln möglicherweise unwirksam sind."
+          "Genaue Kaltmiete erfragen, um die Kautionshöhe in Euro zu berechnen.",
+          "Klausel zur Kaution (beliebige Kosten) vom Mieterverein oder Anwalt auf Wirksamkeit prüfen lassen.",
+          "Schönheitsreparaturklausel mit starrem Fristenplan anwaltlich prüfen lassen – diese sind häufig unwirksam.",
+          "Kündigungsfrist von zwölf Monaten auf Wirksamkeit prüfen lassen und persönliche Planbarkeit abwägen.",
+          "Klausel zur fristlosen Kündigung durch den Vermieter auf Vereinbarkeit mit dem deutschen Mietrecht prüfen lassen.",
+          "Vollständigen Mietvertrag anfordern – dieser Auszug enthält möglicherweise weitere relevante Regelungen."
         ],
         "suggested_questions": [
           {
-            "question": "Was genau sind beliebige Kosten in §7, und können Sie das schriftlich konkretisieren?",
-            "why": "Der Vertragswortlaut lässt dem Vermieter nach diesem Text sehr weiten Spielraum beim Einbehalt der Kaution.",
-            "who_to_ask": "Vermieter, Anwalt"
+            "question": "Für welche konkreten Positionen darf der Vermieter die Kaution einbehalten?",
+            "why": "Der Vertragstext nennt beliebige Kosten – das ist sehr weit gefasst und sollte vor Unterzeichnung geklärt werden.",
+            "who_to_ask": "Vermieter schriftlich, danach Mieterverein oder Anwalt"
           },
           {
-            "question": "Ist die zwölfmonatige Kündigungsfrist kombiniert mit der fristlosen Kündigung des Vermieters nach deutschem Recht wirksam?",
-            "why": "Diese Kombination schafft laut Vertragstext ein starkes Ungleichgewicht zulasten des Mieters.",
-            "who_to_ask": "Anwalt oder Mieterrechtsverein"
+            "question": "Ist die Schönheitsreparaturklausel mit dem starren Drei-Jahres-Rhythmus wirksam?",
+            "why": "Solche Klauseln wurden von deutschen Gerichten häufig für unwirksam erklärt – das hätte Folgen für die Renovierungspflicht.",
+            "who_to_ask": "Mieterverein oder Mietrechtsanwalt"
           },
           {
-            "question": "Gilt die Renovierungspflicht in §12 auch dann, wenn die Wohnung beim Einzug frisch renoviert übergeben wird?",
-            "why": "Der starre Fristenplan ignoriert laut Text den tatsächlichen Zustand.",
-            "who_to_ask": "Anwalt oder Mieterrechtsverein"
+            "question": "Gilt die vertraglich vereinbarte Kündigungsfrist von zwölf Monaten tatsächlich, oder greift das gesetzliche Recht?",
+            "why": "Das Gesetz sieht für Mieter in der Regel drei Monate vor – eine vertraglich verlängerte Frist kann unwirksam sein.",
+            "who_to_ask": "Mieterverein oder Mietrechtsanwalt"
           },
           {
-            "question": "Aus welchem Grund setzt der Vertrag eine Rückzahlungsfrist von sechs Monaten für die Kaution an?",
-            "why": "Diese Frist ist vertraglich lang; die gesetzliche Lage dazu sollte geprüft werden.",
-            "who_to_ask": "Anwalt oder Mieterrechtsverein"
+            "question": "Auf welcher Grundlage kann der Vermieter fristlos kündigen?",
+            "why": "Der Vertrag nennt kein konkretes Erfordernis – gesetzlich ist eine fristlose Kündigung aber an enge Voraussetzungen geknüpft.",
+            "who_to_ask": "Mietrechtsanwalt"
           },
           {
-            "question": "Unter welchen Umständen würde der Vermieter von der fristlosen Kündigung Gebrauch machen?",
-            "why": "Der Vertrag nennt laut Text keinerlei Voraussetzungen für diese Kündigung.",
-            "who_to_ask": "Vermieter, Anwalt"
+            "question": "Gibt es weitere Paragraphen im vollständigen Mietvertrag, die Pflichten oder Rechte des Mieters regeln?",
+            "why": "Dieser Auszug umfasst nur drei Paragraphen – der vollständige Vertrag kann weitere wichtige Regelungen enthalten.",
+            "who_to_ask": "Vermieter – vollständigen Vertrag vor Unterzeichnung anfordern"
           }
         ],
         "attention": {
-          "explanation": "Drei Klauseln in diesem Auszug verdienen besondere Aufmerksamkeit: der vage Einbehaltungsspielraum bei der Kaution, der starre Renovierungsplan ohne Rücksicht auf den Wohnungszustand und die stark asymmetrische Kündigungsregelung – alle drei sind im deutschen Mietrecht erfahrungsgemäß häufig Streitpunkte und sollten vor Unterzeichnung fachlich geprüft werden."
+          "explanation": "Alle drei vorliegenden Klauseln enthalten Formulierungen, die den Mieter einseitig belasten: weitreichender Kautionseinbehalt, starrer Renovierungsrhythmus und eine stark asymmetrische Kündigungsregelung. Mehrere dieser Formulierungen werden in der deutschen Rechtsprechung regelmäßig angefochten – eine Prüfung vor Unterzeichnung ist daher besonders wichtig."
         }
       }
     },
@@ -196,113 +207,113 @@
         "userRegion": "DE"
       },
       "output": {
-        "overview": "Dieser Mietvertragsauszug benachteiligt den Mieter in allen vier gezeigten Klauseln erheblich — mehrere davon dürften nach deutscher Rechtsprechung bereits unwirksam sein, bleiben aber im Vertrag stehen und können im Alltag trotzdem Druck erzeugen.",
+        "overview": "Dieser Mietvertrag enthält mehrere Klauseln, die nach deutschem Recht als unwirksam gelten dürften oder die den Mieter einseitig und erheblich benachteiligen. Der Vertrag ist in der vorliegenden Form für den Mieter sehr ungünstig.",
         "fairness_score": {
           "score": 2,
           "label": "Very unfair",
-          "explanation": "Vier von vier Klauseln weichen zulasten des Mieters vom gesetzlichen Standard ab: Die Kaution-Rückzahlungsfrist ist doppelt so lang wie üblich zulässig, der starre Schönheitsreparaturplan ist nach BGH-Rechtsprechung unwirksam, die Kündigungsfristen sind einseitig, und die Haftungsklausel widerspricht dem Grundsatz der Verschuldenshaftung."
+          "explanation": "Vier zentrale Klauseln verschieben nahezu alle Risiken und Pflichten auf den Mieter, während der Vermieter sich umfassende Rechte ohne Gegenleistung vorbehält — mehrere davon widersprechen dem deutschen Mietrecht (BGB)."
         },
         "redlines": [
           {
             "clause": "§7 Kaution — Rückzahlungsfrist",
             "current_text": "Rückzahlung spätestens sechs Monate nach Auszug",
-            "problem": "Sechs Monate sind deutlich länger als die von der Rechtsprechung anerkannte Frist von etwa drei bis maximal vier Monaten für die Abrechnung; Ihr Geld ist unnötig lang gebunden.",
-            "suggested_change": "Rückzahlung der Kaution oder Vorlage einer schriftlichen Abrechnung spätestens drei Monate nach Rückgabe der Wohnung und Übergabeprotokoll.",
+            "problem": "Sechs Monate ist deutlich länger als nach deutschem Recht zumutbar — die Rechtsprechung erkennt in der Regel maximal drei bis sechs Monate an, aber sechs Monate sind das absolute Maximum und nur bei konkreten, noch laufenden Abrechnungen akzeptabel.",
+            "suggested_change": "Die Kaution wird innerhalb von drei Monaten nach Rückgabe der Wohnung und Vorlage aller abgerechneten Forderungen zurückgezahlt, sofern keine berechtigten Gegenansprüche bestehen.",
             "priority": "must-change",
-            "negotiation_tip": "Benennen Sie die gängige Praxis von drei Monaten als Referenz und bitten Sie um Anpassung — das ist sachlich kaum abzulehnen."
+            "negotiation_tip": "Weisen Sie darauf hin, dass Sie das Geld für die neue Wohnung benötigen und drei Monate für die Abrechnung vollkommen ausreichend sind."
           },
           {
-            "clause": "§7 Kaution — beliebige Kosten",
+            "clause": "§7 Kaution — beliebige Kostendeckung",
             "current_text": "Der Vermieter behält sich vor, die Kaution zur Deckung beliebiger Kosten einzubehalten.",
-            "problem": "Das Wort beliebiger lässt dem Vermieter unkontrollierten Spielraum; die Kaution darf gesetzlich nur für berechtigte Forderungen aus dem Mietverhältnis einbehalten werden.",
-            "suggested_change": "Der Vermieter ist berechtigt, die Kaution ausschließlich zur Deckung nachgewiesener, fälliger Forderungen aus diesem Mietverhältnis zu verwenden; darüber hinaus gehende Beträge sind unverzüglich zurückzuzahlen.",
+            "problem": "Das Wort beliebig gibt dem Vermieter einen unkontrollierten Zugriff auf Ihr Geld ohne Rechtfertigung — dieser Begriff ist rechtlich nicht haltbar und öffnet Missbrauch Tür und Tor.",
+            "suggested_change": "Der Vermieter darf die Kaution ausschließlich zur Deckung unbestrittener oder rechtskräftig festgestellter Forderungen aus dem Mietverhältnis einbehalten.",
             "priority": "must-change",
-            "negotiation_tip": "Formulieren Sie dies als Klarstellung, nicht als Angriff: Sie möchten nur, dass beide Seiten wissen, wofür die Kaution gedacht ist."
+            "negotiation_tip": "Formulieren Sie es als redaktionelle Klarstellung: Sie akzeptieren berechtigte Einbehalte, aber der Begriff beliebig sei juristisch zu unbestimmt und schütze keine der Parteien."
           },
           {
             "clause": "§12 Schönheitsreparaturen — starrer Fristenplan",
-            "current_text": "Sämtliche Schönheitsreparaturen alle drei Jahre, unabhängig vom Zustand",
-            "problem": "Starre Fristenpläne ohne Berücksichtigung des tatsächlichen Zustands sind nach ständiger BGH-Rechtsprechung in AGB unwirksam; Sie könnten trotzdem unter Druck gesetzt werden.",
-            "suggested_change": "Schönheitsreparaturen werden nur bei tatsächlich vorliegendem Renovierungsbedarf und nach beidseitig dokumentiertem Zustandsfeststellungsprotokoll fällig.",
+            "current_text": "Alle drei Jahre, unabhängig vom Zustand",
+            "problem": "Starre Fristenpläne ohne Ausrichtung am tatsächlichen Renovierungsbedarf sind nach ständiger BGH-Rechtsprechung unwirksam — diese Klausel dürfte bereits jetzt keine rechtliche Wirkung entfalten.",
+            "suggested_change": "Schönheitsreparaturen werden nur bei tatsächlichem Bedarf und nach Maßgabe des Abnutzungszustandes der Wohnung durchgeführt; ein fester Zeitplan entfällt.",
             "priority": "must-change",
-            "negotiation_tip": "Weisen Sie ruhig darauf hin, dass der BGH starre Fristenpläne für unwirksam erklärt hat — das ist keine Drohung, sondern eine Information."
+            "negotiation_tip": "Zitieren Sie sachlich, dass der BGH starre Fristenpläne wiederholt für unwirksam erklärt hat — das ist kein Verhandlungspoker, sondern geltende Rechtslage."
           },
           {
-            "clause": "§18 Kündigung — Mieterfrist",
+            "clause": "§18 Kündigung — Kündigungsfrist Mieter",
             "current_text": "Kündigung durch den Mieter nur mit zwölf Monaten Frist zum Quartalsende",
-            "problem": "Das Gesetz sieht für Mieter eine Kündigungsfrist von drei Monaten vor (§573c BGB); zwölf Monate sind eine erhebliche Einschränkung Ihrer Flexibilität.",
-            "suggested_change": "Kündigung durch den Mieter mit einer Frist von drei Monaten zum Monatsende, entsprechend §573c BGB.",
+            "problem": "Die gesetzliche Kündigungsfrist für Mieter beträgt nach § 573c BGB drei Monate — eine Verlängerung auf zwölf Monate ist für den Mieter nach deutschem Recht nicht wirksam vereinbar.",
+            "suggested_change": "Die Kündigungsfrist für den Mieter beträgt drei Monate zum Monatsende gemäß § 573c BGB.",
             "priority": "must-change",
-            "negotiation_tip": "Benennen Sie den Paragraphen direkt — das signalisiert, dass Sie sich auskennen, und verkürzt die Diskussion."
+            "negotiation_tip": "Das ist keine Verhandlungssache, sondern zwingendes Gesetzesrecht — informieren Sie den Vermieter ruhig und sachlich darüber."
           },
           {
-            "clause": "§18 Kündigung — Vermieterrecht zur fristlosen Kündigung",
+            "clause": "§18 Kündigung — fristlose Kündigung Vermieter",
             "current_text": "Der Vermieter kann jederzeit fristlos kündigen.",
-            "problem": "Eine fristlose Kündigung ist auch für Vermieter nur bei schwerem Vertragsverstoß zulässig; diese Formulierung erweckt den Eindruck eines unbegrenzten Rechts.",
-            "suggested_change": "Eine außerordentliche fristlose Kündigung durch den Vermieter ist nur aus wichtigem Grund nach §543 BGB zulässig.",
+            "problem": "Eine fristlose Kündigung durch den Vermieter ist nur bei Vorliegen eines wichtigen Grundes gesetzlich zulässig — eine unbeschränkte jederzeitige fristlose Kündigung ist unwirksam und schafft massive Rechtsunsicherheit.",
+            "suggested_change": "Eine fristlose Kündigung durch den Vermieter ist nur aus wichtigem Grund gemäß §§ 543, 569 BGB zulässig.",
             "priority": "must-change",
-            "negotiation_tip": "Rahmen Sie die Änderung als gegenseitige Fairness: Beide Seiten kündigen nur unter den gesetzlich vorgesehenen Bedingungen."
+            "negotiation_tip": "Erklären Sie, dass Sie nicht grundlos in Wohnungslosigkeit geraten möchten — das sei auch im Interesse eines seriösen Vermieters nicht zumutbar."
           },
           {
-            "clause": "§21 Haftung — verschuldensunabhängige Haftung",
+            "clause": "§21 Haftung — Schäden ohne eigenes Verschulden",
             "current_text": "Der Mieter haftet für alle Schäden am Gebäude, auch wenn er sie nicht verursacht hat.",
-            "problem": "Haftung ohne eigenes Verschulden widerspricht dem deutschen Haftungsrecht und ist in einem Mietvertrag als AGB-Klausel unwirksam.",
-            "suggested_change": "Der Mieter haftet nur für Schäden, die er oder Personen, für die er verantwortlich ist, schuldhaft verursacht haben.",
+            "problem": "Haftung ohne eigenes Verschulden widerspricht dem deutschen Schadensersatzrecht grundlegend — diese Klausel ist nach § 307 BGB unwirksam und unzumutbar.",
+            "suggested_change": "Der Mieter haftet nur für Schäden, die er oder von ihm zu vertretende Personen schuldhaft verursacht haben.",
             "priority": "must-change",
-            "negotiation_tip": "Diese Klausel ist rechtlich nicht haltbar — sprechen Sie das direkt an und bestehen Sie auf Streichung oder Umformulierung."
+            "negotiation_tip": "Stellen Sie klar, dass Sie selbstverständlich für eigene Fehler einstehen, aber nicht für Schäden durch Dritte, Naturereignisse oder bauliche Mängel."
           }
         ],
         "add_these": [
           {
-            "what": "Übergabeprotokoll bei Ein- und Auszug",
-            "why": "Ohne schriftlich dokumentierten Zustand der Wohnung bei Einzug haben Sie keine Grundlage, spätere Schadensvorwürfe zu widerlegen.",
-            "suggested_language": "Bei Übergabe der Mietsache bei Ein- und Auszug wird ein von beiden Parteien unterzeichnetes Übergabeprotokoll erstellt, das den Zustand der Wohnung dokumentiert."
+            "what": "Protokoll zum Wohnungszustand bei Einzug",
+            "why": "Ohne dokumentierten Ausgangszustand können bei Auszug Vorschäden fälschlicherweise dem Mieter angelastet werden.",
+            "suggested_language": "Bei Übergabe der Wohnung wird gemeinsam ein schriftliches Übergabeprotokoll erstellt, das den Zustand aller Räume, Böden, Wände und Einrichtungen festhält und von beiden Parteien unterzeichnet wird."
           },
           {
-            "what": "Deckelung der Kaution auf drei Monatsmieten (netto, kalt)",
-            "why": "Der Vertrag nennt drei Monatsmieten, ohne klarzustellen, ob Warm- oder Kaltmiete gemeint ist; das kann erhebliche Auswirkungen auf die Höhe haben.",
-            "suggested_language": "Die Kaution beträgt drei Monatsnettokaltmieten gemäß §551 BGB und wird auf einem separaten Konto mit marktüblicher Verzinsung angelegt."
+            "what": "Kautionskonto — Anlage und Nachweis",
+            "why": "Der Mieter hat gesetzlich Anspruch darauf, dass die Kaution getrennt vom Vermögen des Vermieters angelegt wird — das sollte schriftlich verankert sein.",
+            "suggested_language": "Der Vermieter legt die Kaution auf einem offenen Treuhandkonto oder einem separaten, insolvenzgeschützten Kautionskonto an und weist dem Mieter die Anlage auf Verlangen nach."
           },
           {
-            "what": "Regelung zur Kautionsverzinsung",
-            "why": "Der Vermieter ist gesetzlich verpflichtet, die Kaution getrennt und verzinst anzulegen; das sollte ausdrücklich im Vertrag stehen.",
-            "suggested_language": "Die Kaution wird vom Vermieter getrennt von seinem Vermögen auf einem Kautionskonto angelegt; Zinsen stehen dem Mieter zu."
+            "what": "Regelung zu Modernisierungen und Mieterhöhungen",
+            "why": "Ohne eine Klausel dazu kann der Vermieter Modernisierungskosten in vollem gesetzlichen Umfang auf die Miete umlegen — eine Deckelung schützt den Mieter.",
+            "suggested_language": "Mieterhöhungen nach Modernisierungen werden dem Mieter mindestens drei Monate vor Beginn der Maßnahme schriftlich angekündigt und überschreiten nicht die gesetzlichen Grenzen gemäß § 559 BGB."
           },
           {
-            "what": "Schriftformklausel für Nebenabreden",
-            "why": "Ohne diese Klausel können mündliche Absprachen schwer nachzuweisen sein.",
-            "suggested_language": "Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform; mündliche Nebenabreden bestehen nicht."
+            "what": "Schriftformklausel für Vertragsänderungen",
+            "why": "Ohne diese Klausel könnten mündliche Absprachen später bestritten werden.",
+            "suggested_language": "Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform und der Unterzeichnung durch beide Parteien."
           },
           {
-            "what": "Betriebskostenabrechnung — Frist und Nachprüfungsrecht",
-            "why": "Der Vertrag enthält keine Regelung zur Nebenkostenabrechnung; ohne sie fehlt eine wichtige Kontrollmöglichkeit.",
-            "suggested_language": "Der Vermieter legt die Betriebskostenabrechnung einmal jährlich vor; der Mieter hat das Recht, Belege einzusehen."
+            "what": "Konkrete Frist zur Mängelbeseitigung durch den Vermieter",
+            "why": "Der Vertrag regelt Mieterpflichten detailliert, enthält aber keine Frist, innerhalb derer der Vermieter angezeigte Mängel beheben muss.",
+            "suggested_language": "Der Vermieter beseitigt vom Mieter schriftlich angezeigte Mängel innerhalb einer angemessenen Frist, bei erheblichen Beeinträchtigungen der Nutzbarkeit innerhalb von 14 Tagen nach Anzeige."
           }
         ],
         "remove_these": [
           {
-            "what": "§7 — Formulierung beliebiger Kosten",
-            "why": "Dieser Begriff ist zu unbestimmt und gibt dem Vermieter einen nicht gerechtfertigten Einbehaltungsspielraum."
+            "what": "§7 — Einbehalt zur Deckung beliebiger Kosten",
+            "why": "Diese Formulierung ist rechtlich unbestimmt, begünstigt einseitig den Vermieter und ist nach § 307 BGB unwirksam."
           },
           {
-            "what": "§12 — Starrer Drei-Jahres-Fristenplan",
-            "why": "Starre Fristenpläne in AGB sind nach BGH-Rechtsprechung unwirksam; die Klausel sollte vollständig gestrichen oder durch eine zustandsbezogene Regelung ersetzt werden."
+            "what": "§12 — starrer Fristenplan unabhängig vom Zustand",
+            "why": "Starre Fristenpläne sind nach BGH-Rechtsprechung unwirksam — die gesamte Fristenregelung sollte ersatzlos gestrichen werden."
           },
           {
-            "what": "§18 — Jederzeit fristlose Kündigung durch den Vermieter",
-            "why": "Diese Formulierung suggeriert ein uneingeschränktes Recht, das so im deutschen Mietrecht nicht existiert."
+            "what": "§18 — jederzeitige fristlose Kündigung durch den Vermieter",
+            "why": "Eine unbeschränkte fristlose Kündigung ohne wichtigen Grund ist gesetzeswidrig und muss entfallen."
           },
           {
-            "what": "§21 — Haftung auch ohne Verursachung",
-            "why": "Verschuldensunabhängige Mieterhaftung für Gebäudeschäden ist rechtlich unwirksam und sollte nicht im Vertrag stehen."
+            "what": "§21 — Haftung für Schäden ohne Verschulden",
+            "why": "Verschuldensunabhängige Haftung des Mieters widerspricht §§ 276, 307 BGB und ist unwirksam."
           },
           {
-            "what": "§18 — Zwölf-Monats-Kündigungsfrist für den Mieter",
-            "why": "Diese Frist übersteigt das gesetzliche Maß erheblich und ist in dieser Form voraussichtlich unwirksam."
+            "what": "§18 — zwölf Monate Kündigungsfrist für den Mieter",
+            "why": "Diese Frist überschreitet die zwingende gesetzliche Regelung des § 573c BGB und ist für den Mieter nicht bindend."
           }
         ],
-        "non_negotiable_warning": "Die Grundstruktur des Mietverhältnisses (Mietpreis, Lage, Wohnungsgröße) ist typischerweise nicht verhandelbar — konzentrieren Sie Ihr Verhandlungskapital auf die Haftungs-, Kautions- und Kündigungsklauseln.",
-        "overall_strategy": "Beginnen Sie mit §21 (Haftung) und §18 (Kündigung), da diese am deutlichsten rechtlich angreifbar sind — das schafft Glaubwürdigkeit; gehen Sie dann zu Kaution und Schönheitsreparaturen über, und signalisieren Sie Kompromissbereitschaft bei kleineren Punkten, um Bewegung bei den wesentlichen Klauseln zu erzeugen."
+        "non_negotiable_warning": "Die Höhe der Kaution von drei Monatsmieten ist gesetzlich das zulässige Maximum und damit nicht verhandelbar — nutzen Sie Ihre Energie für die Klauseln, die tatsächlich änderbar sind.",
+        "overall_strategy": "Beginnen Sie mit den vier Klauseln, die gegen zwingendes deutsches Mietrecht verstoßen (§§ 12, 18, 21), und rahmen Sie diese als rechtliche Klarstellungen, nicht als Forderungen — das nimmt dem Vermieter die Möglichkeit, sie als unzumutbar abzulehnen. Verhandeln Sie die Kautionsrückzahlungsfrist und den Einbehaltsvorbehalt in einem zweiten Schritt als Kompromiss: Drei Monate und klare Kriterien statt sechs Monate und beliebig. Konzedieren Sie kleinere Punkte bewusst, um Goodwill zu erzeugen, und bestehen Sie auf Schriftform für alle vereinbarten Änderungen."
       }
     },
     {
@@ -318,7 +329,7 @@
         "userRegion": "DE"
       },
       "output": {
-        "overall_assessment": "Dieser Vertrag ist in mehreren Kernpunkten eindeutig mieterfeindlich und enthält Klauseln, die nach deutschem Recht aller Wahrscheinlichkeit nach unwirksam sind. Er weicht in fast jedem geprüften Bereich zum Nachteil des Mieters vom gesetzlichen Standard ab.",
+        "overall_assessment": "Dieser Mietvertrag ist in mehreren zentralen Klauseln rechtlich bedenklich bis unwirksam und geht systematisch zu Lasten des Mieters. Er weicht deutlich von einem ausgewogenen Standardmietvertrag ab.",
         "normal_score": {
           "score": 2,
           "label": "Very aggressive"
@@ -326,64 +337,64 @@
         "comparisons": [
           {
             "clause_area": "Kaution – Höhe",
-            "this_document": "Drei Monatsmieten Kaution",
-            "typical_range": "Maximal drei Nettokaltmieten – das ist die gesetzliche Obergrenze nach § 551 BGB",
+            "this_document": "Drei Monatsmieten als Kaution",
+            "typical_range": "Drei Monatsmieten sind gesetzlich das zulässige Maximum (§ 551 BGB)",
             "verdict": "standard",
-            "context": "Drei Monatsmieten sind das gesetzlich zulässige Maximum; mehr wäre unwirksam – dieser Punkt liegt gerade noch im erlaubten Rahmen."
+            "context": "Die Höhe ist zulässig, aber bereits das gesetzliche Maximum – kein Spielraum nach oben."
           },
           {
             "clause_area": "Kaution – Rückzahlung",
-            "this_document": "Rückzahlung erst bis zu sechs Monate nach Auszug",
-            "typical_range": "Gerichte billigen dem Vermieter eine angemessene Prüfungsfrist, in der Regel bis zu drei Monate, in Ausnahmefällen etwas länger",
+            "this_document": "Rückzahlung spätestens sechs Monate nach Auszug",
+            "typical_range": "Üblicherweise drei bis maximal sechs Monate; sechs Monate gilt bereits als das praktische Limit",
             "verdict": "worse_than_usual",
-            "context": "Sechs Monate liegt am oberen Rand oder darüber hinaus, was Gerichte für akzeptabel halten – je nach Einzelfall kann diese Klausel unwirksam sein."
+            "context": "Sechs Monate ist das Maximum, das Gerichte noch tolerieren – üblich und mieterfreundlicher sind drei Monate."
           },
           {
-            "clause_area": "Kaution – Einbehaltungsrecht",
+            "clause_area": "Kaution – Verwendungszweck",
             "this_document": "Vermieter darf Kaution für beliebige Kosten einbehalten",
-            "typical_range": "Einbehalt nur für konkret nachgewiesene Forderungen aus dem Mietverhältnis (Schäden, Mietrückstände, Nebenkosten)",
+            "typical_range": "Kaution darf nur für berechtigte Forderungen aus dem Mietverhältnis einbehalten werden",
             "verdict": "red_flag",
-            "context": "Der Begriff beliebige Kosten ist so unbestimmt, dass diese Klausel nach § 307 BGB als unangemessene Benachteiligung sehr wahrscheinlich unwirksam ist."
+            "context": "Die Formulierung beliebiger Kosten ist nach ständiger Rechtsprechung unwirksam – sie gibt dem Vermieter einen rechtlich nicht gedeckten Freifahrtschein."
           },
           {
             "clause_area": "Schönheitsreparaturen – starrer Fristenplan",
-            "this_document": "Renovierungspflicht starr alle drei Jahre, unabhängig vom Zustand",
-            "typical_range": "Flexible Fristenpläne, die auf den tatsächlichen Zustand abstellen, wären möglicherweise wirksam; starre Pläne sind nach ständiger BGH-Rechtsprechung unwirksam",
+            "this_document": "Renovierung alle drei Jahre, unabhängig vom Zustand der Wohnung",
+            "typical_range": "Starre Fristenpläne ohne Berücksichtigung des tatsächlichen Zustands sind nach BGH-Rechtsprechung unwirksam",
             "verdict": "red_flag",
-            "context": "Der BGH hat starre Fristenpläne mehrfach für unwirksam erklärt – diese Klausel verpflichtet den Mieter wahrscheinlich zu gar nichts, ist aber gefährlich, wenn man sie nicht kennt."
+            "context": "Der BGH hat solche Klauseln mehrfach für nichtig erklärt – der Mieter wäre also möglicherweise gar nicht zur Renovierung verpflichtet, aber das muss er selbst erkennen und darf sich nicht darauf verlassen."
           },
           {
-            "clause_area": "Kündigungsfrist Mieter",
+            "clause_area": "Kündigungsfrist – Mieter",
             "this_document": "Zwölf Monate Kündigungsfrist zum Quartalsende für den Mieter",
-            "typical_range": "Gesetzliche Kündigungsfrist für Mieter beträgt drei Monate zum Monatsende (§ 573c BGB) – eine Verlängerung zum Nachteil des Mieters ist unzulässig",
+            "typical_range": "Gesetzliche Kündigungsfrist für Mieter beträgt drei Monate (§ 573c BGB); vertragliche Verlängerungen sind nur beidseitig möglich",
             "verdict": "red_flag",
-            "context": "Diese Klausel ist nach § 573c Abs. 4 BGB unwirksam – der Mieter kann trotzdem mit drei Monaten kündigen, aber wer die Klausel nicht kennt, fühlt sich gebunden."
+            "context": "Eine einseitig verlängerte Kündigungsfrist nur für den Mieter ist nach § 573c Abs. 4 BGB unwirksam – dennoch kann das Durchsetzen im Streitfall aufwendig sein."
           },
           {
-            "clause_area": "Kündigungsrecht Vermieter",
+            "clause_area": "Kündigung – Vermieter",
             "this_document": "Vermieter kann jederzeit fristlos kündigen",
-            "typical_range": "Außerordentliche fristlose Kündigung durch den Vermieter ist nur bei wichtigem Grund zulässig (§ 543 BGB); ordentliche Kündigung erfordert berechtigtes Interesse und gesetzliche Fristen",
+            "typical_range": "Fristlose Kündigung durch den Vermieter ist nur bei schwerem Vertragsverstoß des Mieters zulässig (§ 543 BGB)",
             "verdict": "red_flag",
-            "context": "Ein schrankenloses fristloses Kündigungsrecht des Vermieters ist gesetzwidrig und damit unwirksam, bleibt aber eine Einschüchterungsklausel."
+            "context": "Diese Klausel ist gesetzlich nicht gedeckt und damit unwirksam – sie soll aber offenkundig Druck auf den Mieter ausüben."
           },
           {
-            "clause_area": "Haftung Mieter für fremde Schäden",
+            "clause_area": "Haftung – Gebäudeschäden",
             "this_document": "Mieter haftet für alle Gebäudeschäden, auch ohne eigenes Verschulden",
-            "typical_range": "Mieter haftet nur für Schäden, die er oder ihm zurechenbare Personen schuldhaft verursacht haben (§ 280 BGB)",
+            "typical_range": "Haftung setzt nach BGB eigenes Verschulden voraus (§ 280 BGB); verschuldensunabhängige Haftung ist im Mietrecht unzulässig",
             "verdict": "red_flag",
-            "context": "Verschuldensunabhängige Haftung für das gesamte Gebäude ist eine der gravierendsten Klauseln im Vertrag und nach § 307 BGB unwirksam."
+            "context": "Diese Klausel ist unwirksam, aber gefährlich: Wer sie nicht kennt, könnte auf Forderungen des Vermieters eingehen, zu denen er rechtlich nicht verpflichtet wäre."
           }
         ],
         "missing_protections": [
-          "Keine Regelung zur Schönheitsreparatur bei unrenoviert übernommener Wohnung – ohne Ausgleichsregelung wäre auch eine angepasste Klausel unwirksam",
-          "Kein Hinweis auf das Recht des Mieters, die Kaution auf einem separaten Kautionskonto anzulegen (§ 551 Abs. 3 BGB)",
-          "Keine Regelung zu Nebenkostenvorauszahlungen und Abrechnungsfristen",
-          "Kein Übergabeprotokoll oder Verweis darauf – schützt beide Seiten bei Ein- und Auszug",
-          "Keine Angabe zur Wohnfläche, die für Mietminderungsrechte und Mietspiegel-Einordnung relevant ist",
-          "Kein Hinweis auf den Münchner Mietspiegel oder Mietpreisbremse, die in München gilt"
+          "Kein Hinweis auf die Mietpreisbremse, obwohl München zu den Gebieten mit angespanntem Wohnungsmarkt gehört und ein Anspruch auf Auskunft zur Vormiete bestehen kann",
+          "Keine Regelung zur Instandhaltungspflicht des Vermieters (§ 535 BGB)",
+          "Kein Übergabeprotokoll oder Hinweis auf eine gemeinsame Wohnungsabnahme",
+          "Keine Regelung zur Nebenkostenabrechnung und zu den abrechenbaren Betriebskostenarten",
+          "Keine Regelung zum Haustierhaltung, Untervermietung oder baulichen Veränderungen – Fehlen kann im Streitfall zum Nachteil des Mieters ausgelegt werden",
+          "Kein Verweis auf gesetzliche Rechte bei Mängeln der Mietsache"
         ],
         "unusually_good": [],
-        "bottom_line": "Dieser Vertrag enthält mindestens vier Klauseln, die nach geltendem deutschen Recht sehr wahrscheinlich unwirksam sind – das schützt den Mieter in diesen Punkten zwar theoretisch, aber nur wer das weiß, kann sich darauf berufen. Vor Unterzeichnung sollte eine Mieterrechtsberatung (z. B. Mieterverein München) diesen Vertrag prüfen. Auf eine Streichung oder Korrektur der Klauseln zu §7 (beliebige Kosten), §18 (Kündigung) und §21 (Haftung) sollte unbedingt bestanden werden."
+        "bottom_line": "Diesen Vertrag sollten Sie in der vorliegenden Form nicht unterschreiben. Mehrere Klauseln sind nach deutschem Recht voraussichtlich unwirksam – das schützt Sie zwar rechtlich, aber nur wenn Sie Ihre Rechte kennen und im Streitfall durchsetzen. Lassen Sie den Vertrag vor der Unterschrift von einem Mieterverein oder einer Rechtsberatungsstelle prüfen, am besten dem Mieterverein München. Bestehen Sie auf einem überarbeiteten Vertrag, der zumindest die Kündigungsfristen, die Kautionsregelung und die Haftungsklausel korrigiert."
       }
     },
     {
@@ -409,58 +420,52 @@
         "userRegion": "US"
       },
       "output": {
-        "fit_assessment": "This policy is a poor fit for this reader's weekend situation in two significant ways: the delivery exclusion directly voids both liability and physical damage coverage during the exact hours they are working, and the explicit exclusion of personal property inside the vehicle leaves their camera gear unprotected in every scenario. The document as written provides meaningful coverage only during personal, non-commercial use of the car.",
+        "fit_assessment": "This policy has two direct collisions with this reader's actual life: the delivery exclusion strips both liability and physical damage coverage during the weekend food delivery work, and the personal property exclusion leaves the camera gear in the trunk completely unprotected at all times. For someone who regularly drives commercially and stores expensive equipment in their car, this policy as written provides far less protection than a standard personal driver would receive.",
         "watch_outs": [
           {
-            "title": "Delivery exclusion kills liability coverage while working",
-            "issue": "The Part A exclusion — coverage does not apply while the vehicle is used to carry persons or property for a fee via a transportation network or delivery network company — collides directly with the reader's weekend food delivery work.",
-            "why_it_matters": "If they injure someone or damage property during a delivery, this policy will deny the claim entirely, leaving them personally liable for damages with no insurer behind them.",
-            "recommendation": "Ask their insurer specifically about a rideshare or delivery endorsement added to this policy, or obtain a commercial auto policy that covers food delivery; confirm in writing that the endorsement closes the gap during active delivery periods."
+            "title": "Liability void during deliveries",
+            "issue": "The Part A exclusion — coverage does not apply while the vehicle is used to carry persons or property for a fee — collides directly with the reader's weekend food delivery work, which is precisely carrying property for a fee.",
+            "why_it_matters": "If the reader causes an at-fault accident while on a delivery run, this policy pays nothing toward the other party's bodily injury or property damage, leaving the reader personally liable for those costs.",
+            "recommendation": "Ask the insurer whether a rideshare or delivery endorsement can be added to this policy, or obtain a separate commercial auto policy that covers the delivery period specifically."
           },
           {
-            "title": "Part D physical damage coverage also voids during delivery",
-            "issue": "Part D covers direct and accidental loss to the covered auto, but the same for-a-fee exclusion applies — meaning if their car is damaged in an accident while on a delivery run, the insurer can deny the vehicle damage claim as well.",
-            "why_it_matters": "A collision while picking up or dropping off a food order could result in full out-of-pocket repair or total-loss costs with no Part D payout.",
-            "recommendation": "Verify with the insurer whether a delivery endorsement extends Part D coverage during active delivery periods, not just Part A, and get that confirmation in writing before the next delivery shift."
+            "title": "Physical damage void during deliveries",
+            "issue": "Part D covers direct and accidental loss to the covered auto, but the same fee-based-use exclusion language that voids Part A almost certainly voids Part D as well during delivery runs — the document does not carve out an exception for physical damage coverage.",
+            "why_it_matters": "If the reader's car is damaged in a collision while on a delivery, the insurer can deny the claim under the same exclusion, leaving the reader to pay for their own vehicle repairs.",
+            "recommendation": "Confirm explicitly with the insurer in writing whether Part D is also suspended during delivery use, and if so, require the delivery endorsement to restore physical damage coverage as well."
           },
           {
-            "title": "Camera gear in trunk is explicitly excluded in every scenario",
-            "issue": "Part D states personal property inside the vehicle is not covered — this directly collides with the reader keeping expensive camera gear in the trunk, regardless of whether a delivery is in progress or not.",
-            "why_it_matters": "Theft from the trunk, a break-in, or a collision that destroys the equipment would result in zero reimbursement from this policy for the camera gear under any circumstance.",
-            "recommendation": "Check whether a homeowners or renters insurance policy covers personal property away from home, or obtain a standalone inland marine or scheduled personal property policy that specifically lists the camera equipment."
+            "title": "Camera gear is categorically excluded",
+            "issue": "Part D explicitly states personal property inside the vehicle is not covered, which directly collides with the reader keeping expensive camera gear in the trunk.",
+            "why_it_matters": "If the camera gear is stolen from the trunk, damaged in a crash, or lost in any auto-related incident, this policy pays nothing toward it regardless of whether a delivery was in progress.",
+            "recommendation": "Check whether a homeowners or renters insurance policy covers personal property away from home, or purchase a standalone inland marine or scheduled personal property policy that covers the specific camera equipment by value."
           },
           {
-            "title": "10-day cancellation window for nonpayment creates sudden coverage gap",
-            "issue": "The Termination clause allows the insurer to cancel with only 10 days notice for nonpayment — if a payment is missed and the reader is unaware, they could be driving and delivering with no coverage before they realize the policy lapsed.",
-            "why_it_matters": "A lapsed policy during a delivery shift means no coverage for an at-fault accident, and the reader would also be driving uninsured in violation of state law.",
-            "recommendation": "Set up automatic payment for the premium and confirm the insurer has a current email or phone number on file so any cancellation notice reaches them immediately."
+            "title": "Short cancellation window for nonpayment",
+            "issue": "The Termination clause allows the insurer to cancel with only 10 days notice for nonpayment, and if coverage lapses during a weekend delivery run, the exclusion problem compounds into a total-coverage problem.",
+            "why_it_matters": "A lapse of even a few days leaves the reader doing delivery work with no coverage at all, which is a higher-stakes gap than it would be for a purely personal driver.",
+            "recommendation": "Set up automatic payment to eliminate the nonpayment cancellation risk, given that a lapse intersecting with delivery work creates compounded exposure."
           }
         ],
         "already_covered": [
-          "Accidents during personal, non-commercial use of the car — such as driving to a shoot location on a weekday — are covered under Part A liability with no exclusion applying.",
-          "Physical damage to the car itself during personal use is covered under Part D, subject to the deductible.",
-          "The 20-day notice requirement for non-nonpayment cancellations gives the reader reasonable time to find replacement coverage if the insurer decides to cancel for another reason."
+          "Accidental physical damage to the car itself during non-delivery personal use is covered under Part D, so a weekend fender-bender while not on a delivery run would be handled.",
+          "Liability for at-fault accidents during personal, non-delivery driving is covered under Part A with no noted exclusion that would apply to ordinary use."
         ],
         "questions_for_your_situation": [
           {
-            "question": "Does your insurer offer a delivery network endorsement that explicitly extends both Part A and Part D coverage during active food delivery periods?",
-            "why": "Without confirmation that both liability and physical damage are restored during delivery, adding an endorsement that only covers one of the two still leaves a major gap.",
-            "who_to_ask": "Your current auto insurance agent or company underwriter."
+            "question": "Does the food delivery platform — DoorDash, Uber Eats, or whichever the reader uses — carry contingent commercial auto coverage, and exactly at which moments during the delivery workflow does that coverage activate and deactivate?",
+            "why": "Platform coverage, where it exists, often has gaps between when the reader is logged in but awaiting an order versus actively transporting food, meaning neither the personal policy nor the platform policy may cover that window.",
+            "who_to_ask": "The delivery platform's driver support or the platform's insurance summary documentation, then confirm with your personal insurer where their exclusion begins relative to the platform's coverage."
           },
           {
-            "question": "Does your food delivery platform — such as DoorDash or Uber Eats — provide any commercial auto coverage, and exactly at what point in the delivery workflow does that coverage start and stop?",
-            "why": "Platform coverage, where it exists, often has its own gaps — for example, it may only apply once an order is accepted, not during the period when you are logged in but waiting — meaning your personal policy exclusion and the platform gap could overlap.",
-            "who_to_ask": "The insurance or safety section of your delivery platform's driver documentation."
+            "question": "What is the total replacement value of the camera gear kept in the trunk, and does the reader's renters or homeowners policy cover it away from home and at what limit?",
+            "why": "The amount determines whether a scheduled inland marine endorsement is warranted, and many renters or homeowners policies cap off-premises personal property coverage well below the value of professional camera equipment.",
+            "who_to_ask": "Your renters or homeowners insurer, asking specifically about off-premises coverage limits and whether camera equipment qualifies as a scheduled item."
           },
           {
-            "question": "Does your renters or homeowners policy cover camera gear stored in your car trunk, and does it apply during commercial activity like delivery driving?",
-            "why": "Some personal property policies exclude coverage during business use, which could eliminate the one remaining avenue for protecting the camera equipment.",
-            "who_to_ask": "Your renters or homeowners insurance agent."
-          },
-          {
-            "question": "What is the total replacement value of your camera gear, and does that figure exceed the deductible or coverage limit on any policy you might use to protect it?",
-            "why": "If the gear's value is high enough, a scheduled inland marine policy listing the equipment by serial number and value may be the only way to ensure full reimbursement.",
-            "who_to_ask": "An independent insurance agent who handles personal articles or inland marine coverage."
+            "question": "Will adding a delivery or commercial use endorsement to this personal auto policy trigger a full underwriting review that could result in the policy being cancelled or repriced?",
+            "why": "Some insurers treat the disclosure of commercial use as a material change that affects the entire policy, not just the delivery period, which the reader needs to anticipate before initiating the conversation.",
+            "who_to_ask": "Your insurance agent or the insurer's underwriting department directly."
           }
         ]
       }

@@ -324,9 +324,9 @@ const JargonAssassin = ({ tool }) => {
 
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    let out = `🗡️ ${t('jarg_title')}\n\n📖 ${results.summary}\n📊 ${results.reading_level}\n\n${results.translation}\n`;
+    let out = `🗡️ ${t('jarg_title')}\n\n📖 ${results.summary}\n\n${results.translation}\n`;
     if (results.glossary?.length) { out += `\n${t('jarg_glossary')}:\n`; results.glossary.forEach(g => { out += `• ${g.term}: ${g.definition}\n`; }); }
-    if (results.checklist?.length) { out += `\n${t('jarg_before_sign')}:\n`; results.checklist.forEach(ch => { out += `☐ ${ch}\n`; }); }
+    if (results.checklist?.length) { out += `\n${results.checklist_title || t('jarg_before_sign')}:\n`; results.checklist.forEach(ch => { out += `☐ ${ch}\n`; }); }
     return out + BRAND;
   }, [results, t]);
 
@@ -461,7 +461,7 @@ const JargonAssassin = ({ tool }) => {
               <p className={`text-sm ${c.text} mt-1`}>{results.for_your_goal}</p>
             </div>
           )}
-          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 {t('jarg_summary')}</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}</div></div>
+          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 {t('jarg_summary')}</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1"></div></div>
           {results.attention?.explanation && (
             <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mt-3`}>
               <h4 className={`text-xs font-bold ${c.textSecondary}`}>{t('jarg_attention_title')}</h4>
@@ -571,7 +571,7 @@ const JargonAssassin = ({ tool }) => {
         </div>}
 
         {/* Checklist */}
-        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ {t('jarg_before_sign')}</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
+        {results.checklist?.length > 0 && activeTab === 'translation' && <div className={`${c.warning} border rounded-xl p-5`}><h3 className="font-bold text-sm mb-3">⚠️ {results.checklist_title || t('jarg_before_sign')}</h3>{results.checklist.map((item, i) => <label key={i} className="flex items-start gap-3 mb-2 cursor-pointer"><input type="checkbox" className="mt-1 w-4 h-4 rounded" /><span className="text-sm">{item}</span></label>)}</div>}
         {results.suggested_questions?.length > 0 && activeTab === 'translation' && (
           <div className={`${c.highlight} border rounded-xl p-5`}>
             <h3 className="font-bold text-sm mb-3">❓ {t('jarg_questions_to_ask')}</h3>

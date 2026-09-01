@@ -90,7 +90,8 @@ Return ONLY valid JSON:
   "for_your_goal": "ONLY when a reader question or concern is supplied above: 2-3 sentences answering it directly from the document, or saying plainly that the document does not address it. Omit this field entirely when no question was supplied.",
   "key_sections": [{ "type": "important | decision | red_flag | deadline", "title": "Brief title", "original_text": "Original text", "simplified": "Plain explanation", "why_it_matters": "Why flagged", "enforceability_note": "If this clause is commonly disputed or unenforceable, note it here. null otherwise." }],
   "glossary": [{ "term": "technical term", "definition": "simple definition", "context": "where it appears" }],
-  "checklist": ["Before you sign/agree, verify this..."],
+  "checklist_title": "Short heading for the checklist below, fitting what this document actually is: 'Before you sign' for something being signed, 'Before you act' or 'What to do next' for a notice, statement, decision or anything the reader does not sign. 4 words maximum.",
+  "checklist": ["Something to verify or do before acting on this document..."],
   "suggested_questions": [{ "question": "Question to ask", "why": "Why it matters", "who_to_ask": "lawyer/doctor/HR/etc." }],
   "attention": { "explanation": "What in this document deserves the reader's attention and why, grounded in its text. One or two short sentences. Say plainly if nothing stands out." }
 }
