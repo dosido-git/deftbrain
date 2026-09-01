@@ -81,19 +81,21 @@ RULES:
 - Do not score or imply overall danger merely because a document is legal, medical, financial, governmental, technical, or unfamiliar.
 - Do not assert that a clause is unenforceable, illegal, medically inappropriate, financially improper, or outside a normal range unless that conclusion is established by reliable current information available in the prompt. When outside verification is needed, say what should be verified and why.
 - For enforceability_note, describe the document issue conservatively and recommend checking current law when jurisdiction or legal currency matters.
+- Describe what the DOCUMENT SAYS or GRANTS, not what is legally true of the reader. "This rider gives the landlord sole and absolute discretion" is accurate; "the landlord has complete, final say" is not, because actual rights depend on applicable law that may limit the clause. The same holds for anything the document appears to waive, forfeit, require or guarantee.
 - Treat missing context as unknown, not evidence of a problem.
 - If the reader supplied a question or concern, prioritize sections that bear directly on it, while still surfacing other material terms.
 
 Return ONLY valid JSON:
 {
+  "for_your_goal": "ONLY when a reader question or concern is supplied above: 2-3 sentences answering it directly from the document, or saying plainly that the document does not address it. Omit this field entirely when no question was supplied.",
   "key_sections": [{ "type": "important | decision | red_flag | deadline", "title": "Brief title", "original_text": "Original text", "simplified": "Plain explanation", "why_it_matters": "Why flagged", "enforceability_note": "If this clause is commonly disputed or unenforceable, note it here. null otherwise." }],
   "glossary": [{ "term": "technical term", "definition": "simple definition", "context": "where it appears" }],
   "checklist": ["Before you sign/agree, verify this..."],
   "suggested_questions": [{ "question": "Question to ask", "why": "Why it matters", "who_to_ask": "lawyer/doctor/HR/etc." }],
-  "danger_score": { "level": "safe | caution | warning | danger", "explanation": "Brief risk explanation" }
+  "attention": { "explanation": "What in this document deserves the reader's attention and why, grounded in its text. One or two short sentences. Say plainly if nothing stands out." }
 }
 
-LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8, glossary AT MOST 10, checklist AT MOST 6, suggested_questions AT MOST 6. Keep every field to ONE short sentence.`, userLanguage) + localeCtx;
+LIMITS (keep the response bounded so it never truncates): for_your_goal AT MOST 3 sentences, key_sections AT MOST 8, glossary AT MOST 10, checklist AT MOST 6, suggested_questions AT MOST 6. Keep every field to ONE short sentence.`, userLanguage) + localeCtx;
 
     const [translated, extracted] = await Promise.all([
       callClaudeWithRetry({

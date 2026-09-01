@@ -24,7 +24,6 @@ const LEVELS = [
 ];
 
 const FLAG = { important: { i: '🚩', lKey: 'jarg_flag_important' }, decision: { i: '⚠️', lKey: 'jarg_flag_decision' }, red_flag: { i: '🔴', lKey: 'jarg_flag_red_flag' }, deadline: { i: '⏰', lKey: 'jarg_flag_deadline' } };
-const DANGER = { safe: '✅', caution: '🟡', warning: '🟠', danger: '🔴' };
 
 const JargonAssassin = ({ tool }) => {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
@@ -274,7 +273,7 @@ const JargonAssassin = ({ tool }) => {
     } catch (e) { setError(e.message || t('jarg_err_request_failed')); }
   };
 
-  const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, danger: results.danger_score?.level, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500), preview: (fileName || docText || '').slice(0, 40) }, ...prev].slice(0, 6)); };
+  const saveDoc = () => { if (!results) return; setSavedDocs(prev => [{ title: fileName || results.summary?.substring(0, 50), docType, readLevel, summary: results.summary, timestamp: new Date().toISOString(), results, docText: docText.substring(0, 500), preview: (fileName || docText || '').slice(0, 40) }, ...prev].slice(0, 6)); };
 
   const loadSaved = (s) => { setResults(s.results); setDocType(s.docType); setReadLevel(s.readLevel); setDocText(s.docText || ''); setMode('results'); setActiveTab('translation'); setQaHistory([]); setSugData(null); setRlData(null); setTplData(null); setApData(null); setPersData(null); setShowSaved(false); };
 
@@ -377,7 +376,7 @@ const JargonAssassin = ({ tool }) => {
       {/* Saved */}
       {showSaved && <div className={`${c.card} ${c.border} border ${c.border} rounded-xl p-5 space-y-3`}>
         <h3 className={`font-bold ${c.text}`}>💾 {t('jarg_saved_title')}</h3>
-        {savedDocs.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_saved_empty')}</p> : savedDocs.map((s, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p>{s.danger && s.danger !== 'safe' && <span className="text-xs">{DANGER[s.danger]}</span>}</div><p className={`text-xs ${c.textMuteded}`}>{(() => { const dt = DOC_TYPES.find(d => d.id === s.docType); return dt ? `${dt.icon} ${t(dt.labelKey)}` : s.docType; })()} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}
+        {savedDocs.length === 0 ? <p className={`text-sm ${c.textMuteded}`}>{t('jarg_saved_empty')}</p> : savedDocs.map((s, i) => <div key={i} className={`${c.cardAlt} rounded-lg p-3 flex items-start justify-between gap-2`}><div className="flex-1 cursor-pointer" onClick={() => loadSaved(s)}><div className="flex items-center gap-2"><p className={`text-sm font-bold ${c.text}`}>{s.title}</p></div><p className={`text-xs ${c.textMuteded}`}>{(() => { const dt = DOC_TYPES.find(d => d.id === s.docType); return dt ? `${dt.icon} ${t(dt.labelKey)}` : s.docType; })()} · {new Date(s.timestamp).toLocaleDateString()}</p></div><button onClick={() => setSavedDocs(prev => prev.filter((_, idx) => idx !== i))} className={`text-xs ${c.textMuteded}`}>🗑️</button></div>)}
       </div>}
 
       {/* ═══ INPUT ═══ */}
@@ -456,8 +455,19 @@ const JargonAssassin = ({ tool }) => {
       {mode === 'results' && results && <div data-copy-results ref={resultsRef} className="space-y-4">
         {/* Summary + Danger */}
         <div className={`${c.accentCard} border rounded-xl p-5`}>
-          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 {t('jarg_summary')}</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}{results.danger_score && <span className={`text-xs px-2 py-0.5 rounded-full ${results.danger_score.level === 'safe' ? c.success : results.danger_score.level === 'caution' ? c.warning : c.danger} border`}>{DANGER[results.danger_score.level]} {results.danger_score.level}</span>}</div></div>
-          {results.danger_score?.explanation && results.danger_score.level !== 'safe' && <p className={`text-xs ${c.textSecondary} mt-2`}>{results.danger_score.explanation}</p>}
+          {results.for_your_goal && (
+            <div className={`${c.highlight} border ${c.border} rounded-lg p-3 mb-3`}>
+              <h3 className={`font-bold ${c.text} text-sm`}>🎯 {t('jarg_for_your_goal')}</h3>
+              <p className={`text-sm ${c.text} mt-1`}>{results.for_your_goal}</p>
+            </div>
+          )}
+          <div className="flex items-start justify-between gap-3"><div className="flex-1"><h3 className={`font-bold ${c.textSecondary} text-sm`}>📖 {t('jarg_summary')}</h3><p className={`text-sm ${c.text} mt-1`}>{results.summary}</p></div><div className="flex flex-col items-end gap-1">{results.reading_level && <span className={`text-xs px-2 py-0.5 rounded-full ${c.highlight} border`}>📖 {results.reading_level}</span>}</div></div>
+          {results.attention?.explanation && (
+            <div className={`${c.cardAlt} border ${c.border} rounded-lg p-3 mt-3`}>
+              <h4 className={`text-xs font-bold ${c.textSecondary}`}>{t('jarg_attention_title')}</h4>
+              <p className={`text-sm ${c.text} mt-1`}>{results.attention.explanation}</p>
+            </div>
+          )}
         </div>
 
         {/* Actions */}

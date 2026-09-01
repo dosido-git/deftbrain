@@ -6,6 +6,8 @@
 // translator output demonstrates de-jargoning of a real-world clause.
 export const jargonAssassin = {
   "en": {
+    "jarg_attention_title": "What deserves your attention",
+    "jarg_for_your_goal": "For what you're trying to figure out",
     "jarg_dt_unsure": "Not sure",
     "jarg_dt_other": "Other",
     "jarg_goal_label": "What are you trying to figure out?",
@@ -193,6 +195,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "es": {
+    "jarg_attention_title": "Lo que merece tu atención",
+    "jarg_for_your_goal": "Sobre lo que quieres averiguar",
     "jarg_dt_unsure": "No estoy seguro",
     "jarg_dt_other": "Otro",
     "jarg_goal_label": "¿Qué quieres averiguar?",
@@ -380,6 +384,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "zh": {
+    "jarg_attention_title": "值得你注意的地方",
+    "jarg_for_your_goal": "关于你想弄清楚的问题",
     "jarg_dt_unsure": "不确定",
     "jarg_dt_other": "其他",
     "jarg_goal_label": "你想弄清楚什么？",
@@ -567,6 +573,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "hi": {
+    "jarg_attention_title": "किस पर ध्यान देना चाहिए",
+    "jarg_for_your_goal": "आप जो जानना चाहते हैं, उस पर",
     "jarg_dt_unsure": "पता नहीं",
     "jarg_dt_other": "अन्य",
     "jarg_goal_label": "आप क्या जानना चाहते हैं?",
@@ -754,6 +762,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ar": {
+    "jarg_attention_title": "ما يستحق الانتباه",
+    "jarg_for_your_goal": "بخصوص ما تريد معرفته",
     "jarg_dt_unsure": "غير محدد",
     "jarg_dt_other": "أخرى",
     "jarg_goal_label": "ما الذي تحاول معرفته؟",
@@ -941,6 +951,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "pt": {
+    "jarg_attention_title": "O que merece sua atenção",
+    "jarg_for_your_goal": "Sobre o que você quer descobrir",
     "jarg_dt_unsure": "Não tenho certeza",
     "jarg_dt_other": "Outro",
     "jarg_goal_label": "O que você quer descobrir?",
@@ -1128,6 +1140,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "fr": {
+    "jarg_attention_title": "Ce qui mérite votre attention",
+    "jarg_for_your_goal": "Sur ce que vous cherchez à savoir",
     "jarg_dt_unsure": "Je ne sais pas",
     "jarg_dt_other": "Autre",
     "jarg_goal_label": "Que cherchez-vous à savoir ?",
@@ -1315,6 +1329,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "de": {
+    "jarg_attention_title": "Worauf du achten solltest",
+    "jarg_for_your_goal": "Zu dem, was du herausfinden willst",
     "jarg_dt_unsure": "Weiß ich nicht",
     "jarg_dt_other": "Sonstiges",
     "jarg_goal_label": "Was willst du herausfinden?",
@@ -1502,6 +1518,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ja": {
+    "jarg_attention_title": "注意しておきたいこと",
+    "jarg_for_your_goal": "知りたいことについて",
     "jarg_dt_unsure": "わからない",
     "jarg_dt_other": "その他",
     "jarg_goal_label": "何を知りたいですか。",
@@ -1689,6 +1707,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ko": {
+    "jarg_attention_title": "눈여겨볼 부분",
+    "jarg_for_your_goal": "알아내고 싶은 것에 대해",
     "jarg_dt_unsure": "잘 모르겠어요",
     "jarg_dt_other": "기타",
     "jarg_goal_label": "무엇을 알아내고 싶나요?",
@@ -1876,6 +1896,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "ru": {
+    "jarg_attention_title": "На что стоит обратить внимание",
+    "jarg_for_your_goal": "По тому, что вы хотите выяснить",
     "jarg_dt_unsure": "Не знаю",
     "jarg_dt_other": "Другое",
     "jarg_goal_label": "Что вы хотите выяснить?",
@@ -2063,6 +2085,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "th": {
+    "jarg_attention_title": "สิ่งที่ควรใส่ใจ",
+    "jarg_for_your_goal": "เกี่ยวกับสิ่งที่คุณอยากรู้",
     "jarg_dt_unsure": "ไม่แน่ใจ",
     "jarg_dt_other": "อื่น ๆ",
     "jarg_goal_label": "อยากรู้เรื่องอะไร",
@@ -2250,6 +2274,8 @@ export const jargonAssassin = {
     "jarg_vs": "vs"
   },
   "vi": {
+    "jarg_attention_title": "Điều đáng chú ý",
+    "jarg_for_your_goal": "Về điều bạn muốn tìm hiểu",
     "jarg_dt_unsure": "Không chắc",
     "jarg_dt_other": "Khác",
     "jarg_goal_label": "Bạn muốn tìm hiểu điều gì?",
