@@ -807,13 +807,13 @@ URL: https://deftbrain.com/HobbyMatch
 Tagline: Discover hobbies you didn't know existed.
 Categories: Out & About
 
-Bored of the usual suggestions? Describe your personality, schedule, budget, and physical situation, and HobbyMatch recommends 5-6 hobbies you've genuinely never considered — with the hook that makes each one addictive, the absolute lowest-barrier first step you can take today, startup costs, and where to find your people.
+Looking for a hobby that actually fits your life? Tell Hobby Match what you enjoy, what you want more of, and the limits that matter. Get a short list of well-matched possibilities, why each might fit, what it takes to try, and an easy first step.
 
-**What it does.** HobbyMatch goes beyond yoga and painting to find hobbies you didn't know existed. It matches your personality, schedule, budget, and physical situation against an enormous range of activities — from urban sketching to historical fencing to mycology. Each recommendation includes what makes it addictive, a first step you can take tonight, realistic costs, and where to find community.
+**What it does.** Hobby Match works from what you supply — interests, how much free time you have, what you can spend, what already has to work around, and what you have tried — and returns a short list of hobbies worth a look. Each one says why it made the list, what you would actually be doing, how it fits the time you have, roughly what it costs to start, and the smallest way to try it before committing to anything.
 
 **How to use it.**
 
-1. Describe your personality and what you're like
+1. Describe your interests and what tends to hold your attention
 2. Pick what you're looking for — relaxation, social, creative, physical, etc.
 3. Add your schedule constraints and budget level
 4. List anything you've already tried so it's excluded
@@ -821,16 +821,16 @@ Bored of the usual suggestions? Describe your personality, schedule, budget, and
 
 **Tips.**
 
-- List things you've tried so they're excluded — this forces more creative suggestions
+- List what you have tried, and why it did or did not work — the reason matters more than the hobby
 - Tap 'Something weird' in the goals for the most unexpected recommendations
-- The 'first step' for each hobby is designed to be doable tonight
-- The wildcard pick at the bottom is intentionally off-script — give it a chance
+- The 'try it once' step is meant to test the hobby before you buy equipment
+- The wildcard, when there is one, approaches what you asked for from a different angle
 
 **Example.**
 
 Input: Introverted night owl, $50 budget, bad knees, loves building things, already tried woodworking and model kits.
 
-Output: Suggests bookbinding (meditative, solo, $20 starter kit), PCB design (build electronics from home at 2am), mushroom cultivation (grow kits are $30, oddly satisfying), amateur radio (build your own equipment, massive online community), and fountain pen restoration (combines mechanical tinkering with history).
+Output: Suggests bookbinding (solo, works in short sessions, low startup), amateur radio (build and repair your own equipment, licence required in most places), and fountain pen restoration (mechanical tinkering with a history angle) — each with what a session actually involves and the smallest way to try it first.
 
 ### Layover Maximizer
 
@@ -1968,6 +1968,41 @@ Input: You want to contact a hiring manager who posted a role, and you have rele
 
 Output: Cold Open Craft gives you three grounded messages that lead differently — for example with the role, the shared topic, or your relevant background — plus a brief follow-up you can use later if needed.
 
+### Concept Coach
+
+URL: https://deftbrain.com/ConceptCoach
+Tagline: Stress-test your business idea before you invest time or money
+Categories: Pursuits, Veer
+
+Describe your business idea and Concept Coach will challenge it, surface weak assumptions, point out genuine strengths, and help you figure out what to test before you commit more time or money.
+
+**What it does.** Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. Concept Coach acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.
+
+**How to use it.**
+
+1. Select where you are with the idea — the earlier the stage, the more brutal the feedback should be
+2. Describe your idea in detail: what it is, who it's for, how it works, how you make money, and what makes it different
+3. Add context about yourself — your background, skills, and resources shape the execution risk assessment
+4. Select focus areas if you want the autopsy to prioritize specific dimensions
+5. Click 'Run the Autopsy' — get a viability score, ranked failure modes, and a validation plan
+6. Start with Kill Questions — if you can't answer them, that's where to focus before anything else
+7. Use Next Steps as a 30-day validation sprint: validate or kill the idea as cheaply as possible
+
+**Tips.**
+
+- The more specific your description, the better the autopsy — 'Airbnb for skills' is less useful than a detailed description of how the marketplace works and how you acquire both sides
+- Add your founder context — a critical risk for one person may not apply to another with the right background or network
+- Viability score is honest: most ideas are 3-6. A 4 means 'fixable with serious work' — that's actually useful information
+- Kill questions are the most valuable output: these are the hypotheses that MUST be true for the idea to work. If you can't answer them, the idea might be dead
+- Next steps prioritize validation over building — the goal is to find out if the idea works as cheaply as possible
+- Run the autopsy again after you've done validation work — the score should improve as you answer kill questions
+
+**Example.**
+
+Input: A product manager describes a marketplace app connecting people who want to learn skills with local expert teachers. Takes 15% commission. Starting with cooking and fitness.
+
+Output: Viability score: 5/10 — 'Two-sided marketplace, cold start dependency.' Failure modes: Cold start problem (CRITICAL) — can't attract learners without teachers and vice versa; No clear differentiation from YouTube and free alternatives (HIGH); 15% commission may be too low for viability (MEDIUM). Kill questions: Will people pay $50/hour for in-person skill teaching when they could watch YouTube for free? Can you get 20 teachers in one city before launch? Next steps: Interview 20 potential learners this week, run a manual concierge version before building any tech.
+
 ### Future Proof
 
 URL: https://deftbrain.com/FutureProof
@@ -2029,41 +2064,6 @@ You already know why this person deserves your recommendation. The difficult par
 Input: Your direct report Sarah is applying for a Senior PM role at Google. You've managed her for 2 years. She led the Q3 launch, mentored junior team members, and is exceptionally good at stakeholder communication.
 
 Output: Ghost Writer generates 3 versions: a narrative letter opening with the Q3 launch story, a structured letter with sections on leadership/communication/initiative, and a concise LinkedIn recommendation. Each highlights [BRACKETS] where you should add specific details only you'd know.
-
-### Idea Autopsy
-
-URL: https://deftbrain.com/IdeaAutopsy
-Tagline: Stress-test your business idea before you invest time or money
-Categories: Pursuits, Veer
-
-Describe your business idea and get a brutally honest assessment: viability score, ranked failure modes with mitigations, genuine strengths, the kill questions you must answer before going further, and a prioritized 30-day validation plan.
-
-**What it does.** Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. IdeaAutopsy acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.
-
-**How to use it.**
-
-1. Select where you are with the idea — the earlier the stage, the more brutal the feedback should be
-2. Describe your idea in detail: what it is, who it's for, how it works, how you make money, and what makes it different
-3. Add context about yourself — your background, skills, and resources shape the execution risk assessment
-4. Select focus areas if you want the autopsy to prioritize specific dimensions
-5. Click 'Run the Autopsy' — get a viability score, ranked failure modes, and a validation plan
-6. Start with Kill Questions — if you can't answer them, that's where to focus before anything else
-7. Use Next Steps as a 30-day validation sprint: validate or kill the idea as cheaply as possible
-
-**Tips.**
-
-- The more specific your description, the better the autopsy — 'Airbnb for skills' is less useful than a detailed description of how the marketplace works and how you acquire both sides
-- Add your founder context — a critical risk for one person may not apply to another with the right background or network
-- Viability score is honest: most ideas are 3-6. A 4 means 'fixable with serious work' — that's actually useful information
-- Kill questions are the most valuable output: these are the hypotheses that MUST be true for the idea to work. If you can't answer them, the idea might be dead
-- Next steps prioritize validation over building — the goal is to find out if the idea works as cheaply as possible
-- Run the autopsy again after you've done validation work — the score should improve as you answer kill questions
-
-**Example.**
-
-Input: A product manager describes a marketplace app connecting people who want to learn skills with local expert teachers. Takes 15% commission. Starting with cooking and fitness.
-
-Output: Viability score: 5/10 — 'Two-sided marketplace, cold start dependency.' Failure modes: Cold start problem (CRITICAL) — can't attract learners without teachers and vice versa; No clear differentiation from YouTube and free alternatives (HIGH); 15% commission may be too low for viability (MEDIUM). Kill questions: Will people pay $50/hour for in-person skill teaching when they could watch YouTube for free? Can you get 20 teachers in one city before launch? Next steps: Interview 20 potential learners this week, run a manual concierge version before building any tech.
 
 ### Leverage Logic
 
@@ -2345,9 +2345,9 @@ URL: https://deftbrain.com/HecklerPrep
 Tagline: Anticipate the hardest questions before they land.
 Categories: The Office
 
-About to present, pitch, or propose something? Describe your topic and audience, and HecklerPrep generates the 10 hardest questions they'll ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, the psychology behind the question, and what to do if you don't know the answer.
+About to present, pitch, or propose something? Describe your topic and audience, and Heckler Prep generates the 10 hardest questions they may ask — the skeptical ones, the gotcha ones, the ones you're hoping nobody brings up. Each comes with a coached answer, what the question is testing, and what to do if you don't know the answer.
 
-**What it does.** HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, the underlying concern the questioner has, and a bail-out strategy if you're caught off guard.
+**What it does.** HecklerPrep is like a sparring partner for presentations. Give it your topic, your audience, and what you're proposing, and it generates the toughest questions that audience will throw at you — not softballs, but the real challenges. Each question includes a model answer, what the question is testing, and something credible to say if you don't know yet.
 
 **How to use it.**
 
@@ -2360,7 +2360,7 @@ About to present, pitch, or propose something? Describe your topic and audience,
 **Tips.**
 
 - The questions get harder as the list goes on — if you can handle #10, you're ready
-- The 'real concern' behind each question tells you what they actually want to hear
+- The 'what this tests' line tells you what the question is really about, so you answer that rather than the words
 - Practice answering out loud, not just reading the model answers
 - The bail-out strategies are for genuine unknowns — don't fake answers
 
@@ -3297,7 +3297,6 @@ Pressure-tests the guiding beliefs you live by across multiple dimensions: histo
 - The 'psychological function' section is often the most revealing part
 - Severity ratings on stress tests help you prioritize what's worth acting on
 - Most useful for beliefs you've held so long you've stopped examining them
-- Pair with Ego Killer when you want a full demolition-and-rebuild
 
 **Example.**
 

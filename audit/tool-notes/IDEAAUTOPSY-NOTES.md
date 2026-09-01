@@ -1,7 +1,13 @@
 # IdeaAutopsy — architecture & lock notes (`ideaautopsy-v1`)
 
 Brutal startup-idea autopsy: viability score, verdict, risks, strengths, kill-questions, next steps.
-**Frontend:** `src/tools/IdeaAutopsy.js` (`ia_` keys). **Backend:** `backend/routes/idea-autopsy.js`
+**Renamed to Concept Coach on 2026-08-31.** The id and URL are now `ConceptCoach`;
+`/IdeaAutopsy`, `/ideaautopsy` and `/idea-autopsy` 301 to it. The i18n prefix
+(`ia_*`), the localStorage keys (`ideaautopsy-*`) and the backend route
+(`/api/idea-autopsy/stream`) deliberately keep the old name — internal, and
+renaming them buys nothing.
+
+**Frontend:** `src/tools/ConceptCoach.js` (`ia_` keys). **Backend:** `backend/routes/idea-autopsy.js`
 (single endpoint `/idea-autopsy/stream` — misnamed, plain JSON; `MODELS.SMART`, `max_tokens 5000`).
 **Golden:** `audit/idea-autopsy-golden-sample.json` (1 DE case). Verify: `npm run check:golden idea-autopsy`.
 
