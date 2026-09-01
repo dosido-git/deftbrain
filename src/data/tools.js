@@ -150,15 +150,15 @@ export const tools = [
   },
   seoDescription: "Stress-test your business idea before you spend a dime. Get a free, brutally honest viability score, ranked failure modes, and a 30-day validation plan.",
   seoTitle: "Business Idea Validator & Risk Checker",
-  title: "Idea Autopsy",
+  title: "Concept Coach",
   tagline: "Stress-test your business idea before you invest time or money",
   tags: ['startup', 'business idea', 'validation', 'entrepreneur', 'founder', 'viability', 'market', 'competition', 'business model', 'risk', 'side project', 'pitch', 'venture', 'product', 'failure', 'investment'],
   icon: "🔬",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#d8c8b8",
-  description: "Describe your business idea and get a brutally honest assessment: viability score, ranked failure modes with mitigations, genuine strengths, the kill questions you must answer before going further, and a prioritized 30-day validation plan.",
+  description: "Describe your business idea and Concept Coach will challenge it, surface weak assumptions, point out genuine strengths, and help you figure out what to test before you commit more time or money.",
   guide: {
-    overview: "Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. IdeaAutopsy acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.",
+    overview: "Most business ideas fail for predictable, avoidable reasons — but founders are too close to their idea to see them. Concept Coach acts as a skeptical advisor who's seen thousands of ideas fail: it stress-tests your idea against real failure modes (market size, willingness to pay, cold start problems, competitive moats, unit economics, execution risk), identifies what's genuinely strong, and tells you the specific questions you need to answer before investing more time or money. The goal is to help you kill bad ideas fast — or fix fixable ones before you've sunk years into them.",
 
     howToUse: [
       "Select where you are with the idea — the earlier the stage, the more brutal the feedback should be",

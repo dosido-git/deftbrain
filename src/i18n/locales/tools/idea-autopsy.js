@@ -1,9 +1,9 @@
 // IdeaAutopsy — ia_* keys for all 13 languages. Self-contained data.
 // {{sym}} is the user's locale currency symbol (interpolated at render time).
-// Brand/tool names (Idea Autopsy, Pre-Mortem, Leverage Logic) stay as-is across languages.
+// Brand/tool names (Concept Coach, Pre-Mortem, Leverage Logic) stay as-is across languages.
 export const ideaAutopsy = {
   en: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Stress-test your business idea before you invest time or money",
     ia_stage_label: "Where are you with this idea?",
     ia_stage_idea: "Just an idea",
@@ -59,7 +59,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Mitigation:",
   },
   es: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Pon a prueba tu idea de negocio antes de invertir tiempo o dinero.",
     ia_stage_label: "¿En qué punto estás con esta idea?",
     ia_stage_idea: "Solo una idea",
@@ -115,7 +115,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Mitigación:",
   },
   zh: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "在投入时间和金钱之前，给你的商业点子做一次压力测试。",
     ia_stage_label: "这个点子目前进展到哪一步了？",
     ia_stage_idea: "只是个点子",
@@ -171,7 +171,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "缓解措施：",
   },
   hi: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "समय या पैसा लगाने से पहले अपने बिज़नेस आइडिया की स्ट्रेस-टेस्ट करें।",
     ia_stage_label: "इस आइडिया के साथ आप कहाँ तक पहुँचे हैं?",
     ia_stage_idea: "बस एक आइडिया",
@@ -227,7 +227,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "उपाय:",
   },
   ar: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "اختبر فكرتك التجارية تحت الضغط قبل أن تستثمر الوقت أو المال.",
     ia_stage_label: "إلى أين وصلت بهذه الفكرة؟",
     ia_stage_idea: "مجرد فكرة",
@@ -283,7 +283,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "إجراء التخفيف:",
   },
   pt: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Faça um teste de estresse na sua ideia de negócio antes de investir tempo ou dinheiro.",
     ia_stage_label: "Em que ponto você está com esta ideia?",
     ia_stage_idea: "Só uma ideia",
@@ -339,7 +339,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Mitigação:",
   },
   fr: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Mettez votre idée d'entreprise à l'épreuve avant d'y investir temps ou argent.",
     ia_stage_label: "Où en êtes-vous avec cette idée ?",
     ia_stage_idea: "Juste une idée",
@@ -395,7 +395,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Atténuation :",
   },
   de: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Stelle deine Geschäftsidee auf die Probe, bevor du Zeit oder Geld investierst.",
     ia_stage_label: "Wo stehst du mit dieser Idee?",
     ia_stage_idea: "Nur eine Idee",
@@ -451,7 +451,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Gegenmaßnahme:",
   },
   ja: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "時間やお金を投じる前に、ビジネスアイデアをストレステストしましょう。",
     ia_stage_label: "このアイデアはどの段階ですか？",
     ia_stage_idea: "まだアイデアだけ",
@@ -507,7 +507,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "対策：",
   },
   ko: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "시간이나 돈을 투자하기 전에 비즈니스 아이디어를 스트레스 테스트하세요.",
     ia_stage_label: "이 아이디어는 어느 단계인가요?",
     ia_stage_idea: "그냥 아이디어",
@@ -563,7 +563,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "완화책:",
   },
   ru: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Проверьте свою бизнес-идею на прочность, прежде чем вкладывать время или деньги.",
     ia_stage_label: "На каком этапе находится эта идея?",
     ia_stage_idea: "Просто идея",
@@ -619,7 +619,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "Меры снижения:",
   },
   th: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "ทดสอบความแข็งแกร่งของไอเดียธุรกิจของคุณก่อนลงทุนเวลาหรือเงิน",
     ia_stage_label: "ตอนนี้ไอเดียนี้อยู่ในขั้นไหนแล้ว?",
     ia_stage_idea: "เป็นแค่ไอเดีย",
@@ -675,7 +675,7 @@ export const ideaAutopsy = {
     ia_copy_mitigation: "วิธีบรรเทา:",
   },
   vi: {
-    ia_title: "Idea Autopsy",
+    ia_title: "Concept Coach",
     ia_tagline: "Thử sức chịu đựng cho ý tưởng kinh doanh của bạn trước khi đầu tư thời gian hay tiền bạc.",
     ia_stage_label: "Bạn đang ở đâu với ý tưởng này?",
     ia_stage_idea: "Chỉ là một ý tưởng",
