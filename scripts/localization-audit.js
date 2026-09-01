@@ -60,7 +60,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/DateNight.js',
   'src/tools/ContractDecoder.js',
   'src/tools/GriefGuide.js',
-  'src/tools/IdeaAutopsy.js',
+  'src/tools/ConceptCoach.js',
   'src/tools/SleepArchitect.js',
   'src/tools/ConflictCoach.js',
   'src/tools/CutToTheChase.js',

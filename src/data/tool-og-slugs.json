@@ -56,7 +56,6 @@
   "HecklerPrep": "heckler-prep",
   "HistoryToday": "history-today",
   "HobbyMatch": "hobby-match",
-  "IdeaAutopsy": "idea-autopsy",
   "JargonAssassin": "jargon-assassin",
   "LaundroMat": "laundro-mat",
   "LayoverMaximizer": "layover-maximizer",
@@ -127,5 +126,6 @@
   "WhatsMyVibe": "whats-my-vibe",
   "WhereDidTheTimeGo": "where-did-the-time-go",
   "WhichLife": "contrast-report",
-  "WrongAnswersOnly": "wrong-answers-only"
+  "WrongAnswersOnly": "wrong-answers-only",
+  "ConceptCoach": "idea-autopsy"
 }

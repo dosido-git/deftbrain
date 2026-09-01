@@ -139,7 +139,7 @@ export const tools = [
   },
 },
 {
-  id: "IdeaAutopsy",
+  id: "ConceptCoach",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {

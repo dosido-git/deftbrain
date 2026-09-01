@@ -11,12 +11,26 @@ import TOOL_OG_SLUGS from '../data/tool-og-slugs.json';
 // Renamed tools keep their old URL alive: old id → current id. A client-side
 // 301-equivalent so existing links, bookmarks, and search results don't break.
 const TOOL_ALIASES = {
-  Recall: 'TheCrux', // renamed 2026-07-22 (broadened beyond lectures)
+  Recall: 'TheCrux',          // renamed 2026-07-22 (broadened beyond lectures)
+  IdeaAutopsy: 'ConceptCoach', // renamed 2026-08-31
 };
 
 const ToolRenderer = ({ college }) => {
   const { toolId } = useParams();
-  const aliasTarget = TOOL_ALIASES[toolId];
+
+  // Ids are matched exactly, so /conceptcoach and /ConceptCoach were two
+  // different things and only one of them existed — a visitor told the tool's
+  // name and typing it in gets nothing. Case-insensitive resolution is the
+  // last step before a 404, so it costs nothing when the id is already right:
+  // an exact match never reaches it, and the redirect below sends the visitor
+  // to the canonical casing so only one URL is ever rendered.
+  const canonicalId = tools.some(i => i.id === toolId)
+    ? null
+    : (Object.keys(TOOL_ALIASES).find(k => k.toLowerCase() === toolId?.toLowerCase())
+       || tools.find(i => i.id.toLowerCase() === toolId?.toLowerCase())?.id);
+
+  const aliasTarget = TOOL_ALIASES[toolId]
+    || (canonicalId ? (TOOL_ALIASES[canonicalId] || canonicalId) : undefined);
   const toolData = tools.find(i => i.id === toolId);
 
   // Hooks must run before any conditional return (react-hooks/rules-of-hooks),

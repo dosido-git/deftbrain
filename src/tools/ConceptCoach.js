@@ -45,7 +45,7 @@ const RISK_LEVELS = {
   low:      { icon: '✅',  labelKey: 'ia_risk_low',     bg: isDark => isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300', txt: isDark => isDark ? 'text-emerald-300' : 'text-emerald-800' },
 };
 
-function IdeaAutopsy({ tool }) {
+function ConceptCoach({ tool }) {
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -118,7 +118,7 @@ function IdeaAutopsy({ tool }) {
   }, [setResults]);
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('IdeaAutopsy', EXAMPLES);
+    const ex = pickExample('ConceptCoach', EXAMPLES);
     setIdeaStage(ex.ideaStage);
     setIdeaDescription(t('ia_ex_desc'));
     setEvidenceSoFar(t('ia_ex_evidence'));
@@ -194,7 +194,7 @@ function IdeaAutopsy({ tool }) {
     return lines.join('\n');
   }, [results, t]);
 
-  useRegisterActions(buildFullText(), tool?.title || 'IdeaAutopsy');
+  useRegisterActions(buildFullText(), tool?.title || 'Concept Coach');
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
@@ -472,5 +472,5 @@ function IdeaAutopsy({ tool }) {
   );
 }
 
-IdeaAutopsy.displayName = 'IdeaAutopsy';
-export default IdeaAutopsy;
+ConceptCoach.displayName = 'ConceptCoach';
+export default ConceptCoach;
