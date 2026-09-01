@@ -7,10 +7,10 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — quoted document text or dialogue must be written plainly with no inner quote marks, or it breaks the JSON.';
 
 const LEVEL_GUIDE = {
-  'eli5': 'Explain like I\'m 5. Simplest words. Short sentences. Child-friendly analogies.',
-  '5th-grade': '5th-grade reading level. Simple words, short sentences. Define technical terms in parentheses.',
-  '8th-grade': '8th-grade reading level. Clear and accessible, preserves more nuance.',
-  'professional': 'Professional but de-jargoned. Replace field-specific jargon with general professional language. Reader is smart but not in this field.'
+  'eli5': 'Simplest possible explanation. Use very simple words and short sentences without becoming childish or losing important meaning.',
+  '5th-grade': 'Everyday language. Use familiar words, short sentences, and define necessary technical terms.',
+  '8th-grade': 'Everyday language with additional nuance and detail.',
+  'professional': 'Keep the detail while removing unnecessary jargon. Preserve technical distinctions that matter.'
 };
 
 // ═══════════════════════════════════════════════════
@@ -18,7 +18,7 @@ const LEVEL_GUIDE = {
 // ═══════════════════════════════════════════════════
 router.post('/jargon-assassin', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { documentText, documentType, readingLevel, userLanguage, imageBase64, mediaType } = req.body;
+    const { documentText, documentType, readingLevel, userGoal, userLanguage, imageBase64, mediaType } = req.body;
     if (!documentText?.trim() && !imageBase64) return res.status(400).json({ error: 'Paste a document or upload a file.' });
 
     const lvl = LEVEL_GUIDE[readingLevel] || LEVEL_GUIDE['5th-grade'];
@@ -39,14 +39,21 @@ router.post('/jargon-assassin', rateLimit(DEFAULT_LIMITS), async (req, res) => {
 
     const translatePrompt = withLanguage(`Translate this complex document into plain language while preserving ALL critical information.
 
-DOCUMENT TYPE: ${documentType || 'general'}
-TARGET READING LEVEL: ${readingLevel || '5th-grade'} — ${lvl}
+DOCUMENT TYPE: ${documentType || 'unsure'}
+EXPLANATION STYLE: ${lvl}
+${userGoal?.trim() ? `READER'S QUESTION OR CONCERN:
+${userGoal.trim().substring(0, 1500)}
+Use this to prioritize the explanation, but do not let it override or distort the document.` : ''}
 
 ${docBlock}
 
 RULES:
-- Maintain ALL factual content. Replace jargon with common words. Break long sentences short. Eliminate passive voice.
-- Define necessary technical terms in parentheses. Use concrete examples for abstract concepts.
+- Preserve the document's meaning, conditions, exceptions, qualifications, dates, amounts, duties, rights, and uncertainties. Do not simplify away a material distinction.
+- Replace unnecessary jargon with common words and shorten tangled sentences where doing so preserves meaning.
+- Define necessary technical terms briefly. Use examples only when clearly labeled as examples, never as facts from the document.
+- If the reader supplied a question or concern, make the summary especially useful for that concern while still covering other material terms.
+- Do not infer facts about the reader's situation beyond what the reader supplied.
+- Do not claim what a clause legally, medically, financially, or administratively means outside the document when that depends on facts, jurisdiction, professional judgment, or current rules. Distinguish document meaning from outside-world conclusions.
 
 Return ONLY valid JSON:
 {
@@ -60,15 +67,22 @@ LIMITS (keep the response bounded so it never truncates): jargon_highlights AT M
 
     const extractPrompt = withLanguage(`Analyze this complex document and extract its key structure — flagged sections, glossary, risk level, and questions the reader should ask. Do NOT write a full translation; that is handled separately.
 
-DOCUMENT TYPE: ${documentType || 'general'}
-READING LEVEL FOR EXPLANATIONS: ${readingLevel || '5th-grade'} — ${lvl}
+DOCUMENT TYPE: ${documentType || 'unsure'}
+EXPLANATION STYLE: ${lvl}
+${userGoal?.trim() ? `READER'S QUESTION OR CONCERN:
+${userGoal.trim().substring(0, 1500)}
+Use this to prioritize what deserves attention, without inventing relevance or facts.` : ''}
 
 ${docBlock}
 
 RULES:
-- Flag important sections, decisions, red flags, and deadlines.
-- For clauses that are commonly unenforceable or unusually aggressive, note this.
-- LEGAL CURRENCY: laws change — when an enforceability_note cites a statute or rule, include its effective date if you know it changed since ~2022; if unsure the rule is current, write 'commonly challenged — verify current law' rather than asserting it.
+- Flag sections that materially affect obligations, rights, money, deadlines, choices, risk, or the reader's stated concern.
+- A red flag must be grounded in the document itself. Explain the textual reason; do not manufacture danger from document type or tone.
+- Do not score or imply overall danger merely because a document is legal, medical, financial, governmental, technical, or unfamiliar.
+- Do not assert that a clause is unenforceable, illegal, medically inappropriate, financially improper, or outside a normal range unless that conclusion is established by reliable current information available in the prompt. When outside verification is needed, say what should be verified and why.
+- For enforceability_note, describe the document issue conservatively and recommend checking current law when jurisdiction or legal currency matters.
+- Treat missing context as unknown, not evidence of a problem.
+- If the reader supplied a question or concern, prioritize sections that bear directly on it, while still surfacing other material terms.
 
 Return ONLY valid JSON:
 {
@@ -85,7 +99,7 @@ LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8
       callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 8000,
-        system: withLanguage('Plain language expert. Translate complex docs so anyone understands. Never omit details. Warm, clear, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
+        system: withLanguage('Plain-language document explainer. Preserve meaning and material detail; distinguish what the document says from outside-world conclusions; never invent reader facts. Warm, clear, careful. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
         messages: [{ role: 'user', content: contentBlocks(translatePrompt) }]
       }, { label: 'jargon-assassin-translate' }),
       callClaudeWithRetry({
@@ -93,7 +107,7 @@ LIMITS (keep the response bounded so it never truncates): key_sections AT MOST 8
         // 4000 truncated on every non-English call (key_sections echo verbatim
         // source text) — 2026-07-23 audit, DE/AR/ZH all down.
         max_tokens: 6000,
-        system: withLanguage('Document risk analyst. Extract flagged sections, glossary, and risk level from complex docs. Note potentially unenforceable clauses. Precise, protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
+        system: withLanguage('Document attention analyst. Identify what materially deserves attention without manufacturing risk. Ground claims in the document, preserve uncertainty, and distinguish document text from conclusions requiring outside verification. Precise and protective. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + localeCtx,
         messages: [{ role: 'user', content: contentBlocks(extractPrompt) }]
       }, { label: 'jargon-assassin-extract' })
     ]);
