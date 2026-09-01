@@ -37,11 +37,7 @@ export const laundroMat = {
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
     // Advisor pre-submit cross-ref (link text is lmt_xref_pep)
-    lmt_xref_advisor_prefix: "Got the laundry sorted but feeling drained? ",
-    lmt_xref_advisor_suffix: " helps you plan around your energy.",
     // Post-result cross-ref (link text is lmt_xref_pep)
-    lmt_xref_post_prefix: "Energy running low? ",
-    lmt_xref_post_suffix: " helps you plan around it.",
     // Rescue cross-ref (link text is lmt_xref_buywise)
     lmt_xref_rescue_prefix: "Item beyond saving? ",
     lmt_xref_rescue_suffix: " helps you decide if a replacement is worth the price.",
@@ -378,10 +374,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "¿Ya tienes la colada resuelta pero te sientes sin energía? ",
-    lmt_xref_advisor_suffix: " te ayuda a planificar según tu energía.",
-    lmt_xref_post_prefix: "¿Te queda poca energía? ",
-    lmt_xref_post_suffix: " te ayuda a planificarte en torno a ella.",
     lmt_xref_rescue_prefix: "¿La prenda ya no tiene salvación? ",
     lmt_xref_rescue_suffix: " te ayuda a decidir si vale la pena reemplazarla.",
 
@@ -686,10 +678,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "衣物搞定了，却觉得精疲力尽？",
-    lmt_xref_advisor_suffix: " 帮你根据精力安排计划。",
-    lmt_xref_post_prefix: "精力不足？",
-    lmt_xref_post_suffix: " 帮你据此安排计划。",
     lmt_xref_rescue_prefix: "衣物已无法挽救？",
     lmt_xref_rescue_suffix: " 帮你判断是否值得花钱重新购买。",
 
@@ -994,10 +982,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "कपड़े तो सँभल गए, पर थका हुआ महसूस कर रहे हैं? ",
-    lmt_xref_advisor_suffix: " आपकी ऊर्जा के अनुसार योजना बनाने में मदद करता है।",
-    lmt_xref_post_prefix: "ऊर्जा कम पड़ रही है? ",
-    lmt_xref_post_suffix: " उसी के अनुसार योजना बनाने में मदद करता है।",
     lmt_xref_rescue_prefix: "कपड़ा अब बचने लायक नहीं? ",
     lmt_xref_rescue_suffix: " तय करने में मदद करता है कि नया खरीदना उसकी कीमत के लायक है या नहीं।",
 
@@ -1302,10 +1286,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "أنجزت الغسيل لكنك تشعر بالإرهاق؟ ",
-    lmt_xref_advisor_suffix: " يساعدك على التخطيط وفق طاقتك.",
-    lmt_xref_post_prefix: "طاقتك منخفضة؟ ",
-    lmt_xref_post_suffix: " يساعدك على التخطيط وفقاً لذلك.",
     lmt_xref_rescue_prefix: "القطعة لم تعد قابلة للإنقاذ؟ ",
     lmt_xref_rescue_suffix: " يساعدك على تقرير ما إذا كان البديل يستحق ثمنه.",
 
@@ -1610,10 +1590,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "Resolveu a roupa, mas está se sentindo sem energia? ",
-    lmt_xref_advisor_suffix: " ajuda você a planejar de acordo com a sua energia.",
-    lmt_xref_post_prefix: "Energia em baixa? ",
-    lmt_xref_post_suffix: " ajuda você a se planejar em torno disso.",
     lmt_xref_rescue_prefix: "A peça já não tem mais salvação? ",
     lmt_xref_rescue_suffix: " ajuda você a decidir se vale a pena comprar outra.",
 
@@ -1918,10 +1894,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "La lessive est réglée mais vous vous sentez vidé ? ",
-    lmt_xref_advisor_suffix: " vous aide à planifier selon votre énergie.",
-    lmt_xref_post_prefix: "Énergie en baisse ? ",
-    lmt_xref_post_suffix: " vous aide à planifier en conséquence.",
     lmt_xref_rescue_prefix: "Le vêtement est irrécupérable ? ",
     lmt_xref_rescue_suffix: " vous aide à décider si un remplacement vaut le coup.",
 
@@ -2226,10 +2198,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "Wäsche geregelt, aber fühlst dich erschöpft? ",
-    lmt_xref_advisor_suffix: " hilft dir, rund um deine Energie zu planen.",
-    lmt_xref_post_prefix: "Energie geht zur Neige? ",
-    lmt_xref_post_suffix: " hilft dir, entsprechend zu planen.",
     lmt_xref_rescue_prefix: "Das Stück ist nicht mehr zu retten? ",
     lmt_xref_rescue_suffix: " hilft dir zu entscheiden, ob sich ein Ersatz lohnt.",
 
@@ -2534,10 +2502,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "洗濯は片づいたけど、ぐったり疲れている？ ",
-    lmt_xref_advisor_suffix: " がエネルギーに合わせて計画を立てるのを助けます。",
-    lmt_xref_post_prefix: "エネルギー切れ？ ",
-    lmt_xref_post_suffix: " がそれに合わせて計画を立てるのを助けます。",
     lmt_xref_rescue_prefix: "もう救えない一着？ ",
     lmt_xref_rescue_suffix: " が買い替える価値があるか判断するのを助けます。",
 
@@ -2842,10 +2806,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "빨래는 정리됐는데 진이 빠진 느낌인가요? ",
-    lmt_xref_advisor_suffix: " 이 당신의 에너지에 맞춰 계획을 세우도록 도와줍니다.",
-    lmt_xref_post_prefix: "에너지가 부족한가요? ",
-    lmt_xref_post_suffix: " 이 그에 맞춰 계획을 세우도록 도와줍니다.",
     lmt_xref_rescue_prefix: "더 이상 살릴 수 없는 옷인가요? ",
     lmt_xref_rescue_suffix: " 이 새로 사는 게 그만한 값어치가 있는지 판단하도록 도와줍니다.",
 
@@ -3150,10 +3110,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "Со стиркой разобрались, но чувствуете себя без сил? ",
-    lmt_xref_advisor_suffix: " поможет спланировать дела с учётом вашей энергии.",
-    lmt_xref_post_prefix: "Энергия на исходе? ",
-    lmt_xref_post_suffix: " поможет спланировать дела с учётом этого.",
     lmt_xref_rescue_prefix: "Вещь уже не спасти? ",
     lmt_xref_rescue_suffix: " поможет решить, стоит ли замена своих денег.",
 
@@ -3458,10 +3414,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "จัดการซักผ้าเสร็จแล้วแต่รู้สึกหมดแรงหรือ? ",
-    lmt_xref_advisor_suffix: " ช่วยคุณวางแผนให้เข้ากับพลังงานของคุณ",
-    lmt_xref_post_prefix: "พลังงานเหลือน้อยหรือ? ",
-    lmt_xref_post_suffix: " ช่วยคุณวางแผนให้สอดคล้องกับมัน",
     lmt_xref_rescue_prefix: "เสื้อผ้าหมดทางช่วยแล้วหรือ? ",
     lmt_xref_rescue_suffix: " ช่วยคุณตัดสินใจว่าการซื้อใหม่คุ้มราคาหรือไม่",
 
@@ -3766,10 +3718,6 @@ export const laundroMat = {
 
     lmt_xref_pep: "✨ PEP",
     lmt_xref_buywise: "🛒 BuyWise",
-    lmt_xref_advisor_prefix: "Giặt giũ xong xuôi rồi nhưng cảm thấy kiệt sức? ",
-    lmt_xref_advisor_suffix: " giúp bạn lên kế hoạch dựa trên năng lượng của mình.",
-    lmt_xref_post_prefix: "Năng lượng đang cạn? ",
-    lmt_xref_post_suffix: " giúp bạn lên kế hoạch xoay quanh điều đó.",
     lmt_xref_rescue_prefix: "Món đồ hết đường cứu vãn? ",
     lmt_xref_rescue_suffix: " giúp bạn quyết định liệu mua mới có đáng giá hay không.",
 

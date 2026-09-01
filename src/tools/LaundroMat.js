@@ -1638,7 +1638,28 @@ const LaundroMat = ({ tool }) => {
   // ══════════════════════════════════════════
   // MAIN RENDER
   // ══════════════════════════════════════════
-  const handleReset = () => { setAdviceResults(null); setError?.(''); };
+  // PF-16: one reset, on the title row, available from the first keystroke.
+  // The previous one cleared adviceResults and the error and nothing else, so
+  // every form field and both other tabs' results survived it — and it only
+  // appeared once a result existed, which is the moment it is least needed.
+  // Timers are deliberately untouched: a running dryer cycle is real-world
+  // state, and cancelling it because someone cleared a stain form would be
+  // destructive.
+  const handleReset = () => {
+    setLoadDesc(''); setMachineType('home'); setLabelImage(null); setLabelPreview(null); setAdviceResults(null);
+    setStainType(''); setStainCustom(''); setFabric('Cotton'); setStainAge('just_happened');
+    setStainImage(null); setStainPreview(null); setStainResults(null); setCheckedSteps({}); setSelectedChips([]);
+    setDisasterType(''); setRescueItem(''); setRescueMaterial(''); setRescueTimeAgo(''); setRescueSeverity('');
+    setRescueImage(null); setRescuePreview(null); setRescueResults(null);
+    setError?.('');
+  };
+
+  // Anything the visitor has entered or received, across every tab.
+  const hasAnything = !!(
+    loadDesc.trim() || labelImage || adviceResults ||
+    stainType || stainCustom.trim() || stainImage || stainResults || selectedChips.length ||
+    disasterType || rescueItem.trim() || rescueMaterial.trim() || rescueImage || rescueResults
+  );
 
   return (
     <div className={`space-y-4 ${c.text}`}>
@@ -1652,7 +1673,7 @@ const LaundroMat = ({ tool }) => {
               </p>
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
             </div>
-            {(adviceResults || stainResults) && (
+            {hasAnything && (
               <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>{t('lmt_start_over')}</button>
             )}
           </div>
@@ -1675,20 +1696,28 @@ const LaundroMat = ({ tool }) => {
       <style>{'@keyframes laundroFlash { 0%,100%{opacity:0} 50%{opacity:1} }'}</style>
       {renderError()}
 
-      {/* Post-result cross-ref (visible after any result lands) */}
-      {(() => { const results = adviceResults || stainResults; return results && (
-        <p className={`text-xs text-center mt-2 ${c.textMuted}`}>
-          {t('lmt_xref_post_prefix')}<a href="/PEP" className={linkStyle}>{t('lmt_xref_pep')}</a>{t('lmt_xref_post_suffix')}
-        </p>
-      ); })()}
-
       <p className={`text-xs text-center mt-4 ${c.textMuted}`}>{t('lmt_disclaimer')}</p>
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
-        <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmt_related_tools')}</p>
-        <div className="flex flex-wrap gap-3">
-          <a href="/PEP" className={`text-xs ${linkStyle}`}>{t('lmt_xref_pep')}</a>
+      {/* Related tools: a bare link, never a sentence. The prose version
+          ("Energy running low? PEP helps you plan around it") interrupted the
+          result to pitch another tool. Rendered at the foot before a result and
+          at the end after one — the two placements the convention allows, and
+          the post-result one is what S5.5 checks for. */}
+      {(() => { const results = adviceResults || stainResults || rescueResults; return results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmt_related_tools')}</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/PEP" className={`text-xs ${linkStyle}`}>{t('lmt_xref_pep')}</a>
+          </div>
         </div>
-      </div>
+      ); })()}
+      {!(adviceResults || stainResults || rescueResults) && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4 mt-4`}>
+          <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('lmt_related_tools')}</p>
+          <div className="flex flex-wrap gap-3">
+            <a href="/PEP" className={`text-xs ${linkStyle}`}>{t('lmt_xref_pep')}</a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
