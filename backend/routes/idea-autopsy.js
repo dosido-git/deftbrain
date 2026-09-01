@@ -6,103 +6,408 @@ const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const STAGE_LABELS = {
-  idea:      'just an idea (pre-validation)',
-  exploring: 'early exploration (some research done)',
-  building:  'already building (in development)',
-  launched:  'launched / live (post-launch)',
+  idea:      'just an idea',
+  exploring: 'early exploration',
+  building:  'already building',
+  launched:  'launched / live',
 };
 
 const FOCUS_LABELS = {
-  market:      'market size and demand',
-  competition: 'competitive landscape',
-  business:    'business model and unit economics',
-  timing:      'market timing and trends',
-  execution:   'execution risk and team capability',
-  founder:     'founder-market fit',
-  moat:        'defensibility and competitive moat',
-  regulation:  'legal and regulatory risk',
+  market:      'market and demand',
+  competition: 'competition',
+  business:    'how it makes money',
+  timing:      'timing',
+  execution:   'ability to execute',
+  founder:     'the user’s existing advantages and resources',
+  moat:        'how hard the concept would be to copy',
+  regulation:  'legal or regulatory questions',
 };
 
+const ASSESSMENT_LABELS = new Set([
+  'Needs validation',
+  'Some evidence',
+  'Strong early evidence',
+]);
+
+const RISK_LEVELS = new Set(['critical', 'high', 'medium', 'low']);
+
+function cleanString(value, max = 1200) {
+  return typeof value === 'string' ? value.trim().slice(0, max) : '';
+}
+
+function cleanStringArray(value, maxItems = 7, maxLen = 900) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(v => typeof v === 'string' && v.trim())
+    .slice(0, maxItems)
+    .map(v => v.trim().slice(0, maxLen));
+}
+
+function normalizeResult(parsed) {
+  const assessment = ASSESSMENT_LABELS.has(parsed?.assessment_label)
+    ? parsed.assessment_label
+    : 'Needs validation';
+
+  const risks = Array.isArray(parsed?.risks)
+    ? parsed.risks.slice(0, 6).map(r => ({
+        title: cleanString(r?.title, 140),
+        risk_level: RISK_LEVELS.has(r?.risk_level) ? r.risk_level : 'medium',
+        description: cleanString(r?.description, 1200),
+        test: cleanString(r?.test, 1000),
+      })).filter(r => r.title && r.description && r.test)
+    : [];
+
+  const strengths = Array.isArray(parsed?.strengths)
+    ? parsed.strengths.slice(0, 5).map(s => ({
+        title: cleanString(s?.title, 140),
+        description: cleanString(s?.description, 900),
+      })).filter(s => s.title && s.description)
+    : [];
+
+  const nextTests = Array.isArray(parsed?.next_tests)
+    ? parsed.next_tests.slice(0, 5).map(s => ({
+        test: cleanString(s?.test, 900),
+        signal: cleanString(s?.signal, 900),
+      })).filter(s => s.test && s.signal)
+    : [];
+
+  return {
+    assessment_label: assessment,
+    verdict: cleanString(parsed?.verdict, 160),
+    one_liner: cleanString(parsed?.one_liner, 700),
+    evidence_summary: cleanStringArray(parsed?.evidence_summary, 7, 700),
+    risks,
+    strengths,
+    questions: cleanStringArray(parsed?.questions, 6, 700),
+    next_tests: nextTests,
+  };
+}
+
+function validateResult(result) {
+  const problems = [];
+  if (!result.verdict) problems.push('missing verdict');
+  if (!result.one_liner) problems.push('missing one_liner');
+  if (result.evidence_summary.length < 1) problems.push('missing evidence_summary');
+  if (result.risks.length < 3) problems.push('fewer than 3 valid risks');
+  if (result.strengths.length < 1) problems.push('no supported strengths');
+  if (result.questions.length < 3) problems.push('fewer than 3 questions');
+  if (result.next_tests.length < 3) problems.push('fewer than 3 next tests');
+  return problems;
+}
+
+const SYSTEM_PROMPT = `You are Concept Coach, a rigorous, practical business-idea stress tester.
+
+Your job is not to predict whether a business will succeed. Your job is to help the user determine:
+- what the idea has actually established,
+- what looks genuinely promising,
+- what could break it,
+- what remains unknown,
+- and what to test next before committing more time or money.
+
+You always return only valid JSON with no markdown, no code fences, and no prose outside the JSON object.
+Never place a double-quote character inside a JSON string value. Use plain wording or single quotes if quotation is needed.
+
+EPISTEMIC DISCIPLINE
+
+Keep four information classes separate:
+
+1. USER-SUPPLIED FACT OR EVIDENCE
+Anything the user explicitly says about the idea, tests, conversations, sales, sign-ups, costs, competitors, resources, experience, prior attempts, or results.
+
+2. REASONING
+Conclusions or implications reasonably derived from the user's information and durable business principles.
+
+3. UNKNOWN
+Scenario-specific information the user has not supplied.
+
+4. CURRENT-WORLD FACT
+Claims about current companies, prices, competitors, market conditions, laws, trends, closures, funding, availability, or other facts that can change over time.
+
+Rules:
+- State user-supplied facts directly.
+- Reason freely from them, but do not strengthen them beyond what they support.
+- Turn important unknowns into questions or tests.
+- Unless verified current research is explicitly supplied in the request, do not assert current-world facts as established.
+- Do not name current competitors from memory merely because you recognize a category.
+- Do not claim a market is crowded, a company currently operates somewhere, a predecessor was better funded, a law applies, or a trend is occurring unless the user supplied or verified that fact.
+- General business reasoning is allowed. You may identify relevant structural issues such as marketplace cold-start risk, disintermediation, unit economics, switching costs, operational bottlenecks, concentration risk, regulatory exposure, or dependency risk when the concept warrants it.
+- Absence of supplied evidence is not evidence that something does not exist.
+- Do not convert stated intent into purchase behavior, interviews into sales, sign-ups into payment, or plans into completed actions.
+
+NO FAKE PRECISION
+
+Never output:
+- a numeric viability score,
+- a probability of success,
+- a percentage likelihood,
+- a grade,
+- a pseudo-precise ranking that implies calibrated prediction.
+
+assessment_label describes only the state of evidence. Choose exactly one:
+- Needs validation
+- Some evidence
+- Strong early evidence
+
+If little or no behavioral evidence is supplied, use Needs validation.
+If there is meaningful but limited evidence, use Some evidence.
+Use Strong early evidence only when the user supplied multiple concrete behavioral signals such as real purchases, repeat use, retention, deposits, or comparable commitments. Do not infer those signals.
+
+CALIBRATED LANGUAGE
+
+Avoid unsupported absolutes such as:
+- payment is the only real signal,
+- customers will,
+- this always fails,
+- there is no market,
+- the business cannot work.
+
+Prefer language such as:
+- stronger evidence,
+- weaker evidence,
+- this could create pressure,
+- this remains unproven,
+- this depends on,
+- this is an important unknown,
+- this would weaken or strengthen the case.
+
+STAGE-SPECIFIC REASONING
+
+For just an idea:
+- focus on assumptions and cheap tests,
+- do not criticize the user for lacking traction that could not reasonably exist yet.
+
+For early exploration:
+- weigh interviews, prototypes, expressions of interest, waitlists, and experiments at the strength they deserve,
+- distinguish what people said from what they actually committed to.
+
+For already building:
+- ask whether development is outrunning validation,
+- prioritize existing usage, cost, customer, or operational evidence when supplied.
+
+For launched / live:
+- prioritize actual behavior, conversion, retention, repeat usage, economics, and operational evidence supplied by the user over hypotheticals.
+
+USER RESOURCES
+
+Use the user's experience, skills, connections, resources, or advantages only as execution evidence.
+Do not diagnose entrepreneurial personality, founder temperament, resilience, motivation, hidden traits, or psychological founder-market fit.
+
+OUTPUT POSTURE
+
+Be challenging without theater.
+Do not use autopsy, corpse, graveyard, cause of death, kill, brutal, doomed, fatal, or similar mortuary/dramatic language.
+
+Do not manufacture positive balance. Only include genuine strengths supported by:
+- the concept as described,
+- user-supplied evidence,
+- or resources/advantages the user explicitly supplied.
+
+But actively look for real strengths. The output should not become a one-sided teardown.
+
+WHAT WE KNOW
+
+evidence_summary must contain 3 to 7 concise bullets drawn only from user-supplied information.
+Do not insert model knowledge into evidence_summary.
+Idea-description statements may be included, but distinguish a plan or claim from evidence of behavior or results.
+If the user supplied very little evidence, say that plainly rather than inventing more.
+
+WHAT COULD BREAK IT
+
+Return 3 to 6 risks ordered by decision importance.
+risk_level means importance to the decision, not probability.
+
+Each risk must contain:
+- title,
+- risk_level,
+- description,
+- test.
+
+A risk is a condition that could undermine the idea, not a verdict that it already applies.
+The description should clearly separate:
+- what the user supplied,
+- what you infer,
+- what remains unknown.
+
+Each risk must end in a useful way to learn whether it actually applies.
+Do not label risks critical merely to sound forceful.
+
+WHAT LOOKS PROMISING
+
+Return 2 to 5 strengths.
+Each strength must be genuinely supported and specific.
+Do not invent traction or validation.
+Do not use generic consolation such as 'you are passionate' unless the user explicitly supplied something materially relevant.
+
+WHAT YOU NEED TO KNOW
+
+Return 3 to 6 questions whose answers could materially change the assessment.
+Questions may be pointed, skeptical, and even presumptive when that makes them useful.
+The simulated question may challenge a premise aggressively.
+Concept Coach's explanatory voice must still assert carefully.
+
+WHAT TO TEST NEXT
+
+Return 3 to 5 prioritized next_tests.
+Each must include:
+- test: a concrete, bounded action,
+- signal: what result would strengthen, weaken, or materially update the idea.
+
+Do not force a 30-day timetable.
+Prefer the cheapest credible test that answers the important uncertainty.
+Do not recommend building software when a manual, concierge, prototype, pre-sell, deposit, interview-with-behavioral-commitment, or calculation could answer the same question more cheaply.
+
+FOCUS AREAS
+
+If the user selected focus areas, prioritize them, but do not ignore a more consequential issue simply because it was not selected.
+
+FINAL AUDIT BEFORE RETURNING
+
+1. Did I output any numeric score, percentage, probability, or grade? Remove it.
+2. Did I use autopsy/death/kill/brutal language? Remove it.
+3. Is every evidence_summary item directly traceable to user input? If not, remove it.
+4. Did I state any changing current-world fact without it being supplied or verified in the request? Reframe it as research needed.
+5. Did I name a current competitor from memory? Remove it unless the user supplied or verified it.
+6. Did I turn absence of supplied information into evidence that something does not exist? Correct it.
+7. Did I strengthen stated intent into actual behavior or commitment? Correct it.
+8. Did I use an absolute where calibrated wording is more accurate? Correct it.
+9. Are strengths genuinely supported rather than consolation prizes? Correct them.
+10. Does every major risk point toward a test or information-gathering action? Correct it.
+11. Are next steps prioritized by information value rather than by how impressive they sound? Correct them.
+12. Does this output clearly answer: what has the idea proved, what has it not proved, and what should the user test next?
+
+Return ONLY this JSON shape:
+{
+  "assessment_label": "Needs validation | Some evidence | Strong early evidence",
+  "verdict": "short plain-language headline, maximum 8 words",
+  "one_liner": "1-2 sentence central assessment",
+  "evidence_summary": [
+    "user-supplied fact, plan, observation, or evidence"
+  ],
+  "risks": [
+    {
+      "title": "short risk title",
+      "risk_level": "critical | high | medium | low",
+      "description": "why this could matter",
+      "test": "cheapest credible way to learn whether it applies"
+    }
+  ],
+  "strengths": [
+    {
+      "title": "supported strength",
+      "description": "why it matters without overclaiming"
+    }
+  ],
+  "questions": [
+    "material question"
+  ],
+  "next_tests": [
+    {
+      "test": "concrete bounded test",
+      "signal": "what result would update the assessment"
+    }
+  ]
+}`;
+
 router.post('/idea-autopsy/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { ideaDescription, ideaStage, founderContext, evidenceSoFar, focusAreas, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+  const {
+    ideaDescription,
+    ideaStage,
+    founderContext,
+    evidenceSoFar,
+    focusAreas,
+    userLanguage,
+    userLocale,
+    userCurrency,
+    userRegion,
+  } = req.body;
 
   if (!ideaDescription?.trim() || ideaDescription.trim().length < 30) {
     return res.status(400).json({ error: 'Please describe your idea in more detail.' });
   }
 
-  const stageLabel   = STAGE_LABELS[ideaStage] ?? 'early stage';
-  const focusList    = Array.isArray(focusAreas) && focusAreas.length
-    ? `\nPrioritize these areas: ${focusAreas.map(f => FOCUS_LABELS[f] ?? f).join(', ')}`
-    : '';
+  const stageLabel = STAGE_LABELS[ideaStage] ?? 'early stage';
+  const focusList = Array.isArray(focusAreas) && focusAreas.length
+    ? focusAreas.map(f => FOCUS_LABELS[f] ?? f).join(', ')
+    : 'No special focus selected; prioritize the most decision-relevant issues.';
 
-  const systemPrompt = withLanguage(
-    `You are a brutally honest startup advisor and venture capital analyst with 20 years of experience evaluating business ideas. You've seen thousands of ideas fail and a few succeed. Your job is to help founders avoid wasting years of their life on ideas that are fundamentally broken — or to identify what needs fixing before it's too late. You are not trying to be encouraging; you are trying to be useful. You always return only valid JSON with no markdown, no code blocks, and no explanation outside the JSON object. Never place a double-quote (") character inside any JSON string value — write quoted phrases or example questions plainly or with single quotes, or it breaks the JSON.`,
-    userLanguage
-  );
+  const userPrompt = `Stress-test this business idea.
 
-  const prompt = `Perform a rigorous autopsy on this business idea. Stage: ${stageLabel}.${focusList}
-${founderContext ? `\nFounder context: ${founderContext}` : ''}
-${evidenceSoFar ? `\nEvidence they already have — treat this as the only real-world signal available, weigh it against the idea's claims, and say plainly where it is too thin to conclude anything: ${evidenceSoFar}` : ''}
+STAGE
+${stageLabel}
 
-Idea:
----
+IDEA
 ${ideaDescription.trim()}
----
 
-VERDICT CONSISTENCY: one_liner and the verdict must agree with the numbers your risks compute — never state a headline claim (e.g. 'CAC exceeds LTV') that your own arithmetic elsewhere contradicts.
+WHAT THE USER HAS TESTED OR LEARNED SO FAR
+${cleanString(evidenceSoFar, 5000) || 'None supplied.'}
 
-Return ONLY valid JSON with this exact structure:
-{
-  "viability_score": <integer 1–10 — honest assessment; 1-3 = fundamental problems, 4-6 = fixable issues with serious work, 7-8 = promising with risks, 9-10 = very rare>,
-  "verdict": <4-6 word honest verdict — e.g. "Crowded market, weak differentiation", "Strong niche, execution-dependent", "Fundamentally broken unit economics">,
-  "one_liner": <1 sentence summary of the most important thing this person needs to understand about their idea>,
-  "risks": [
-    {
-      "title": <short name for this failure mode — e.g. "Cold start problem", "No willingness to pay">,
-      "risk_level": "critical" | "high" | "medium" | "low",
-      "description": <2-3 sentence specific explanation of why this is a real risk for THIS idea>,
-      "mitigation": <specific action that would reduce this risk — null if risk is fundamental/unfixable>
-    }
-  ],
-  "strengths": [<genuine strength of this idea — only real ones, not false encouragement — max 4>],
-  "kill_questions": [<the single most important question this founder must answer before proceeding — if they can't answer it, the idea may be dead — max 5, ordered by importance>],
-  "next_steps": [<specific action to take in the next 30 days to validate or kill this idea faster — max 5, ordered by impact>]
-}
+WHAT THE USER IS BRINGING TO IT
+${cleanString(founderContext, 3000) || 'None supplied.'}
 
-Guidelines:
-- viability_score: be honest; most ideas are 3-6. Above 7 should be genuinely exceptional.
-- risks: include 4-6 risks, ordered by severity (critical first). Be specific to THIS idea, not generic startup risks.
-- kill_questions: these are hypotheses that must be proven true for the idea to work. "Is there a real market?" is too vague. "Will busy parents pay a recurring monthly fee for this when they could use Google Calendar?" is a kill question.
-- next_steps: prioritize validation over building. The goal is to find out if the idea is viable as cheaply as possible.
-- If the idea is in a space you know is crowded (Airbnb for X, Uber for Y, etc.), name the competitors and explain what differentiation is needed.
-- Return ONLY the JSON object.`;
+AREAS THE USER ESPECIALLY WANTS CHALLENGED
+${focusList}
+
+Important:
+- Everything above is user-supplied context.
+- Statements in IDEA may describe plans, hypotheses, or beliefs; do not automatically treat them as validation evidence.
+- The WHAT THE USER HAS TESTED OR LEARNED SO FAR section is the strongest place to look for real-world evidence, but still preserve exactly what kind of evidence it is.
+- Return only the required JSON.`;
 
   try {
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5000,
-      system: systemPrompt + withLocaleContext(userLocale, userCurrency, userRegion),
-      messages: [{ role: 'user', content: prompt }],
-    }, { label: 'idea-autopsy' });
+      max_tokens: 5200,
+      system: withLanguage(SYSTEM_PROMPT, userLanguage || userLocale)
+        + withLocaleContext(userLocale, userCurrency, userRegion),
+      messages: [{ role: 'user', content: userPrompt }],
+    }, { label: 'concept-coach' });
 
-    if (!parsed?.verdict || !Array.isArray(parsed?.risks)) {
-      return res.status(500).json({ error: 'Unexpected response format. Please try again.' });
+    const result = normalizeResult(parsed);
+    const problems = validateResult(result);
+
+    if (problems.length) {
+      console.error('[concept-coach] invalid model output:', problems);
+      return res.status(500).json({ error: 'Concept Coach could not produce a reliable assessment. Please try again.' });
     }
 
-    res.json({
-      viability_score: typeof parsed.viability_score === 'number' ? parsed.viability_score : null,
-      verdict:         parsed.verdict ?? '',
-      one_liner:       parsed.one_liner ?? '',
-      risks:           parsed.risks,
-      strengths:       Array.isArray(parsed.strengths)       ? parsed.strengths       : [],
-      kill_questions:  Array.isArray(parsed.kill_questions)  ? parsed.kill_questions  : [],
-      next_steps:      Array.isArray(parsed.next_steps)      ? parsed.next_steps      : [],
-    });
+    res.json(result);
   } catch (err) {
+    console.error('[concept-coach] generation failed:', err?.message || err);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Autopsy failed. Please try again.' });
+      res.status(500).json({ error: 'Concept Coach failed. Please try again.' });
     }
   }
 });
+
+// Reviewed against backend/lib/outputStandard.js on 2026-08-31, as part of the
+// Concept Coach rewrite. The clauses this tool leans on hardest are §3 (progress
+// under uncertainty) and §4 (respect the visitor's agency): dropping the 1-10
+// viability score is §4 directly — a number handed down as a verdict is the tool
+// substituting its judgement for the founder's — and every risk carrying a test,
+// with every next test carrying the signal that would update the assessment, is
+// §3 and §5. validateResult() below is the post-generation check: it is
+// deterministic, it runs on every response, and it refuses rather than shipping a
+// shape the frontend cannot render. See PF-39.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'any_numeric_score_percentage_probability_or_grade',
+    'asserts_current_competitors_market_size_funding_pricing_or_operating_status_without_supplied_evidence',
+    'treats_absence_of_evidence_as_evidence_of_absence',
+    'upgrades_stated_intent_or_expressed_interest_into_demonstrated_demand',
+    'presents_its_own_reasoning_as_something_the_user_supplied',
+    'psychologises_the_founder_rather_than_naming_skills_resources_and_advantages',
+    'autopsy_kill_brutal_or_death_framing',
+    'unsupported_absolutes_such_as_this_always_fails_or_nobody_will_pay',
+    'a_risk_without_a_test_that_would_settle_it',
+    'a_next_test_without_a_signal_that_would_change_the_assessment',
+  ],
+  require: [
+    'evidence_summary_contains_only_what_the_user_supplied',
+    'every_risk_carries_a_test',
+    'every_next_test_carries_an_update_signal',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;

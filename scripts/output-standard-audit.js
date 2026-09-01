@@ -59,6 +59,10 @@ for (const slug of onDisk) {
 // router.outputGuard — and calls the validator, or says out loud that it does
 // not need one. Without this, "reviewed under v2" means the prompt got longer.
 const DECLARES_GUARD = /(?:^|\n)\s*router\.outputGuard\s*=/;
+// validateResult() is Concept Coach's — deterministic, on every response, and
+// it refuses rather than shipping an unrenderable shape. The name is generic
+// enough to be worth noting that it is not a loophole: the check below also
+// requires router.outputGuard, so a route cannot pass on the function name alone.
 // HobbyMatch v2's deterministicViolations() is the strongest of these: it is
 // regex, not a model, it runs after the repair pass, and the route refuses to
 // respond while it still finds something. A check that can only be satisfied,
@@ -68,7 +72,7 @@ const DECLARES_GUARD = /(?:^|\n)\s*router\.outputGuard\s*=/;
 // and repairs only the components that fail. Recognised by name for the same
 // reason enforceSuppliedFacts is — a tool's own check counts, provided it runs
 // after generation and can change what ships.
-const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelope\s*\(|enforceSuppliedFacts\s*\(|validateAndRepair\s*\(|deterministicViolations\s*\(/;
+const CALLS_GUARD = /runOutputGuard\s*\(|checkAgainstSupplied\s*\(|enforceEnvelope\s*\(|enforceSuppliedFacts\s*\(|validateAndRepair\s*\(|deterministicViolations\s*\(|validateResult\s*\(/;
 // Routes exempt from needing a guard, by name and with a reason. Empty today.
 const GUARD_EXEMPT = new Map([]);
 
@@ -110,6 +114,16 @@ const SCHEMA_SMELLS = [
 // Named exceptions, with reasons. Empty — an exception here should be a
 // conspicuous decision, not a hole somebody fell into.
 const SCHEMA_CONGRUENCE_EXEMPT = new Map([
+  ['idea-autopsy',
+    'Concept Coach\'s "risk_level" is an IMPORTANCE ordering, not a likelihood. ' +
+    'The prompt says so in the schema itself — "risk_level means importance to ' +
+    'the decision, not probability" — and asks for risks "ordered by decision ' +
+    'importance". The smell targets a model guessing how likely something is; ' +
+    'this field ranks what matters most to the choice in front of the founder, ' +
+    'which is exactly what §1 asks the tool to prioritise. The rewrite removed ' +
+    'the actual false precision this tool used to carry: the 1-10 viability ' +
+    'score, and the guard prohibits any numeric score, percentage or grade ' +
+    'returning.'],
   ['dream-pattern-spotter',
     'The "emotion" field holds emotions the DREAMER selected about their own ' +
     'dream and sent to us — recurring_emotions counts how often each of their ' +

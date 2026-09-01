@@ -34,12 +34,12 @@ const EXAMPLES = [
 },
   {
   ideaStage: 'launched',
-  focusAreas: ['market', 'timing', 'founder'],
+  focusAreas: ['market', 'timing', 'founder', 'next'],
 },
-];
+];;
 
 const RISK_LEVELS = {
-  critical: { icon: '💀', labelKey: 'ia_risk_critical', bg: isDark => isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-300', txt: isDark => isDark ? 'text-red-300' : 'text-red-800' },
+  critical: { icon: '🔴', labelKey: 'ia_risk_critical', bg: isDark => isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-300', txt: isDark => isDark ? 'text-red-300' : 'text-red-800' },
   high:     { icon: '🚨', labelKey: 'ia_risk_high',     bg: isDark => isDark ? 'bg-orange-900/30 border-orange-700' : 'bg-orange-50 border-orange-300', txt: isDark => isDark ? 'text-orange-300' : 'text-orange-800' },
   medium:   { icon: '⚠️',  labelKey: 'ia_risk_medium',  bg: isDark => isDark ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-300', txt: isDark => isDark ? 'text-amber-300' : 'text-amber-800' },
   low:      { icon: '✅',  labelKey: 'ia_risk_low',     bg: isDark => isDark ? 'bg-emerald-900/30 border-emerald-700' : 'bg-emerald-50 border-emerald-300', txt: isDark => isDark ? 'text-emerald-300' : 'text-emerald-800' },
@@ -95,10 +95,10 @@ function ConceptCoach({ tool }) {
   const [evidenceSoFar, setEvidenceSoFar] = useState('');
   const [founderContext, setFounderContext] = useState('');
   const [focusAreas, setFocusAreas]         = useState([]);
-  const [results, setResults]               = usePersistentState('ideaautopsy-results', null);
-  const [sessionHistory, setSessionHistory]               = usePersistentState('ideaautopsy-history', []);
+  const [results, setResults]               = usePersistentState('conceptcoach-results-v2', null);
+  const [sessionHistory, setSessionHistory]               = usePersistentState('conceptcoach-history-v2', []);
   const [error, setError]                   = useState('');
-  const [activeTab, setActiveTab]           = useState('risks');
+  const [activeTab, setActiveTab]           = useState('evidence');
 
   const resultsRef    = useRef(null);
   const handleRunRef  = useRef(null);
@@ -114,11 +114,11 @@ function ConceptCoach({ tool }) {
     setEvidenceSoFar('');
     setFounderContext('');
     setFocusAreas([]);
-    setActiveTab('risks');
+    setActiveTab('evidence');
   }, [setResults]);
 
   const loadExample = useCallback(() => {
-    const ex = pickExample('ConceptCoach', EXAMPLES);
+    const ex = pickExample('IdeaAutopsy', EXAMPLES);
     setIdeaStage(ex.ideaStage);
     setIdeaDescription(t('ia_ex_desc'));
     setEvidenceSoFar(t('ia_ex_evidence'));
@@ -135,7 +135,7 @@ function ConceptCoach({ tool }) {
     if (!canSubmit || loading) return;
     setError('');
     setResults(null);
-    setActiveTab('risks');
+    setActiveTab('evidence');
 
     try {
       const parsed = await callToolEndpoint('idea-autopsy/stream', {
@@ -153,7 +153,7 @@ function ConceptCoach({ tool }) {
       setSessionHistory(prev => [{
         preview: ideaDescription.slice(0, 80) + (ideaDescription.length > 80 ? '…' : ''),
         verdict: parsed.verdict ?? null,
-        score:   parsed.viability_score ?? null,
+        assessment: parsed.assessment_label ?? null,
         ts:      Date.now(),
       }, ...prev].slice(0, 6));
     } catch (err) {
@@ -167,28 +167,33 @@ function ConceptCoach({ tool }) {
   const buildFullText = useCallback(() => {
     if (!results) return '';
     const lines = [t('ia_copy_header'), ''];
-    if (results.viability_score != null) lines.push(`${t('ia_copy_score')} ${results.viability_score}/10 — ${results.verdict ?? ''}`);
+    if (results.assessment_label) lines.push(results.assessment_label);
+    if (results.verdict) lines.push(results.verdict);
     if (results.one_liner) lines.push(`\n${results.one_liner}`);
+    if (results.evidence_summary?.length) {
+      lines.push(`\n${t('ia_copy_evidence')}`);
+      results.evidence_summary.forEach(s => lines.push(`• ${s}`));
+    }
     if (results.risks?.length) {
-      lines.push(`\n${t('ia_copy_failures')}`);
+      lines.push(`\n${t('ia_copy_risks')}`);
       results.risks.forEach(r => {
         const lvlLabel = RISK_LEVELS[r.risk_level]?.labelKey ? t(RISK_LEVELS[r.risk_level].labelKey) : (r.risk_level ?? '');
         lines.push(`\n[${lvlLabel}] ${r.title}`);
         lines.push(r.description);
-        if (r.mitigation) lines.push(`${t('ia_copy_mitigation')} ${r.mitigation}`);
+        if (r.test) lines.push(`${t('ia_copy_test')} ${r.test}`);
       });
     }
     if (results.strengths?.length) {
       lines.push(`\n${t('ia_copy_strengths')}`);
-      results.strengths.forEach(s => lines.push(`• ${s}`));
+      results.strengths.forEach(s => lines.push(`• ${typeof s === 'string' ? s : `${s.title}: ${s.description}`}`));
     }
-    if (results.kill_questions?.length) {
+    if (results.questions?.length) {
       lines.push(`\n${t('ia_copy_questions')}`);
-      results.kill_questions.forEach((q, i) => lines.push(`${i + 1}. ${q}`));
+      results.questions.forEach((q, i) => lines.push(`${i + 1}. ${q}`));
     }
-    if (results.next_steps?.length) {
+    if (results.next_tests?.length) {
       lines.push(`\n${t('ia_copy_next')}`);
-      results.next_steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+      results.next_tests.forEach((s, i) => lines.push(`${i + 1}. ${typeof s === 'string' ? s : `${s.test} — ${s.signal}`}`));
     }
     lines.push(BRAND);
     return lines.join('\n');
@@ -213,13 +218,9 @@ function ConceptCoach({ tool }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  const scoreColor = score => {
-    if (score >= 7) return isDark ? 'text-emerald-400' : 'text-emerald-600';
-    if (score >= 5) return isDark ? 'text-amber-400' : 'text-amber-600';
-    return isDark ? 'text-red-400' : 'text-red-600';
-  };
 
   const TABS = [
+    { id: 'evidence',  label: t('ia_tab_evidence') },
     { id: 'risks',     label: t('ia_tab_risks') },
     { id: 'strengths', label: t('ia_tab_strengths') },
     { id: 'questions', label: t('ia_tab_questions') },
@@ -254,7 +255,6 @@ function ConceptCoach({ tool }) {
           rows={5}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
         />
-        <p className={`mt-1 text-xs ${c.textMuted}`}>{t('ia_desc_help')}</p>
       </div>
 
       {/* Evidence so far */}
@@ -325,7 +325,7 @@ function ConceptCoach({ tool }) {
           <ul className="space-y-1.5">
             {sessionHistory.map((h, i) => (
               <li key={i} className={`text-xs ${c.textSecondary} flex items-start gap-2`}>
-                {h.score != null && <span className={`font-bold flex-shrink-0 ${scoreColor(h.score)}`}>{h.score}/10</span>}
+                {h.assessment && <span className={`font-bold flex-shrink-0 ${c.accentTxt}`}>{h.assessment}</span>}
                 <span className={c.textMuted}>{h.preview}</span>
               </li>
             ))}
@@ -343,10 +343,9 @@ function ConceptCoach({ tool }) {
         {/* Verdict banner */}
         <div className={`${c.card} border ${c.border} rounded-xl p-5`}>
           <div className="flex items-start gap-4">
-            {results.viability_score != null && (
-              <div className="text-center flex-shrink-0">
-                <p className={`text-4xl font-black ${scoreColor(results.viability_score)}`}>{results.viability_score}</p>
-                <p className={`text-[10px] font-bold ${c.textMuted} uppercase`}>{t('ia_score_of')}</p>
+            {results.assessment_label && (
+              <div className={`${c.infoBox} border rounded-lg px-3 py-2 text-xs font-bold flex-shrink-0`}>
+                {results.assessment_label}
               </div>
             )}
             <div className="flex-1">
@@ -373,6 +372,18 @@ function ConceptCoach({ tool }) {
 
           <div className="p-4 space-y-3">
 
+            {/* What we know tab */}
+            {activeTab === 'evidence' && (
+              <div className="space-y-2">
+                <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_evidence_intro')}</p>
+                {results?.evidence_summary?.map((s, i) => (
+                  <div key={i} className={`text-sm ${c.infoBox} border rounded-lg px-3 py-2.5 flex gap-2`}>
+                    <span className="flex-shrink-0">•</span><span>{s}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Risks tab */}
             {activeTab === 'risks' && results?.risks?.map((risk, i) => {
               const cfg = RISK_LEVELS[risk.risk_level] ?? RISK_LEVELS.medium;
@@ -384,9 +395,9 @@ function ConceptCoach({ tool }) {
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg.bg(isDark)} ${cfg.txt(isDark)}`}>{t(cfg.labelKey)}</span>
                   </div>
                   <p className={`text-sm ${cfg.txt(isDark)} mb-2`}>{risk.description}</p>
-                  {risk.mitigation && (
+                  {risk.test && (
                     <p className={`text-xs ${cfg.txt(isDark)} opacity-80`}>
-                      <span className="font-semibold">{t('ia_mitigation')}</span>{risk.mitigation}
+                      <span className="font-semibold">{t('ia_test')}</span>{risk.test}
                     </p>
                   )}
                 </div>
@@ -398,7 +409,7 @@ function ConceptCoach({ tool }) {
               <ul className="space-y-2">
                 {results?.strengths?.map((s, i) => (
                   <li key={i} className={`text-sm ${c.success} border rounded-lg px-3 py-2.5 flex gap-2`}>
-                    <span className="flex-shrink-0">✅</span><span>{s}</span>
+                    <span className="flex-shrink-0">✅</span><span>{typeof s === 'string' ? s : <><strong>{s.title}</strong>{s.description ? ` — ${s.description}` : ''}</>}</span>
                   </li>
                 ))}
               </ul>
@@ -408,7 +419,7 @@ function ConceptCoach({ tool }) {
             {activeTab === 'questions' && (
               <div className="space-y-2">
                 <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_questions_intro')}</p>
-                {results?.kill_questions?.map((q, i) => (
+                {results?.questions?.map((q, i) => (
                   <div key={i} className={`text-sm ${c.warning} border rounded-lg px-3 py-2.5 flex gap-2`}>
                     <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{q}</span>
                   </div>
@@ -420,9 +431,9 @@ function ConceptCoach({ tool }) {
             {activeTab === 'next' && (
               <div className="space-y-2">
                 <p className={`text-xs ${c.textMuted} mb-3`}>{t('ia_next_intro')}</p>
-                {results?.next_steps?.map((s, i) => (
+                {results?.next_tests?.map((s, i) => (
                   <div key={i} className={`text-sm ${c.infoBox} border rounded-lg px-3 py-2.5 flex gap-2`}>
-                    <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{s}</span>
+                    <span className={`flex-shrink-0 font-bold ${c.accentTxt}`}>{i + 1}.</span><span>{typeof s === 'string' ? s : <><strong>{s.test}</strong>{s.signal ? ` — ${s.signal}` : ''}</>}</span>
                   </div>
                 ))}
               </div>
