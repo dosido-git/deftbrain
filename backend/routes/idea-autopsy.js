@@ -24,7 +24,7 @@ const FOCUS_LABELS = {
 };
 
 router.post('/idea-autopsy/stream', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  const { ideaDescription, ideaStage, founderContext, focusAreas, userLanguage, userLocale, userCurrency, userRegion } = req.body;
+  const { ideaDescription, ideaStage, founderContext, evidenceSoFar, focusAreas, userLanguage, userLocale, userCurrency, userRegion } = req.body;
 
   if (!ideaDescription?.trim() || ideaDescription.trim().length < 30) {
     return res.status(400).json({ error: 'Please describe your idea in more detail.' });
@@ -42,6 +42,7 @@ router.post('/idea-autopsy/stream', rateLimit(DEFAULT_LIMITS), async (req, res) 
 
   const prompt = `Perform a rigorous autopsy on this business idea. Stage: ${stageLabel}.${focusList}
 ${founderContext ? `\nFounder context: ${founderContext}` : ''}
+${evidenceSoFar ? `\nEvidence they already have — treat this as the only real-world signal available, weigh it against the idea's claims, and say plainly where it is too thin to conclude anything: ${evidenceSoFar}` : ''}
 
 Idea:
 ---

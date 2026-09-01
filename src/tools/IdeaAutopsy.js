@@ -34,9 +34,9 @@ const EXAMPLES = [
 },
   {
   ideaStage: 'launched',
-  focusAreas: ['market', 'timing', 'founder', 'next'],
+  focusAreas: ['market', 'timing', 'founder'],
 },
-];;
+];
 
 const RISK_LEVELS = {
   critical: { icon: '💀', labelKey: 'ia_risk_critical', bg: isDark => isDark ? 'bg-red-900/30 border-red-700' : 'bg-red-50 border-red-300', txt: isDark => isDark ? 'text-red-300' : 'text-red-800' },
@@ -92,6 +92,7 @@ function IdeaAutopsy({ tool }) {
 
   const [ideaStage, setIdeaStage]           = useState('idea');
   const [ideaDescription, setIdeaDescription] = useState('');
+  const [evidenceSoFar, setEvidenceSoFar] = useState('');
   const [founderContext, setFounderContext] = useState('');
   const [focusAreas, setFocusAreas]         = useState([]);
   const [results, setResults]               = usePersistentState('ideaautopsy-results', null);
@@ -110,6 +111,7 @@ function IdeaAutopsy({ tool }) {
     setError('');
     setIdeaStage('idea');
     setIdeaDescription('');
+    setEvidenceSoFar('');
     setFounderContext('');
     setFocusAreas([]);
     setActiveTab('risks');
@@ -119,6 +121,7 @@ function IdeaAutopsy({ tool }) {
     const ex = pickExample('IdeaAutopsy', EXAMPLES);
     setIdeaStage(ex.ideaStage);
     setIdeaDescription(t('ia_ex_desc'));
+    setEvidenceSoFar(t('ia_ex_evidence'));
     setFounderContext(t('ia_ex_founder', { sym }));
     setFocusAreas(ex.focusAreas);
     setResults(null);
@@ -137,6 +140,7 @@ function IdeaAutopsy({ tool }) {
     try {
       const parsed = await callToolEndpoint('idea-autopsy/stream', {
         ideaDescription: ideaDescription.trim(),
+        evidenceSoFar: evidenceSoFar.trim() || null,
         ideaStage,
         founderContext: founderContext.trim() || null,
         focusAreas,
@@ -155,7 +159,7 @@ function IdeaAutopsy({ tool }) {
     } catch (err) {
       setError(err.message || t('ia_error'));
     }
-  }, [canSubmit, loading, ideaDescription, ideaStage, founderContext, focusAreas, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [canSubmit, loading, ideaDescription, evidenceSoFar, ideaStage, founderContext, focusAreas, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
 
   handleRunRef.current = handleRun;
   canSubmitRef.current = canSubmit;
@@ -248,6 +252,21 @@ function IdeaAutopsy({ tool }) {
           onChange={e => setIdeaDescription(e.target.value)}
           placeholder={t('ia_desc_ph')}
           rows={5}
+          className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
+        />
+        <p className={`mt-1 text-xs ${c.textMuted}`}>{t('ia_desc_help')}</p>
+      </div>
+
+      {/* Evidence so far */}
+      <div>
+        <label className={`block text-sm font-medium ${c.labelText} mb-1`}>
+          {t('ia_evidence_label')} <span className={`text-xs font-normal ${c.textMuted}`}>{t('ia_evidence_hint')}</span>
+        </label>
+        <textarea
+          value={evidenceSoFar}
+          onChange={e => setEvidenceSoFar(e.target.value)}
+          placeholder={t('ia_evidence_ph')}
+          rows={3}
           className={`w-full px-3 py-2.5 border rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`}
         />
       </div>
@@ -437,7 +456,7 @@ function IdeaAutopsy({ tool }) {
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(results || focusAreas.length || founderContext.trim() || ideaDescription.trim()) ? (
+              {(results || focusAreas.length || founderContext.trim() || evidenceSoFar.trim() || ideaDescription.trim()) ? (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   ↺ {t('ia_new')}
                 </button>
