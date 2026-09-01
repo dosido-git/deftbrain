@@ -15,6 +15,12 @@ That is a code-level name, not a user-facing one — see the vocabulary note in
 
 See `audit/CONVENTIONS.md` for full patterns and worked examples. The rules below are the non-negotiables.
 
+Installing an owner-supplied rewrite (zip or spec) has its own checklist:
+`audit/REWRITE-INSTALL-KIT.md`. Read it first — a supplied rewrite is a draft,
+not a patch, and the traps it lists (dynamic import by filename, a new input the
+backend never reads, changed English staling twelve translations) do not all fail
+a gate.
+
 ## Foundation documents (read before design, copy, or product decisions)
 
 Four documents in `docs/foundation/` define what DeftBrain is and how it should
