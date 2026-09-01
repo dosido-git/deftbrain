@@ -867,7 +867,18 @@ for name, fpath in tools:
                          # a stored list of who you have thanked, and what you
                          # said, is a record most people would rather this tool
                          # did not keep.
-                         'GratitudeDebtClearer'}
+                         'GratitudeDebtClearer',
+                         # LaundroMat joined on 2026-09-01 with the framing
+                         # redesign. Same shape as FocusSoundArchitect: the
+                         # redesign removed the history panel from the advisor
+                         # input, which was the only thing that read
+                         # laundromat-history, so keeping the writes would mean
+                         # recording every load someone washed with no way to
+                         # look at it. The tool is now about the garment in
+                         # front of you, not a laundry log. Timers still
+                         # persist (laundromat-timers) — a running cycle, not
+                         # a record of past ones.
+                         'LaundroMat'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

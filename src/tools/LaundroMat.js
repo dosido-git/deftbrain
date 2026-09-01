@@ -319,7 +319,6 @@ const LaundroMat = ({ tool }) => {
 
   // ── Timers (persistent — survives navigation) ──
   const [timers, setTimers] = usePersistentState('laundromat-timers', []);
-  const [laundryHistory, setLaundryHistory] = usePersistentState('laundromat-history', []);
   const [newLabel, setNewLabel] = useState('');
   const [newDuration, setNewDuration] = useState(30);
   const [customDuration, setCustomDuration] = useState('');
@@ -589,8 +588,6 @@ const LaundroMat = ({ tool }) => {
         machineType,
         imageBase64: labelImage || null,
       });
-      const historyPreview = (loadDesc || t('lmt_history_default')).substring(0, 40);
-      setLaundryHistory(prev => [{ id: Date.now().toString(), date: new Date().toISOString(), preview: historyPreview }, ...prev].slice(0, 6));
       setAdviceResults(res);
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
     } catch (err) { setError(err.message || t('lmt_err_get_advice')); }
@@ -1146,16 +1143,10 @@ const LaundroMat = ({ tool }) => {
     return (
       <div>
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
               <span>👕</span> {t('lmt_adv_q')} <span className={c.required}>*</span>
             </h3>
-            {laundryHistory.length > 0 && (
-              <span className={`text-[10px] ${c.textMuted}`}>
-                {t('lmt_adv_last')} {(() => { const d = new Date(laundryHistory[0].date); const days = Math.floor((Date.now() - d) / 86400000); return days === 0 ? t('lmt_adv_today') : days === 1 ? t('lmt_adv_yesterday') : t('lmt_adv_days_ago', { days }); })()}
-                {laundryHistory[0].preview ? ` · ${laundryHistory[0].preview}` : ''}
-              </span>
-            )}
           </div>
 
           {/* Quick-pick chips */}
@@ -1219,10 +1210,6 @@ const LaundroMat = ({ tool }) => {
               </button>
             ))}
           </div>
-
-          <p className={`text-xs text-center ${c.textMuted} mb-2`}>
-            {t('lmt_xref_advisor_prefix')}<a href="/PEP" className={linkStyle}>{t('lmt_xref_pep')}</a>{t('lmt_xref_advisor_suffix')}
-          </p>
 
           <button title={t('cmd_enter')} onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2

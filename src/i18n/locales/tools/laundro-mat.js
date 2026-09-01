@@ -13,17 +13,17 @@ export const laundroMat = {
   en: {
     // ── Header / chrome ──
     lmt_title: "LaundroMat",
-    lmt_tagline: "Never lose track of your laundry again",
+    lmt_tagline: "🧺 What to wash, how to wash it, and what to do when things go wrong.",
     lmt_start_over: "↺ Start Over",
-    lmt_disclaimer: "AI-generated advice — for reference only. Always check garment care labels.",
+    lmt_disclaimer: "Laundry guidance — always check garment care labels.",
     lmt_related_tools: "🔗 Related tools",
 
     // ── Tabs ──
-    lmt_tab_advisor: "🧠 Advisor",
-    lmt_tab_stain: "🆘 Stain",
-    lmt_tab_rescue: "🚑 Rescue",
-    lmt_tab_symbols: "🏷️ Symbols",
-    lmt_tab_timers: "⏱️ Timers",
+    lmt_tab_advisor: "👕 Wash a Load",
+    lmt_tab_stain: "💧 Remove a Stain",
+    lmt_tab_rescue: "🚑 Rescue Clothes",
+    lmt_tab_symbols: "🏷 Read a Label",
+    lmt_tab_timers: "⏱ Timers",
     lmt_spill_banner: "🆘 Just spilled something? Act now — every second counts",
 
     // ── Errors ──
@@ -358,16 +358,16 @@ export const laundroMat = {
 
   es: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "No vuelvas a perder de vista tu colada",
+    lmt_tagline: "🧺 Qué lavar, cómo lavarlo y qué hacer cuando algo sale mal.",
     lmt_start_over: "↺ Empezar de nuevo",
-    lmt_disclaimer: "Consejos generados por IA — solo de referencia. Consulta siempre las etiquetas de cuidado.",
+    lmt_disclaimer: "Orientación para el lavado: consulta siempre las etiquetas de cuidado.",
     lmt_related_tools: "🔗 Herramientas relacionadas",
 
-    lmt_tab_advisor: "🧠 Asesor",
-    lmt_tab_stain: "🆘 Manchas",
-    lmt_tab_rescue: "🚑 Rescate",
-    lmt_tab_symbols: "🏷️ Símbolos",
-    lmt_tab_timers: "⏱️ Temporizadores",
+    lmt_tab_advisor: "👕 Lavar una carga",
+    lmt_tab_stain: "💧 Quitar una mancha",
+    lmt_tab_rescue: "🚑 Rescatar prendas",
+    lmt_tab_symbols: "🏷 Leer una etiqueta",
+    lmt_tab_timers: "⏱ Temporizadores",
     lmt_spill_banner: "🆘 ¿Acabas de derramar algo? Actúa ya — cada segundo cuenta",
 
     lmt_err_upload_image: "Sube una imagen, por favor",
@@ -666,16 +666,16 @@ export const laundroMat = {
 
   zh: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "再也不会忘记你的衣物",
+    lmt_tagline: "🧺 该洗什么、怎么洗，以及出问题时怎么办。",
     lmt_start_over: "↺ 重新开始",
-    lmt_disclaimer: "AI 生成的建议——仅供参考。请务必查看衣物的洗涤标签。",
+    lmt_disclaimer: "洗涤建议 —— 请始终查看衣物护理标签。",
     lmt_related_tools: "🔗 相关工具",
 
-    lmt_tab_advisor: "🧠 顾问",
-    lmt_tab_stain: "🆘 污渍",
-    lmt_tab_rescue: "🚑 抢救",
-    lmt_tab_symbols: "🏷️ 符号",
-    lmt_tab_timers: "⏱️ 计时器",
+    lmt_tab_advisor: "👕 洗一批衣物",
+    lmt_tab_stain: "💧 去除污渍",
+    lmt_tab_rescue: "🚑 抢救衣物",
+    lmt_tab_symbols: "🏷 看懂标签",
+    lmt_tab_timers: "⏱ 计时器",
     lmt_spill_banner: "🆘 刚洒了东西？立即行动——分秒必争",
 
     lmt_err_upload_image: "请上传一张图片",
@@ -974,16 +974,16 @@ export const laundroMat = {
 
   hi: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "अब अपने कपड़ों का हिसाब कभी न भूलें",
+    lmt_tagline: "🧺 क्या धोना है, कैसे धोना है, और गड़बड़ होने पर क्या करना है।",
     lmt_start_over: "↺ फिर से शुरू करें",
-    lmt_disclaimer: "AI से बनी सलाह — केवल संदर्भ के लिए। कपड़ों के केयर लेबल हमेशा जाँचें।",
+    lmt_disclaimer: "धुलाई संबंधी मार्गदर्शन — कपड़ों के केयर लेबल हमेशा देखें।",
     lmt_related_tools: "🔗 संबंधित टूल",
 
-    lmt_tab_advisor: "🧠 सलाहकार",
-    lmt_tab_stain: "🆘 दाग",
-    lmt_tab_rescue: "🚑 बचाव",
-    lmt_tab_symbols: "🏷️ चिह्न",
-    lmt_tab_timers: "⏱️ टाइमर",
+    lmt_tab_advisor: "👕 कपड़े धोएँ",
+    lmt_tab_stain: "💧 दाग हटाएँ",
+    lmt_tab_rescue: "🚑 कपड़े बचाएँ",
+    lmt_tab_symbols: "🏷 लेबल पढ़ें",
+    lmt_tab_timers: "⏱ टाइमर",
     lmt_spill_banner: "🆘 अभी कुछ गिर गया? तुरंत कार्रवाई करें — हर पल कीमती है",
 
     lmt_err_upload_image: "कृपया एक छवि अपलोड करें",
@@ -1282,16 +1282,16 @@ export const laundroMat = {
 
   ar: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "لن تفقد متابعة غسيلك بعد الآن",
+    lmt_tagline: "🧺 ما الذي يُغسل، وكيف يُغسل، وماذا يُفعل عند حدوث خطأ.",
     lmt_start_over: "↺ ابدأ من جديد",
-    lmt_disclaimer: "نصائح مُولّدة بالذكاء الاصطناعي — للاسترشاد فقط. تحقّق دائماً من ملصقات العناية بالملابس.",
+    lmt_disclaimer: "إرشادات للغسيل — يجب دائماً مراجعة ملصقات العناية بالملابس.",
     lmt_related_tools: "🔗 أدوات ذات صلة",
 
-    lmt_tab_advisor: "🧠 المستشار",
-    lmt_tab_stain: "🆘 البقع",
-    lmt_tab_rescue: "🚑 الإنقاذ",
-    lmt_tab_symbols: "🏷️ الرموز",
-    lmt_tab_timers: "⏱️ المؤقتات",
+    lmt_tab_advisor: "👕 غسل حِمل",
+    lmt_tab_stain: "💧 إزالة بقعة",
+    lmt_tab_rescue: "🚑 إنقاذ الملابس",
+    lmt_tab_symbols: "🏷 قراءة الملصق",
+    lmt_tab_timers: "⏱ المؤقتات",
     lmt_spill_banner: "🆘 سكبت شيئاً للتو؟ تصرّف الآن — كل ثانية تهم",
 
     lmt_err_upload_image: "يرجى رفع صورة",
@@ -1590,16 +1590,16 @@ export const laundroMat = {
 
   pt: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "Nunca mais perca o controle da sua roupa",
+    lmt_tagline: "🧺 O que lavar, como lavar e o que fazer quando algo dá errado.",
     lmt_start_over: "↺ Começar de novo",
-    lmt_disclaimer: "Conselhos gerados por IA — apenas para referência. Verifique sempre as etiquetas de conservação.",
+    lmt_disclaimer: "Orientação de lavagem — confira sempre as etiquetas de cuidado.",
     lmt_related_tools: "🔗 Ferramentas relacionadas",
 
-    lmt_tab_advisor: "🧠 Consultor",
-    lmt_tab_stain: "🆘 Manchas",
-    lmt_tab_rescue: "🚑 Resgate",
-    lmt_tab_symbols: "🏷️ Símbolos",
-    lmt_tab_timers: "⏱️ Temporizadores",
+    lmt_tab_advisor: "👕 Lavar uma carga",
+    lmt_tab_stain: "💧 Tirar uma mancha",
+    lmt_tab_rescue: "🚑 Salvar peças",
+    lmt_tab_symbols: "🏷 Ler a etiqueta",
+    lmt_tab_timers: "⏱ Timers",
     lmt_spill_banner: "🆘 Acabou de derramar algo? Aja agora — cada segundo conta",
 
     lmt_err_upload_image: "Envie uma imagem, por favor",
@@ -1898,16 +1898,16 @@ export const laundroMat = {
 
   fr: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "Ne perdez plus jamais le fil de votre lessive",
+    lmt_tagline: "🧺 Quoi laver, comment le laver, et que faire quand ça tourne mal.",
     lmt_start_over: "↺ Recommencer",
-    lmt_disclaimer: "Conseils générés par IA — à titre indicatif seulement. Vérifiez toujours les étiquettes d'entretien.",
+    lmt_disclaimer: "Conseils de lavage — vérifiez toujours les étiquettes d'entretien.",
     lmt_related_tools: "🔗 Outils connexes",
 
-    lmt_tab_advisor: "🧠 Conseiller",
-    lmt_tab_stain: "🆘 Taches",
-    lmt_tab_rescue: "🚑 Sauvetage",
-    lmt_tab_symbols: "🏷️ Symboles",
-    lmt_tab_timers: "⏱️ Minuteurs",
+    lmt_tab_advisor: "👕 Laver une machine",
+    lmt_tab_stain: "💧 Enlever une tache",
+    lmt_tab_rescue: "🚑 Sauver un vêtement",
+    lmt_tab_symbols: "🏷 Lire une étiquette",
+    lmt_tab_timers: "⏱ Minuteurs",
     lmt_spill_banner: "🆘 Vous venez de renverser quelque chose ? Agissez maintenant — chaque seconde compte",
 
     lmt_err_upload_image: "Veuillez téléverser une image",
@@ -2206,16 +2206,16 @@ export const laundroMat = {
 
   de: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "Behalte deine Wäsche immer im Blick",
+    lmt_tagline: "🧺 Was du wäschst, wie du es wäschst und was du tust, wenn etwas schiefgeht.",
     lmt_start_over: "↺ Neu starten",
-    lmt_disclaimer: "KI-generierte Ratschläge — nur zur Orientierung. Prüfe immer die Pflegeetiketten der Kleidung.",
+    lmt_disclaimer: "Wäsche-Hinweise — schau immer auf die Pflegeetiketten.",
     lmt_related_tools: "🔗 Verwandte Tools",
 
-    lmt_tab_advisor: "🧠 Berater",
-    lmt_tab_stain: "🆘 Flecken",
-    lmt_tab_rescue: "🚑 Rettung",
-    lmt_tab_symbols: "🏷️ Symbole",
-    lmt_tab_timers: "⏱️ Timer",
+    lmt_tab_advisor: "👕 Wäsche waschen",
+    lmt_tab_stain: "💧 Fleck entfernen",
+    lmt_tab_rescue: "🚑 Kleidung retten",
+    lmt_tab_symbols: "🏷 Etikett lesen",
+    lmt_tab_timers: "⏱ Timer",
     lmt_spill_banner: "🆘 Gerade etwas verschüttet? Handle jetzt — jede Sekunde zählt",
 
     lmt_err_upload_image: "Bitte lade ein Bild hoch",
@@ -2514,16 +2514,16 @@ export const laundroMat = {
 
   ja: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "もう洗濯のことを忘れない",
+    lmt_tagline: "🧺 何を洗うか、どう洗うか、そして失敗したときにどうするか。",
     lmt_start_over: "↺ 最初からやり直す",
-    lmt_disclaimer: "AIが生成したアドバイス — 参考用です。必ず衣類の洗濯表示を確認してください。",
+    lmt_disclaimer: "洗濯のめやすです。必ず衣類の洗濯表示を確認してください。",
     lmt_related_tools: "🔗 関連ツール",
 
-    lmt_tab_advisor: "🧠 アドバイザー",
-    lmt_tab_stain: "🆘 シミ",
-    lmt_tab_rescue: "🚑 レスキュー",
-    lmt_tab_symbols: "🏷️ 記号",
-    lmt_tab_timers: "⏱️ タイマー",
+    lmt_tab_advisor: "👕 洗濯する",
+    lmt_tab_stain: "💧 シミを落とす",
+    lmt_tab_rescue: "🚑 服を救出する",
+    lmt_tab_symbols: "🏷 洗濯表示を読む",
+    lmt_tab_timers: "⏱ タイマー",
     lmt_spill_banner: "🆘 何かこぼした？ 今すぐ対処を — 一秒が勝負です",
 
     lmt_err_upload_image: "画像をアップロードしてください",
@@ -2822,16 +2822,16 @@ export const laundroMat = {
 
   ko: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "다시는 빨래를 잊지 마세요",
+    lmt_tagline: "🧺 무엇을 어떻게 빨고, 잘못됐을 때 어떻게 할지.",
     lmt_start_over: "↺ 처음부터",
-    lmt_disclaimer: "AI가 생성한 조언 — 참고용입니다. 항상 의류의 취급 라벨을 확인하세요.",
+    lmt_disclaimer: "세탁 안내입니다. 옷의 관리 라벨을 꼭 확인하세요.",
     lmt_related_tools: "🔗 관련 도구",
 
-    lmt_tab_advisor: "🧠 어드바이저",
-    lmt_tab_stain: "🆘 얼룩",
-    lmt_tab_rescue: "🚑 응급처치",
-    lmt_tab_symbols: "🏷️ 기호",
-    lmt_tab_timers: "⏱️ 타이머",
+    lmt_tab_advisor: "👕 빨래하기",
+    lmt_tab_stain: "💧 얼룩 지우기",
+    lmt_tab_rescue: "🚑 옷 되살리기",
+    lmt_tab_symbols: "🏷 라벨 읽기",
+    lmt_tab_timers: "⏱ 타이머",
     lmt_spill_banner: "🆘 방금 뭔가 쏟았나요? 지금 바로 — 1초가 중요합니다",
 
     lmt_err_upload_image: "이미지를 업로드해 주세요",
@@ -3130,16 +3130,16 @@ export const laundroMat = {
 
   ru: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "Больше никогда не теряйте контроль над стиркой",
+    lmt_tagline: "🧺 Что стирать, как стирать и что делать, если что-то пошло не так.",
     lmt_start_over: "↺ Начать заново",
-    lmt_disclaimer: "Советы созданы ИИ — только для справки. Всегда проверяйте ярлыки по уходу за одеждой.",
+    lmt_disclaimer: "Рекомендации по стирке — всегда сверяйтесь с ярлыком по уходу.",
     lmt_related_tools: "🔗 Похожие инструменты",
 
-    lmt_tab_advisor: "🧠 Советник",
-    lmt_tab_stain: "🆘 Пятна",
-    lmt_tab_rescue: "🚑 Спасение",
-    lmt_tab_symbols: "🏷️ Символы",
-    lmt_tab_timers: "⏱️ Таймеры",
+    lmt_tab_advisor: "👕 Постирать загрузку",
+    lmt_tab_stain: "💧 Вывести пятно",
+    lmt_tab_rescue: "🚑 Спасти вещь",
+    lmt_tab_symbols: "🏷 Прочитать ярлык",
+    lmt_tab_timers: "⏱ Таймеры",
     lmt_spill_banner: "🆘 Только что что-то пролили? Действуйте сейчас — каждая секунда на счету",
 
     lmt_err_upload_image: "Пожалуйста, загрузите изображение",
@@ -3438,16 +3438,16 @@ export const laundroMat = {
 
   th: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "ไม่ลืมเรื่องซักผ้าอีกต่อไป",
+    lmt_tagline: "🧺 ซักอะไร ซักอย่างไร และทำอย่างไรเมื่อเกิดปัญหา",
     lmt_start_over: "↺ เริ่มใหม่",
-    lmt_disclaimer: "คำแนะนำที่สร้างโดย AI — เพื่อการอ้างอิงเท่านั้น โปรดตรวจสอบป้ายดูแลรักษาเสื้อผ้าเสมอ",
+    lmt_disclaimer: "คำแนะนำการซัก — ตรวจสอบป้ายดูแลเสื้อผ้าเสมอ",
     lmt_related_tools: "🔗 เครื่องมือที่เกี่ยวข้อง",
 
-    lmt_tab_advisor: "🧠 ที่ปรึกษา",
-    lmt_tab_stain: "🆘 คราบ",
-    lmt_tab_rescue: "🚑 กู้ภัย",
-    lmt_tab_symbols: "🏷️ สัญลักษณ์",
-    lmt_tab_timers: "⏱️ ตัวจับเวลา",
+    lmt_tab_advisor: "👕 ซักผ้าหนึ่งรอบ",
+    lmt_tab_stain: "💧 ขจัดคราบ",
+    lmt_tab_rescue: "🚑 กู้เสื้อผ้า",
+    lmt_tab_symbols: "🏷 อ่านป้ายดูแล",
+    lmt_tab_timers: "⏱ ตัวจับเวลา",
     lmt_spill_banner: "🆘 เพิ่งทำอะไรหกใส่หรือ? ลงมือเดี๋ยวนี้ — ทุกวินาทีมีค่า",
 
     lmt_err_upload_image: "กรุณาอัปโหลดรูปภาพ",
@@ -3746,16 +3746,16 @@ export const laundroMat = {
 
   vi: {
     lmt_title: "LaundroMat",
-    lmt_tagline: "Không bao giờ quên việc giặt giũ nữa",
+    lmt_tagline: "🧺 Giặt gì, giặt thế nào, và làm gì khi có sự cố.",
     lmt_start_over: "↺ Bắt đầu lại",
-    lmt_disclaimer: "Lời khuyên do AI tạo — chỉ để tham khảo. Luôn kiểm tra nhãn hướng dẫn giặt của quần áo.",
+    lmt_disclaimer: "Hướng dẫn giặt giũ — luôn kiểm tra nhãn hướng dẫn trên quần áo.",
     lmt_related_tools: "🔗 Công cụ liên quan",
 
-    lmt_tab_advisor: "🧠 Cố vấn",
-    lmt_tab_stain: "🆘 Vết bẩn",
-    lmt_tab_rescue: "🚑 Cứu hộ",
-    lmt_tab_symbols: "🏷️ Ký hiệu",
-    lmt_tab_timers: "⏱️ Hẹn giờ",
+    lmt_tab_advisor: "👕 Giặt một mẻ",
+    lmt_tab_stain: "💧 Tẩy vết bẩn",
+    lmt_tab_rescue: "🚑 Cứu quần áo",
+    lmt_tab_symbols: "🏷 Đọc nhãn mác",
+    lmt_tab_timers: "⏱ Hẹn giờ",
     lmt_spill_banner: "🆘 Vừa làm đổ thứ gì đó? Hành động ngay — từng giây đều quý",
 
     lmt_err_upload_image: "Vui lòng tải lên một ảnh",
