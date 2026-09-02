@@ -273,32 +273,30 @@ const LeverageLogic = ({ tool }) => {
 
       {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
-      {/* PF-16: the tool's one reset. Lifted out of the form block so it is
-          reachable from the results, counter, prep and email screens too —
-          before, leaving the form meant losing the only way to start again. */}
-      {hasInput && (
-        <div className="flex justify-end">
-          <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap`}>
+      {/* The tagline row, shared by every view. PF-30: the page <h1> is already
+          the tool's name, so there is no title here — this used to repeat it.
+          PF-16's one reset sits on this row, which is how it stays reachable
+          from the results, counter, prep and email screens. */}
+      <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
+        <div>
+          <p className={`text-base ${c.textSecondary}`}>
+            <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
+          </p>
+          {view === 'form' && (
+            <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          )}
+        </div>
+        {hasInput && (
+          <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
             {t('llog_new')}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ════════ FORM ════════ */}
       {view === 'form' && (
         <div className="space-y-5">
           <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-5 space-y-5`}>
-            <div className="pb-3 border-b border-zinc-500">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className={`text-xl font-bold ${c.text}`}>
-                    <span className="me-2">{tool?.icon ?? '⚖️'}</span>{tool?.title ?? 'Leverage Logic'}
-                  </h2>
-                  <p className={`text-sm ${c.textSecondary}`}>{t('llog_tagline')}</p>
-                  <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
-                </div>
-              </div>
-            </div>
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${c.textMuted}`}>{t('llog_q_situation')} <span className={c.required}>*</span></label>
                 <textarea value={situation} onChange={e => setSituation(e.target.value)} placeholder={t('llog_ph_situation')} rows={3} className={`w-full p-3 border-2 rounded-xl text-sm resize-y focus:outline-none focus:ring-2 ${c.input}`} />
