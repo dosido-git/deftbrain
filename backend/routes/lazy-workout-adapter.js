@@ -35,6 +35,211 @@ const CONTEXTS = {
 // ═══════════════════════════════════════════════════
 // ROUTE 1: RIGHT NOW — Energy + context-aware workout
 // ═══════════════════════════════════════════════════
+// ── v2 post-generation check ────────────────────────────────────────────────
+// Reviewed against backend/lib/outputStandard.js on 2026-09-01. Declaring v2 is
+// what makes the contract's own first line true: the standard text is injected
+// by lib/claude.js only for routes that declare it, so "Follow
+// DEFTBRAIN_OUTPUT_STANDARD_V2" was pointing at a document the model could not
+// see.
+//
+// The check is aimed at the OUTCOMES clause, which is the enumerable one: a
+// movement described by the effect it will supposedly have. A field that is one
+// short sentence promising an effect is blanked; anything longer is logged, not
+// mutated, because cutting a clause out of a step could leave an instruction
+// that no longer makes sense.
+const PROMISED_OUTCOME = /\b(?:relieves?|releases?|reduces?|eases?|calms?|resets?|boosts?|restores?|flushes?|undoes|fixes)\b[^.]{0,60}\b(?:pain|tension|stress|anxiety|circulation|nervous system|posture|energy|stiffness|soreness|cortisol)\b|\b(?:will|helps?) (?:relieve|release|reduce|calm|improve|increase|fix|undo)\b/i;
+
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+  const walk = (node) => {
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string' && PROMISED_OUTCOME.test(v)) {
+        if (v.length <= 160 && (v.match(/[.!?]/g) || []).length <= 1) {
+          console.log(`[lazy-workout-adapter] ${k} blanked — promised an effect: ${v.slice(0, 70)}`);
+          node[k] = '';
+        } else {
+          console.log(`[lazy-workout-adapter] ${k} promises an effect (left intact, too long to cut safely): ${v.slice(0, 70)}`);
+        }
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(data);
+  return data;
+}
+
+const LWA_CONTRACT = `
+LAZY WORKOUT ADAPTER — INPUT INTERPRETATION
+
+Follow DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+The visitor is asking for movement that fits the capacity, time, setting, physical information, and circumstances they supplied today.
+
+ADAPT; DO NOT DIAGNOSE
+
+Use the visitor's selections to modify the routine, not to explain the visitor.
+
+"Bad sleep," "emotional day," "long meeting," "hungover," "cramps," "nervous/anxious," "after a conflict," and similar inputs are context for adaptation. They do not establish a medical, physical, or psychological condition.
+
+Do not infer why the visitor has low energy, pain, stiffness, tension, restlessness, or another sensation.
+
+Do not tell the visitor what their body "needs," what their nervous system is doing, what caused a symptom, or what an exercise will fix unless that is established.
+
+Treat energy as today's self-reported capacity, not fitness level, motivation, health, or psychological state.
+
+PHYSICAL INPUTS
+
+"Where do you feel it?" describes what the visitor reported feeling. It does not authorize diagnosis or treatment.
+
+Do not convert:
+"sore back" into a back injury;
+"tight hips" into shortened muscles;
+"tension" into stress physiology;
+"restless legs" into a medical condition.
+
+INJURIES AND LIMITATIONS
+
+Treat every supplied injury or limitation as a hard constraint.
+
+Do not design around it by assuming movements are safe merely because they seem gentle.
+
+If the limitation makes a proposed movement uncertain, choose a different movement that does not depend on the affected area.
+
+Do not provide rehabilitation, post-surgical progression, or injury treatment unless the tool is explicitly operating within an appropriate medical-safety pathway.
+
+CONTEXT SHOULD MATTER
+
+Selections should materially affect the routine when relevant.
+
+Examples:
+- little time -> fewer movements, not rushed movements;
+- low energy -> lower effort and simpler transitions;
+- office -> movements practical in an office;
+- in bed -> movements that can actually be done in bed;
+- sore body area -> avoid unnecessarily loading it;
+- screen marathon -> movement may change position or visual focus without claiming the screen time caused a symptom.
+
+Do not force every selected detail into the output when it does not materially change the recommendation.
+
+The goal is the smallest useful routine that fits today.
+
+LAZY WORKOUT ADAPTER — OUTPUT CONTRACT
+
+Produce a routine the visitor can use immediately.
+
+The result should feel like:
+"Here is a manageable way to move right now."
+
+Not:
+"Here is my analysis of your body, mood, health, or motivation."
+
+ANSWER FIRST
+
+Lead with the routine.
+
+Do not begin with encouragement, a diagnosis, an explanation of the visitor's condition, or a paragraph about why movement is beneficial.
+
+Keep setup short.
+
+For every movement, make clear:
+- what to do;
+- how long or how many repetitions when needed;
+- any positioning cue necessary to perform it;
+- an easier alternative when materially useful.
+
+Do not overload simple movements with coaching language.
+
+EFFORT
+
+Match effort to the visitor's stated capacity.
+
+Low energy means reduce demand, complexity, transitions, and required effort. It does not mean the visitor is fragile.
+
+Higher energy permits more movement but does not authorize a demanding workout merely because the slider is high.
+
+Never frame completion as an obligation.
+
+No guilt, streak pressure, "no excuses," earned-rest language, or claims that doing something is morally better than doing nothing.
+
+OUTCOMES
+
+Do not promise or predict that a movement will:
+- relieve pain;
+- release tension;
+- improve circulation;
+- calm the nervous system;
+- increase energy;
+- improve sleep;
+- reduce anxiety;
+- undo sitting;
+- fix posture;
+- accelerate recovery;
+
+unless the available information supports that specific claim.
+
+Describe the movement rather than inventing its effect.
+
+Prefer:
+"Slow shoulder rolls."
+
+Not:
+"This releases the tension stored in your shoulders."
+
+Prefer:
+"Finish with slow breathing."
+
+Not:
+"This tells your nervous system that the hard part is over."
+
+SAFETY
+
+Do not diagnose, rehabilitate, prescribe treatment, or impersonate a physical therapist or medical professional.
+
+Pain is not a challenge to push through.
+
+If a movement causes pain, dizziness, unusual shortness of breath, or another concerning symptom, tell the visitor to stop that movement.
+
+Respect supplied limitations without speculating about their cause.
+
+Do not prescribe exercise progression after surgery, acute injury, or another medical event merely because the visitor entered it in a text field. When appropriate, keep guidance within ordinary low-risk movement and defer to instructions already given by the visitor's clinician.
+
+PRECISION
+
+Use the visitor's available time as a real constraint.
+
+Movement durations and repetitions may be specified when they define the routine.
+
+Do not invent physiological thresholds, recovery timelines, calorie burns, therapeutic doses, or expected improvement.
+
+Do not make the routine fill every available minute merely because time is available.
+
+AGENCY AND RECOVERY PATH
+
+Make reducing the routine legitimate.
+
+When appropriate provide an obvious easier path:
+- fewer repetitions;
+- smaller range of motion;
+- seated instead of standing;
+- skip the movement;
+- stop after the first movement.
+
+A partial routine is still a valid use of the tool.
+
+FINAL CHECK
+
+Before returning the result:
+- Did today's inputs actually change the routine?
+- Did I diagnose anything the visitor merely described?
+- Did I promise a physical or emotional effect?
+- Did I treat low energy as incapacity?
+- Did I override an injury or limitation?
+- Is every movement understandable without expert knowledge?
+- Is there anything here that can be removed?
+- Can the visitor start immediately?
+`;
+
 router.post('/lazy-workout-adapter', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { energy, bodyAreas, timeMinutes, limitations, setting, completionCount, preferences, contexts, userLanguage } = req.body;
@@ -81,13 +286,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Low-pressure movement coach. Any movement counts. Never guilt-trip. Warm, casual, zero-judgment. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter' });
     if (!parsed.vibe && !parsed.exercises && !parsed.workout) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) {
     console.error('[LazyWorkout]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -117,13 +322,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Gentle movement guide. 2 minutes is a win. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-micro' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) {
     console.error('[LazyWorkoutMicro]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -152,13 +357,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Low-pressure weekly planner. Menu, not mandate. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-week' });
     if (!parsed.plan_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) {
     console.error('[LazyWorkoutWeek]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
@@ -180,13 +385,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Exercise swapper. No guilt. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-swap' });
     if (!parsed.replacement) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutSwap]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -210,13 +415,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Targeted relief guide. Physical therapist, not trainer. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Targeted movement adapter. Adapt movement to what the visitor reported feeling; do not diagnose or treat it. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-body' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutBody]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -234,13 +439,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Movement celebration. Warm, brief, real. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-complete' });
     if (!parsed.message) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutComplete]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -265,13 +470,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Movement analyst. Useful self-knowledge. Warm. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-insights' });
     if (!parsed.summary) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutInsights]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -299,13 +504,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Environment stacking expert. Layer movement onto activities. Invisible, effortless. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-stack' });
     if (!parsed.stack_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutStack]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -333,13 +538,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Sleep preparation guide. Calm, gentle, progressive. Goal is sleep. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-sleep' });
     if (!parsed.session_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutSleep]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -371,13 +576,13 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Recovery designer. First aid for the body after life happens. Warm, holistic. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-recovery' });
     if (!parsed.protocol_name) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutRecovery]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -406,13 +611,13 @@ Return ONLY valid JSON:
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Evidence analyst. Real data, warm delivery. Not cheerleading. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-prove' });
     if (!parsed.headline) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutProve]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
 
@@ -432,14 +637,37 @@ Write every field with precision — no filler, no padding, no restating what wa
     const parsed = await callClaudeWithRetry({
         model: MODELS.SMART,
         max_tokens: 4000,
-        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
+        system: withLanguage('Friendly nudger. Pattern-aware. Not pushy. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE + LWA_CONTRACT, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
         messages: [{ role: 'user', content: prompt }],
     }, { label: 'lazy-workout-adapter-nudge' });
     if (!parsed.nudge) {
       return res.status(500).json({ error: 'Could not adapt your workout. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
   } catch (error) { console.error('[LazyWorkoutNudge]', error); res.status(500).json({ error: 'Something went wrong. Please try again.' }); }
 });
+
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'diagnoses_a_condition_from_something_the_visitor_merely_described',
+    'explains_why_the_visitor_feels_tired_sore_tense_or_restless',
+    'tells_the_visitor_what_their_body_or_nervous_system_needs',
+    'promises_a_movement_will_relieve_release_calm_energise_or_fix_something',
+    'invents_a_physiological_threshold_recovery_timeline_or_calorie_figure',
+    'treats_low_energy_as_incapacity_or_fragility',
+    'guilt_streak_pressure_no_excuses_or_earned_rest_framing',
+    'prescribes_rehabilitation_or_post_surgical_progression',
+    'loads_or_strains_an_area_the_visitor_named_as_injured',
+    'fills_every_available_minute_merely_because_time_was_supplied',
+  ],
+  require: [
+    'leads_with_the_routine_not_with_encouragement_or_analysis',
+    'todays_inputs_materially_changed_the_routine',
+    'every_movement_is_performable_without_expert_knowledge',
+    'an_easier_path_or_a_legitimate_way_to_stop_is_offered',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
