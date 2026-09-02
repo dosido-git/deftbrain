@@ -58,11 +58,13 @@ const LeverageLogic = ({ tool }) => {
     border: isDark ? 'border-zinc-700' : 'border-zinc-200',
     danger: isDark ? 'bg-red-900/20 border-red-800/50 text-red-300' : 'bg-red-50 border-red-200 text-red-700',
     textSecondary: isDark ? 'text-zinc-300' : 'text-gray-600',
+    labelText:     isDark ? 'text-zinc-200' : 'text-gray-700',
     success:       isDark ? 'bg-emerald-900/20 border-emerald-700 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-800',
     warning:       isDark ? 'bg-amber-900/20 border-amber-700 text-amber-200' : 'bg-amber-50 border-amber-300 text-amber-800',
     required:    isDark ? 'text-amber-400' : 'text-amber-700',
   };
   c.textMuteded = c.textMuted;
+  c.label = c.labelText;
 
   const linkStyle = isDark
     ? 'text-cyan-400 hover:text-cyan-300 underline underline-offset-2'
@@ -273,24 +275,29 @@ const LeverageLogic = ({ tool }) => {
 
       {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
-      {/* The tagline row, shared by every view. PF-30: the page <h1> is already
-          the tool's name, so there is no title here — this used to repeat it.
-          PF-16's one reset sits on this row, which is how it stays reachable
-          from the results, counter, prep and email screens. */}
-      <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
-        <div>
-          <p className={`text-base ${c.textSecondary}`}>
-            <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
-          </p>
-          {view === 'form' && (
+      {/* Standard header, same shape as the rest of the catalog (see
+          ComebackCooker): tagline, Try Example beneath it, reset top-right.
+          PF-30 — the wrapper already prints the name as the page <h1>.
+          It lives at the tool root rather than inside the form card because
+          this tool has five screens and PF-16's one reset has to be reachable
+          from all of them. */}
+      <div className="mb-4 pb-3 border-b border-zinc-500">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className={`text-base ${c.textSecondary}`}>
+              <span className="me-2 text-lg">{tool?.icon ?? '⚖️'}</span>{t('llog_tagline')}
+            </p>
             <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+          </div>
+          {hasInput && (
+            <button
+              onClick={resetAll}
+              className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs`}
+            >
+              ↺ {t('start_over')}
+            </button>
           )}
         </div>
-        {hasInput && (
-          <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-            {t('llog_new')}
-          </button>
-        )}
       </div>
 
       {/* ════════ FORM ════════ */}
