@@ -114,24 +114,41 @@ const WEEK_DAYS = [
   { id: 'Sun', labelKey: 'lwa_day_sun' },
 ];
 
-const EXAMPLES = [
-  {
-    energy: 3,
-    bodyAreas: [],
-    timeMins: 10,
-    limitations: 'Stiff neck, lower back tightness',
-    setting: 'home',
-    contexts: ['bad-sleep', 'screen-marathon'],
-  },
-  {
-    energy: 4,
-    bodyAreas: [],
-    timeMins: 15,
-    limitations: '',
-    setting: 'office',
-    contexts: ['long-meeting', 'emotional-day'],
-  },
-];
+// One set per mode, two each, so the header pill has something to load whichever
+// tab is open and pickExample can actually rotate. Free text lives behind a
+// translation key rather than in this file: these values go straight into the
+// visitor's own input boxes, and an English string in a German form is the tool
+// failing to speak the language it just rendered itself in.
+const MODE_EXAMPLES = {
+  'right-now': [
+    { energy: 3, bodyAreas: ['stiff-neck'], timeMins: 10, setting: 'home', contexts: ['bad-sleep', 'screen-marathon'], limitationsKey: 'lwa_ex_rn_lim' },
+    { energy: 6, bodyAreas: ['tight-hips'], timeMins: 15, setting: 'office', contexts: ['long-meeting'], limitationsKey: '' },
+  ],
+  micro: [
+    { bodyAreas: ['stiff-neck'], setting: 'office' },
+    { bodyAreas: ['restless-legs'], setting: 'bed' },
+  ],
+  body: [
+    { bodyTarget: 'sore-back', bodyIntensity: 'gentle', bodyTime: 5 },
+    { bodyTarget: 'wrists-hands', bodyIntensity: 'moderate', bodyTime: 10 },
+  ],
+  stack: [
+    { stackActivityKey: 'lwa_ex_stack_1', stackDuration: 60, bodyAreas: ['stiff-neck'], limitationsKey: '' },
+    { stackActivityKey: 'lwa_ex_stack_2', stackDuration: 30, bodyAreas: ['tight-hips'], limitationsKey: '' },
+  ],
+  sleep: [
+    { sleepTime: 5, bodyAreas: ['general-tension'], stressLevel: 'high' },
+    { sleepTime: 10, bodyAreas: ['sore-back'], stressLevel: 'racing' },
+  ],
+  recovery: [
+    { recoveryEventKey: 'lwa_ex_rec_1', recoveryIntensity: 'rough', recoveryTime: 10 },
+    { recoveryEventKey: 'lwa_ex_rec_2', recoveryIntensity: 'moderate', recoveryTime: 5 },
+  ],
+  week: [
+    { typicalEnergy: { Mon: '3', Tue: '5', Wed: '4', Thu: '5', Fri: '2', Sat: '7', Sun: '6' }, limitationsKey: '' },
+    { typicalEnergy: { Mon: '6', Tue: '6', Wed: '5', Thu: '4', Fri: '3', Sat: '8', Sun: '7' }, limitationsKey: 'lwa_ex_week_lim' },
+  ],
+};
 // ─── Pure helpers (module-level) ───
 const parseDuration = (dur) => {
   if (!dur) return 30;
@@ -428,16 +445,31 @@ const LazyWorkoutAdapter = ({ tool }) => {
   const timerRef = useRef(null);
   const breatheRef = useRef(null);
   const loadExample = () => {
-    const ex = pickExample('LazyWorkoutAdapter', EXAMPLES);
-    setEnergy(ex.energy);
-    setBodyAreas(ex.bodyAreas);
-    setTimeMins(ex.timeMins);
-    setLimitations(ex.limitations);
-    setSetting(ex.setting);
-    setContexts(ex.contexts);
+    // Rotate per mode, not per tool, so opening Sleep does not hand you the
+    // second Right Now example because of a counter the other tab advanced.
+    const ex = pickExample(`LazyWorkoutAdapter:${mode}`, MODE_EXAMPLES[mode]);
+    if (!ex) return;
+    const setters = {
+      energy: setEnergy, bodyAreas: setBodyAreas, timeMins: setTimeMins,
+      setting: setSetting, contexts: setContexts,
+      bodyTarget: setBodyTarget, bodyIntensity: setBodyIntensity, bodyTime: setBodyTime,
+      stackDuration: setStackDuration,
+      sleepTime: setSleepTime, stressLevel: setStressLevel,
+      recoveryIntensity: setRecoveryIntensity, recoveryTime: setRecoveryTime,
+      typicalEnergy: setTypicalEnergy,
+    };
+    for (const [k, v] of Object.entries(ex)) {
+      if (!k.endsWith('Key')) setters[k]?.(v);
+    }
+    // Free text, resolved at click time in the language now on screen. Only
+    // touched by the modes that actually read it, so loading a Body example
+    // does not wipe something typed under Right Now.
+    if ('limitationsKey' in ex) setLimitations(ex.limitationsKey ? t(ex.limitationsKey) : '');
+    if (ex.stackActivityKey) setStackActivity(t(ex.stackActivityKey));
+    if (ex.recoveryEventKey) setRecoveryEvent(t(ex.recoveryEventKey));
   };
 
-  const handleRightNowRef = useRef(null);
+  const submitRef = useRef(null);
   const canSubmitRef = useRef(false);
 
   // ─── Persistent state ───
@@ -837,15 +869,30 @@ const LazyWorkoutAdapter = ({ tool }) => {
   useRegisterActions(buildFullText(), tool?.title || 'Lazy Workout Adapter');
 
   // ─── Keyboard shortcut ───
-  handleRightNowRef.current = handleRightNow;
-  canSubmitRef.current = mode === 'right-now';
+  // One shortcut that follows whichever mode is open. Each entry carries the
+  // same readiness condition as its button's `disabled`, so cmd-enter can never
+  // fire a submit the button itself would have refused — Body without a target,
+  // Stack without an activity, Recovery without an event. History and Breathe
+  // have no submit to fire.
+  const MODE_SUBMIT = {
+    'right-now': [handleRightNow, true],
+    micro: [handleMicro, true],
+    body: [handleBody, !!bodyTarget],
+    stack: [handleStack, !!stackActivity.trim()],
+    sleep: [handleSleep, true],
+    recovery: [handleRecovery, !!recoveryEvent.trim()],
+    week: [handleWeek, true],
+  };
+  const [modeSubmit, modeReady] = MODE_SUBMIT[mode] || [null, false];
+  submitRef.current = modeReady ? modeSubmit : null;
+  canSubmitRef.current = !!modeReady;
 
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'SELECT') return;
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !loading && canSubmitRef.current) {
-        handleRightNowRef.current?.();
+        submitRef.current?.();
       }
     };
     document.addEventListener('keydown', handler);
@@ -910,7 +957,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
               <p className={`text-base ${c.textSecondary}`}>
                 <span className="me-2 text-lg">{tool?.icon ?? '🧘'}</span>{t('lwa_tagline')}
               </p>
+              {MODE_EXAMPLES[mode] && (
               <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
+              )}
             </div>
             {showReset && (
               <button onClick={handleReset} className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-lg ${c.sec} border ${c.borderLine}`} aria-label={t('lwa_start_over')}>
@@ -1191,15 +1240,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 ))}
               </div>
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleMicro}
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_give_2_min')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
@@ -1267,15 +1322,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
               </div>
               <input type="range" min="3" max="15" value={bodyTime} onChange={e => setBodyTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleBody}
               disabled={loading || !bodyTarget}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_relief')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
@@ -1331,15 +1392,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 </button>
               ))}
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleStack}
               disabled={loading || !stackActivity.trim()}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_stack')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
@@ -1414,15 +1481,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
               </div>
               <input type="range" min="3" max="15" value={sleepTime} onChange={e => setSleepTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleSleep}
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_winddown')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
@@ -1513,15 +1586,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
               </div>
               <input type="range" min="3" max="15" value={recoveryTime} onChange={e => setRecoveryTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleRecovery}
               disabled={loading || !recoveryEvent.trim()}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_recovery')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
@@ -1584,15 +1663,21 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 ))}
               </div>
             </div>
-            <button
+            <button title={t('cmd_enter')}
               onClick={handleWeek}
               disabled={loading}
-              className={`w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
+              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
             >
               {loading ? (
                 <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
               ) : (
                 <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_plan_week')}</>
+              )}
+              {!loading && (
+                <kbd aria-hidden="true"
+                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                  ⌘↵
+                </kbd>
               )}
             </button>
           </div>
