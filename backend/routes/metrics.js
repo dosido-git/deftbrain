@@ -525,13 +525,24 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
       };
     })() : null;
     // Small colored ▲/▼ badge vs the prior window; '' when there's no prior window.
+    // Every Δ compares its window with the equal-length window BEFORE it —
+    // never with another range you might have open in a second tab. Those
+    // ranges nest: the last 14 days sit inside the last 30, so subtracting one
+    // card from the other is not a comparison the dashboard ever makes. The
+    // number that makes that obvious is the prior window's own value, so it
+    // travels with the delta rather than living in a footnote.
+    const prevWindowText = rangeText.replace(/^(last|yesterday)\s?/, '') || rangeText;
     const deltaHtml = (cur, prev) => {
       if (prev == null) return '';
       const d = cur - prev;
-      if (d === 0) return '<span style="font-size:12px;color:#999;font-weight:400"> ±0</span>';
+      const title = `previous ${prevWindowText}: ${prev}`;
+      if (d === 0) return `<span title="${escH(title)}" style="font-size:12px;color:#999;font-weight:400"> ±0</span>`;
       const up = d > 0;
-      return `<span style="font-size:12px;font-weight:600;color:${up ? '#15803d' : '#b91c1c'}"> ${up ? '▲' : '▼'} ${up ? '+' : '−'}${Math.abs(d)}</span>`;
+      return `<span title="${escH(title)}" style="font-size:12px;font-weight:600;color:${up ? '#15803d' : '#b91c1c'}"> ${up ? '▲' : '▼'} ${up ? '+' : '−'}${Math.abs(d)}</span>`;
     };
+    // Same text under the number, where it cannot be missed on a touch screen
+    // that has no hover.
+    const vsPrev = (prev) => (prev == null ? null : `vs ${prev} in the previous ${prevWindowText}`);
     const feedback = rows.filter(r => r.kind === 'feedback');
     const ideas = rows.filter(r => r.kind === 'idea');
     // Canonical per-tool key = the frontend tool id from the page path
@@ -862,12 +873,12 @@ router.get('/metrics/report', rateLimit(METRIC_LIMITS, 'metrics-report:'), (req,
     <p style="font-size:11px;color:#888;margin:2px 0 0">filters: bot user-agents + ${DC_RANGE_COUNT.toLocaleString()} cloud/datacenter IP ranges (AWS/GCP/Oracle/DO) excluded at write time · self-exclusion: ${EXCLUDED_IPS.length ? `${EXCLUDED_IPS.length} IP(s)` : 'none set (METRICS_EXCLUDE_IPS)'}</p>
     <p style="font-size:11px;color:#888;margin:2px 0 0">Testing the live site? Open it once with <code>?operator=1</code> in every browser and device you test from — that flag lives in the browser, so it holds when your IP does not (cellular, another network, Private Relay). <code>?operator=0</code> undoes it.</p>
     <div class="cards">
-      ${card('page views', pv.length, null, deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
-      ${card('sessions', sessions.length, null, deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
-      ${card('interactive', interactiveSessions, pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human', deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
-      ${card('return visitors', returningSessions.length, pct(returningSessions.length, sessions.length) + ' of sessions', deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
-      ${card('tool runs', runs.length, pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
-      ${card('took it with them', taken.length, 'print + copy + share', deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
+      ${card('page views', pv.length, vsPrev(prevMetrics && prevMetrics.pv), deltaHtml(pv.length, prevMetrics && prevMetrics.pv))}
+      ${card('sessions', sessions.length, vsPrev(prevMetrics && prevMetrics.sessions), deltaHtml(sessions.length, prevMetrics && prevMetrics.sessions))}
+      ${card('interactive', interactiveSessions, (pct(interactiveSessions, sessions.length) + ' of sessions — clicked/scrolled, likely human') + (vsPrev(prevMetrics && prevMetrics.interactive) ? ' · ' + vsPrev(prevMetrics && prevMetrics.interactive) : ''), deltaHtml(interactiveSessions, prevMetrics && prevMetrics.interactive))}
+      ${card('return visitors', returningSessions.length, (pct(returningSessions.length, sessions.length) + ' of sessions') + (vsPrev(prevMetrics && prevMetrics.returning) ? ' · ' + vsPrev(prevMetrics && prevMetrics.returning) : ''), deltaHtml(returningSessions.length, prevMetrics && prevMetrics.returning))}
+      ${card('tool runs', runs.length, (pct(delivered, runs.length) + ' delivered (answered and rendered)' + (renderErrors.length ? ` — ${renderErrors.length} render crash${renderErrors.length === 1 ? '' : 'es'}` : '') + (thinResults.length ? `, ${thinResults.length} thin` : '')) + (vsPrev(prevMetrics && prevMetrics.runs) ? ' · ' + vsPrev(prevMetrics && prevMetrics.runs) : ''), deltaHtml(runs.length, prevMetrics && prevMetrics.runs))}
+      ${card('took it with them', taken.length, ('print + copy + share') + (vsPrev(prevMetrics && prevMetrics.taken) ? ' · ' + vsPrev(prevMetrics && prevMetrics.taken) : ''), deltaHtml(taken.length, prevMetrics && prevMetrics.taken))}
       ${card('reached the closing CTA', closingSeen, homeViews ? pct(closingSeen, homeViews) + ' of home views' : 'no home views in range')}
       ${card('helpful', helpfulYes + '/' + feedback.length)}
     </div>
