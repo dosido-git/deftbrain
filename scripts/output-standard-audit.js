@@ -114,6 +114,13 @@ const SCHEMA_SMELLS = [
 // Named exceptions, with reasons. Empty — an exception here should be a
 // conspicuous decision, not a hole somebody fell into.
 const SCHEMA_CONGRUENCE_EXEMPT = new Map([
+  ['laundro-mat',
+    'LaundroMat\'s "temperature" is the wash water setting — Cold, Warm or Hot, ' +
+    'the dial on the machine — not a score for a feeling. The smell is aimed at ' +
+    'a model rating an emotional state nobody measured; this one names a control ' +
+    'the visitor is about to turn. The tool\'s real false precision was ' +
+    'success_probability on a garment it has never seen, and that is gone from ' +
+    'both the stain and rescue schemas.'],
   ['idea-autopsy',
     'Concept Coach\'s "risk_level" is an IMPORTANCE ordering, not a likelihood. ' +
     'The prompt says so in the schema itself — "risk_level means importance to ' +

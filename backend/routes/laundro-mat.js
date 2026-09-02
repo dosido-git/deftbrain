@@ -15,7 +15,46 @@ function parseBase64Image(dataUrl) {
   return { base64Data, mediaType };
 }
 
-const SYSTEM_PROMPT = `You are LaundroMat, an AI laundry expert. You give specific, practical laundry advice — care instructions, stain treatment, and fabric guidance.
+// ── v2 post-generation check ────────────────────────────────────────────────
+// Reviewed against backend/lib/outputStandard.js on 2026-09-01. The clause this
+// tool kept failing is §8: the stain action said "bleach and heat have set this"
+// in four separate fields, and the advise action said "wash the red shirt alone"
+// in four more. So the check is deterministic and aimed at that: a tip field
+// that only echoes a field above it is removed rather than shipped, which is
+// what §7 asks for when a section has nothing of its own to do.
+const TIP_FIELDS = ['quick_tip', 'pro_tip', 'prevention_tip'];
+
+function significantWords(text) {
+  return new Set(String(text || '').toLowerCase().match(/[a-z]{5,}/g) || []);
+}
+
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+  // Everything the visitor already read, minus the tip fields themselves.
+  const body = Object.entries(data)
+    .filter(([k]) => !TIP_FIELDS.includes(k))
+    .map(([, v]) => (typeof v === 'string' ? v : JSON.stringify(v)))
+    .join(' ');
+  const bodyWords = significantWords(body);
+  for (const field of TIP_FIELDS) {
+    const tip = data[field];
+    if (typeof tip !== 'string' || !tip.trim()) continue;
+    const tipWords = [...significantWords(tip)];
+    if (tipWords.length < 4) continue;
+    const overlap = tipWords.filter(w => bodyWords.has(w)).length / tipWords.length;
+    // Four fifths of a one-sentence tip's own vocabulary already appearing
+    // above is a restatement, not a tip.
+    if (overlap >= 0.8) {
+      console.log(`[laundro-mat] ${field} dropped — ${Math.round(overlap * 100)}% of it already appears in the result`);
+      data[field] = '';
+    }
+  }
+  return data;
+}
+
+const SYSTEM_PROMPT = `EACH FIELD MUST EARN ITS PLACE. Do not restate one conclusion across several fields — a headline, then a probability, then a tip, then a closing line is the same sentence in four costumes. If a field would only repeat what another field already says, return an empty string or an empty array for it.
+
+You are LaundroMat, an AI laundry expert. You give specific, practical laundry advice — care instructions, stain treatment, and fabric guidance.
 
 TONE: Practical, direct, slightly protective of people's clothes. Brief but specific.
 
@@ -82,7 +121,7 @@ Return ONLY valid JSON. Format:
     "wash_minutes": 35,
     "dry_minutes": 45
   },
-  "quick_tip": "One bonus laundry tip relevant to this load — one sentence",
+  "quick_tip": "One sentence that adds something no other field already says — a non-obvious risk or habit specific to THIS load. Empty string if everything useful is already covered above.",
   "care_symbols": [
     { "code": "exact code from the CARE SYMBOL CODES list below — pick the closest match", "name": "Symbol name — 3-6 words", "meaning": "Plain English meaning — one sentence" }
   ]
@@ -103,7 +142,7 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      return res.json(data);
+      return res.json(validateResult(data));
     }
 
     // ─── LABEL: Care label symbol identification ───
@@ -142,7 +181,7 @@ Return ONLY valid JSON. Format:
   "drying_advice": [
     { "item": "this garment. Nothing else.", "method": "The drying instructions from the label, in one short sentence", "risk": "high or low — one sentence" }
   ],
-  "quick_tip": "One practical tip based on this garment type — one sentence"
+  "quick_tip": "One sentence that adds something no other field already says. Empty string if everything useful is already covered above."
 }
 
 CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all of them; never omit a symbol. For each, set "code" to the single closest match from this list (if none is exact, pick the nearest — never invent codes or emoji, never skip a symbol): ${CARE_CODE_REF}` }
@@ -153,7 +192,7 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
       if (!data.load_assessment && !data.advice) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      return res.json(data);
+      return res.json(validateResult(data));
     }
 
     // ─── STAIN: Urgent stain treatment ───
@@ -201,8 +240,7 @@ Return ONLY valid JSON. Format:
   ],
   "do_not": ["Don't do X — reason", "Don't do Y — reason"],
   "if_stain_is_set": "Alternative approach if the stain is already dried/set (1-2 sentences)",
-  "success_probability": "Start with exactly High, Medium or Low, then an em dash, then a brief honest explanation in one short sentence",
-  "pro_tip": "One bonus tip (1 sentence) — one sentence"
+  "pro_tip": "One sentence that adds something no other field already says — not a restatement of the urgency line or of what to do if the stain is set. Empty string if everything useful is already covered above."
 }`
       });
 
@@ -216,7 +254,7 @@ Return ONLY valid JSON. Format:
       if (!data.urgency && !data.steps) {
         return res.status(500).json({ error: 'Could not analyze your laundry. Please try again.' });
       }
-      return res.json(data);
+      return res.json(validateResult(data));
     }
 
     // ─── RESCUE: Disaster recovery for ruined garments ───
@@ -270,7 +308,7 @@ Return ONLY valid JSON:
   "time_sensitive": true,
   "if_not_working": "What to try if main steps fail — one sentence",
   "when_to_stop": "At what point to accept defeat and repurpose the item — one sentence",
-  "prevention_tip": "How to avoid this exact situation next time — one sentence"
+  "prevention_tip": "How to avoid this exact situation next time, in one sentence, without repeating a do_not item. Empty string if the do_not list already covers it."
 }`
       });
 
@@ -284,7 +322,7 @@ Return ONLY valid JSON:
       if (!('rescue_steps' in data) && !('recoverable' in data)) {
         return res.status(500).json({ error: 'Could not assess recovery options. Please try again.' });
       }
-      return res.json(data);
+      return res.json(validateResult(data));
     }
 
     return res.status(400).json({ error: 'Invalid action. Use: advise, label, stain, or rescue' });
@@ -294,5 +332,25 @@ Return ONLY valid JSON:
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+router.outputStandard = 'v2';
+router.outputGuard = {
+  prohibit: [
+    'restates_one_conclusion_across_several_fields',
+    'a_tip_field_that_only_repeats_a_field_above_it',
+    'a_success_probability_or_grade_on_a_garment_it_has_never_seen',
+    'presents_recovery_as_a_precise_probability_rather_than_an_outlook',
+    'repeats_a_treatment_the_visitor_said_they_already_tried',
+    'ignores_heat_setting_after_the_visitor_reports_drying_or_ironing',
+    'scolds_the_visitor_for_how_the_damage_happened',
+    'claims_a_result_is_comprehensive_tailored_or_carefully_considered',
+  ],
+  require: [
+    'leads_with_what_to_do_not_with_preamble',
+    'names_what_cannot_be_undone_plainly_rather_than_offering_false_hope',
+    'gives_a_next_step_when_the_first_approach_fails',
+    'fulfills_tool_promise',
+  ],
+};
 
 module.exports = router;
