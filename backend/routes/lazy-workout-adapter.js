@@ -47,7 +47,34 @@ const CONTEXTS = {
 // short sentence promising an effect is blanked; anything longer is logged, not
 // mutated, because cutting a clause out of a step could leave an instruction
 // that no longer makes sense.
-const PROMISED_OUTCOME = /\b(?:relieves?|releases?|reduces?|eases?|calms?|resets?|boosts?|restores?|flushes?|undoes|fixes)\b[^.]{0,60}\b(?:pain|tension|stress|anxiety|circulation|nervous system|posture|energy|stiffness|soreness|cortisol)\b|\b(?:will|helps?) (?:relieve|release|reduce|calm|improve|increase|fix|undo)\b/i;
+// Two registers, because banning one only moves the model into the other. The
+// clinical set was already here; the folk set is what came back instead once the
+// clinical words were forbidden ("gets the blood moving" for "improves
+// circulation"). Both are the same claim: an effect this movement will have on
+// your body, which the tool has no way to know.
+//
+// English only, deliberately: this is a backstop, not the fix. The fix is that
+// no schema field asks for an effect any more, which holds in all 13 languages.
+const CLINICAL_OUTCOME = /\b(?:relieves?|releases?|reduces?|eases?|calms?|resets?|boosts?|restores?|flushes?|undoes|fixes)\b[^.]{0,60}\b(?:pain|tension|stress|anxiety|circulation|nervous system|posture|energy|stiffness|soreness|cortisol)\b|\b(?:will|helps?) (?:relieve|release|reduce|calm|improve|increase|fix|undo)\b/i;
+const FOLK_OUTCOME = new RegExp([
+  // "gets the blood moving", "blood flow"
+  /\bgets? (?:the |your )?blood (?:moving|flowing|pumping)\b/,
+  /\bblood flow\b/,
+  // Third-person claims about what a movement does to a body part. The -s is
+  // required and load-bearing: "opens up the shoulders" is a claim about the
+  // exercise, "open your chest" is a positioning cue we want to keep.
+  /\b(?:opens|loosens|unlocks|lengthens|decompresses|unwinds|melts|wakes)\s+(?:up\s+|out\s+)?(?:the|your)\s+(?:(?:front|back|sides?|top|base)\s+of\s+(?:the|your)\s+)?(?:shoulders?|hips?|chest|back|spine|neck|legs?|body|joints?|muscles?)\b/,
+  // Claims about what it spares you
+  /\bwithout\s+(?:putting|placing|adding)?\s*(?:any\s+)?(?:strain|stress|pressure|load|impact)\s+on\b/,
+  /\b(?:easy|gentle|kind)\s+on\s+(?:the|your)\s+(?:joints?|back|knees?|spine)\b/,
+  // Benefit by idiom
+  /\bgoes? a long way\b/,
+  /\b(?:does|do|works?) wonders\b/,
+  /\bcounteracts?\b/,
+  /\bcombats?\b/,
+  /\b(?:undoe?s?|undoing|counters?|countering)\s+(?:all\s+)?(?:the\s+)?(?:sitting|desk|hunching|slouching)\b/,
+].map(r => r.source).join('|'), 'i');
+const PROMISED_OUTCOME = { test: (v) => CLINICAL_OUTCOME.test(v) || FOLK_OUTCOME.test(v) };
 
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
@@ -276,7 +303,7 @@ Return ONLY valid JSON:
   "workout_name": "Casual name — 3-6 words",
   "vibe": "One warm sentence. If context provided, acknowledge it.",
   "total_time": "${timeMinutes || '10'} minutes",
-  "exercises": [{ "name": "name", "duration": "time", "seconds": 60, "how": "conversational instructions — one sentence", "why": "why this helps NOW — one sentence", "too_much": "easier version — one sentence", "do_while": "multitask option — one sentence", "body_area": "target — one sentence" }],
+  "exercises": [{ "name": "name", "duration": "time", "seconds": 60, "how": "conversational instructions — one sentence", "why": "one sentence naming which of THEIR inputs put this movement here — their energy level, their minutes, their setting, or the area they named. Start from what they told you, not from the body. Never state what the movement does to them", "too_much": "easier version — one sentence", "do_while": "multitask option — one sentence", "body_area": "target — one sentence" }],
   "rest_note": "generous rest guidance — one sentence",
   "barrier_check": { "clothes": "current clothes fine — one sentence", "space": "space needed — one sentence", "noise": "apartment-friendly? — one sentence", "equipment": "none or what helps — one sentence" },
   "done_is_done": "warm half-is-fine message — one sentence",
@@ -314,8 +341,8 @@ Rules: feels like stretching. Feels good immediately. No standing unless specifi
 
 Return ONLY valid JSON:
 { "session_name": "name", "total_time": "2 minutes", "message": "one warm sentence",
-  "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "sensation — one sentence" }],
-  "after": "what to notice after — one sentence" }
+  "movements": [{ "name": "name", "seconds": 40, "how": "one sentence", "feels_like": "what it feels like to DO — effort, position, pace. Not what it does to the body" }],
+  "after": "what they can do next, or nothing at all — one sentence. No claim about how they will feel" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
 
@@ -403,13 +430,13 @@ router.post('/lazy-workout-adapter-body', rateLimit(DEFAULT_LIMITS), async (req,
     const { bodyArea, intensity, timeMinutes, limitations, userLanguage } = req.body;
     if (!bodyArea?.trim()) return res.status(400).json({ error: 'What needs attention?' });
     const areaDesc = BODY_AREAS[bodyArea] || bodyArea;
-    const prompt = withLanguage(`Targeted relief for: ${areaDesc}. Intensity: ${intensity || 'gentle'}. Time: ${timeMinutes || '5'} min. Should feel like RELIEF, not exercise.
+    const prompt = withLanguage(`Gentle movement centred on the area they named: ${areaDesc}. Intensity: ${intensity || 'gentle'}. Time: ${timeMinutes || '5'} min. Should feel easy to do, not like a workout. Do not promise it will relieve anything.
 LIMITATIONS: ${limitations || 'None'} — respect these; never load or strain an injured area.
 ("seconds" = duration in seconds, integer.)
 Return ONLY valid JSON:
-{ "session_name": "n", "for": "what this addresses — one sentence", "time": "${timeMinutes || '5'} minutes",
-  "movements": [{ "name": "n", "duration": "t", "seconds": 60, "how": "gentle instructions — one sentence", "feels_like": "sensation — one sentence", "caution": "or null — one sentence" }],
-  "prevention_tip": "daily tip — one sentence" }
+{ "session_name": "n", "for": "how the session is shaped around that area — one sentence describing the plan, not a physical effect", "time": "${timeMinutes || '5'} minutes",
+  "movements": [{ "name": "n", "duration": "t", "seconds": 60, "how": "gentle instructions — one sentence", "feels_like": "what it feels like to DO — effort, position, pace. Not what it does to the body", "caution": "or null — one sentence" }],
+  "prevention_tip": "one small thing they could do on another day — one sentence. Do not claim it prevents anything" }
 
 Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.`, userLanguage);
     const parsed = await callClaudeWithRetry({
