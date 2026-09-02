@@ -1,11 +1,11 @@
 {
   "_meta": {
     "tool": "lazy-workout-adapter",
-    "captured": "2026-07-02",
+    "captured": "2026-09-02",
     "model": "claude-sonnet-4-6 ×13 endpoints",
-    "baseline": "lazyworkoutadapter-v2",
+    "baseline": "lazyworkoutadapter-v3",
     "how_to_regress": "npm run check:golden lazy-workout-adapter  (dev backend up)",
-    "note": "insights case guards the history payload-key fix (was always-400); main guards limitations pipe. 2026-07-15: migrated all 12 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Model split unchanged (all 12 on MODELS.SMART). Live-verified all 12 endpoints in German — no truncation at the existing 4000-token budget on any endpoint, including the two largest schemas (week: 7-day menu, recovery: variable-length steps array). 4 new cases below (recovery, prove, sleep, nudge) — the prior golden only covered 2 of 12 endpoints.",
+    "note": "insights case guards the history payload-key fix (was always-400); main guards limitations pipe. 2026-07-15: migrated all 12 endpoints off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Model split unchanged (all 12 on MODELS.SMART). Live-verified all 12 endpoints in German — no truncation at the existing 4000-token budget on any endpoint, including the two largest schemas (week: 7-day menu, recovery: variable-length steps array). 4 new cases below (recovery, prove, sleep, nudge) — the prior golden only covered 2 of 12 endpoints. 2026-09-02: Sleep, Week, History and Breathe retired at the owner’s direction — nine modes had grown into a fitness platform, and the five that remain are each a variation of one question. Their routes (week, sleep, insights, prove) were deleted, so the insights/prove/sleep cases went with them; micro, body and stack cases were added so every surviving mode still has one. Streaks and totals came out of the nudge and completion prompts in the same pass.",
     "how_to_regression_diff": " 2026-09-01: the tool now declares v2, so lib/claude.js injects the output standard into all twelve endpoints, and a shared LWA_CONTRACT covers input interpretation and output for every mode. The clinician persona (\"Physical therapist, not trainer\") is gone from the relief endpoint — this tool adapts movement, it does not simulate a clinician. validateResult() blanks a short field that promises an effect (\"eases lower back tension\") and logs longer ones rather than cutting a clause out of an instruction. A movement described WITHOUT a promised effect is correct, not a thin result."
   },
   "cases": [
@@ -96,94 +96,6 @@
       }
     },
     {
-      "name": "insights-5-sessions",
-      "endpoint": "/api/lazy-workout-adapter-insights",
-      "input": {
-        "history": [
-          {
-            "date": "2026-06-25",
-            "day": "Thursday",
-            "energyBefore": 3,
-            "energyAfter": 6,
-            "duration": 10,
-            "completedPct": 100,
-            "sessionType": "right-now",
-            "workoutName": "Desk reset"
-          },
-          {
-            "date": "2026-06-26",
-            "day": "Friday",
-            "energyBefore": 4,
-            "energyAfter": 6,
-            "duration": 5,
-            "completedPct": 80,
-            "sessionType": "micro",
-            "workoutName": "Wake-up"
-          },
-          {
-            "date": "2026-06-28",
-            "day": "Sunday",
-            "energyBefore": 2,
-            "energyAfter": 5,
-            "duration": 10,
-            "completedPct": 100,
-            "sessionType": "right-now",
-            "workoutName": "Slump breaker"
-          },
-          {
-            "date": "2026-06-29",
-            "day": "Monday",
-            "energyBefore": 5,
-            "energyAfter": 7,
-            "duration": 15,
-            "completedPct": 100,
-            "sessionType": "body",
-            "workoutName": "Back relief"
-          },
-          {
-            "date": "2026-07-01",
-            "day": "Wednesday",
-            "energyBefore": 3,
-            "energyAfter": 6,
-            "duration": 10,
-            "completedPct": 90,
-            "sessionType": "right-now",
-            "workoutName": "Afternoon lift"
-          }
-        ],
-        "userLanguage": "en"
-      },
-      "output": {
-        "summary": "You showed up five times in nine days, often starting on low energy and consistently leaving feeling better — that's a real pattern worth trusting.",
-        "energy_patterns": {
-          "best_days": [
-            "Monday",
-            "Thursday"
-          ],
-          "movement_impact": "Every session lifted energy by 2–3 points, with Monday's body session producing the largest single gain (+2 from an already decent baseline of 5).",
-          "insight": "You move most effectively when starting at a 3–5 energy range — even a 2 became a 5 on Sunday, suggesting movement works as a recovery tool, not just a performance enhancer."
-        },
-        "body_patterns": {
-          "frequent_areas": [],
-          "suggestion": "No body-area data was captured — adding a quick post-session tag (e.g. hips, shoulders, lower back) would unlock your most useful personalization layer."
-        },
-        "context_patterns": {
-          "common_triggers": [
-            "low-to-moderate energy dip",
-            "mid-week reset",
-            "end-of-week wind-down"
-          ],
-          "insight": "You tend to move when energy is flagging rather than when you're already feeling good, using sessions as a regulation strategy rather than a reward."
-        },
-        "consistency": {
-          "sessions_per_week": "3.5",
-          "trend": "stable",
-          "wins": "You completed 100% of four out of five sessions, and the one partial session (80%) still got done — your follow-through rate is exceptionally high."
-        },
-        "personal_tip": "Your Sunday and Wednesday sessions both started at a 3 and ended at a 5–6 using just 10 minutes — when the week feels heavy, 10 minutes is your proven minimum effective dose."
-      }
-    },
-    {
       "name": "recovery-de-difficult-breakup",
       "endpoint": "/api/lazy-workout-adapter-recovery",
       "input": {
@@ -261,173 +173,9 @@
       }
     },
     {
-      "name": "prove-de-7-sessions",
-      "endpoint": "/api/lazy-workout-adapter-prove",
-      "input": {
-        "history": [
-          {
-            "date": "2026-07-01",
-            "day": "Mi",
-            "energyBefore": 3,
-            "energyAfter": 5,
-            "duration": 8,
-            "completedPct": 100,
-            "sessionType": "right-now"
-          },
-          {
-            "date": "2026-07-02",
-            "day": "Do",
-            "energyBefore": 4,
-            "energyAfter": 6,
-            "duration": 10,
-            "completedPct": 80,
-            "sessionType": "micro"
-          },
-          {
-            "date": "2026-07-03",
-            "day": "Fr",
-            "energyBefore": 2,
-            "energyAfter": 4,
-            "duration": 5,
-            "completedPct": 100,
-            "sessionType": "body"
-          },
-          {
-            "date": "2026-07-04",
-            "day": "Sa",
-            "energyBefore": 5,
-            "energyAfter": 7,
-            "duration": 12,
-            "completedPct": 100,
-            "sessionType": "right-now"
-          },
-          {
-            "date": "2026-07-05",
-            "day": "So",
-            "energyBefore": 6,
-            "energyAfter": 7,
-            "duration": 6,
-            "completedPct": 90,
-            "sessionType": "stack"
-          },
-          {
-            "date": "2026-07-06",
-            "day": "Mo",
-            "energyBefore": 3,
-            "energyAfter": 5,
-            "duration": 9,
-            "completedPct": 100,
-            "sessionType": "right-now"
-          },
-          {
-            "date": "2026-07-07",
-            "day": "Di",
-            "energyBefore": 4,
-            "energyAfter": 6,
-            "duration": 7,
-            "completedPct": 100,
-            "sessionType": "micro"
-          }
-        ],
-        "userLanguage": "de"
-      },
-      "output": {
-        "headline": "Die Daten sind eindeutig: Bewegung hilft dieser Person – jedes einzelne Mal hat sie Energie gewonnen.",
-        "energy_evidence": {
-          "avg_before": "3,9",
-          "avg_after": "5,7",
-          "avg_change": "+1,9",
-          "pct_sessions_improved": "100%",
-          "verdict": "clear"
-        },
-        "best_sessions": {
-          "best_type": "Right-now-Einheiten zeigen mit durchschnittlich +2,0 Punkten den stärksten Energieanstieg – besonders wenn die Ausgangslage niedrig war.",
-          "best_duration": "9",
-          "best_day": "Samstag brachte den größten absoluten Sprung (+2 Punkte), aber auch Mittwoch und Montag zeigten trotz niedriger Startenergie klare Verbesserungen.",
-          "insight": "Diese Person profitiert am meisten, wenn sie sich bewegt, obwohl – oder gerade weil – die Energie vorher gering war."
-        },
-        "consistency_story": {
-          "total_sessions": "7",
-          "sessions_per_week": "7 Einheiten in 7 Tagen – täglich",
-          "total_minutes": "57 Minuten",
-          "trend": "Stabile tägliche Praxis mit hoher Abschlussquote (96% im Schnitt) – kein einziger Tag ohne Bewegung.",
-          "reframe": "57 Minuten in einer Woche klingen wenig, aber das entspricht täglich weniger als 9 Minuten – und hat jedes Mal etwas bewirkt."
-        },
-        "honest_note": "Es gibt keine Sitzung in diesen Daten, bei der Bewegung nicht geholfen hat – das ist bemerkenswert ehrlich, weil es bedeutet: Der innere Widerstand lügt, die Zahlen nicht."
-      }
-    },
-    {
-      "name": "sleep-de-high-stress",
-      "endpoint": "/api/lazy-workout-adapter-sleep",
-      "input": {
-        "timeMinutes": 8,
-        "bodyAreas": [
-          "general-tension"
-        ],
-        "stress_level": "high",
-        "userLanguage": "de"
-      },
-      "output": {
-        "session_name": "Sanftes Loslassen vor dem Schlaf",
-        "time": "8 Minuten",
-        "setup": "Dimme das Licht auf ein warmes Minimum, lege dein Handy umgekehrt weg, sorge für eine angenehme Raumtemperatur zwischen 16 und 18 Grad, und lege dich auf eine bequeme Unterlage.",
-        "movements": [
-          {
-            "name": "Sitzendes Schulter-Lösen",
-            "duration": "1,5 Minuten",
-            "seconds": 90,
-            "how": "Lass die Schultern langsam nach vorne rollen, dann nach oben zu den Ohren ziehen, und ganz bewusst nach hinten und unten sinken lassen — als würdest du eine schwere Last ablegen.",
-            "position": "sitting",
-            "breathing": "Beim Hochziehen einatmen, beim Loslassen langsam durch den Mund ausatmen und alle Spannung mit dem Atem freigeben."
-          },
-          {
-            "name": "Kiefer und Gesicht weichwerden lassen",
-            "duration": "1 Minute",
-            "seconds": 60,
-            "how": "Lege eine Hand sanft auf den Kiefer, öffne den Mund einen Spalt, lass die Zunge vom Gaumen sinken und spüre, wie das Gesicht schwerer und weicher wird.",
-            "position": "sitting",
-            "breathing": "Atme ruhig durch die Nase ein und lass die Ausatmung durch den leicht geöffneten Mund als stilles Seufzen entweichen."
-          },
-          {
-            "name": "Übergang: Hinlegen und Ankommen",
-            "duration": "1 Minute",
-            "seconds": 60,
-            "how": "Lege dich langsam auf den Rücken, richte dich ohne Eile aus, lass Arme und Beine leicht geöffnet neben dir liegen und spüre das Gewicht deines Körpers, der vollständig von der Unterlage getragen wird.",
-            "position": "lying",
-            "breathing": "Atme dreimal tief ein und lass bei jeder Ausatmung den Körper noch ein Stück tiefer in die Unterlage sinken."
-          },
-          {
-            "name": "Progressives Körper-Loslassen von Fuß bis Kopf",
-            "duration": "2 Minuten",
-            "seconds": 120,
-            "how": "Wandere mit deiner Aufmerksamkeit langsam von den Zehen über Waden, Oberschenkel, Bauch, Hände, Arme, Schultern bis zum Kopf — halte an jedem Bereich kurz inne und erlaube ihm, schwer und weich zu werden, ohne etwas zu tun.",
-            "position": "lying",
-            "breathing": "Atme bei jedem Körperbereich einmal tief ein und stelle dir beim langen Ausatmen vor, wie genau dort alle Anspannung wie warmes Wasser wegfließt."
-          },
-          {
-            "name": "Stille Atemwahrnehmung mit schwerem Körper",
-            "duration": "2,5 Minuten",
-            "seconds": 150,
-            "how": "Lasse die Augen geschlossen und beobachte nur noch, wie dein Bauch sich bei jedem Atemzug sanft hebt und senkt — du musst nichts verändern, nur wahrnehmen und zuschauen.",
-            "position": "lying",
-            "breathing": "Atme natürlich und ohne Anstrengung; wenn Gedanken kommen, kehre einfach ohne Bewertung zur Empfindung des Atems zurück."
-          }
-        ],
-        "final_breathing": {
-          "name": "Tiefes Einschlafen durch Atemverlängerung",
-          "inhale": 4,
-          "hold": 7,
-          "exhale": 8,
-          "instruction": "Atme 4 Sekunden lang ruhig durch die Nase ein, halte den Atem sanft für 7 Sekunden an, und lass ihn dann in 8 Sekunden vollständig und geräuschlos durch den Mund entweichen — wiederhole diesen Rhythmus so oft du möchtest, bis du einfach einschläfst."
-        },
-        "sleep_tip": "Dein Körper weiß bereits, wie man schläft — deine einzige Aufgabe heute Nacht ist es, loszulassen und ihm zu vertrauen."
-      }
-    },
-    {
-      "name": "nudge-de-4-day-streak",
+      "name": "nudge-de-recent-history",
       "endpoint": "/api/lazy-workout-adapter-nudge",
       "input": {
-        "streak": 4,
         "lastSessionDate": "2026-07-14",
         "currentDay": "Mittwoch",
         "currentHour": 19,
@@ -447,6 +195,166 @@
         "suggested_mode": "right-now",
         "suggested_time": 10,
         "reason": "Gestern 10 Minuten, heute gleiche Uhrzeit – der Körper kennt das Muster bereits."
+      }
+    },
+    {
+      "name": "micro-office-stiff-neck",
+      "endpoint": "/api/lazy-workout-adapter-micro",
+      "input": {
+        "bodyAreas": [
+          "stiff-neck"
+        ],
+        "position": "seated at a desk",
+        "userLanguage": "en"
+      },
+      "output": {
+        "session_name": "Neck and Shoulder Reset",
+        "total_time": "2 minutes",
+        "message": "Three slow movements, all from your chair — nothing to set up, nothing to push through.",
+        "movements": [
+          {
+            "name": "Slow Neck Side Tilts",
+            "seconds": 40,
+            "how": "Drop your right ear toward your right shoulder, pause where you feel the pull, then slowly switch sides — let gravity do the work.",
+            "feels_like": "Unhurried, heavy-headed, like your neck is being gently unspooled side to side."
+          },
+          {
+            "name": "Shoulder Roll Circles",
+            "seconds": 40,
+            "how": "Roll both shoulders forward in wide, slow circles, then reverse — keep the movement big and lazy.",
+            "feels_like": "Like shrugging in slow motion, with a satisfying grinding looseness through the top of each circle."
+          },
+          {
+            "name": "Chest Open Squeeze",
+            "seconds": 40,
+            "how": "Lace your hands behind your head, let your elbows drift back and apart, hold for a breath, then bring them forward and repeat.",
+            "feels_like": "A gentle prying-open across the front of the chest, easy and passive on the hold."
+          }
+        ],
+        "after": "Close the tab and carry on, or sit quietly for a moment — either is fine."
+      }
+    },
+    {
+      "name": "body-de-sore-back",
+      "endpoint": "/api/lazy-workout-adapter-body",
+      "input": {
+        "bodyArea": "sore-back",
+        "intensity": "gentle",
+        "timeMinutes": 5,
+        "limitations": "",
+        "userLanguage": "de"
+      },
+      "output": {
+        "session_name": "Sanfte Bewegung für den unteren Rücken",
+        "for": "Fünf Minuten mit kleinen, langsamen Bewegungen im Liegen und Sitzen, die den unteren Rücken nicht belasten.",
+        "time": "5 Minuten",
+        "movements": [
+          {
+            "name": "Knie zur Brust ziehen",
+            "duration": "1 Minute",
+            "seconds": 60,
+            "how": "Auf dem Rücken liegen, ein Knie mit beiden Händen sanft zur Brust ziehen, 20–30 Sekunden halten, dann die Seite wechseln.",
+            "feels_like": "Ruhiges Liegen mit wenig Muskelanstrengung, die Bewegung ist klein und kontrolliert.",
+            "caution": "Nur so weit ziehen, wie es sich angenehm anfühlt — kein Drücken oder Ziehen in den Schmerz."
+          },
+          {
+            "name": "Knie von Seite zu Seite wiegen",
+            "duration": "1,5 Minuten",
+            "seconds": 90,
+            "how": "Auf dem Rücken liegen, beide Knie angestellt, dann beide Knie langsam nach rechts und links sinken lassen — ohne Schwung, nur mit dem Gewicht der Beine.",
+            "feels_like": "Passives Nachgeben des Gewichts, kaum aktive Muskelarbeit, gleichmäßiges Tempo.",
+            "caution": "Falls eine Seite unangenehm ist, den Bewegungsradius verkleinern oder die Seite auslassen."
+          },
+          {
+            "name": "Becken sanft kippen",
+            "duration": "1 Minute",
+            "seconds": 60,
+            "how": "Weiterhin auf dem Rücken, Knie angestellt: das Becken langsam nach oben kippen, sodass der Rücken flach auf dem Boden liegt, dann wieder loslassen — im ruhigen Wechsel.",
+            "feels_like": "Kleine, flache Bewegung im unteren Rücken, fast wie ein leichtes Einrollen und Lösen.",
+            "caution": "null"
+          },
+          {
+            "name": "Sitzend aufrichten und loslassen",
+            "duration": "1 Minute",
+            "seconds": 60,
+            "how": "Aufrecht auf einem Stuhl oder dem Boden sitzen, einmal langsam die Wirbelsäule aufrichten und dann bewusst wieder locker werden lassen — im eigenen Tempo wiederholen.",
+            "feels_like": "Abwechselndes leichtes Anspannen und Nachlassen, ohne dass die Bewegung in Anstrengung übergeht.",
+            "caution": "null"
+          },
+          {
+            "name": "Langsames Atmen in Rückenlage",
+            "duration": "30 Sekunden",
+            "seconds": 30,
+            "how": "Auf dem Rücken liegen, Beine ausgestreckt oder Knie angestellt, und ein paar Mal tief und langsam ein- und ausatmen.",
+            "feels_like": "Stilles Liegen, kein Muskelanstrengung, nur das Heben und Senken des Bauches beobachten.",
+            "caution": "null"
+          }
+        ],
+        "prevention_tip": "An einem anderen Tag kannst du beim längeren Sitzen zwischendurch kurz aufstehen und ein paar Schritte gehen."
+      }
+    },
+    {
+      "name": "stack-tv-no-accumulation-claim",
+      "endpoint": "/api/lazy-workout-adapter-stack",
+      "input": {
+        "activity": "Watching TV after dinner",
+        "duration": 60,
+        "bodyAreas": [
+          "stiff-neck"
+        ],
+        "limitations": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "stack_name": "Neck and Shoulders TV Unwind",
+        "activity": "Watching TV after dinner",
+        "frequency": "roughly every 10 minutes",
+        "movements": [
+          {
+            "name": "Slow Ear-to-Shoulder Tilts",
+            "seconds": 30,
+            "how": "Let your right ear drop toward your right shoulder, hold a breath or two, then slowly switch sides — keep your eyes on the screen the whole time.",
+            "cue": "Do this when a scene change or ad break catches your eye.",
+            "invisible": true
+          },
+          {
+            "name": "Shoulder Rolls",
+            "seconds": 30,
+            "how": "Roll both shoulders backward in slow circles, five or six times, then forward the same — no need to pause the show.",
+            "cue": "Do this the first time someone on screen stands up or walks into a room.",
+            "invisible": true
+          },
+          {
+            "name": "Chin Tucks",
+            "seconds": 30,
+            "how": "Sit back gently, then draw your chin straight back — like making a slight double chin — hold two seconds, release, repeat a few times.",
+            "cue": "Do this at the start of any new segment or after the theme music of a show plays.",
+            "invisible": true
+          },
+          {
+            "name": "Shoulder Blade Squeeze",
+            "seconds": 45,
+            "how": "Sit upright for a moment and gently draw both shoulder blades toward each other, hold for three counts, then let go — repeat four or five times.",
+            "cue": "Do this the next time a character pauses or there is a quiet moment on screen.",
+            "invisible": true
+          },
+          {
+            "name": "Slow Neck Rotation",
+            "seconds": 40,
+            "how": "Turn your head slowly to look over your right shoulder, pause for a breath, then rotate to the left — keep it unhurried and stop if anything feels sharp.",
+            "cue": "Do this when a commercial comes on or the show cuts to a new location.",
+            "invisible": true
+          },
+          {
+            "name": "Chest Opener Stretch",
+            "seconds": 30,
+            "how": "Clasp your hands behind you on the cushion or just press your palms into the couch, gently lift your chest, and take one slow breath in that position.",
+            "cue": "Do this near the end of the show or when you notice you have been leaning forward.",
+            "invisible": true
+          }
+        ],
+        "total_active_time": "around 3-4 minutes spread across the hour",
+        "message": "Do whichever ones you remember, whenever you remember them — out of order is fine, and skipping a few is fine too. They are just small ways to move a little while you are already sitting there."
       }
     }
   ]

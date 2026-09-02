@@ -42,12 +42,6 @@ const CONTEXTS = [
   { id: 'post-argument', icon: '😤', labelKey: 'lwa_ctx_post_argument' },
 ];
 
-const STRESS_LEVELS = [
-  { id: 'low', icon: '🌿', labelKey: 'lwa_stress_low' },
-  { id: 'medium', icon: '🌊', labelKey: 'lwa_stress_medium' },
-  { id: 'high', icon: '🌪️', labelKey: 'lwa_stress_high' },
-  { id: 'racing', icon: '⚡', labelKey: 'lwa_stress_racing' },
-];
 
 const INTENSITIES = [
   { id: 'gentle', icon: '🌿', labelKey: 'lwa_int_gentle' },
@@ -86,33 +80,15 @@ const STACK_ACTIVITIES = [
   { id: 'Commuting (passenger)', labelKey: 'lwa_sa_commuting' },
 ];
 
-const BREATHE_PATTERNS = [
-  { name: 'Box', pattern: { inhale: 4, hold: 4, exhale: 4 } },
-  { name: '4-7-8', pattern: { inhale: 4, hold: 7, exhale: 8 } },
-  { name: 'Calm', pattern: { inhale: 4, hold: 2, exhale: 6 } },
-];
 
 const MODE_TABS = [
   ['right-now', '⚡', 'lwa_tab_right_now'],
   ['micro', '⏱️', 'lwa_tab_micro'],
   ['body', '🎯', 'lwa_tab_body'],
   ['stack', '📚', 'lwa_tab_stack'],
-  ['sleep', '🌙', 'lwa_tab_sleep'],
   ['recovery', '🩹', 'lwa_tab_recovery'],
-  ['week', '📅', 'lwa_tab_week'],
-  ['history', '📊', 'lwa_tab_history'],
-  ['breathe', '🫁', 'lwa_tab_breathe'],
 ];
 
-const WEEK_DAYS = [
-  { id: 'Mon', labelKey: 'lwa_day_mon' },
-  { id: 'Tue', labelKey: 'lwa_day_tue' },
-  { id: 'Wed', labelKey: 'lwa_day_wed' },
-  { id: 'Thu', labelKey: 'lwa_day_thu' },
-  { id: 'Fri', labelKey: 'lwa_day_fri' },
-  { id: 'Sat', labelKey: 'lwa_day_sat' },
-  { id: 'Sun', labelKey: 'lwa_day_sun' },
-];
 
 // One set per mode, two each, so the header pill has something to load whichever
 // tab is open and pickExample can actually rotate. Free text lives behind a
@@ -136,17 +112,9 @@ const MODE_EXAMPLES = {
     { stackActivityKey: 'lwa_ex_stack_1', stackDuration: 60, bodyAreas: ['stiff-neck'], limitationsKey: '' },
     { stackActivityKey: 'lwa_ex_stack_2', stackDuration: 30, bodyAreas: ['tight-hips'], limitationsKey: '' },
   ],
-  sleep: [
-    { sleepTime: 5, bodyAreas: ['general-tension'], stressLevel: 'high' },
-    { sleepTime: 10, bodyAreas: ['sore-back'], stressLevel: 'racing' },
-  ],
   recovery: [
     { recoveryEventKey: 'lwa_ex_rec_1', recoveryIntensity: 'rough', recoveryTime: 10 },
     { recoveryEventKey: 'lwa_ex_rec_2', recoveryIntensity: 'moderate', recoveryTime: 5 },
-  ],
-  week: [
-    { typicalEnergy: { Mon: '3', Tue: '5', Wed: '4', Thu: '5', Fri: '2', Sat: '7', Sun: '6' }, limitationsKey: '' },
-    { typicalEnergy: { Mon: '6', Tue: '6', Wed: '5', Thu: '4', Fri: '3', Sat: '8', Sun: '7' }, limitationsKey: 'lwa_ex_week_lim' },
   ],
 };
 // ─── Pure helpers (module-level) ───
@@ -255,16 +223,10 @@ const CompleteView = ({ exs, exercisesDone, exercisesSkipped, completeMsg, energ
         {completeMsg ? (
           <>
             <p className={`text-sm ${c.text} mb-3`}>{completeMsg.message}</p>
-            {completeMsg.streak_status && <p className={`text-xs font-bold ${c.accTxt} mb-1`}>🔥 {completeMsg.streak_status}</p>}
             {completeMsg.energy_note && (
               <p className={`text-xs ${c.textSecondaryAlt}`}>⚡ {completeMsg.energy_note}</p>
             )}
             {completeMsg.suggestion && <p className={`text-xs ${c.textMute} mt-1`}>💡 {completeMsg.suggestion}</p>}
-            {completeMsg.milestone && (
-              <div className={`${c.cyanBox} border rounded-lg p-2 mt-2 inline-block`}>
-                <p className="text-xs">🏅 {completeMsg.milestone}</p>
-              </div>
-            )}
           </>
         ) : (
           <>
@@ -371,7 +333,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     accBox: isDark ? 'bg-lime-900/20 border-lime-700' : 'bg-lime-50 border-lime-200',
     accTxt: isDark ? 'text-lime-300' : 'text-lime-700',
     cyanBox: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
-    ind: isDark ? 'bg-cyan-900/20 border-cyan-700 text-cyan-200' : 'bg-cyan-50 border-cyan-200 text-cyan-800',
     errBox: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     danger: isDark ? 'bg-red-900/20 border-red-700 text-red-200' : 'bg-red-50 border-red-200 text-red-800',
     sld: isDark ? 'accent-lime-400' : 'accent-lime-600',
@@ -398,13 +359,9 @@ const LazyWorkoutAdapter = ({ tool }) => {
   // ─── Result state ───
   const [workout, setWorkout] = useState(null);
   const [microSession, setMicroSession] = useState(null);
-  const [weekPlan, setWeekPlan] = useState(null);
   const [bodySession, setBodySession] = useState(null);
-  const [insights, setInsights] = useState(null);
   const [stackResult, setStackResult] = useState(null);
-  const [sleepResult, setSleepResult] = useState(null);
   const [recoveryResult, setRecoveryResult] = useState(null);
-  const [proveData, setProveData] = useState(null);
   const [nudge, setNudge] = useState(null);
 
   // ─── Timer state ───
@@ -425,25 +382,15 @@ const LazyWorkoutAdapter = ({ tool }) => {
   const [bodyTarget, setBodyTarget] = useState('');
   const [bodyIntensity, setBodyIntensity] = useState('gentle');
   const [bodyTime, setBodyTime] = useState(5);
-  const [typicalEnergy, setTypicalEnergy] = useState({});
   const [stackActivity, setStackActivity] = useState('');
   const [stackDuration, setStackDuration] = useState(60);
-  const [sleepTime, setSleepTime] = useState(5);
-  const [stressLevel, setStressLevel] = useState('medium');
   const [recoveryEvent, setRecoveryEvent] = useState('');
   const [recoveryIntensity, setRecoveryIntensity] = useState('moderate');
   const [recoveryTime, setRecoveryTime] = useState(5);
 
-  // ─── Breathe state ───
-  const [breatheActive, setBreatheActive] = useState(false);
-  const [breathePhase, setBreathePhase] = useState('inhale');
-  const [breatheSecs, setBreatheSecs] = useState(4);
-  const [breatheCycles, setBreatheCycles] = useState(0);
-  const [breathePattern, setBreathePattern] = useState({ inhale: 4, hold: 4, exhale: 4 });
 
   // ─── Refs ───
   const timerRef = useRef(null);
-  const breatheRef = useRef(null);
   const loadExample = () => {
     // Rotate per mode, not per tool, so opening Sleep does not hand you the
     // second Right Now example because of a counter the other tab advanced.
@@ -454,9 +401,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
       setting: setSetting, contexts: setContexts,
       bodyTarget: setBodyTarget, bodyIntensity: setBodyIntensity, bodyTime: setBodyTime,
       stackDuration: setStackDuration,
-      sleepTime: setSleepTime, stressLevel: setStressLevel,
       recoveryIntensity: setRecoveryIntensity, recoveryTime: setRecoveryTime,
-      typicalEnergy: setTypicalEnergy,
     };
     for (const [k, v] of Object.entries(ex)) {
       if (!k.endsWith('Key')) setters[k]?.(v);
@@ -476,33 +421,18 @@ const LazyWorkoutAdapter = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('lazy-workout-history', []);
   const [prefs, setPrefs] = usePersistentState('lazy-workout-prefs', { hated: [], loved: [] });
   const [presets, setPresets] = usePersistentState('lazy-workout-presets', []);
-  const [notTodayLog, setNotTodayLog] = usePersistentState('lazy-workout-nottoday', []);
 
   // ─── Derived ───
   const totalSessions = sessionHistory.length;
-  const streak = (() => {
-    if (!sessionHistory.length) return 0;
-    let s = 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    for (let i = 0; i <= 60; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      if (sessionHistory.some(h => h.date === d.toISOString().split('T')[0])) s++;
-      else if (i > 0) break;
-    }
-    return s;
-  })();
 
   // ─── Helpers ───
   const getTimerExercises = useCallback(() => {
     if (workout?.exercises) return workout.exercises;
     if (microSession?.movements) return microSession.movements.map(m => ({ name: m.name, duration: `${m.seconds} seconds`, how: m.how }));
     if (bodySession?.movements) return bodySession.movements;
-    if (sleepResult?.movements) return sleepResult.movements;
     if (recoveryResult?.steps) return recoveryResult.steps.map(s => ({ name: s.name, duration: s.duration, how: s.how }));
     return [];
-  }, [workout, microSession, bodySession, sleepResult, recoveryResult]);
+  }, [workout, microSession, bodySession, recoveryResult]);
 
   const toggleBody = (id) =>
     setBodyAreas(prev => prev.includes(id) ? prev.filter(b => b !== id) : [...prev, id]);
@@ -516,7 +446,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
       const now = new Date();
       callToolEndpoint('lazy-workout-adapter-nudge', {
         history: sessionHistory.slice(-10),
-        streak,
         lastSessionDate: sessionHistory[sessionHistory.length - 1]?.date,
         currentDay: now.toLocaleDateString('en', { weekday: 'long' }),
         currentHour: now.getHours(),
@@ -545,23 +474,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
   }, [timerRunning, timerPaused, timerSecs, timerIdx, getTimerExercises]);
 
   // ─── Breathing timer effect ───
-  useEffect(() => {
-    if (!breatheActive) return;
-    if (breatheSecs > 0) {
-      breatheRef.current = setTimeout(() => setBreatheSecs(s => s - 1), 1000);
-    } else if (breathePhase === 'inhale') {
-      setBreathePhase('hold');
-      setBreatheSecs(breathePattern.hold);
-    } else if (breathePhase === 'hold') {
-      setBreathePhase('exhale');
-      setBreatheSecs(breathePattern.exhale);
-    } else {
-      setBreathePhase('inhale');
-      setBreatheSecs(breathePattern.inhale);
-      setBreatheCycles(prev => prev + 1);
-    }
-    return () => clearTimeout(breatheRef.current);
-  }, [breatheActive, breatheSecs, breathePhase, breathePattern]);
 
   // ─── Timer controls ───
   const startTimer = (idx = 0) => {
@@ -593,14 +505,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setTimerMode(false);
   };
 
-  const startBreathe = (pattern) => {
-    const p = pattern || { inhale: 4, hold: 4, exhale: 4 };
-    setBreathePattern(p);
-    setBreathePhase('inhale');
-    setBreatheSecs(p.inhale);
-    setBreatheCycles(0);
-    setBreatheActive(true);
-  };
 
   // ─── API handlers ───
   const handleRightNow = async () => {
@@ -631,17 +535,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
-  const handleWeek = async () => {
-    setError('');
-    setWeekPlan(null);
-    try {
-      const d = await callToolEndpoint('lazy-workout-adapter-week', {
-        typicalEnergy, limitations, preferences: prefs, completionCount: totalSessions,
-        userLocale, userCurrency, userRegion,
-      });
-      if (d) setWeekPlan(d);
-    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
-  };
 
   const handleBody = async () => {
     if (!bodyTarget) { setError(t('lwa_err_tap_hurts')); return; }
@@ -670,18 +563,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
-  const handleSleep = async () => {
-    setError('');
-    setSleepResult(null);
-    setTimerMode(false);
-    try {
-      const d = await callToolEndpoint('lazy-workout-adapter-sleep', {
-        timeMinutes: sleepTime, bodyAreas, stress_level: stressLevel,
-        userLocale, userCurrency, userRegion,
-      });
-      if (d) setSleepResult(d);
-    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
-  };
 
   const handleRecovery = async () => {
     if (!recoveryEvent.trim()) { setError(t('lwa_err_what_happened')); return; }
@@ -697,31 +578,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
-  const handleInsights = async () => {
-    if (sessionHistory.length < 5) { setError(t('lwa_err_need_5')); return; }
-    setError('');
-    setInsights(null);
-    try {
-      const d = await callToolEndpoint('lazy-workout-adapter-insights', {
-        history: sessionHistory.slice(-30),
-        userLocale, userCurrency, userRegion,
-      });
-      if (d) setInsights(d);
-    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
-  };
 
-  const handleProve = async () => {
-    if (sessionHistory.length < 7) { setError(t('lwa_err_need_7')); return; }
-    setError('');
-    setProveData(null);
-    try {
-      const d = await callToolEndpoint('lazy-workout-adapter-prove', {
-        history: sessionHistory.slice(-50), notTodayLog,
-        userLocale, userCurrency, userRegion,
-      });
-      if (d) setProveData(d);
-    } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
-  };
 
   const handleSwap = async (exercise, idx) => {
     try {
@@ -747,7 +604,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     const totalCount = exs.length;
     const pct = totalCount ? Math.round((completedCount / totalCount) * 100) : 100;
     const effMode = sessionType || mode;
-    const sessionMins = effMode === 'body' ? bodyTime : effMode === 'sleep' ? sleepTime
+    const sessionMins = effMode === 'body' ? bodyTime
       : effMode === 'recovery' ? recoveryTime : effMode === 'micro' ? 2 : (timeMins || 2);
     const session = {
       date: new Date().toISOString().split('T')[0],
@@ -759,7 +616,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
       bodyAreas, setting, contexts,
       sessionType: sessionType || mode,
       workoutName: workout?.workout_name || microSession?.session_name || bodySession?.session_name
-                || sleepResult?.session_name || recoveryResult?.protocol_name || 'Movement',
+                || recoveryResult?.protocol_name || 'Movement',
       // PF-25 exception: 40-char preview-text truncation; session history capped at 50 below.
       preview: (workout?.workout_name || microSession?.session_name || 'Movement').slice(0, 40),
     };
@@ -771,7 +628,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
         energyBefore: energy,
         energyAfter,
         duration: sessionMins,
-        streak: streak + 1,
         totalSessions: totalSessions + 1,
         sessionType: sessionType || mode,
         userLocale, userCurrency, userRegion,
@@ -780,13 +636,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     } catch (e) { setError(e.message || t('lwa_err_request_failed')); }
   };
 
-  const handleNotToday = () => {
-    setNotTodayLog(prev => [
-      ...prev,
-      { date: new Date().toISOString().split('T')[0], day: new Date().toLocaleDateString('en', { weekday: 'long' }) },
-    ].slice(-50));
-    setNudge(null);
-  };
+  const handleNotToday = () => setNudge(null);
 
   const savePreset = () => {
     if (!workout) return;
@@ -797,15 +647,14 @@ const LazyWorkoutAdapter = ({ tool }) => {
   };
 
   const handleReset = () => {
-    setWorkout(null); setMicroSession(null); setWeekPlan(null);
-    setBodySession(null); setInsights(null); setStackResult(null);
-    setSleepResult(null); setRecoveryResult(null); setProveData(null);
+    setWorkout(null); setMicroSession(null);
+    setBodySession(null); setStackResult(null);
+    setRecoveryResult(null);
     setNudge(null); setError('');
     setEnergy(5); setBodyAreas([]); setTimeMins(10);
     setLimitations(''); setSetting('home'); setContexts([]);
     setBodyTarget(''); setBodyIntensity('gentle'); setBodyTime(5);
     setStackActivity(''); setStackDuration(60);
-    setSleepTime(5); setStressLevel('medium');
     setRecoveryEvent(''); setRecoveryIntensity('moderate'); setRecoveryTime(5);
     setExercisesDone(new Set()); setExercisesSkipped(new Set());
     setShowComplete(false); setCompleteMsg(null);
@@ -815,7 +664,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
 
   const resetSession = () => {
     setWorkout(null); setMicroSession(null); setBodySession(null);
-    setSleepResult(null); setRecoveryResult(null); setStackResult(null);
+    setRecoveryResult(null); setStackResult(null);
     setTimerMode(false); setTimerRunning(false); setTimerPaused(false);
     setShowComplete(false); setCompleteMsg(null);
     setExercisesDone(new Set()); setExercisesSkipped(new Set());
@@ -845,26 +694,16 @@ const LazyWorkoutAdapter = ({ tool }) => {
       stackResult.movements?.forEach((m, i) => {
         lines.push(`${i + 1}. ${m.name}`, `   ${m.how}`, `   ${t('lwa_copy_cue')} ${m.cue}`, '');
       });
-    } else if (sleepResult) {
-      lines.push(`🌙 ${sleepResult.session_name}`, '');
-      sleepResult.movements?.forEach((m, i) => {
-        lines.push(`${i + 1}. ${m.name} — ${m.duration}`, `   ${m.how}`, '');
-      });
     } else if (recoveryResult) {
       lines.push(`🩹 ${recoveryResult.protocol_name}`, recoveryResult.for || '', '');
       recoveryResult.steps?.forEach((s, i) => {
         lines.push(`${i + 1}. ${s.name} — ${s.duration}`, `   ${s.how}`, '');
       });
-    } else if (weekPlan) {
-      lines.push(`📅 ${weekPlan.plan_name}`, weekPlan.philosophy || '', '');
-      weekPlan.days?.forEach(d => {
-        lines.push(`${d.day}: ${t('lwa_copy_min')} — ${d.minimum?.name} (${d.minimum?.time}) | ${t('lwa_copy_full')} — ${d.feeling_it?.name} (${d.feeling_it?.time})`, '');
-      });
     }
     if (!lines.length) return '';
     lines.push(BRAND);
     return lines.join('\n');
-  }, [workout, microSession, bodySession, stackResult, sleepResult, recoveryResult, weekPlan, t]);
+  }, [workout, microSession, bodySession, stackResult, recoveryResult, t]);
 
   useRegisterActions(buildFullText(), tool?.title || 'Lazy Workout Adapter');
 
@@ -879,9 +718,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
     micro: [handleMicro, true],
     body: [handleBody, !!bodyTarget],
     stack: [handleStack, !!stackActivity.trim()],
-    sleep: [handleSleep, true],
     recovery: [handleRecovery, !!recoveryEvent.trim()],
-    week: [handleWeek, true],
   };
   const [modeSubmit, modeReady] = MODE_SUBMIT[mode] || [null, false];
   submitRef.current = modeReady ? modeSubmit : null;
@@ -900,30 +737,12 @@ const LazyWorkoutAdapter = ({ tool }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  // ─── Calendar (last 30 days) ───
-  const calendarDays = (() => {
-    const days = [];
-    const today = new Date();
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
-      days.push({
-        date: ds,
-        label: d.getDate(),
-        day: d.toLocaleDateString('en', { weekday: 'short' }),
-        sessions: sessionHistory.filter(h => h.date === ds),
-        skipped: notTodayLog.some(n => n.date === ds),
-      });
-    }
-    return days;
-  })();
 
   // Unified results sentinel — drives the post-result cross-ref block AND
   // lets the audit's S5.5 Pattern A regex recognize the multi-state union as
   // a results-conditional. Without this alias the audit can't match it.
   const results = workout || microSession || bodySession || stackResult
-                || sleepResult || recoveryResult || weekPlan;
+                || recoveryResult;
 
   // Reset button visibility — show when there's a result OR when the user has
   // entered something on the active mode's form.
@@ -969,20 +788,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
           </div>
         </div>
         <div className="px-5 py-4 space-y-3">
-          {/* Stats */}
-          {totalSessions > 0 && (
-            <div className="flex flex-wrap gap-3">
-              {streak > 0 && (
-                <div className={`${c.accBox} border rounded-lg px-3 py-1.5 flex items-center gap-1.5`}>
-                  <span className="text-sm">🔥</span>
-                  <span className={`text-xs font-bold ${c.accTxt}`}>{streak}d</span>
-                </div>
-              )}
-              <div className={`${c.cardLime} border ${c.borderLine} rounded-lg px-3 py-1.5`}>
-                <span className={`text-xs ${c.textSecondaryAlt}`}>{t('lwa_sessions', { count: totalSessions })}</span>
-              </div>
-            </div>
-          )}
 
           {/* Nudge */}
           {nudge && !workout && !timerMode && !showComplete && (
@@ -992,7 +797,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
                 <p className={`text-xs ${c.textMute} mt-1`}>{nudge.reason}</p>
               </div>
               <div className="flex gap-1.5 flex-shrink-0">
-                <button onClick={() => { setMode(nudge.suggested_mode || 'right-now'); setTimeMins(parseInt(nudge.suggested_time) || 10); setNudge(null); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnLime}`}>{t('lwa_lets_go')}</button>
+                <button onClick={() => { setMode(MODE_EXAMPLES[nudge.suggested_mode] ? nudge.suggested_mode : 'right-now'); setTimeMins(parseInt(nudge.suggested_time) || 10); setNudge(null); }} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${c.btnLime}`}>{t('lwa_lets_go')}</button>
                 <button onClick={handleNotToday} className={`px-3 py-1.5 rounded-lg text-xs ${c.sec} border ${c.borderLine}`}>{t('lwa_not_today')}</button>
               </div>
             </div>
@@ -1452,93 +1257,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
         )
       )}
 
-      {/* ═══ SLEEP PREP ═══ */}
-      {mode === 'sleep' && !timerMode && !showComplete && (
-        !sleepResult ? (
-          <div className={`${c.card} border ${c.borderLine} rounded-xl p-5 space-y-4`}>
-            <div>
-              <h3 className={`font-bold ${c.text}`}>🌙 {t('lwa_sleep_title')}</h3>
-              <p className={`text-sm ${c.textMute}`}>{t('lwa_sleep_desc')}</p>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lwa_stress_level')}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {STRESS_LEVELS.map(s => (
-                  <button
-                    key={s.id}
-                    onClick={() => setStressLevel(s.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs border ${stressLevel === s.id ? c.on : `${c.off} ${c.borderLine}`}`}
-                  >
-                    {s.icon} {t(s.labelKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className={`text-sm font-bold ${c.text}`}>{t('lwa_time')}</span>
-                <span className={`text-sm font-bold ${c.accTxt}`}>{sleepTime}m</span>
-              </div>
-              <input type="range" min="3" max="15" value={sleepTime} onChange={e => setSleepTime(parseInt(e.target.value))} className={`w-full h-2 rounded-full ${c.sld}`} />
-            </div>
-            <button title={t('cmd_enter')}
-              onClick={handleSleep}
-              disabled={loading}
-              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnPrimary} disabled:opacity-40`}
-            >
-              {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
-              ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_build_winddown')}</>
-              )}
-              {!loading && (
-                <kbd aria-hidden="true"
-                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                  ⌘↵
-                </kbd>
-              )}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className={`${c.ind} border rounded-xl p-5`}>
-              <h2 className={`text-lg font-bold ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{sleepResult.session_name}</h2>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-cyan-700 text-cyan-200' : 'bg-cyan-100 text-cyan-700'} mt-2 inline-block`}>🌙 {sleepResult.time}</span>
-            </div>
-            {sleepResult.setup && (
-              <div className={`${c.cardLime} border ${c.borderLine} rounded-lg p-3`}>
-                <p className={`text-xs font-bold ${c.textMute}`}>🕯️ {t('lwa_setup_first')}</p>
-                <p className={`text-sm ${c.textSecondaryAlt}`}>{sleepResult.setup}</p>
-              </div>
-            )}
-            <p className={`text-xs ${c.textMute}`}>💡 {t('lwa_tap_start_there')}</p>
-            <button onClick={() => startTimer(0)} className={`w-full py-2.5 rounded-xl font-bold text-sm ${c.btnPrimary}`}>▶ {t('lwa_guide_me')}</button>
-            {sleepResult.movements?.map((m, i) => <ExCard key={i} ex={m} idx={i} swappable={false} exercisesDone={exercisesDone} startTimer={startTimer} handleSwap={handleSwap} loading={loading} c={c} isDark={isDark} t={t} />)}
-            {sleepResult.final_breathing && (
-              <div className={`${c.cyanBox} border rounded-xl p-4 text-center`}>
-                <p className="text-xs font-bold mb-2">🫁 {t('lwa_final')} {sleepResult.final_breathing.name}</p>
-                <p className="text-sm">{sleepResult.final_breathing.instruction}</p>
-                <button
-                  onClick={() => startBreathe({
-                    inhale: sleepResult.final_breathing.inhale,
-                    hold: sleepResult.final_breathing.hold,
-                    exhale: sleepResult.final_breathing.exhale,
-                  })}
-                  className={`mt-2 px-4 py-1.5 rounded-lg text-xs font-bold ${c.btnPrimary}`}
-                >
-                  🫁 {t('lwa_start_breathing')}
-                </button>
-              </div>
-            )}
-            {sleepResult.sleep_tip && (
-              <div className={`${c.cardLime} border ${c.borderLine} rounded-lg p-3`}>
-                <p className={`text-xs ${c.textMute}`}>💤 {sleepResult.sleep_tip}</p>
-              </div>
-            )}
-          </div>
-        )
-      )}
-
       {/* ═══ RECOVERY ═══ */}
       {mode === 'recovery' && !timerMode && !showComplete && (
         !recoveryResult ? (
@@ -1635,314 +1353,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
             )}
           </div>
         )
-      )}
-
-      {/* ═══ MY WEEK ═══ */}
-      {mode === 'week' && (
-        !weekPlan ? (
-          <div className={`${c.card} border ${c.borderLine} rounded-xl p-5 space-y-4`}>
-            <div>
-              <h3 className={`font-bold ${c.text}`}>📅 {t('lwa_week_title')}</h3>
-              <p className={`text-sm ${c.textMute}`}>{t('lwa_week_desc')}</p>
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${c.text} mb-2`}>{t('lwa_typical_energy')}</p>
-              <div className="grid grid-cols-7 gap-1">
-                {WEEK_DAYS.map(d => (
-                  <div key={d.id} className="text-center">
-                    <p className={`text-xs ${c.textMute}`}>{t(d.labelKey)}</p>
-                    <select
-                      value={typicalEnergy[d.id] || ''}
-                      onChange={e => setTypicalEnergy(p => ({ ...p, [d.id]: e.target.value }))}
-                      className={`w-full px-1 py-1 rounded border text-xs ${c.input}`}
-                    >
-                      <option value="">?</option>
-                      {[...Array(10)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
-                    </select>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button title={t('cmd_enter')}
-              onClick={handleWeek}
-              disabled={loading}
-              className={`relative w-full py-3 rounded-xl font-bold text-sm ${c.btnLime} disabled:opacity-40`}
-            >
-              {loading ? (
-                <><span className="inline-block animate-spin">{tool?.icon ?? '🧘'}</span> {t('lwa_working')}</>
-              ) : (
-                <><span className="me-1">{tool?.icon ?? '🧘'}</span> {t('lwa_plan_week')}</>
-              )}
-              {!loading && (
-                <kbd aria-hidden="true"
-                  className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
-                  ⌘↵
-                </kbd>
-              )}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className={`${c.accBox} border rounded-xl p-5`}>
-              <h2 className={`text-lg font-bold ${c.accTxt}`}>{weekPlan.plan_name}</h2>
-              {weekPlan.philosophy && <p className={`text-sm ${c.textSecondaryAlt} mt-1`}>{weekPlan.philosophy}</p>}
-            </div>
-            {weekPlan.days?.map((d, i) => (
-              <div key={i} className={`${c.card} border ${c.borderLine} rounded-xl p-4 space-y-2`}>
-                <div className="flex justify-between">
-                  <h3 className={`font-bold text-sm ${c.text}`}>{d.day}</h3>
-                  {d.theme && <span className={`text-xs ${c.accTxt}`}>{d.theme}</span>}
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className={`${c.cardLime} border ${c.borderLine} rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${c.accTxt}`}>{t('lwa_min')} · {d.minimum?.time}</p>
-                    <p className={`text-xs font-bold ${c.text}`}>{d.minimum?.name}</p>
-                    <p className={`text-xs ${c.textSecondaryAlt}`}>{d.minimum?.description}</p>
-                  </div>
-                  <div className={`${c.cardAlt} border rounded-lg p-3`}>
-                    <p className={`text-xs font-bold ${isDark ? 'text-sky-300' : 'text-sky-700'}`}>{t('lwa_plus')} · {d.feeling_it?.time}</p>
-                    <p className={`text-xs font-bold ${c.text}`}>{d.feeling_it?.name}</p>
-                    <p className={`text-xs ${c.textSecondaryAlt}`}>{d.feeling_it?.description}</p>
-                  </div>
-                </div>
-                {d.skip_day_note && <p className={`text-xs ${c.textMute}`}>😴 {d.skip_day_note}</p>}
-              </div>
-            ))}
-            {weekPlan.weekly_note && (
-              <div className={`${c.cyanBox} border rounded-xl p-4`}>
-                <p className="text-sm">{weekPlan.weekly_note}</p>
-              </div>
-            )}
-          </div>
-        )
-      )}
-
-      {/* ═══ BREATHE ═══ */}
-      {mode === 'breathe' && (
-        <div className="space-y-4">
-          <div className={`${c.card} border ${c.borderLine} rounded-2xl p-6 text-center`}>
-            <h3 className={`font-bold ${c.text} mb-4`}>🫁 {t('lwa_breathe_title')}</h3>
-            {!breatheActive ? (
-              <>
-                <p className={`text-sm ${c.textMute} mb-4`}>{t('lwa_breathe_pick')}</p>
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  {BREATHE_PATTERNS.map(b => (
-                    <button
-                      key={b.name}
-                      onClick={() => startBreathe(b.pattern)}
-                      className={`p-3 rounded-xl border ${c.cardLime} ${c.borderLine}`}
-                    >
-                      <p className={`text-sm font-bold ${c.text}`}>{b.name}</p>
-                      <p className={`text-xs ${c.textMute}`}>{b.pattern.inhale}-{b.pattern.hold}-{b.pattern.exhale}</p>
-                    </button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={`relative w-40 h-40 mx-auto mb-4 rounded-full flex items-center justify-center transition-all duration-1000 ${breathePhase === 'inhale' ? (isDark ? 'bg-lime-900/30' : 'bg-lime-100') : breathePhase === 'hold' ? (isDark ? 'bg-sky-900/30' : 'bg-sky-100') : (isDark ? 'bg-cyan-900/30' : 'bg-cyan-100')}`}>
-                  <div>
-                    <p className={`text-3xl font-bold ${c.text}`}>{breatheSecs}</p>
-                    <p className={`text-sm font-bold ${breathePhase === 'inhale' ? c.accTxt : breathePhase === 'hold' ? (isDark ? 'text-sky-300' : 'text-sky-600') : (isDark ? 'text-cyan-300' : 'text-cyan-600')}`}>
-                      {breathePhase === 'inhale' ? t('lwa_breathe_in') : breathePhase === 'hold' ? t('lwa_hold') : t('lwa_breathe_out')}
-                    </p>
-                  </div>
-                </div>
-                <p className={`text-xs ${c.textMute} mb-3`}>{t('lwa_cycle', { num: breatheCycles + 1 })}</p>
-                <button onClick={() => setBreatheActive(false)} className={`px-5 py-2 rounded-xl font-bold text-sm ${c.sec} border ${c.borderLine}`}>{t('lwa_stop')}</button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ═══ HISTORY ═══ */}
-      {mode === 'history' && (
-        <div className="space-y-4">
-          <div className={`${c.card} border ${c.borderLine} rounded-xl p-5`}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className={`font-bold ${c.text}`}>📊 {t('lwa_last_30')}</h3>
-              <div className="flex gap-1.5">
-                {sessionHistory.length >= 5 && (
-                  <button onClick={handleInsights} disabled={loading} className={`disabled:opacity-40 text-xs font-bold ${c.accTxt}`}>🔍 {t('lwa_insights')}</button>
-                )}
-                {sessionHistory.length >= 7 && (
-                  <button onClick={handleProve} disabled={loading} className={`disabled:opacity-40 text-xs font-bold ${isDark ? 'text-sky-300' : 'text-sky-600'}`}>📈 {t('lwa_prove_it')}</button>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-10 gap-1">
-              {calendarDays.map((d, i) => (
-                <div
-                  key={i}
-                  className={`w-full aspect-square rounded-md flex items-center justify-center text-xs ${d.sessions.length > 0 ? c.on : d.skipped ? (isDark ? 'bg-zinc-600' : 'bg-gray-300') : `${c.cardLime} border ${c.borderLine}`}`}
-                  title={`${d.day} ${d.date}`}
-                >
-                  {d.sessions.length > 0 ? '✅' : d.skipped ? '·' : <span className={c.textMute}>{d.label}</span>}
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3 mt-3">
-              <span className={`text-xs ${c.textSecondaryAlt}`}>🔥 {t('lwa_streak_d', { count: streak })}</span>
-              <span className={`text-xs ${c.textSecondaryAlt}`}>📊 {t('lwa_total', { count: totalSessions })}</span>
-              {sessionHistory.length > 0 && (() => {
-                const sessionsWithEnergy = sessionHistory.filter(h => h.energyAfter);
-                if (!sessionsWithEnergy.length) return null;
-                const avg = sessionsWithEnergy.reduce((s, h) => s + (h.energyAfter - h.energyBefore), 0) / sessionsWithEnergy.length;
-                const sign = avg > 0 ? '+' : '';
-                return <span className={`text-xs ${c.textSecondaryAlt}`}>⚡ {t('lwa_avg_shift', { val: `${sign}${avg.toFixed(1)}` })}</span>;
-              })()}
-              {notTodayLog.length > 0 && (
-                <span className={`text-xs ${c.textMute}`}>· {t('lwa_n_skipped', { count: notTodayLog.length })}</span>
-              )}
-            </div>
-          </div>
-
-          {/* Prove It */}
-          {proveData && (
-            <div className="space-y-3">
-              <div className={`${proveData.energy_evidence?.verdict === 'clear' ? c.okBox : proveData.energy_evidence?.verdict === 'moderate' ? c.warn : c.cardAlt} border rounded-xl p-5`}>
-                <h3 className="font-bold text-sm mb-2">📈 {t('lwa_does_help')}</h3>
-                <p className="text-lg font-bold">{proveData.headline}</p>
-              </div>
-              {proveData.energy_evidence && (
-                <div className={`${c.card} border ${c.borderLine} rounded-xl p-4`}>
-                  <p className={`text-xs font-bold ${c.text} mb-2`}>⚡ {t('lwa_energy_evidence')}</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className={`${c.cardLime} rounded-lg p-2 text-center`}>
-                      <p className={`text-xs ${c.textMute}`}>{t('lwa_before')}</p>
-                      <p className={`text-lg font-bold ${c.text}`}>{proveData.energy_evidence.avg_before}</p>
-                    </div>
-                    <div className={`${c.cardLime} rounded-lg p-2 text-center`}>
-                      <p className={`text-xs ${c.textMute}`}>{t('lwa_after')}</p>
-                      <p className={`text-lg font-bold ${c.text}`}>{proveData.energy_evidence.avg_after}</p>
-                    </div>
-                    <div className={`${c.accBox} border rounded-lg p-2 text-center`}>
-                      <p className={`text-xs ${c.textMute}`}>{t('lwa_change')}</p>
-                      <p className={`text-lg font-bold ${c.accTxt}`}>{proveData.energy_evidence.avg_change}</p>
-                    </div>
-                  </div>
-                  <p className={`text-xs ${c.textSecondaryAlt} mt-2`}>{t('lwa_pct_improved', { pct: proveData.energy_evidence.pct_sessions_improved })}</p>
-                </div>
-              )}
-              {proveData.best_sessions && (
-                <div className={`${c.cardAlt} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">🎯 {t('lwa_what_works')}</p>
-                  <p className="text-sm mt-1">{proveData.best_sessions.insight}</p>
-                  {(proveData.best_sessions.best_type || proveData.best_sessions.best_day || proveData.best_sessions.best_duration) && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {proveData.best_sessions.best_type && <span className={`text-xs px-2 py-0.5 rounded-full ${c.on}`}>{t('lwa_best_type', { val: proveData.best_sessions.best_type })}</span>}
-                      {proveData.best_sessions.best_day && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{t('lwa_best_day', { val: proveData.best_sessions.best_day })}</span>}
-                      {proveData.best_sessions.best_duration && <span className={`text-xs px-2 py-0.5 rounded-full ${c.cardAlt} border`}>{t('lwa_best_length', { val: proveData.best_sessions.best_duration })}</span>}
-                    </div>
-                  )}
-                </div>
-              )}
-              {proveData.consistency_story && (
-                <div className={`${c.cyanBox} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">📊 {t('lwa_your_story')}</p>
-                  <p className="text-sm mt-1">{proveData.consistency_story.reframe}</p>
-                  <p className={`text-xs ${c.textMute} mt-1`}>{t('lwa_sessions_per_week', { count: proveData.consistency_story.sessions_per_week })} · {proveData.consistency_story.trend}</p>
-                  {(proveData.consistency_story.total_sessions || proveData.consistency_story.total_minutes) && (
-                    <p className={`text-xs ${c.textMute}`}>{proveData.consistency_story.total_sessions && t('lwa_total_sessions', { count: proveData.consistency_story.total_sessions })}{proveData.consistency_story.total_sessions && proveData.consistency_story.total_minutes && ' · '}{proveData.consistency_story.total_minutes && t('lwa_total_minutes', { count: proveData.consistency_story.total_minutes })}</p>
-                  )}
-                </div>
-              )}
-              {proveData.honest_note && (
-                <div className={`${c.accBox} border rounded-xl p-4`}>
-                  <p className={`text-sm ${c.accTxt}`}>☕ {proveData.honest_note}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Insights */}
-          {insights && (
-            <div className="space-y-3">
-              <div className={`${c.accBox} border rounded-xl p-5`}>
-                <h3 className={`font-bold ${c.accTxt} mb-2`}>🔍 {t('lwa_patterns')}</h3>
-                <p className={`text-sm ${c.text}`}>{insights.summary}</p>
-              </div>
-              {insights.energy_patterns?.insight && (
-                <div className={`${c.cardAlt} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">⚡ {t('lwa_energy')}</p>
-                  <p className="text-sm mt-1">{insights.energy_patterns.insight}</p>
-                  {insights.energy_patterns.best_days?.length > 0 && <p className={`text-xs ${c.textMute} mt-1`}>{t('lwa_best_days', { val: insights.energy_patterns.best_days.join(', ') })}</p>}
-                  {insights.energy_patterns.movement_impact && <p className={`text-xs ${c.accTxt} mt-1`}>{t('lwa_avg_impact', { val: insights.energy_patterns.movement_impact })}</p>}
-                </div>
-              )}
-              {insights.body_patterns?.suggestion && (
-                <div className={`${c.cardAlt} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">🦵 {t('lwa_body_patterns')}</p>
-                  {insights.body_patterns.frequent_areas?.length > 0 && <p className={`text-xs ${c.textMute} mt-1`}>{t('lwa_frequent', { val: insights.body_patterns.frequent_areas.join(', ') })}</p>}
-                  <p className="text-sm mt-1">{insights.body_patterns.suggestion}</p>
-                </div>
-              )}
-              {insights.consistency?.wins && (
-                <div className={`${c.okBox} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">🏅 {t('lwa_consistency')}</p>
-                  <p className="text-sm mt-1">{insights.consistency.wins}</p>
-                </div>
-              )}
-              {insights.context_patterns?.common_triggers?.length > 0 && (
-                <div className={`${c.warn} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">🎯 {t('lwa_what_makes_move')}</p>
-                  <p className="text-sm mt-1">{insights.context_patterns.insight}</p>
-                </div>
-              )}
-              {insights.personal_tip && (
-                <div className={`${c.cyanBox} border rounded-xl p-4`}>
-                  <p className="text-xs font-bold">💡 {t('lwa_tip')}</p>
-                  <p className="text-sm">{insights.personal_tip}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Recent */}
-          {sessionHistory.length > 0 && (
-            <div className={`${c.card} border ${c.borderLine} rounded-xl p-5`}>
-              <h3 className={`font-bold ${c.text} mb-3`}>{t('lwa_recent')}</h3>
-              {sessionHistory.slice(-8).reverse().map((h, i) => (
-                <div key={i} className={`${c.cardLime} border ${c.borderLine} rounded-lg p-3 flex items-center justify-between mb-2`}>
-                  <div>
-                    <p className={`text-sm font-bold ${c.text}`}>{h.workoutName}</p>
-                    <p className={`text-xs ${c.textMute}`}>{h.day} · {h.sessionType || t('lwa_workout_fallback')}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {h.energyAfter && (
-                      <span className={`text-xs ${h.energyAfter > h.energyBefore ? (isDark ? 'text-green-300' : 'text-green-600') : c.textMute}`}>
-                        {h.energyBefore}→{h.energyAfter}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {sessionHistory.length === 0 && (
-            <div className={`${c.cardLime} border ${c.borderLine} rounded-xl p-8 text-center`}>
-              <p className="text-3xl mb-2">🌱</p>
-              <p className={`text-sm ${c.textSecondaryAlt}`}>{t('lwa_history_appears')}</p>
-            </div>
-          )}
-
-          {sessionHistory.length > 0 && (
-            <button
-              onClick={() => {
-                if (window.confirm(t('lwa_clear_confirm'))) {
-                  setSessionHistory([]);
-                  setInsights(null);
-                  setProveData(null);
-                }
-              }}
-              className={`text-xs ${c.textMute}`}
-            >
-              🗑️ {t('lwa_clear')}
-            </button>
-          )}
-        </div>
       )}
 
       {/* Error */}
