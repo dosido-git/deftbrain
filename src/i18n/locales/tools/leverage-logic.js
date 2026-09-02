@@ -4,6 +4,7 @@
 // BATNA) stay as-is across languages.
 export const leverageLogic = {
   en: {
+    llog_saved_note: "Saved analysis from {{date}}. Anything listed as unknown may have changed since.",
     llog_h_your_position: "Your position",
     llog_h_their_position: "Their position",
     llog_h_standing_on: "What this rests on",
@@ -145,6 +146,7 @@ export const leverageLogic = {
     // Debrief view
   },
   es: {
+    llog_saved_note: "Análisis guardado del {{date}}. Lo que figura como desconocido puede haber cambiado.",
     llog_h_your_position: "Tu posición",
     llog_h_their_position: "La posición de ellos",
     llog_h_standing_on: "En qué se apoya esto",
@@ -267,6 +269,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← Construir estrategia",
   },
   zh: {
+    llog_saved_note: "这是 {{date}} 保存的分析。其中标为未知的内容可能已经改变。",
     llog_h_your_position: "你的处境",
     llog_h_their_position: "对方的处境",
     llog_h_standing_on: "这份分析的依据",
@@ -389,6 +392,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← 制定策略",
   },
   hi: {
+    llog_saved_note: "{{date}} का सहेजा गया विश्लेषण। जो अज्ञात बताया गया है वह अब बदल चुका हो सकता है।",
     llog_h_your_position: "आपकी स्थिति",
     llog_h_their_position: "उनकी स्थिति",
     llog_h_standing_on: "यह किस पर टिका है",
@@ -511,6 +515,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← रणनीति बनाएं",
   },
   ar: {
+    llog_saved_note: "تحليل محفوظ بتاريخ {{date}}. ما ورد أنه مجهول ربما تغير منذ ذلك الحين.",
     llog_h_your_position: "موقفك",
     llog_h_their_position: "موقفهم",
     llog_h_standing_on: "ما يستند إليه هذا",
@@ -633,6 +638,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← بناء الاستراتيجية",
   },
   pt: {
+    llog_saved_note: "Análise salva de {{date}}. O que consta como desconhecido pode ter mudado.",
     llog_h_your_position: "Sua posição",
     llog_h_their_position: "A posição deles",
     llog_h_standing_on: "Em que isto se apoia",
@@ -755,6 +761,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← Montar estratégia",
   },
   fr: {
+    llog_saved_note: "Analyse enregistrée le {{date}}. Ce qui figure comme inconnu a pu changer depuis.",
     llog_h_your_position: "Votre position",
     llog_h_their_position: "Leur position",
     llog_h_standing_on: "Sur quoi cela repose",
@@ -877,6 +884,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← Élaborer la stratégie",
   },
   de: {
+    llog_saved_note: "Gespeicherte Analyse vom {{date}}. Was als unbekannt vermerkt ist, kann sich geändert haben.",
     llog_h_your_position: "Deine Position",
     llog_h_their_position: "Deren Position",
     llog_h_standing_on: "Worauf das beruht",
@@ -999,6 +1007,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← Strategie erstellen",
   },
   ja: {
+    llog_saved_note: "{{date}} に保存した分析です。未確認とされた点は変わっている可能性があります。",
     llog_h_your_position: "自分の立場",
     llog_h_their_position: "相手の立場",
     llog_h_standing_on: "この分析の根拠",
@@ -1121,6 +1130,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← 戦略を構築",
   },
   ko: {
+    llog_saved_note: "{{date}}에 저장한 분석입니다. 미확인으로 표시된 내용은 달라졌을 수 있습니다.",
     llog_h_your_position: "내 입장",
     llog_h_their_position: "상대의 입장",
     llog_h_standing_on: "이 분석의 근거",
@@ -1243,6 +1253,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← 전략 만들기",
   },
   ru: {
+    llog_saved_note: "Сохранённый анализ от {{date}}. То, что отмечено как неизвестное, могло измениться.",
     llog_h_your_position: "Ваша позиция",
     llog_h_their_position: "Их позиция",
     llog_h_standing_on: "На чём это основано",
@@ -1365,6 +1376,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← Построить стратегию",
   },
   th: {
+    llog_saved_note: "บทวิเคราะห์ที่บันทึกไว้เมื่อ {{date}} สิ่งที่ระบุว่ายังไม่ทราบอาจเปลี่ยนไปแล้ว",
     llog_h_your_position: "จุดยืนของคุณ",
     llog_h_their_position: "จุดยืนของอีกฝ่าย",
     llog_h_standing_on: "สิ่งนี้ตั้งอยู่บนอะไร",
@@ -1487,6 +1499,7 @@ export const leverageLogic = {
     llog_build_strategy_back: "← สร้างกลยุทธ์",
   },
   vi: {
+    llog_saved_note: "Phân tích đã lưu ngày {{date}}. Những điều ghi là chưa biết có thể đã thay đổi.",
     llog_h_your_position: "Vị thế của bạn",
     llog_h_their_position: "Vị thế của họ",
     llog_h_standing_on: "Điều này dựa trên đâu",

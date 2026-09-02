@@ -111,6 +111,8 @@ const LeverageLogic = ({ tool }) => {
 
   // ── Persistent (after all useState — PF-11/PF-14) ──
   const [sessionHistory, setSessionHistory] = usePersistentState('ll-history', []);
+  // Set when a saved analysis is on screen, so it is never mistaken for a fresh one.
+  const [savedAt, setSavedAt] = useState(null);
   const [results, setResults] = usePersistentState('leverage-results', null);
 
   // Restore the results view on reload — results persist but `view` resets to 'form',
@@ -138,9 +140,48 @@ const LeverageLogic = ({ tool }) => {
         userLocale, userCurrency, userRegion,
       });
       setResults(data); setView('results');
-      setSessionHistory(prev => [{ id: Date.now(), situation: situation.trim(), type: negotiationType, date: new Date().toLocaleDateString(), approach: data?.strategy?.approach || '', result: '', preview: situation.trim().slice(0, 40) }, ...prev].slice(0, 6));
+      setSavedAt(null);
+      setSessionHistory(prev => [{
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        approach: data?.how_to_negotiate?.approach || '',
+        preview: situation.trim().slice(0, 40),
+        // Everything needed to put the visitor back where they were: the
+        // analysis itself, and the inputs that produced it. Storing only the
+        // situation meant clicking an entry silently refilled two fields and
+        // looked like nothing had happened.
+        snapshot: data,
+        inputs: {
+          situation: situation.trim(), negotiationType,
+          yourSide: yourSide.trim(), theirSide: theirSide.trim(),
+          desired: desired.trim(), urgency, relationship,
+        },
+      }, ...prev].slice(0, 6));
     } catch (err) { setError(err.message || t('llog_err_analyze')); }
     finally { setLoading(false); }
+  };
+
+  // Put a saved analysis back on screen, along with the inputs behind it, so the
+  // form still matches what produced it and the follow-up modes have something
+  // to work from. Entries saved before this existed carry no snapshot — those
+  // restore what they can and stay on the form.
+  const recallSession = (h) => {
+    const i = h.inputs || {};
+    setSituation(i.situation ?? h.situation ?? '');
+    setNegotiationType(i.negotiationType ?? h.type ?? '');
+    setYourSide(i.yourSide ?? '');
+    setTheirSide(i.theirSide ?? '');
+    setDesired(i.desired ?? '');
+    if (i.urgency) setUrgency(i.urgency);
+    if (i.relationship) setRelationship(i.relationship);
+    setCounterResults(null); setPrepResults(null); setEmailResults(null);
+    if (h.snapshot) {
+      setResults(h.snapshot);
+      setSavedAt(h.date || '');
+      setView('results');
+    } else {
+      setView('form');
+    }
   };
 
   const loadExample = useCallback(() => {
@@ -207,7 +248,7 @@ const LeverageLogic = ({ tool }) => {
     setCounterResults(null); setPrepResults(null); setTheyJustSaid('');
     setWhatYouKnow(''); setWhatYouDontKnow(''); setError('');
     setView('form');
-    setEmailResults(null);
+    setEmailResults(null); setSavedAt(null);
   };
 
   // ── Cmd/Ctrl+Enter keyboard shortcut ──
@@ -374,9 +415,9 @@ const LeverageLogic = ({ tool }) => {
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('llog_past_negotiations')}</p>
                 <div className="space-y-1.5">
                   {sessionHistory.slice(0, 5).map(h => (
-                    <button key={h.id} onClick={() => { setSituation(h.situation); setNegotiationType(h.type); }} className={`w-full text-start p-2.5 rounded-xl ${c.cardAlt} border`}>
+                    <button key={h.id} onClick={() => recallSession(h)} className={`w-full text-start p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
-                        <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.situation}</p>
+                        <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.inputs?.situation || h.situation}</p>
                         <span className={`text-[10px] ${c.textMuted} shrink-0 ms-2`}>{h.date}</span>
                       </div>
                       {h.approach && <p className={`text-[10px] ${c.textMuted}`}>{t('llog_strategy_label')} {h.approach}</p>}
@@ -394,6 +435,15 @@ const LeverageLogic = ({ tool }) => {
       {/* ════════ RESULTS ════════ */}
       {view === 'results' && results && (
         <div className="space-y-5">
+          {/* A recalled analysis is the copy saved that day. Saying so matters
+              here more than in most tools: half of what this one produces is a
+              list of things you did not know yet, and some of them you may since
+              have found out. */}
+          {savedAt && (
+            <div className={`${c.cardAlt} border rounded-xl p-3 text-xs ${c.textSecondary}`}>
+              🕓 {t('llog_saved_note', { date: savedAt })}
+            </div>
+          )}
           <div className="flex gap-2 flex-wrap">
           </div>
 
