@@ -5072,44 +5072,45 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before a negotiation you can't afford to walk into cold.",
-    give: "The negotiation, what you want, and the type.",
-    get: "A power-balance read, your leverage and theirs, scripts, and a walk-away line. Then rehearse against a simulated counterpart, draft the email, and debrief after.",
-    edge: "It maps their leverage too, which is what stops you overplaying a weak hand.",
+    when: "Before a negotiation, when you are not sure what you actually have.",
+    give: "The situation, what you want, and anything you think is working for either side.",
+    get: "Your position and theirs, separated into what is established and what you are assuming, what is still unknown and how to find it out, and words you could use.",
+    edge: "It asks what the other side has too, and leaves their column empty rather than inventing one.",
   },
-  seoDescription: "Win any negotiation with the right strategy. Map your leverage and theirs, get scripts and a concession ladder, war-game their responses, and draft the email.",
-  seoTitle: "Negotiation Strategist: Leverage, Scripts & War-Gaming",
+  seoDescription: "Work out what leverage you actually have before a negotiation. Separates the facts you supplied from the assumptions built on them, names what is still unknown, and turns it into words you can use.",
+  seoTitle: "Leverage Logic: See Where You Stand Before You Negotiate",
   title: "Leverage Logic",
-  tagline: "Win any negotiation with the right strategy",
-  tags: ['negotiation', 'leverage', 'salary', 'strategy', 'scripts', 'batna', 'career'],
+  tagline: "Know where you stand before you negotiate",
+  tags: ['negotiation', 'leverage', 'salary', 'assumptions', 'preparation', 'career'],
   icon: "⚖️",
   categories: ['Pursuits', 'Veer'],
   headerColor: "#d4dde8",
-  description: "Map both sides' leverage in any negotiation — salary, lease, vendor, dispute — then get scripts, a concession ladder, war-gamed counters, and ready-to-send emails.",
+  description: "Facing a negotiation? Describe the situation, what you want, and anything you think gives you leverage. Leverage Logic helps you see where each side has room to move, what you may be assuming, and how to make your case without giving away more than you need to.",
   guide: {
-      overview: "LeverageLogic is a negotiation strategist. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — and it reads the power balance, maps your leverage points and theirs, and builds a full game plan: what to ask for, scripts for the conversation, a concession ladder, your BATNA, and traps to avoid. Then use the companion modes to counter what they just said, check your prep, war-game their likely responses, draft the email, and debrief afterward.",
+      overview: "Leverage Logic helps you reason about negotiating power instead of manufacturing it. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — along with anything working in your favour and anything working in theirs, and it separates what you have actually established from what you are assuming on top of it. Where something important is unknown, it says so and tells you how to find it out, rather than filling the gap with a plausible guess. It does not rate your leverage strong or weak, invent the other side's budget or motives, predict what they will do, or score your readiness out of a hundred, because none of that can be known from what you typed.",
 
       howToUse: [
         "Describe the negotiation, what you want, and pick the type (salary, lease, vendor, purchase…)",
-        "Review your game plan: leverage map, power balance, scripts, concession ladder, BATNA",
-        "Paste what they said into Counter mode for a read and a response",
-        "War-game their likely pushback in the Simulator before the real conversation",
-        "Draft the ask as an email, and run a Debrief afterward to grade the outcome"
+        "Add anything working in your favour — and, separately, anything working in theirs",
+        "Read your position and theirs: each fact, what it may mean, and what its value depends on",
+        "Work through what is still unknown before you go in, using Am I ready?",
+        "Paste what they said into Counter for a read on what it settles and what it leaves open, or draft the ask as an email"
       ],
 
       example: {
-        scenario: "You're asking for a raise after two years without one, and you have a competing offer.",
-        action: "Enter the situation and goal, review the leverage map and scripts, then war-game your manager's likely responses.",
-        result: "A game plan that leads with the competing offer as leverage, scripts for the opening and pushback, a concession ladder (title bump if not salary), and a clear walk-away point."
+        scenario: "You're asking for a raise after two years without one, and you have a written offer from another company.",
+        action: "Enter the situation and what you want, list the offer and your billing-system knowledge in your favour, and leave their side blank because you genuinely do not know it.",
+        result: "Three established facts with what each may mean and what its worth depends on; an empty column for their position saying that is the biggest gap; five things to find out first, including whether the outside offer has an expiry; and an approach that names which fact it rests on."
       },
 
       tips: [
-        "Log each round in the timeline so Counter mode knows the history",
-        "Your BATNA (best alternative) is your real leverage — know it before you start",
-        "Use the Prep Check before high-stakes conversations; it scores your readiness",
-        "Run the Debrief even on losses — the lessons feed your next negotiation"
+        "Fill in their side if you can, even partially — with it blank, the tool will not guess it for you",
+        "The amber lines are the point: they mark where a fact stops being worth what you think it is",
+        "If a piece of leverage has no established fact under it, it is an assumption wearing a suit",
+        "Am I ready? gives you a verdict and what it turns on, not a score"
       ]
     }
+
 },
 
 {

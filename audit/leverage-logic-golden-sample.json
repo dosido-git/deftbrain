@@ -1,455 +1,407 @@
 {
   "_meta": {
     "tool": "leverage-logic",
-    "captured": "2026-07-02",
+    "captured": "2026-09-02",
     "model": "claude-sonnet-4-6 ×6 endpoints",
     "baseline": "leveragelogic-v2",
     "how_to_regress": "npm run check:golden leverage-logic  (dev backend up)",
-    "note": "debrief case guards clean outcome_grade / value_left enums (were inverted by annotations). 2026-07-15: migrated all 6 endpoints off raw anthropic.messages.create() + a local safeParseJSON/3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Removed the local safeParseJSON helper (superseded by cleanJsonResponse + repairMalformedJson inside callClaudeWithRetry). Added NO_QUOTE_RULE to all 6 prompts — /counter interpolates the other party's raw quoted speech directly into the prompt (THEY JUST SAID: \"...\"), and every endpoint's scripts/say_this fields are literally 'exact words to say', both prime candidates for breaking JSON in German. Live-verified all 6 endpoints in German, including /counter with a deliberately quote-nested input (a quoted line inside theyJustSaid) — no truncation, no invalid JSON, no leaked raw quotes. 4 new cases below (counter, prep-check, simulate, draft-email) — the prior golden only covered 2 of 6 endpoints."
+    "note": "Rebuilt 2026-09-02 for the V2 rewrite around the core reasoning rule. The simulate and debrief endpoints were deleted, so their cases went with them; the surviving four each get one, plus a German main for headroom. main-their-side-blank-stays-empty is the load-bearing one: the visitor supplied nothing about the other side, so their_position must come back empty rather than invented — validateResult empties it in code, not by asking the model nicely."
   },
   "cases": [
     {
-      "name": "strategy-raise",
+      "name": "main-their-side-blank-stays-empty",
       "endpoint": "/api/leverage-logic",
       "input": {
-        "situation": "Asking for a raise after two years without one; I lead the team that shipped our biggest feature this year and I have a competing offer at 15% more.",
-        "leverage": "Competing offer, strong performance reviews, only person who knows the billing system",
-        "desired": "A 12-15% raise or a promotion with comp review",
-        "urgency": "soon",
-        "relationship": "ongoing",
+        "situation": "Asking for a raise after two years without one. I have a written offer from another company.",
+        "yourSide": "Written offer at a higher salary. I am the only one who knows our billing system.",
+        "theirSide": "",
+        "desired": "A raise that matches the outside offer",
+        "urgency": "moderate",
+        "relationship": "important",
         "negotiationType": "salary",
-        "pastAttempts": [],
         "userLanguage": "en"
       },
       "output": {
-        "situation_read": {
-          "summary": "Two years of pay stagnation against a backdrop of leading the company's biggest feature ship this year creates a textbook leverage moment, amplified by a live competing offer and unique institutional knowledge of the billing system.",
-          "power_balance": "who_has_leverage",
-          "power_explanation": "The competing offer sets a market floor, the billing system dependency creates replacement risk, and two years without a raise gives moral weight to the ask.",
-          "negotiation_type": "salary",
-          "stakes": "high",
-          "complexity": "moderate"
+        "read": {
+          "summary": "They are asking their current employer for a raise after two years without one, and want their salary matched to a written offer they hold from another company.",
+          "type": "salary",
+          "standing_on": "Three facts: a written external offer at a higher salary, two years without a raise, and sole knowledge of the company billing system."
         },
-        "your_leverage": [
+        "your_position": [
           {
-            "point": "A real competing offer at 15% more sets an external market price for your work that the company must beat or match.",
-            "strength": "strong",
-            "how_to_use": "Reference it as market data, not a threat — frame it as 'I want to stay, but I need this to make sense financially.'",
-            "when": "Middle — after establishing your performance case, before they stall.",
-            "warning": "Leading with it reads as ultimatum and can make the conversation adversarial before it needs to be."
+            "established": "They have a written offer from another company at a higher salary.",
+            "implication": "This removes ambiguity about market rate and gives the employer a concrete number to respond to rather than a vague request.",
+            "depends_on": "Whether the employer believes they will actually leave if the offer is not matched — which depends partly on how moderate urgency and the importance of the relationship read to the employer."
           },
           {
-            "point": "You are the sole owner of the billing system, making your immediate departure operationally disruptive and expensive to replace.",
-            "strength": "strong",
-            "how_to_use": "Let this sit implicit — they know it; mentioning it subtly ('I'd want to make sure whoever takes billing handoff is set up well') signals the risk without being coercive.",
-            "when": "Only if they push back hard or stall — it's a silent pressure point.",
-            "warning": "Saying it out loud can feel like a hostage-taking move and damage the relationship you need to preserve."
+            "established": "They are the only person who knows the billing system.",
+            "implication": "Replacing them may carry a disruption cost the employer cannot easily quantify, which could make a raise look cheaper than the alternative.",
+            "depends_on": "How difficult and costly the employer believes retraining or replacing that knowledge would actually be — this is unknown without knowing the employer's view."
           },
           {
-            "point": "You shipped the company's highest-impact feature this year with documented strong performance reviews.",
-            "strength": "strong",
-            "how_to_use": "Open with specific results — revenue impact, users affected, timeline delivered — not adjectives.",
-            "when": "Early — establish the value anchor before any number is on the table.",
-            "warning": "Don't over-rehearse it; reciting metrics robotically undercuts the credibility of the achievement."
-          },
-          {
-            "point": "Two years without a raise means inflation alone has cut your real compensation, giving the ask a fairness framing that's hard to argue against.",
-            "strength": "medium",
-            "how_to_use": "Mention it once as context — 'My comp hasn't moved in two years while my scope has grown significantly' — then drop it.",
-            "when": "Early, paired with the performance case to show value growth outpacing pay.",
-            "warning": "Dwelling on it shifts the tone from forward-looking to grievance, which weakens your position."
+            "established": "Two years have passed without a raise.",
+            "implication": "This frames the request as overdue rather than aggressive and gives them a factual basis for saying they have not asked before.",
+            "depends_on": "Whether the employer attributes the gap to budget constraints, oversight, or a deliberate assessment of their value — which changes how the point lands."
           }
         ],
-        "their_leverage": [
+        "their_position": [],
+        "their_position_note": "Nothing was supplied about the employer's position, constraints, or priorities — this is the biggest gap in the analysis.",
+        "what_matters_most": [
           {
-            "point": "Budget cycles and approval chains mean even a willing manager may not be able to move fast.",
-            "strength": "medium",
-            "how_to_neutralize": "Ask directly what the approval process looks like and set a specific follow-up date so 'I need to check' doesn't become indefinite delay."
+            "factor": "Whether the employer believes they will leave if the offer is not matched.",
+            "why": "A written offer only creates pressure if the employer treats it as a credible exit, not a negotiating tactic.",
+            "status": "unknown"
           },
           {
-            "point": "They can counter that the competing offer comes with unknowns — different culture, risk, ramp-up time — to reduce its urgency.",
-            "strength": "medium",
-            "how_to_neutralize": "Acknowledge that you prefer to stay, which is why you're having the conversation, but be clear the offer is real and the deadline is real."
+            "factor": "The written external offer at a specific higher number.",
+            "why": "It anchors the conversation to a concrete figure and shifts the burden to the employer to respond to a real alternative.",
+            "status": "established"
           },
           {
-            "point": "Promotion decisions often require a case built over time, giving them a reason to defer comp review to a future cycle.",
-            "strength": "medium",
-            "how_to_neutralize": "Come in with both options framed — raise now, or promotion-track commitment with a comp review date locked in — so delay requires actively rejecting a path, not just saying 'not yet.'"
+            "factor": "The billing system dependency.",
+            "why": "If the employer has not considered the cost of losing that knowledge, naming it clearly may shift the calculation.",
+            "status": "established"
+          },
+          {
+            "factor": "Whether the employer has budget authority or must escalate the decision.",
+            "why": "If the person they are talking to cannot approve the raise, the conversation may stall regardless of the strength of the case.",
+            "status": "unknown"
           }
         ],
-        "strategy": {
-          "approach": "Performance-anchored ask with market validation, keeping the relationship intact while making inaction costly.",
-          "opening_position": "Ask for 15% to anchor at the top of your range and leave room to land at 12-13% while still winning.",
-          "target": "15% raise or a promotion with a committed comp review bringing you to at least 12% within 60 days.",
-          "walkaway": "Below 12% with no promotion path or title change, the competing offer becomes the right move.",
-          "concession_ladder": [
-            {
-              "order": 1,
-              "give_up": "Flexibility on the effective date — accepting a raise that starts 30 days out instead of immediately.",
-              "costs_you": "low",
-              "value_to_them": "high — gives them time to process payroll and approvals without losing the negotiation"
-            },
-            {
-              "order": 2,
-              "give_up": "Accepting 12% now with a written 90-day review committed to hitting 15% upon a defined milestone.",
-              "costs_you": "medium",
-              "value_to_them": "medium — splits the ask across time, which is easier to approve in stages"
-            }
-          ],
-          "timing": "Request the meeting this week — competing offer timelines are real and waiting past the holiday weekend signals low urgency.",
-          "setting": "In person or video one-on-one with your direct manager only — no email for the core ask, and never loop in HR before your manager hears it first."
-        },
-        "scripts": [
+        "unknowns": [
           {
-            "moment": "Opening the conversation",
-            "say_this": "Hey, I wanted to carve out some time to talk about where I am — my role has grown a lot, especially this year, and I think it's the right moment to revisit my comp.",
-            "why_it_works": "It's direct without being combative and frames the conversation as a natural next step, not a confrontation.",
-            "tone": "warm"
+            "unknown": "Whether the employer has any intention or ability to match the offer.",
+            "why_it_matters": "If there is a budget ceiling well below the offer figure, the strategy needs to shift to other compensation or a timeline.",
+            "how_to_find_out": "Ask directly early in the conversation: is matching an external offer something the company does, and who would need to approve it."
           },
           {
-            "moment": "Presenting your ask",
-            "say_this": "We shipped [feature name], which is the biggest thing this team has delivered — I led that end to end, my reviews have been strong, and I haven't had a comp adjustment in two years, so I'm asking for a 15% increase.",
-            "why_it_works": "Stacks the evidence before the number so the ask feels earned, not arbitrary.",
-            "tone": "confident"
+            "unknown": "Who in the organization actually has authority to approve a raise of this size.",
+            "why_it_matters": "Negotiating with someone who cannot say yes wastes the offer as leverage and may dilute it before it reaches the decision-maker.",
+            "how_to_find_out": "Confirm before the meeting whether the person they are meeting with can approve salary changes, or whether HR or a senior manager must be involved."
           },
           {
-            "moment": "If they say no or push back",
-            "say_this": "I hear you on the constraints — help me understand what path gets us there, because I genuinely want to make this work here.",
-            "why_it_works": "Turns pushback into a problem-solving moment and keeps you on the same side of the table as your manager.",
-            "tone": "matter-of-fact"
+            "unknown": "How the employer views the billing system dependency and what they think it would cost to address it without them.",
+            "why_it_matters": "The leverage from being the sole billing system expert is only as strong as the employer's own assessment of that risk.",
+            "how_to_find_out": "Listen for how the employer responds when the topic is raised — deflection or minimizing suggests they have already considered a workaround."
           },
           {
-            "moment": "Deploying your leverage",
-            "say_this": "I want to be transparent with you — I've been approached by another company and the offer is meaningful, which is part of why I wanted to have this conversation now rather than just sit on it.",
-            "why_it_works": "Introduces the competing offer as honesty, not a threat, which respects the relationship while making the stakes real.",
-            "tone": "warm"
+            "unknown": "Whether the employer has a policy on matching outside offers, or a history of doing so.",
+            "why_it_matters": "Some organizations refuse to match on principle; knowing this in advance avoids walking into a wall.",
+            "how_to_find_out": "Ask a trusted colleague who has been there longer, or review any available company handbook language on compensation reviews."
           },
           {
-            "moment": "Closing / getting to yes",
-            "say_this": "So can we land on either 15% effective the first of next month, or a promotion track with a committed review date — I'm flexible on the structure, I just need something concrete today.",
-            "why_it_works": "Gives them two yes options instead of yes or no, and 'concrete today' prevents an open-ended stall.",
-            "tone": "confident"
+            "unknown": "What their actual walkaway point is — would they take the external offer if the raise is refused.",
+            "why_it_matters": "If they would not leave, the offer is softer leverage than it appears; if they would, they can negotiate from a more settled position.",
+            "how_to_find_out": "Decide this privately before the meeting, not during it — it is a question only they can answer."
           }
         ],
-        "traps_to_avoid": [
+        "how_to_negotiate": {
+          "approach": "Lead with the written offer as a concrete reference point, state the request clearly, and let the billing system dependency surface as a cost consideration rather than a threat.",
+          "rests_on": "The written offer gives them a specific number to anchor to; the billing system dependency adds a replacement cost the employer may not have priced.",
+          "opening": "Name the two years without a raise, present the written offer figure, and ask whether the company can match it — keeping the tone direct and the relationship framing intact.",
+          "if_you_are_wrong": "If the employer dismisses the offer or the billing dependency, ask what they would need to see to support a raise, and get that answer in writing as a path forward.",
+          "do_not_give_away": "Do not volunteer that the relationship matters enough that they might stay anyway — it reduces the credibility of the offer as a real alternative."
+        },
+        "what_to_say": [
           {
-            "trap": "Revealing the exact competing company or offer letter details when asked.",
-            "why_dangerous": "They can research the company, decide the role doesn't fit you, or use details to slow-play until the offer expires.",
-            "instead": "Confirm the offer is real and the number is real — 'I'd rather not share specifics, but it's a serious offer at a meaningful number' — and hold there."
+            "moment": "At the opening, to frame the conversation.",
+            "say_this": "I want to be straightforward with you. I have gone two years without a raise and I have received a written offer from another company at a higher salary. I would prefer to stay, but I need to know whether we can get to that number.",
+            "rests_on": "Two years without a raise and the written offer — both established."
           },
           {
-            "trap": "Accepting a vague 'we'll revisit this at your next review' as an outcome.",
-            "why_dangerous": "Without a date, a number, and a written record, it's a non-commitment that resets you to square one in six months.",
-            "instead": "If they offer a future review, pin it to a specific date, a specific range, and ask for it in a follow-up email you send that afternoon."
+            "moment": "If asked what the number is.",
+            "say_this": "The offer is [the figure from the written offer]. That is what I am asking you to match.",
+            "rests_on": "The written offer — established, though the visitor must fill in the actual figure."
           },
           {
-            "trap": "Negotiating against yourself by softening the ask before they've even responded.",
-            "why_dangerous": "Saying 'I was thinking maybe 10 or 12%' before they push back gives up ground you hadn't even lost yet.",
-            "instead": "State 15%, then go silent — let them respond to the number before you move anything."
+            "moment": "If the employer pushes back on cost or budget.",
+            "say_this": "I am also the only person here who knows the billing system end to end. I want you to factor in what it would take to cover that if I were not here.",
+            "rests_on": "Sole billing system knowledge — established."
           },
           {
-            "trap": "Letting the conversation turn into a performance review instead of a compensation decision.",
-            "why_dangerous": "If they pivot to discussing your areas for growth, the frame shifts from 'you've earned this' to 'let's see if you deserve it,' and you lose the initiative.",
-            "instead": "Acknowledge any feedback briefly and redirect — 'Happy to dig into that separately — for today, I want to stay focused on the comp question.'"
+            "moment": "If the employer says they need time to consider.",
+            "say_this": "I understand — I just want to be honest that the offer has a decision deadline, so I would need an answer by [date]. What do you need from me to move this forward on your end?",
+            "rests_on": "The existence of the external offer, which typically carries a deadline — visitor should confirm the actual deadline before using this."
+          },
+          {
+            "moment": "If the employer asks whether they are seriously considering leaving.",
+            "say_this": "I take the offer seriously. I am here because I would rather resolve this here first.",
+            "rests_on": "The importance of the relationship — established — without conceding that they will definitely stay regardless of outcome."
           }
         ],
-        "batna": {
-          "best_alternative": "The competing offer at 15% more, which you can accept if this negotiation fails to hit your walkaway of 12%.",
-          "how_strong": "strong",
-          "how_to_strengthen": "Before the meeting, call the competing company and confirm the offer is still live and the timeline — you need to know exactly how long you have before the window closes.",
-          "mention_it": "yes_subtly"
-        },
-        "body_language": {
-          "do": [
-            "Sit forward slightly when presenting your ask — it projects ownership of the conversation without aggression.",
-            "Pause after stating your number and hold eye contact — silence after an anchor is a feature, not awkward.",
-            "Nod once when they speak — signals you're listening, not waiting to rebut."
-          ],
-          "avoid": [
-            "Don't look away or down when you say the number — breaking eye contact reads as uncertainty about your own ask.",
-            "Don't touch your face or neck when they push back — it signals stress and undermines the confident tone you're building.",
-            "Don't lean back in your chair when they speak — it reads as disengagement or defensiveness."
-          ]
-        },
-        "confidence_boost": "You walked in with a live offer, sole ownership of a critical system, and the biggest ship of the year on your record — they need this conversation to go well more than you do."
+        "traps": [
+          {
+            "trap": "Assuming the billing system dependency is obvious to the employer and will automatically be felt as pressure.",
+            "instead": "Name it explicitly and briefly — do not assume they have priced the replacement cost without being prompted."
+          },
+          {
+            "trap": "Using the relationship as a reason to soften the ask or hedge the offer as leverage.",
+            "instead": "Keep the ask clear and the offer factual; the relationship can be a reason to resolve it here, not a reason to accept less."
+          },
+          {
+            "trap": "Treating the written offer as decisive leverage without knowing whether this employer matches outside offers at all.",
+            "instead": "Find out early in the conversation whether matching is something they do, so the strategy can adjust if the answer is no."
+          }
+        ]
       }
     },
     {
-      "name": "debrief-partial-win",
-      "endpoint": "/api/leverage-logic/debrief",
+      "name": "main-de-both-sides-supplied",
+      "endpoint": "/api/leverage-logic",
       "input": {
-        "situation": "Salary negotiation: asked for 15% with a competing offer in hand.",
-        "strategy": "Lead with the competing offer, anchor at 15%, concession ladder to 10% + title bump.",
-        "timeline": [
-          {
-            "who": "me",
-            "what": "Presented the ask at 15% with market data",
-            "result": ""
-          },
-          {
-            "who": "them",
-            "what": "Manager said budget is frozen until Q3 but offered 8% now",
-            "result": ""
-          }
-        ],
-        "finalOutcome": "Got 8% now plus a written commitment to revisit at 12% in Q3 with a title bump.",
-        "desiredOutcome": "A 12-15% raise or a promotion with comp review",
-        "userLanguage": "en"
-      },
-      "output": {
-        "outcome_grade": "B",
-        "outcome_summary": "Landed 8% immediately with a binding Q3 path to 12% and a title bump — within the target range but back-loaded and contingent.",
-        "what_worked": [
-          {
-            "tactic": "Anchoring at 15% with market data created room to negotiate down while still landing above the midpoint floor.",
-            "impact": "Preserved 8% now instead of settling at the first counteroffer of something lower."
-          },
-          {
-            "tactic": "Holding the competing offer as leverage forced a written Q3 commitment rather than a vague 'we'll revisit it' promise.",
-            "impact": "Converted a verbal budget excuse into a documented obligation with a specific quarter attached."
-          }
-        ],
-        "what_didnt": [
-          {
-            "mistake": "Conceding to the Q3 timeline without negotiating the trigger conditions or consequences if the 12% review is delayed or softened.",
-            "cost": "If Q3 comes and budget is 'frozen again,' there's no enforcement mechanism — effectively risked 4% with no recourse.",
-            "next_time": "Before accepting any deferred comp structure, specify in writing what happens if the review doesn't result in 12% — tie it to a resignation right or formal escalation clause."
-          },
-          {
-            "mistake": "The negotiation ended in two rounds with no counter to the 8% offer before accepting the split structure.",
-            "cost": "Skipping a counter on the immediate number likely cost 1-2% upfront — the gap between 8% and a possible 9-10% was never tested.",
-            "next_time": "Always counter at least once before accepting a split deal; propose 10% now plus Q3 title review as a middle position."
-          }
-        ],
-        "value_left_on_table": {
-          "likely": "yes",
-          "explanation": "The Q3 commitment is only as strong as the manager's authority and the company's Q3 budget reality — if either slips, the delta between 8% and 12% (roughly 4% of salary, potentially $4K-$8K depending on base) evaporates. The immediate number was also likely soft.",
-          "how_to_capture": "Before Q3 arrives, schedule a formal check-in in writing for mid-Q3, confirm the title change paperwork is initiated now, and use any competing offers that surface before then as a re-opener."
-        },
-        "leverage_lessons": [
-          "A competing offer is a time-sensitive asset — its power decays the longer the negotiation drags or the more it's implied rather than presented with a deadline.",
-          "A frozen budget is a constraint, not a ceiling — the manager found 8% inside a 'frozen' budget, which means the ceiling was higher than disclosed.",
-          "Written commitments are only as strong as their specificity — 'revisit at 12%' is not the same as 'you will receive 12%.'"
-        ],
-        "for_next_time": {
-          "do_more": "Use the competing offer to impose a decision deadline, not just an anchor — 'I need to respond to the other offer by Friday' forces a real decision.",
-          "do_less": "Stop accepting deferred structures without locking down the conditions, triggers, and consequences in the same document.",
-          "try_new": "Introduce a signing-bonus ask as a bridge when immediate salary is constrained — it bypasses budget-cycle friction and can close the gap between 8% now and 12% later in a single lump sum.",
-          "key_insight": "You won the structure of the deal but gave away enforcement — the next negotiation is actually Q3, and you need to prepare for it now."
-        }
-      }
-    },
-    {
-      "name": "counter-de-nested-quote",
-      "endpoint": "/api/leverage-logic/counter",
-      "input": {
-        "situation": "Gehaltsverhandlung",
-        "theyJustSaid": "Wir haben aktuell einfach kein Budget dafür, aber vielleicht nächstes Jahr — außerdem hat mir mein Chef gesagt: \"Das Team ist schon teuer genug.\"",
-        "yourGoal": "trotzdem eine Erhöhung bekommen",
-        "userLanguage": "de"
-      },
-      "output": {
-        "read": "Sie haben kein echtes Budget-Problem — sie testen, ob du nachgibst, ohne Gegenwehr zu leisten.",
-        "their_tactic": "Double Shield: zwei Ausreden gleichzeitig (kein Budget + Chef-Autorität), um dich zu demotivieren, weiterzuverhandeln.",
-        "danger_level": "caution",
-        "responses": [
-          {
-            "approach": "Wert verankern",
-            "say_this": "Ich verstehe den Druck von oben — deswegen möchte ich kurz zeigen, was ich dem Team in den letzten Monaten konkret gebracht habe, damit wir das Gespräch mit Zahlen führen können, nicht mit Bauchgefühl.",
-            "then_what": "Du verschiebst das Gespräch von Kosten zu Wert — der Vorgesetzte muss dann inhaltlich reagieren, nicht emotional.",
-            "risk": "low",
-            "best_if": "Du hast konkrete Ergebnisse oder Projekte, die du nennen kannst."
-          },
-          {
-            "approach": "Alternativen öffnen",
-            "say_this": "Falls Gehalt gerade wirklich nicht geht — wäre es möglich, das in einem schriftlichen Commitment für Q1 nächsten Jahres festzuhalten, plus kurzfristig eine Einmalzahlung oder mehr Urlaubstage?",
-            "then_what": "Du zeigst Flexibilität, ohne deinen Anspruch aufzugeben — und bringst sie dazu, sich konkret festzulegen statt vage zu bleiben.",
-            "risk": "medium",
-            "best_if": "Der Arbeitgeber ist grundsätzlich wohlwollend, aber wirklich budgetbeschränkt."
-          },
-          {
-            "approach": "Chef direkt einbeziehen",
-            "say_this": "Wenn die Entscheidung beim Chef liegt, wäre ich sehr offen dafür, das Gespräch direkt mit ihm zu führen — ich kann meinen Beitrag gut erklären und nehme ihm damit auch die Last ab.",
-            "then_what": "Entweder wird das Treffen arrangiert, was dir mehr Einfluss gibt, oder der Vorgesetzte merkt, dass er das besser selbst löst.",
-            "risk": "high",
-            "best_if": "Du hast ein gutes Standing im Unternehmen und keine Angst vor direkter Konfrontation mit der Führungsebene."
-          }
-        ],
-        "do_not_say": "Okay, dann warte ich bis nächstes Jahr — das signalisiert Kapitulation und setzt keinen einzigen Anreiz, sich für dich einzusetzen.",
-        "silence_option": "Nein — Stille hilft hier nicht, weil die Aussage absichtlich vage ist und ohne deine Reaktion einfach als akzeptiert gilt."
-      }
-    },
-    {
-      "name": "prep-check-de-lease",
-      "endpoint": "/api/leverage-logic/prep-check",
-      "input": {
-        "situation": "Mietvertrag verhandeln, Vermieter will 20% mehr",
-        "whatYouKnow": "Vergleichsmieten in der Gegend",
-        "whatYouDontKnow": "Ob es Leerstand im Gebäude gibt",
+        "situation": "Verlängerung unseres Büromietvertrags. Der Vermieter will 12 Prozent mehr.",
+        "yourSide": "Wir zahlen seit vier Jahren pünktlich. Zwei vergleichbare Einheiten im Haus stehen leer.",
+        "theirSide": "Er sagt, seine Hypothek sei teurer geworden, und ein anderer Mieter habe Interesse.",
+        "desired": "Die Erhöhung auf 4 Prozent begrenzen",
+        "urgency": "high",
+        "relationship": "moderate",
         "negotiationType": "lease",
         "userLanguage": "de"
       },
       "output": {
-        "readiness_score": 52,
-        "readiness_label": "needs_work",
-        "critical_gaps": [
+        "read": {
+          "summary": "Es geht um die Verlängerung eines Büromietvertrags, bei dem der Vermieter eine Erhöhung von 12 Prozent fordert. Der Mieter möchte die Erhöhung auf 4 Prozent begrenzen.",
+          "type": "lease",
+          "standing_on": "Die Analyse stützt sich auf vier etablierte Fakten: vier Jahre pünktliche Zahlungen, zwei leerstehende vergleichbare Einheiten im selben Gebäude, die Behauptung des Vermieters über gestiegene Hypothekenkosten und seine Erwähnung eines anderen Interessenten."
+        },
+        "your_position": [
           {
-            "gap": "Leerstandsquote im Gebäude und in der unmittelbaren Umgebung ist unbekannt.",
-            "why_critical": "Hoher Leerstand schwächt die Verhandlungsposition des Vermieters erheblich und gibt dir Hebel für eine Ablehnung der Erhöhung.",
-            "how_to_find": "Klingel bei Nachbarn oder frag den Hausmeister beiläufig, wie viele Wohnungen gerade frei stehen.",
-            "time_needed": "30 min"
+            "established": "Der Mieter zahlt seit vier Jahren pünktlich die Miete.",
+            "implication": "Das macht den Mieter zu einem nachweislich zuverlässigen Einkommensstrom für den Vermieter, was bei einem Neuvermietung nicht garantiert wäre.",
+            "depends_on": "Wie schwer es dem Vermieter tatsächlich fällt, neue Mieter zu finden, entscheidet, wie viel Gewicht diese Zuverlässigkeit in der Praxis hat."
           },
           {
-            "gap": "Rechtliche Grundlage der geforderten Erhöhung ist unklar — ob Staffelmiete, Indexmiete oder freie Verhandlung.",
-            "why_critical": "Ohne diese Info weißt du nicht, ob der Vermieter überhaupt rechtlich 20% verlangen darf oder ob die Forderung angreifbar ist.",
-            "how_to_find": "Lese deinen bestehenden Mietvertrag auf Klauseln zu Mietanpassung durch, dauert maximal 15 Minuten.",
-            "time_needed": "15 min"
-          },
-          {
-            "gap": "Deine eigene Schmerzgrenze und maximale Zugeständnishöhe sind nicht definiert.",
-            "why_critical": "Ohne festgelegte Grenze läufst du Gefahr, in der Verhandlungssituation spontan mehr zuzustimmen als vertretbar.",
-            "how_to_find": "Berechne anhand deines Nettoeinkommens, welcher Mietanteil die 30%-Grenze überschreitet.",
-            "time_needed": "5 min"
-          },
-          {
-            "gap": "Mietpreisbremse-Geltung für deine Gemeinde und Wohnung ist ungeprüft.",
-            "why_critical": "Falls die Mietpreisbremse gilt, darf die Miete bei Neuvermietung höchstens 10% über der ortsüblichen Vergleichsmiete liegen — das würde 20% direkt blockieren.",
-            "how_to_find": "Suche auf dem Mieterverein-Portal deiner Stadt oder bei mietpreisbremse.de nach deiner Postleitzahl.",
-            "time_needed": "5 min"
+            "established": "Zwei vergleichbare Einheiten im selben Gebäude stehen leer.",
+            "implication": "Der Vermieter trägt bereits Leerstandskosten im Gebäude, was den finanziellen Druck erhöht, den bestehenden Mieter zu halten.",
+            "depends_on": "Wie lange diese Einheiten schon leer stehen und zu welchem Preis sie angeboten werden, bestimmt, wie ernst dieses Signal ist."
           }
         ],
-        "strengths": [
-          "Vergleichsmieten der Gegend sind bereits bekannt — das ist das stärkste Druckmittel in jeder Mietverhandlung.",
-          "Frühzeitige Auseinandersetzung mit dem Thema lässt Zeit für gründliche Vorbereitung.",
-          "Als bestehender Mieter hast du einen strukturellen Vorteil: Leerstand und Neuvermietungsaufwand kosten den Vermieter Geld."
-        ],
-        "homework": [
+        "their_position": [
           {
-            "task": "Prüfe online, ob für deine Postleitzahl die Mietpreisbremse gilt, und drucke den Nachweis aus.",
-            "priority": "must_do",
-            "time": "5 Minuten"
+            "established": "Der Vermieter sagt, seine Hypothekenkosten seien gestiegen.",
+            "implication": "Er begründet die Erhöhung mit eigenen Kosten, nicht mit dem Marktwert der Einheit, was bedeutet, dass er möglicherweise unter finanziellem Druck steht.",
+            "depends_on": "Ob gestiegene Hypothekenkosten die geforderten 12 Prozent tatsächlich rechtfertigen, lässt sich ohne Kenntnis des lokalen Marktniveaus nicht beurteilen."
           },
           {
-            "task": "Lies deinen Mietvertrag gezielt auf Staffel-, Index- oder Anpassungsklauseln und notiere den genauen Wortlaut.",
-            "priority": "must_do",
-            "time": "15 Minuten"
-          },
-          {
-            "task": "Erstelle eine kurze Tabelle mit 3 bis 5 konkreten Vergleichsobjekten aus Immoscout oder ähnlichen Portalen, inklusive Adresse, Größe und Kaltmiete pro Quadratmeter.",
-            "priority": "must_do",
-            "time": "30 Minuten"
-          },
-          {
-            "task": "Erkunde diskret den Leerstand im Gebäude durch Klingeln oder ein Gespräch mit Nachbarn.",
-            "priority": "should_do",
-            "time": "30 Minuten"
-          },
-          {
-            "task": "Formuliere schriftlich dein Eröffnungsangebot, dein Ziel und deine absolute Grenze, bevor du ins Gespräch gehst.",
-            "priority": "must_do",
-            "time": "10 Minuten"
-          },
-          {
-            "task": "Kontaktiere den örtlichen Mieterverein für eine kurze telefonische Einschätzung zur Rechtslage.",
-            "priority": "should_do",
-            "time": "Eine Stunde inklusive Wartezeit"
-          },
-          {
-            "task": "Recherchiere, wie lange du bereits Mieter bist und notiere Zahlungspünktlichkeit sowie erledigte Kleinreparaturen als Argumente für deine Zuverlässigkeit.",
-            "priority": "nice_to_have",
-            "time": "10 Minuten"
+            "established": "Der Vermieter hat erwähnt, dass ein anderer Interessent vorhanden sei.",
+            "implication": "Diese Aussage soll Dringlichkeit erzeugen und die Verhandlungsposition des Mieters schwächen.",
+            "depends_on": "Ob dieser Interessent real ist, ernsthaft interessiert ist und zu denselben oder besseren Konditionen abschließen würde, ist nicht bekannt."
           }
         ],
-        "ready_when": "Du bist bereit, wenn du sagen kannst: Auf Basis von Vergleichsmieten, Mietpreisbremse-Status und Leerstandslage ist eine Erhöhung von X Prozent das Maximum, was ich akzeptiere — und ich weiß genau warum.",
-        "quick_win": "Gib jetzt sofort deine Postleitzahl auf mietpreisbremse.de ein — falls sie gilt, hat sich die Forderung von 20% bereits rechtlich erledigt und du gehst gestärkt in das Gespräch."
+        "their_position_note": null,
+        "what_matters_most": [
+          {
+            "factor": "Die Glaubwürdigkeit des anderen Interessenten",
+            "why": "Ist er real und konkret, verändert das die gesamte Verhandlungsdynamik zuungunsten des Mieters; ist er ein Druckmittel ohne Substanz, verliert die 12-Prozent-Forderung ihren zentralen Hebel.",
+            "status": "unknown"
+          },
+          {
+            "factor": "Das aktuelle Marktniveau für vergleichbare Büroflächen in der Region",
+            "why": "Erst mit diesem Wissen lässt sich beurteilen, ob 12 Prozent marktkonform, überhöht oder sogar niedrig sind, und damit die eigene Gegenforderung sachlich begründen.",
+            "status": "unknown"
+          },
+          {
+            "factor": "Die zwei leerstehenden Einheiten im Gebäude",
+            "why": "Sie belegen, dass der Vermieter bereits mit Leerstand zu kämpfen hat, und stärken das Argument, dass ein verlässlicher Bestandsmieter wertvoller ist als ein unsicherer Neuzugang.",
+            "status": "established"
+          },
+          {
+            "factor": "Die hohe Dringlichkeit auf Seiten des Mieters",
+            "why": "Wenn der Vermieter weiß oder vermutet, dass der Mieter keine echte Ausweichoption hat, schwächt das die Verhandlungsposition erheblich.",
+            "status": "established"
+          }
+        ],
+        "unknowns": [
+          {
+            "unknown": "Wie hoch sind aktuelle Marktmieten für vergleichbare Büroflächen in der Umgebung?",
+            "why_it_matters": "Ohne diesen Vergleichswert lässt sich die Gegenforderung von 4 Prozent nicht sachlich begründen.",
+            "how_to_find_out": "Aktuelle Inserate für ähnliche Flächen im selben Stadtteil recherchieren oder einen lokalen Immobilienmakler um eine kurze Einschätzung bitten."
+          },
+          {
+            "unknown": "Wie konkret ist der andere Interessent, den der Vermieter erwähnt hat?",
+            "why_it_matters": "Ein echter Alternativmieter mit unterschriftsreifem Angebot verändert die Machtbalance erheblich.",
+            "how_to_find_out": "Im Gespräch ruhig nachfragen, ob es ein konkretes Angebot gibt und bis wann eine Entscheidung erwartet wird, ohne dabei Nervosität zu zeigen."
+          },
+          {
+            "unknown": "Wie lange stehen die zwei Einheiten im Gebäude bereits leer?",
+            "why_it_matters": "Langanhaltender Leerstand verstärkt das Argument, dass der Vermieter auf Einnahmen angewiesen ist; kurzer Leerstand tut das weniger.",
+            "how_to_find_out": "Öffentliche Inserate prüfen oder im Gespräch beiläufig ansprechen, ob die anderen Flächen bereits vermietet sind."
+          },
+          {
+            "unknown": "Hat der Mieter eine realistische Ausweichoption, also eine alternative Bürofläche, die er beziehen könnte?",
+            "why_it_matters": "Ohne eine solche Option ist die Verhandlungsposition strukturell schwach, unabhängig davon, welche anderen Argumente vorliegen.",
+            "how_to_find_out": "Vor dem Gespräch gezielt nach Alternativen suchen, auch wenn ein Umzug nicht angestrebt wird, um zumindest zu wissen, was möglich wäre."
+          },
+          {
+            "unknown": "Wie lang soll der neue Mietvertrag laufen?",
+            "why_it_matters": "Eine längere Laufzeitgarantie könnte dem Vermieter genug Planungssicherheit bieten, um eine niedrigere Erhöhung zu akzeptieren.",
+            "how_to_find_out": "Die eigenen betrieblichen Bedürfnisse klären und überlegen, ob eine Laufzeit von zum Beispiel drei oder fünf Jahren als Tauschargument angeboten werden kann."
+          }
+        ],
+        "how_to_negotiate": {
+          "approach": "Die eigene Zuverlässigkeit als belegten Wert in den Mittelpunkt stellen und gleichzeitig den Leerstand im Gebäude als sachliches Signal für die aktuelle Vermietungslage ansprechen.",
+          "rests_on": "Vier Jahre pünktliche Zahlung und zwei leerstehende Einheiten im selben Gebäude.",
+          "opening": "Das Gespräch mit der Bereitschaft zur Verlängerung eröffnen, dann konkret auf den nachgewiesenen Zahlungsverlauf hinweisen und die Gegenforderung von 4 Prozent sachlich nennen.",
+          "if_you_are_wrong": "Falls sich herausstellt, dass der andere Interessent real und konkret ist, kann eine mittlere Erhöhung von zum Beispiel 7 bis 8 Prozent als Kompromiss angeboten werden, verbunden mit einer längeren Vertragslaufzeit.",
+          "do_not_give_away": "Die eigene Dringlichkeit oder das Fehlen einer Ausweichoption nicht erwähnen, weil das dem Vermieter signalisiert, dass der Mieter kaum Spielraum hat."
+        },
+        "what_to_say": [
+          {
+            "moment": "Zu Beginn des Gesprächs, um die eigene Position zu verankern",
+            "say_this": "Wir verlängern gerne und schätzen das bisherige Verhältnis. Vier Jahre ohne einen einzigen Zahlungsverzug sprechen für sich. Auf dieser Grundlage schlagen wir eine Erhöhung von 4 Prozent vor.",
+            "rests_on": "Vier Jahre pünktliche Zahlung."
+          },
+          {
+            "moment": "Wenn der Vermieter auf die gestiegenen Hypothekenkosten hinweist",
+            "say_this": "Das verstehe ich. Gleichzeitig sind zwei Einheiten im Haus gerade nicht vermietet. Ein verlässlicher Bestandsmieter schützt vor weiterem Leerstand, das hat auch für Sie einen konkreten Wert.",
+            "rests_on": "Zwei leerstehende Einheiten im Gebäude."
+          },
+          {
+            "moment": "Wenn der Vermieter den anderen Interessenten ins Spiel bringt",
+            "say_this": "Das nehme ich zur Kenntnis. Darf ich fragen, ob es sich um ein konkretes Angebot handelt? Wir würden gerne wissen, in welchem Zeitrahmen Sie entscheiden müssen.",
+            "rests_on": "Die Erwähnung eines anderen Interessenten durch den Vermieter."
+          },
+          {
+            "moment": "Wenn das Gespräch in eine Sackgasse gerät",
+            "say_this": "Vielleicht hilft es, über die Vertragslaufzeit zu sprechen. Wenn eine längere Bindung für Sie Planungssicherheit schafft, lässt sich das vielleicht mit einer moderateren Erhöhung verbinden.",
+            "rests_on": "Der Wert eines verlässlichen Mieters für den Vermieter, kombiniert mit dem Leerstand im Gebäude."
+          }
+        ],
+        "traps": [
+          {
+            "trap": "Den anderen Interessenten als leeres Druckmittel abzutun, nur weil er unbewiesen klingt.",
+            "instead": "Die Glaubwürdigkeit dieser Aussage zuerst prüfen, indem im Gespräch ruhig nach Details gefragt wird, bevor die eigene Strategie darauf aufgebaut wird."
+          },
+          {
+            "trap": "Anzunehmen, dass der Leerstand im Gebäude automatisch starke Verhandlungsmacht bedeutet.",
+            "instead": "Den Leerstand als sachliches Argument nennen, aber nicht darauf beharren, weil sein Gewicht davon abhängt, wie dringend der Vermieter diese Einnahmen braucht, was nicht bekannt ist."
+          },
+          {
+            "trap": "Die Gegenforderung von 4 Prozent ohne Marktbezug als fair zu bezeichnen.",
+            "instead": "Erst aktuelle Marktmieten recherchieren, damit die Zahl belegt und nicht nur behauptet ist."
+          }
+        ]
       }
     },
     {
-      "name": "simulate-de-salary",
-      "endpoint": "/api/leverage-logic/simulate",
+      "name": "counter-no-subtext-no-prediction",
+      "endpoint": "/api/leverage-logic/counter",
       "input": {
-        "situation": "Gehaltsverhandlung mit zwei Gegenangeboten",
-        "strategy": "Anchoring hoch mit Daten",
-        "negotiationType": "salary",
-        "yourOpening": "Ich lege beide Angebote offen und bitte um ein Gegenangebot",
-        "userLanguage": "de"
+        "situation": "Freelance rate negotiation for a three-month contract",
+        "theyJustSaid": "We love your work but the budget is fixed at 60 an hour and we have another designer who quoted less.",
+        "yourGoal": "75 an hour",
+        "tonePreference": "warm",
+        "userLanguage": "en"
       },
       "output": {
-        "scenarios": [
+        "what_it_settles": "They have stated a budget ceiling of $60/hr and indicated at least one competing quote came in below that.",
+        "what_it_leaves_open": "Whether the budget is genuinely fixed or a starting position, how the other designer compares in relevant experience or fit, and whether scope, timeline, or other terms have room to move.",
+        "before_you_answer": "Decide whether you would take $60/hr if nothing else changes, because your answer will signal that one way or another.",
+        "responses": [
           {
-            "likelihood": "most_likely — Arbeitgeber fühlt sich unter Druck und weicht leicht nach oben ab, ohne das höhere Angebot zu erreichen",
-            "they_say": "Wir können Ihnen 92.000 Euro anbieten, das ist das Maximum, was unser Budget aktuell zulässt.",
-            "subtext": "Sie wollen den Prozess beenden, haben aber noch Spielraum nach oben, den sie nicht freiwillig zeigen.",
-            "your_counter": "Ich schätze das sehr — 92.000 Euro liegt jedoch noch 8.000 Euro unter dem anderen vorliegenden Angebot; was können Sie tun, um diese Lücke zu schließen, sei es durch Gehalt, Bonus oder andere Leistungen?",
-            "then_expect": "Sie werden wahrscheinlich einen Kompromiss bei 95.000 Euro oder einen Einmalbonus als Brücke vorschlagen.",
-            "end_state": "Einigung nahe dem oberen Angebot mit möglichen Zusatzleistungen als Gesichtswahrendes Zugeständnis."
+            "approach": "Hold rate, add value",
+            "say_this": "I really appreciate that, and I want to make this work. My rate for this scope is $75 — what I can promise is [specific thing you bring that justifies the gap, e.g. fast turnaround, deep familiarity with this industry, no revision surprises]. Happy to talk through what that looks like for you.",
+            "use_this_if": "You have a concrete, honest reason your work costs more than the competing quote and you are willing to walk away if they cannot move.",
+            "gives_up": "Nothing on rate, but it invites them to weigh your value against the cheaper option openly."
           },
           {
-            "likelihood": "possible — Arbeitgeber matcht das höchste Angebot direkt, um den Kandidaten sofort zu sichern",
-            "they_say": "Wir wollen Sie nicht verlieren — wir gehen auf 100.000 Euro und hoffen, dass das Ihre Entscheidung klärt.",
-            "subtext": "Die Position ist schwer zu besetzen und der Verlust kostet sie mehr als die Gehaltserhöhung.",
-            "your_counter": "Das ist ein starkes Signal und zeigt mir, dass Sie wirklich investieren wollen — ich nehme mir 24 Stunden, um die Gesamtpakete abzuschließen zu vergleichen.",
-            "then_expect": "Sie werden zustimmen, eventuell aber um eine schnelle Entscheidung bitten oder leicht nervös reagieren.",
-            "end_state": "Bestes mögliches Ergebnis — volles Match mit der Option, noch Zusatzleistungen auszuhandeln."
+            "approach": "Explore scope flexibility",
+            "say_this": "I love the project and I want to find a way in. If $60 is the ceiling, could we look at adjusting the scope or deliverables so I can meet you there without shortchanging the work?",
+            "use_this_if": "You would genuinely prefer the work at $60 over not having it, and you think there is scope that could reasonably be trimmed.",
+            "gives_up": "Signals flexibility on rate, which weakens your $75 position if scope turns out not to be adjustable."
           },
           {
-            "likelihood": "unlikely_but_possible — Arbeitgeber lehnt jede weitere Diskussion ab und stellt ein Ultimatum",
-            "they_say": "Unser Angebot steht, wir sind nicht in der Position, Bieterkriege zu führen — nehmen Sie es oder lassen Sie es.",
-            "subtext": "Entweder ist das Budget wirklich fest oder sie testen, ob Sie blufffen, und wollen die Kontrolle zurückgewinnen.",
-            "your_counter": "Ich verstehe Ihre Position vollständig — darf ich fragen, ob es irgendeinen Bereich gibt, sei es Titel, Flexibilität oder Entwicklungsbudget, in dem noch Bewegung möglich wäre?",
-            "then_expect": "Entweder öffnen sie ein kleines Fenster für Nicht-Gehalts-Verbesserungen oder sie bestätigen das Ultimatum endgültig.",
-            "end_state": "Entscheidungspunkt — entweder akzeptieren mit optimierten Nebenleistungen oder das Gespräch elegant beenden und das andere Angebot annehmen."
+            "approach": "Ask one question",
+            "say_this": "That is helpful to know — can I ask what is driving the $60 figure? I want to understand whether there is any room before I respond properly.",
+            "use_this_if": "You are not yet sure whether you want to hold firm or negotiate, and you want more information before committing to a direction.",
+            "gives_up": "A little time and initiative, but gains information that could make every other response more effective."
           }
         ],
-        "wild_card": {
-          "scenario": "Arbeitgeber zweifelt offen an der Echtheit des zweiten Angebots und fordert einen Nachweis oder ein Schreiben.",
-          "how_to_handle": "Ruhig bleiben, kein Nachweis schulden — sagen: Ich verstehe den Zweifel, aber ich bin nicht verpflichtet, vertrauliche Dokumente zu teilen; mein Ziel ist eine Einigung hier, nicht ein Beweis."
-        },
-        "best_path": "Szenario 1 ansteuern und aktiv auf Nicht-Gehalts-Komponenten lenken, da dort mehr Flexibilität liegt und der Arbeitgeber gesichtswahrender zustimmen kann.",
-        "danger_path": "Szenario 3 vermeiden — Frühwarnsignal ist ein harter, kurzer Satz ohne Gegenfrage, da dann Konfrontation eskaliert und das Verhältnis beschädigt wird."
+        "do_not_say": "Asking who the other designer is or what they quoted — it reads as insecure and gives nothing useful back to you.",
+        "saying_nothing": "Waiting is only a real option if you have a natural pause in the conversation, such as email, where a few hours of silence reads as considered rather than evasive."
       }
     },
     {
-      "name": "draft-email-de-salary-followup",
+      "name": "prep-check-verdict-not-score",
+      "endpoint": "/api/leverage-logic/prep-check",
+      "input": {
+        "situation": "Asking for a raise after two years without one",
+        "whatYouKnow": "I have a written outside offer. My reviews are strong.",
+        "whatYouDontKnow": "Whether there is any budget left this cycle",
+        "negotiationType": "salary",
+        "userLanguage": "en"
+      },
+      "output": {
+        "verdict": "ready_enough",
+        "verdict_because": "A written outside offer is concrete, verifiable leverage, and strong reviews support the case on merit — the budget question affects timing and tactics but not whether to go in.",
+        "gaps": [
+          {
+            "gap": "Whether budget remains in the current cycle is unknown.",
+            "why_it_matters": "If the answer is no, the conversation shifts to a committed future date rather than an immediate increase.",
+            "how_to_find_out": "Ask your manager directly whether compensation adjustments are still being made this cycle before naming a number.",
+            "effort": "a few minutes"
+          },
+          {
+            "gap": "The expiration date or urgency of the outside offer is not established.",
+            "why_it_matters": "A deadline on the offer creates natural pressure; without one, the other side may feel no urgency to respond quickly.",
+            "how_to_find_out": "Check the offer letter or contact the outside employer to confirm how long it stands.",
+            "effort": "a few minutes"
+          }
+        ],
+        "already_solid": [
+          "Written outside offer — tangible, not implied; it establishes a market floor for your value.",
+          "Strong reviews over two years — documented performance makes the ask harder to deflect on merit grounds.",
+          "Two years without a raise — the gap itself is a reasonable anchor for why this conversation is overdue."
+        ],
+        "one_thing_first": "Go in now rather than waiting on the budget question, but open by asking whether adjustments are still possible this cycle — the answer shapes whether you push for immediate action or lock in a written commitment to a specific future date."
+      }
+    },
+    {
+      "name": "draft-email-three-versions",
       "endpoint": "/api/leverage-logic/draft-email",
       "input": {
-        "situation": "Gehaltsverhandlung per E-Mail nachfassen",
+        "situation": "Asking for a raise after two years without one. I have a written outside offer.",
+        "howToNegotiate": {
+          "approach": "Lead with the established facts",
+          "rests_on": "The written offer"
+        },
+        "whatToSay": [
+          {
+            "say_this": "I have an offer in hand and I would rather stay."
+          }
+        ],
         "negotiationType": "salary",
-        "recipientName": "Frau Müller",
-        "tone": "professionell aber warm",
-        "userLanguage": "de"
+        "recipientName": "Dana",
+        "tone": "professional",
+        "userLanguage": "en"
       },
       "output": {
         "drafts": [
           {
-            "version": "Professionell — sachlich und respektvoll",
-            "subject_line": "Nachfrage zu unserem Gespräch über meine Vergütung",
-            "body": "Sehr geehrte Frau Müller, ich möchte höflich an unser Gespräch vom [Datum] anknüpfen und nachfragen, ob es bereits eine Rückmeldung zu meinem Gehaltsvorschlag gibt. Ich bin weiterhin sehr motiviert, meine Aufgaben bei [Unternehmen] auszubauen, und freue mich auf Ihre Einschätzung. Über einen kurzen Austausch — gern auch telefonisch — würde ich mich sehr freuen.",
-            "tone_note": "Dieser Ton signalisiert Professionalität und Geduld, ohne Druck zu erzeugen — ideal für eine erste schriftliche Nachfrage."
+            "version": "Professional",
+            "subject_line": "Compensation Discussion — Two Years In",
+            "body": "Dana, I wanted to reach out directly because I value my role here and want to be straightforward with you. I have been with the company for two years without a compensation adjustment, and I have recently received a written outside offer. I would genuinely prefer to stay, and I am raising this now because I believe a conversation is the right first step. I would welcome time on your calendar to discuss this.",
+            "tone_note": "Stays factual and measured throughout, letting the offer carry its own weight without pressure language."
           },
           {
-            "version": "Direkt & Selbstbewusst — klar und ergebnisorientiert",
-            "subject_line": "Gehaltsverhandlung — meine Erwartungen und nächste Schritte",
-            "body": "Sehr geehrte Frau Müller, ich möchte die offene Frage zu meiner Vergütungsanpassung konkret voranbringen und bitte Sie um eine verbindliche Rückmeldung bis [Datum]. Meine bisherigen Leistungen — insbesondere [konkreter Beitrag] — unterstreichen meinen Anspruch auf eine Anpassung in Höhe von [Betrag/Prozent]. Ich stehe für ein kurzes Gespräch jederzeit gern zur Verfügung.",
-            "tone_note": "Dieser Ton eignet sich, wenn das Gespräch bereits länger offen ist und eine klare Zeitlinie gesetzt werden muss."
+            "version": "Direct",
+            "subject_line": "I Have an Outside Offer — I Want to Stay",
+            "body": "Dana, I will get straight to the point: I have a written offer from another employer, and I would rather stay here. Two years without a compensation adjustment is the context. I am not using this as a threat — I am bringing it to you first because this is where I want to be. Can we find time to talk this week?",
+            "tone_note": "Opens with the conclusion and moves quickly, which leaves less room for the email to be deflected."
           },
           {
-            "version": "Warm & Kooperativ — beziehungsorientiert und einladend",
-            "subject_line": "Kurze Nachfrage zu unserem gemeinsamen Gespräch",
-            "body": "Liebe Frau Müller, ich denke gern an unser Gespräch zurück und wollte einmal nachfragen, wie der aktuelle Stand bezüglich meiner Gehaltsentwicklung ist. Ich schätze unsere Zusammenarbeit sehr und möchte gemeinsam eine Lösung finden, die für beide Seiten passt. Haben Sie vielleicht in dieser oder nächster Woche kurz Zeit für ein Telefonat?",
-            "tone_note": "Dieser Ansatz stärkt die persönliche Beziehung zu Frau Müller und hält die Tür für ein offenes Gespräch weit auf."
+            "version": "Warm",
+            "subject_line": "Something I Want to Discuss With You",
+            "body": "Dana, I have been thinking about how to bring this up, and I decided straightforward is best. I have been here two years without a change in compensation, and I have recently received a written offer from another organization. I share this not to create pressure but because I genuinely want to stay and I think you should know where things stand. I would appreciate a chance to talk when you have availability.",
+            "tone_note": "Acknowledges the awkwardness of the conversation without apologizing for having it, which keeps the tone honest rather than deferential."
           }
         ],
-        "do_not_put_in_writing": [
-          "Ihre genaue Gehaltsvorstellung oder Untergrenze — schriftlich festgehaltene Zahlen schwächen Ihre Verhandlungsposition, da sie keinen Spielraum für Reaktion auf Gegenforderungen lassen.",
-          "Vergleiche mit Gehältern von Kollegen — das kann als respektlos wahrgenommen werden und rechtliche Konsequenzen für alle Beteiligten haben.",
-          "Drohungen oder Andeutungen eines Jobwechsels — solche Aussagen wirken per E-Mail ultimativ und destruktiv; mündlich können sie dosierter und kontextuierter eingesetzt werden.",
-          "Emotionale Begründungen wie Unzufriedenheit oder finanzielle Not — das verlagert die Verhandlung ins Persönliche und schwächt Ihr professionelles Auftreten.",
-          "Reaktionen auf ein konkretes Gegenangebot — Verhandlungsdynamik entsteht im Dialog, nicht im Schriftverkehr."
+        "keep_out_of_writing": [
+          "The specific number from the outside offer — in writing it becomes a floor and a negotiating anchor before any conversation has happened.",
+          "Any frustration about two years passing without a raise — said in person it reads as human, in writing it can read as complaint.",
+          "Your walkaway point or deadline — those are best communicated live, where tone and response are both visible."
         ],
-        "subject_line_tip": "Die Betreffzeile entscheidet, ob die E-Mail sofort oder erst Tage später geöffnet wird — sie sollte konkret und nicht bedrohlich klingen, damit Frau Müller positiv gestimmt in die E-Mail geht.",
-        "timing_tip": "Dienstag oder Mittwoch zwischen 9 und 11 Uhr versenden — Montags herrscht oft Meetingstress, freitags sinkt die Bereitschaft für wichtige Entscheidungen.",
-        "follow_up_plan": "Falls nach 5 Werktagen keine Antwort erfolgt, kurz und freundlich per Telefon oder persönlich nachfragen — mündlich lässt sich Dringlichkeit besser vermitteln ohne schriftlich Druck aufzubauen."
+        "before_you_send": "Re-read the email as Dana and ask whether anything in it could be forwarded upward or to HR in a way that would hurt your position."
       }
     }
   ]
