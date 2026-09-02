@@ -746,11 +746,17 @@ const LazyWorkoutAdapter = ({ tool }) => {
 
   // Reset button visibility — show when there's a result OR when the user has
   // entered something on the active mode's form.
-  const hasInput = (mode === 'right-now' && (bodyAreas.length || contexts.length || energy !== 5))
-                || (mode === 'body' && bodyTarget)
-                || (mode === 'stack' && stackActivity.trim())
-                || (mode === 'recovery' && recoveryEvent.trim())
-                || (mode === 'micro' && bodyAreas.length);
+  // Boolean(), not the raw expression: in 2 Min mode with nothing selected this
+  // lands on `bodyAreas.length` — the number 0, which React renders as a literal
+  // "0" next to the tagline instead of hiding the button. Same trap waiting in
+  // the modes whose clause ends on an empty string.
+  const hasInput = Boolean(
+    (mode === 'right-now' && (bodyAreas.length || contexts.length || energy !== 5))
+    || (mode === 'body' && bodyTarget)
+    || (mode === 'stack' && stackActivity.trim())
+    || (mode === 'recovery' && recoveryEvent.trim())
+    || (mode === 'micro' && bodyAreas.length)
+  );
   const showReset = !!results || hasInput;
 
   // ═══════════════════════════════════════════════════════════════════════
