@@ -6,30 +6,38 @@ const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
 const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases or cues plainly or with single quotes, or it breaks the JSON.';
 
+// Same rule as CONTEXTS: the area they picked, not a cause we made up for it.
+// "Tight hips" no longer arrives "from sitting", tension is no longer "and
+// stress", and sore wrists are no longer attributed to typing.
 const BODY_AREAS = {
-  'stiff-neck': 'Stiff/tight neck and shoulders',
+  'stiff-neck': 'Stiff or tight neck and shoulders',
   'sore-back': 'Sore or tight lower back',
-  'tight-hips': 'Tight hips and hip flexors from sitting',
-  'restless-legs': 'Restless or heavy legs',
-  'general-tension': 'General body tension and stress',
-  'just-blah': 'No specific complaints, just low energy',
-  'wrists-hands': 'Sore wrists/hands (typing, phone use)',
-  'stiff-all-over': 'Stiff everywhere — haven\'t moved in a while'
+  'tight-hips': 'Tight hips',
+  'restless-legs': 'Restless legs',
+  'general-tension': 'General body tension',
+  'just-blah': 'No specific area, just low energy',
+  'wrists-hands': 'Sore wrists or hands',
+  'stiff-all-over': 'Stiff all over'
 };
 
+// What the visitor actually selected, in words no stronger than the chip they
+// tapped. These strings go straight into the prompt, so anything added here is
+// something the model will faithfully repeat back as though the visitor had said
+// it. "Emotional day" used to arrive as "Emotionally draining day (stress,
+// anxiety, sadness, overwhelm)" — four feelings nobody reported.
 const CONTEXTS = {
-  'long-meeting': 'Just finished a long meeting/class (1+ hours sitting, mentally drained)',
-  'bad-sleep': 'Slept badly (under 5 hours, restless, woke up multiple times)',
-  'screen-marathon': 'Been staring at screens for hours (eyes tired, neck stiff, brain foggy)',
-  'emotional-day': 'Emotionally draining day (stress, anxiety, sadness, overwhelm)',
-  'ate-too-much': 'Ate too much / food coma (bloated, sluggish, regretful)',
-  'hungover': 'Hungover or recovering from a rough night',
-  'travel-day': 'Travel day (been in a car/plane/train, cramped, dehydrated)',
-  'period-cramps': 'Period cramps or menstrual discomfort',
-  'just-woke-up': 'Just woke up (groggy, stiff, need to ease in)',
-  'been-standing': 'Been on feet all day (sore feet, tired legs, lower back)',
-  'pre-event-nerves': 'Anxious about something coming up (interview, date, presentation)',
-  'post-argument': 'After a difficult conversation or conflict (tense, activated, unsettled)'
+  'long-meeting': 'Just finished a long meeting or class',
+  'bad-sleep': 'Says they slept badly',
+  'screen-marathon': 'Has been looking at screens for hours',
+  'emotional-day': 'Describes today as an emotional day',
+  'ate-too-much': 'Says they ate too much',
+  'hungover': 'Hungover',
+  'travel-day': 'Has been travelling today (car, plane or train)',
+  'period-cramps': 'Period cramps',
+  'just-woke-up': 'Just woke up',
+  'been-standing': 'Has been on their feet all day',
+  'pre-event-nerves': 'Nervous about something coming up',
+  'post-argument': 'After a difficult conversation or conflict'
 };
 
 // ═══════════════════════════════════════════════════
@@ -248,6 +256,21 @@ Prefer:
 
 Not:
 "This tells your nervous system that the hard part is over."
+
+DO NOT INVENT EMOTIONAL INTENSITY
+
+Preserve the user's description of their day without amplifying it.
+
+If the user selected "Emotional day," do not rewrite that as:
+"emotionally draining"
+"overwhelming"
+"rough"
+"heavy"
+
+unless the user supplied those descriptions.
+
+Use the supplied wording:
+"You mentioned an emotional day..."
 
 DO NOT TURN CONTEXT INTO CAUSATION
 
