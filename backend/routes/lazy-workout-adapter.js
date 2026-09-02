@@ -55,7 +55,7 @@ const CONTEXTS = {
 //
 // English only, deliberately: this is a backstop, not the fix. The fix is that
 // no schema field asks for an effect any more, which holds in all 13 languages.
-const CLINICAL_OUTCOME = /\b(?:relieves?|releases?|reduces?|eases?|calms?|resets?|boosts?|restores?|flushes?|undoes|fixes)\b[^.]{0,60}\b(?:pain|tension|stress|anxiety|circulation|nervous system|posture|energy|stiffness|soreness|cortisol)\b|\b(?:will|helps?) (?:relieve|release|reduce|calm|improve|increase|fix|undo)\b/i;
+const CLINICAL_OUTCOME = /\b(?:relieves?|releases?|reduces?|eases?|calms?|resets?|boosts?|restores?|flushes?|undoes|fixes|treats?|activates?|corrects?|improves?)\b[^.]{0,60}\b(?:pain|tension|stress|anxiety|circulation|nervous system|posture|energy|stiffness|soreness|cortisol|tightness|aches?|knots?|cramps?|mobility|flexibility|range of motion)\b|\b(?:will|helps?) (?:relieve|release|reduce|calm|improve|increase|fix|undo)\b/i;
 const FOLK_OUTCOME = new RegExp([
   // "gets the blood moving", "blood flow"
   /\bgets? (?:the |your )?blood (?:moving|flowing|pumping)\b/,
@@ -63,7 +63,7 @@ const FOLK_OUTCOME = new RegExp([
   // Third-person claims about what a movement does to a body part. The -s is
   // required and load-bearing: "opens up the shoulders" is a claim about the
   // exercise, "open your chest" is a positioning cue we want to keep.
-  /\b(?:opens|loosens|unlocks|lengthens|decompresses|unwinds|melts|wakes)\s+(?:up\s+|out\s+)?(?:the|your)\s+(?:(?:front|back|sides?|top|base)\s+of\s+(?:the|your)\s+)?(?:shoulders?|hips?|chest|back|spine|neck|legs?|body|joints?|muscles?)\b/,
+  /\b(?:opens|loosens|unlocks|lengthens|decompresses|unwinds|melts|wakes|activates|engages)\s+(?:up\s+|out\s+)?(?:the|your)\s+(?:(?:front|back|sides?|top|base)\s+of\s+(?:the|your)\s+)?(?:[a-z]+\s+)?(?:shoulders?|hips?|chest|back|spine|neck|legs?|body|joints?|muscles?|core|glutes|abs|hamstrings)\b/,
   // Claims about what it spares you
   /\bwithout\s+(?:putting|placing|adding)?\s*(?:any\s+)?(?:strain|stress|pressure|load|impact)\s+on\b/,
   /\b(?:easy|gentle|kind)\s+on\s+(?:the|your)\s+(?:joints?|back|knees?|spine)\b/,
@@ -74,7 +74,37 @@ const FOLK_OUTCOME = new RegExp([
   /\bcombats?\b/,
   /\b(?:undoe?s?|undoing|counters?|countering)\s+(?:all\s+)?(?:the\s+)?(?:sitting|desk|hunching|slouching)\b/,
 ].map(r => r.source).join('|'), 'i');
-const PROMISED_OUTCOME = { test: (v) => CLINICAL_OUTCOME.test(v) || FOLK_OUTCOME.test(v) };
+// Absolutes about effort. Low energy means less demand, not that an active
+// movement costs nothing — and "zero effort required" on a movement the visitor
+// then has to perform reads as the tool not having listened.
+const ABSOLUTE_EFFORT = new RegExp([
+  /\bzero\s+(?:real\s+)?(?:effort|work|exertion)\b/,
+  /\b(?:no|without\s+any)\s+(?:real|actual|muscular|physical)?\s*(?:effort|exertion|work)(?:\s+(?:required|needed|involved|at all))?/,
+  /\b(?:almost|practically|virtually|basically)\s+no\s+(?:real\s+|muscular\s+|physical\s+)?(?:effort|exertion|work)\b/,
+  /\beffortless(?:ly)?\b/,
+  /\brequires?\s+(?:almost\s+)?nothing\b/,
+].map(r => r.source).join('|'), 'i');
+
+// Context turned into causation. The visitor said they had a long screen day;
+// that is not a licence to explain what screen days do to shoulders in general.
+const CAUSAL_GENERALIZATION = new RegExp([
+  /\btends?\s+to\b/,
+  /\busually\s+(?:gets?|get|becomes?|ends?\s+up|stays?|sits?|holds?)\b/,
+  /\boften\s+(?:gets?|get|becomes?|ends?\s+up|stays?)\b/,
+  /\b(?:most|many)\s+people\b/,
+  /\bwe\s+(?:all\s+)?(?:tend|hold|carry|store)\b/,
+].map(r => r.source).join('|'), 'i');
+
+const OUTPUT_RULES = [
+  ['promised an effect', CLINICAL_OUTCOME],
+  ['promised an effect in plainer words', FOLK_OUTCOME],
+  ['claimed the movement costs nothing', ABSOLUTE_EFFORT],
+  ['generalised about bodies instead of using their inputs', CAUSAL_GENERALIZATION],
+];
+const PROMISED_OUTCOME = {
+  test: (v) => OUTPUT_RULES.some(([, re]) => re.test(v)),
+  rule: (v) => (OUTPUT_RULES.find(([, re]) => re.test(v)) || [''])[0],
+};
 
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
@@ -84,10 +114,10 @@ function validateResult(data) {
     for (const [k, v] of Object.entries(node)) {
       if (typeof v === 'string' && PROMISED_OUTCOME.test(v)) {
         if (v.length <= 160 && (v.match(/[.!?]/g) || []).length <= 1) {
-          console.log(`[lazy-workout-adapter] ${k} blanked — promised an effect: ${v.slice(0, 70)}`);
+          console.log(`[lazy-workout-adapter] ${k} blanked — ${PROMISED_OUTCOME.rule(v)}: ${v.slice(0, 70)}`);
           node[k] = '';
         } else {
-          console.log(`[lazy-workout-adapter] ${k} promises an effect (left intact, too long to cut safely): ${v.slice(0, 70)}`);
+          console.log(`[lazy-workout-adapter] ${k} ${PROMISED_OUTCOME.rule(v)} (left intact, too long to cut safely): ${v.slice(0, 70)}`);
         }
       } else if (v && typeof v === 'object') walk(v);
     }
@@ -218,6 +248,50 @@ Prefer:
 
 Not:
 "This tells your nervous system that the hard part is over."
+
+DO NOT TURN CONTEXT INTO CAUSATION
+
+Explain why a movement fits using the user's stated constraints, not an
+invented physical consequence of their day.
+
+Prefer:
+"You mentioned a stiff neck, so this keeps the movement small and gentle."
+
+Not:
+"Shoulders tend to get held still during long screen sessions."
+
+DO NOT EQUATE LOW ENERGY WITH ZERO PHYSICAL EFFORT
+
+Low energy should reduce demand, transitions, complexity, and intensity.
+Do not describe active movements as requiring "zero effort," "no real
+effort," or similar absolutes.
+
+Prefer:
+"keeps the effort low"
+"requires little setup"
+"keeps you on the floor"
+
+Not:
+"zero effort required"
+"without any real effort"
+
+EXPLAIN THE FIT, NOT THE BENEFIT
+
+The green line under each movement should answer:
+"Why did this movement make sense for the inputs I gave you?"
+
+It should NOT make a therapeutic claim or manufacture physiology.
+
+Ground it in:
+- energy/capacity;
+- available time;
+- location;
+- stated body area;
+- practical constraints;
+- simplicity or position.
+
+Do not claim the movement treats, relieves, fixes, releases, restores,
+opens, activates, improves, or corrects the reported issue.
 
 SAFETY
 
