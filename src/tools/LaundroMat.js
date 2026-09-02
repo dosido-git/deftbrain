@@ -1210,6 +1210,12 @@ const LaundroMat = ({ tool }) => {
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               disabled:opacity-40 ${(!loadDesc.trim() && !labelImage) ? c.btnIdle : c.btnPrimary}`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me_next')}</>}
+            {!loading && (loadDesc.trim() || labelImage) && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1387,11 +1393,17 @@ const LaundroMat = ({ tool }) => {
             <input ref={stainPhotoRef} type="file" accept="image/*" onChange={handleStainPhoto} className="hidden" />
           </div>
 
-          <button onClick={getStainHelp}
+          <button onClick={getStainHelp} title={t('cmd_enter')}
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
-            className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
+            className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
             {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help_next')}</>}
+            {!loading && (stainType || stainCustom.trim() || stainImage) && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
           </button>
         </div>
 
@@ -1506,9 +1518,15 @@ const LaundroMat = ({ tool }) => {
               </div>
             </div>
 
-            <button onClick={getRescueHelp} disabled={!canRescue || loading}
-              className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
+            <button onClick={getRescueHelp} disabled={!canRescue || loading} title={t('cmd_enter')}
+              className={`relative w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
               {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_rescue_assessing')}</> : <><span>🚑</span> {t('lmt_rescue_can_i_fix')}</>}
+            {!loading && canRescue && (
+              <kbd aria-hidden="true"
+                className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
+                ⌘↵
+              </kbd>
+            )}
             </button>
           </>
         ) : (
