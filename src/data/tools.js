@@ -902,41 +902,45 @@ export const tools = [
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Good things keep happening to other people.",
-    give: "Where you go, who you know, what you make publicly, and the kind of luck you want.",
-    get: "Five specific moves — low effort, high potential upside — sized to your actual life.",
-    edge: "Treats luck as exposure you can engineer rather than something you wait for.",
+    when: "When useful things keep happening to other people and you want more chances at them.",
+    give: "Where your life puts you in contact with new people or ideas, and what you would like more chances to encounter.",
+    get: "A plain read of how new people and ideas currently reach you, what narrows that, what already works, and three to five practical ways to widen it.",
+    edge: "It works only from what you supplied — no luck score, no percentage, and no claim about what any move will produce.",
   },
-  seoDescription: "Calculate your luck surface area and get 5 specific, low-effort moves to expand it — broadcast a signal, enter new rooms, attract opportunity. Free, no signup.",
-  seoTitle: "Luck Surface Area Calculator & Booster",
+  seoDescription: "Find practical ways to create more chances for useful things to happen. Describe where your life already puts you in contact with new people and ideas, and get concrete moves to widen it — no luck score, no predictions.",
+  seoTitle: "Luck Surface: Create More Chances for Useful Things to Happen",
   title: "Luck Surface",
-  tagline: "Calculate your luck surface area. Expand it with five specific moves.",
-  tags: ['networking', 'opportunity', 'career', 'luck', 'serendipity', 'visibility', 'connections', 'social', 'growth', 'get noticed', 'community'],
+  tagline: "Create more chances for useful things to happen",
+  tags: ['luck', 'serendipity', 'opportunity', 'networking', 'connections', 'visibility', 'career'],
   icon: "🧲",
-  categories: ['Humans', 'Pursuits', 'Me'],
-  headerColor: "#ccdfc4",
-  description: "Calculates your luck surface area — the percentage of available serendipity you're actually exposed to — and designs five specific asymmetric moves to expand it. Each move is a different mechanism: broadcast a signal, infiltrate a new room, create a serendipity artifact, curate a connection, or compound an existing asset.",
+  categories: ['Pursuits'],
+  headerColor: "#e8d5b7",
+  description: "Want more opportunities to find you? Describe where your work, interests, and relationships currently put you in contact with new people and ideas. Luck Surface finds practical ways to increase the number of useful collisions you make possible.",
   guide: {
-      overview: "Luck surface area is the aggregate exposure to serendipitous collisions with opportunities, people, and ideas. It's not random — it's engineered. LuckSurface audits your current patterns and designs five asymmetric moves: low effort, high serendipity potential.",
+      overview: "Luck Surface helps you create more opportunities for useful, unexpected connections and discoveries. Describe where your life currently puts you in contact with new people or ideas — work, hobbies, communities, places you spend time, things you make or share — and it describes how new people and opportunities reach you today, what narrows that, what is already working, and three to five practical ways to widen it. It does not calculate a luck percentage, because there is no defensible denominator for available serendipity, and it does not claim any move will produce a particular result. It explains the mechanism instead: what a change makes possible, not what it will deliver.",
+
       howToUse: [
-        "Describe your life in detail — where you go, who you know, what you make or share publicly",
-        "Add what kind of luck you want more of — opportunities, collaborators, clients, mentors",
-        "Optionally note what you already do to put yourself out there",
-        "Review each of the five moves and expand the ones that resonate",
-        "Start with the 'Start Here' move at the bottom — it's the highest-leverage first step"
+        "Describe where your life already puts you in contact with new people or ideas",
+        "Optionally say what you would like more chances to encounter, and what you already do",
+        "Read your current opportunity surface — narrow, mixed, or broad — and what narrows it",
+        "Work through the moves; each names the exposure it creates, not a result it promises",
+        "Start with the one move marked Start here"
       ],
+
       example: {
-        scenario: "Remote software engineer, feeling professionally invisible",
-        action: "Describe the routine, the small friend group, the absence of industry events",
-        result: "Current surface: 14%. Invisible wall: professional identity outsourced entirely to employer — no external signal of what you know or care about. Five moves: (1) One technical post per month about something you had to figure out; (2) Next local tech meetup, introduce yourself to one person; (3) Open-source one internal tool with a thoughtful README; (4) One coffee with a former colleague per quarter; (5) Add one line to LinkedIn about what you're interested in next."
+        scenario: "You work from home on the same team you have been on for three years, see a small group of friends, and share nothing publicly about what you do.",
+        action: "Describe the work, the friend group, and the fact that you do not post about your work; say you would like more chances at interesting collaborators.",
+        result: "A narrow reading with the reasons named concretely — most contact runs through one team and one friend group — what already works, and three to five moves that each open a different route, with the smallest first step for each."
       },
+
       tips: [
-        "The mechanism labels explain why each move works — not just what to do",
-        "The 'time to first result' estimate helps calibrate expectations per move",
-        "Choose the lowest-friction move first — momentum matters more than perfection",
-        "Re-run every 6 months — the bottleneck shifts as your surface grows"
+        "Say what you actually do, not what you think sounds impressive — every move has to connect to something you supplied",
+        "Leaving a field blank is fine; it will say so rather than invent an answer",
+        "Nothing here predicts a result. A move is worth doing if it would still be worth doing when nobody unexpected replies",
+        "If a suggestion names a specific event or venue you never mentioned, that is a bug — tell us"
       ]
     }
+
 },
 
 {

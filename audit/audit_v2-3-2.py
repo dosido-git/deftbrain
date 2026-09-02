@@ -862,6 +862,11 @@ for name, fpath in tools:
     # which is a thing to be shown as little as possible.
     _NO_HISTORY_TOOLS = {'RentersDepositSaver', 'RoastMe', 'ConflictCoach', 'FocusPocus', 'FocusSoundArchitect',
                          'FriendshipFadeAlerter',
+                         # LuckSurface joined on 2026-09-02. The Recent block
+                         # came off the input screen in the rewrite, and a store
+                         # nothing renders is exactly what this rule is for, so
+                         # the recording went with the display.
+                         'LuckSurface',
                          # GratitudeDebtClearer joined on 2026-08-28. The rewrite
                          # keeps the last result and nothing else, deliberately:
                          # a stored list of who you have thanked, and what you

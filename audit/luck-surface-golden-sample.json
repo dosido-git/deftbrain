@@ -4,76 +4,130 @@
     "generated": "2026-07-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
     "baseline_commit": "lucksurface-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden luck-surface) and diff for QUALITY not exact match: HTTP 200, audit + the_five_moves (5) + the_target present, no truncation. The de-css-width-and-truncation-guard case GUARDS: audit.current_surface_area AND the_target.new_surface_area must be BARE percentage strings (/^\\d{1,3}%$/) — the frontend renders them BOTH as a displayed number AND as raw style={{width: value}} progress bars, so prose breaks the bar (GravityWell class). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) current/new_surface_area are BARE percentages (schema example '14%'/'43%' + explicit rule); (3) EXACTLY 5 moves + max_tokens 3000; (4) no annotation suffixes. Guard keys on audit (top-level)."
+    "how_to_regression_diff": "Re-run (npm run check:golden luck-surface) and diff for QUALITY not exact match: HTTP 200, audit + the_five_moves (5) + the_target present, no truncation. The de-css-width-and-truncation-guard case GUARDS: audit.current_surface_area AND the_target.new_surface_area must be BARE percentage strings (/^\\d{1,3}%$/) — the frontend renders them BOTH as a displayed number AND as raw style={{width: value}} progress bars, so prose breaks the bar (GravityWell class). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) current/new_surface_area are BARE percentages (schema example '14%'/'43%' + explicit rule); (3) EXACTLY 5 moves + max_tokens 3000; (4) no annotation suffixes. Guard keys on audit (top-level).",
+    "captured": "2026-09-02",
+    "baseline": "lucksurface-v2",
+    "note": "Re-recorded 2026-09-02 for the contract rewrite. The old case guarded current_surface_area and new_surface_area, which were percentage strings rendered directly as CSS progress-bar widths — both are gone, along with the premise that serendipity has a denominator. What replaces it is the same class of risk in the new shape: breadth (narrow|mixed|broad) and mechanism (signal|enter|create|connect|compound) are switched on by the frontend, so withLanguage translating either would render a blank label in twelve languages. The German case exists to catch exactly that, and validateResult pins both in code as well."
   },
   "cases": [
     {
-      "name": "de-css-width-and-truncation-guard",
+      "name": "de-enum-stays-english",
       "endpoint": "/api/luck-surface",
       "input": {
-        "description": "Ich bin freiberuflicher UX-Designer in Berlin, arbeite viel allein von zu Hause und mein Netzwerk ist über die Jahre eingeschlafen.",
-        "goals": "Mehr spannende Projekte und Kooperationen, vielleicht ein Sprecher-Auftritt auf einer Konferenz",
-        "currentExposures": "LinkedIn (selten aktiv), ein alter Blog",
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "DE"
+        "description": "Freiberufliche Illustratorin, arbeite von zu Hause. Fast alle Aufträge kommen über zwei Stammkunden, die mich weiterempfehlen. Ich poste fertige Arbeiten auf Instagram, spreche aber nie über die Arbeit selbst. Einmal pro Woche gehe ich zum Aktzeichnen.",
+        "goals": "Mehr Kundschaft und andere Illustratorinnen zum Austausch",
+        "currentExposures": "Instagram, die Zeichengruppe",
+        "userLanguage": "de"
       },
       "output": {
-        "audit": {
-          "current_surface_area": "11%",
-          "the_diagnosis": "Der Arbeitsalltag ist vollständig nach innen gerichtet: keine regelmäßigen Berührungspunkte mit neuen Menschen, keine sichtbare Expertise im Netz, kein Signal an die Außenwelt, dass dieser Designer existiert und hochwertige Arbeit liefert. Passive Präsenz (LinkedIn, schlafender Blog) ohne aktive Aussendung von Signalen ist strukturell unsichtbar — Algorithmen und Menschen ignorieren Konten, die schweigen.",
-          "the_invisible_wall": "Null Ausgangs-Signale: niemand kann jemanden empfehlen oder beauftragen, den er nicht wahrnimmt — das Netzwerk ist nicht eingeschlafen, es hat schlicht keine Antenne mehr, die sendet.",
-          "what_theyre_good_at": "Das Fundament steht bereits — LinkedIn-Profil und Blog existieren als schlafende Plattformen, die sofort reaktiviert werden können, ohne von null zu starten."
+        "current_surface": {
+          "breadth": "narrow",
+          "summary": "Fast alle Aufträge laufen über zwei Empfehlungsquellen, und deine öffentliche Präsenz auf Instagram zeigt Ergebnisse, aber keine Einblicke in den Entstehungsprozess. Die Zeichengruppe ist der einzige regelmäßige Kontakt zu anderen Kreativen.",
+          "limits": [
+            "Aufträge hängen an zwei Kunden — fällt einer weg, fehlt eine ganze Säule",
+            "Instagram-Posts ohne Prozesseinblick oder Kontext geben Außenstehenden wenig Anlass, dich als Illustratorin wahrzunehmen oder anzusprechen",
+            "Die Zeichengruppe ist bisher der einzige Ort, an dem du andere Kreative triffst"
+          ],
+          "already_working": [
+            "Weiterempfehlungen durch Stammkunden schaffen einen funktionierenden Weg zu neuen Aufträgen",
+            "Die Zeichengruppe ermöglicht regelmäßigen Kontakt zu anderen zeichnenden Menschen"
+          ]
         },
-        "the_five_moves": [
+        "moves": [
           {
-            "title": "Der 10-Minuten-LinkedIn-Blitz",
-            "mechanism": "broadcast",
-            "the_move": "Jeden Dienstag und Donnerstag um 08:30 Uhr einen einzigen LinkedIn-Post veröffentlichen: ein konkreter UX-Fehler aus einem echten Projekt (anonymisiert), mit Vorher/Nachher-Screenshot und drei Sätzen Erklärung — kein Rat, nur ein Fall.",
-            "why_asymmetric": "Fallstudien mit visuellem Vorher/Nachher performen auf LinkedIn 4–6× besser als Text-Posts und signalisieren gleichzeitig Kompetenz an potenzielle Auftraggeber, die aktiv suchen.",
-            "luck_multiplier": "Inbound-Projektanfragen und erste Konferenz-Einladungen durch Sichtbarkeit bei Veranstaltern",
-            "time_to_first_result": "3–5 Wochen bis erste Direktnachricht von einem Interessenten oder Veranstalter"
+            "title": "Prozess sichtbar machen",
+            "mechanism": "signal",
+            "action": "Zeige auf Instagram gelegentlich, wie eine Illustration entsteht — eine Skizze, eine Zwischenstufe oder eine kurze Erklärung deiner Entscheidungen. Das muss kein aufwendiges Format sein.",
+            "why_it_expands_opportunity": "Menschen, die Illustrationen beauftragen wollen oder selbst illustrieren, haben so einen konkreten Anknüpfungspunkt — sie sehen nicht nur ein Ergebnis, sondern wie du arbeitest und denkst.",
+            "first_step": "Fotografiere beim nächsten Auftrag eine frühe Skizze und schreibe zwei Sätze dazu, was du dir dabei überlegt hast."
           },
           {
-            "title": "Der Konferenz-Rückkanal",
-            "mechanism": "infiltrate",
-            "the_move": "Sofort drei Berliner UX/Design-Konferenzen (z. B. UX Camp Berlin, Beyond Tellerrand, Push Conference) identifizieren und dem jeweiligen Programmverantwortlichen eine 3-Sätze-E-Mail schicken: konkreter Talk-Titel, ein Satz Nutzen für das Publikum, Link zu einem einzigen Fallbeispiel — kein Lebenslauf.",
-            "why_asymmetric": "Konferenz-Slots werden 80 % durch direkte Kontaktaufnahme vergeben, nicht durch Call-for-Papers — der Kanal ist strukturell untergenutzt und der Wettbewerb dort minimal.",
-            "luck_multiplier": "Sprecherauftritt + Netzwerk-Expansion in einer einzigen Aktion",
-            "time_to_first_result": "6–10 Wochen bis zur ersten positiven Rückmeldung oder konkretem Folgegespräch"
+            "title": "Zeichengruppe als Austauschort nutzen",
+            "mechanism": "connect",
+            "action": "Sprich in der Gruppe offen darüber, dass du freiberuflich illustrierst und gern mehr Kolleginnen kennenlernen möchtest. Frage, ob andere ähnliche Erfahrungen machen oder Gleichgesinnte kennen.",
+            "why_it_expands_opportunity": "Die Gruppe ist bereits ein regelmäßiger Kontaktpunkt — das Gespräch über deine Arbeit kann Verbindungen sichtbar machen, die bisher nicht entstanden sind.",
+            "first_step": "Erwähne beim nächsten Treffen konkret, an welchen Projekten du gerade arbeitest und wonach du suchst."
           },
           {
-            "title": "Der Zombie-Blog als Recruiting-Tool",
-            "mechanism": "create",
-            "the_move": "Den alten Blog einmalig mit einem einzigen, langen Artikel reaktivieren: 'Die 5 teuersten UX-Fehler, die ich in Berliner Startups gesehen habe' — SEO-optimiert auf Keywords wie 'UX Freelancer Berlin' und direkt auf LinkedIn und in drei relevanten Slack-Gruppen geteilt.",
-            "why_asymmetric": "Ein einziger hochwertiger Artikel mit lokalem SEO-Bezug rankt dauerhaft und arbeitet passiv, während ein LinkedIn-Post nach 48 Stunden tot ist — einmalige Arbeit, jahrelange Sichtbarkeit.",
-            "luck_multiplier": "Organische Inbound-Leads von Unternehmen, die aktiv einen Berliner UX-Freelancer suchen",
-            "time_to_first_result": "8–14 Wochen bis erste organische Google-Anfragen, sofort Reaktionen über Social-Teilen"
-          },
-          {
-            "title": "Das 15-Minuten-Kaffee-Protokoll",
+            "title": "Bestehende Kunden gezielt ansprechen",
             "mechanism": "compound",
-            "the_move": "Jeden Montag eine Person aus dem eingeschlafenen Netzwerk per LinkedIn oder Telefon kontaktieren mit einer einzigen Frage: 'Ich baue mein Netzwerk gerade neu auf — wen sollte ich unbedingt kennenlernen?' — kein Pitch, keine Bitte um Arbeit.",
-            "why_asymmetric": "Eine Frage nach einer Empfehlung erzeugt Netzwerk-Wachstum exponentiell, weil jede Person im Schnitt 3–5 Weiterleitungen auslöst — bei 52 Kontakten pro Jahr entsteht ein neues Netzwerk aus dem alten.",
-            "luck_multiplier": "Warme Einführungen zu potenziellen Kooperationspartnern und Auftraggebern",
-            "time_to_first_result": "2–4 Wochen bis zur ersten Warm-Intro, die eine neue Tür öffnet"
+            "action": "Bitte deine zwei Stammkunden aktiv darum, dich weiterzuempfehlen — und mach ihnen dabei leicht, es zu tun, zum Beispiel indem du kurz beschreibst, für welche Arten von Projekten du noch Kapazität hast.",
+            "why_it_expands_opportunity": "Empfehlungen kommen bereits über diesen Weg — eine direkte Bitte mit konkretem Kontext gibt den Kunden eine klare Grundlage, um dich bei passenden Kontakten ins Gespräch zu bringen.",
+            "first_step": "Schreibe einem der beiden Kunden eine kurze Nachricht, in der du erwähnst, dass du freie Kapazitäten hast und dich über eine Weiterempfehlung freuen würdest."
           },
           {
-            "title": "Der Kooperations-Köder",
-            "mechanism": "curate",
-            "the_move": "Eine kostenlose, einstündige 'UX-Audit-Session' für Berliner Startups anbieten — öffentlich auf LinkedIn ankündigen, auf 3 Plätze pro Monat begrenzen und explizit sagen, dass keine Verkaufsabsicht besteht, sondern Netzwerkaufbau.",
-            "why_asymmetric": "Knappheit (3 Plätze) und Reziprozität (kostenloser Wert) erzeugen gleichzeitig Nachfrage, Referenzen und direkte Einblicke in aktuelle Startup-Probleme — aus jedem Audit entsteht im Schnitt eine Weiterempfehlung.",
-            "luck_multiplier": "Direkte Projektkonversionen, Co-Founder-Kontakte und Speaker-Reputation durch Social Proof",
-            "time_to_first_result": "1–2 Wochen bis zur Buchung der ersten Session nach der Ankündigung"
+            "title": "Anderen Illustratorinnen online begegnen",
+            "mechanism": "enter",
+            "action": "Suche auf Instagram oder in anderen Plattformen nach Illustratorinnen, deren Arbeit dich interessiert, und nimm aktiv an deren Kommentarbereichen teil — mit inhaltlichen Reaktionen, nicht nur mit Likes.",
+            "why_it_expands_opportunity": "So gelangst du in den Sichtbereich von Menschen, mit denen du fachlich etwas gemeinsam hast, ohne dass dafür eine Veranstaltung oder ein Netzwerkanlass nötig ist.",
+            "first_step": "Folge heute drei Illustratorinnen, deren Arbeit dich anspricht, und hinterlasse bei einem Post einen kurzen, echten Kommentar zur Arbeit selbst."
           }
         ],
-        "the_target": {
-          "new_surface_area": "43%",
-          "what_becomes_possible": "Eingehende Projektanfragen ohne aktive Akquise, ein erster bezahlter oder bestätigter Konferenz-Slot, und ein aktives Netzwerk aus 20–30 neuen, relevanten Kontakten innerhalb von 6 Monaten.",
-          "the_compound_effect": "LinkedIn-Posts treiben Traffic auf den Blog und liefern Material für den Talk-Pitch; der Talk-Pitch öffnet Türen für Warm-Intros; die Audit-Sessions produzieren Fallstudien für neue Posts — alle fünf Moves speisen sich gegenseitig."
+        "start_here": {
+          "move_title": "Prozess sichtbar machen",
+          "why_this_one": "Du postest bereits auf Instagram — das ist die Basis, und eine kleine Erweiterung dessen, was du zeigst, braucht kein neues Verhalten, nur eine andere Perspektive auf das, was du ohnehin tust.",
+          "first_step": "Fotografiere beim nächsten Auftrag eine frühe Skizze und schreibe zwei Sätze dazu, was du dir dabei überlegt hast."
+        }
+      }
+    },
+    {
+      "name": "en-no-goal-supplied",
+      "endpoint": "/api/luck-surface",
+      "input": {
+        "description": "Software engineer, work from home, same team three years. Live in Denver, go to the gym, cook, watch TV. Small tight friend group.",
+        "goals": "",
+        "currentExposures": "",
+        "userLanguage": "en"
+      },
+      "output": {
+        "current_surface": {
+          "breadth": "narrow",
+          "summary": "Most of your contact with new people and ideas currently flows through a single stable team you have worked with for three years, plus a small fixed friend group. The gym is a recurring physical environment, but you did not describe it as a place where you exchange ideas or make new connections.",
+          "limits": [
+            "Working from home removes the ambient exposure to colleagues, visitors, and cross-team conversations that an office environment produces.",
+            "Three years on the same team means most professional input comes from a recurring, familiar set of people.",
+            "Cooking and watching TV are private activities that do not expose you to new people or perspectives."
+          ],
+          "already_working": [
+            "The gym puts you in a recurring shared environment with people outside your professional circle.",
+            "A stable friend group is a potential relay for introductions, even if that function is not currently active."
+          ]
         },
-        "the_one_to_start": "Move 4 (Das 15-Minuten-Kaffee-Protokoll): Heute noch eine Person aus dem alten Netzwerk auf LinkedIn heraussuchen und folgende Nachricht senden — 'Hey [Name], ich melde mich mal wieder! Ich baue gerade mein berufliches Netzwerk aktiv neu auf — wen aus deinem Umfeld sollte ich unbedingt kennenlernen?' — dauert 4 Minuten und setzt sofort eine Kettenreaktion in Gang."
+        "moves": [
+          {
+            "title": "Write publicly about your work",
+            "mechanism": "signal",
+            "action": "Pick one technical problem, decision, or thing you learned recently at work and write it up plainly — a blog post, a dev.to article, or a LinkedIn post. Aim for something a fellow engineer would find useful or recognizable.",
+            "why_it_expands_opportunity": "Written technical content gives people outside your current team a way to find you and understand what you work on, without any real-time effort on your part after publishing.",
+            "first_step": "Choose one specific thing you figured out in the last month and write a rough first draft this week."
+          },
+          {
+            "title": "Join a local or online technical community",
+            "mechanism": "enter",
+            "action": "Find a Denver-area tech meetup, a relevant Discord or Slack community for your stack or domain, or an async forum where working engineers discuss real problems. Participate in at least one thread or attend one event before deciding if it fits.",
+            "why_it_expands_opportunity": "This puts you in contact with engineers and adjacent professionals who do not share your current employer or social circle, creating a different path for ideas and connections to reach you.",
+            "first_step": "Search Meetup or lu.ma for Denver software or tech events, or search for a Discord community tied to a tool or language you use daily."
+          },
+          {
+            "title": "Use the gym as a slow-build connection point",
+            "mechanism": "compound",
+            "action": "Since you already go to the gym regularly, make a habit of brief, low-stakes conversations with the same recurring faces over time — not networking, just being a consistent, recognizable presence.",
+            "why_it_expands_opportunity": "Repeated contact with the same people in a non-professional context is one route through which introductions and unexpected information sometimes travel, without requiring deliberate effort beyond what you already do.",
+            "first_step": "Next time you recognize a regular, exchange a few words — no agenda required."
+          },
+          {
+            "title": "Cook with or for new people",
+            "mechanism": "enter",
+            "action": "Look for a cooking class, supper club, or community kitchen event in Denver where you would be alongside people you have not met. Alternatively, host a small dinner and ask each friend to bring one person you have not met.",
+            "why_it_expands_opportunity": "Cooking is already something you do — attaching it to a shared social context introduces you to people outside your current fixed circles in a low-pressure setting.",
+            "first_step": "Search for cooking classes or supper club events in Denver, or text your friend group about a dinner where each person brings one new face."
+          }
+        ],
+        "start_here": {
+          "move_title": "Write publicly about your work",
+          "why_this_one": "You have three years of accumulated work experience to draw from right now, and publishing one piece creates a persistent, findable signal that does not require you to be in a particular place or attend anything.",
+          "first_step": "Write a rough draft about one specific technical thing you worked through recently — do not edit it yet, just get the idea down."
+        }
       }
     }
   ]
