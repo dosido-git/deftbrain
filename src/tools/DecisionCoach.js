@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 
 
@@ -428,7 +429,7 @@ const DecisionCoach = ({ tool }) => {
 
   // Scroll to results when they appear
   useEffect(() => {
-    if (results || prosResult || devilsResult || chainResult) resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (results || prosResult || devilsResult || chainResult) revealSection(resultsRef.current);
   }, [results, prosResult, devilsResult, chainResult]);
 
   // Keyboard: Cmd/Ctrl+Enter submits
@@ -667,7 +668,7 @@ const DecisionCoach = ({ tool }) => {
     // settled. Steps, ruled-out and a closing line all do assert that.
     const awaitingAnswer = !!results?.one_thing_that_could_change_this?.question;
     return (
-      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
         {renderTimer()}{renderSpiral()}
         {rejectedChoices.length > 0 && <div className={`text-center text-xs font-semibold ${c.textMuteded}`}>{t('dc_rejected_count', { n: rejectedChoices.length })}</div>}
         <div className={`p-6 rounded-2xl border-2 ${c.decisionBg}`}>

@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // WEB AUDIO SYNTHESIS ENGINE
@@ -1053,7 +1054,7 @@ const FocusSoundArchitect = ({ tool }) => {
         sessionMinutes: timerMin,
       });
       setRecipe(data);
-      const scrollTimer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 200);
+      const scrollTimer = setTimeout(() => revealSection(resultsRef.current), 200);
       return () => clearTimeout(scrollTimer);
     } catch (err) {
       setError(err.message || t('fsa_err_generate'));
@@ -1291,7 +1292,7 @@ const FocusSoundArchitect = ({ tool }) => {
       {/* PLAYER + RECIPE                                     */}
       {/* ═══════════════════════════════════════════════════ */}
       {recipe && (
-        <div data-copy-results ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
 
           {/* Transport bar */}
           <div className={`${c.card} ${c.border} border rounded-xl shadow-sm p-5 ${!isPlaying ? (isDark ? 'ring-2 ring-cyan-500/40' : 'ring-2 ring-cyan-300') : ''}`}>

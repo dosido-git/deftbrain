@@ -5,6 +5,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 const EXAMPLES = [
   {
@@ -130,7 +131,7 @@ const BeforeHello = ({ tool }) => {
 
   useEffect(() => {
     if (!results || !resultsRef.current) return;
-    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
@@ -247,7 +248,7 @@ const BeforeHello = ({ tool }) => {
         )}
 
         {results && (
-          <div className="space-y-4">
+          <div ref={resultsRef} className="scroll-mt-24 space-y-4">
             {results.starting_position && (
               <div className={`rounded-2xl border p-5 ${c.card} ${c.border}`}>
                 <p className={`text-xs font-black uppercase tracking-widest mb-3 ${c.textMuted}`}>🧭 {t('bh_starting_position')}</p>

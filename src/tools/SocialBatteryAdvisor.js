@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 
 // ════════════════════════════════════════════════════════════
@@ -193,14 +194,14 @@ const SocialBatteryAdvisor = ({ tool }) => {
   // ── Scroll to results + reset ──
   useEffect(() => {
     if (!results || !resultsRef.current) return;
-    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {
     if (!rechargeResults || !rechargeResultsRef.current) return;
-    const timer = setTimeout(() => rechargeResultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(rechargeResultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rechargeResults]);
@@ -976,7 +977,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
     const r = results;
 
     return (
-      <div data-copy-results ref={resultsRef} className="space-y-4">
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <button onClick={() => setView('log')} className={`text-xs font-bold ${c.accentTxt} min-h-[32px]`}>{t('sea_back_to_log')}</button>
         </div>
@@ -1313,7 +1314,7 @@ const SocialBatteryAdvisor = ({ tool }) => {
 
       {/* Recharge Results */}
       {rechargeResults && (
-        <div ref={rechargeResultsRef} className="space-y-4">
+        <div ref={rechargeResultsRef} className="scroll-mt-24 space-y-4">
           {rechargeResults.energy_assessment && (
             <div className={`${c.verdict} border-2 rounded-xl p-5`}>
               <span className="text-3xl block mb-2 text-center">🔋</span>

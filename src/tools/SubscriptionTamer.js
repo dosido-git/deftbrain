@@ -7,6 +7,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { currencySymbol } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -570,7 +571,7 @@ const SubscriptionTamer = ({ tool }) => {
   // ─── Scroll to results when ready ───
   useEffect(() => {
     if (results && resultsRef.current) {
-      const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+      const timer = setTimeout(() => revealSection(resultsRef.current), 200);
       return () => clearTimeout(timer);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -760,7 +761,7 @@ const SubscriptionTamer = ({ tool }) => {
   const renderResults = () => {
     if (!results || view !== 'sweep') return null;
     return (
-      <div data-copy-results ref={resultsRef} className="space-y-5">
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className={`${c.card} border rounded-xl p-4 text-center`}>
@@ -1173,7 +1174,7 @@ const SubscriptionTamer = ({ tool }) => {
       {negResults && (
         <div ref={negResultsRef} className="space-y-4">
           {/* eslint-disable-next-line no-unused-vars */}
-          <span ref={resultsRef} className="sr-only" aria-hidden="true" />
+          <span ref={resultsRef} className="scroll-mt-24 sr-only" aria-hidden="true" />
           {/* Contact method */}
           {negResults.contact_method && (
             <div className={`${c.cardAlt} border rounded-xl p-4`}>

@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -372,7 +373,7 @@ const DoctorVisitPrep = ({ tool }) => {
   // ── PF-7: Scroll to results (with clearTimeout cleanup) ──
   useEffect(() => {
     if (!results) return;
-    const t = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    const t = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(t);
   }, [results]);
 
@@ -647,7 +648,7 @@ const DoctorVisitPrep = ({ tool }) => {
 
       {/* ══════════ RESULTS ══════════ */}
       {results && (
-        <div data-copy-results ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
           {/* First thing on the page, because it changes how everything below
               it should be read. It used to be the last thing on the page.
               Framing, not a warning — so no ⚠️ and no amber. */}

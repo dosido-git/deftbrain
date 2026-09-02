@@ -7,6 +7,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useTranslation } from '../i18n/useTranslation';
 import { formatDate } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -631,7 +632,7 @@ const FinalWish = ({ tool }) => {
   const topRef = useRef(null);
   useEffect(() => {
     if (screen === 'welcome' || !topRef.current) return;
-    topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    revealSection(topRef.current);
   }, [currentChapter, screen]);
 
   // ══════════════════════════════════════════

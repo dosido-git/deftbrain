@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -594,7 +595,7 @@ const MeetingBSDetector = ({ tool }) => {
   const shouldFocusNewTeamMeetingsRef = useRef(false);
   useEffect(() => {
     if (!analyzeResults || !resultsRef.current) return;
-    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analyzeResults]);
@@ -695,7 +696,7 @@ const MeetingBSDetector = ({ tool }) => {
       </div>
 
       {analyzeResults && (
-        <div className="space-y-4" ref={resultsRef}>
+        <div className="scroll-mt-24 space-y-4" ref={resultsRef}>
           <div className={`${verdictColor(analyzeResults.verdict)} border-2 rounded-xl p-5 text-center`}>
             <span className="text-4xl block mb-2">{analyzeResults.verdict_emoji || '📊'}</span>
             <p className={`text-xl font-black ${c.text}`}>{analyzeResults.verdict}</p>

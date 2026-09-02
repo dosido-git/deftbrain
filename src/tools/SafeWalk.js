@@ -7,6 +7,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { getEmergencyNumber } from '../utils/emergencyNumber';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -762,7 +763,7 @@ const SafeWalk = ({ tool }) => {
   // Scroll to result
   useEffect(() => {
     if (!assessResult) return;
-    const id = setTimeout(() => assessResultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    const id = setTimeout(() => revealSection(assessResultRef.current), 100);
     return () => clearTimeout(id);
   }, [assessResult]);
 
@@ -1028,7 +1029,7 @@ const SafeWalk = ({ tool }) => {
       const risk = riskColors[r.safety_overview?.risk_level] || riskColors.moderate;
 
       return (
-        <div className="space-y-3" ref={assessResultRef}>
+        <div className="scroll-mt-24 space-y-3" ref={assessResultRef}>
           {/* Safety Overview */}
           {renderCollapsible('overview', '🚦', t('sw_safety_overview'), (
             <div className={`p-4 rounded-xl border ${risk.bg}`}>

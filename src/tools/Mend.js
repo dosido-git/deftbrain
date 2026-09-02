@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // Constants
@@ -794,7 +795,7 @@ const Mend = ({ tool }) => {
   // ── Scroll to results ──────────────────────────────────────
   useEffect(() => {
     if (!results) return;
-    const scrollTimer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    const scrollTimer = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(scrollTimer);
   }, [results]);
 
@@ -2837,7 +2838,7 @@ const Mend = ({ tool }) => {
     // Without this you keep whatever scroll position the previous view left
     // you at — and after a long set of results that is the bottom of the page,
     // so the view you just chose opens at its end.
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    setTimeout(() => revealSection(resultsRef.current), 60);
   };
 
   // ════════════════════════════════════════════════════════════
@@ -2880,7 +2881,7 @@ const Mend = ({ tool }) => {
       </div>
 
         {/* Active view */}
-        <div data-copy-results ref={resultsRef}>
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24">
         {view === 'calibrate' && renderCalibrate()}
         {view === 'fix' && renderFix()}
         {view === 'detect' && renderDetect()}

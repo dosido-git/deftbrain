@@ -8,6 +8,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { track } from '../utils/analytics';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -442,7 +443,7 @@ const DoctorVisitTranslator = ({ tool }) => {
   // ── PF-7: Scroll to results on results mode (with clearTimeout cleanup) ──
   useEffect(() => {
     if (mode !== 'results' || !results) return;
-    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    const timer = setTimeout(() => revealSection(resultsRef.current), 100);
     return () => clearTimeout(timer);
   }, [mode, results]);
 
@@ -638,7 +639,7 @@ const DoctorVisitTranslator = ({ tool }) => {
 
       {/* ══════════ RESULTS MODE ══════════ */}
       {mode === 'results' && results && (
-        <div data-copy-results ref={resultsRef} className="space-y-4">
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex flex-wrap gap-2">
               <button

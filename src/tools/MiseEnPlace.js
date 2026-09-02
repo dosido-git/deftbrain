@@ -7,6 +7,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { compressImage, CompressionPresets } from '../utils/imageCompression';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // THEME — Navy & Gold
@@ -190,7 +191,7 @@ const MiseEnPlace = ({ tool }) => {
 
   useEffect(() => {
     if (results && resultsRef.current) {
-      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+      setTimeout(() => revealSection(resultsRef.current), 200);
     }
   }, [results]);
 
@@ -557,7 +558,7 @@ const MiseEnPlace = ({ tool }) => {
     if (!results) return null;
 
     return (
-      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
         {/* Selected Meal header */}
         {results.selected_meal && (
           <div className={`p-5 rounded-2xl border-2 ${c.tipBg}`}>

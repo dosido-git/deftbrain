@@ -8,6 +8,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { PendingBtn, usePendingKey } from '../components/PendingAction';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -329,8 +330,7 @@ const SixDegreesOfMe = ({ tool }) => {
   const openProfile = () => {
     setShowProfile(true);
     if (!profileRef.current) return;
-    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    profileRef.current.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    revealSection(profileRef.current);
   };
 
   const handleSurprise = async () => {
@@ -459,14 +459,14 @@ const SixDegreesOfMe = ({ tool }) => {
   // Scroll to results
   useEffect(() => {
     if (!result || !resultsRef.current) return;
-    const timer = setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(resultsRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result]);
 
   useEffect(() => {
     if (!betweenResult || !betweenResultRef.current) return;
-    const timer = setTimeout(() => betweenResultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+    const timer = setTimeout(() => revealSection(betweenResultRef.current), 200);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [betweenResult]);
@@ -1031,7 +1031,7 @@ const SixDegreesOfMe = ({ tool }) => {
 
       {/* Between result */}
       {betweenResult && (
-        <div ref={betweenResultRef} className={`rounded-2xl border overflow-hidden ${c.card}`}>
+        <div ref={betweenResultRef} className={`scroll-mt-24 rounded-2xl border overflow-hidden ${c.card}`}>
           <div className={`px-5 py-3 border-b ${c.border}`}>
             <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuted}`}>
               🤝 {betweenNameA || t('sdm_copy_you')} ↔ {betweenNameB || t('sdm_copy_them')}
@@ -1385,7 +1385,7 @@ const SixDegreesOfMe = ({ tool }) => {
           )}
 
           {/* Chain result */}
-          <div data-copy-results ref={resultsRef}>
+          <div data-copy-results ref={resultsRef} className="scroll-mt-24">
             {result && renderChainVisualization(result, { showWhatIf: true })}
           </div>
 

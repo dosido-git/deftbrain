@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { revealSection } from '../utils/revealSection';
 
 /**
  * Bring a newly-revealed screen to the top of the window when the tool advances.
@@ -61,7 +62,11 @@ export function useScrollToSection(ref, key) {
     // `scrollIntoView` forces layout when called, so the geometry is correct
     // whether or not a frame has been painted since.
     const id = window.setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      // revealSection moves focus first, which is what tells a screen reader
+      // the screen changed; the scroll is the visible half. It also resolves
+      // the behaviour itself, and a hidden tab is one of the cases it forces
+      // to instant — the reason this hook already passed 'auto' by hand.
+      revealSection(ref.current);
     }, 0);
     return () => window.clearTimeout(id);
   }, [ref, key]);

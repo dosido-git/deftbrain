@@ -6,6 +6,7 @@ import { ShareBtn } from '../components/ActionButtons';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // Two disputes of genuinely different kinds: one a fact that can be looked up,
 // one a disagreement about what happened where no fact will settle it.
@@ -224,7 +225,7 @@ const TheFinalWord = ({ tool }) => {
   useEffect(() => {
     if (!(result || daResult)) return;
     const timer = setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      revealSection(resultsRef.current);
     }, 200);
     return () => clearTimeout(timer);
   }, [result, daResult]);
@@ -1406,7 +1407,7 @@ const TheFinalWord = ({ tool }) => {
         )}
 
         {/* ═══════ VERDICT CARDS ═══════ */}
-        <div data-copy-results ref={resultsRef}>
+        <div data-copy-results ref={resultsRef} className="scroll-mt-24">
 
         {/* Quick Question Result */}
         {result?._mode === 'question' && (

@@ -6,6 +6,7 @@ import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
+import { revealSection } from '../utils/revealSection';
 
 // ════════════════════════════════════════════════════════════
 // BRAND
@@ -197,7 +198,7 @@ const TipOfTongue = ({ tool }) => {
 
   useEffect(() => {
     if (results && resultsRef.current) {
-      setTimeout(() => resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+      setTimeout(() => revealSection(resultsRef.current), 200);
     }
   }, [results]);
 
@@ -302,7 +303,7 @@ const TipOfTongue = ({ tool }) => {
     const matches = results.matches || [];
 
     return (
-      <div data-copy-results ref={resultsRef} className="space-y-4 mt-4">
+      <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-4 mt-4">
         {results.category_detected && (
           <p className={'text-xs font-medium ' + c.textMuted}>{t('tot_looking_for')} {results.category_detected}</p>
         )}
@@ -530,7 +531,7 @@ const TipOfTongue = ({ tool }) => {
     setRefinement('');
     setError('');
     setShowHistory(false);
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    setTimeout(() => revealSection(resultsRef.current), 100);
   }, []);
   const renderHistory = () => {
     if (sessionHistory.length === 0) return null;
