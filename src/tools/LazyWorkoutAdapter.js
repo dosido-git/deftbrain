@@ -790,14 +790,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
     setTimerIdx(0); setTimerSecs(0);
   };
 
-  const fillExample = () => {
-    setEnergy(4);
-    setContexts(['screen-marathon', 'long-meeting']);
-    setBodyAreas(['stiff-neck', 'sore-back']);
-    setTimeMins(8);
-    setSetting('office');
-  };
-
   // ─── Build full text + register actions ───
   const buildFullText = useCallback(() => {
     const lines = [];
@@ -1062,7 +1054,7 @@ const LazyWorkoutAdapter = ({ tool }) => {
               <input type="text" value={limitations} onChange={e => setLimitations(e.target.value)} placeholder={t('lwa_limitations_ph')} className={`w-full p-3 rounded-xl border text-base ${c.input}`} />
             </div>
 
-            {/* Submit + Try Example */}
+            {/* Submit */}
             <div className="space-y-2">
               <button title={t('cmd_enter')}
                 onClick={handleRightNow}
@@ -1080,13 +1072,6 @@ const LazyWorkoutAdapter = ({ tool }) => {
                   ⌘↵
                 </kbd>
               )}
-              </button>
-              <button
-                onClick={fillExample}
-                disabled={loading}
-                className={`w-full py-2 rounded-xl text-xs font-medium disabled:opacity-40 ${c.sec} border ${c.borderLine}`}
-              >
-                ✨ {t('try_example')}
               </button>
             </div>
 
