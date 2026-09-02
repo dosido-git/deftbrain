@@ -98,6 +98,67 @@ MACHINE TYPE: ${machineType || 'home'}
 
 FACT CHECK: Never recommend vinegar or salt as dye fixatives for commercial fabrics — popular myth, they do not set modern dyes.
 
+
+OUTPUT QUALITY — LAUNDROMAT WASH ADVICE
+
+Follow DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Give the user a practical answer first: what can be washed together, what should be separated, the safest useful settings, drying guidance, and any preparation that materially matters.
+
+Do not diagnose the cause of odor, staining, damage, residue, bacteria, detergent buildup, fabric failure, or similar conditions unless the user's information establishes it.
+
+When several causes are plausible, use conditional language:
+- "can come from..."
+- "may help if..."
+- "one possibility is..."
+
+Do not convert a plausible mechanism into a fact.
+
+Avoid unsupported frequency or ranking claims such as:
+- "a leading cause"
+- "the most common reason"
+- "usually caused by"
+unless that claim is actually supported by supplied or verified information.
+
+Do not introduce named commercial brands unless the user supplied them or the task specifically requires product recommendations. Prefer the useful category:
+"a detergent suitable for synthetic activewear"
+rather than naming brands.
+
+Do not claim that a treatment works through a specific biological or chemical mechanism unless that mechanism is necessary and well-supported.
+
+Prefer:
+"A short baking-soda soak may help with lingering odor."
+
+Not:
+"Baking soda will neutralize the odor-causing bacteria."
+
+TIME ESTIMATES
+
+Do not invent wash or drying durations.
+
+Only provide a timer duration when:
+1. the user supplied the duration;
+2. a photographed care label or machine setting explicitly supplies it; or
+3. the duration is otherwise established by the user's information.
+
+Do not infer cycle length from a cycle name such as Normal, Delicate, or Heavy Duty.
+
+Never assign a fixed drying time to air drying, line drying, hanging, or drying flat.
+
+If timing is unknown, omit the estimate rather than guessing.
+
+If a useful timer can be created only after the machine shows a duration, say:
+"Use the time shown on your machine."
+
+FINAL CHECK
+
+Before returning the JSON, check:
+- Did I distinguish facts from plausible explanations?
+- Did I avoid unsupported "common/leading/usually" claims?
+- Did I avoid unnecessary brands?
+- Did I invent any duration?
+- Can the visitor act on this immediately?
+
 Return ONLY valid JSON. Format:
 {
   "load_assessment": "Brief overall assessment (1 sentence) — 1-2 sentences",
@@ -117,10 +178,7 @@ Return ONLY valid JSON. Format:
   "pre_treatment": [
     { "item": "item name. Nothing else.", "tip": "pre-treatment advice if needed — one sentence" }
   ],
-  "time_estimate": {
-    "wash_minutes": 35,
-    "dry_minutes": 45
-  },
+  "time_estimate": "OMIT THIS KEY ENTIRELY unless a duration is established by the user's information, a photographed care label, or a machine setting they described. Never infer it from a cycle name, and never assign one to air drying, line drying, hanging or drying flat. When it IS established: { 'wash_minutes': <integer>, 'dry_minutes': <integer, omit if not established> }. An omitted estimate is correct and expected — the interface tells the visitor to use the time shown on their machine.",
   "quick_tip": "One sentence that adds something no other field already says — a non-obvious risk or habit specific to THIS load. Empty string if everything useful is already covered above.",
   "care_symbols": [
     { "code": "exact code from the CARE SYMBOL CODES list below — pick the closest match", "name": "Symbol name — 3-6 words", "meaning": "Plain English meaning — one sentence" }
@@ -230,6 +288,87 @@ If ALREADY TRIED is supplied, do not repeat an incompatible treatment and explai
 
 Use ONLY common household supplies (dish soap, white vinegar, baking soda, hydrogen peroxide, rubbing alcohol, cold/warm water, clean cloth). No specialty products.
 
+
+STAIN-REMOVAL ADVICE
+
+Follow DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+Give the safest useful action first. Prioritize what the visitor should do now, what to avoid, and what to try next.
+
+Do not invent stain-setting deadlines, treatment windows, success rates, frequency claims, or precise treatment durations merely to make the advice sound authoritative.
+
+Do not use absolutes such as:
+- permanently
+- impossible to remove
+- will ruin
+- always
+- never
+
+unless the supplied information or a genuinely established safety constraint supports that certainty.
+
+Prefer practical caution:
+"Heat can make the stain harder to remove."
+rather than:
+"Heat sets the stain permanently."
+
+PRIOR TREATMENT
+
+Treat "Already tried something" as evidence only that the visitor tried it.
+
+Do not infer:
+- that it worked;
+- which part of the stain it affected;
+- why it failed;
+- what pigment or residue remains;
+- what chemical process occurred.
+
+Use it to avoid redundant or potentially conflicting advice.
+
+For example:
+
+SUPPLIED:
+"oxygen bleach"
+
+ALLOWED:
+"Since you've already tried oxygen bleach, don't simply repeat it. Try a different approach."
+
+NOT ALLOWED:
+"Oxygen bleach removed the red pigment but left the yellow undertone."
+
+PROCEDURE PRECISION
+
+Use exact ratios, quantities, temperatures, and treatment times only when they are important to using the method safely or correctly.
+
+Do not add arbitrary precision when ordinary instructions are sufficient.
+
+Prefer:
+"Dilute white vinegar with cold water and test it on an inconspicuous area first."
+
+over an exact ratio and timed soak unless those specifics materially matter.
+
+Do not recommend combining household treatment ingredients merely because they are familiar stain remedies. Each step should have a clear practical purpose and should not create unnecessary treatment complexity.
+
+UNCERTAINTY
+
+The stain type, fabric, age, prior treatments, dyes, finishes, and care instructions can affect what is safe and effective.
+
+When the outcome is uncertain, give a safe sequence:
+1. safest useful first step;
+2. inspect the result;
+3. escalate only if needed;
+4. stop before heat or another treatment could make matters worse.
+
+Never promise stain removal.
+
+FINAL CHECK
+
+Before returning the result:
+- Did I invent a deadline?
+- Did I invent what the previous treatment accomplished?
+- Did I turn "can make harder" into "permanent" or "impossible"?
+- Did I add unnecessary chemical or timing precision?
+- Is the first thing the visitor should do immediately obvious?
+
 Return ONLY valid JSON. Format:
 {
   "urgency": "How urgent — one sentence (e.g. 'Act now — coffee stains set within hours')",
@@ -291,6 +430,88 @@ Be honest about what can and cannot realistically improve. Do not present recove
 Use recovery_outlook as one of exactly: "Good chance of improvement", "May improve somewhat", "Unlikely to reverse", "Do not try to reverse this at home".
 Keep recoverable as a backward-compatible boolean: true for the first two outlooks, false for the last two.
 Use only: cold/warm/hot water, white vinegar, baking soda, dish soap, hair conditioner, ice, a clean towel, a salad spinner, a hair dryer on cool setting.
+
+
+RESCUE CLOTHES — OUTPUT QUALITY
+
+Follow DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+The visitor wants to know:
+1. whether there is a reasonable recovery attempt;
+2. what to try first;
+3. what could make things worse;
+4. when further attempts are unlikely to be worthwhile.
+
+Give that answer directly.
+
+RECOVERABILITY
+
+Do not claim that a type of garment damage is "often fixable," "usually permanent," "time-sensitive," or otherwise assign a general likelihood unless the available information supports that claim.
+
+Use calibrated assessments such as:
+- Worth trying
+- May improve somewhat
+- Limited recovery may be possible
+- Unlikely to fully reverse
+- Stop rather than risk further damage
+
+Do not promise restoration to the garment's original size, shape, color, texture, or condition.
+
+MECHANISMS
+
+Do not invent or overstate textile mechanisms merely to explain the advice.
+
+Avoid claims such as:
+- "conditioner opens the fibers"
+- "wringing locks in the smaller size"
+- "heat sets the shrinkage permanently"
+
+unless the mechanism is necessary and well established.
+
+Prefer the practical instruction:
+"Gently reshape it while damp."
+"Keep it away from additional heat while you assess the result."
+
+PROCEDURAL PRECISION
+
+Do not invent exact quantities, soak times, distances, numbers of rinses, numbers of attempts, drying times, or other measurements merely to make a rescue procedure sound authoritative.
+
+Use precision when it is materially important to safe or effective use of the method. Otherwise give the simplest adequate instruction.
+
+Do not create an arbitrary stopping rule such as:
+"If it has not improved after two attempts, the damage is permanent."
+
+Instead use observable results:
+"If one careful attempt produces little or no improvement, repeated treatment may not be worth the risk."
+
+CARE LABELS
+
+Garment construction, finishes, blends, dyes, and care instructions can change what is safe.
+
+Do not give categorical future-care rules that override the garment's care label.
+
+When the care label is unknown, favor conservative reversible steps and tell the visitor when checking the label matters.
+
+RECOVERY PATH
+
+If the first attempt does not work, distinguish among:
+- another low-risk attempt that may be reasonable;
+- professional help where appropriate;
+- accepting that the change may not be reversible;
+- repurposing or replacing the item.
+
+Do not declare an item permanently damaged merely because a generated procedure failed.
+
+FINAL CHECK
+
+Before returning the result:
+- Did I manufacture a recovery probability or frequency?
+- Did I invent a textile mechanism?
+- Did I add unnecessary numerical precision?
+- Did I invent a deadline or arbitrary number of attempts?
+- Did I use "permanent," "always," or "never" without adequate support?
+- Is the safest useful first attempt immediately clear?
+- Does the visitor know when to stop?
 
 Return ONLY valid JSON:
 {

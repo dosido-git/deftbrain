@@ -1123,12 +1123,19 @@ const LaundroMat = ({ tool }) => {
           )}
 
           {/* Set timers from estimate */}
-          {r.time_estimate && (
+          {/* A duration is only returned when the visitor's own information
+              establishes one, so it is usually absent — and the old guard
+              checked the OBJECT, not the numbers, which would have rendered
+              "Set timers (undefined min)" on a button that started nothing.
+              No number means we say where to find one instead. */}
+          {Number(r.time_estimate?.wash_minutes) > 0 || Number(r.time_estimate?.dry_minutes) > 0 ? (
             <button onClick={() => setTimersFromAdvice(r.time_estimate.wash_minutes, r.time_estimate.dry_minutes, r.drying_advice)}
               className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 ${c.btnPrimary}`}>
               <span>⏱️</span>
               {t('lmt_set_timers', { wash: r.time_estimate.wash_minutes, dry: r.time_estimate.dry_minutes ? t('lmt_set_timers_dry', { min: r.time_estimate.dry_minutes }) : '' })}
             </button>
+          ) : (
+            <p className={`text-xs text-center ${c.textMuted}`}>⏱️ {t('lmt_use_machine_time')}</p>
           )}
 
         </div>

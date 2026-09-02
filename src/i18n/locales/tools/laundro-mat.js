@@ -11,6 +11,7 @@
 // id and backend `id`/`value` stay English in code.
 export const laundroMat = {
   en: {
+    lmt_use_machine_time: "Use the time shown on your machine.",
     lmt_adv_q_next: "What are you washing?",
     lmt_adv_placeholder_next: "Anything you are unsure about? e.g. new red shirt, wool sweater, workout clothes that smell…",
     lmt_machine_type_next: "How are you washing it?",
@@ -375,6 +376,7 @@ export const laundroMat = {
   },
 
   es: {
+    lmt_use_machine_time: "Usa el tiempo que indique tu lavadora.",
     lmt_adv_q_next: "¿Qué vas a lavar?",
     lmt_adv_placeholder_next: "¿Algo que te genere dudas? Por ejemplo: camisa roja nueva, jersey de lana, ropa de deporte con olor…",
     lmt_machine_type_next: "¿Cómo lo vas a lavar?",
@@ -701,6 +703,7 @@ export const laundroMat = {
   },
 
   zh: {
+    lmt_use_machine_time: "以洗衣机上显示的时间为准。",
     lmt_adv_q_next: "你要洗什么？",
     lmt_adv_placeholder_next: "有什么拿不准的？例如：新的红衬衫、羊毛衫、有味道的运动服……",
     lmt_machine_type_next: "你打算怎么洗？",
@@ -1027,6 +1030,7 @@ export const laundroMat = {
   },
 
   hi: {
+    lmt_use_machine_time: "अपनी मशीन पर दिखने वाला समय इस्तेमाल करें।",
     lmt_adv_q_next: "आप क्या धो रहे हैं?",
     lmt_adv_placeholder_next: "किस बारे में संदेह है? जैसे नई लाल शर्ट, ऊनी स्वेटर, बदबूदार कसरत के कपड़े…",
     lmt_machine_type_next: "आप इसे कैसे धोएँगे?",
@@ -1353,6 +1357,7 @@ export const laundroMat = {
   },
 
   ar: {
+    lmt_use_machine_time: "استخدم الوقت الظاهر على الغسالة.",
     lmt_adv_q_next: "ما الذي سيتم غسله؟",
     lmt_adv_placeholder_next: "هل هناك ما يثير التردد؟ مثل قميص أحمر جديد، كنزة صوف، ملابس رياضية ذات رائحة…",
     lmt_machine_type_next: "كيف سيتم الغسل؟",
@@ -1679,6 +1684,7 @@ export const laundroMat = {
   },
 
   pt: {
+    lmt_use_machine_time: "Use o tempo que aparecer na sua máquina.",
     lmt_adv_q_next: "O que você vai lavar?",
     lmt_adv_placeholder_next: "Algo que te deixa em dúvida? Ex.: camisa vermelha nova, suéter de lã, roupa de treino com cheiro…",
     lmt_machine_type_next: "Como você vai lavar?",
@@ -2005,6 +2011,7 @@ export const laundroMat = {
   },
 
   fr: {
+    lmt_use_machine_time: "Utilisez la durée affichée sur votre machine.",
     lmt_adv_q_next: "Que lavez-vous ?",
     lmt_adv_placeholder_next: "Un doute sur quelque chose ? Par ex. : chemise rouge neuve, pull en laine, tenue de sport qui sent…",
     lmt_machine_type_next: "Comment allez-vous le laver ?",
@@ -2331,6 +2338,7 @@ export const laundroMat = {
   },
 
   de: {
+    lmt_use_machine_time: "Nimm die Zeit, die deine Maschine anzeigt.",
     lmt_adv_q_next: "Was wäschst du?",
     lmt_adv_placeholder_next: "Etwas, bei dem du unsicher bist? Zum Beispiel neues rotes Hemd, Wollpullover, Sportsachen, die riechen…",
     lmt_machine_type_next: "Wie wäschst du es?",
@@ -2657,6 +2665,7 @@ export const laundroMat = {
   },
 
   ja: {
+    lmt_use_machine_time: "洗濯機に表示される時間を使ってください。",
     lmt_adv_q_next: "何を洗いますか。",
     lmt_adv_placeholder_next: "迷っているものはありますか。例：新しい赤いシャツ、ウールのセーター、においの気になる運動着…",
     lmt_machine_type_next: "どうやって洗いますか。",
@@ -2983,6 +2992,7 @@ export const laundroMat = {
   },
 
   ko: {
+    lmt_use_machine_time: "세탁기에 표시되는 시간을 사용하세요.",
     lmt_adv_q_next: "무엇을 빨래하나요?",
     lmt_adv_placeholder_next: "망설여지는 게 있나요? 예: 새 빨간 셔츠, 울 스웨터, 냄새나는 운동복…",
     lmt_machine_type_next: "어떻게 빨 건가요?",
@@ -3309,6 +3319,7 @@ export const laundroMat = {
   },
 
   ru: {
+    lmt_use_machine_time: "Ориентируйтесь на время, которое показывает машина.",
     lmt_adv_q_next: "Что вы стираете?",
     lmt_adv_placeholder_next: "Есть что-то, в чём вы не уверены? Например: новая красная рубашка, шерстяной свитер, спортивная одежда с запахом…",
     lmt_machine_type_next: "Как вы будете стирать?",
@@ -3635,6 +3646,7 @@ export const laundroMat = {
   },
 
   th: {
+    lmt_use_machine_time: "ใช้เวลาที่เครื่องซักผ้าแสดง",
     lmt_adv_q_next: "กำลังจะซักอะไร",
     lmt_adv_placeholder_next: "มีอะไรที่ไม่แน่ใจไหม เช่น เสื้อแดงตัวใหม่ เสื้อไหมพรม ชุดออกกำลังกายที่มีกลิ่น…",
     lmt_machine_type_next: "จะซักด้วยวิธีไหน",
@@ -3961,6 +3973,7 @@ export const laundroMat = {
   },
 
   vi: {
+    lmt_use_machine_time: "Dùng thời gian hiển thị trên máy của bạn.",
     lmt_adv_q_next: "Bạn định giặt gì?",
     lmt_adv_placeholder_next: "Có món nào bạn chưa chắc? Ví dụ: áo đỏ mới, áo len, đồ tập có mùi…",
     lmt_machine_type_next: "Bạn giặt bằng cách nào?",

@@ -12,7 +12,7 @@
     },
     "note": "Regression reference for LaundroMat. Re-run each case's input against the live backend (npm run check:golden laundro-mat) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation. The RESCUE case GUARDS the verdict-consistency fix: recoverable/confidence/success_probability MUST agree (here recoverable:false -> confidence:low + success_probability:Low). DO NOT silently reverse: (1) model split advise/label=sonnet-4-6 (vision-heavy), stain/rescue=haiku-4-5; (2) care_symbols must appear in the Advisor copy text (frontend buildFullText), not a dead symbols branch; (3) rescue verdict trio consistency rule in the prompt. Label action needs an image so it has no golden case. See audit/tool-notes/LAUNDROMAT-NOTES.md. 2026-07-15: migrated all 4 actions (advise, label, stain, rescue) off raw anthropic.messages.create() + a local 3-attempt retry (only retried on thrown exceptions, never detected a successful-but-truncated response) to callClaudeWithRetry. Renamed the label action's local `parsed` (image-parse result) to `img` — scan-guard-keys' AST heuristic was matching it against the AI-response schema once it sat directly before the callClaudeWithRetry call, a false positive introduced by the migration itself, not a real bug; renaming resolved it cleanly. Added a no-inner-double-quote rule to SYSTEM_PROMPT (applies to all 4 actions). Live-verified all 4 actions in German, including label with a real synthetic care-label JPEG (vision content-block passthrough confirmed intact through callClaudeWithRetry) — still no golden case for label (image payload too large for this file, per the original note).",
     "rate_limit_note": "Backend limits 4 req/min — check:golden runs cases sequentially; if a case 429s, re-run.",
-    "how_to_regression_diff": " 2026-09-01: rescue schema changed. success_probability (High/Medium/Low) is GONE — a probability the tool could not calibrate. recovery_outlook replaces it with four fixed phrases, and recoverable stays as a compat boolean: true for the first two outlooks, false for the last two. The frontend RENDERS recovery_outlook as text and switches only on recoverable, which is why withLanguage translating the phrase is correct here rather than the enum trap. Stain accepts stainTreatment: check the advice references what was already tried and any heat-setting. 2026-09-01 v2: reviewed against lib/outputStandard.js and declared. success_probability is gone from the STAIN schema too (it survived the rescue rewrite) — same unearned precision, and it was the fourth field restating one conclusion. The clause this tool failed was §8: quick_tip/pro_tip/prevention_tip echoed fields above them. They must now earn their place or come back EMPTY, so an empty tip is CORRECT, not a regression. validateResult() drops a tip whose vocabulary is 80% already in the result."
+    "how_to_regression_diff": " 2026-09-01: rescue schema changed. success_probability (High/Medium/Low) is GONE — a probability the tool could not calibrate. recovery_outlook replaces it with four fixed phrases, and recoverable stays as a compat boolean: true for the first two outlooks, false for the last two. The frontend RENDERS recovery_outlook as text and switches only on recoverable, which is why withLanguage translating the phrase is correct here rather than the enum trap. Stain accepts stainTreatment: check the advice references what was already tried and any heat-setting. 2026-09-01 v2: reviewed against lib/outputStandard.js and declared. success_probability is gone from the STAIN schema too (it survived the rescue rewrite) — same unearned precision, and it was the fourth field restating one conclusion. The clause this tool failed was §8: quick_tip/pro_tip/prevention_tip echoed fields above them. They must now earn their place or come back EMPTY, so an empty tip is CORRECT, not a regression. validateResult() drops a tip whose vocabulary is 80% already in the result. 2026-09-01 (later): per-action output-quality blocks added to advise, stain and rescue. time_estimate is now OPTIONAL and usually ABSENT — it is returned only when the visitor supplied a duration or a photographed label did; the interface says \"use the time shown on your machine\" otherwise. A golden case WITHOUT time_estimate is correct; its reappearance on a run where no duration was supplied is the regression."
   },
   "cases": [
     {
@@ -24,61 +24,57 @@
         "machineType": "home"
       },
       "output": {
-        "load_assessment": "This load has three incompatible groups — the red wool sweater must be washed alone, the jeans should be separated from the white shirts to prevent dye transfer, and the remaining items can share a cycle.",
+        "load_assessment": "This load must be split — the red wool sweater cannot go with the jeans, tees, or socks under any setting safe for wool, and the red dye poses a bleed risk to white cotton.",
         "separate_these": [
           {
             "item": "Red wool sweater",
-            "reason": "Wool requires a delicate or hand-wash cycle with cold water and wool-safe detergent — machine washing with the other items risks felting and shrinkage.",
+            "reason": "Wool requires a gentle cold cycle and no spin agitation that would cause shrinkage or felting, and red dye can bleed onto white cotton.",
             "risk": "high"
           },
           {
-            "item": "Blue jeans",
-            "reason": "Indigo dye from blue denim can bleed onto white cotton t-shirts, especially in warm water.",
+            "item": "White cotton t-shirts",
+            "reason": "Red dye from the sweater or jeans can transfer to white fabric in the wash.",
             "risk": "high"
           }
         ],
         "safe_together": [
-          "White cotton t-shirts",
+          "Blue jeans (2 pairs)",
           "Gym socks"
         ],
         "recommended_settings": {
           "cycle": "Normal",
-          "temperature": "Warm",
-          "spin": "Medium",
-          "detergent_notes": "Use a standard detergent for the white shirts and socks; add a color-safe booster if the whites are dingy."
+          "temperature": "Cold",
+          "spin": "High",
+          "detergent_notes": "Use a standard detergent; turn jeans inside-out before washing to reduce surface fading."
         },
         "drying_advice": [
           {
             "item": "Red wool sweater",
-            "method": "Lay flat on a clean towel to dry — never hang or tumble dry, as heat and gravity will distort the shape.",
+            "method": "Reshape and dry flat on a clean towel away from direct heat — never tumble dry or hang, as both can cause shrinkage or distortion.",
             "risk": "high"
           },
           {
-            "item": "Blue jeans",
-            "method": "Tumble dry on low heat or hang to dry to reduce shrinkage and preserve the dye.",
+            "item": "White cotton t-shirts",
+            "method": "Tumble dry on medium heat or line dry; if line drying in direct sun, be aware that sun can gradually yellow white fabric over time.",
             "risk": "low"
           },
           {
-            "item": "White cotton t-shirts and gym socks",
-            "method": "Tumble dry on medium heat until fully dry.",
+            "item": "Blue jeans and gym socks",
+            "method": "Tumble dry jeans on medium heat; socks tolerate medium to high heat — check the socks for any synthetic content that would require lower heat.",
             "risk": "low"
           }
         ],
         "pre_treatment": [
           {
             "item": "White cotton t-shirts",
-            "tip": "Check collar and underarm areas for yellowing before washing and apply a small amount of liquid detergent or an oxygen-based stain remover directly, letting it sit for 10 minutes."
+            "tip": "Check for any stains and apply a small amount of liquid detergent directly to the spot, let it sit briefly, then wash — do not let it dry on the fabric."
           },
           {
-            "item": "Gym socks",
-            "tip": "If heavily soiled, soak in cold water with a scoop of oxygen-based cleaner for 30 minutes before washing."
+            "item": "Blue jeans",
+            "tip": "Turn inside-out before loading to reduce indigo dye transfer to other items and to the drum."
           }
         ],
-        "time_estimate": {
-          "wash_minutes": 35,
-          "dry_minutes": 50
-        },
-        "quick_tip": "Turn the blue jeans inside-out before washing — this slows surface fading significantly over repeated cycles.",
+        "quick_tip": "Wash the red wool sweater alone its first few times — red wool can release enough dye in early washes to tint anything sharing the water, even at cold temperatures.",
         "care_symbols": []
       }
     },
@@ -92,30 +88,29 @@
         "stainAge": "dried"
       },
       "output": {
-        "urgency": "Act today — dried red wine on silk is harder to lift but still treatable before it becomes permanent.",
+        "urgency": "Act now — dried wine on silk needs gentle handling to avoid pushing the stain deeper into the fibers.",
         "what_you_need": [
-          "cold water",
-          "white vinegar",
-          "clean cloth or sponge",
-          "dish soap",
-          "hydrogen peroxide (3%)"
+          "Cold water",
+          "Clean white cloth or paper towels",
+          "White vinegar",
+          "Dish soap (mild, unscented)",
+          "Second clean cloth"
         ],
         "steps": [
-          "Blot the stain gently with a damp cloth and cold water to loosen surface residue — do not rub.",
-          "Mix equal parts white vinegar and cold water. Sponge this onto the stain, working from the outside edge inward. Let it sit for 5 minutes.",
-          "Blot with a clean cloth. Repeat the vinegar solution 2–3 times until the stain lightens.",
-          "If color remains, mix 1 part hydrogen peroxide with 2 parts cold water. Test this on a hidden corner of the silk first — peroxide can lighten some dyes. Apply to the stain, let sit 2–3 minutes, then blot thoroughly.",
-          "Rinse the entire area with cold water to remove all solution residue.",
-          "Blot dry with a clean cloth and air-dry flat or hanging. Do not heat-dry until you are certain the stain is gone."
+          "Blot the dried stain gently with a damp cloth using cold water only. Do not rub. Work from the outer edge toward the center to avoid spreading.",
+          "Mix one part white vinegar with three parts cold water. Dampen a cloth with this solution and blot the stain repeatedly, replacing the cloth as color transfers.",
+          "Rinse by blotting with cold water on a clean cloth until no vinegar smell remains.",
+          "Mix a few drops of mild dish soap with cold water. Blot the area once more to remove any remaining pigment.",
+          "Blot dry with a clean cloth. Lay flat to air-dry completely — do not hang or apply heat."
         ],
         "do_not": [
-          "Do not use hot water — heat sets red wine into silk permanently.",
-          "Do not rub or scrub — silk tears easily and rubbing drives the stain deeper into fibers.",
-          "Do not use bleach — it will damage or discolor silk.",
-          "Do not use baking soda on wet silk — it leaves a residue that is hard to rinse out."
+          "Don't use hot water — heat can make dried stains harder to lift from silk.",
+          "Don't rub or scrub — silk fibers damage easily and rubbing can drive the stain deeper.",
+          "Don't wring or twist the fabric.",
+          "Don't use hydrogen peroxide on red wine unless vinegar alone has no effect — peroxide can interact unpredictably with wine tannins on delicate fibers."
         ],
-        "if_stain_is_set": "If the stain has been heat-dried or ignored for days, the color is likely permanent in the silk fiber itself. Your best option is to try the vinegar and hydrogen peroxide sequence once, but manage expectations — some dried wine stains cannot be fully removed without professional cleaning or dyeing.",
-        "pro_tip": "Silk absorbs liquid quickly, so speed matters more with this fabric than with cotton; the first 30 minutes make the biggest difference."
+        "if_stain_is_set": "If the vinegar and soap approach does not noticeably fade the stain after one cycle, the stain may have bonded to the silk dye. Stop here and consider professional cleaning — further home treatment risks damaging the fabric without removing the wine.",
+        "pro_tip": "Inspect the stain under natural light after each blot; dried wine can look darker than it is, and you may have removed more than you think before moving to the next step."
       }
     },
     {
@@ -133,17 +128,15 @@
         "recoverable": false,
         "confidence": "high",
         "recovery_outlook": "Unlikely to reverse",
-        "headline": "Felted cashmere this severe cannot be restored with household supplies — the fibers have permanently bonded.",
+        "headline": "Severe felting after weeks of drying cannot be reversed with household supplies — the fiber structure has permanently bonded.",
         "rescue_steps": [],
         "do_not": [
-          "Do not soak it again hoping water and conditioner will undo weeks of set felting — the structure is now fixed and rewetting will not separate the fibers",
-          "Do not use heat or a hair dryer — warmth accelerates and locks in felting permanently",
-          "Do not stretch or pull the fabric — felted wool will not yield and you will damage fibers further"
+          "Do not attempt soaking or stretching — felted wool has mechanically locked fibers that will not relax or separate, and wet manipulation will only set the damage further"
         ],
         "time_sensitive": false,
-        "if_not_working": "There is no recovery path for felting this advanced.",
-        "when_to_stop": "Stop now — felting locked in for weeks is permanent. Consider repurposing the sweater into a felted wool project (pillows, coasters, a pet bed) rather than attempting to wear it as intended.",
-        "prevention_tip": "Dry cashmere flat on a towel away from heat and direct air circulation — even a warm dryer or radiator can felt wool before it fully dries."
+        "if_not_working": "No household method will restore the sweater's original texture or size; professional felting reversal does not exist.",
+        "when_to_stop": "Do not attempt recovery — accept that the sweater has changed irreversibly and consider repurposing it as a smaller item, felted wool textile, or donation.",
+        "prevention_tip": "Cashmere requires cold water, gentle spin or hand-squeeze only, and immediate laying flat to dry — never machine wash on standard cycles and never allow to air-dry crumpled or in a heap."
       }
     },
     {
@@ -156,16 +149,16 @@
         "userLanguage": "de"
       },
       "output": {
-        "load_assessment": "Diese Ladung enthält vier verschiedene Stoffgruppen, die unterschiedliche Temperaturen und Behandlungen benötigen — alles zusammen zu waschen würde den Wollpullover ruinieren und die Jeans könnten auf das weiße Hemd abfärben.",
+        "load_assessment": "Diese Ladung muss aufgeteilt werden: Wolle, dunkle Farben und ein weißes Hemd mit Flecken vertragen sich nicht in einem Waschgang.",
         "separate_these": [
           {
             "item": "Dunkelroter Wollpullover",
-            "reason": "Wolle verfilzt bei normalen Waschtemperaturen und Schleuderdrehzahlen — er muss separat im Schonwaschgang mit kaltem Wasser gewaschen werden.",
+            "reason": "Wolle verfilzt bei normalen Schleudertouren und zu warmen Temperaturen – er braucht ein eigenes Schonwaschprogramm.",
             "risk": "high"
           },
           {
             "item": "Weißes Baumwollhemd",
-            "reason": "Dunkle Jeans können beim ersten oder zweiten Waschen Farbstoff abgeben, der auf weißem Stoff sichtbare Verfärbungen hinterlässt.",
+            "reason": "Dunkle Farben – besonders Dunkelrot und dunkles Denim – können auf weißen Stoffen abfärben.",
             "risk": "high"
           }
         ],
@@ -174,44 +167,39 @@
           "Sportsocken"
         ],
         "recommended_settings": {
-          "cycle": "Heavy Duty",
-          "temperature": "Warm",
-          "spin": "High",
-          "detergent_notes": "Für Jeans und Sportsocken ein normales Vollwaschmittel verwenden — kein Weichspüler bei Sportsocken, da er die feuchtigkeitsableitende Funktion beeinträchtigt."
+          "cycle": "Normal",
+          "temperature": "Cold",
+          "spin": "Medium",
+          "detergent_notes": "Ein Colorwaschmittel schützt die Dunkelfarben vor dem Verblassen; kein Vollwaschmittel oder Bleichmittel."
         },
         "drying_advice": [
           {
-            "item": "Dunkelroter Wollpullover",
-            "method": "Liegend auf einem Handtuch in Form trocknen — niemals aufhängen oder in den Trockner geben.",
+            "item": "Wollpullover",
+            "method": "Liegend auf einem Handtuch in Form trocknen lassen – niemals aufhängen und nicht im Trockner.",
             "risk": "high"
           },
           {
+            "item": "Jeans & Sportsocken",
+            "method": "Auf der Leine oder auf einem Wäscheständer trocknen; Jeans auf links drehen, um Farbverlust zu verlangsamen.",
+            "risk": "low"
+          },
+          {
             "item": "Weißes Baumwollhemd",
-            "method": "Im Trockner bei mittlerer Hitze oder an der Luft trocknen, solange es noch leicht feucht ist bügeln, um Falten zu vermeiden.",
-            "risk": "low"
-          },
-          {
-            "item": "Jeans",
-            "method": "Im Trockner bei mittlerer Hitze oder auf der Leine trocknen — auf links gedreht trocknen, um die Farbe länger zu erhalten.",
-            "risk": "low"
-          },
-          {
-            "item": "Sportsocken",
-            "method": "Im Trockner bei hoher Hitze trocknen — das tötet Bakterien ab, die Gerüche verursachen.",
-            "risk": "low"
+            "method": "An der Leine oder liegend trocknen – Trockner bei Kaffeeflecken erst verwenden, wenn der Fleck vollständig entfernt ist, da Hitze ihn dauerhaft einbrennen kann.",
+            "risk": "high"
           }
         ],
         "pre_treatment": [
           {
-            "item": "Weißes Baumwollhemd (Kaffeeflecken)",
-            "tip": "Fleck mit kaltem Wasser anfeuchten, dann flüssiges Vollwaschmittel oder einen Fleckenstift direkt auftragen, 10–15 Minuten einwirken lassen und danach sofort waschen — kein heißes Wasser verwenden, da es den Kaffeefleck einbrennt."
+            "item": "Weißes Baumwollhemd",
+            "tip": "Kaffeeflecken vor dem Waschen mit kaltem Wasser von hinten ausspülen, dann ein flüssiges Waschmittel oder eine Fleckenpaste direkt einarbeiten und mindestens 10 Minuten einwirken lassen."
+          },
+          {
+            "item": "Wollpullover",
+            "tip": "Auf links drehen, in einem Wäschenetz waschen und ein Wollwaschmittel (ohne Enzyme) verwenden."
           }
         ],
-        "time_estimate": {
-          "wash_minutes": 50,
-          "dry_minutes": 60
-        },
-        "quick_tip": "Neue dunkle Jeans den ersten ein bis zwei Wäschen auf links gedreht und allein waschen — selbst nach mehrmaligem Waschen können sie genug Farbstoff abgeben, um helle Kleidungsstücke dauerhaft zu verfärben.",
+        "quick_tip": "Den Wollpullover keinesfalls zusammen mit den Jeans waschen – selbst ein einziger Waschgang im falschen Programm kann Wolle irreversibel verfilzen.",
         "care_symbols": []
       }
     },
@@ -226,30 +214,28 @@
         "userLanguage": "de"
       },
       "output": {
-        "urgency": "Handeln Sie sofort — Rotwein setzt sich in Baumwolle innerhalb von Stunden fest und wird dann deutlich schwerer zu entfernen.",
+        "urgency": "Handeln Sie sofort — Rotwein auf Baumwolle lässt sich in den nächsten Minuten am leichtesten behandeln, bevor der Farbstoff tiefer eindringt.",
         "what_you_need": [
-          "Kaltes Wasser",
-          "Sauberes Tuch oder Papiertücher",
-          "Weißer Essig",
+          "kaltes Wasser",
+          "sauberes Tuch oder Papiertücher",
           "Spülmittel",
-          "Wasserstoffperoxid (3%)"
+          "weißer Essig"
         ],
         "steps": [
-          "Blot sofort mit einem sauberen, trockenen Tuch — drücken Sie, reiben Sie nicht, um die Flüssigkeit aufzusaugen.",
-          "Spülen Sie den Fleck von der Rückseite mit kaltem Wasser — das drückt den Wein aus dem Stoff heraus, nicht hinein.",
-          "Mischen Sie 1 Teil weißen Essig mit 2 Teilen kaltem Wasser und tränken Sie den Fleck 5–10 Minuten lang.",
-          "Tragen Sie eine kleine Menge Spülmittel direkt auf den feuchten Fleck auf und reiben Sie sanft mit Ihren Fingern oder einem weichen Tuch.",
-          "Spülen Sie gründlich mit kaltem Wasser, bis keine Seifenreste mehr vorhanden sind.",
-          "Falls der Fleck noch sichtbar ist, testen Sie Wasserstoffperoxid an einer verborenen Stelle des Stoffes, tragen Sie es dann auf den Fleck auf, lassen Sie es 10 Minuten einwirken und spülen Sie gründlich aus.",
-          "Nicht trocknen, bis der Fleck vollständig weg ist — Hitze setzt ihn fest."
+          "Blot die nasse Stelle sofort mit einem sauberen trockenen Tuch ab — drücken Sie fest, aber reiben Sie nicht. Wiederholen Sie das mit frischen Tuchpartien, bis kein Wein mehr aufgesogen wird.",
+          "Spülen Sie den Fleck von der Rückseite unter kaltem fließendem Wasser ab, damit der Wein aus dem Stoff hinaus und nicht weiter hinein gespült wird.",
+          "Mischen Sie etwa 1 Teelöffel Spülmittel mit 1 Liter kaltem Wasser. Tränken Sie ein sauberes Tuch in dieser Lösung und tupfen Sie den Fleck wiederholt ab, bis der rote Farbton verblasst.",
+          "Spülen Sie erneut mit kaltem Wasser nach, um Seifenreste zu entfernen.",
+          "Falls noch ein roter Hauch sichtbar ist: Verdünnen Sie weißen Essig mit kaltem Wasser (etwa 1 Teil Essig auf 3 Teile Wasser), tupfen Sie den Fleck ab und spülen Sie nochmals mit Wasser nach.",
+          "Lufttrocknen lassen — nicht in den Trockner geben, bis der Fleck vollständig weg ist."
         ],
         "do_not": [
-          "Verwenden Sie kein heißes Wasser — es öffnet die Fasern und lässt den Wein tiefer eindringen.",
-          "Reiben Sie nicht — das drückt den Fleck tiefer in den Stoff.",
-          "Trocknen Sie den Stoff nicht mit Hitze (Trockner, Bügel, Föhn), bis der Fleck weg ist — Hitze macht Rotweinflecken dauerhaft."
+          "Nicht reiben oder schrubben — das treibt den Wein tiefer in die Fasern.",
+          "Nicht mit heißem Wasser spülen — Wärme kann den Farbstoff schneller fixieren.",
+          "Nicht bügeln oder in den Trockner geben, bevor der Fleck behandelt ist — Hitze macht Rotwein schwerer zu entfernen."
         ],
-        "if_stain_is_set": "Tränken Sie die gesamte betroffene Stelle über Nacht in einer Lösung aus 1 Teil Essig und 2 Teilen Wasser, behandeln Sie dann wie in Schritt 3 und 4 beschrieben. Bei hartnäckigen Flecken können Sie Wasserstoffperoxid direkt auftragen, aber testen Sie es zunächst an einer verborenen Stelle — es kann bei wiederholter Verwendung empfindliche Farben bleichen.",
-        "pro_tip": "Baumwolle verträgt Wasserstoffperoxid besser als empfindliche Stoffe — wenn die anderen Methoden nicht funktionieren, ist es Ihre nächste Option."
+        "if_stain_is_set": "Wenn der Fleck bereits getrocknet ist, tränken Sie die Stelle 30 Minuten lang in kaltem Wasser mit Spülmittel, bevor Sie die obigen Schritte wiederholen. Essig kann danach helfen, aber der Farbstoff lässt sich schwächer entfernen, je älter der Fleck ist.",
+        "pro_tip": "Baumwolle verträgt Essig gut — testen Sie die verdünnte Essig-Lösung aber zunächst an einer verborgeneren Stelle des Stoffes, falls der Stoff gefärbt ist."
       }
     },
     {
@@ -267,24 +253,26 @@
       "output": {
         "recoverable": true,
         "confidence": "medium",
-        "recovery_outlook": "Good chance of improvement",
-        "headline": "Dein Merinopullover kann teilweise zurückgestreckt werden — handeln in der nächsten Stunde.",
+        "recovery_outlook": "May improve somewhat",
+        "headline": "Merinowolle lässt sich teilweise entspannen — handeln Sie in der nächsten Stunde.",
         "rescue_steps": [
-          "Schritt 1: Fülle eine Schüssel mit lauwarmem Wasser (etwa 30°C) und gib zwei Esslöffel Haarspülung hinzu. Rühre gut um.",
-          "Schritt 2: Lege den Pullover hinein und lass ihn 15–20 Minuten einweichen. Die Spülung weicht die Wollfasern auf, die Wärme dehnt sie aus.",
-          "Schritt 3: Drücke das Wasser sanft aus — nicht auswringen. Nutze eine Salatschleuder auf niedriger Stufe oder wickle ihn in ein sauberes Handtuch.",
-          "Schritt 4: Lege den feuchten Pullover flach auf ein trockenes Handtuch. Dehne ihn vorsichtig mit den Händen in die gewünschte Größe — arbeite von innen nach außen, nicht an den Nähten.",
-          "Schritt 5: Lass ihn an der Luft trocknen. Drehe ihn nach 30 Minuten um. Verwende keinen Föhn — die Hitze würde den Prozess rückgängig machen."
+          "Füllen Sie ein Waschbecken mit kaltem Wasser und geben Sie zwei Esslöffel Haarspülung hinzu. Rühren Sie um.",
+          "Legen Sie den Pullover hinein und lassen Sie ihn 15–20 Minuten einweichen, ohne ihn zu kneten oder zu reiben.",
+          "Heben Sie den Pullover sanft heraus, drücken Sie das Wasser vorsichtig aus (nicht wringen), und legen Sie ihn auf ein sauberes Handtuch.",
+          "Formen Sie den Pullover sanft in die gewünschte Größe, während er noch feucht ist — ziehen Sie die Ärmel, dehnen Sie die Breite und Länge. Seien Sie geduldig; arbeiten Sie gegen den Widerstand, nicht mit Gewalt.",
+          "Lassen Sie ihn flach auf einem trockenen Handtuch an der Luft trocknen. Richten Sie ihn alle 30 Minuten neu aus.",
+          "Nutzen Sie während des Trocknens einen kühlen Haartrockner, um das Dehnen zu unterstützen — halten Sie ihn 15 cm entfernt und bewegen Sie ihn ständig."
         ],
         "do_not": [
-          "Keine Hitze verwenden — nicht waschen in heißem Wasser, nicht föhnen. Hitze verfestigt die Schrumpfung sofort.",
-          "Nicht in den Trockner zurück, auch nicht auf niedrige Temperatur.",
-          "Nicht auswringen oder kräftig dehnen — Merinowolle reißt, wenn sie nass ist."
+          "Nicht in Wasser wärmer als lauwarm legen — Hitze kann die Schrumpfung verstärken.",
+          "Nicht reiben, kneten oder drehen — Merinowolle wird dadurch weiter verfilzt und schrumpft mehr.",
+          "Nicht in den Trockner zurück — das war die Ursache.",
+          "Nicht aufhängen, während es nass ist — sein Gewicht zieht es auseinander und verursacht Formverlust."
         ],
         "time_sensitive": true,
-        "if_not_working": "Nach dem Trocknen: Spülung erneut anwenden, diesmal 30 Minuten einweichen und aggressiver dehnen — aber erwarte nur 50–70 % Rückgang.",
-        "when_to_stop": "Wenn nach zwei Versuchen weniger als ein Zentimeter Fortschritt sichtbar ist, wird der Rest permanent sein; nutze ihn als Kind-Pullover oder Putzlappen.",
-        "prevention_tip": "Merinowolle gehört nie in den Trockner — immer an der Luft trocknen, flach liegend."
+        "if_not_working": "Wenn nach dem ersten Versuch wenig bis gar keine Verbesserung sichtbar ist, warten Sie, bis der Pullover vollständig trocken ist, und bewerten Sie das Ergebnis neu, bevor Sie es erneut versuchen.",
+        "when_to_stop": "Wenn der Pullover nach dem Trocknen immer noch deutlich zu klein ist, hat sich die Faser wahrscheinlich gesetzt, und weitere Versuche verschlimmern nur das Risiko von Formverlust oder Beschädigung.",
+        "prevention_tip": "Merinowolle gehört niemals in den Trockner — waschen Sie sie kalt von Hand oder im Schonwaschgang und lassen Sie sie flach liegen, um zu trocknen."
       }
     }
   ]
