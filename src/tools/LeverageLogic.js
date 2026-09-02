@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePersistentState } from '../hooks/usePersistentState';
 import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
+import { useScrollToSection } from '../hooks/useScrollToSection';
 import { currencySymbol } from '../utils/formatLocale';
 import { pickExample } from '../utils/exampleRotation';
 
@@ -252,6 +253,14 @@ const LeverageLogic = ({ tool }) => {
   };
 
   // ── Cmd/Ctrl+Enter keyboard shortcut ──
+  // Entries that can actually be recalled. Anything saved before snapshots
+  // existed has nothing to show, and a row that does nothing when clicked is
+  // worse than no row.
+  const savedNegotiations = sessionHistory.filter(h => h.snapshot);
+
+  const stageRef = useRef(null);
+  useScrollToSection(stageRef, view);
+
   const submitRef = useRef(null);
   useEffect(() => {
     submitRef.current = () => {
@@ -341,6 +350,12 @@ const LeverageLogic = ({ tool }) => {
         </div>
       </div>
 
+      {/* One wrapper around all five screens. useScrollToSection reveals it
+         whenever `view` changes — after a submit, after a recall, on the way
+         into Counter-move — which moves focus as well as the viewport. This
+         tool had no scroll or focus handling at all: you pressed submit and
+         the answer appeared below the fold with focus still on the button. */}
+      <div ref={stageRef} className="scroll-mt-24 space-y-4">
       {/* ════════ FORM ════════ */}
       {view === 'form' && (
         <div className="space-y-5">
@@ -410,11 +425,11 @@ const LeverageLogic = ({ tool }) => {
                 <button onClick={() => { setView('prep'); fetchPrepCheck(); }} className={`w-full py-2.5 rounded-xl text-xs font-bold ${c.btnSoft}`}>{t('llog_not_ready')}</button>
               )}
             </div>
-            {sessionHistory.length > 0 && (
+            {savedNegotiations.length > 0 && (
               <div className={`${c.card} border rounded-2xl p-5`}>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuted}`}>{t('llog_past_negotiations')}</p>
                 <div className="space-y-1.5">
-                  {sessionHistory.slice(0, 5).map(h => (
+                  {savedNegotiations.slice(0, 5).map(h => (
                     <button key={h.id} onClick={() => recallSession(h)} className={`w-full text-start p-2.5 rounded-xl ${c.cardAlt} border`}>
                       <div className="flex items-center justify-between">
                         <p className={`text-xs font-bold ${c.text} truncate flex-1`}>{h.inputs?.situation || h.situation}</p>
@@ -833,6 +848,7 @@ const LeverageLogic = ({ tool }) => {
             )}
           </div>
         )}
+      </div>
 
     </div>
   );
