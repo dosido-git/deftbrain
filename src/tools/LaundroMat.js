@@ -325,6 +325,7 @@ const LaundroMat = ({ tool }) => {
   const [newSound, setNewSound] = useState('fanfare');
   const [alertBefore, setAlertBefore] = useState(5);
   const [showCustomTimer, setShowCustomTimer] = useState(false);
+  const [showSymbolReference, setShowSymbolReference] = useState(false);
   const [notifPermission, setNotifPermission] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied');
   const [showNotifBanner, setShowNotifBanner] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -373,6 +374,7 @@ const LaundroMat = ({ tool }) => {
   const [stainCustom, setStainCustom] = useState('');
   const [fabric, setFabric] = useState('Cotton');
   const [stainAge, setStainAge] = useState('just_happened');
+  const [stainTreatment, setStainTreatment] = useState('');
   const [stainImage, setStainImage] = useState(null);
   const [stainPreview, setStainPreview] = useState(null);
   const [compressingStain, setCompressingStain] = useState(false);
@@ -640,11 +642,12 @@ const LaundroMat = ({ tool }) => {
         stainCustom: stainCustom.trim(),
         fabric,
         stainAge,
+        stainTreatment: stainTreatment.trim(),
         imageBase64: stainImage || null,
       });
       setStainResults(res);
     } catch (err) { setError(err.message || t('lmt_err_stain_advice')); }
-  }, [stainType, stainCustom, fabric, stainAge, stainImage, callToolEndpoint, t]);
+  }, [stainType, stainCustom, fabric, stainAge, stainTreatment, stainImage, callToolEndpoint, t]);
 
   const handleRescuePhoto = async (e) => {
     const file = e.target.files?.[0];
@@ -785,14 +788,6 @@ const LaundroMat = ({ tool }) => {
           </button>
         ))}
       </div>
-      {activeTab !== 'stain' && (
-        <button
-          onClick={() => { setActiveTab('stain'); setStainAge('just_happened'); }}
-          className={`w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border-2 transition-all
-            ${isDark ? 'border-red-700 bg-red-900/20 text-red-300 hover:bg-red-900/40' : 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100'}`}>
-          {t('lmt_spill_banner')}
-        </button>
-      )}
     </div>
   );
 
@@ -941,7 +936,7 @@ const LaundroMat = ({ tool }) => {
           <button onClick={() => setShowCustomTimer(!showCustomTimer)}
             className={`w-full flex items-center gap-2 p-4 text-start`}>
             <span>⏱️</span>
-            <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide flex-1`}>{t('lmt_custom_timer')}</span>
+            <span className={`text-xs font-bold ${c.textSecondary} uppercase tracking-wide flex-1`}>{t('lmt_timer_options')}</span>
             {<Caret open={showCustomTimer} />}
           </button>
           {showCustomTimer && (
@@ -1145,7 +1140,7 @@ const LaundroMat = ({ tool }) => {
         <div className={`p-5 rounded-2xl border ${c.border} ${c.card} mb-4`}>
           <div className="mb-2">
             <h3 className={`text-sm font-bold ${c.text} flex items-center gap-2`}>
-              <span>👕</span> {t('lmt_adv_q')} <span className={c.required}>*</span>
+              <span>👕</span> {t('lmt_adv_q_next')} <span className={c.required}>*</span>
             </h3>
           </div>
 
@@ -1172,7 +1167,7 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           <textarea value={loadDesc} onChange={e => { setLoadDesc(e.target.value); setSelectedChips([]); }}
-            placeholder={t('lmt_adv_placeholder')}
+            placeholder={t('lmt_adv_placeholder_next')}
             rows={3} className={`w-full px-4 py-3 rounded-xl border text-sm ${c.input} outline-none mb-3`} />
 
           {/* Care label photo */}
@@ -1199,7 +1194,7 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           {/* Machine type */}
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_machine_type')}</span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_machine_type_next')}</span>
           <div className="flex gap-1.5 mb-4">
             {[
               { v: 'home', lk: 'lmt_machine_home' }, { v: 'laundromat', lk: 'lmt_machine_laundromat' }, { v: 'handwash', lk: 'lmt_machine_handwash' },
@@ -1213,8 +1208,8 @@ const LaundroMat = ({ tool }) => {
 
           <button title={t('cmd_enter')} onClick={getLoadAdvice} disabled={loading || (!loadDesc.trim() && !labelImage)}
             className={`relative w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
-              ${(!loadDesc.trim() && !labelImage) ? c.btnIdle : c.btnPrimary}`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me')}</>}
+              disabled:opacity-40 ${(!loadDesc.trim() && !labelImage) ? c.btnIdle : c.btnPrimary}`}>
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_advise_me_next')}</>}
           {!loading && (
             <kbd aria-hidden="true"
               className="hidden sm:flex items-center absolute end-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-white/30 bg-white/15 text-[10px] font-bold tracking-wide">
@@ -1352,7 +1347,7 @@ const LaundroMat = ({ tool }) => {
           </div>
 
           {/* Stain age */}
-          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_stain_how_old')}</span>
+          <span className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_stain_state_q')}</span>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {STAIN_AGES.map(a => (
               <button key={a.value} onClick={() => setStainAge(a.value)}
@@ -1360,6 +1355,13 @@ const LaundroMat = ({ tool }) => {
                 {t(a.labelKey)}
               </button>
             ))}
+          </div>
+
+          <div className="mb-3">
+            <label className={`text-xs font-semibold ${c.textSecondary} mb-2 block`}>{t('lmt_stain_tried_q')} <span className={`font-normal ${c.textMuted}`}>{t('lmt_rescue_optional')}</span></label>
+            <input type="text" value={stainTreatment} onChange={e => setStainTreatment(e.target.value)}
+              placeholder={t('lmt_stain_tried_ph')}
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm ${c.input} outline-none`} />
           </div>
 
           {/* Stain photo */}
@@ -1389,7 +1391,7 @@ const LaundroMat = ({ tool }) => {
             disabled={loading || (!stainType && !stainCustom.trim() && !stainImage)}
             className={`w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2
               ${(stainType || stainCustom.trim() || stainImage) && !loading ? c.btnPrimary : c.btnDisabled} disabled:opacity-40`}>
-            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help')}</>}
+            {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_analyzing')}</> : <><span className="me-1">{tool?.icon ?? '🧺'}</span> {t('lmt_help_next')}</>}
           </button>
         </div>
 
@@ -1433,8 +1435,8 @@ const LaundroMat = ({ tool }) => {
         {!rescueResults ? (
           <>
             <div className={`p-4 rounded-2xl border ${c.border} ${c.card}`}>
-              <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('lmt_rescue_title')}</p>
-              <p className={`text-xs ${c.textSecondary}`}>{t('lmt_rescue_intro')}</p>
+              <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('lmt_rescue_title_next')}</p>
+              <p className={`text-xs ${c.textSecondary}`}>{t('lmt_rescue_intro_next')}</p>
             </div>
 
             <div className={`${c.card} border ${c.border} rounded-xl p-4 space-y-4`}>
@@ -1474,7 +1476,7 @@ const LaundroMat = ({ tool }) => {
 
               {/* When */}
               <div>
-                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('lmt_rescue_when')}</p>
+                <p className={`text-xs font-bold ${c.textSecondary} mb-2`}>{t('lmt_rescue_state_q')}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {TIME_AGO.map(item => (
                     <button key={item.id} onClick={() => setRescueTimeAgo(rescueTimeAgo === item.id ? '' : item.id)}
@@ -1491,7 +1493,7 @@ const LaundroMat = ({ tool }) => {
                 <input ref={rescuePhotoRef} type="file" accept="image/*" onChange={handleRescuePhoto} className="hidden" />
                 {rescuePreview ? (
                   <div className="relative inline-block">
-                    <img src={rescuePreview} alt={t('lmt_rescue_title')} className="h-24 rounded-lg object-cover border" />
+                    <img src={rescuePreview} alt={t('lmt_rescue_title_next')} className="h-24 rounded-lg object-cover border" />
                     <button onClick={() => { setRescueImage(null); setRescuePreview(null); }}
                       className="absolute -top-2 -end-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">✕</button>
                   </div>
@@ -1506,25 +1508,20 @@ const LaundroMat = ({ tool }) => {
 
             <button onClick={getRescueHelp} disabled={!canRescue || loading}
               className={`w-full ${c.btnPrimary} disabled:opacity-40 font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2`}>
-              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_rescue_assessing')}</> : <><span>🚑</span> {t('lmt_rescue_can_i_save')}</>}
+              {loading ? <><span className="animate-spin inline-block">{tool?.icon ?? '🧺'}</span> {t('lmt_rescue_assessing')}</> : <><span>🚑</span> {t('lmt_rescue_can_i_fix')}</>}
             </button>
           </>
         ) : (
           <div className="space-y-4">
-            {/* Recoverable verdict */}
-            <div className={`${c.card} border-2 ${rescueResults.recoverable ? 'border-emerald-500' : 'border-red-500'} rounded-xl p-5`}>
+            {/* Recovery outlook — calibrated, not binary */}
+            <div className={`${c.card} border-2 ${rescueResults.recoverable ? 'border-emerald-500' : 'border-amber-500'} rounded-xl p-5`}>
               <div className="flex items-start gap-3">
-                <span className="text-3xl flex-shrink-0">{rescueResults.recoverable ? '✅' : '❌'}</span>
+                <span className="text-3xl flex-shrink-0">{rescueResults.recoverable ? '🛠️' : '⚠️'}</span>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className={`text-xs font-black uppercase px-2 py-0.5 rounded ${rescueResults.recoverable ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
-                      {rescueResults.recoverable ? t('lmt_rescue_saveable') : t('lmt_rescue_likely_gone')}
+                    <span className={`text-xs font-black uppercase px-2 py-0.5 rounded ${rescueResults.recoverable ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                      {rescueResults.recovery_outlook || (rescueResults.recoverable ? t('lmt_rescue_outlook_possible') : t('lmt_rescue_outlook_limited'))}
                     </span>
-                    {rescueResults.success_probability && (
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${c.btnSecondary}`}>
-                        {t('lmt_rescue_chance', { prob: rescueResults.success_probability })}
-                      </span>
-                    )}
                     {rescueResults.time_sensitive && (
                       <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">{t('lmt_rescue_time_sensitive')}</span>
                     )}
@@ -1598,39 +1595,89 @@ const LaundroMat = ({ tool }) => {
   // ══════════════════════════════════════════
   const renderSymbolsTab = () => {
     const categories = [...new Set(CARE_SYMBOLS.map(s => s.category))];
+    const r = adviceResults;
     return (
       <div className="space-y-5">
-        <div className={`p-4 rounded-2xl border ${c.skyCard}`}>
-          <p className={`text-sm font-semibold ${c.text} mb-1`}>{t('lmt_symbols_title')}</p>
-          <p className={`text-xs ${c.textSecondary}`}>{t('lmt_symbols_intro')}</p>
-        </div>
-        {categories.map(cat => (
-          <div key={cat}>
-            <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-2`}>{t(CARE_SYMBOLS.find(s => s.category === cat).categoryKey)}</p>
-            <div className="space-y-2">
-              {CARE_SYMBOLS.filter(s => s.category === cat).map(sym => (
-                <div key={sym.code}
-                  className={`flex items-start gap-3 p-3.5 rounded-xl border ${sym.caution
-                    ? (isDark ? 'bg-red-900/15 border-red-700/50' : 'bg-red-50 border-red-200')
-                    : `${c.card} ${c.border}`}`}>
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border
-                    ${sym.caution
-                      ? (isDark ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-red-100 border-red-300 text-red-700')
-                      : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-200' : 'bg-gray-100 border-gray-200 text-gray-700')}`}>
-                    {sym.sym.startsWith('<')
-                      ? <span dangerouslySetInnerHTML={{ __html: sym.sym }} className="flex items-center justify-center w-full h-full" />
-                      : <span className="text-base font-black">{sym.sym}</span>}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold ${sym.caution ? (isDark ? 'text-red-300' : 'text-red-800') : c.text}`}>{t(sym.nameKey)}</p>
-                    <p className={`text-xs mt-0.5 leading-relaxed ${sym.caution ? (isDark ? 'text-red-300/80' : 'text-red-700') : c.textSecondary}`}>{t(sym.meaningKey)}</p>
-                  </div>
-                </div>
-              ))}
+        <div className={`p-5 rounded-2xl border ${c.skyCard}`}>
+          <p className={`text-base font-bold ${c.text} mb-1`}>{t('lmt_label_primary_title')}</p>
+          <p className={`text-sm ${c.textSecondary} mb-4`}>{t('lmt_label_primary_intro')}</p>
+          {labelPreview ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <img src={labelPreview} alt={t('lmt_label_primary_title')} className="w-20 h-20 object-cover rounded-lg border" />
+                <button onClick={() => { setLabelPreview(null); setLabelImage(null); setAdviceResults(null); if (labelPhotoRef.current) labelPhotoRef.current.value = ''; }}
+                  className={`px-3 py-2 rounded-lg text-xs font-semibold ${c.btnSecondary}`}>{t('lmt_label_change_photo')}</button>
+              </div>
+              <button onClick={getLoadAdvice} disabled={loading || !labelImage}
+                className={`w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 ${labelImage ? c.btnPrimary : c.btnDisabled}`}>
+                {loading ? t('lmt_analyzing') : t('lmt_label_translate_btn')}
+              </button>
             </div>
+          ) : (
+            <button onClick={() => labelPhotoRef.current?.click()}
+              className={`w-full flex items-center justify-center gap-2 p-5 rounded-xl border-2 border-dashed text-sm font-bold ${c.dropzone} ${c.textSecondary}`}>
+              <span>📷</span> {t('lmt_label_add_photo')}
+            </button>
+          )}
+          <input ref={labelPhotoRef} type="file" accept="image/*" onChange={handleLabelPhoto} className="hidden" />
+        </div>
+
+        {r?.care_symbols?.length > 0 && (
+          <div className={`${c.card} border ${c.border} rounded-xl p-5 space-y-4`}>
+            <div>
+              <p className={`text-sm font-bold ${c.text}`}>{t('lmt_label_result_title')}</p>
+              {r.load_assessment && <p className={`text-sm ${c.textSecondary} mt-1`}>{r.load_assessment}</p>}
+            </div>
+            {r.recommended_settings && (
+              <div className={`${c.skyCard} border rounded-xl p-4`}>
+                <p className={`text-sm font-semibold ${c.text}`}>
+                  {r.recommended_settings.cycle}{r.recommended_settings.temperature ? ` · ${r.recommended_settings.temperature}` : ''}{r.recommended_settings.spin ? ` · ${r.recommended_settings.spin}` : ''}
+                </p>
+                {r.recommended_settings.detergent_notes && <p className={`text-xs ${c.textSecondary} mt-1`}>{r.recommended_settings.detergent_notes}</p>}
+              </div>
+            )}
+            <div className="space-y-2">
+              {r.care_symbols.map((sym, i) => {
+                const match = resolveCareSymbol(sym);
+                return <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${c.cardAlt}`}>
+                  <span className={`flex-shrink-0 w-9 h-9 flex items-center justify-center ${c.text}`}>
+                    {match ? <span dangerouslySetInnerHTML={{ __html: match.sym }} className="flex items-center justify-center w-full h-full" /> : '•'}
+                  </span>
+                  <p className={`text-sm ${c.text}`}><strong>{sym.name}:</strong> {sym.meaning}</p>
+                </div>;
+              })}
+            </div>
+            {r.drying_advice?.length > 0 && <div className={`${c.warning} border rounded-xl p-3`}>
+              {r.drying_advice.map((d,i)=><p key={i} className="text-sm"><strong>{d.item}:</strong> {d.method}</p>)}
+            </div>}
           </div>
-        ))}
-        <p className={`text-xs text-center ${c.textMuted}`}>{t('lmt_symbols_standards')}</p>
+        )}
+
+        <button onClick={() => setShowSymbolReference(v => !v)} className={`w-full py-3 rounded-xl border ${c.border} text-sm font-semibold ${c.btnSecondary}`}>
+          {showSymbolReference ? '▾' : '▸'} {t('lmt_label_browse_all')}
+        </button>
+
+        {showSymbolReference && <div className="space-y-5">
+          {categories.map(cat => (
+            <div key={cat}>
+              <p className={`text-xs font-bold uppercase tracking-wide ${c.textMuted} mb-2`}>{t(CARE_SYMBOLS.find(s => s.category === cat).categoryKey)}</p>
+              <div className="space-y-2">
+                {CARE_SYMBOLS.filter(s => s.category === cat).map(sym => (
+                  <div key={sym.code} className={`flex items-start gap-3 p-3.5 rounded-xl border ${sym.caution ? (isDark ? 'bg-red-900/15 border-red-700/50' : 'bg-red-50 border-red-200') : `${c.card} ${c.border}`}`}>
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center border ${sym.caution ? (isDark ? 'bg-red-900/30 border-red-700 text-red-300' : 'bg-red-100 border-red-300 text-red-700') : (isDark ? 'bg-zinc-700 border-zinc-600 text-zinc-200' : 'bg-gray-100 border-gray-200 text-gray-700')}`}>
+                      {sym.sym.startsWith('<') ? <span dangerouslySetInnerHTML={{ __html: sym.sym }} className="flex items-center justify-center w-full h-full" /> : <span className="text-base font-black">{sym.sym}</span>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold ${sym.caution ? (isDark ? 'text-red-300' : 'text-red-800') : c.text}`}>{t(sym.nameKey)}</p>
+                      <p className={`text-xs mt-0.5 leading-relaxed ${sym.caution ? (isDark ? 'text-red-300/80' : 'text-red-700') : c.textSecondary}`}>{t(sym.meaningKey)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          <p className={`text-xs text-center ${c.textMuted}`}>{t('lmt_symbols_standards')}</p>
+        </div>}
       </div>
     );
   };

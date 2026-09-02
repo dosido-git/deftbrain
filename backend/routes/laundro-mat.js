@@ -26,7 +26,7 @@ const CARE_CODE_REF = 'MW0=Machine Wash | MW1=Machine Wash Cold · 30°C | MW2=M
 
 router.post('/laundro-mat', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
-    const { action, loadDescription, machineType, stainType, stainCustom, fabric, stainAge, imageBase64 } = req.body;
+    const { action, loadDescription, machineType, stainType, stainCustom, fabric, stainAge, stainTreatment, imageBase64 } = req.body;
 
     // ─── ADVISE: Full load analysis ───
     if (action === 'advise') {
@@ -184,7 +184,10 @@ CARE SYMBOL CODES — identify EVERY symbol printed on the label and include all
 
 STAIN TYPE: ${stainType || stainCustom || '(see photo above)'}
 FABRIC: ${fabric || 'Unknown'}
-STAIN AGE: ${stainAge || 'unknown'}
+STAIN STATE / AGE: ${stainAge || 'unknown'}
+ALREADY TRIED: ${stainTreatment || 'Nothing supplied'}
+
+If ALREADY TRIED is supplied, do not repeat an incompatible treatment and explain any important interaction risk. If the stain has already been heat-dried, account for that explicitly.
 
 Use ONLY common household supplies (dish soap, white vinegar, baking soda, hydrogen peroxide, rubbing alcohol, cold/warm water, clean cloth). No specialty products.
 
@@ -246,14 +249,16 @@ MATERIAL: ${material || 'Unknown'}
 TIME SINCE INCIDENT: ${timeAgo || 'Unknown'}
 SEVERITY: ${severity || 'Unknown'}
 
-Be honest about success probability. Some garments cannot be saved — say so clearly rather than give false hope.
-CONSISTENCY: "recoverable", "confidence", and "success_probability" MUST agree. "success_probability" (High/Medium/Low) must match "confidence" (high/medium/low). If "recoverable" is false, both must be Low. Never give a high/medium probability for an item you call unrecoverable.
+Be honest about what can and cannot realistically improve. Do not present recovery as a precise probability. Distinguish between improvement, partial reversibility, and full restoration.
+Use recovery_outlook as one of exactly: "Good chance of improvement", "May improve somewhat", "Unlikely to reverse", "Do not try to reverse this at home".
+Keep recoverable as a backward-compatible boolean: true for the first two outlooks, false for the last two.
 Use only: cold/warm/hot water, white vinegar, baking soda, dish soap, hair conditioner, ice, a clean towel, a salad spinner, a hair dryer on cool setting.
 
 Return ONLY valid JSON:
 {
   "recoverable": true,
   "confidence": "high|medium|low",
+  "recovery_outlook": "Good chance of improvement|May improve somewhat|Unlikely to reverse|Do not try to reverse this at home",
   "headline": "One direct sentence: 'Your wool sweater can be unshrunk — act in the next hour'",
   "rescue_steps": [
     "Step 1: Specific action with exact supplies, quantities, and technique",
@@ -262,7 +267,6 @@ Return ONLY valid JSON:
   "do_not": [
     "Don't do X — it will make it permanent because Y"
   ],
-  "success_probability": "High|Medium|Low",
   "time_sensitive": true,
   "if_not_working": "What to try if main steps fail — one sentence",
   "when_to_stop": "At what point to accept defeat and repurpose the item — one sentence",
