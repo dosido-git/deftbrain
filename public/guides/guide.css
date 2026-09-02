@@ -176,6 +176,21 @@ h2 {
   padding-top: 3px;
   opacity: .5;
 }
+/* Optional per-step artwork (see scripts/build-guides.js). currentColor so a
+   symbol inherits the guide's ink rather than carrying its own palette. */
+.step-art {
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--accent2);
+}
+.step-art svg { flex: 0 0 auto; }
+.step-art figcaption {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--muted, #6b6a66);
+}
 .step-body h3 {
   font-family: 'DM Sans', sans-serif;
   font-weight: 500;

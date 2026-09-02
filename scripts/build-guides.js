@@ -166,10 +166,18 @@ function renderGuide(spec, siblings) {
 
   // Body: steps with optional callout inserted after step N
   const stepsHtml = spec.steps.map((s, i) => {
+    // Optional per-step artwork. Raw SVG, NOT escaped — these strings are
+    // authored in the spec files, which are ours; nothing here comes from a
+    // visitor. Kept generic (any guide may illustrate a step) rather than
+    // teaching this shared builder about one tool's symbol catalogue.
+    const art = s.art
+      ? `\n          <figure class="step-art" role="img" aria-label="${esc(s.artLabel || s.name)}">${s.art}${
+          s.artCaption ? `<figcaption>${esc(s.artCaption)}</figcaption>` : ''}</figure>`
+      : '';
     let block = `      <div class="step">
         <div class="step-num">${i+1}</div>
         <div class="step-body">
-          <h3>${esc(s.name)}</h3>
+          <h3>${esc(s.name)}</h3>${art}
           <p>${esc(s.body)}</p>
         </div>
       </div>`;
