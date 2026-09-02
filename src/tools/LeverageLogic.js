@@ -273,6 +273,17 @@ const LeverageLogic = ({ tool }) => {
 
       {error && <div className={`p-3 rounded-xl border mb-4 ${c.danger}`}><span className="me-1">⚠️</span> {error}</div>}
 
+      {/* PF-16: the tool's one reset. Lifted out of the form block so it is
+          reachable from the results, counter, prep and email screens too —
+          before, leaving the form meant losing the only way to start again. */}
+      {hasInput && (
+        <div className="flex justify-end">
+          <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap`}>
+            {t('llog_new')}
+          </button>
+        </div>
+      )}
+
       {/* ════════ FORM ════════ */}
       {view === 'form' && (
         <div className="space-y-5">
@@ -286,12 +297,6 @@ const LeverageLogic = ({ tool }) => {
                   <p className={`text-sm ${c.textSecondary}`}>{t('llog_tagline')}</p>
                   <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
                 </div>
-                {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-                {(hasInput) ? (
-                  <button onClick={resetAll} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                    {t('llog_new')}
-                  </button>
-                ) : null}
               </div>
             </div>
               <div>
