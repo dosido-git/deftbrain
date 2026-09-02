@@ -193,6 +193,73 @@ sound more natural.
 
 In every schema below, "you" means the person reading the result, never the
 model. Write the field values the same way.
+
+FOLLOW-UP MODES MUST PRESERVE THE STRATEGY'S EPISTEMIC STANDARD
+
+Counter-move, Email Drafter, and readiness follow-ups must obey the same
+grounding rules as the primary Leverage Logic analysis.
+
+Do not become more certain merely because the visitor has moved from
+analysis to action.
+
+COUNTER-MOVE
+
+When explaining "Use this if" or "Gives up," distinguish a possible
+strategic consequence from a certain one.
+
+Prefer:
+"May reveal that $110/hr with the volume commitment is acceptable to you."
+
+Not:
+"Reveals that $110/hr is your acceptable floor."
+
+Prefer:
+"This may invite further negotiation."
+
+Not:
+"Signals you are willing to negotiate further."
+
+Do not claim to know how the other party will interpret a statement.
+
+EMAIL DRAFTER
+
+Draft directly from established facts and the chosen strategy.
+
+When advising what to omit, do not predict how the recipient will react.
+
+Prefer:
+"Consider saving the waitlisted clients for the live conversation, where
+you can decide whether they are useful in response to what the client says."
+
+Not:
+"Mentioning them invites a standoff."
+
+Separate:
+- factual problems: "Do not say this because it is not established";
+from
+- strategic choices: "Consider leaving this out because you may prefer
+to preserve it for later."
+
+Do not turn a strategic preference into a universal negotiation rule.
+
+SCRIPTS
+
+Scripts may be assertive.
+
+Their factual premises may not be.
+
+Every factual statement in a generated script or email must be traceable
+to information supplied by the visitor or explicitly established during
+the negotiation.
+
+FINAL CROSS-MODE CHECK
+
+Before returning any follow-up:
+- Did I become more certain than the main analysis?
+- Did I predict how the other side will interpret something?
+- Did I turn a possible consequence into "Gives up" as though guaranteed?
+- Did I convert a strategic option into a rule?
+- Did I introduce any fact that was not established?
 `;
 
 // Two claims the old version made constantly and neither of which it could
@@ -257,12 +324,21 @@ const THIRD_PERSON_READER = /\bthe (?:visitor|user|negotiator)\b/i;
 // is established; hedged or explicitly conditional uses are spared.
 const RANKED = /\b(?:strongest|weakest|most concrete|hardest to dismiss|harder to dismiss|your best leverage|the real leverage)\b/i;
 
+// The follow-up modes drift into certainty the main analysis avoids: "reveals
+// that $110 is your floor", "signals you are willing to negotiate", "invites a
+// standoff". All are claims about how a statement will be read. A modal turns
+// each of them back into the sentence the rule asks for, so the hedge is the
+// whole test.
+const INTERPRETATION = /\b(?:reveals?|signals?|tells them|shows them|communicates? that|invites? (?:a|further)|reads as|comes across as|will be (?:read|seen|taken) as)\b/i;
+const MODAL_HEDGE = /\b(?:may|might|could|can|risks?|possibly|perhaps|tends? to|if )\b/i;
+
 const RULES = [
   ['predicted what the other side will do', PREDICTION],
   ['scored or graded the negotiation', SCORED],
   ['said what the other side believes or wants', PSYCHOLOGIZED, (v) => REPORTED.test(v) || EPISTEMIC_HEDGE.test(v)],
   ['assigned legal significance it cannot establish', LEGAL_CLAIM, (v) => HEDGED_LEGAL.test(v) || EPISTEMIC_HEDGE.test(v)],
   ['ranked leverage whose consequence is not established', RANKED, (v) => EPISTEMIC_HEDGE.test(v)],
+  ['stated an interpretation as certain', INTERPRETATION, (v) => MODAL_HEDGE.test(v) || EPISTEMIC_HEDGE.test(v)],
   ['talked about you instead of to you', THIRD_PERSON_READER],
 ];
 
@@ -449,8 +525,8 @@ Return ONLY valid JSON:
     {
       "approach": "Short name for this approach — 2-4 words",
       "say_this": "Plain words you could actually say, in first person — 1-2 sentences",
-      "use_this_if": "The circumstance that makes this the right one — one sentence",
-      "gives_up": "What this response concedes or reveals, or null — one sentence"
+      "use_this_if": "The circumstance that would make this the right one — one sentence",
+      "gives_up": "What this response MAY concede or reveal, or null — one sentence. Stay conditional: a possible consequence, never a certain one, and never a claim about how they will read it"
     }
   ],
   "do_not_say": "A reply that would cost you something, and what it costs — one sentence",
@@ -576,8 +652,8 @@ Return ONLY valid JSON:
       "tone_note": "What this version does differently — one sentence"
     }
   ],
-  "keep_out_of_writing": ["Something better said in person, and why — one short line each"],
-  "before_you_send": "The one thing to re-read for before sending — one sentence"
+  "keep_out_of_writing": ["Something you may prefer to keep for the live conversation, and why — one short line each. Say which it is: not established, or established but worth holding back. Never predict how the recipient will react, and never state a strategic preference as a rule of negotiation"],
+  "before_you_send": "The one thing to re-read for before sending — one sentence. A factual check, not a prediction about how it will land"
 }
 
 ARRAY BOUNDS: exactly 3 drafts, one per version, in that order. keep_out_of_writing at most 3.
