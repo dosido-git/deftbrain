@@ -258,6 +258,88 @@ unless explaining the underlying concept would genuinely help.
 The output should feel practical, curious, and encouraging without
 performative enthusiasm.
 
+GET NOTICED — OUTPUT GROUNDING ADDITIONS
+
+Follow DEFTBRAIN_OUTPUT_STANDARD_V2.
+
+CURRENT OPPORTUNITY SURFACE
+
+Describe only pathways the visitor actually supplied.
+
+Do not convert an omitted pathway into a known limitation.
+
+BAD:
+"Your professional exposure currently runs almost entirely through your existing team and employer."
+
+BETTER:
+"The professional exposure you described is concentrated in your existing team and employer."
+
+BAD:
+"Your social contact is a stable but small friend group with no professional overlap."
+
+BETTER:
+"You described a small, close friend group, but did not describe whether those relationships create professional connections."
+
+WHAT CURRENTLY LIMITS NEW EXPOSURE
+
+A limitation must follow from something the visitor actually described.
+
+Do not state general circumstances as though their effects on this visitor are established.
+
+BAD:
+"Remote work removes the incidental contact with people outside your company that an office or shared workspace can produce."
+
+BETTER:
+"Working from home may provide fewer incidental opportunities to meet people outside your existing work relationships."
+
+Do not classify ordinary hobbies as "private or consumption-based" unless that distinction is useful and supported.
+
+BAD:
+"Hobbies as described are private or consumption-based, which creates little outward signal about your skills or interests."
+
+BETTER:
+"You mentioned the gym, cooking, and watching TV, but didn't describe using those interests to meet new people or share what you do."
+
+WHAT'S ALREADY WORKING
+
+This section means an EXISTING PATHWAY that is already creating exposure.
+
+Do not put unused possibilities, latent assets, geographic opportunities, or hypothetical actions in this section.
+
+BAD:
+"Living in Denver gives you access to in-person professional and technical communities if you choose to use them."
+
+This is a possible move, not something already working.
+
+BAD:
+"Three years of accumulated work likely means you have projects, decisions, and lessons that could be made visible."
+
+This is a possible resource, not evidence of an existing exposure pathway.
+
+If the visitor has not described anything currently creating new exposure, say so plainly:
+
+"Nothing you described clearly shows an existing pathway that regularly puts your work in front of new professional contacts. That doesn't mean none exists—only that you haven't identified one here."
+
+MOVE GENERATION
+
+Do not invent facts about what exists locally or who participates.
+
+When location is supplied, location may personalize the search/action without establishing current-world facts.
+
+BAD:
+"Find one recurring in-person gathering in Denver where working software engineers participate..."
+
+BETTER:
+"Look for one recurring Denver-area gathering related to software development, startups, or another professional interest you want to explore."
+
+Do not assume the visitor has a suitable open-source project, public technical community, or two people worth introducing.
+
+Frame these conditionally when their existence has not been established:
+
+"If you use an open-source tool or participate in a public technical community, look for one small contribution you could make..."
+
+"If two people you already know would genuinely benefit from knowing each other, consider making the introduction."
+
 FINAL CHECK
 
 Before returning the result ask:
@@ -303,6 +385,21 @@ const PERSONALITY_CLAIM = /\byou (?:are|seem|appear|come across as|tend to be)\s
 // The voice rule, mechanically.
 const THIRD_PERSON_READER = /\bthe (?:visitor|user|person)\b/i;
 
+// "Already working" is the section that drifts hardest: it fills with things
+// that could work rather than things that do. A latent asset is a move, and a
+// city you live in is not a pathway. Key-scoped, because the same phrasing is
+// perfectly correct inside a move.
+const HYPOTHETICAL = new RegExp([
+  '\\bif you (?:choose|want|decide|use|participate)\\b',
+  '\\bcould be (?:made |turned )?\\w*',
+  '\\bgives? you access to\\b',
+  '\\blikely means\\b',
+  '\\bmeans you (?:have|probably have)\\b',
+  '\\bthere (?:are|may be|could be) (?:many |plenty of )?\\w+ (?:communities|groups|meetups|events)\\b',
+  '\\bwaiting to be\\b',
+  '\\bpotential\\b',
+].join('|'), 'i');
+
 const RULES = [
   ['measured something it cannot measure', FAKE_MEASURE],
   ['predicted a result', RESULT_PREDICTION, (v) => HEDGE.test(v)],
@@ -316,6 +413,18 @@ const MECHANISMS = ['signal', 'enter', 'create', 'connect', 'compound'];
 
 function validateResult(data) {
   if (!data || typeof data !== 'object') return data;
+
+  // Drop anything in already_working that is a possibility rather than a
+  // pathway. If that empties the section the frontend says so in the visitor's
+  // own language, which is better than leaving an English sentence behind.
+  const aw = data.current_surface && data.current_surface.already_working;
+  if (Array.isArray(aw)) {
+    const kept = aw.filter(x => !(typeof x === 'string' && HYPOTHETICAL.test(x)));
+    if (kept.length !== aw.length) {
+      console.log(`[luck-surface] already_working: dropped ${aw.length - kept.length} of ${aw.length} — possibility, not an existing pathway`);
+    }
+    data.current_surface.already_working = kept;
+  }
 
   // breadth and mechanism are switched on by the frontend, so they must stay
   // exact English. withLanguage translates JSON string values, which is how an
@@ -374,15 +483,15 @@ Return ONLY valid JSON:
 {
   "current_surface": {
     "breadth": "Exactly one of these English words and nothing else: narrow, mixed, broad",
-    "summary": "1-2 sentences describing how you currently encounter new people, ideas, or opportunities",
-    "limits": ["Concrete structural limitation grounded in what you supplied — one short line each"],
-    "already_working": ["Concrete existing pathway that already creates exposure — one short line each"]
+    "summary": "1-2 sentences describing only the pathways you actually supplied. Say what you described, not what your world contains — an omitted pathway is unknown, not absent",
+    "limits": ["A limitation that follows from something you actually described — one short line each. Where the effect on you is inferred rather than established, say may or fewer rather than stating it as fact"],
+    "already_working": ["An EXISTING pathway that is already creating exposure — one short line each. Never a latent asset, a place you live, or something you could do; those are moves. If nothing you described qualifies, return exactly one line saying so plainly and that it does not mean none exists"]
   },
   "moves": [
     {
       "title": "Short useful title — 2-5 words",
       "mechanism": "Exactly one of these English words and nothing else: signal, enter, create, connect, compound",
-      "action": "Concrete action you can take — one or two sentences",
+      "action": "Concrete action you can take — one or two sentences. Where you have not established that something exists — an open-source project, a public community, two people worth introducing, a particular local gathering — frame it conditionally with If, and name a category to look for rather than asserting one is there",
       "why_it_expands_opportunity": "The exposure mechanism, without predicting an outcome — one sentence",
       "first_step": "Smallest useful way to begin — one sentence"
     }
