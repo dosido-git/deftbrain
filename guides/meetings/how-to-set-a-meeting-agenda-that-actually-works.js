@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Generate the working agenda in two minutes",
-    body:     "Meeting Hijack Preventer takes your meeting topic, attendees, and duration and produces a structured agenda — items with outcomes, time-boxes, owners, and pre-read suggestions — formatted to actually run the meeting.",
+    body:     "Meeting Hijack Stopper asks what genuinely needs to happen live to reach your stated outcome, then builds only that: blocks with timings that fit the time you have, each with a purpose and a way to run it. If the design does not need every minute, it leaves some unscheduled rather than padding to fill the slot.",
     features: [
       "Outcome-named agenda items",
       "Time-boxed allocations",
@@ -57,7 +57,7 @@ module.exports = {
       "Pre-read suggestions",
       "Built-in schedule slack",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

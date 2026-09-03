@@ -294,10 +294,10 @@ function validateResult(data) {
         const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
         if (hit) {
           if (v.length <= 260 && (v.match(/[.!?]/g) || []).length <= 2) {
-            console.log(`[meeting-hijack-preventer] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            console.log(`[meeting-hijack-stopper] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
             node[k] = '';
           } else {
-            console.log(`[meeting-hijack-preventer] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+            console.log(`[meeting-hijack-stopper] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
           }
         }
       } else if (v && typeof v === 'object') walk(v);
@@ -401,7 +401,7 @@ ANYTHING ELSE THEY SAID MATTERS: ${extraContext && extraContext.trim() ? extraCo
 // ═══════════════════════════════════════════════════════════════
 // BUILD MY MEETING PLAN
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/meeting-hijack-stopper', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingGoal, userLanguage } = req.body;
     const duration = Number(req.body.duration);
@@ -469,7 +469,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 6000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-hijack-preventer' });
+    }, { label: 'meeting-hijack-stopper' });
 
     if (!parsed.meeting_plan || !Array.isArray(parsed.meeting_plan.agenda)) {
       return res.status(500).json({ error: 'Could not build the plan. Please try again.' });
@@ -479,7 +479,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingHijackPreventer]', error);
+    console.error('[MeetingHijackStopper]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -489,7 +489,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // captured. Never before: the old tool handed people a decision log and a
 // summary email full of outcomes the meeting had not produced yet.
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-hijack-preventer/follow-up', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/meeting-hijack-stopper/follow-up', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { decided, nextSteps, stillOpen, forNextTime, meetingGoal, userLanguage } = req.body;
 
@@ -552,13 +552,13 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-hijack-preventer-follow-up' });
+    }, { label: 'meeting-hijack-stopper-follow-up' });
 
     if (!parsed.message) return res.status(500).json({ error: 'Could not draft the follow-up. Please try again.' });
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingHijackPreventer/follow-up]', error);
+    console.error('[MeetingHijackStopper/follow-up]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

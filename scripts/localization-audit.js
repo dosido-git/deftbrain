@@ -138,7 +138,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/EmailUrgencyTriager.js',
   'src/tools/CaptionMagic.js',
   'src/tools/PEP.js',
-  'src/tools/MeetingHijackPreventer.js',
+  'src/tools/MeetingHijackStopper.js',
   'src/tools/VirtualBodyDouble.js',
   'src/tools/LeverageLogic.js',
   'src/tools/TaskAvalancheBreaker.js',

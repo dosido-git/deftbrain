@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Get reclaim-the-floor language for the moment",
-    body:     "Meeting Hijack Preventer generates the in-meeting language — hold-the-floor phrases, bridging redirects, post-interrupt reclaims — that handle chronic interrupters without escalating, plus the private-conversation script for the longer fix.",
+    body:     "Meeting Hijack Stopper takes 'people interrupt each other' as a problem to design around and hands you the language for it — short, conversational, firm where it needs to be, and written to protect the meeting's purpose rather than to correct anyone.",
     features: [
       "Floor-holding language",
       "Post-interrupt reclaim phrases",
@@ -57,7 +57,7 @@ module.exports = {
       "Private-conversation scripts",
       "Tone calibration",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

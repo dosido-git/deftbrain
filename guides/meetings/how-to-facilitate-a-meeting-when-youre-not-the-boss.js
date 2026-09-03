@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Get the facilitation playbook for the room you're in",
-    body:     "Meeting Hijack Preventer reads your attendee list and topic, then generates an agenda and facilitation scripts calibrated for the seniority dynamic — pre-meeting blessing prompts, redirect language, and structured closes.",
+    body:     "Meeting Hijack Stopper never assumes authority you did not tell it about. If who makes the final call is unresolved, it says so and puts that first rather than inventing an escalation path — and the facilitation language it gives you invites rather than commands.",
     features: [
       "Seniority-aware scripts",
       "Pre-meeting alignment prompts",
@@ -57,7 +57,7 @@ module.exports = {
       "Acknowledgment templates",
       "Structured-close language",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

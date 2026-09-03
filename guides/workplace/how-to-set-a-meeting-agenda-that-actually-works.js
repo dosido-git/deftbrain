@@ -22,15 +22,15 @@ module.exports = {
   cta: {
     glyph:    '🛡️',
     headline: "Run the meeting. Don't let it run you.",
-    body:     "Meeting Hijack Preventer generates structured, time-boxed agendas with facilitator scripts for every scenario — managing dominators, drawing out quiet voices, redirecting tangents, virtual meeting protocols. Pick a template or describe a goal, check the known challenges, and get a complete meeting structure plus follow-up artifacts.",
+    body:     "Meeting Hijack Stopper starts from what you say has to be true when the meeting ends, then builds the agenda backwards from that — each block with a reason it exists, a way to run it, and words you could open it with. It builds the lightest structure that gets there rather than bolting on ground rules and a round robin because that is what agendas usually contain.",
     features: [
       "Time-boxed agendas with explicit speaking order and decision frameworks",
       "Facilitator scripts: kind but effective redirect language for live use",
       "Anti-hijack strategies for dominators, interrupters, and tangent-makers",
       "Virtual protocols for Zoom, Teams, Google Meet — and follow-up email templates"
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

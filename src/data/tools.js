@@ -4701,7 +4701,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 },
 {
   modified: "",
-  id: "MeetingHijackPreventer",
+  id: "MeetingHijackStopper",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -4712,7 +4712,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   },
   seoDescription: "Build a meeting agenda around what actually has to happen, with the words to say when it drifts and a checklist for before people leave. Free, no signup.",
   seoTitle: "Meeting Agenda Builder & Facilitation Scripts",
-  title: "Meeting Hijack Preventer",
+  title: "Meeting Hijack Stopper",
   tagline: "Keep meetings structured, inclusive, and on track",
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",

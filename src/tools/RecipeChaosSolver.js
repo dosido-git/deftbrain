@@ -74,7 +74,7 @@ function saveStore(key, items, max) {
 // Uses a reducer (rather than a state hook) so the file's first state-
 // declaration match lands inside the main RecipeChaosSolver component body,
 // not in this helper. Same pattern documented in BuyWise (batch 8) and
-// MeetingHijackPreventer (batch 9).
+// MeetingHijackStopper (batch 9).
 function Section({ icon, title, badge, children, defaultOpen = false, c }) {
   const [open, toggle] = useReducer(o => !o, defaultOpen);
 

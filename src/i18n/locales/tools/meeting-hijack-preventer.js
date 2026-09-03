@@ -1,4 +1,4 @@
-// Meeting Hijack Preventer — mhp_* keys, rewritten 2026-09-03 alongside the
+// Meeting Hijack Stopper — mhp_* keys, rewritten 2026-09-03 alongside the
 // plan-first rebuild. The old set described a different tool: templates, cost
 // tracking, an effectiveness questionnaire, pre-generated minutes and a
 // decision log. Those keys are gone rather than kept "just in case" — a catalog
@@ -18,7 +18,7 @@ export const meetingHijackPreventer = {
     // ── Header / chrome ──
     mhp_tagline: "Walk in with a plan you can actually run",
     mhp_start_over: "↺ Start Over",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Other",
     mhp_skip_optional: "Rather not say",
@@ -160,7 +160,7 @@ export const meetingHijackPreventer = {
   es: {
     mhp_tagline: "Llega con un plan que de verdad puedas dirigir",
     mhp_start_over: "↺ Empezar de nuevo",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Otro",
     mhp_skip_optional: "Prefiero no decirlo",
@@ -293,7 +293,7 @@ export const meetingHijackPreventer = {
   zh: {
     mhp_tagline: "带着一份真能照着走的方案进会议室",
     mhp_start_over: "↺ 重新开始",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "其他",
     mhp_skip_optional: "不想说",
@@ -426,7 +426,7 @@ export const meetingHijackPreventer = {
   hi: {
     mhp_tagline: "ऐसी योजना लेकर जाएँ जिसे आप सचमुच चला सकें",
     mhp_start_over: "↺ फिर से शुरू करें",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "अन्य",
     mhp_skip_optional: "नहीं बताना चाहते",
@@ -559,7 +559,7 @@ export const meetingHijackPreventer = {
   ar: {
     mhp_tagline: "ادخل ومعك خطة يمكنك إدارتها فعلًا",
     mhp_start_over: "↺ ابدأ من جديد",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "غير ذلك",
     mhp_skip_optional: "أفضّل ألّا أقول",
@@ -692,7 +692,7 @@ export const meetingHijackPreventer = {
   pt: {
     mhp_tagline: "Entre com um plano que você consiga mesmo conduzir",
     mhp_start_over: "↺ Começar de novo",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Outro",
     mhp_skip_optional: "Prefiro não dizer",
@@ -825,7 +825,7 @@ export const meetingHijackPreventer = {
   fr: {
     mhp_tagline: "Arrivez avec un plan que vous pouvez vraiment animer",
     mhp_start_over: "↺ Recommencer",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Autre",
     mhp_skip_optional: "Je préfère ne pas le dire",
@@ -958,7 +958,7 @@ export const meetingHijackPreventer = {
   de: {
     mhp_tagline: "Geh mit einem Plan rein, den du wirklich moderieren kannst",
     mhp_start_over: "↺ Neu beginnen",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Anderes",
     mhp_skip_optional: "Lieber nicht sagen",
@@ -1091,7 +1091,7 @@ export const meetingHijackPreventer = {
   ja: {
     mhp_tagline: "実際に回せる進行案を持って入る",
     mhp_start_over: "↺ 最初から",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "その他",
     mhp_skip_optional: "答えたくない",
@@ -1224,7 +1224,7 @@ export const meetingHijackPreventer = {
   ko: {
     mhp_tagline: "실제로 굴릴 수 있는 계획을 들고 들어가세요",
     mhp_start_over: "↺ 처음부터",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "기타",
     mhp_skip_optional: "말하지 않겠습니다",
@@ -1357,7 +1357,7 @@ export const meetingHijackPreventer = {
   ru: {
     mhp_tagline: "Заходите с планом, который реально можно вести",
     mhp_start_over: "↺ Начать заново",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Другое",
     mhp_skip_optional: "Предпочту не говорить",
@@ -1490,7 +1490,7 @@ export const meetingHijackPreventer = {
   th: {
     mhp_tagline: "เดินเข้าไปพร้อมแผนที่คุณคุมได้จริง",
     mhp_start_over: "↺ เริ่มใหม่",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "อื่น ๆ",
     mhp_skip_optional: "ขอไม่บอก",
@@ -1623,7 +1623,7 @@ export const meetingHijackPreventer = {
   vi: {
     mhp_tagline: "Bước vào với một kế hoạch bạn thật sự điều hành được",
     mhp_start_over: "↺ Bắt đầu lại",
-    mhp_default_copy_title: "Meeting Hijack Preventer",
+    mhp_default_copy_title: "Meeting Hijack Stopper",
     mhp_required: "*",
     mhp_other: "Khác",
     mhp_skip_optional: "Không muốn nói",

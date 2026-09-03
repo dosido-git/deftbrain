@@ -46,7 +46,7 @@ const MEETING_TYPES = [
 // PROBLEM, never a kind of person — the old set said "one person tends to
 // dominate" and "quiet participants struggle", which handed the model a
 // character sketch it then wrote into the plan. The keys match the CHALLENGES
-// map in backend/routes/meeting-hijack-preventer.js.
+// map in backend/routes/meeting-hijack-stopper.js.
 const CHALLENGE_OPTS = [
   { key: 'airtime',      labelKey: 'mhp_ch_airtime' },
   { key: 'wanders',      labelKey: 'mhp_ch_wanders' },
@@ -211,7 +211,7 @@ function KeepOnTrack({ results, c, isDark, onFinish, t }) {
 // ════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ════════════════════════════════════════════════════════════
-const MeetingHijackPreventer = ({ tool }) => {
+const MeetingHijackStopper = ({ tool }) => {
   const { callToolEndpoint, loading } = useClaudeAPI();
   const { t } = useTranslation();
   const { isDark } = useTheme();
@@ -311,7 +311,7 @@ const MeetingHijackPreventer = ({ tool }) => {
     setResults(null);
     setFollowUp(null);
     try {
-      const data = await callToolEndpoint('meeting-hijack-preventer', {
+      const data = await callToolEndpoint('meeting-hijack-stopper', {
         meetingGoal: meetingGoal.trim(),
         duration: effectiveDuration,
         participantCount: participantCount ? parseInt(participantCount, 10) : null,
@@ -352,7 +352,7 @@ const MeetingHijackPreventer = ({ tool }) => {
     setError('');
     setFollowUp(null);
     try {
-      const data = await callToolEndpoint('meeting-hijack-preventer/follow-up', {
+      const data = await callToolEndpoint('meeting-hijack-stopper/follow-up', {
         meetingGoal: meetingGoal.trim() || null,
         decided: decided.trim() || null,
         nextSteps: nextSteps.filter(s => s.task.trim()),
@@ -375,7 +375,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
   // ── Try an example ──
   const loadExample = useCallback(() => {
-    const ex = pickExample('MeetingHijackPreventer', EXAMPLES);
+    const ex = pickExample('MeetingHijackStopper', EXAMPLES);
     setMeetingGoal(ex.meetingGoal);
     setDuration(ex.duration);
     setCustomDuration('');
@@ -1021,10 +1021,10 @@ const MeetingHijackPreventer = ({ tool }) => {
   );
 };
 
-MeetingHijackPreventer.displayName = 'MeetingHijackPreventer';
+MeetingHijackStopper.displayName = 'MeetingHijackStopper';
 
 // ════════════════════════════════════════════════════════════
-// SECTION COMPONENT (declared after MeetingHijackPreventer so PF-14's
+// SECTION COMPONENT (declared after MeetingHijackStopper so PF-14's
 // first-useState scan lands inside the main component, not this helper)
 // ════════════════════════════════════════════════════════════
 function Section({ icon, title, children, defaultOpen = false, c, onToggle }) {
@@ -1045,4 +1045,4 @@ function Section({ icon, title, children, defaultOpen = false, c, onToggle }) {
   return ui;
 }
 
-export default MeetingHijackPreventer;
+export default MeetingHijackStopper;

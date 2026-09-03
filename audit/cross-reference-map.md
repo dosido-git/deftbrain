@@ -88,8 +88,8 @@ Tools are grouped by natural relationship clusters, not categories.
 | **EmailUrgencyTriager** | ← VelvetHammer | Post-result | "Need to write a tough reply? [Velvet Hammer](/VelvetHammer) helps with diplomatic responses." |
 | **BragSheetBuilder** | → LeverageLogic | Post-result | "Ready to use these wins? [Leverage Logic](/LeverageLogic) helps you negotiate with evidence." |
 | **LeverageLogic** | → BragSheetBuilder | Pre-result | "Need ammunition first? Build your case with [Brag Sheet Builder](/BragSheetBuilder)." |
-| **MeetingHijackPreventer** | ← JustifyMyMeeting | Post-result | "Want to decode what was actually said? Run meeting notes through [Justify My Meeting](/JustifyMyMeeting)." |
-| **JustifyMyMeeting** | ← MeetingHijackPreventer | Post-result | "Meeting getting derailed? Next time, prep with [Meeting Hijack Preventer](/MeetingHijackPreventer)." |
+| **MeetingHijackStopper** | ← JustifyMyMeeting | Post-result | "Want to decode what was actually said? Run meeting notes through [Justify My Meeting](/JustifyMyMeeting)." |
+| **JustifyMyMeeting** | ← MeetingHijackStopper | Post-result | "Meeting getting derailed? Next time, prep with [Meeting Hijack Stopper](/MeetingHijackStopper)." |
 
 ---
 

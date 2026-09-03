@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Build the meeting and the scripts before you start",
-    body:     "Meeting Hijack Preventer generates a structured agenda with time-boxed items, facilitator scripts for opening, redirecting, and closing, and intervention language for the moments meetings tend to drift.",
+    body:     "Meeting Hijack Stopper gives you a timed agenda built around what has to be true at the end, the words for the moments it drifts, and a short list for before people leave. Run it against the built-in timer, then write the follow-up from what you actually captured.",
     features: [
       "Time-boxed agenda generator",
       "Facilitator opening scripts",
@@ -63,7 +63,7 @@ module.exports = {
       "Closing recap structure",
       "Inclusion-prompt suggestions",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

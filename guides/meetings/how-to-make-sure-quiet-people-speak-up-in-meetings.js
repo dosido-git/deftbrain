@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Generate inclusion prompts for your specific room",
-    body:     "Meeting Hijack Preventer reads your agenda and attendee list and generates topic-specific prompts, pre-warning messages, and round-robin moments calibrated to draw out the quieter contributors.",
+    body:     "Meeting Hijack Stopper chooses participation methods from what the meeting needs — written input, thinking time, opening the floor to perspectives not yet heard — instead of demanding that everyone speak. It addresses someone by name only if you supplied the name, and it never reads silence as discomfort.",
     features: [
       "Topic-specific prompts",
       "Pre-meeting warning scripts",
@@ -63,7 +63,7 @@ module.exports = {
       "Inclusion-prompt language",
       "Acknowledgment templates",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Get redirect language before the meeting starts",
-    body:     "Meeting Hijack Preventer generates intervention scripts for the dominators, interrupters, and tangent-takers in your specific room — calibrated for the seniority dynamic and the meeting's stated outcome.",
+    body:     "Meeting Hijack Stopper prepares you for the airtime problem without deciding who causes it or why. You get a prevention, a response, and a line to say — and nothing in the plan describes anyone in your room as dominant, because you told it about a pattern, not a person.",
     features: [
       "Dominator-redirect scripts",
       "Inclusion-prompt language",
@@ -63,7 +63,7 @@ module.exports = {
       "Tone calibration",
       "Anti-hijack strategies",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

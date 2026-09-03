@@ -2402,9 +2402,9 @@ Input: A standing 60-minute engineering all-hands with 22 attendees. The agenda 
 
 Output: Verdict: MAKE IT ASYNC. The reasoning names what synchronous time is buying here — nothing a written update would not — and what would change the verdict, such as a decision that needs the disagreement in the room. The time footprint is computed from your own numbers: 22 × 1h = 22 person-hours. A better way: a written update thread with a short live slot kept only for what needs discussion. Then it drafts the message, which proposes rather than announces, because you may not have the authority to change someone else's meeting.
 
-### Meeting Hijack Preventer
+### Meeting Hijack Stopper
 
-URL: https://deftbrain.com/MeetingHijackPreventer
+URL: https://deftbrain.com/MeetingHijackStopper
 Tagline: Keep meetings structured, inclusive, and on track
 Categories: The Office
 

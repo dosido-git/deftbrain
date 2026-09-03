@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🛡',
     headline: "Get redirect language for the moment of drift",
-    body:     "Meeting Hijack Preventer generates the exact in-meeting language — parking-lot offers, time-anchored redirects, group-framed corrections — that bring a meeting back on topic without making it personal.",
+    body:     "Meeting Hijack Stopper writes the in-meeting language for a wandering conversation: naming the tangent, capturing it if it deserves capturing, and getting back to the question in front of you. No corporate facilitation filler — just words you could say aloud.",
     features: [
       "Tangent-redirect scripts",
       "Parking-lot phrasing",
@@ -63,7 +63,7 @@ module.exports = {
       "Group-framed corrections",
       "Tone calibration",
     ],
-    toolId:   'MeetingHijackPreventer',
-    toolName: 'Meeting Hijack Preventer',
+    toolId:   'MeetingHijackStopper',
+    toolName: 'Meeting Hijack Stopper',
   },
 };

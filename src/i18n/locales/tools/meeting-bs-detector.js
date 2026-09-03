@@ -191,7 +191,7 @@ export const meetingBsDetector = {
     // ── Misc ──
     mbd_xref_before: "Before the meeting",
     mbd_xref_next_step: "Next step",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -358,7 +358,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "Antes de la reunión",
     mbd_xref_next_step: "Siguiente paso",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -525,7 +525,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "开会之前",
     mbd_xref_next_step: "下一步",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -692,7 +692,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "मीटिंग से पहले",
     mbd_xref_next_step: "अगला कदम",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -859,7 +859,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "قبل الاجتماع",
     mbd_xref_next_step: "الخطوة التالية",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1026,7 +1026,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "Antes da reunião",
     mbd_xref_next_step: "Próximo passo",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1193,7 +1193,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "Avant la réunion",
     mbd_xref_next_step: "Prochaine étape",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1360,7 +1360,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "Vor dem Meeting",
     mbd_xref_next_step: "Nächster Schritt",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1527,7 +1527,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "会議の前に",
     mbd_xref_next_step: "次の一手",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1694,7 +1694,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "회의 전에",
     mbd_xref_next_step: "다음 단계",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -1861,7 +1861,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "До встречи",
     mbd_xref_next_step: "Следующий шаг",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -2028,7 +2028,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "ก่อนการประชุม",
     mbd_xref_next_step: "ก้าวต่อไป",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },
@@ -2195,7 +2195,7 @@ export const meetingBsDetector = {
 
     mbd_xref_before: "Trước cuộc họp",
     mbd_xref_next_step: "Bước tiếp theo",
-    mbd_xref_hijack: "🛡️ Meeting Hijack Preventer",
+    mbd_xref_hijack: "🛡️ Meeting Hijack Stopper",
     mbd_xref_jargon: "🗡️ Jargon Assassin",
     mbd_xref_heckler: "😤 Heckler Prep",
   },

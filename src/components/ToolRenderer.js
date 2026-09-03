@@ -15,6 +15,7 @@ const TOOL_ALIASES = {
   IdeaAutopsy: 'ConceptCoach', // renamed 2026-08-31
   LuckSurface: 'GetNoticed',   // renamed 2026-09-02
   MeetingBSDetector: 'JustifyMyMeeting', // renamed 2026-09-02
+  MeetingHijackPreventer: 'MeetingHijackStopper', // renamed 2026-09-03
 };
 
 const ToolRenderer = ({ college }) => {
