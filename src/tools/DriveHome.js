@@ -6,6 +6,7 @@ import { useRegisterActions } from '../components/ActionBarContext';
 import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { CopyBtn } from '../components/ActionButtons';
+import { useScrollToSection } from '../hooks/useScrollToSection';
 
 // ════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -390,6 +391,11 @@ const DriveHome = ({ tool }) => {
   // ══════════════════════════════════════════
   // RENDER
   // ══════════════════════════════════════════
+  // Reveal the answer when it arrives: frame the tool if its header fits,
+  // otherwise put the answer on top. Focus moves either way.
+  const revealRef = useRef(null);
+  useScrollToSection(revealRef, result);
+
   return (
     <div className={`space-y-4 ${c.text}`}>
       {/* ── PF-30 header: icon + tagline, Try an example, Start over ── */}
@@ -490,7 +496,7 @@ const DriveHome = ({ tool }) => {
       )}
 
       {result && (
-        <div className="space-y-4">
+        <div ref={revealRef} className="scroll-mt-24 space-y-4">
           <section className={`rounded-xl border p-4 md:p-5 ${tone}`}>
             <p className="text-xs font-bold uppercase tracking-wide">{readLabel}</p>
             <h2 className="mt-2 text-xl font-bold">{result.headline}</h2>
