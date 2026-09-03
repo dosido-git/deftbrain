@@ -10,7 +10,7 @@
     {
       "name": "plan-decision-unknown-authority",
       "endpoint": "/api/meeting-hijack-stopper",
-      "guards": "Decision framework is 'Not sure', so decision_plan.what_needs_clarifying MUST name who decides rather than inventing an answer, and nothing may describe an escalation path. Two challenges selected means exactly two watch_for entries. Agenda minutes must sum to at most 60, and meeting_plan.scheduled_minutes / unscheduled_minutes are computed in code — the agenda is fitted DOWNWARD only, so an agenda that came in under 60 keeps its slack rather than being padded.",
+      "guards": "Framework is 'Not sure', so decision_plan.what_needs_clarifying MUST name who decides rather than inventing an answer, and no escalation path may appear. Two challenges → exactly two watch_for. scheduled_minutes + unscheduled_minutes == 60; the agenda is fitted DOWNWARD only, so slack the model left is slack it meant.",
       "input": {
         "meetingGoal": "Decide which two of the four proposals move forward to the design phase.",
         "duration": 60,
@@ -32,88 +32,82 @@
       ],
       "output": {
         "meeting_plan": {
-          "goal": "Choose which two of the four proposals move forward to the design phase.",
-          "end_state": "Two proposals are selected by name, any open conditions are noted, and each participant knows what happens next.",
+          "goal": "Decide which two of the four proposals move forward to the design phase.",
+          "end_state": "Two proposals are selected and written down with a clear record of the choice, or the unresolved selection and the person or process with authority to settle it are clearly identified, along with whatever partial agreement was reached.",
           "total_minutes": 60,
           "agenda": [
             {
-              "title": "Frame the decision",
-              "minutes": 5,
-              "purpose": "Make the exit criteria explicit before evaluation begins so the group knows what they are deciding and how.",
-              "how_to_run_it": "State the goal, the constraint (exactly two move forward), and name the unresolved question of who makes the final call if the group cannot reach agreement. Get a quick verbal acknowledgment.",
-              "say_this_if_helpful": "We are here to pick two proposals to take into design. Only two move forward today. Before we dig in, I want to flag that we have not established what happens if we cannot agree — so if that becomes relevant, we will need to pause and sort that out rather than push past it."
+              "title": "Clarify the decision and who can make it",
+              "minutes": 8,
+              "purpose": "Establish upfront how two proposals will be chosen and who has authority to finalize it, so the rest of the meeting has a clear endpoint.",
+              "how_to_run_it": "Name the decision plainly: which two proposals advance. Ask the group directly whether there is an agreed process for making that call, and who has authority if the group cannot reach agreement. Write the answer where everyone can see it before moving on.",
+              "say_this_if_helpful": "Before we get into the proposals, I want to make sure we know what we are deciding and how. We need to choose two of the four proposals to move forward. Does everyone understand that framing? And if we cannot reach agreement, who has the authority to make the final call? I want that settled now so we are not figuring it out at the end."
             },
             {
-              "title": "Clarify the proposals",
-              "minutes": 10,
-              "purpose": "Give every participant a shared, accurate picture of all four proposals before evaluation starts.",
-              "how_to_run_it": "Invite a brief summary of each proposal — one or two sentences each, from whoever knows it best. Hold questions until all four are described. If a proposal is already well understood by everyone, skip its summary.",
-              "say_this_if_helpful": "Quick summaries only — enough that anyone who is less familiar can evaluate fairly. We will get into pros and cons next."
+              "title": "Brief review of each proposal",
+              "minutes": 16,
+              "purpose": "Give every participant a shared baseline on all four proposals before evaluation begins.",
+              "how_to_run_it": "Give each proposal roughly four minutes. Ask whoever is presenting or summarizing it to cover the core idea and what advancing it would require. Hold questions until all four have been introduced.",
+              "say_this_if_helpful": "We will take about four minutes per proposal to make sure everyone has the same picture. Please hold questions until we have been through all four."
             },
             {
-              "title": "Evaluate against shared criteria",
+              "title": "Identify the strongest cases for each proposal",
               "minutes": 20,
-              "purpose": "Surface the strongest reasons for and against each proposal so the group is making a reasoned choice.",
-              "how_to_run_it": "Ask the group to name what criteria matter most for moving to design, then work through the proposals against those criteria in open discussion. Keep the focus on the criteria, not on advocacy. If the conversation lingers on one proposal, move it forward explicitly.",
-              "say_this_if_helpful": "What do we need a proposal to demonstrate before we invest in designing it? Let us agree on that first, then use it to look at each one."
+              "purpose": "Surface the reasoning behind each proposal so the group is comparing on substance, not just preference.",
+              "how_to_run_it": "Open discussion, but actively manage airtime. For each proposal, invite arguments in its favor and any significant concerns. If discussion stalls on one proposal, move it forward. If it runs long, redirect to the next. Note that two proposals share a team of origin; invite the group to assess all four against the same criteria rather than treating origin as a factor.",
+              "say_this_if_helpful": "For each proposal, I want to hear the strongest case for advancing it, and any material concerns about doing so. We will try to apply the same lens to all four. We have about five minutes per proposal, so I will move us along when needed."
             },
             {
-              "title": "Make the selection",
-              "minutes": 15,
-              "purpose": "Reach the actual decision — two proposals chosen — using the criteria the group named.",
-              "how_to_run_it": "Ask directly which two proposals the group supports advancing, using the criteria as the reference point. If there is clear convergence, name it and confirm. If there is disagreement, surface the specific sticking point and resolve it — or, if the group cannot resolve it, invoke the clarification you named at the start about who decides.",
-              "say_this_if_helpful": "Based on what we just worked through, which two are we advancing? I want to name what I am hearing and check whether we are aligned."
-            },
-            {
-              "title": "Capture and close",
-              "minutes": 5,
-              "purpose": "Leave with a shared record of the decision, any conditions attached to it, and the immediate next step.",
-              "how_to_run_it": "State the two selected proposals by name. Note any conditions or open questions the group flagged. Confirm who is doing what next and when. Ask if anything is missing before closing.",
-              "say_this_if_helpful": "We are advancing [proposal name] and [proposal name]. Here is what we said happens next. Anything missing before we close?"
+              "title": "Select two proposals or frame the unresolved choice",
+              "minutes": 12,
+              "purpose": "Reach the decision or, if agreement is not there, produce a clear and actionable statement of what is unresolved.",
+              "how_to_run_it": "Ask whether any two proposals have clear support from the group. If yes, name them and confirm. If there is disagreement, identify exactly which proposals are in contention and what the sticking point is, then apply the decision process clarified in the first block.",
+              "say_this_if_helpful": "Based on what we have heard, I want to see if we can name two proposals. Are there two that the group feels ready to move forward? If there is disagreement, let us be specific about which proposals are in question and what is making this difficult."
             }
           ],
-          "scheduled_minutes": 55,
-          "unscheduled_minutes": 5
+          "scheduled_minutes": 56,
+          "unscheduled_minutes": 4
         },
         "watch_for": [
           {
-            "situation": "One voice is carrying most of the airtime during evaluation, and other perspectives have not been heard.",
-            "prevent_it": "In the evaluation block, explicitly invite input from others before the same person speaks again.",
-            "if_it_happens": "Redirect by name to the purpose, then open the floor broadly.",
-            "say_this": "I want to make sure we are drawing on everyone here before we stay with this thread. Is there a perspective on this proposal we have not heard yet?"
+            "situation": "One person speaks at length on most points, and other voices are not getting into the discussion.",
+            "prevent_it": "State early that you will be actively inviting other perspectives throughout, so it is expected rather than surprising when you do.",
+            "if_it_happens": "Redirect by name to the group, not to the individual, to avoid making it personal.",
+            "say_this": "I want to make sure we hear other perspectives on this before we move on. Is there anything we have not covered yet?"
           },
           {
-            "situation": "The conversation drifts into questions about a proposal beyond scope — its implementation, resourcing, or broader strategy — rather than whether it advances.",
-            "prevent_it": "State the evaluation criteria explicitly in the criteria block so the group has a reference to return to.",
-            "if_it_happens": "Name the drift, capture the point if it matters, and redirect to the selection criteria.",
-            "say_this": "That is worth knowing, but it is taking us past today's decision. Can we note it and come back to whether this proposal meets the criteria we set?"
+            "situation": "The conversation moves away from which two proposals advance and onto broader topics such as implementation details, team resourcing, or future phases.",
+            "prevent_it": "Write the decision question visibly at the start and refer back to it whenever discussion drifts.",
+            "if_it_happens": "Name what is happening and redirect to the decision in front of the group.",
+            "say_this": "That is worth exploring, but it is going to pull us away from the choice we need to make today. Can we note it and come back to the two proposals?"
           }
         ],
         "decision_plan": {
           "needed": true,
-          "approach": "Work toward convergence through the criteria-based evaluation. When the group discusses the proposals against shared criteria, the selection should follow from that conversation rather than requiring a separate vote. If the group converges on two proposals, name the decision and confirm it explicitly. If there is genuine disagreement, isolate the specific point of difference rather than re-litigating everything — and if agreement cannot be reached, the group will need to clarify who holds the final call before the meeting can close.",
-          "what_needs_clarifying": "Who makes the final call if the group does not agree on which two proposals advance. This is unresolved and needs to be named at the start so the group knows what happens if they get stuck. Also worth noting: two proposals come from the same team, which does not disqualify them but may make it useful to confirm early that the selection criteria apply equally to all four."
+          "approach": "The first agenda block establishes how the group will decide and who has authority if agreement is not reached. The discussion in the middle blocks builds a shared picture of each proposal. The final block uses that shared picture to test for agreement on two proposals. If agreement is present, name the two proposals and record them. If the group cannot agree, name exactly which proposals are in contention, what the sticking point is, and refer the unresolved choice to whoever was identified as having authority in the first block.",
+          "what_needs_clarifying": "Who has the authority to make the final selection if the group does not reach agreement. This is not established and should be named in the first agenda block before discussion begins."
         },
         "before_the_meeting": [
-          "Send participants a brief summary of all four proposals with enough time to review before the meeting — they should arrive already familiar with the basics.",
-          "Decide what you will say if the group cannot agree: either you know who holds the final call, or you surface that gap at the start and let the group name it.",
-          "Confirm whether the platform chat will be available and usable — it is helpful for collecting criteria or capturing decisions in real time without interrupting the flow."
+          "Send participants a short summary of all four proposals with enough time to review before the meeting, so the review block can stay brief.",
+          "Prepare a shared visual or document where you can write the decision question, any agreements, and open items as the meeting runs.",
+          "Know in advance whether the two proposals from the same team will be presented by that team, and plan to apply consistent criteria across all four regardless of origin."
         ],
         "finish_strong": {
           "before_people_leave": [
-            "Name both selected proposals explicitly — not by description, by name.",
-            "Note any conditions the group attached to either selection.",
-            "Confirm the immediate next step and who owns it.",
-            "Flag any unresolved questions that need follow-up outside the meeting."
+            "If two proposals were selected, write them down and confirm the group sees the same record.",
+            "If the selection is unresolved, write the exact question that remains open and name which proposals are in contention.",
+            "Record whatever partial agreement was reached, even if the final choice was not settled.",
+            "Name who has authority to settle any unresolved choice and what the next step is.",
+            "Confirm whether any follow-up communication is needed and who will send it."
           ],
-          "closing_script": "We are leaving with two proposals selected to move into design. If anything about that decision needs to travel outside this room, it should reflect what we agreed here — not the conversation around it. Thank you for the focus it took to get there."
+          "closing_script": "Here is where we landed: either two proposals are confirmed to move forward, or we have a clear picture of what is still open and who will resolve it. I will make sure that record goes out to everyone so we are working from the same information. Thank you for the time."
         }
       }
     },
     {
       "name": "plan-names-supplied-disagree-and-commit",
       "endpoint": "/api/meeting-hijack-stopper",
-      "guards": "Names ARE supplied, so addressing Sam, Priya or Dana directly is allowed here — the rule is that a name may be used only when the visitor gave it. 'Disagree & commit' must be adapted as a preference: nothing may require anyone to type COMMIT, declare a decision final, or escalate to leadership. Seven challenges selected means seven watch_for entries, each describing a situation and never a person.",
+      "guards": "The case the 2026-09-03 pass exists for. Names ARE supplied, so using them is allowed — but nothing may RANK them (no 'the three most directly affected', no 'key stakeholder'), and 'Dana will be affected' must stay exposure rather than becoming a constraint Dana holds: 'ask Dana how the splits would affect the platform group', never 'get Dana's constraints'. 'Disagree & commit' is a discussion norm, not authority: with no decision owner established, no script may demand a yes or a no, require anyone to commit, or declare anything final. end_state must carry BOTH branches — a split agreed, OR the unresolved question and its decision owner identified — because an outcome that only counts when the room agrees is an outcome for half the meetings. before_people_leave must work either way. And the previous unresolved quarter is context, not a mandate: 'the meeting's stated goal is to settle it today', never 'we cannot let that happen again'. All three watch_for entries must describe what someone in the room would SEE — two people speaking at once, an agreement still vague about the next action — never heat, defensiveness or private lack of commitment.",
       "input": {
         "meetingGoal": "Agree how we split on-call between the two teams for next quarter.",
         "duration": 45,
@@ -140,51 +134,44 @@
       ],
       "output": {
         "meeting_plan": {
-          "goal": "Agree how to split on-call responsibility between the two teams for next quarter.",
-          "end_state": "A specific on-call split is agreed, or if full agreement is not reached, a named person makes the call before everyone leaves the room.",
+          "goal": "Agree how on-call will be split between the two teams for next quarter.",
+          "end_state": "A specific on-call split for next quarter is agreed and written down, or the exact unresolved choice and the person or process that can settle it are clearly identified.",
           "total_minutes": 45,
           "agenda": [
             {
-              "title": "Frame the problem and what we need to leave with",
+              "title": "Frame the problem and the finish line",
               "minutes": 5,
-              "purpose": "Make the stakes and the endpoint concrete so the conversation stays anchored — especially given that this was unresolved last quarter.",
-              "how_to_run_it": "State the outcome plainly: we need a specific split agreed today, not a direction to keep discussing. Name that if we reach 45 minutes without agreement, a decision will still be made before people leave.",
-              "say_this_if_helpful": "We are here to land a specific on-call split for next quarter — not to revisit whether to do it, but how to divide it. Last quarter this did not get resolved, so today we are going to close it. If we cannot fully agree, we will still name a decision before we break up."
+              "purpose": "Orient everyone to the same question so the discussion has a clear target from the start.",
+              "how_to_run_it": "State the goal plainly: leave with a decided split or a clear decision path. Name the two possible endings so no one is surprised if agreement is not reached. Invite Sam and Priya to confirm the question is framed correctly before discussion opens.",
+              "say_this_if_helpful": "Last quarter this stayed unresolved. Today the goal is to leave with a clear on-call split for next quarter, or if we cannot get there, a clear statement of what is unresolved and who can settle it. Sam, Priya, does that capture what we need to decide?"
             },
             {
-              "title": "Clarify who decides if the group does not agree",
-              "minutes": 3,
-              "purpose": "Remove the ambiguity that tends to make hard discussions circular — if people know who holds the final call, the conversation has somewhere to land.",
-              "how_to_run_it": "Ask directly: if Sam, Priya, and Dana cannot reach agreement, who makes the final call? Get that named aloud now, not at the end when time is short.",
-              "say_this_if_helpful": "Before we get into the substance — if we cannot reach full agreement today, who has the final call? I want that named now so we are not figuring it out under pressure at minute 44."
-            },
-            {
-              "title": "Lay out the constraints from each team",
+              "title": "Surface the options",
               "minutes": 10,
-              "purpose": "Get the actual operating limits on the table before anyone proposes a split, so proposals are grounded in what is workable.",
-              "how_to_run_it": "Invite Sam and Priya to each state their team's constraints in two minutes or less — capacity, coverage gaps, anything that makes certain splits unworkable. Then give Dana the same floor for the platform side. Hold proposals until this block is done.",
-              "say_this_if_helpful": "Before we get to proposals, I want to hear constraints first. Sam, what makes certain splits unworkable for your team? Two minutes or so — then Priya, then Dana."
+              "purpose": "Get the realistic split options on the table before anyone argues for one, so the discussion is about choices rather than positions.",
+              "how_to_run_it": "Ask Sam and Priya to each describe what they see as workable splits, one at a time without interruption. Write each option where everyone can see it. Then ask Dana how the proposed splits would affect the platform group. Do not editorialize; just capture.",
+              "say_this_if_helpful": "Before we debate anything, I want to get the options visible. Sam, what splits seem workable from your side? I will capture it, then Priya, I will come to you."
             },
             {
-              "title": "Propose and pressure-test options",
-              "minutes": 18,
-              "purpose": "Generate and narrow the real options, not an open-ended debate.",
-              "how_to_run_it": "Ask for proposals that take the stated constraints into account. Write each option visibly — on a whiteboard or paper everyone can see. For each one, ask what breaks and what works, not whether people like it. Aim to narrow to one or two live options within the block.",
-              "say_this_if_helpful": "What split could actually work given what we just heard? Put a proposal on the table and we will stress-test it — what breaks, what holds."
+              "title": "Examine the options",
+              "minutes": 15,
+              "purpose": "Work through the practical trade-offs of each option so the group has enough information to move toward a choice.",
+              "how_to_run_it": "Take each option in turn. Invite the group to raise practical concerns or questions about it. Keep discussion on observable factors: coverage, load, handoffs. If the conversation drifts, name the option you are on and bring it back. If one voice is carrying the whole discussion, explicitly invite other perspectives before continuing.",
+              "say_this_if_helpful": "Is there anything we are missing before we move to the next one? We have not heard from everyone yet."
             },
             {
-              "title": "Reach the decision",
-              "minutes": 7,
-              "purpose": "Turn the narrowed option into a commitment, or if needed, invoke the decision-maker.",
-              "how_to_run_it": "Name the leading option. Ask whether anyone sees a critical problem not yet raised. If the group can commit, name the decision and the split. If one or two people cannot agree but everyone else can, invite those people to disagree and commit — flag that they can note their objection without blocking the outcome. If agreement is genuinely impossible, the person named earlier makes the call now.",
-              "say_this_if_helpful": "It sounds like the leading option is [the split]. Can everyone commit to that, even if it is not their first choice? If you have a serious objection we have not addressed, now is the time. Otherwise we are naming this as the decision."
+              "title": "Move toward a decision",
+              "minutes": 10,
+              "purpose": "Turn the discussion into a concrete choice.",
+              "how_to_run_it": "Ask whether there is an option, or a combination, the group can live with. If one emerges, state it clearly and check for objections. If a genuine objection is raised, ask what would need to change for it to be workable. If no agreement is in reach, name the sticking point precisely and ask who in the room, or outside it, has the authority to make the final call.",
+              "say_this_if_helpful": "We have about ten minutes. Is there an option on the board, or a version of one, that everyone can work with? If there is a real objection, let us hear it now."
             },
             {
-              "title": "Name next steps before leaving the room",
-              "minutes": 2,
-              "purpose": "Prevent the decision from dissolving between the meeting and implementation.",
-              "how_to_run_it": "State the agreed split, who owns communicating it, and any immediate follow-up needed. Do not move to new topics.",
-              "say_this_if_helpful": "Here is what we agreed: [the split]. Who is communicating this, and to whom, before end of day? Anything else that needs to happen this week for this to hold?"
+              "title": "Lock down what we are leaving with",
+              "minutes": 5,
+              "purpose": "Ensure the outcome is concrete enough to act on whether or not the group fully agreed.",
+              "how_to_run_it": "Read back exactly what was decided, or exactly what remains unresolved. Assign a named next step and owner for anything not settled. Confirm who will communicate the outcome and to whom.",
+              "say_this_if_helpful": "Let me read back what we are leaving with so we are all working from the same thing."
             }
           ],
           "scheduled_minutes": 45,
@@ -192,73 +179,74 @@
         },
         "watch_for": [
           {
-            "situation": "One voice consistently fills the space before others have a chance to respond",
-            "prevent_it": "In the constraints block, structure turns explicitly — name Sam, then Priya, then Dana — so the pattern does not set in early.",
-            "if_it_happens": "Cut in cleanly at a breath and redirect to someone who has not spoken.",
-            "say_this": "I want to hear some other takes before we stay with this one. Priya, what is your read?"
+            "situation": "One person is speaking for an extended stretch and other voices have not come in.",
+            "prevent_it": "Name the expectation early: you will be moving between perspectives to make sure the group has the full picture before deciding.",
+            "if_it_happens": "Cut in at a natural pause, acknowledge the point briefly, and redirect by name to someone who has not spoken.",
+            "say_this": "I want to bring in some other perspectives before we stay with this one. Who else has a view on this option?"
           },
           {
-            "situation": "The conversation drifts into last quarter's dispute rather than the decision in front of the group",
-            "prevent_it": "Open by naming that this is about the split for next quarter, not a post-mortem.",
-            "if_it_happens": "Name the drift and redirect without relitigating it.",
-            "say_this": "That history is real, but relitigating it will not get us to a split today. Let us focus on what works for next quarter."
+            "situation": "The discussion moves away from the on-call split and onto a different problem or grievance.",
+            "prevent_it": "Write the specific question on a shared surface at the start so it stays visible as an anchor.",
+            "if_it_happens": "Name the drift without judgment and redirect to the decision in front of the group.",
+            "say_this": "That is worth discussing, but I do not think we can do it justice here. Can we note it and come back to the split question?"
           },
           {
-            "situation": "People talk over each other and threads get lost",
-            "prevent_it": "Keep one option or question visible at a time — write it where everyone can see it so there is a shared reference point.",
-            "if_it_happens": "Stop the conversation briefly and restate the specific question on the table.",
-            "say_this": "Let me pause us — we have multiple threads going. The question in front of us right now is [restate it]. Who wants to go first on that?"
+            "situation": "Two people start talking at the same time and one thread risks getting lost.",
+            "prevent_it": "Establish at the start that you will manage speaking order when it gets tangled.",
+            "if_it_happens": "Name both speakers, pick one to go first, and commit to returning to the other.",
+            "say_this": "Let us take these one at a time. Sam, finish your point, then Priya, I will come straight to you."
           },
           {
-            "situation": "The clock runs short before a decision is reached",
-            "prevent_it": "Keep the options-and-proposals block to its 18 minutes; name the time when you enter the decision block.",
-            "if_it_happens": "Skip further deliberation and go straight to the decision or invoke the named decision-maker.",
-            "say_this": "We have five minutes. We are not going to resolve every concern, so we need to call it. The leading option is [the split] — who cannot commit to that?"
+            "situation": "The clock is running short and the group is still working through options without a decision in sight.",
+            "prevent_it": "Flag the time at the start of the decision block so urgency is shared, not just held by the facilitator.",
+            "if_it_happens": "Name the time remaining, state the two possible endings, and ask the group to choose which path they are on.",
+            "say_this": "We have about five minutes. If we are not going to land a decision today, I need us to name exactly what is unresolved and who can settle it."
           },
           {
-            "situation": "Some participants have not contributed anything by the time options are on the table",
-            "prevent_it": "Structure the constraints block so each team lead has a named turn; Dana is also explicitly given a floor.",
-            "if_it_happens": "Offer a direct but low-pressure invitation.",
-            "say_this": "We have not heard from everyone yet. Is there a constraint or problem with this option we have not raised?"
+            "situation": "Several people have not said anything and the discussion is being carried by a smaller subset.",
+            "prevent_it": "After options are on the table, explicitly invite the full group before moving to the decision block.",
+            "if_it_happens": "Pause the main thread and address the broader group with an open invitation.",
+            "say_this": "Before we move on, is there anything on the table we are missing? Any perspective we have not heard yet?"
           },
           {
-            "situation": "The group talks in circles and cannot land on a decision",
-            "prevent_it": "Clarify the decision-maker in the opening block so you have somewhere to go if consensus fails.",
-            "if_it_happens": "Name that the conversation has covered the ground and invoke the agreed process.",
-            "say_this": "We have heard the considerations. We are not going to resolve every concern by talking longer. [Name], this is yours to call."
+            "situation": "The group cannot reach agreement and the meeting risks ending without a clear next step.",
+            "prevent_it": "State both valid endings at the start so the group knows a clear decision path is also a success.",
+            "if_it_happens": "Stop trying to force agreement and shift to framing the unresolved choice precisely, then ask who has the authority to make the final call.",
+            "say_this": "We are not going to force a decision that is not there. Let us name exactly what is unresolved and figure out who can settle it and by when."
           },
           {
-            "situation": "The meeting ends with no clear next steps attached to the decision",
-            "prevent_it": "Hold the last two minutes of the agenda for next steps only — do not let it get absorbed into the decision discussion.",
-            "if_it_happens": "Stop new discussion and state the closing questions directly.",
-            "say_this": "Before we break up — who is communicating this decision, and what needs to happen this week for the split to actually hold?"
+            "situation": "The meeting ends with an apparent agreement that is still vague enough that the next action is unclear.",
+            "prevent_it": "Reserve the last five minutes explicitly for reading back what was decided in concrete terms before anyone leaves.",
+            "if_it_happens": "Before closing, ask someone to state the decision in their own words and check whether it is specific enough to act on.",
+            "say_this": "Can someone say back what we just agreed to, specifically enough that we could put it in writing right now?"
           }
         ],
         "decision_plan": {
           "needed": true,
-          "approach": "Narrow to one workable option through constraint-grounded proposals, then ask for commitment. Frame it as: if you have a serious unresolved objection, name it now; otherwise you are committing even if this is not your preferred split. If one or two people resist but the group is otherwise aligned, invite them to disagree and commit — their objection is noted, the decision still stands. If genuine deadlock remains, the person named at the start of the meeting makes the final call before everyone leaves the room.",
-          "what_needs_clarifying": "Who holds the final decision if Sam, Priya, and Dana cannot agree — this is not established and needs to be named at the start of the meeting, not after the discussion fails."
+          "approach": "Work through the options until one emerges that the group can accept. If there is disagreement, ask whether the objection changes the option or blocks it entirely. If a version of an option can address the objection, revise and check again. If the group is genuinely split and no resolution is in reach, the goal shifts: name the exact sticking point, capture what was agreed, and identify who has the authority to make the final call outside the room. The disagree-and-commit framing is useful here as a signal that people do not need to love the outcome to move forward with it, but do not invoke it as a mechanism to override an objection or declare the decision closed.",
+          "what_needs_clarifying": "Who has the authority to make the final call if Sam, Priya, and the group cannot agree in the room. This should be identified before or at the start of the meeting so the group knows what a stalemate actually means."
         },
         "before_the_meeting": [
-          "Ask Sam, Priya, and Dana to come with their team's constraints written down — not a proposal, just what makes certain splits unworkable.",
-          "Confirm privately who has the final call if the group cannot agree, so you are not surfacing that question cold in the room.",
-          "Have a whiteboard or large paper available so options can be written visibly during the proposals block."
+          "Ask Sam and Priya separately what splits they see as workable, so you arrive knowing the range of options rather than discovering them live.",
+          "Ask Dana what aspects of the proposed splits would affect the platform group, so that impact can be raised at the right moment rather than surfacing as a surprise.",
+          "Find out who, if anyone, has the authority to make the final call if the group does not agree, and confirm whether that person is in the room.",
+          "Write the decision question somewhere visible in the room before people arrive."
         ],
         "finish_strong": {
           "before_people_leave": [
-            "The specific on-call split for next quarter is stated aloud and agreed or called.",
-            "Any dissenting views are acknowledged without reopening the decision.",
-            "One person is named to communicate the decision and to whom.",
-            "Any immediate follow-up actions are named with an owner."
+            "Read back the agreed split in specific terms, or name the exact unresolved question if agreement was not reached.",
+            "If a decision was reached, confirm who owns communicating it and to whom.",
+            "If a decision was not reached, confirm who has the authority to settle it and what the next step is.",
+            "Note anything that came up that needs a separate conversation, so it does not quietly reopen this one."
           ],
-          "closing_script": "Here is where we landed: [restate the split]. That is the decision for next quarter. [Name] is communicating it to [whoever needs to know]. Thank you for staying in it — this one needed to get closed."
+          "closing_script": "Here is what we are leaving with: either a specific split we agreed on, or a precise statement of what is still open and who handles it from here. I will make sure that is written up and shared. Thank you for working through a genuinely difficult question."
         }
       }
     },
     {
       "name": "plan-bare-minimum",
       "endpoint": "/api/meeting-hijack-stopper",
-      "guards": "Only a goal and a duration. Nothing else was supplied, so nothing may be invented: no headcount, no platform features, no roles, no lead times ('send it 24 hours in advance'), no named participants. No challenges selected, so watch_for is capped at 2 and may legitimately be short. This is the case that catches a model filling silence.",
+      "guards": "Only a goal and a duration. No invented headcount, platform, roles or lead times. No challenges selected, so watch_for is capped at 2 and may legitimately be short. This is the case that catches a model filling silence.",
       "input": {
         "meetingGoal": "Work out why the last release slipped and what we change before the next one.",
         "duration": 30,
@@ -278,37 +266,37 @@
       ],
       "output": {
         "meeting_plan": {
-          "goal": "Work out why the last release slipped and what we change before the next one.",
-          "end_state": "The group has agreed on the specific causes of the slip and named the concrete changes to make before the next release, with owners and any open questions recorded.",
+          "goal": "Work out why the last release slipped and what changes before the next one.",
+          "end_state": "The group has named the specific causes of the slip and agreed on at least one concrete change for the next release, or the unresolved questions and who has authority to settle them are clearly written down.",
           "total_minutes": 30,
           "agenda": [
             {
-              "title": "Set the frame",
+              "title": "Frame the two questions",
               "minutes": 3,
-              "purpose": "Make sure everyone is working the same problem so the conversation stays focused.",
-              "how_to_run_it": "State the two questions driving the meeting — why did the release slip, and what changes before the next one. Say what you want to leave with: causes and agreed changes, not a full post-mortem document.",
-              "say_this_if_helpful": "We have 30 minutes. I want us to leave with a shared read on what caused the slip and a short list of concrete changes we are actually going to make before the next release. Let's stay on those two questions."
+              "purpose": "Make sure everyone is working on the same problem before discussion opens.",
+              "how_to_run_it": "State both questions plainly and write them where the group can see them: what caused the slip, and what changes before the next release. Clarify that the goal is specific answers, not a general postmortem.",
+              "say_this_if_helpful": "We have 30 minutes. Two questions: what caused the slip, and what do we change before the next release. I want to leave with specific answers to both, or a clear path to them if we cannot settle everything today."
             },
             {
-              "title": "What happened — build a shared picture",
-              "minutes": 9,
-              "purpose": "Get the facts on the table before anyone jumps to fixes, so the group is diagnosing the same event.",
-              "how_to_run_it": "Ask what went wrong and when. Take brief notes on the key points — timeline moments, gaps, surprises. Do not let the group jump to solutions yet; if someone does, note it and bring them back.",
-              "say_this_if_helpful": "Before we talk about what to change, let's make sure we have the same picture of what actually happened. What went wrong, and when did it become visible?"
+              "title": "Causes of the slip",
+              "minutes": 10,
+              "purpose": "Surface what actually happened before moving to fixes.",
+              "how_to_run_it": "Ask the group to name causes. Capture each one briefly. Where multiple causes come up, note them all rather than converging too early. If the list is growing long, ask the group to identify which causes had the most impact on the slip.",
+              "say_this_if_helpful": "What do we think caused the release to slip? I will capture everything. We can sort it in a moment."
             },
             {
-              "title": "Root causes — what drove the slip",
-              "minutes": 9,
-              "purpose": "Move from symptoms to the causes worth acting on.",
-              "how_to_run_it": "Ask what was underneath the problems named in the previous block. Push one level deeper on anything that sounds like a symptom. Capture the causes the group agrees are real drivers, not just contributing noise.",
-              "say_this_if_helpful": "What was actually behind that? If we had caught it earlier, what would we have needed to see?"
+              "title": "Agree on the changes",
+              "minutes": 12,
+              "purpose": "Turn the causes into specific, ownable changes for the next release.",
+              "how_to_run_it": "For each significant cause, ask what would concretely be different next time. Push for specificity: what changes, who is involved, and by when. If the group surfaces more changes than can be resolved in the time remaining, ask which one or two matter most and flag the rest as open questions.",
+              "say_this_if_helpful": "For each cause, what specifically changes before the next release? I want a clear action, not a principle."
             },
             {
-              "title": "What changes — agree on concrete actions",
-              "minutes": 9,
-              "purpose": "Turn the diagnosis into specific, ownable changes before the next release.",
-              "how_to_run_it": "For each root cause, ask what would concretely be different next time and who will own it. Keep the list short — a few changes you will actually make beats a long list no one owns. Record each item as a change, an owner, and any dependency.",
-              "say_this_if_helpful": "For each cause we named, what specifically changes before the next release — and who owns that change?"
+              "title": "Capture and close",
+              "minutes": 5,
+              "purpose": "Leave with a written record that is usable after the meeting ends.",
+              "how_to_run_it": "Read back the causes named and each change agreed. For anything still unresolved, write the exact question and note who has authority to settle it if that is known. Confirm the next step for any open item.",
+              "say_this_if_helpful": "Let me read back what we have. Causes: [list]. Changes agreed: [list]. Still open: [list]. Does that match what you heard?"
             }
           ],
           "scheduled_minutes": 30,
@@ -316,43 +304,44 @@
         },
         "watch_for": [
           {
-            "situation": "The conversation stays on what happened and does not move to causes or changes, consuming the time available.",
-            "prevent_it": "Name the two-question structure at the start and signal the transition explicitly when you move between blocks.",
-            "if_it_happens": "Call the transition out loud and redirect to the next question.",
-            "say_this": "We have a good picture of what happened. Let's use the time we have left to get to causes and changes — that is what we need to leave with."
+            "situation": "The discussion stays on what happened and the group does not move to what changes.",
+            "prevent_it": "Write both questions visibly at the start so the shift from causes to changes is an explicit step, not an implied one.",
+            "if_it_happens": "Name the shift out loud and move the group forward.",
+            "say_this": "We have a solid picture of what happened. I want to use the time we have left on what changes. What would be different next time?"
           },
           {
-            "situation": "The group surfaces more potential changes than can realistically be owned or tracked.",
-            "prevent_it": "When asking for changes, prompt for the two or three that matter most rather than inviting an open list.",
-            "if_it_happens": "Ask the group to name which changes would have the most impact on the next release.",
-            "say_this": "We have several options. Which two or three would actually change the outcome if we committed to them before the next release?"
+            "situation": "A change is agreed in words but the next action is still vague when the group moves on.",
+            "prevent_it": "For each change, ask for the specific action and who is involved before moving to the next one.",
+            "if_it_happens": "Pause and ask the clarifying question before capturing it.",
+            "say_this": "Before we move on: what specifically happens, and who is involved? I want to write something concrete."
           }
         ],
         "decision_plan": {
           "needed": true,
-          "approach": "Work toward agreement on the change list through open discussion. Where the group converges, record it as agreed. Where it does not, name the open question explicitly rather than forcing a close. Each agreed change needs an owner — do not leave the list as collective intent.",
-          "what_needs_clarifying": "Who has the authority to decide if the group disagrees on a change — this is not established and should be named before or at the start of the meeting so a stalemate has a way forward."
+          "approach": "No decision framework was specified. For each proposed change, the group works toward a specific action. If the group agrees, write it down with enough detail to act on. If the group does not agree, write the exact unresolved question and identify who has authority to settle it before the next release.",
+          "what_needs_clarifying": "Who has authority to approve or ratify changes if the group cannot reach agreement in the room. If that is unclear, name it as an open question before the meeting ends."
         },
         "before_the_meeting": [
-          "Know the basic facts of the slip yourself — what was late, by how much, and what was affected — so you can anchor the opening if the group does not have a shared starting point.",
-          "Decide how you will capture the output in the room: a shared doc, a whiteboard, notes you will send after — have that ready before you start.",
-          "If it is not clear who has final authority when the group disagrees, resolve that before the meeting or plan to name it explicitly at the start."
+          "Have a way to write causes and changes where you can read them back at the end, whether that is a shared screen, a whiteboard, or notes you read aloud.",
+          "Know roughly when the next release is scheduled so you can ground any changes in a real timeline if the group asks.",
+          "If there is a short factual record of what slipped and when, have it available so the group does not spend time reconstructing the timeline from memory."
         ],
         "finish_strong": {
           "before_people_leave": [
-            "Read back the agreed root causes so the group confirms them.",
-            "Read back each agreed change with its owner.",
-            "Name any open questions or unresolved causes that need follow-up.",
-            "Confirm how and when the output will be shared."
+            "Read back every cause the group named.",
+            "Read back every change agreed and the specific action attached to each one.",
+            "For anything still unresolved, write the exact question and note who can settle it if that is known.",
+            "Confirm the next step for each open item.",
+            "Ask if anything is missing before people leave."
           ],
-          "closing_script": "Here is what we agreed: the slip came down to these causes, and we are making these specific changes before the next release, each with an owner. I will send this out so it is on record. If anything looks wrong, flag it before it gets treated as settled."
+          "closing_script": "Here is what we have: [causes], [changes agreed], [open questions and next steps]. If anything looks wrong or missing, say so now. Otherwise, I will send this around so we have a shared record."
         }
       }
     },
     {
       "name": "follow-up-full-capture",
       "endpoint": "/api/meeting-hijack-stopper/follow-up",
-      "guards": "Every section captured, and one next step deliberately has no owner and no date. That step must come back with empty strings rather than a guessed owner or an invented deadline, and the message must not thank anyone for contributions it cannot see or announce a next meeting nobody mentioned.",
+      "guards": "Every section captured, and one next step deliberately has no owner and no date — it must come back with empty strings rather than a guessed owner or an invented deadline. The message must not thank anyone for contributions it cannot see or announce a next meeting nobody mentioned.",
       "input": {
         "meetingGoal": "Agree how we split on-call between the two teams for next quarter.",
         "decided": "Platform team takes weekday on-call, product team takes weekends, reviewed after six weeks.",
@@ -392,13 +381,13 @@
         "still_open": [
           "Who covers public holidays."
         ],
-        "message": "Here is where we landed on on-call for next quarter. The platform team takes weekday on-call and the product team takes weekends, with a review after six weeks. Dana will update the rota in PagerDuty by Friday. The six-week review criteria still need to be written up — no owner or date was agreed. We also did not resolve who covers public holidays, so that needs a decision before the rota goes live."
+        "message": "Here is where we landed on on-call splits for next quarter. Platform team takes weekdays, product team takes weekends, with a review after six weeks. Dana will update the rota in PagerDuty by Friday. The six-week review criteria still need to be written up — no owner was confirmed for that. We also left open the question of public holiday cover, which will need a decision before the new rota takes effect. For any future conversation on this, having the incident numbers available would help."
       }
     },
     {
       "name": "follow-up-only-one-section",
       "endpoint": "/api/meeting-hijack-stopper/follow-up",
-      "guards": "Nothing was decided and no next steps were captured — only an open question. what_we_decided and what_happens_next MUST come back as empty arrays. A placeholder, a bracket or a guessed decision here is the exact failure the old tool shipped, which pre-generated a decision log before the meeting had happened.",
+      "guards": "Nothing decided, no next steps — only an open question. what_we_decided and what_happens_next MUST be empty arrays. A placeholder or a guessed decision here is the exact failure the old tool shipped, which pre-generated a decision log before the meeting had happened.",
       "input": {
         "meetingGoal": "Decide the Q4 priorities.",
         "decided": "",
@@ -417,7 +406,7 @@
         "still_open": [
           "Whether the migration comes before or after the audit"
         ],
-        "message": "We met to decide Q4 priorities. We were not able to reach agreement on the sequencing question: whether the migration should come before or after the audit. That question remains open and will need to be resolved before Q4 planning can be finalized."
+        "message": "We met to decide Q4 priorities. The one question we were not able to settle is whether the migration should come before or after the audit. That choice remains open. If you have input on it or know who can make the call, please share it so we can move forward."
       }
     }
   ]

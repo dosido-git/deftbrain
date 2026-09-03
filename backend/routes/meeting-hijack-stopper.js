@@ -52,6 +52,12 @@ but do not silently invent:
 A selected challenge describes a facilitation problem to prepare for.
 It does not establish why that problem occurs or which participant causes it.
 
+Describe it the way a person in the room would SEE it, never as a hidden state.
+Two people speaking at once is observable; "the overlap creates heat rather than
+progress" is a claim about feelings. An agreement that is still vague about the
+next action is observable; "no one is actually committed to it" is a claim about
+what people privately intend.
+
 For example:
 
 "One person takes a lot of airtime"
@@ -141,6 +147,21 @@ When addressing someone directly:
 is appropriate only if the visitor supplied Sam's name and inviting Sam is
 reasonable in context.
 
+NAMED PEOPLE
+
+Supplying a name and a role tells you that person exists and what they do. It
+does not rank them. Do not call anyone the most affected, the most important,
+the key stakeholder, or the decision-maker unless the visitor said so. If you
+need to refer to the group of people they described, say what is true: they are
+the people whose roles or impact were specifically described.
+
+"Affected" is not a constraint. If the visitor says someone will be affected,
+that establishes exposure, not a position, a requirement, a limit, or an
+objection they are holding. Ask what the effect would be; do not supply it.
+
+Wrong: "Get Dana's constraints on the proposed splits."
+Right: "Ask Dana how the proposed splits would affect the platform group."
+
 DECISIONS
 
 Treat the visitor's selected decision framework as a preference, not as an
@@ -159,6 +180,31 @@ paths.
 "Disagree & commit" does not mean the facilitator can require participants
 to type COMMIT, declare a decision final, or escalate disagreement to
 leadership unless the visitor established that authority.
+
+A SELECTED FRAMEWORK IS NOT AUTHORITY
+
+The framework shapes how the discussion runs. It does not tell you who may
+close it. When final authority is unknown, do not write anything that requires
+a participant to commit, vote, accept, agree, or enact a decision — not "I need
+a yes or a no from both of you", not "we can note the disagreement and still
+commit to moving forward". The facilitator may not be able to make that stick,
+and a script that assumes they can is one they cannot use.
+
+Clarify who can make or ratify the call first. That is the move.
+
+SUCCESS WITHOUT CLOSURE
+
+When authority is unknown, a meeting can succeed two ways, and the plan should
+say so rather than assuming the first:
+
+1. A specific decision is reached and written down, OR
+2. The unresolved choice is framed exactly, and the person or process that can
+   settle it is identified.
+
+Never write an outcome that only counts as success if the room reaches
+agreement. If closure is not possible, the meeting should still produce: the
+exact unresolved question, what WAS agreed, who has authority to decide if that
+is known, and the next step.
 
 FACILITATION SCRIPTS
 
@@ -222,6 +268,12 @@ Every recommendation should be traceable either to:
 2. a clearly presented design choice you are recommending.
 
 Do not turn recommendations into fictional facts about the meeting.
+
+A previous meeting that ended unresolved establishes that it ended unresolved.
+It does not establish that anything must be settled this time. Resolution today
+is the visitor's stated goal, not an external requirement — write "the meeting's
+stated goal is to settle it today", never "it needs to be settled today" or "we
+cannot let that happen again", which is theatre standing in for a fact.
 `;
 
 // ═══════════════════════════════════════════════════════════════
@@ -240,6 +292,11 @@ const INFERRED_PERSON = new RegExp([
   '\\bintroverts?\\b|\\bextroverts?\\b',
   '\\b(?:they|he|she|participants?|people|attendees) (?:probably |likely |may )?(?:feel|feels|felt|are feeling) (?:intimidated|unsafe|dismissed|steamrolled|talked over|shut down)\\b',
   '\\bdeliberately (?:dominat\\w+|derail\\w+|monopoli[sz]\\w+)\\b',
+  // Added 2026-09-03: heat and private intent, the two hidden states that
+  // survived the first pass by not naming a person.
+  '\\bcreates? (?:heat|friction|tension|defensiveness) (?:rather than|instead of|not)\\b',
+  '\\b(?:no ?one|nobody) is (?:actually|really|genuinely|truly) (?:committed|bought in|on board|invested)\\b',
+  '\\b(?:the room|the group|they) (?:is|are) (?:not )?(?:actually |really )?(?:bought in|invested|checked out|resistant)\\b',
   '\\b(?:is|are) (?:trying|looking) to (?:dominate|derail|take over|hijack)\\b',
 ].join('|'), 'i');
 
@@ -270,11 +327,49 @@ const UNKNOWABLE_SUCCESS = new RegExp([
   '\\beveryone (?:felt|was) (?:heard|included|safe|comfortable)\\b',
 ].join('|'), 'i');
 
+// ── Final grounding pass, 2026-09-03 ──────────────────────────────────────
+// Four more, each a real sentence the tool produced on the on-call split probe.
+
+// "I need a yes or a no from both of you" — a script that requires someone to
+// commit, in a meeting where nobody established who may close the decision.
+const DEMANDED_COMMITMENT = new RegExp([
+  '\\bI need (?:a |an )?(?:yes or (?:a )?no|commitment|answer|decision) (?:from|out of)\\b',
+  '\\b(?:everyone|each of you|both of you|I need you all) (?:to )?(?:commit|sign off|confirm|agree) (?:to|on)\\b',
+  '\\b(?:we|you) (?:can|will|must) (?:note (?:a|the|any) disagreement and )?(?:still )?commit to\\b',
+  '\\b(?:this|the decision) is (?:now )?final\\b',
+  '\\bgo around the (?:room|table) (?:and|to) (?:get|hear) (?:a )?(?:yes|commitment|confirmation)\\b',
+].join('|'), 'i');
+
+// "the three most directly affected" — a ranking nobody supplied.
+const RANKED_PEOPLE = new RegExp([
+  '\\bthe (?:most|two most|three most|people most) (?:directly )?(?:affected|impacted|invested|senior|important)\\b',
+  '\\b(?:is|are) the (?:key|primary|main|most important) (?:stakeholder|decision[- ]maker|voice|player)s?\\b',
+  '\\bmost (?:directly )?(?:affected|impacted) (?:by|are|is)\\b',
+].join('|'), 'i');
+
+// "Get Dana's constraints" — turning described exposure into a position held.
+const INVENTED_CONSTRAINT = new RegExp([
+  '\\b(?:get|gather|collect|surface|understand)\\b[^.]{0,25}\\b(?:constraints?|requirements?|objections?|conditions?|red lines?|non[- ]negotiables?)\\b',
+  '\\b(?:their|his|her|\\p{Lu}\\p{L}+\\x27s) (?:constraints?|red lines?|non[- ]negotiables?|hard requirements?)\\b',
+].join('|'), 'iu');
+
+// "we cannot let that happen again" — history dramatised into an obligation.
+const HISTORY_AS_MANDATE = new RegExp([
+  '\\b(?:we|you) (?:cannot|can\\x27t|must not) let (?:that|this|it) happen again\\b',
+  '\\b(?:needs?|has|have) to be (?:settled|resolved|decided|closed) (?:today|now|this time)\\b',
+  '\\b(?:cannot|can\\x27t) (?:leave|walk out|end) (?:this|the meeting|today) without\\b',
+  '\\b(?:this|it) (?:cannot|can\\x27t|must not) (?:drag on|slip) again\\b',
+].join('|'), 'i');
+
 // A hedge means the sentence is proposing, not asserting — spare it.
 const HEDGED = /\b(?:if|whether|may|might|could|unless|when|in case|consider|you did not|not (?:supplied|established|clear))\b/i;
 
 const RULES = [
   ['inferred a personality or a feeling nobody described', INFERRED_PERSON],
+  ['demanded a commitment the facilitator may have no authority to require', DEMANDED_COMMITMENT],
+  ['ranked the named participants', RANKED_PEOPLE],
+  ['turned being affected into a constraint they were never said to hold', INVENTED_CONSTRAINT],
+  ['turned an unresolved past meeting into an obligation to settle it today', HISTORY_AS_MANDATE],
   ['imported a frame the visitor did not raise', IMPORTED_FRAME],
   ['invented an exact lead time', INVENTED_LEAD_TIME, (v) => HEDGED.test(v)],
   ['invented decision authority or an escalation path', INVENTED_AUTHORITY],
@@ -425,35 +520,35 @@ Return ONLY valid JSON:
 {
   "meeting_plan": {
     "goal": "What this meeting is for, in the visitor's own terms — one sentence",
-    "end_state": "What is concretely true when the meeting ends: the decision made, the thing understood, the plan agreed — one sentence starting from the outcome, not from the activity",
+    "end_state": "What is concretely true when the meeting ends — one sentence, starting from the outcome rather than the activity. It must still count as success if the room cannot agree. Where a decision is wanted but authority is not established, write BOTH branches: 'a specific split is agreed and written down, or the unresolved choice and its decision owner are clearly identified'. Never make the outcome depend on named people committing to something",
     "total_minutes": ${duration},
     "agenda": [
       {
         "title": "What this block is — a short phrase, not a ritual name",
         "minutes": 0,
         "purpose": "Why this block is in the meeting at all — one short line",
-        "how_to_run_it": "What the facilitator actually does — one or two sentences, concrete",
-        "say_this_if_helpful": "Words they could say out loud to open or steer this block, or an empty string if the block needs none"
+        "how_to_run_it": "What the facilitator actually does — one or two sentences, concrete. Where the visitor named people, use their names but do not rank them and do not put words or positions in their mouths: 'ask Dana how the proposed splits would affect the platform group', never 'get Dana's constraints', which invents a constraint Dana was never said to have",
+        "say_this_if_helpful": "Words they could say out loud to open or steer this block, or an empty string if the block needs none. Firm is fine; claiming authority the facilitator may not have is not. State the goal rather than dramatising the history — 'last quarter it stayed unresolved, today the goal is to leave with a clear split, or a clear decision path if we cannot get there', never 'we cannot let that happen again'"
       }
     ]
   },
   "watch_for": [
     {
-      "situation": "A facilitation problem this meeting could plausibly hit, described as a situation and never as a claim about a person",
+      "situation": "A facilitation problem this meeting could plausibly hit, described the way someone in the room would SEE it — never as a hidden state. 'Two people start speaking at once and one point risks getting lost', not 'the overlap creates heat rather than progress'. 'The apparent agreement is still vague enough that the next action is unclear', not 'nobody is actually committed to it'. No heat, defensiveness, intimidation, motives, disengagement or private intent",
       "prevent_it": "What to set up beforehand or say early so it is less likely — one short line",
       "if_it_happens": "What to actually do in the moment — one short line",
-      "say_this": "Short, natural words they could say out loud. Firm where it needs to be. No diplomatic filler"
+      "say_this": "Short, natural words they could say out loud. Firm where it needs to be, but never claiming authority the facilitator may not have — no demanding a yes or a no, no declaring anything final. No diplomatic filler, and no theatre: state the goal rather than dramatising the history"
     }
   ],
   "decision_plan": {
     "needed": true,
-    "approach": "How to reach the decision in this meeting, adapting whatever framework they named. Empty string if the meeting does not need a decision",
+    "approach": "How to reach the decision in this meeting, adapting whatever framework they named. The framework shapes the discussion; it does not grant anyone the power to close it. If final authority was not established, nothing here may require a participant to commit, vote, accept or enact — say instead how to reach agreement if it is there, and how to frame the choice and its owner if it is not. Empty string if the meeting does not need a decision",
     "what_needs_clarifying": "What about the decision is genuinely unresolved — most often who makes the final call if the group does not agree. Empty string if nothing is unclear"
   },
-  "before_the_meeting": ["Preparation specific to THIS meeting — one short line each. No generic meeting checklist, and no invented lead times"],
+  "before_the_meeting": ["Preparation specific to THIS meeting — one short line each. No generic meeting checklist, and no invented lead times. If it involves a named person, ask what the effect on them would be; do not assert a constraint, requirement or objection they were never described as having"],
   "finish_strong": {
-    "before_people_leave": ["A short checklist tied to the stated outcome — one short line each"],
-    "closing_script": "Words to close the meeting cleanly — two or three sentences"
+    "before_people_leave": ["A short checklist tied to the stated outcome — one short line each. Where a decision was wanted, this must work for BOTH endings: if it was reached, capture it and its owner; if it was not, capture the exact unresolved question, whatever WAS agreed, who has authority to settle it if that is known, and the next step. A checklist that only functions when the room agreed is a checklist for half the meetings"],
+    "closing_script": "Words to close the meeting cleanly — two or three sentences. It has to work whether or not the group got there, and it may not declare a decision final or require anyone to commit"
   }
 }
 

@@ -62,6 +62,48 @@ that matter". The parking-lot store was folded into Capture's "what's still
 open". The template suggestions were built on the effectiveness scores and went
 with them.
 
+## The 2026-09-03 grounding pass
+
+A live read of the on-call-split probe found the tool doing four things the
+input did not support. The largest was decision authority.
+
+**A framework is not authority.** The tool correctly noticed that nobody had
+established who decides if Sam and Priya disagree — and then wrote scripts that
+demanded commitment anyway: "I need a yes or a no from both of you", "we can
+note a disagreement and still commit to moving forward". Selecting
+"disagree & commit" says how the discussion should run. It says nothing about
+who may close it. With authority unknown, nothing may require a participant to
+commit, vote, accept or enact.
+
+**Success has two branches now.** The old end state was "a split agreed, with
+Sam and Priya both committed to it" — an outcome that only counts when the room
+agrees, which is an outcome for half the meetings. It now reads: a specific
+split is agreed and written down, **or** the exact unresolved question and its
+decision owner are identified. `before_people_leave` works either way, and so
+does the closing script.
+
+| It wrote | It now writes |
+| --- | --- |
+| "the three most directly affected" | "the three people whose roles or impact were specifically described" |
+| "get Dana's constraints" | "ask Dana how the proposed splits would affect the platform group" |
+| "the overlap creates heat rather than progress" | "two people start speaking at once and one point risks getting lost" |
+| "no one is actually committed to it" | "the agreement is still vague enough that the next action is unclear" |
+| "it needs to be settled today" / "we cannot let that happen again" | "last quarter it stayed unresolved; today the goal is a clear split, or a clear decision path" |
+
+Being *affected* is exposure, not a position. It does not establish a
+constraint, a requirement or an objection someone is holding — ask what the
+effect would be rather than supplying one. And a previous meeting that ended
+unresolved establishes only that. Resolution today is the visitor's goal, not
+an external requirement.
+
+New backstops: `DEMANDED_COMMITMENT`, `RANKED_PEOPLE`, `INVENTED_CONSTRAINT`,
+`HISTORY_AS_MANDATE`, plus two clauses added to `INFERRED_PERSON` for the hidden
+states that had slipped past it by not naming anyone (heat, private intent).
+Twelve bad forms caught, eight replacement phrasings verified to survive.
+
+The capture rule is untouched, deliberately: anything left blank stays out of
+the follow-up.
+
 ## Endpoints
 
 | Path | Purpose | max_tokens |

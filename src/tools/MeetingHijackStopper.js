@@ -968,7 +968,13 @@ const MeetingHijackStopper = ({ tool }) => {
               <div>
                 {/* PF-30 — the wrapper already prints the name as the page <h1>. */}
                 <p className={`text-base ${c.textSecondary}`}>
-                  <span className="me-2 text-lg">{tool?.icon ?? '🛡️'}</span>{tool?.tagline ?? t('mhp_tagline')}
+                  {/* The catalog tagline opens with the icon, so printing
+                      tool?.icon here too rendered it twice. Strip a leading
+                      emoji rather than editing the tagline — the wording is the
+                      owner's, the duplication is ours. Same in
+                      src/tools/JustifyMyMeeting.js. */}
+                  <span className="me-2 text-lg">{tool?.icon ?? '🛡️'}</span>
+                  {(tool?.tagline ?? t('mhp_tagline')).replace(/^\p{Extended_Pictographic}[\uFE0F\u200D\p{Extended_Pictographic}]*\s*/u, '')}
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
