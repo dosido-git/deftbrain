@@ -4717,7 +4717,7 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
   categories: ['The Office'],
-  headerColor: "#d4dde8",
+  headerColor: "#97b4d8",
   description: "Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.",
   guide: {
       overview: "Most meeting-agenda tools hand you a ritual: ground rules, a round robin, a parking lot, a role for everyone. This one starts from the outcome you describe and asks what genuinely needs to happen live to reach it, then builds the lightest structure that gets there. It gives you facilitation language you could actually say out loud rather than corporate filler, and it is careful about what it does not know: it will not invent who has authority to decide, will not describe anyone in the room as dominant or quiet, and will not tell you to send something a fixed number of hours in advance.",

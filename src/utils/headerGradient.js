@@ -84,17 +84,30 @@ export function partnerColor(hex) {
 
 // Dark mode gets a derived value, not the light-mode hex. Hue is kept,
 // saturation is damped (a pastel's saturation reads as neon once the lightness
-// drops), and lightness is pinned near the surface rather than near white.
+// drops), and lightness lands near the surface rather than near white.
+//
+// The first version pinned dark lightness to a constant, which quietly undid
+// the point: two tools in the same hue family — Justify My Meeting at L87 and
+// Meeting Hijack Stopper at L72 — both derived to L21 and became the same dark
+// band, distinguishable only by a few points of saturation. Dark lightness now
+// tracks the source, inverted: the deeper a tool's light-mode colour, the
+// stronger its dark band. A source already darker than the pastel range
+// saturates at the top of the output range, which is what those four entries
+// need anyway — a near-black band on a near-black page is not a band.
+function darkLightness(srcL) {
+  return clamp(19 + (92 - srcL) * 0.18, 19, 27);
+}
+
 export function darkBase(hex) {
   const c = hexToHsl(hex);
   if (!c) return null;
-  return hslToHex(c.h, clamp(c.s * 0.72, 14, 34), 21);
+  return hslToHex(c.h, clamp(c.s * 0.72, 14, 34), darkLightness(c.l));
 }
 
 export function darkPartner(hex) {
   const c = hexToHsl(hex);
   if (!c) return null;
-  return hslToHex(c.h + 10, clamp(c.s * 0.72, 14, 34), 27);
+  return hslToHex(c.h + 10, clamp(c.s * 0.72, 14, 34), darkLightness(c.l) + 6);
 }
 
 // The value ToolPageWrapper puts in `style`. Geometry is unchanged from the
