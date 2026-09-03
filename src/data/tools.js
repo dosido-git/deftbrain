@@ -4705,39 +4705,44 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "Before a meeting that always gets derailed by the same person.",
-    give: "A template or your meeting goal, plus format and length.",
-    get: "A time-boxed agenda, explicit speaking order, and facilitator scripts for the moments it goes wrong.",
-    edge: "It scripts the intervention — what to actually say when someone runs long — which is the part that's hard in the room.",
+    when: "You are running a meeting and want it to actually reach the thing it was called for.",
+    give: "What needs to happen by the end, how long you have, and roughly who is there.",
+    get: "An agenda built around that outcome, words to say when it drifts, and a short list for before people leave. Then a timer to run it by, and a follow-up written from what you actually captured.",
+    edge: "It writes the sentence you would have to improvise in the room — the redirect, the widening, the close — and it builds the plan around your stated outcome instead of a template.",
   },
-  seoDescription: "Build a structured, inclusive meeting agenda with time-boxed items, facilitator scripts, and anti-hijack tactics so no one derails it. Free, instant, no signup.",
-  seoTitle: "Meeting Agenda Maker & Facilitator Scripts",
+  seoDescription: "Build a meeting agenda around what actually has to happen, with the words to say when it drifts and a checklist for before people leave. Free, no signup.",
+  seoTitle: "Meeting Agenda Builder & Facilitation Scripts",
   title: "Meeting Hijack Preventer",
   tagline: "Keep meetings structured, inclusive, and on track",
   tags: ['meeting', 'agenda', 'facilitation', 'hijack', 'inclusive', 'structure', 'work'],
   icon: "🛡️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "Create structured, inclusive meeting agendas with time-boxed items, facilitator scripts, and anti-hijack strategies. Prevents dominant personalities from derailing discussions and ensures all voices are heard.",
+  description: "Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.",
   guide: {
-      overview: "The Meeting Hijack Preventer generates complete meeting structures that keep discussions focused and productive. It provides time-boxed agenda items, explicit speaking order, facilitator scripts for every scenario, decision-making frameworks, virtual meeting protocols, and ready-to-use follow-up documents. Perfect for preventing tangents, managing dominant speakers, and ensuring quiet participants contribute.",
+      overview: "Most meeting-agenda tools hand you a ritual: ground rules, a round robin, a parking lot, a role for everyone. This one starts from the outcome you describe and asks what genuinely needs to happen live to reach it, then builds the lightest structure that gets there. It gives you facilitation language you could actually say out loud rather than corporate filler, and it is careful about what it does not know: it will not invent who has authority to decide, will not describe anyone in the room as dominant or quiet, and will not tell you to send something a fixed number of hours in advance.",
       howToUse: [
-        "Choose a meeting template (Sprint Planning, Retrospective, Brainstorm, etc.) or enter a custom meeting goal",
-        "Select your format (Virtual or In-person) and if virtual, choose your platform (Zoom, Teams, Google Meet)",
-        "Set duration, participant count, meeting type, and decision-making framework (Consensus, Majority Vote, Disagree & Commit, or Leader Decides)",
-        "Check any known challenges (dominators, off-topic, talking over, schedule issues, quiet voices)",
-        "Click 'Generate Meeting Structure' to get your complete agenda with facilitator scripts, virtual protocols, anti-hijack strategies, and meeting artifacts (action items tracker, minutes template, follow-up email, and decision log)"
+        "Say what needs to happen in the meeting — what should be decided, discussed, created, resolved or understood by the time it ends",
+        "Set the time you have and roughly who will be there; names or roles are optional and only used if you supply them",
+        "Optionally pick what tends to get in the way — a person taking a lot of airtime, conversation wandering, running out of time — and how decisions get made",
+        "Build the plan: an agenda with timings, what to say when it drifts, how you will reach the decision, and what to do before people leave",
+        "Run it live against a timer, then capture what you decided, what happens next and what is still open — and generate the follow-up from that and nothing else"
       ],
       example: {
-        scenario: "You're leading a 60-minute virtual Zoom meeting to decide on Q1 marketing strategy with 6 people. You know one person tends to dominate and quiet team members struggle to speak up.",
-        action: "Select 'Decision-making Meeting' template, set to Virtual/Zoom, choose 'Majority Vote' framework, check 'One person dominates' and 'Quiet people don't speak up' challenges, then generate.",
-        result: "You receive a time-boxed agenda with round-robin speaking order, Zoom-specific protocols (mute/chat/raise hand), facilitator scripts for managing dominance ('Thanks [Name], let's hear from others'), a voting process, action items tracker, and a pre-written follow-up email—everything you need to run an inclusive, productive meeting."
+        scenario: "A 60-minute call with seven people to decide which two of four proposals move into design. You know one voice tends to fill the time and the conversation drifts.",
+        action: "Describe the outcome, set 60 minutes and seven people, tick 'One person takes a lot of airtime' and 'Conversation wanders', and leave the decision method as 'Not sure'.",
+        result: "An agenda that opens by settling the criteria AND who makes the final call if the group does not agree — because you said you were not sure, so it names that as something to clarify rather than assuming an answer. Then a block per proposal, an evaluation block, and a selection block, with a couple of minutes left unscheduled rather than padded. For each of your two concerns you get a prevention, a response, and a sentence to say: 'That is a real question, but it belongs in the design phase.' Nothing tells you who the talkative person is or why they do it — you did not say, so it does not either."
       },
       tips: [
-        "Send the generated agenda to participants 24 hours in advance so they can prepare and feel more confident contributing",
-        "Actually use the facilitator scripts—they're designed to be kind but effective, removing the burden of improvising redirect language in the moment",
-        "For virtual meetings, share the platform-specific protocols at the start and assign a Tech Support role to handle breakout rooms and chat monitoring",
-        "Use templates for recurring meeting types (standups, retrospectives) to save time and maintain consistency across your team's meetings"
+        "Describe the outcome, not the topic. 'Decide which two proposals advance' produces a usable agenda; 'discuss the proposals' produces a meeting about proposals",
+        "The scripts are the point. Read them once before you go in — improvising a redirect while someone is mid-sentence is the hard part",
+        "Leaving a field blank is a real answer. If you do not know who decides, say so, and the plan will treat that as the first thing to settle",
+        "The follow-up is generated after the meeting from what you captured. Anything you leave blank stays out of it rather than becoming a placeholder"
+      ],
+      pitfalls: [
+        "It cannot see the room. It works only from what you type, so the politics, the history and anyone's mood are invisible to it",
+        "A plan is not authority. If changing how the meeting runs is not yours to change, the agenda is a proposal to whoever owns it",
+        "The timer keeps the plan honest, not the conversation. Overrunning a block is information, not a failure"
       ]
     }
 },

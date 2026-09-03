@@ -4,403 +4,570 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
-  try {
-    const { meetingGoal, 
-      duration, 
-      participantCount, 
-      meetingType, 
-      challenges,
-      isVirtual,
-      virtualPlatform,
-      decisionFramework,
-      useTemplate,
-      selectedTemplate, userLanguage } = req.body;
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
-    // Validation
-    if (!meetingGoal && !meetingGoal?.trim() && !useTemplate) {
-      return res.status(400).json({ error: 'Meeting goal or template is required' });
-    }
+// ═══════════════════════════════════════════════════════════════
+// The brief. Every endpoint below opens with this.
+// ═══════════════════════════════════════════════════════════════
+const CORE = `
+You are helping someone prepare to run a meeting well.
 
-    if (!duration || duration < 15 || duration > 120) {
-      return res.status(400).json({ error: 'Duration must be between 15 and 120 minutes' });
-    }
+Your job is not to design the theoretically perfect meeting. Build a practical
+plan the person can actually use while facilitating.
 
-    // Build challenge context
-    const challengeList = [];
-    if (challenges && typeof challenges === 'object') {
-      if (challenges.dominates) challengeList.push('one person tends to dominate discussions');
-      if (challenges.offTopic) challengeList.push('conversations go off-topic easily');
-      if (challenges.talkOver) challengeList.push('people talk over each other');
-      if (challenges.schedule) challengeList.push('difficult to keep on schedule');
-      if (challenges.quietVoices) challengeList.push('quiet participants struggle to contribute');
-    }
+The meeting plan should help them:
 
-    const challengeContext = challengeList.length > 0
-      ? `\n\nKNOWN CHALLENGES: ${challengeList.join(', ')}`
-      : '';
+1. Make the purpose clear.
+2. Give the meeting enough structure to reach that purpose.
+3. Protect useful discussion without letting tangents consume the meeting.
+4. Make participation possible without forcing equal airtime.
+5. Handle predictable disruptions calmly.
+6. Reach the intended decision or outcome when possible.
+7. Leave with clear decisions, open questions, and next steps.
 
-    // Template-specific guidance
-    const templateGuidance = useTemplate && selectedTemplate ? `
-TEMPLATE SELECTED: ${selectedTemplate}
-Use this as a foundation and adapt based on the specific meeting goal and parameters.
-` : '';
+GROUNDING
 
-    // Virtual meeting context
-    const virtualContext = isVirtual ? `
-VIRTUAL MEETING PLATFORM: ${virtualPlatform}
-Include platform-specific protocols for:
-- Mute/unmute management
-- Screen sharing protocols
-- Chat usage guidelines
-- Raise hand feature
-- Breakout room allocation (if applicable)
-` : '';
+Treat information supplied by the visitor as established.
 
-    // Decision framework context
-    const decisionContext = `
-DECISION-MAKING FRAMEWORK: ${decisionFramework}
-${decisionFramework === 'Consensus' ? 'Everyone must agree. Focus on finding common ground and addressing all concerns.' : ''}
-${decisionFramework === 'Majority Vote' ? 'Decisions made by voting. Prepare voting mechanisms and tallying process.' : ''}
-${decisionFramework === 'Disagree & Commit' ? 'Allow dissent, but require commitment. Script for acknowledging disagreement while moving forward.' : ''}
-${decisionFramework === 'Leader Decides' ? 'Leader makes final call after hearing input. Script for collecting input efficiently.' : ''}
+You may reason from that information to design a useful meeting structure,
+but do not silently invent:
+
+- participant personalities or motives
+- organizational hierarchy
+- who has authority
+- who should make a decision
+- interpersonal conflict
+- participant expertise
+- participant preferences
+- accessibility or neurodivergence
+- psychological safety problems
+- previous meeting behavior
+- available technology or collaboration tools
+- company policies or norms
+- deadlines
+- required follow-up timing
+- materials that already exist
+- decisions that have already been made
+
+A selected challenge describes a facilitation problem to prepare for.
+It does not establish why that problem occurs or which participant causes it.
+
+For example:
+
+"One person takes a lot of airtime"
+
+may justify:
+- structured turns
+- a facilitator redirect
+- inviting additional perspectives
+
+It does NOT establish:
+- who the person is
+- why they behave that way
+- that they intentionally dominate
+- that other participants feel intimidated
+
+MEETING DESIGN
+
+Start with the visitor's stated meeting outcome.
+
+Ask:
+"What needs to happen live for this meeting to succeed?"
+
+Build the agenda around that answer.
+
+Do not automatically add generic meeting rituals such as:
+- lengthy ground rules
+- technology checks
+- icebreakers
+- formal role assignments
+- round robins
+- silent ranking
+- parking lots
+- breakout rooms
+- objection rounds
+- voting
+- formal commitment ceremonies
+
+Use them only when they solve a problem in this particular meeting.
+
+Prefer the lightest structure that can reasonably accomplish the meeting's
+purpose.
+
+TIME
+
+Agenda times must fit within the visitor's total duration.
+
+Do not force a fixed 10% buffer.
+
+Use a small buffer when useful, or leave none when the meeting design does
+not need one.
+
+Do not invent exact advance-preparation periods such as:
+"send 24 hours beforehand"
+or
+"test technology 15 minutes early."
+
+When timing is useful but not established, use flexible language:
+"before the meeting"
+"with enough time for participants to review it"
+
+PARTICIPATION
+
+Inclusive facilitation does not mean every participant must speak the same
+amount or speak at least once.
+
+Choose participation methods based on what the meeting needs.
+
+Useful options may include:
+- open discussion
+- structured turns
+- silent thinking before discussion
+- written input
+- anonymous input
+- inviting perspectives not yet heard
+- smaller-group discussion
+
+Do not infer that someone who has not spoken is disengaged, uncomfortable,
+intimidated, or "a quiet person."
+
+Do not force someone to contribute.
+
+Prefer invitations such as:
+"We haven't heard every perspective yet. Is there anything we're missing?"
+
+When addressing someone directly:
+"Sam, is there anything you'd add?"
+is appropriate only if the visitor supplied Sam's name and inviting Sam is
+reasonable in context.
+
+DECISIONS
+
+Treat the visitor's selected decision framework as a preference, not as an
+immutable organizational rule.
+
+Adapt it to the meeting.
+
+Do not invent decision authority.
+
+If it is unclear who has the final decision, explicitly identify that as
+something to clarify.
+
+Do not manufacture votes, rankings, consensus, commitments, or escalation
+paths.
+
+"Disagree & commit" does not mean the facilitator can require participants
+to type COMMIT, declare a decision final, or escalate disagreement to
+leadership unless the visitor established that authority.
+
+FACILITATION SCRIPTS
+
+Give the visitor language they can actually say.
+
+Scripts should be:
+- short
+- conversational
+- respectful
+- specific
+- easy to say aloud
+- firm when necessary
+
+Avoid corporate facilitation jargon.
+
+Do not assume bad intent.
+
+A redirect should protect the meeting's purpose, not punish the speaker.
+
+Good:
+"That's related, but I don't think we can do it justice here. Can we capture
+it and come back to the decision in front of us?"
+
+Good:
+"I want to make sure we hear some other perspectives before we stay with
+this one."
+
+Avoid:
+"We really appreciate those perspectives..."
+when one person has simply been talking too long.
+
+The visitor needs usable words, not diplomatic filler.
+
+PLATFORM
+
+Do not generate a generic Zoom/Teams/Meet instruction manual merely because
+the meeting is virtual.
+
+Mention platform features only when they materially support the meeting
+design.
+
+Examples:
+- chat for collecting ideas
+- polls for voting
+- breakout rooms for small-group work
+- raise hand when speaking order is otherwise difficult
+
+Do not assume those features are available, enabled, or appropriate merely
+because a platform was selected.
+
+OUTPUT STANDARD
+
+Write directly to the visitor as "you."
+
+Reason freely about meeting design.
+Assert carefully about the visitor, participants, organization, and meeting
+history.
+
+Every recommendation should be traceable either to:
+1. something the visitor told you, or
+2. a clearly presented design choice you are recommending.
+
+Do not turn recommendations into fictional facts about the meeting.
 `;
 
-    // One 9-key schema at max_tokens 6000 measured 102s — past the ~60s where
-    // Safari abandons the fetch. The two halves below share the same brief and
-    // emit disjoint top-level keys, so they generate in parallel and merge back
-    // to the original response shape (frontend untouched).
-    const sharedContext = `You are an expert meeting facilitator specializing in inclusive, neurodivergent-friendly meeting structures.
+// ═══════════════════════════════════════════════════════════════
+// Detectors. Each one is a class of invention the brief forbids and the
+// model still produced during the rewrite probes. A named field that trips
+// one is blanked; an array item is pruned, because an empty bullet reads
+// worse than no bullet.
+// ═══════════════════════════════════════════════════════════════
 
-You are writing ONE PART of a highly structured meeting agenda that prevents hijacking and ensures all voices are heard. Another writer is handling the other part — cover only your own keys.
+// "the quiet ones", "Sam tends to dominate", "the team feels unsafe speaking up"
+const INFERRED_PERSON = new RegExp([
+  '\\bquiet (?:participants?|people|team ?members?|voices|ones|attendees)\\b',
+  '\\bdominant (?:speakers?|participants?|personalit\\w+|voices)\\b',
+  '\\b(?:participants?|people|attendees|team ?members?) who (?:are|feel) (?:shy|intimidated|uncomfortable|nervous|anxious|reluctant|afraid)\\b',
+  '\\b(?:someone|somebody|the person) who (?:is|tends to be) (?:shy|quiet|dominant|domineering|talkative)\\b',
+  '\\bintroverts?\\b|\\bextroverts?\\b',
+  '\\b(?:they|he|she|participants?|people|attendees) (?:probably |likely |may )?(?:feel|feels|felt|are feeling) (?:intimidated|unsafe|dismissed|steamrolled|talked over|shut down)\\b',
+  '\\bdeliberately (?:dominat\\w+|derail\\w+|monopoli[sz]\\w+)\\b',
+  '\\b(?:is|are) (?:trying|looking) to (?:dominate|derail|take over|hijack)\\b',
+].join('|'), 'i');
 
-MEETING DETAILS:
-- Goal: ${meetingGoal || 'See template'}
-- Duration: ${duration} minutes
-- Participants: ${participantCount} people
-- Type: ${meetingType}
-- Format: ${isVirtual ? `Virtual (${virtualPlatform})` : 'In-person'}${challengeContext}
-${templateGuidance}${virtualContext}${decisionContext}
+// The two words the old prompt asked for by name, and which the new one bans.
+const IMPORTED_FRAME = /\bpsychological safety\b|\bneurodivergen\w+\b|\bneurotypical\b|\bsafe space\b/i;
 
-TONE GUIDELINES:
-- Scripts should be warm but direct
-- Never condescending or parental
-- Assume good intent from all participants
-- Prioritize psychological safety
-- Use "we" language, not "you" (less accusatory)
-- Neurodivergent-friendly: clear expectations, predictable structure
-${isVirtual ? '- Virtual-friendly: acknowledge technology challenges with empathy' : ''}
+// "send the deck 24 hours in advance", "test your audio 15 minutes early"
+const INVENTED_LEAD_TIME = new RegExp([
+  '\\b\\d+\\s*(?:hours?|days?|minutes?|weeks?)\\s*(?:in advance|beforehand|ahead of time|before the meeting|early|prior)\\b',
+  '\\b(?:at least|no later than)\\s*\\d+\\s*(?:hours?|days?|minutes?|weeks?)\\b',
+  '\\b(?:the day|a week|48 hours|24 hours) (?:before|prior)\\b',
+].join('|'), 'i');
 
-Focus especially on addressing these challenges: ${challengeList.join(', ') || 'general meeting effectiveness'}
+// Authority and escalation the visitor never established.
+const INVENTED_AUTHORITY = new RegExp([
+  '\\b(?:escalate|escalation) (?:it |this |the (?:decision|disagreement|issue) )?to (?:leadership|management|the (?:exec|executive|leadership) team|your (?:manager|boss|director|VP))\\b',
+  '\\bthe (?:facilitator|leader|manager|organi[sz]er) (?:has|holds|retains) (?:the )?(?:final|ultimate) (?:say|call|authority|decision)\\b',
+  '\\b(?:makes?|make) (?:a |the )?(?:provisional|final|binding) (?:call|decision)\\b[^.]{0,60}\\b(?:flags?|escalates?|reports?)\\b',
+  '\\btype (?:COMMIT|"COMMIT")\\b|\\bsay COMMIT\\b',
+  '\\b(?:requires?|require) (?:everyone|each participant|all participants) to (?:commit|agree|sign off|confirm)\\b',
+].join('|'), 'i');
 
-Never place a double-quote (") character inside any string value — it breaks the JSON.`;
+// Success defined as something the tool cannot observe.
+const UNKNOWABLE_SUCCESS = new RegExp([
+  '\\b(?:every|each|all) (?:participants?|people|attendees|team ?members?) (?:contributed|spoke|participated|had (?:their )?say)\\b',
+  '\\bcontributed at least once\\b',
+  '\\bno ?(?:one|body) (?:felt|had to) (?:dominated|excluded|compete|left out|unheard|silenced)\\b',
+  '\\beveryone (?:felt|was) (?:heard|included|safe|comfortable)\\b',
+].join('|'), 'i');
 
-    // ── Part A: the agenda itself, the decision process, roles, prep ──
-    const structurePrompt = `${sharedContext}
+// A hedge means the sentence is proposing, not asserting — spare it.
+const HEDGED = /\b(?:if|whether|may|might|could|unless|when|in case|consider|you did not|not (?:supplied|established|clear))\b/i;
 
-${useTemplate ? `BASE YOUR AGENDA ON THIS TEMPLATE WHILE ADAPTING TO THE SPECIFICS:
+const RULES = [
+  ['inferred a personality or a feeling nobody described', INFERRED_PERSON],
+  ['imported a frame the visitor did not raise', IMPORTED_FRAME],
+  ['invented an exact lead time', INVENTED_LEAD_TIME, (v) => HEDGED.test(v)],
+  ['invented decision authority or an escalation path', INVENTED_AUTHORITY],
+  ['defined success as something nobody can observe', UNKNOWABLE_SUCCESS],
+];
 
-${selectedTemplate === 'sprint-planning' ? `Sprint Planning Template:
-- Review sprint goal (5 min)
-- Review backlog items (20 min)
-- Story point estimation (30 min)
-- Capacity planning (15 min)
-- Commit to sprint (10 min)
-- Buffer (10 min)` : ''}
-
-${selectedTemplate === 'retrospective' ? `Retrospective Template:
-- Set the stage (5 min)
-- Gather data: What went well? (15 min)
-- Gather data: What didn't go well? (15 min)
-- Generate insights (15 min)
-- Decide what to do (10 min)
-- Close (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'brainstorm' ? `Brainstorming Template:
-- Problem statement (5 min)
-- Silent ideation (10 min)
-- Idea sharing round-robin (20 min)
-- Idea clustering (10 min)
-- Dot voting/prioritization (10 min)
-- Next steps (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'decision' ? `Decision-Making Template:
-- Frame the decision (10 min)
-- Present options (15 min)
-- Discuss pros/cons (20 min)
-- Apply decision framework (10 min)
-- Document decision (5 min)
-- Buffer (5 min)` : ''}
-
-${selectedTemplate === 'standup' ? `Daily Standup Template:
-- Opening (1 min)
-- Round-robin updates: Yesterday/Today/Blockers (10 min)
-- Parking lot quick capture (2 min)
-- Close (2 min)` : ''}
-
-${selectedTemplate === 'one-on-one' ? `One-on-One Template:
-- Check-in/rapport (5 min)
-- Progress on goals (10 min)
-- Challenges/support needed (10 min)
-- Forward planning (5 min)
-- Buffer (5 min)` : ''}
-` : ''}
-
-YOUR PART: the timed agenda, the decision process, the speaking roles, the prep checklist.
-
-CRITICAL REQUIREMENTS:
-1. Time-box EVERY agenda item with specific minute allocations
-2. Reserve 5-10% of total time as buffer
-3. Provide explicit speaking order where applicable
-4. Define decision-making process based on ${decisionFramework} framework
-5. ${isVirtual ? `Assume a ${virtualPlatform} virtual meeting when assigning roles and prep steps` : 'Assume an in-person meeting when assigning roles and prep steps'}
-
-OUTPUT FORMAT (valid JSON) — your response MUST contain ALL FOUR of these top-level keys and NOTHING else:
-{
-  "meeting_structure": {
-    "total_duration": ${duration},
-    "agenda_items": [
-      {
-        "topic": "Opening & Ground Rules",
-        "time_allocated": 5,
-        "objective": "Set expectations and create psychological safety",
-        "facilitator_role": "State the meeting goal, review time limits, introduce parking lot, ${isVirtual ? 'review virtual meeting protocols' : 'establish ground rules'}",
-        "speaker_order": ["Facilitator"],
-        "time_warning": "We have 1 minute left for questions about the agenda"
-      }
-      // ... more items that add up to ${duration - Math.floor(duration * 0.1)} minutes
-    ],
-    "buffer_time": ${Math.floor(duration * 0.1)},
-    "parking_lot_instructions": "Write tangent topics on sticky notes ${isVirtual ? 'or in shared doc/chat' : 'or whiteboard'}. Address at end if time permits, or schedule follow-up."
-  },
-
-  "decision_making_structure": {
-    "when_to_use": "Explain when in the meeting to apply this framework",
-    "process": "Step-by-step process for making decisions with this framework",
-    ${decisionFramework === 'Majority Vote' || decisionFramework === 'Disagree & Commit' ? '"voting_mechanism": "How voting will work (show of hands, poll, anonymous, etc)",' : ''}
-    "conflict_resolution": "What to do if framework doesn't lead to clean resolution"
-  },
-
-  "speaking_roles": [
-    {
-      "role": "Facilitator",
-      "responsibility": "Guide discussion, manage time, ensure all voices heard${isVirtual ? ', manage virtual tools' : ''}"
-    },
-    {
-      "role": "Timekeeper",
-      "responsibility": "Track time for each agenda item, give 2-minute and 1-minute warnings"
-    },
-    {
-      "role": "Notetaker",
-      "responsibility": "Capture key decisions, action items, and parking lot items${isVirtual ? ' in shared doc' : ''}"
-    }
-    ${isVirtual ? `,{
-      "role": "Tech Support",
-      "responsibility": "Handle technical issues, manage breakout rooms, monitor chat"
-    }` : ''}
-  ],
-
-  "preparation_checklist": [
-    "Send agenda 24 hours in advance",
-    "Assign roles before meeting starts",
-    ${isVirtual ? `"Test ${virtualPlatform} technology 15 minutes early",` : ''}
-    ${isVirtual ? '"Set up parking lot in shared doc",' : '"Set up parking lot (whiteboard or sticky notes)",'}
-    "Prepare any materials participants need to review",
-    ${isVirtual ? '"Share screen/presentation files in advance",' : ''}
-    "Review facilitator scripts"
-  ]
-}
-
-LIMITS (keep the response compact so it never gets cut off):
-- agenda_items: AT MOST 12 items, each a substantial time block that sums (with buffer_time) to ${duration} minutes
-- Keep every string field to ONE short sentence
-
-Return ONLY valid JSON.`;
-
-    // ── Part B: the words the facilitator says, and the artifacts ──
-    const scriptsPrompt = `${sharedContext}
-
-YOUR PART: the facilitator's exact words, the anti-hijack tactics, and the take-away artifacts.
-
-CRITICAL REQUIREMENTS:
-1. Include facilitator scripts that are kind but firm
-2. Create strategies for parking lot methodology
-3. Address the known challenges with specific prevention/response tactics
-4. ${isVirtual ? `Include ${virtualPlatform}-specific virtual meeting protocols` : 'Reflect in-person meeting best practices'}
-5. Generate meeting artifacts: action items template, minutes template, follow-up email
-
-OUTPUT FORMAT (valid JSON) — your response MUST contain ALL of these top-level keys and NOTHING else:
-{
-  "facilitator_scripts": {
-    "opening": "Exact words to start meeting with warmth and clarity${isVirtual ? ', including virtual meeting setup' : ''}",
-    "redirecting_tangent": "Kind but firm phrase when discussion goes off-topic",
-    "managing_dominance": "Tactful way to redirect dominant speaker and invite others",
-    "encouraging_quiet_voices": "Gentle invitation for quieter participants without putting them on spot",
-    "time_warning": "How to signal time is running low without creating anxiety",
-    "parking_lot_response": "What to say when parking an idea to validate it while staying on track",
-    "closing": "How to wrap up with clear next steps and appreciation"
-  },
-  ${isVirtual ? `
-  "virtual_meeting_protocols": {
-    "mute_management": "When to mute/unmute and how the facilitator manages it on ${virtualPlatform}",
-    "screen_sharing": "Who shares, how to hand off, and how to avoid dead air on ${virtualPlatform}",
-    "chat_usage": "What the chat is for (questions, links, parking lot) and who monitors it",
-    "raise_hand": "How to use the raise-hand feature so quiet voices get a turn",
-    "breakout_rooms": "If and how breakout rooms are used, and how to bring people back"
-  },` : ''}
-
-  "anti_hijack_strategies": [
-    {
-      "scenario": "Someone monopolizes discussion",
-      "prevention": "Set expectation in ground rules: 'Let's hear from everyone before second rounds'",
-      "response": "Thank you [name], those are valuable points. Let's hear from others who haven't spoken yet. [Quiet person], what are your thoughts?"
-    },
-    {
-      "scenario": "Conversation goes off-topic",
-      "prevention": "Start with clear objective for each agenda item",
-      "response": "This is interesting, but let's park it for now to stay on track. I'm adding it to our parking lot to revisit if time allows."
-    }
-    // Include 3-5 strategies based on the known challenges
-  ],
-
-  "meeting_artifacts": {
-    "action_items_template": "Format for tracking action items:
-
-ACTION ITEMS FROM [MEETING NAME] - [DATE]
-===========================================
-
-| Action Item | Owner | Deadline | Status | Notes |
-|------------|-------|----------|--------|-------|
-| [Description] | [Name] | [Date] | [Not Started/In Progress/Complete] | [Any notes] |
-| | | | | |
-
-Next Review: [Date]
-",
-
-    "meeting_minutes_template": "Template for meeting minutes:
-
-MEETING MINUTES
-Meeting: [Name]
-Date: [Date]
-Time: [Start] - [End]
-Attendees: [Names]
-Facilitator: [Name]
-Notetaker: [Name]
-
-AGENDA ITEMS COVERED:
-1. [Topic] - [Summary of discussion]
-   - Key points discussed
-   - Decisions made
-
-2. [Topic] - [Summary]
-
-DECISIONS MADE:
-- [Decision 1]: [Context and outcome]
-- [Decision 2]: [Context and outcome]
-
-ACTION ITEMS: (see action items tracker)
-
-PARKING LOT ITEMS:
-- [Item 1] - assigned to [person] for follow-up
-- [Item 2] - to be discussed in [future meeting]
-
-NEXT STEPS:
-- [Next step 1]
-- [Next step 2]
-",
-
-    "follow_up_email": "Subject: [Meeting Name] - Summary & Next Steps
-
-Hi team,
-
-Thanks for participating in today's ${(meetingType || 'team').toLowerCase()} meeting. Here's a summary:
-
-DECISIONS MADE:
-• [Key decision 1]
-• [Key decision 2]
-
-ACTION ITEMS:
-• [Person]: [Task] by [Date]
-• [Person]: [Task] by [Date]
-
-PARKING LOT (for future discussion):
-• [Item 1]
-• [Item 2]
-
-NEXT MEETING: [Date/Time if applicable]
-
-Full meeting minutes are attached/available at [link].
-
-Best,
-[Facilitator Name]",
-
-    "decision_log": "DECISION LOG
-Date: [Date]
-Decision: [What was decided]
-Framework Used: ${decisionFramework}
-Participants: [Who was involved]
-Rationale: [Why this decision was made]
-Dissent: [Any disagreement expressed]
-Next Review: [When to revisit if needed]"
-  },
-
-  "success_metrics": "Meeting is successful if: (1) ${decisionFramework === 'Decision-making' ? 'Decision is made with clear next steps' : 'Stated goal is achieved'}, (2) All participants contributed at least once, (3) Time limit was respected, (4) Clear next steps and ownership defined, (5) No one felt dominated or excluded, (6) Parking lot items are documented."
-}
-
-LIMITS (keep the response compact so it never gets cut off):
-- anti_hijack_strategies: 3-5 strategies
-- Keep every string field to ONE short sentence (the artifact templates are the only multi-line fields)
-
-Return ONLY valid JSON.`;
-
-    const locale = withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion);
-    const [structurePart, scriptsPart] = await Promise.all([
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 3500,
-        messages: [{ role: 'user', content: withLanguage(structurePrompt, userLanguage) + locale }]
-      }, { label: 'meeting-hijack-preventer:structure' }),
-      callClaudeWithRetry({
-        model: MODELS.SMART,
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: withLanguage(scriptsPrompt, userLanguage) + locale }]
-      }, { label: 'meeting-hijack-preventer:scripts' }),
-    ]);
-
-    const results = { ...scriptsPart, ...structurePart };
-
-    if (!results.meeting_structure || !results.facilitator_scripts) {
-      return res.status(500).json({ error: 'Could not generate meeting structure. Please try again.' });
-    }
-    // The time-box is the tool's core promise, and the model routinely overruns it
-    // (probe: 53 min of agenda for a 45-min meeting). Rescale in code so
-    // items + buffer always sum to the requested duration.
-    const ms = results.meeting_structure;
-    if (Array.isArray(ms.agenda_items) && ms.agenda_items.length) {
-      const buffer = Number(ms.buffer_time) || 0;
-      const itemSum = ms.agenda_items.reduce((t, it) => t + (Number(it.time_allocated) || 0), 0);
-      const target = duration - buffer;
-      if (itemSum > 0 && target > 0 && itemSum !== target) {
-        let running = 0;
-        ms.agenda_items.forEach((it, i) => {
-          if (i === ms.agenda_items.length - 1) {
-            it.time_allocated = Math.max(1, target - running);
+// Arrays are objects: Object.entries enumerates their indices, so the walk
+// reaches strings inside arrays without a special case. An earlier version of
+// this pattern returned early on arrays and every array-of-strings field went
+// unchecked.
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+  const walk = (node) => {
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string') {
+        const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
+        if (hit) {
+          if (v.length <= 260 && (v.match(/[.!?]/g) || []).length <= 2) {
+            console.log(`[meeting-hijack-preventer] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            node[k] = '';
           } else {
-            it.time_allocated = Math.max(1, Math.round((Number(it.time_allocated) || 0) * target / itemSum));
-            running += it.time_allocated;
+            console.log(`[meeting-hijack-preventer] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
           }
-        });
-      }
-      ms.total_duration = duration;
+        }
+      } else if (v && typeof v === 'object') walk(v);
     }
-    res.json(results);
+  };
+  walk(data);
+  const prune = (node) => {
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) {
+        const it = node[i];
+        if (it === '') node.splice(i, 1);
+        else if (it && typeof it === 'object' && Object.values(it).every(x => x === '' || x == null)) node.splice(i, 1);
+        else prune(it);
+      }
+      return;
+    }
+    if (node && typeof node === 'object') Object.values(node).forEach(prune);
+  };
+  prune(data);
+  return data;
+}
+
+// The time-box is the tool's core promise and the model routinely overruns it
+// (an earlier probe: 53 minutes of agenda for a 45-minute meeting). Rescale in
+// code — but only DOWNWARD. An agenda that comes in under the duration left
+// slack on purpose, and inflating it back up would be the fixed buffer the
+// brief says not to force, applied in reverse.
+function fitAgendaToDuration(plan, duration) {
+  const items = plan && Array.isArray(plan.agenda) ? plan.agenda : null;
+  if (!items || !items.length || !(duration > 0)) return plan;
+  const sum = items.reduce((t, it) => t + (Number(it && it.minutes) || 0), 0);
+  if (sum > duration) {
+    let running = 0;
+    items.forEach((it, i) => {
+      if (i === items.length - 1) it.minutes = Math.max(1, duration - running);
+      else {
+        it.minutes = Math.max(1, Math.round((Number(it.minutes) || 0) * duration / sum));
+        running += it.minutes;
+      }
+    });
+  }
+  plan.total_minutes = duration;
+  plan.scheduled_minutes = items.reduce((t, it) => t + (Number(it.minutes) || 0), 0);
+  plan.unscheduled_minutes = Math.max(0, duration - plan.scheduled_minutes);
+  return plan;
+}
+
+// The challenge checkboxes. The value is the facilitation problem, stated as a
+// problem — never as a claim about a person. Kept here rather than in the
+// frontend so the wording the model sees is the wording under review.
+const CHALLENGES = {
+  airtime:      'One person takes a lot of airtime',
+  wanders:      'Conversation wanders',
+  interrupt:    'People interrupt each other',
+  overrun:      'We run out of time',
+  unheard:      'Some people do not get much chance to contribute',
+  undecided:    'Decisions are hard to reach',
+  no_next_step: 'We leave without clear next steps',
+};
+
+function challengeLines(challenges, other) {
+  const out = [];
+  if (challenges && typeof challenges === 'object') {
+    for (const [k, on] of Object.entries(challenges)) {
+      if (on && CHALLENGES[k]) out.push(CHALLENGES[k]);
+    }
+  }
+  if (typeof other === 'string' && other.trim()) out.push(other.trim());
+  return out;
+}
+
+function brief(body) {
+  const {
+    meetingGoal, duration, participantCount, participantNotes,
+    format, platform, meetingType, challenges, challengeOther,
+    decisionFramework, extraContext,
+  } = body;
+
+  const picked = challengeLines(challenges, challengeOther);
+
+  return `WHAT NEEDS TO HAPPEN IN THIS MEETING:
+${String(meetingGoal || '').trim()}
+
+TIME AVAILABLE: ${duration} minutes
+PEOPLE: ${participantCount ? `${participantCount}` : 'Not supplied — do not assume a group size.'}
+NAMES OR ROLES THAT MATTER: ${participantNotes && participantNotes.trim() ? participantNotes.trim() : 'Not supplied. Do not invent names, roles, seniority or who decides.'}
+FORMAT: ${format || 'Not supplied.'}
+PLATFORM: ${platform ? platform : 'Not supplied. Do not assume any platform feature is available or enabled.'}
+KIND OF MEETING: ${meetingType ? meetingType : 'Not supplied — infer nothing from its absence.'}
+
+WHAT TENDS TO GET IN THE WAY (facilitation problems to prepare for, NOT claims about any person):
+${picked.length ? picked.map(x => `- ${x}`).join('\n') : '- Nothing selected. Do not invent a problem to solve; prepare for the meeting as described.'}
+
+HOW DECISIONS WILL BE MADE: ${decisionFramework && decisionFramework !== 'Not sure'
+    ? `${decisionFramework} — a preference, not an organisational rule. Adapt it.`
+    : 'Not established. Do not assume one, and if the meeting needs a decision, name the question of who decides as something to clarify.'}
+
+ANYTHING ELSE THEY SAID MATTERS: ${extraContext && extraContext.trim() ? extraContext.trim() : 'Nothing supplied.'}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BUILD MY MEETING PLAN
+// ═══════════════════════════════════════════════════════════════
+router.post('/meeting-hijack-preventer', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { meetingGoal, userLanguage } = req.body;
+    const duration = Number(req.body.duration);
+
+    if (!meetingGoal || !String(meetingGoal).trim()) {
+      return res.status(400).json({ error: 'Tell me what needs to happen in this meeting.' });
+    }
+    if (!Number.isFinite(duration) || duration < 5 || duration > 480) {
+      return res.status(400).json({ error: 'How long is the meeting? Anything from 5 minutes to 8 hours.' });
+    }
+
+    const picked = challengeLines(req.body.challenges, req.body.challengeOther);
+
+    const prompt = `${CORE}
+
+${brief(req.body)}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+Return ONLY valid JSON:
+{
+  "meeting_plan": {
+    "goal": "What this meeting is for, in the visitor's own terms — one sentence",
+    "end_state": "What is concretely true when the meeting ends: the decision made, the thing understood, the plan agreed — one sentence starting from the outcome, not from the activity",
+    "total_minutes": ${duration},
+    "agenda": [
+      {
+        "title": "What this block is — a short phrase, not a ritual name",
+        "minutes": 0,
+        "purpose": "Why this block is in the meeting at all — one short line",
+        "how_to_run_it": "What the facilitator actually does — one or two sentences, concrete",
+        "say_this_if_helpful": "Words they could say out loud to open or steer this block, or an empty string if the block needs none"
+      }
+    ]
+  },
+  "watch_for": [
+    {
+      "situation": "A facilitation problem this meeting could plausibly hit, described as a situation and never as a claim about a person",
+      "prevent_it": "What to set up beforehand or say early so it is less likely — one short line",
+      "if_it_happens": "What to actually do in the moment — one short line",
+      "say_this": "Short, natural words they could say out loud. Firm where it needs to be. No diplomatic filler"
+    }
+  ],
+  "decision_plan": {
+    "needed": true,
+    "approach": "How to reach the decision in this meeting, adapting whatever framework they named. Empty string if the meeting does not need a decision",
+    "what_needs_clarifying": "What about the decision is genuinely unresolved — most often who makes the final call if the group does not agree. Empty string if nothing is unclear"
+  },
+  "before_the_meeting": ["Preparation specific to THIS meeting — one short line each. No generic meeting checklist, and no invented lead times"],
+  "finish_strong": {
+    "before_people_leave": ["A short checklist tied to the stated outcome — one short line each"],
+    "closing_script": "Words to close the meeting cleanly — two or three sentences"
+  }
+}
+
+ARRAY BOUNDS: agenda 3-6 items, watch_for ${picked.length ? `one entry per problem they selected and nothing more (${picked.length})` : 'at most 2, and only for problems this meeting design genuinely risks'}, before_the_meeting at most 4, before_people_leave at most 5.
+
+The agenda minutes must sum to at most ${duration}. Leave time unscheduled if the design does not need every minute — do not pad to fill the slot, and do not add a block called Buffer.
+
+"needed" is true only if this meeting has to produce a decision. When it is false, "approach" and "what_needs_clarifying" are empty strings.
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 6000,
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'meeting-hijack-preventer' });
+
+    if (!parsed.meeting_plan || !Array.isArray(parsed.meeting_plan.agenda)) {
+      return res.status(500).json({ error: 'Could not build the plan. Please try again.' });
+    }
+
+    fitAgendaToDuration(parsed.meeting_plan, duration);
+    res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('Meeting Hijack Preventer error:', error);
+    console.error('[MeetingHijackPreventer]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════
+// FOLLOW-UP — generated on demand AFTER the meeting, from what the visitor
+// captured. Never before: the old tool handed people a decision log and a
+// summary email full of outcomes the meeting had not produced yet.
+// ═══════════════════════════════════════════════════════════════
+router.post('/meeting-hijack-preventer/follow-up', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+  try {
+    const { decided, nextSteps, stillOpen, forNextTime, meetingGoal, userLanguage } = req.body;
+
+    const steps = Array.isArray(nextSteps)
+      ? nextSteps.filter(s => s && s.task && String(s.task).trim())
+      : [];
+
+    const anything = [decided, stillOpen, forNextTime].some(x => x && String(x).trim()) || steps.length;
+    if (!anything) {
+      return res.status(400).json({ error: 'Capture something from the meeting first — even one line.' });
+    }
+
+    const prompt = `${CORE}
+
+Using only the visitor's captured meeting information, create a concise
+follow-up.
+
+Do not invent decisions, owners, deadlines, attendees, agreement, dissent,
+next meetings, or rationale.
+
+If a field was not captured, omit it rather than inserting a placeholder or
+guessing.
+
+Structure:
+
+WHAT WE DECIDED
+Only if decisions were captured.
+
+WHAT HAPPENS NEXT
+Only captured actions, owners, and dates.
+
+STILL OPEN
+Only captured unresolved items.
+
+Draft a short follow-up message using the same information.
+
+WHAT THE MEETING WAS FOR: ${meetingGoal && meetingGoal.trim() ? meetingGoal.trim() : 'Not supplied.'}
+WHAT THEY DECIDED: ${decided && decided.trim() ? decided.trim() : 'Nothing captured — omit the decisions section entirely.'}
+WHAT HAPPENS NEXT: ${steps.length
+    ? steps.map(s => `- ${s.task}${s.owner ? ` — ${s.owner}` : ' — no owner captured'}${s.when ? ` — ${s.when}` : ' — no date captured'}`).join('\n')
+    : 'Nothing captured — omit the next-steps section entirely.'}
+WHAT IS STILL OPEN: ${stillOpen && stillOpen.trim() ? stillOpen.trim() : 'Nothing captured — omit the still-open section entirely.'}
+FOR NEXT TIME: ${forNextTime && forNextTime.trim() ? forNextTime.trim() : 'Nothing captured.'}
+
+Return ONLY valid JSON:
+{
+  "what_we_decided": ["One captured decision per line, restated plainly. Empty array if none were captured"],
+  "what_happens_next": [
+    { "task": "The captured action", "owner": "The captured owner, or an empty string if none was captured", "when": "The captured date, or an empty string if none was captured" }
+  ],
+  "still_open": ["One captured unresolved item per line. Empty array if none were captured"],
+  "message": "A short follow-up message built from the same information and nothing else — three to six sentences, ready to send. It states what was captured; it does not thank people for contributions you cannot see, summarise a discussion you were not given, or announce a next meeting nobody mentioned"
+}
+
+An empty array is the correct answer for a section nobody captured. Do not fill one with a placeholder, a bracket, or a guess.
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
+
+    const parsed = await callClaudeWithRetry({
+      model: MODELS.SMART,
+      max_tokens: 2500,
+      messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'meeting-hijack-preventer-follow-up' });
+
+    if (!parsed.message) return res.status(500).json({ error: 'Could not draft the follow-up. Please try again.' });
+    res.json(validateResult(parsed));
+
+  } catch (error) {
+    console.error('[MeetingHijackPreventer/follow-up]', error);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Reviewed against backend/lib/outputStandard.js during the 2026-09-03 rewrite.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  checks: ['validateResult'],
+  note: 'inferred personalities and feelings, imported frames (psychological safety / neurodivergence), invented lead times, invented decision authority and escalation paths, and success defined as something unobservable are all blanked in code. The agenda is fitted to the visitor\'s duration downward only — an agenda that comes in short left slack on purpose. The follow-up is generated after the meeting from captured input, never before it.',
+};
 
 module.exports = router;
