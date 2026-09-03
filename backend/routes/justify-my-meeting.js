@@ -168,6 +168,29 @@ be written down individually. Each names a specific move the model kept making.
     action will happen unless the visitor established it. Offer it as a question
     the room can answer, not as a plan the room has agreed to.
 
+13. No prep does not establish that advance thought is unnecessary either. It
+    establishes that preparation is not part of the described value, so the case
+    for the meeting has to rest on what happens live. Write that.
+
+14. Do not infer that a group is too large from headcount alone. A number is not
+    a verdict on who belongs there. When you do not know how attendees
+    contribute, say that it is unknown whether everyone needs to attend.
+
+15. When a pre-read is circulated late, that may create a risk that live time
+    goes on orientation. It does not establish that anyone is unprepared. Name
+    the risk; do not report the state.
+
+16. Never say an interaction 'cannot happen async', 'requires synchronous time'
+    or 'is impossible in writing' unless that is literally true. It almost never
+    is. Say it is likely to benefit from real-time exchange, and say why —
+    what the back-and-forth actually does that a thread would not.
+
+17. In a drafted message, explain the STRUCTURE of the message: what it leads
+    with, what it concedes, what it asks for, what it leaves open. Never predict
+    the recipient's reaction. You do not know whether they will agree, feel
+    defensive, be receptive, or appreciate the framing, and saying so turns a
+    piece of writing advice into a claim about a person you have never met.
+
 Reason freely about meeting design. Assert carefully about the meeting.
 
 VOICE
@@ -259,6 +282,42 @@ const MANUFACTURED_BENEFIT = new RegExp([
   '\\bsense of (?:accountability|belonging|shared purpose|connection)\\b',
 ].join('|'), 'i');
 
+// ── Micro-pass, 2026-09-03 ───────────────────────────────────────────────
+// Three of the six are shaped like something a regex can see. The other three
+// (no-prep, pre-read timing, agenda roles) are about what a sentence ASSERTS
+// rather than which words it uses, and live in the field descriptions instead —
+// a pattern loose enough to catch them would blank correct sentences too.
+
+// "this cannot happen async" / "requires synchronous time". Almost never
+// literally true, and the honest version — likely to benefit, and why — is
+// both more accurate and more useful.
+const ASYNC_ABSOLUTISM = new RegExp([
+  '\\b(?:cannot|can\\x27t|could not|couldn\\x27t|impossible to)\\b[^.]{0,45}\\b(?:async|asynchronous\\w*|in writing|over (?:email|slack|chat)|be written)\\b',
+  '\\b(?:async|asynchronous\\w*|writing|written|email|slack|a thread)\\b[^.]{0,35}\\b(?:cannot|can\\x27t|will not|would not|does not|wouldn\\x27t|won\\x27t) (?:work|do|suffice|be enough)\\b',
+  '\\b(?:requires?|demands?|needs?) (?:real[- ]time|synchronous|live) (?:time|interaction|discussion|exchange|conversation)\\b',
+  '\\b(?:only|exclusively) (?:possible|works) (?:live|in real[- ]time|synchronously)\\b',
+  '\\bhas to (?:happen|be done) (?:live|synchronously|in real[- ]time)\\b',
+].join('|'), 'i');
+
+// A headcount read as a verdict on who belongs. ARBITRARY_RULE already covers
+// the explicit threshold form ("more than 10 attendees is too many"); this is
+// the softer version that slipped past it.
+const HEADCOUNT_AS_VERDICT = new RegExp([
+  '\\b\\d+\\s*(?:people|attendees|participants)\\b[^.]{0,45}\\b(?:too many|more than (?:is )?needed|does not need|do not (?:all )?need to|need not all)\\b',
+  '\\b(?:people|attendees|participants)\\b[^.]{0,20}\\b(?:is|are|feels?|seems?) too many\\b',
+  '\\btoo many (?:people|attendees|participants|voices)\\b',
+  '\\bwith \\d+ (?:people|attendees)[^.]{0,30}\\b(?:meaningful|real|genuine) (?:discussion|participation|dialogue) (?:is|becomes)\\b',
+].join('|'), 'i');
+
+// Predicting how the recipient of a drafted message will react.
+const PREDICTED_REACTION = new RegExp([
+  '\\b(?:they|the (?:organi[sz]er|manager|recipient|reader))\\b[^.]{0,40}\\b(?:will|are) (?:more )?likely to (?:agree|accept|say yes|respond well|receive)\\b',
+  '\\bmakes (?:them|the (?:organi[sz]er|recipient|reader)) (?:more likely to|feel|less defensive|receptive)\\b',
+  '\\b(?:will|would) (?:not )?(?:feel|come across as|be taken as) (?:defensive|attacked|criticis\\w+|dismissed|appreciated)\\b',
+  '\\b(?:they|your (?:manager|boss|lead)|the (?:organi[sz]er|manager|recipient|reader|team)) (?:will|would|is likely to|are likely to) (?:appreciate|respect|welcome|resent|resist|understand|see)\\b',
+  '\\b(?:disarms?|preempts?|defuses?) (?:their |any )?(?:defensiveness|resistance|objection)\\b',
+].join('|'), 'i');
+
 const HEDGED = /\b(?:if|whether|may|might|could|unknown|not established|you did not (?:say|describe)|unless)\b/i;
 
 const RULES = [
@@ -270,6 +329,9 @@ const RULES = [
   ['read recurrence as habit or stagnation', RECURRENCE_AS_HABIT],
   ['read no-prep as low engagement', NO_PREP_AS_ENGAGEMENT],
   ['manufactured a benefit to balance the verdict', MANUFACTURED_BENEFIT, (v) => HEDGED.test(v)],
+  ['called something impossible async when it is only harder', ASYNC_ABSOLUTISM],
+  ['read a headcount as a verdict on who belongs', HEADCOUNT_AS_VERDICT],
+  ['predicted how the recipient would react', PREDICTED_REACTION],
 ];
 
 const VERDICTS = ['KEEP IT', 'SHORTEN IT', 'FIX IT', 'MAKE IT ASYNC', 'NOT ENOUGH TO TELL'];
@@ -388,9 +450,9 @@ Return ONLY valid JSON:
   "verdict": "Exactly one of these English strings and nothing else: KEEP IT, SHORTEN IT, FIX IT, MAKE IT ASYNC, NOT ENOUGH TO TELL",
   "one_liner": "A memorable one-sentence judgment — the line they would repeat to a colleague",
   "what_we_know": ["A fact THEY supplied, restated plainly — one short line each"],
-  "why_this_verdict": ["Specific reasoning grounded in what they supplied — one short line each. Where a step is inference rather than fact, say so. Three moves are banned outright here because they keep recurring: (a) do not generalise the visitor's own airtime to anyone else — say the input does not establish how the other attendees use their time; (b) do not read recurrence or age as habit, momentum or lack of redesign — say it recurs and that this makes the question worth asking; (c) do not read no-prep as low engagement or low cognitive demand — say preparation is not part of the meeting's described value"],
-  "what_earns_the_meeting": ["Something synchronous time genuinely enables here — one short line each. Empty array if nothing supplied supports one. Never invent one to balance the verdict, and never call the discussion contested, sensitive or difficult unless they described it that way"],
-  "what_weakens_the_case": ["Something that makes synchronous time harder to justify here — one short line each"],
+  "why_this_verdict": ["Specific reasoning grounded in what they supplied — one short line each. Where a step is inference rather than fact, say so. Three moves are banned outright here because they keep recurring: (a) do not generalise the visitor's own airtime to anyone else — say the input does not establish how the other attendees use their time; (b) do not read recurrence or age as habit, momentum or lack of redesign — say it recurs and that this makes the question worth asking; (c) do not read no-prep as low engagement, low cognitive demand, or as evidence that advance thought is unnecessary — say preparation is not part of the described value, so the case has to rest on what happens live. And never treat a headcount as a verdict on its own: if you do not know how the attendees contribute, say it is unknown whether everyone needs to attend"],
+  "what_earns_the_meeting": ["Something synchronous time genuinely enables here — one short line each. Empty array if nothing supplied supports one. Never invent one to balance the verdict, and never call the discussion contested, sensitive or difficult unless they described it that way. Say something is LIKELY TO BENEFIT from real-time exchange and say what the back-and-forth does; never that it cannot happen async or requires synchronous time, which is almost never literally true"],
+  "what_weakens_the_case": ["Something that makes synchronous time harder to justify here — one short line each. A pre-read circulated late is a RISK that live time goes on orientation; it does not establish that anyone is unprepared. Name the risk, not the state"],
   "unknowns_that_matter": ["Missing information that could materially change the verdict — one short line each"],
   "better_format": {
     "recommendation": "Exactly one of these English strings and nothing else: Keep as-is, Shorter meeting, Smaller meeting, Async update, Async first meeting if needed, Other",
@@ -550,7 +612,7 @@ Return ONLY valid JSON:
     {
       "name": "ONLY the meeting's name, exactly as they wrote it — not the whole line from the list. 'Monday standup', never 'Monday standup — 0.5h, 8 people, recurring — what everyone is working on'",
       "read": "Exactly one of these English strings and nothing else: earns its time, worth questioning, worth revisiting, not enough to tell. Judge THIS meeting from what they wrote about it, never the category its name belongs to. If the purpose is blank or too thin to judge, the answer is 'not enough to tell' — do not supply the conventional purpose of a 1:1, a standup, a design review or a retro and then grade the meeting against that",
-      "why": "One sentence, grounded in what they supplied about this meeting. Where the read is 'not enough to tell', say what is missing. Never call a decision contested or a topic sensitive unless they said so, and a decision needing discussion does not establish that every listed attendee needs to be in it"
+      "why": "One sentence, grounded in what they supplied about this meeting. Where the read is 'not enough to tell', say what is missing. Never call a decision contested or a topic sensitive unless they said so; a decision needing discussion does not establish that every listed attendee needs to be in it; and never say something cannot be done async — say it is likely to benefit from real-time exchange, and why"
     }
   ],
   "opportunities": [
@@ -741,10 +803,10 @@ Return ONLY valid JSON:
 {
   "why_are_we_meeting": "What live time is FOR in the improved meeting — one or two sentences, written forwards. Not a summary of what was wrong before",
   "what_must_be_true_when_we_leave": ["A decision, an agreement, a question answered, a plan — one short line each"],
-  "who_needs_to_participate": ["A role they supplied, or the FUNCTION needed if they did not — one short line each. Describe what a person needs to be able to do, never what they already know or could have read, and never invent a title"],
+  "who_needs_to_participate": ["A role they supplied, or the FUNCTION needed if they did not — one short line each. Describe what a person needs to be able to do, never what they already know or could have read, and never invent a title. Any role they did NOT supply is a design recommendation and must read like one — 'someone will need to capture the decision' or 'it would help to have someone who can approve the spend', never 'the note-taker' or 'the approver', which assert a post that may not exist"],
   "before_the_meeting": ["What can happen beforehand instead of live — one short line each. Empty array if nothing supplied supports one"],
   "live_agenda": [
-    { "item": "What happens live — one short line, written conditionally where it depends on something not established", "why_live": "Why this benefits from being synchronous — one short line", "minutes": "A number only if duration was supplied and the split is defensible, otherwise null. These do not have to add up to the slot" }
+    { "item": "What happens live — one short line, written conditionally where it depends on something not established", "why_live": "What the live back-and-forth does here that a written thread would not — one short line. Phrase it as benefit, never as impossibility", "minutes": "A number only if duration was supplied and the split is defensible, otherwise null. These do not have to add up to the slot" }
   ],
   "end_with": "The closing move: decision, owner, next step, unresolved question — one sentence"
 }
@@ -815,7 +877,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 Return ONLY valid JSON:
 {
   "message": "The message, ready to send — 2-5 sentences. It proposes; it does not announce, and it never states that they will skip",
-  "why_it_lands": "What makes this version workable — one sentence",
+  "why_it_lands": "The STRUCTURE of the message: what it leads with, what it concedes, what it asks for, what it deliberately leaves open — one sentence. Never predict the recipient's reaction. You do not know whether they will agree, feel defensive, be receptive or appreciate the framing, and guessing turns writing advice into a claim about a person you have never met",
   "if_they_say_no": "What to say if the organizer declines, keeping the relationship intact — 1-2 sentences",
   "do_not_send": "The version of this message that would cost them something, and what it costs — one sentence"
 }

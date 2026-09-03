@@ -115,6 +115,38 @@ then containment, then the meeting at that index.
 every mode, which turned a caveat into furniture. The output has to demonstrate
 the rule instead.
 
+## The 2026-09-03 micro-pass
+
+Six more, after a live read of all five modes. Same method: numbered rules in
+`SHARED`, the specific ones repeated in the field that produces them, and a
+backstop wherever a regex can actually see the failure.
+
+| It wrote | It now writes |
+| --- | --- |
+| no prep → advance thought unnecessary | "Preparation is not part of the described value, so the case has to rest on what happens live" |
+| headcount → too many people | "Whether all 9 attendees are needed is unknown from the input" |
+| late pre-read → attendees are unprepared | "creates a risk that live time goes on orientation" |
+| "the note-taker" | "someone willing to capture decisions — this does not require a dedicated role" |
+| "cannot happen async" | "likely to benefit from real-time exchange, because…" |
+| "they are more likely to agree" | "leads with X, concedes Y, asks for Z, leaves W open" |
+
+New backstops: `ASYNC_ABSOLUTISM`, `HEADCOUNT_AS_VERDICT`, `PREDICTED_REACTION`.
+Thirteen bad forms caught, eight legitimate phrasings verified to survive — the
+first draft of all three missed a case each ("a written thread would not work",
+"twenty-two attendees is too many", "your manager will appreciate"), so widen
+and retest rather than assuming the first pattern is complete.
+
+The other three rules — no-prep, pre-read timing, agenda roles — have no
+backstop on purpose. They are about what a sentence ASSERTS rather than which
+words it uses, and any pattern loose enough to catch them blanked correct
+sentences in testing. They live in the field descriptions only.
+
+**A note on `why_it_lands`.** The JSON key and its UI label ("Why it lands:")
+both invite exactly the prediction rule 6 bans. The key stays because renaming
+it churns the frontend and the goldens for no functional gain, and the model
+never sees the label — but if the field drifts back toward predicting reactions,
+the name is the first place to look.
+
 ## Endpoints
 
 | Path | Purpose | max_tokens |
