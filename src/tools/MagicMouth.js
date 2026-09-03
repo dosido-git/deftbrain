@@ -196,9 +196,6 @@ const MagicMouth = ({ tool }) => {
     }
   };
 
-  const handlePhoneReset = () => {
-    setPhoneCompany(''); setPhoneIssue(''); setPhoneGoal(''); setPhoneResults(null); setError('');
-  };
 
   const handleNuclear = async () => {
     if (!nuclearCompany.trim()) { setError(t('mm_err_opponent')); return; }
@@ -309,10 +306,12 @@ const MagicMouth = ({ tool }) => {
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(phoneResults || phoneCompany.trim() || phoneGoal.trim() || phoneIssue.trim()) ? (
-                <button onClick={handlePhoneReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  📞 {t('mm_try_another_call')}
+              {/* PF-16: the tool's one reset, on the title row, from the first
+                  keystroke. This slot used to hold a phone-only reset labelled
+                  Try another call, so from Ask or Nuclear there was nothing here. */}
+              {hasAnything ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('start_over')}
                 </button>
               ) : null}
             </div>
@@ -335,19 +334,6 @@ const MagicMouth = ({ tool }) => {
             </button>
           ))}
         </div>
-        {/* PF-16: the tool's one reset, on the mode row so it is reachable from
-            all three. It used to live inside the Ask results only, and Nuclear
-            had a reset handler with no button wired to it at all. */}
-        {hasAnything && (
-          <div className="flex justify-end mt-2">
-            <button
-              onClick={handleReset}
-              className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}
-            >
-              ↺ {t('start_over')}
-            </button>
-          </div>
-        )}
         </div>
       </div>
 
