@@ -4,15 +4,15 @@
     "generated": "2026-07-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), single endpoint",
     "baseline_commit": "lucksurface-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden luck-surface) and diff for QUALITY not exact match: HTTP 200, audit + the_five_moves (5) + the_target present, no truncation. The de-css-width-and-truncation-guard case GUARDS: audit.current_surface_area AND the_target.new_surface_area must be BARE percentage strings (/^\\d{1,3}%$/) — the frontend renders them BOTH as a displayed number AND as raw style={{width: value}} progress bars, so prose breaks the bar (GravityWell class). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) current/new_surface_area are BARE percentages (schema example '14%'/'43%' + explicit rule); (3) EXACTLY 5 moves + max_tokens 3000; (4) no annotation suffixes. Guard keys on audit (top-level).",
+    "how_to_regression_diff": "Re-run (npm run check:golden get-noticed) and diff for QUALITY not exact match: HTTP 200, audit + the_five_moves (5) + the_target present, no truncation. The de-css-width-and-truncation-guard case GUARDS: audit.current_surface_area AND the_target.new_surface_area must be BARE percentage strings (/^\\d{1,3}%$/) — the frontend renders them BOTH as a displayed number AND as raw style={{width: value}} progress bars, so prose breaks the bar (GravityWell class). DO NOT silently reverse: (1) sonnet-4-6 via callClaudeWithRetry; (2) current/new_surface_area are BARE percentages (schema example '14%'/'43%' + explicit rule); (3) EXACTLY 5 moves + max_tokens 3000; (4) no annotation suffixes. Guard keys on audit (top-level).",
     "captured": "2026-09-02",
     "baseline": "lucksurface-v2",
-    "note": "Re-recorded 2026-09-02 for the contract rewrite. The old case guarded current_surface_area and new_surface_area, which were percentage strings rendered directly as CSS progress-bar widths — both are gone, along with the premise that serendipity has a denominator. What replaces it is the same class of risk in the new shape: breadth (narrow|mixed|broad) and mechanism (signal|enter|create|connect|compound) are switched on by the frontend, so withLanguage translating either would render a blank label in twelve languages. The German case exists to catch exactly that, and validateResult pins both in code as well."
+    "note": "Re-recorded 2026-09-02 for the contract rewrite. The old case guarded current_surface_area and new_surface_area, which were percentage strings rendered directly as CSS progress-bar widths — both are gone, along with the premise that serendipity has a denominator. What replaces it is the same class of risk in the new shape: breadth (narrow|mixed|broad) and mechanism (signal|enter|create|connect|compound) are switched on by the frontend, so withLanguage translating either would render a blank label in twelve languages. The German case exists to catch exactly that, and validateResult pins both in code as well. 2026-09-02: route file, endpoint and this sample renamed to get-noticed to match the catalog id — the old luck-surface names outlived the rename and read as a different tool."
   },
   "cases": [
     {
       "name": "de-enum-stays-english",
-      "endpoint": "/api/luck-surface",
+      "endpoint": "/api/get-noticed",
       "input": {
         "description": "Freiberufliche Illustratorin, arbeite von zu Hause. Fast alle Aufträge kommen über zwei Stammkunden, die mich weiterempfehlen. Ich poste fertige Arbeiten auf Instagram, spreche aber nie über die Arbeit selbst. Einmal pro Woche gehe ich zum Aktzeichnen.",
         "goals": "Mehr Kundschaft und andere Illustratorinnen zum Austausch",
@@ -72,7 +72,7 @@
     },
     {
       "name": "en-no-goal-supplied",
-      "endpoint": "/api/luck-surface",
+      "endpoint": "/api/get-noticed",
       "input": {
         "description": "Software engineer, work from home, same team three years. Live in Denver, go to the gym, cook, watch TV. Small tight friend group.",
         "goals": "",

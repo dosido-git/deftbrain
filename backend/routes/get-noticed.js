@@ -421,7 +421,7 @@ function validateResult(data) {
   if (Array.isArray(aw)) {
     const kept = aw.filter(x => !(typeof x === 'string' && HYPOTHETICAL.test(x)));
     if (kept.length !== aw.length) {
-      console.log(`[luck-surface] already_working: dropped ${aw.length - kept.length} of ${aw.length} — possibility, not an existing pathway`);
+      console.log(`[get-noticed] already_working: dropped ${aw.length - kept.length} of ${aw.length} — possibility, not an existing pathway`);
     }
     data.current_surface.already_working = kept;
   }
@@ -452,10 +452,10 @@ function validateResult(data) {
         const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
         if (hit) {
           if (v.length <= 200 && (v.match(/[.!?]/g) || []).length <= 1) {
-            console.log(`[luck-surface] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            console.log(`[get-noticed] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
             node[k] = '';
           } else {
-            console.log(`[luck-surface] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+            console.log(`[get-noticed] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
           }
         }
       } else if (v && typeof v === 'object') walk(v);
@@ -465,7 +465,7 @@ function validateResult(data) {
   return data;
 }
 
-router.post('/luck-surface', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/get-noticed', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { description, goals, currentExposures, userLanguage } = req.body;
     if (!description?.trim()) return res.status(400).json({ error: 'Describe where your life puts you in contact with new people or ideas.' });
@@ -512,7 +512,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       max_tokens: 4000,
       system: withLanguage('Helps people widen the ways new people, ideas and opportunities can reach them. Works only from what the visitor supplied. Return ONLY valid JSON. No markdown. ' + NO_QUOTE_RULE, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
       messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) }],
-    }, { label: 'luck-surface' });
+    }, { label: 'get-noticed' });
     if (!parsed.current_surface) {
       return res.status(500).json({ error: 'Could not read your situation. Please try again.' });
     }

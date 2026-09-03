@@ -87,7 +87,7 @@ const GetNoticed = ({ tool }) => {
     if (!description.trim()) return;
     setError(''); setResults(null);
     try {
-      const data = await callToolEndpoint('luck-surface', {
+      const data = await callToolEndpoint('get-noticed', {
         description: description.trim(),
         goals: goals.trim() || undefined,
         currentExposures: currentExposures.trim() || undefined,

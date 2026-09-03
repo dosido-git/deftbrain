@@ -1,8 +1,17 @@
-# LuckSurface — architecture & lock notes (`lucksurface-v1`)
+# GetNoticed — architecture & lock notes (`lucksurface-v2`)
 
-"Luck surface area" analyzer: current→target serendipity score + 5 moves to widen it. **Frontend:**
-`src/tools/LuckSurface.js` (in `LOCALIZED_TOOLS`, `lks_`). **Backend:** `backend/routes/luck-surface.js`
-(single endpoint). **Golden:** `audit/luck-surface-golden-sample.json` (1 DE case). Verify: `npm run check:golden luck-surface`.
+Renamed from Luck Surface on 2026-09-02, and rewritten at the same time: the
+percentage premise is gone (there is no denominator for available serendipity),
+replaced by a qualitative narrow/mixed/broad reading. **Frontend:**
+`src/tools/GetNoticed.js` (in `LOCALIZED_TOOLS`). **Backend:**
+`backend/routes/get-noticed.js`, endpoint `/api/get-noticed` (single endpoint).
+**Golden:** `audit/get-noticed-golden-sample.json`. Verify: `npm run check:golden get-noticed`.
+
+**The `lks_` i18n prefix stays**, along with its catalog file
+`src/i18n/locales/tools/luck-surface.js`. Renaming an i18n prefix buys nothing
+and risks a silent collision across the flat per-language namespace; the file
+path is also what the Gate 5 allowlist is keyed on. Everything else — file,
+endpoint, retry label, log prefix, golden — follows the catalog id.
 
 ## Shape
 1 endpoint, `claude-sonnet-4-6` (`MODELS.SMART`), **`max_tokens 3000`**, `callClaudeWithRetry` +
