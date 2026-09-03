@@ -9,6 +9,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import LocaleSelectors from './LocaleSelectors';
 import FeedbackTap from './FeedbackTap';
 import { ensurePrintStyles } from './printStyles';
+import { headerGradient } from '../utils/headerGradient';
 
 // Inner component — has access to ActionBarContext
 const ToolPageWrapperInner = ({ children, tool, toolId }) => {
@@ -293,9 +294,15 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
         {/* Main Content Area */}
         <main data-print-main className="lg:col-span-8">
           <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
-              ...(detectedTool?.headerColor ? {
-                background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
-              } : { background: isDark ? '#27272a' : '#ffffff' }),
+              // Two stops instead of one, and a derived value in dark mode
+              // rather than the light-mode hex. Same geometry as before —
+              // solid to 60px, gone by 220px — so nothing on the page moves.
+              // See src/utils/headerGradient.js for why each number is what
+              // it is. headerGradient returns null for a malformed hex, which
+              // falls through to the plain surface below.
+              ...(headerGradient(detectedTool?.headerColor, isDark)
+                ? { background: headerGradient(detectedTool.headerColor, isDark) }
+                : { background: isDark ? '#27272a' : '#ffffff' }),
             }}>
             <div className={`${colors.surface} m-3 sm:m-8 rounded-xl p-4 sm:p-6`}>
               {children}
