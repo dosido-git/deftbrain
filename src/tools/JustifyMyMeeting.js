@@ -1128,7 +1128,16 @@ const JustifyMyMeeting = ({ tool }) => {
   // ════════════════════════════════════════════════════════════
   // MAIN RENDER
   // ════════════════════════════════════════════════════════════
+  // Start Over clears the inputs too, not just the answer. Clearing the result
+  // and leaving the form full is the version that looks like it worked and
+  // isn't: the next submit re-sends whatever was already typed.
   const handleReset = () => {
+    setMeetingText(''); setDuration(''); setAttendees(''); setContext('');
+    setRelationship('');
+    setZName(''); setZPurpose(''); setZActual(''); setZFreq('Weekly');
+    setZDuration(''); setZAttendees('');
+    setWeekMeetings([{ name: '', duration: '', attendees: '', recurring: false, purpose: '' }]);
+    setRWhat(''); setRMinutes(''); setRRole('');
     setJudgeResults(null);
     setAgendaResults(null);
     setMessageResults(null);
@@ -1137,7 +1146,17 @@ const JustifyMyMeeting = ({ tool }) => {
     setRescueResults(null);
     setError('');
   };
-  const hasOutput = !!primary;
+
+  // Offered whenever there is something to clear, not only once an answer has
+  // arrived — a half-filled form someone wants to abandon is the case where
+  // the button is most useful, and it was exactly the case that hid it. The
+  // name deliberately avoids the word `results`: PF-16 splits the file on the
+  // first `{results &&` to check the reset sits above it.
+  const canReset = !!primary
+    || [meetingText, context, zName, zPurpose, zActual, zDuration, zAttendees, rWhat, rMinutes].some(v => String(v).trim())
+    || String(duration).trim() || String(attendees).trim()
+    || weekMeetings.some(m => m.name.trim() || m.duration || m.attendees || m.purpose.trim());
+
   const results = primary;
 
   return (
@@ -1160,7 +1179,7 @@ const JustifyMyMeeting = ({ tool }) => {
                 </p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {hasOutput && (
+              {canReset && (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0`}>
                   {t('mbd_start_over')}
                 </button>
