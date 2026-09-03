@@ -35,6 +35,18 @@ const MagicMouth = ({ tool }) => {
     { want: t('mm_ex8_want'), situation: t('mm_ex8_situation', { sym }) },
   ];
 
+  // Try an example used to fill the Ask form whatever tab you were on, so on the
+  // other two it did nothing visible.
+  const EXAMPLE_PHONE = [
+    { company: t('mm_pex1_company'), issue: t('mm_pex1_issue'), goal: t('mm_pex1_goal') },
+    { company: t('mm_pex2_company'), issue: t('mm_pex2_issue'), goal: t('mm_pex2_goal') },
+  ];
+
+  const EXAMPLE_NUCLEAR = [
+    { company: t('mm_nex1_company'), problem: t('mm_nex1_problem'), tried: t('mm_nex1_tried'), goal: t('mm_nex1_goal') },
+    { company: t('mm_nex2_company'), problem: t('mm_nex2_problem'), tried: t('mm_nex2_tried'), goal: t('mm_nex2_goal') },
+  ];
+
   const c = {
     card:          isDark ? 'bg-zinc-800' : 'bg-white',
     cardAlt:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
@@ -135,6 +147,21 @@ const MagicMouth = ({ tool }) => {
   const loadExample = () => handleExample();
 
   const handleExample = () => {
+    // Fills the tab you are looking at. Rotation is per mode, so trying the
+    // Nuclear example does not advance the Ask counter.
+    if (mode === 'phone') {
+      const ex = pickExample('MagicMouth:phone', EXAMPLE_PHONE.filter(e => e.issue !== phoneIssue));
+      if (!ex) return;
+      setPhoneCompany(ex.company); setPhoneIssue(ex.issue); setPhoneGoal(ex.goal);
+      return;
+    }
+    if (mode === 'nuclear') {
+      const ex = pickExample('MagicMouth:nuclear', EXAMPLE_NUCLEAR.filter(e => e.problem !== nuclearProblem));
+      if (!ex) return;
+      setNuclearCompany(ex.company); setNuclearProblem(ex.problem);
+      setNuclearTried(ex.tried); setNuclearGoal(ex.goal);
+      return;
+    }
     const filtered = EXAMPLE_ASKS.filter(e => e.want !== whatYouWant);
     const ex = pickExample('MagicMouth', filtered);
     setWhatYouWant(ex.want);
