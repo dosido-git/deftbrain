@@ -5439,19 +5439,20 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A free afternoon and no plan.",
-    give: "Your location and how long you have.",
-    get: "Specific plans — two to four hours, little or no cost, doable this week.",
+    when: "You have a free hour or two and no plan for it.",
+    give: "Where you are, how long you have, what sounds good, and how you are getting around.",
+    get: "A small local outing built around those constraints — a few stops, a route, and what to check before you leave.",
+    edge: "It names the type of place to look for rather than inventing a venue it cannot currently see, so the plan survives a closed door.",
   },
-  seoDescription: "Beat boredom with a mini-adventure near you, under $20 and done in 2-4 hours. A full itinerary with timing and what to bring. Free, no signup.",
+  seoDescription: "Got a free hour? Get a small local outing built around your time, budget, transport and interests — with what to check before you go. Free, no signup.",
   seoTitle: "Cheap Micro-Adventure Planner Near You",
   title: "Micro-Adventure Mapper",
-  tagline: "Mini-adventures near you, under $20, in 2-4 hours",
+  tagline: "🗺️ Turn a free hour into a small adventure",
   tags: ['bored', 'adventure', 'explore', 'fun', 'weekend', 'activity'],
   icon: "🗺️",
   categories: ['Out & About'],
   headerColor: "#ccdfc4",
-  description: "Plans accessible mini-adventures: 2-4 hours, under $20, in/near your city. Detailed itineraries for urban exploration, nature, culture, social experiences. Creates novelty within ordinary constraints. Removes 'need full day/lots of money' barrier to adventure.",
+  description: "Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.",
   guide: {
     overview: "Adventures don't require expensive trips or full days. This tool creates specific micro-adventure plans - 2-4 hours, low/no cost, doable this week. Urban exploration, hidden local spots, photography walks, new neighborhoods. Makes exploration accessible.",
     

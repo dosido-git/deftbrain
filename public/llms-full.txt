@@ -871,10 +871,10 @@ Output: Compare shows IST wins (86 vs 72) because you can visit the city visa-fr
 ### Micro-Adventure Mapper
 
 URL: https://deftbrain.com/MicroAdventureMapper
-Tagline: Mini-adventures near you, under $20, in 2-4 hours
+Tagline: 🗺️ Turn a free hour into a small adventure
 Categories: Out & About
 
-Plans accessible mini-adventures: 2-4 hours, under $20, in/near your city. Detailed itineraries for urban exploration, nature, culture, social experiences. Creates novelty within ordinary constraints. Removes 'need full day/lots of money' barrier to adventure.
+Got an hour or two and want to do something different? Tell us where you are, how much time you have, what sounds good, and how you're getting around. Micro-Adventure Mapper builds a small local outing that fits the time, budget, and constraints you actually have.
 
 **What it does.** Adventures don't require expensive trips or full days. This tool creates specific micro-adventure plans - 2-4 hours, low/no cost, doable this week. Urban exploration, hidden local spots, photography walks, new neighborhoods. Makes exploration accessible.
 
@@ -2405,7 +2405,7 @@ Output: Verdict: MAKE IT ASYNC. The reasoning names what synchronous time is buy
 ### Meeting Hijack Stopper
 
 URL: https://deftbrain.com/MeetingHijackStopper
-Tagline: Keep meetings structured, inclusive, and on track
+Tagline: 🛡️ A plan for the meeting—and the moments that could derail it.
 Categories: The Office
 
 Tell it what needs to happen by the time the meeting ends, and it builds an agenda around that — with the words to say when the conversation wanders, a plan for reaching the decision, and a short checklist for before people leave. Then run it live against a timer, and write the follow-up from what you actually captured.

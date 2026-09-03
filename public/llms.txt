@@ -38,7 +38,7 @@
 - [Date Night](https://deftbrain.com/DateNight): Plan an evening that feels special—without spending hours figuring it out.
 - [Hobby Match](https://deftbrain.com/HobbyMatch): Discover hobbies you didn't know existed.
 - [Layover Maximizer](https://deftbrain.com/LayoverMaximizer): Turn dead time into a memorable part of your trip
-- [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): Mini-adventures near you, under $20, in 2-4 hours
+- [Micro-Adventure Mapper](https://deftbrain.com/MicroAdventureMapper): 🗺️ Turn a free hour into a small adventure
 - [Party Architect](https://deftbrain.com/PartyArchitect): Host events people actually remember.
 - [Sensory Minefield Mapper](https://deftbrain.com/SensoryMinefieldMapper): Predict and avoid overwhelming sensory environments
 
@@ -96,7 +96,7 @@
 - [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
 - [Heckler Prep](https://deftbrain.com/HecklerPrep): Anticipate the hardest questions before they land.
 - [Justify My Meeting](https://deftbrain.com/JustifyMyMeeting): 🕵️ Is a meeting justified?
-- [Meeting Hijack Stopper](https://deftbrain.com/MeetingHijackStopper): Keep meetings structured, inclusive, and on track
+- [Meeting Hijack Stopper](https://deftbrain.com/MeetingHijackStopper): 🛡️ A plan for the meeting—and the moments that could derail it.
 - [Pre-Mortem](https://deftbrain.com/PreMortem): Your plan has already failed. This is the memo explaining why.
 - [The Debrief](https://deftbrain.com/TheDebrief): The meeting ended. Now figure out what actually happened.
 
