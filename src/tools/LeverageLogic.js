@@ -114,7 +114,7 @@ const LeverageLogic = ({ tool }) => {
   const [sessionHistory, setSessionHistory] = usePersistentState('ll-history', []);
   // Set when a saved analysis is on screen, so it is never mistaken for a fresh one.
   const [savedAt, setSavedAt] = useState(null);
-  const [results, setResults] = usePersistentState('leverage-results', null);
+  const [results, setResults] = usePersistentState('leverage-results-v2', null);
 
   // Restore the results view on reload — results persist but `view` resets to 'form',
   // leaving the saved strategy unreachable (and the copy bar serving invisible content).

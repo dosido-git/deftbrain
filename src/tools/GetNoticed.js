@@ -76,7 +76,7 @@ const GetNoticed = ({ tool }) => {
   const [description, setDescription] = useState('');
   const [goals, setGoals] = useState('');
   const [currentExposures, setCurrentExposures] = useState('');
-  const [results, setResults] = usePersistentState('lucksurface-results', null);
+  const [results, setResults] = usePersistentState('getnoticed-results-v2', null);
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState({});
 

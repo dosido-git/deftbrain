@@ -85,7 +85,7 @@ const MagicMouth = ({ tool }) => {
   const [situation, setSituation] = useState('');
   const [whoYoureAsking, setWhoYoureAsking] = useState('');
   const [triedAlready, setTriedAlready] = useState('');
-  const [results, setResults] = usePersistentState('magicmouth-results', null);
+  const [results, setResults] = usePersistentState('magicmouth-results-v2', null);
   const [error, setError] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showBackup, setShowBackup] = useState(false);
@@ -621,7 +621,7 @@ const MagicMouth = ({ tool }) => {
             )}
 
             {/* Delivery Notes */}
-            {(results?.delivery_notes || results?.dont_do_this) && (
+            {(typeof results?.delivery_notes === 'string' || results?.dont_do_this) && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <button onClick={() => toggleSection('delivery')} className="w-full flex items-center justify-between">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
@@ -633,7 +633,7 @@ const MagicMouth = ({ tool }) => {
                   <div className="mt-4 space-y-3">
                     <div className={`${c.warningBox} rounded-xl p-3`}>
                       <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>🎤 {t('mm_delivery_notes')}</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{typeof results?.delivery_notes === 'string' ? results.delivery_notes : ''}</p>
                     </div>
                     {results?.dont_do_this && (
                       <div className={`${c.errorBg} rounded-xl p-3`}>
