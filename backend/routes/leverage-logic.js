@@ -355,7 +355,13 @@ function validateResult(data, opts = {}) {
   }
 
   const walk = (node) => {
-    if (Array.isArray(node)) return node.forEach(walk);
+    // No early return for arrays. An array IS an object, so Object.entries
+    // below enumerates its indices and node[k] = '' assigns into it — while
+    // forEach(walk) handed each STRING element to a function that returns
+    // immediately for non-objects, so every array-of-strings field went
+    // unchecked. Found when Meeting Worth It emitted "most attendees are
+    // passive listeners" inside why_this_verdict and the rule that exists
+    // to catch exactly that did not fire.
     if (!node || typeof node !== 'object') return;
     for (const [k, v] of Object.entries(node)) {
       if (typeof v === 'string') {
@@ -372,6 +378,18 @@ function validateResult(data, opts = {}) {
     }
   };
   walk(data);
+  // A blanked array item would render as an empty bullet, which reads worse than
+  // no bullet. Blanking is right for a named field; for a list, removal is.
+  const prune = (node) => {
+    if (Array.isArray(node)) {
+      for (let i = node.length - 1; i >= 0; i--) {
+        if (node[i] === '') node.splice(i, 1); else prune(node[i]);
+      }
+      return;
+    }
+    if (node && typeof node === 'object') Object.values(node).forEach(prune);
+  };
+  prune(data);
   return data;
 }
 
