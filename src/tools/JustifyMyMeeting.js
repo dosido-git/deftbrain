@@ -1215,10 +1215,14 @@ const JustifyMyMeeting = ({ tool }) => {
         </div>
       )}
 
-      {/* Disclaimer */}
-      <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
-        <p className={`text-xs ${c.textMuted}`}>{t('mbd_disclaimer')}</p>
-      </div>
+      {/* Disclaimer — on the input state only. It is worth reading once, before
+          you type; repeated under every answer it stops being a caveat and
+          becomes furniture. The output has to demonstrate the rule instead. */}
+      {!results && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-3 text-center`}>
+          <p className={`text-xs ${c.textMuted}`}>{t('mbd_disclaimer')}</p>
+        </div>
+      )}
 
       {/* Post-result cross-refs */}
       {results && (

@@ -72,6 +72,49 @@ verdict attached, on a work machine — is not a thing to keep by default.
 the schema change, per the rule learned from Magic Mouth: a persisted v1 result
 restored into a v2 renderer crashes the tool for every existing user.
 
+## The 2026-09-03 grounding pass
+
+A live read of all five modes found the tool was still asserting four things
+nobody had told it. The fix is twelve numbered rules in `SHARED`, the specific
+ones repeated inside the field descriptions that produce them, and four new
+deterministic backstops.
+
+| It wrote | It now writes |
+| --- | --- |
+| "A 90-second speaking slot suggests most attendees are in a similar passive position" | "You spend about 90 seconds reporting… the input does not establish how the other attendees use their time" |
+| "Six months of recurrence without apparent redesign suggests habit rather than intent" | "The meeting has recurred for six months — that establishes recurrence, and makes it worth asking whether the format has been revisited" |
+| "No prep signals low cognitive engagement is expected" | "No preparation is required, so preparation is not part of the meeting's described value" |
+| "Any soft accountability that comes from saying tasks out loud" | "Nothing specific was established from what you told me…" |
+
+New backstops: `GENERALISED_FROM_SELF`, `RECURRENCE_AS_HABIT`,
+`NO_PREP_AS_ENGAGEMENT`, `MANUFACTURED_BENEFIT` (hedge-spared, because the
+conditional version of that sentence is wanted). All four unit-tested to fire,
+and the replacement phrasings above tested to survive.
+
+**Build the Agenda was the big one.** It had been continuing to argue against
+the old meeting inside the new agenda — "no decisions are made", "status they
+already possess", "status they could read in writing" — and then manufacturing
+a full 60-minute schedule immediately after recommending a 20-minute meeting.
+The prompt now says the argument is over once the visitor asks for an agenda,
+allows conditional items ("anything anyone has flagged", not "the blockers"),
+and states that the slot is not a target to fill. A probe now allocates five
+minutes and leaves the rest null, with an explicit item: "if no items were
+flagged, consider whether to convene at all".
+
+**Week Audit judges the meeting, not the category.** A 1:1 with no purpose
+supplied now returns `not enough to tell` and says what is missing, instead of
+supplying the conventional purpose of a 1:1 and grading against it.
+
+**`per_meeting[].name` is pinned in code.** The schema said "copied from their
+list", and the list renders as `Monday standup — 0.5h, 8 people, recurring —
+purpose`, so some runs copied the whole line into `name` — which the frontend
+prints as the card heading. It now snaps back to the supplied name: exact match,
+then containment, then the meeting at that index.
+
+**The disclaimer moved to the input state only.** It read under every answer in
+every mode, which turned a caveat into furniture. The output has to demonstrate
+the rule instead.
+
 ## Endpoints
 
 | Path | Purpose | max_tokens |
