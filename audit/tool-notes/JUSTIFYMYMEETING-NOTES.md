@@ -88,6 +88,32 @@ standard with `validateResult` as the declared check.
 
 ## Goldens
 
-`audit/justify-my-meeting-golden-sample.json` was carried over from the old tool
-and **its cases are stale** — they exercise endpoints that no longer exist.
-Re-record before trusting `npm run check:golden`.
+Re-recorded 2026-09-03 against the live backend. The v1 cases were discarded
+outright rather than ported: they exercised eleven endpoints that no longer
+exist, and their expected output carried a confidence score.
+
+Eight cases, one per endpoint plus three that exist only to guard a specific
+failure. Each carries a `guards` line saying what it is for.
+
+| Case | What it is there to catch |
+| --- | --- |
+| `judge-with-numbers` | person-hours must be 22 (1 × 22) and come from `timeFootprint()` |
+| `judge-no-numbers` | nothing supplied, so `time_footprint` is all-null and no field states a figure about the meeting |
+| `zombie` | Weekly → `occurrences_per_year` 52 and `annual_person_hours` 156, from `PER_YEAR` |
+| `zombie-no-original-purpose` | `then_and_now` must name the gap, not invent a purpose, and not read the absence as evidence |
+| `week` | reads pinned to English; totals 3.5h / 37 person-hours / 1 missing; **no numbers in `summary`** |
+| `rescue` | role "Attending", so nothing assumes authority to end or restructure |
+| `agenda-after-fix-it` | `live_agenda` minutes numeric only because duration was supplied |
+| `message-after-make-it-async` | proposes, never announces, never says the visitor will skip |
+
+`npm run check:golden justify-my-meeting` (needs a local backend) checks
+structure only. Three things it cannot see, and which are the whole point of
+this tool — check them by eye after any prompt change:
+
+1. **Every number in prose traces to something the visitor supplied.** A digit
+   inside a *proposal* is fine — "circulate the deck 24 hours ahead" invents
+   nothing about this meeting. A digit inside a *claim* about the meeting is a
+   regression. The line is claim versus suggestion.
+2. **The three pinned enums are still exact English.** A translated value means
+   the frontend picks the wrong colour in twelve languages.
+3. **Nothing gives permission to skip**, and no drafted message announces.

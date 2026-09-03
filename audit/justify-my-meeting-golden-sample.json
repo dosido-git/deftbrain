@@ -1,216 +1,427 @@
 {
   "_meta": {
-    "tool": "meeting-bs-detector",
-    "captured": "2026-06-25",
-    "baseline": "meetingbsdetector-v1",
-    "model": "claude-sonnet-4-6",
-    "note": "Regression reference for MeetingBSDetector. Re-run each case's input against the live backend (npm run check:golden meeting-bs-detector) and diff for QUALITY not exact match: all sections present, non-empty arrays stay non-empty, no truncation, numbers consistent (time_cost.total_person_hours == duration*participants). The calendar + report cases GUARD the success-guard fix: both MUST return 200 (they 500'd before — guards checked parsed.verdict but schemas emit week_verdict / grade). See audit/tool-notes/MEETINGBSDETECTOR-NOTES.md."
+    "tool": "justify-my-meeting",
+    "captured": "2026-09-03",
+    "baseline": "justifymymeeting-v1",
+    "model": "MODELS.SMART",
+    "note": "Regression reference for Justify My Meeting (renamed from Meeting BS Detector, 2026-09-02 — the v1 goldens were discarded because they exercised eleven endpoints that no longer exist). Re-run with `npm run check:golden justify-my-meeting` against a local backend and diff for QUALITY, not exact match. Beyond what check-golden asserts automatically, eyeball these by hand, because no gate sees them: (1) every number in every prose field must trace to something the visitor supplied — the arithmetic lives in timeFootprint()/totals and nowhere else; (2) `verdict`, `better_format.recommendation` and `per_meeting[].read` must be EXACTLY the English enum strings, since the frontend looks them up to pick a colour and a t() key; (3) nothing may tell the visitor they are allowed to skip, and no message may announce rather than propose. Each case carries its own `guards` line saying what it is there to catch. See audit/tool-notes/JUSTIFYMYMEETING-NOTES.md."
   },
   "cases": [
     {
-      "name": "main-analyze",
-      "endpoint": "/api/meeting-bs-detector",
+      "name": "judge-with-numbers",
+      "endpoint": "/api/justify-my-meeting",
+      "guards": "time_footprint.person_hours must equal duration x attendees (22), computed in code — never from the model.",
       "input": {
-        "meetingText": "Weekly engineering all-hands, standing recurring, 22 people, no agenda, status updates",
+        "meetingText": "Weekly engineering all-hands. Standing 60-minute meeting, 22 attendees. Agenda: status updates from each team lead. No prep, no decisions, everyone reports out what they did last week. Recurring for six months.",
         "duration": 1,
-        "attendees": 22
+        "attendees": 22,
+        "context": "I am one of the team leads. I speak for about 90 seconds and listen for the rest."
       },
+      "optionalSections": [
+        "what_earns_the_meeting",
+        "what_weakens_the_case",
+        "unknowns_that_matter",
+        "if_it_has_to_happen"
+      ],
       "output": {
-        "verdict": "NEEDS RESCUE",
-        "verdict_emoji": "🔧",
-        "confidence": 91,
-        "quality_score": 2,
-        "one_liner": "22 people paying 22 person-hours weekly to hear status updates they could read in five minutes.",
-        "reasoning": [
-          "No agenda means attendees arrive with no context, no preparation, and no shared definition of what 'done' looks like — the meeting cannot succeed by design.",
-          "Status updates are pull information: they should live in a shared doc or async tool so people read only what's relevant to them, not broadcast to 22 people simultaneously.",
-          "22 attendees obliterates any real discussion — at one hour, each person gets under 3 minutes of airtime if time were distributed equally, which it never is.",
-          "Recurring with no stated deliverables is a textbook entropy trap: the meeting persists because it always has, not because it produces anything.",
-          "The sole green flag — one hour, not two — is the only thing keeping this from an outright cancel verdict; there's a salvageable core if the format is restructured."
+        "verdict": "MAKE IT ASYNC",
+        "one_liner": "This is a 22-person audience sitting through a report they could read in five minutes.",
+        "what_we_know": [
+          "Weekly, 60-minute standing meeting, running for six months",
+          "22 attendees",
+          "Agenda is status updates from each team lead",
+          "No prep required, no decisions made",
+          "The visitor speaks for roughly 90 seconds and listens for the rest"
         ],
-        "red_flags": [
-          "No agenda provided",
-          "22 attendees — more than double the 10-person red flag threshold",
-          "Recurring standing meeting with no stated deliverables",
-          "Purpose is status updates — a classic async-replaceable format",
-          "No decision-making need identified"
+        "why_this_verdict": [
+          "The agenda as described is one-directional reporting, not discussion or decision-making",
+          "No decisions and no prep are both supplied facts, removing two common justifications for synchronous time",
+          "A 90-second speaking slot inside a 60-minute meeting suggests minimal personal return for the time invested — inference, but supported by the structure described",
+          "Six months of recurrence without apparent redesign suggests the format has become habit rather than intentional design — inference"
         ],
-        "green_flags": [
-          "Duration is 1 hour, not 2+ hours",
-          "Engineering all-hands can have legitimate culture and alignment value if structured correctly"
+        "what_earns_the_meeting": [
+          "If team leads ask cross-cutting questions after updates, synchronous time enables that in a way async does not",
+          "If the meeting creates accountability or surfaces blockers through live follow-up, that is real value — though the visitor did not describe either happening"
         ],
-        "time_cost": {
+        "what_weakens_the_case": [
+          "Status updates as described require no real-time interaction to deliver",
+          "The visitor gets roughly 90 seconds of relevance from a 60-minute commitment",
+          "No decisions means the group cannot point to a concrete output from the time spent"
+        ],
+        "unknowns_that_matter": [
+          "Whether discussion, questions, or coordination actually follow the updates — this would materially strengthen the case",
+          "Whether leadership uses the meeting to read the room or surface issues informally",
+          "Whether a written update format has ever been tried or would be accepted by whoever owns this meeting"
+        ],
+        "better_format": {
+          "recommendation": "Async update",
+          "how": "Each team lead posts a short written update before a set deadline — what shipped, what is blocked, what needs a decision. A brief synch meeting is held only when something in the updates requires live resolution.",
+          "assumptions": "The meeting owner is open to changing the format, and the organization has a reliable shared channel where updates would actually be read."
+        },
+        "next_move": "Bring a concrete async proposal to whoever owns the meeting — offer to run a four-week trial with written updates and a standing 15-minute call only if something needs resolution.",
+        "if_it_has_to_happen": [
+          "Cut the round-robin and ask each lead to flag only blockers or decisions needed from the group — updates go in writing beforehand",
+          "Reserve the last 15 minutes for open cross-team questions so the synchronous time does something the written update cannot"
+        ],
+        "time_footprint": {
           "duration_hours": 1,
           "participants": 22,
-          "total_person_hours": 22,
-          "could_save_hours": 18,
-          "annual_cost_if_recurring": "If weekly, this meeting consumes 1,144 person-hours per year — the equivalent of roughly 28.5 full work weeks of a single engineer's time."
-        },
-        "alternative": "Replace with a shared async status doc updated Friday by each team lead; hold a 15-minute live sync monthly for genuine cross-team blockers and culture moments only.",
-        "rescue_tips": [
-          "Publish a capped agenda 24 hours before: max 3 items, each with an owner and a time box — no agenda, no meeting.",
-          "Split the format: 10 minutes of pre-read async updates (written, not spoken), 20 minutes live for decisions and blockers only, then hard stop at 30 minutes.",
-          "Audit attendance ruthlessly — identify the 6-8 people who actually need to hear decisions in real time and make everyone else optional with a shared summary doc sent within the hour."
-        ],
-        "decline_message": "Thanks for including me — I want to make sure my time in this meeting is actually useful. Since the format is status updates without an agenda, I'm going to opt out this week and catch up via the shared notes afterward. If there's a decision or blocker where you need my input directly, flag me and I'll join or respond async same day.",
-        "optimal_format": "10-min async written status thread (Slack or Notion) + optional 20-min monthly live sync for decisions and blockers only, capped at 8 people"
+          "person_hours": 22,
+          "occurrences_per_year": null,
+          "annual_person_hours": null
+        }
       }
     },
     {
-      "name": "calendar-weekaudit",
-      "endpoint": "/api/meeting-bs-detector/calendar",
+      "name": "judge-no-numbers",
+      "endpoint": "/api/justify-my-meeting",
+      "guards": "No duration, no headcount. time_footprint must come back all-null, and no field may state a figure ABOUT THE MEETING that the visitor did not supply — no headcount, no duration, no person-hours, no annual cost. This is the case that catches a model doing arithmetic it was told not to do. Numbers inside a PROPOSAL are fine and not a regression: 'circulate the deck 24 hours ahead' invents nothing about this meeting, it suggests something to try. The line is claim versus suggestion, not the presence of a digit.",
+      "input": {
+        "meetingText": "Recurring 'project sync' with no agenda in the invite. In practice the organiser talks through a slide deck and asks at the end whether anyone has questions. Usually nobody does.",
+        "duration": null,
+        "attendees": null,
+        "context": null
+      },
+      "optionalSections": [
+        "what_earns_the_meeting",
+        "what_weakens_the_case",
+        "unknowns_that_matter",
+        "if_it_has_to_happen"
+      ],
+      "output": {
+        "verdict": "FIX IT",
+        "one_liner": "This is a slide presentation wearing a meeting costume — it needs a reason to exist in real time, not just a room.",
+        "what_we_know": [
+          "The meeting recurs under the label 'project sync'",
+          "No agenda appears in the invite",
+          "The organiser presents a slide deck and then asks for questions",
+          "Questions are rarely or never asked"
+        ],
+        "why_this_verdict": [
+          "The described format — one person talks, nobody responds — uses synchronous time without producing the back-and-forth that justifies it",
+          "Inference: if questions are consistently absent, the deck is either self-explanatory or attendees are not engaging, either of which weakens the case for live delivery",
+          "The absence of an agenda makes it harder for attendees to prepare, which likely reduces the quality of any discussion that could occur",
+          "Nothing supplied rules out that real coordination or decision-making happens alongside the deck — so async replacement is not yet the right call"
+        ],
+        "what_earns_the_meeting": [
+          "A recurring sync can create accountability and shared awareness that does not naturally emerge from distributed updates",
+          "The Q&A moment, even when quiet, gives attendees a sanctioned opening to raise blockers or flag misalignments"
+        ],
+        "what_weakens_the_case": [
+          "Slide-plus-silence is a broadcast, not a conversation — synchronous time is not doing the work only synchronous time can do",
+          "No agenda means attendees cannot arrive with prepared questions or contributions, which tends to produce exactly the silence described",
+          "The consistent absence of questions suggests the format is not generating the engagement that would justify the time cost"
+        ],
+        "unknowns_that_matter": [
+          "Whether decisions, escalations, or coordination actually happen during the meeting — even informally — beyond the deck",
+          "Whether attendees talk to each other during or after, which would indicate value the format is suppressing rather than creating",
+          "Duration and headcount — both affect how much this costs and what redesign is proportionate"
+        ],
+        "better_format": {
+          "recommendation": "Shorter meeting",
+          "how": "Send the deck ahead of time with a brief written summary, then use the live time only for questions, decisions, and blockers — with a standing agenda that makes those categories explicit.",
+          "assumptions": "Attendees will actually read the deck before joining, which requires the summary to be genuinely short and the meeting to visibly reward preparation."
+        },
+        "next_move": "Propose one change for the next occurrence: circulate the deck 24 hours ahead with three explicit questions you want the group to answer live, and see whether that shifts the silence.",
+        "if_it_has_to_happen": [
+          "Open with one direct question to the group rather than waiting until the end — it signals that participation is expected, not optional",
+          "Replace the open 'any questions?' close with a round-robin or named prompt so attendees know they will be asked, not just invited",
+          "Add a two-line agenda to the invite so attendees know what decisions or topics require their input"
+        ],
+        "time_footprint": {
+          "duration_hours": null,
+          "participants": null,
+          "person_hours": null,
+          "occurrences_per_year": null,
+          "annual_person_hours": null
+        }
+      }
+    },
+    {
+      "name": "zombie",
+      "endpoint": "/api/justify-my-meeting/zombie",
+      "guards": "Weekly + duration + attendees, so occurrences_per_year (52) and annual_person_hours must both be populated from PER_YEAR, in code.",
+      "input": {
+        "meetingName": "Monday Marketing Sync",
+        "originalPurpose": "Set up when we were launching the new site — we needed everyone in one place daily while things were breaking.",
+        "whatActuallyHappens": "The site launched fourteen months ago. Now it is six people reading their Asana tasks aloud. Two people join from their cars.",
+        "frequency": "Weekly",
+        "duration": 0.5,
+        "attendees": 6
+      },
+      "optionalSections": [
+        "what_synchronous_still_does",
+        "what_would_be_lost",
+        "what_to_change",
+        "unknowns_that_matter"
+      ],
+      "output": {
+        "verdict": "SHOULD DIE",
+        "one_liner": "This meeting outlived its emergency by fourteen months and is now just six people narrating a project management tool at each other.",
+        "then_and_now": "It was created for daily crisis coordination during a live site launch. The crisis ended fourteen months ago; what remains is a weekly Asana read-aloud.",
+        "what_synchronous_still_does": [],
+        "what_would_be_lost": [
+          "A shared moment where blockers could surface if anyone chose to raise one",
+          "Whatever light social or team-rhythm function the meeting accidentally provides"
+        ],
+        "what_to_change": [
+          {
+            "change": "Cancel the standing meeting entirely",
+            "why": "Reading tasks aloud from a shared tool is the definition of information the tool already provides — no real-time interaction value was described"
+          },
+          {
+            "change": "Replace with an async Asana comment or weekly digest if team visibility still matters",
+            "why": "The goal of shared awareness does not require six people live on a call"
+          },
+          {
+            "change": "Keep a lightweight standing call only if a genuine coordination need is identified first",
+            "why": "The original need is gone; any replacement should be justified by a current need, not habit"
+          }
+        ],
+        "unknowns_that_matter": [
+          "Whether any discussion, questions, or decisions ever emerge — even occasionally — that would be harder to resolve async",
+          "Whether the two people joining from cars feel the meeting serves them or feel obligated to attend"
+        ],
+        "next_move": "Cancel one occurrence, tell the team why, and ask them to flag within two weeks if anything they needed the meeting for did not get handled another way.",
+        "time_footprint": {
+          "duration_hours": 0.5,
+          "participants": 6,
+          "person_hours": 3,
+          "occurrences_per_year": 52,
+          "annual_person_hours": 156
+        }
+      }
+    },
+    {
+      "name": "zombie-no-original-purpose",
+      "endpoint": "/api/justify-my-meeting/zombie",
+      "guards": "then_and_now must SAY the original purpose was not supplied rather than inventing one, and the absence must not itself be treated as evidence the meeting is dead.",
+      "input": {
+        "meetingName": "Cross-functional Data Review",
+        "originalPurpose": null,
+        "whatActuallyHappens": "Someone shares a dashboard and asks if anyone has questions. It ends 20 minutes early most weeks.",
+        "frequency": "Biweekly",
+        "duration": 1,
+        "attendees": 11
+      },
+      "optionalSections": [
+        "what_synchronous_still_does",
+        "what_would_be_lost",
+        "what_to_change",
+        "unknowns_that_matter"
+      ],
+      "output": {
+        "verdict": "SHOULD DIE",
+        "one_liner": "This is a dashboard with an audience, not a meeting.",
+        "then_and_now": "The original purpose was not supplied. What happens now is someone displays a dashboard and invites questions — then the group sits in silence until time is up, usually 20 minutes early.",
+        "what_synchronous_still_does": [
+          "Provides a standing opportunity for questions that might not get asked otherwise"
+        ],
+        "what_would_be_lost": [
+          "The passive safety net of 'anyone can ask something' — though it rarely triggers",
+          "Cross-functional visibility that might not happen if people never glance at the same data"
+        ],
+        "what_to_change": [
+          {
+            "change": "Replace the meeting with a shared dashboard link and an async comment thread",
+            "why": "The meeting as described is information delivery with optional Q&A — neither requires 11 people live"
+          },
+          {
+            "change": "If something synchronous is kept, cut to 20 minutes and require one submitted question or topic per attendee beforehand",
+            "why": "The consistent early endings suggest the format is generating no real discussion; a question requirement would test whether there is latent demand for it"
+          }
+        ],
+        "unknowns_that_matter": [
+          "Whether the 20 minutes of actual use ever produces decisions, coordination, or discoveries that would not happen async",
+          "Whether the dashboard is already accessible to all 11 attendees outside the meeting",
+          "Whether attendance is mandatory or voluntary — low voluntary attendance would confirm the verdict"
+        ],
+        "next_move": "Send the dashboard link to all 11 people, skip one occurrence, and see whether anything breaks — if no one notices, that answers the question.",
+        "time_footprint": {
+          "duration_hours": 1,
+          "participants": 11,
+          "person_hours": 11,
+          "occurrences_per_year": 26,
+          "annual_person_hours": 286
+        }
+      }
+    },
+    {
+      "name": "week",
+      "endpoint": "/api/justify-my-meeting/week",
+      "guards": "One per_meeting entry per supplied meeting, each read pinned to exact English. totals computed in code from their numbers only: your_hours 3.5 (0.5+1+2), person_hours 37 (0.5x8 + 1x5 + 2x14), and the fourth meeting has neither figure, so meetings_counted_for_person_hours is 3 and meetings_missing_numbers is 1 — never an estimate to fill the gap. The summary must contain no counts, totals or ranges at all; it regressed once with an invented '14 to 73 people'.",
       "input": {
         "meetings": [
           {
-            "title": "Daily standup",
-            "duration": "30 min",
-            "attendees": "9",
+            "name": "Monday standup",
+            "duration": 0.5,
+            "attendees": 8,
             "recurring": true,
-            "notes": "status"
+            "purpose": "What everyone is working on this week"
           },
           {
-            "title": "Sprint planning",
-            "duration": "2 hours",
-            "attendees": "8",
+            "name": "Design review",
+            "duration": 1,
+            "attendees": 5,
             "recurring": true,
-            "notes": "plan"
+            "purpose": "Decide whether the checkout flow ships"
           },
           {
-            "title": "1:1",
-            "duration": "30 min",
-            "attendees": "2",
+            "name": "Quarterly planning kickoff",
+            "duration": 2,
+            "attendees": 14,
+            "recurring": false,
+            "purpose": "Set the Q4 priorities"
+          },
+          {
+            "name": "All-hands",
+            "duration": null,
+            "attendees": null,
             "recurring": true,
-            "notes": ""
+            "purpose": null
           }
         ]
       },
+      "optionalSections": [
+        "opportunities",
+        "unknowns_that_matter"
+      ],
       "output": {
-        "week_verdict": "HEAVY",
-        "week_emoji": "🟡",
-        "total_meeting_hours": 5.5,
-        "total_person_hours": 26.5,
-        "potential_savings_hours": 11.25,
-        "one_liner": "The standup is quietly eating 22.5 person-hours a week on status updates that a shared doc could replace in minutes.",
-        "meetings": [
+        "summary": "A mix of operational, design, and strategic meetings — some clearly decision-focused, one with no usable information at all. The week spans routine check-ins through a significant planning event.",
+        "per_meeting": [
           {
-            "index": 1,
-            "title": "Daily Standup — Status Report",
-            "verdict": "SHORTEN",
-            "verdict_emoji": "⏱️",
-            "reason": "30 minutes for 9 people is a team meeting disguised as a standup — true standups run 10 minutes max with a strict 3-question format, saving 22.5 person-hours per week vs. the current 22.5 burned.",
-            "time_cost": "0.5h × 9 people × 5 days = 22.5 person-hours",
-            "priority": 1
+            "name": "Monday standup",
+            "read": "worth questioning",
+            "why": "Sharing what everyone is working on this week is the stated purpose, but with eight people that is a lot of listening per speaker — worth checking whether it surfaces blockers and coordination needs or runs as a broadcast."
           },
           {
-            "index": 2,
-            "title": "Sprint Planning — Weekly",
-            "verdict": "KEEP",
-            "verdict_emoji": "✅",
-            "reason": "2 hours of collaborative planning for 8 people is well within acceptable range for a recurring planning session that directly produces work alignment and sprint commitments.",
-            "time_cost": "2h × 8 people = 16 person-hours",
-            "priority": 3
+            "name": "Design review",
+            "read": "earns its time",
+            "why": "A real go/no-go decision on a shipping feature is exactly the kind of call that benefits from synchronous alignment, and five people is a workable size for it."
           },
           {
-            "index": 3,
-            "title": "1:1 — Manager Check-in",
-            "verdict": "KEEP",
-            "verdict_emoji": "✅",
-            "reason": "30 minutes between 2 people is one of the highest-ROI meeting formats that exists — coaching, unblocking, and trust-building cannot be replicated async.",
-            "time_cost": "0.5h × 2 people = 1 person-hour",
-            "priority": 2
+            "name": "Quarterly planning kickoff",
+            "read": "earns its time",
+            "why": "Setting Q4 priorities benefits from collective input, negotiation, and shared understanding — the kind of work where real-time discussion produces a different result than async would."
+          },
+          {
+            "name": "All-hands",
+            "read": "not enough to tell",
+            "why": "Without duration, attendee count, or agenda, there is no basis for a read on this meeting."
           }
         ],
-        "keep": [
-          "Sprint Planning — Weekly",
-          "1:1 — Manager Check-in"
+        "opportunities": [
+          {
+            "change": "Move status updates async and use standup time only for blockers and cross-team coordination",
+            "which": "Monday standup",
+            "what_it_assumes": "Participants are willing to write brief updates before the meeting and the facilitator can hold the format to exceptions only"
+          },
+          {
+            "change": "Narrow attendance to decision-makers and people whose work is directly affected",
+            "which": "Quarterly planning kickoff",
+            "what_it_assumes": "Remaining attendees can receive outputs through a written summary and have genuine input into priorities rather than needing to be present for buy-in"
+          }
         ],
-        "cut": [],
-        "rescue": [
-          "Daily Standup — Status Report"
+        "shape_of_the_week": null,
+        "unknowns_that_matter": [
+          "What the all-hands covers, how long it runs, and how many people attend",
+          "Whether the Monday standup surfaces actionable blockers or runs as a round-robin status broadcast",
+          "Whether the quarterly kickoff involves genuine priority negotiation or presents decisions already made"
         ],
-        "weekly_advice": "Cut the standup to 10 minutes with a hard timer and the three classic questions only — anything that needs discussion gets a parking lot and a separate 15-minute huddle with only the relevant people.",
-        "meeting_free_blocks": "Protect mornings after the standup (roughly 9:10–12:00) and all afternoons as deep-work blocks — sprint planning is your one justified afternoon anchor."
+        "next_move": "Get the all-hands details — until you know its duration and headcount, you cannot see the true weight of this week.",
+        "totals": {
+          "meetings": 4,
+          "your_hours": 3.5,
+          "person_hours": 37,
+          "meetings_counted_for_person_hours": 3,
+          "meetings_missing_numbers": 1
+        }
       }
     },
     {
-      "name": "report",
-      "endpoint": "/api/meeting-bs-detector/report",
+      "name": "rescue",
+      "endpoint": "/api/justify-my-meeting/rescue",
+      "guards": "Role is \"Attending\", so nothing may assume authority to end, leave or restructure the meeting — if_youre_not_running_it must invite rather than command.",
       "input": {
-        "scorecards": [
-          {
-            "title": "Standup",
-            "verdict": "COULD BE AN EMAIL",
-            "quality_score": 3
-          },
-          {
-            "title": "Planning",
-            "verdict": "JUSTIFIED",
-            "quality_score": 7
-          }
-        ],
-        "historySummary": "12 meetings, 18h saved",
-        "totalHours": 15
+        "whatsHappening": "We are 35 minutes into a 45-minute meeting and we have not reached the thing it was called for. Two people are relitigating a decision that was made last month.",
+        "minutesIn": 35,
+        "yourRole": "Attending"
       },
+      "optionalSections": [],
       "output": {
-        "report_title": "Meetings Are Eating You Alive",
-        "period": "Based on 12 meetings analyzed with 2 detailed scorecards submitted.",
-        "headline_stat": "15 person-hours per week lost to meetings — that's nearly half a standard workweek before you've done any real work.",
-        "headline_emoji": "🔥",
-        "grade": "C",
-        "grade_label": "Needs Work",
-        "key_stats": [
+        "the_problem": "With 10 minutes left, the meeting has not reached its stated purpose because two people are re-arguing a decision that was already made.",
+        "say_this_now": "We have 10 minutes left and we still need to get to the reason this was called — can we park the question about last month's decision and move to that? If the earlier decision needs to be reopened, that probably needs its own time.",
+        "softer_version": "I want to make sure we get to the main item before we lose the room — can we hold the discussion about the earlier decision and use the time we have left for what this meeting was called for?",
+        "if_youre_not_running_it": "Address the facilitator or the person who called it: 'I don't want us to run out of time — are we able to get to the original agenda item now, and handle the other thread separately?'",
+        "if_its_time_to_wrap": "If there is no time to reach the original purpose: 'We're out of time before we got to the main item — can we agree on who owns scheduling that conversation, and what needs to happen before then?'",
+        "after_the_meeting": "Send a brief note to the organizer naming the item that was not reached and asking who is responsible for getting it resolved."
+      }
+    },
+    {
+      "name": "agenda-after-fix-it",
+      "endpoint": "/api/justify-my-meeting/agenda",
+      "guards": "The follow-up a FIX IT verdict earns. live_agenda minutes may only be numbers when duration was supplied; who_needs_to_participate must describe functions, not invented job titles.",
+      "input": {
+        "meetingText": "Weekly engineering all-hands. Standing 60-minute meeting, 22 attendees. Agenda: status updates from each team lead. No prep, no decisions, everyone reports out what they did last week. Recurring for six months.",
+        "duration": 1,
+        "attendees": 22,
+        "context": "I am one of the team leads. I speak for about 90 seconds and listen for the rest."
+      },
+      "optionalSections": [
+        "before_the_meeting"
+      ],
+      "output": {
+        "why_are_we_meeting": "Twenty-two people gather weekly so each team lead can report status to the group. The supplied purpose is information delivery, not interaction — but the meeting may also enable cross-team awareness, surface blockers, and allow anyone to ask questions across teams in real time.",
+        "what_must_be_true_when_we_leave": [
+          "Each team lead has heard what every other team is working on",
+          "Any cross-team blockers or dependencies have surfaced and been flagged",
+          "Anyone with a question for another team has had a chance to ask it"
+        ],
+        "who_needs_to_participate": [
+          "Each team lead who holds status others need to hear",
+          "Anyone with authority to unblock cross-team issues when they surface",
+          "Anyone whose work depends on another team's status"
+        ],
+        "before_the_meeting": [
+          "Each team lead writes a three-to-five line status note and posts it before the meeting — attendees read, not listen, to routine updates",
+          "Anyone with a cross-team question or dependency flags it on the shared update so live time targets only those items"
+        ],
+        "live_agenda": [
           {
-            "label": "Weekly meeting load",
-            "value": "15 person-hours per week sitting in meetings",
-            "emoji": "⏰",
-            "verdict": "Concerning"
+            "item": "Flagged cross-team blockers and dependencies — only items teams identified in advance",
+            "why_live": "These require real-time negotiation or escalation that a written update cannot resolve",
+            "minutes": 25
           },
           {
-            "label": "Person-hours already rescued",
-            "value": "18 person-hours saved through smarter meeting decisions",
-            "emoji": "🏆",
-            "verdict": "Good"
+            "item": "Open floor: questions raised by the written updates that nobody flagged in advance",
+            "why_live": "Unexpected questions benefit from immediate back-and-forth rather than async thread chains",
+            "minutes": 20
           },
           {
-            "label": "Decisions made in scored meetings",
-            "value": "0 out of 2 scored meetings produced an actual decision",
-            "emoji": "🚨",
-            "verdict": "Bad"
-          },
-          {
-            "label": "Right people in the room",
-            "value": "0 out of 2 scored meetings had only the necessary attendees",
-            "emoji": "👥",
-            "verdict": "Bad"
-          },
-          {
-            "label": "Meetings that could have been shorter",
-            "value": "Both scored meetings ran longer than the content required",
-            "emoji": "📉",
-            "verdict": "Bad"
-          },
-          {
-            "label": "Meetings analyzed in total",
-            "value": "12 meetings reviewed — solid dataset to spot patterns",
-            "emoji": "📊",
-            "verdict": "Good"
+            "item": "Any time-sensitive coordination or announcements that require a live reaction",
+            "why_live": "Some decisions need immediate acknowledgment or a quick group read to proceed",
+            "minutes": 15
           }
         ],
-        "biggest_win": "18 person-hours already reclaimed — proof that meeting awareness is actively working and the habit is sticking. 💪",
-        "biggest_problem": "Zero scored meetings produced a decision AND had the right people — your meetings are gatherings, not engines of progress.",
-        "time_analysis": {
-          "meeting_hours_per_week": 15,
-          "productive_meeting_pct": 30,
-          "could_reclaim_hours": 7,
-          "maker_time_ratio": "For every 1 hour in a meeting, you need to protect at least 2 hours of uninterrupted focus time — right now that ratio is dangerously flipped."
-        },
-        "recommendations": [
-          "🎯 No agenda, no meeting — every invite must answer 'what decision or output does this produce?' before it gets calendar space.",
-          "✂️ Cut the default duration: move 60-minute meetings to 45, 30-minute meetings to 20 — time expands to fill the slot every single time.",
-          "👤 Halve the invite list — for each scored meeting, every attendee who didn't need to be there cost person-hours you can't get back; make attendance opt-in with a shared doc instead.",
-          "📋 End every meeting with a 60-second decision log read aloud — if you can't name the decision made, the meeting shouldn't have happened."
-        ],
-        "share_summary": "Our team spends 15 person-hours a week in meetings — and scored meetings are producing zero decisions with the wrong people in the room. 🚨 The good news: we've already reclaimed 18 person-hours by paying attention, and that number is going up."
+        "end_with": "Close by naming any blocker that was raised and who owns it, then confirm whether next week's meeting is needed at full length or can be async if no flags are posted by a set cutoff."
+      }
+    },
+    {
+      "name": "message-after-make-it-async",
+      "endpoint": "/api/justify-my-meeting/message",
+      "guards": "The follow-up a MAKE IT ASYNC verdict earns. The message must PROPOSE, never announce, and must never state that the visitor will skip.",
+      "input": {
+        "meetingText": "Weekly engineering all-hands. Standing 60-minute meeting, 22 attendees. Agenda: status updates from each team lead. No prep, no decisions, everyone reports out what they did last week. Recurring for six months.",
+        "verdict": "MAKE IT ASYNC",
+        "better": "Written updates from each lead before a deadline, plus a 20-minute sync kept only for what needs live discussion.",
+        "relationship": "My manager"
+      },
+      "optionalSections": [],
+      "output": {
+        "message": "I wanted to raise something about the weekly all-hands — I think we could get the same value with less time cost for everyone. What if each lead submitted a short written update by Monday morning, and we kept a 20-minute sync for anything that actually needs live discussion? Happy to draft a template for the written updates if that would help get it off the ground.",
+        "why_it_lands": "It offers a concrete structure rather than just a complaint, and the offer to do the legwork makes it easy for your manager to say yes.",
+        "if_they_say_no": "Good to know — can you help me understand what the 60-minute format gives us that the shorter version would miss? That would help me get more out of it.",
+        "do_not_send": "Any version that opens with 'this meeting is a waste of time' or implies the current format is your manager's failure — it puts them on the defensive before they can hear the idea."
       }
     }
   ]
