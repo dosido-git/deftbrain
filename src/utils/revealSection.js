@@ -105,4 +105,22 @@ export function revealSection(node, opts = {}) {
   target.scrollIntoView({ behavior, block });
 }
 
+/**
+ * The focus half on its own, for the handful of places that already scroll
+ * themselves for reasons worth keeping. VirtualBodyDouble is the example: it
+ * computes against the document rather than scrollIntoView because of the
+ * scroll containers between it and the root, and it scrolls twice, instantly,
+ * because a smooth glide lost a race with scroll anchoring. None of that should
+ * be replaced by this file — but it still never told anyone the screen changed.
+ */
+export function focusSection(node) {
+  if (!node || typeof node.focus !== 'function') return;
+  if (!node.hasAttribute('tabindex')) node.setAttribute('tabindex', '-1');
+  try {
+    node.focus({ preventScroll: true });
+  } catch (_) {
+    // Detached mid-transition. The caller's own scroll still runs.
+  }
+}
+
 export default revealSection;

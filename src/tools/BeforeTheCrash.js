@@ -7,6 +7,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { pickExample } from '../utils/exampleRotation';
 import { tools } from '../data/tools';
 import Caret from '../components/Caret';
+import { useScrollToSection } from '../hooks/useScrollToSection';
 
 // Local date, not toISOString(): that converts to UTC first, so west of
 // Greenwich an evening check-in lands on tomorrow. This log is a record of
@@ -276,8 +277,13 @@ export default function BeforeTheCrash() {
     [t('cpv2_mood_label'), latest?.mood],
   ];
 
+  // A view change swaps the whole tool body, so this reveals the tool:
+  // frame mode shows the header and controls, focus lands on the body.
+  const stageRef = useRef(null);
+  useScrollToSection(stageRef, view);
+
   return (
-    <div className={`space-y-4 ${c.text}`}>
+    <div ref={stageRef} className={`scroll-mt-24 space-y-4 ${c.text}`}>
       {/* ── Unified header card: icon + tagline + Try an example + reset + tabs ── */}
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm px-5 pt-2.5 pb-5`}>
         <div className="flex items-start justify-between gap-3 pb-3 border-b border-zinc-500">
