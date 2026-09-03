@@ -34,13 +34,30 @@
  *   - Someone who has asked for less motion has asked for less motion. The
  *     same fallback covers prefers-reduced-motion.
  *
- * @param {HTMLElement|null|undefined} node   the section to reveal
- * @param {{ block?: ScrollLogicalPosition, focus?: boolean }} [opts]
+ * FRAME MODE. When a whole screen is replaced — a form becomes a result, a
+ * setup becomes a running timer — the visitor has not merely gained content
+ * below what they were reading; they have moved. There the useful thing at the
+ * top of the window is the top of the tool, header and all, so they can see
+ * where they are and reach the controls.
+ *
+ * When results are merely appended below a form that is still on screen, that
+ * is wrong: it would spend a third of a phone screen re-showing a heading and
+ * the visitor's own input before the answer they waited for. Measured on Get
+ * Noticed at 375x812: framing costs 310px of chrome and 43% of the visible
+ * answer.
+ *
+ * So frame mode scrolls the frame and focuses the content. Those can differ,
+ * and here they should: the viewport shows the header, while a screen reader
+ * still starts reading at what actually changed instead of re-reading the
+ * tagline, the example button and the recap on every submit.
+ *
+ * @param {HTMLElement|null|undefined} node   the content to reveal and focus
+ * @param {{ block?: ScrollLogicalPosition, focus?: boolean, frame?: boolean }} [opts]
  */
 export function revealSection(node, opts = {}) {
   if (!node || typeof node.scrollIntoView !== 'function') return;
 
-  const { block = 'start', focus = true } = opts;
+  const { block = 'start', focus = true, frame = false } = opts;
 
   let behavior = 'smooth';
   try {
@@ -64,7 +81,28 @@ export function revealSection(node, opts = {}) {
     }
   }
 
-  node.scrollIntoView({ behavior, block });
+  // The tool card's own <section> is the frame. Every tool page has one —
+  // ToolPageWrapper puts data-print-section on it — and falling back to the
+  // node keeps this safe anywhere that is not a tool page.
+  let target = node;
+  if (frame && typeof node.closest === 'function') {
+    const section = node.closest('[data-print-section]');
+    // Frame only when the header actually fits. A tool whose header and recap
+    // are taller than this would push the answer most of the way off a phone
+    // screen, which is the failure the measurement above describes — so past
+    // that point the content wins. Costs nothing to check and means no tool
+    // has to be classified by hand.
+    if (section) {
+      try {
+        const gap = node.getBoundingClientRect().top - section.getBoundingClientRect().top;
+        if (gap <= window.innerHeight * 0.4) target = section;
+      } catch (_) {
+        target = section;
+      }
+    }
+  }
+
+  target.scrollIntoView({ behavior, block });
 }
 
 export default revealSection;

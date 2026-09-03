@@ -66,7 +66,9 @@ export function useScrollToSection(ref, key) {
       // the screen changed; the scroll is the visible half. It also resolves
       // the behaviour itself, and a hidden tab is one of the cases it forces
       // to instant — the reason this hook already passed 'auto' by hand.
-      revealSection(ref.current);
+      // frame: this hook exists for screen changes, which is exactly the case
+      // where the top of the tool is the right thing to show.
+      revealSection(ref.current, { frame: true });
     }, 0);
     return () => window.clearTimeout(id);
   }, [ref, key]);

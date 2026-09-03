@@ -292,7 +292,7 @@ const ToolPageWrapperInner = ({ children, tool, toolId }) => {
 
         {/* Main Content Area */}
         <main data-print-main className="lg:col-span-8">
-          <section data-print-section className={`border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
+          <section data-print-section className={`scroll-mt-24 border ${colors.border} rounded-2xl shadow-sm overflow-hidden transition-colors duration-200`} style={{
               ...(detectedTool?.headerColor ? {
                 background: `linear-gradient(to bottom, ${detectedTool.headerColor} 0%, ${detectedTool.headerColor} 60px, transparent 220px)`
               } : { background: isDark ? '#27272a' : '#ffffff' }),
