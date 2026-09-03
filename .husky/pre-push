@@ -69,6 +69,15 @@ node scripts/check-renames.js
 # nothing could say so. Mechanical sweeps pass with OUTPUT_STANDARD_SKIP=1.
 node scripts/output-standard-audit.js
 
+# Gate 9b — three-way sync (CLAUDE.md rule 5, until now unenforced). The install
+# kit says of it outright: "Nothing catches this. No gate compares the frontend's
+# payload to the route's destructuring. Do it by hand, every time." Doing it by
+# hand missed Concept Coach's evidenceSoFar — a prominent textarea whose answer
+# was posted and dropped, so the visitor typed their customer research into a box
+# that changed nothing. A call to an endpoint no route serves always fails; dead
+# params are baselined in src/data/sync-accepted.json so only NEW ones do.
+node scripts/three-way-sync-audit.js
+
 # Gate 10 — per-language conventions (audit/I18N-REVIEW-LEDGER.md, executable).
 # Gate 5 proves a key exists in thirteen languages and i18n-quality-audit proves
 # it is not stale; neither can see that a translation says 당신, or 您, or "o teu",

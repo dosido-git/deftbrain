@@ -1,0 +1,26 @@
+{
+  "note": "Fields sent to a route that never reads them. Accepted as pre-existing — see scripts/three-way-sync-audit.js. Only NEW findings fail.",
+  "accepted": [
+    "BikeMedic /bike-medic bike_profile",
+    "ConflictCoach /conflict-coach emotionalState",
+    "DecisionCoach /decision-coach/patterns date",
+    "DecisionCoach /decision-coach/patterns followUp",
+    "FinalWish /final-wish locale",
+    "LazyWorkoutAdapter /lazy-workout-adapter-complete totalSessions",
+    "LazyWorkoutAdapter /lazy-workout-adapter-nudge weekday",
+    "Mend /apology-calibrator/practice sessionHistory",
+    "PlantRescue /plant-rescue/followup imageProvided",
+    "SixDegreesOfMe /six-degrees/chain-between locale",
+    "SixDegreesOfMe /six-degrees/profile-prompt locale",
+    "SixDegreesOfMe /six-degrees/story locale",
+    "SixDegreesOfMe /six-degrees/surprise locale",
+    "SixDegreesOfMe /six-degrees/tag-nodes locale",
+    "SixDegreesOfMe /six-degrees/what-if locale",
+    "SpiralStopper /spiral-stopper current_step",
+    "TaskAvalancheBreaker /task-avalanche-breaker completedTaskIds",
+    "TheFinalWord /the-final-word originalMode",
+    "TimeWarp /time-warp seed",
+    "WaitingModeLiberator /waiting-mode-liberator weekday",
+    "WrongAnswersOnly /wrong-answers-only seed"
+  ]
+}
