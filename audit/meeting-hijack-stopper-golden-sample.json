@@ -1,255 +1,423 @@
 {
   "_meta": {
-    "tool": "MeetingHijackPreventer",
-    "generated": "2026-07-13",
-    "model": "claude-sonnet-4-6 (MODELS.SMART), 1 endpoint",
-    "baseline_commit": "meetinghijackpreventer-v1",
-    "how_to_regression_diff": "Re-run the case (npm run check:golden meeting-hijack-preventer) and diff for QUALITY not exact match: HTTP 200, no truncation, and the STRUCTURAL guarantees below. GUARDS: (1) virtual_meeting_protocols MUST be a populated object (5 keys: mute_management/screen_sharing/chat_usage/raise_hand/breakout_rooms) — the schema used to emit an empty {} so the whole 'Virtual Protocols' section rendered blank; (2) meeting_artifacts must include meeting_minutes_template AND follow_up_email AND decision_log — the frontend now reads meeting_minutes_template from meeting_artifacts (was reading it top-level → never rendered) and renders <pre> bodies for follow_up_email + decision_log (were header-only, dead); (3) no annotation leaks (— one sentence / — N words / — N sentences were echoed into rendered agenda topics, scripts, strategies); (4) agenda_items capped at 12 + max_tokens 6000 (was uncapped at 5000 → 120-min virtual meetings truncated). DO NOT silently reverse: (1) virtual_meeting_protocols populated schema; (2) frontend reads meeting_artifacts.meeting_minutes_template + <pre> bodies for follow_up_email/decision_log; (3) agenda_items<=12 + max_tokens 6000; (4) no annotation suffixes; (5) the no-inner-double-quote JSON rule."
+    "tool": "meeting-hijack-stopper",
+    "captured": "2026-09-03",
+    "baseline": "meetinghijackstopper-v1",
+    "model": "MODELS.SMART",
+    "note": "Regression reference for Meeting Hijack Stopper (renamed from Meeting Hijack Preventer, 2026-09-03, the day after the plan-first rewrite). The v1 golden was discarded rather than ported: its single case exercised an endpoint that no longer exists and its expected output contained speaking roles, meeting artifacts and a success-metrics string the rewrite removed. Re-run with `npm run check:golden meeting-hijack-stopper` against a local backend and diff for QUALITY, not exact match. Beyond what check-golden asserts automatically, eyeball these by hand, because no gate sees them: (1) nothing may describe a participant's personality, motive or feelings — a selected challenge is a facilitation problem, never a claim about a person; (2) nothing may invent decision authority, an escalation path, or an exact lead time such as 'send it 24 hours in advance'; (3) no ritual should appear (ground rules, icebreakers, round robins, parking lots, formal roles, Tech Support) unless it solves a problem in that specific meeting; (4) the agenda is fitted to the duration DOWNWARD only, so unscheduled_minutes > 0 is correct behaviour, not a bug. Each case carries its own `guards` line saying what it is there to catch. See audit/tool-notes/MEETINGHIJACKSTOPPER-NOTES.md."
   },
   "cases": [
     {
-      "name": "de-virtual-120min-sprint-max-schema",
-      "endpoint": "/api/meeting-hijack-preventer",
+      "name": "plan-decision-unknown-authority",
+      "endpoint": "/api/meeting-hijack-stopper",
+      "guards": "Decision framework is 'Not sure', so decision_plan.what_needs_clarifying MUST name who decides rather than inventing an answer, and nothing may describe an escalation path. Two challenges selected means exactly two watch_for entries. Agenda minutes must sum to at most 60, and meeting_plan.scheduled_minutes / unscheduled_minutes are computed in code — the agenda is fitted DOWNWARD only, so an agenda that came in under 60 keeps its slack rather than being padded.",
       "input": {
-        "meetingGoal": "Entscheiden, welche zwei von vier Feature-Vorschlägen in die Q3-Roadmap kommen, und Verantwortliche zuweisen.",
-        "duration": 120,
-        "participantCount": 8,
-        "meetingType": "Decision-making",
-        "isVirtual": true,
-        "virtualPlatform": "Zoom",
-        "decisionFramework": "Disagree & Commit",
+        "meetingGoal": "Decide which two of the four proposals move forward to the design phase.",
+        "duration": 60,
+        "participantCount": 7,
+        "participantNotes": null,
+        "format": "Virtual",
+        "platform": "Zoom",
+        "meetingType": "Decision",
         "challenges": {
-          "dominates": true,
-          "offTopic": true,
-          "talkOver": true,
-          "schedule": true,
-          "quietVoices": true
+          "airtime": true,
+          "wanders": true
         },
-        "useTemplate": true,
-        "selectedTemplate": "sprint-planning",
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany"
+        "challengeOther": null,
+        "decisionFramework": "Not sure",
+        "extraContext": "Two of the proposals came from the same team and they are invested in both."
       },
+      "optionalSections": [
+        "before_the_meeting"
+      ],
       "output": {
-        "meeting_structure": {
-          "total_duration": 120,
-          "agenda_items": [
+        "meeting_plan": {
+          "goal": "Choose which two of the four proposals move forward to the design phase.",
+          "end_state": "Two proposals are selected by name, any open conditions are noted, and each participant knows what happens next.",
+          "total_minutes": 60,
+          "agenda": [
             {
-              "topic": "Technischer Check & Ankommen",
-              "time_allocated": 5,
-              "objective": "Sicherstellen, dass alle Teilnehmenden technisch verbunden und bereit sind",
-              "facilitator_role": "Zoom-Verbindung prüfen, Stummschalten-Protokoll erklären, Notetaker und Timekeeper bestätigen",
-              "speaker_order": [
-                "Moderation"
-              ],
-              "time_warning": "Wir starten in 1 Minute – bitte Mikrofon stumm schalten bis zur Aufforderung"
+              "title": "Frame the decision",
+              "minutes": 5,
+              "purpose": "Make the exit criteria explicit before evaluation begins so the group knows what they are deciding and how.",
+              "how_to_run_it": "State the goal, the constraint (exactly two move forward), and name the unresolved question of who makes the final call if the group cannot reach agreement. Get a quick verbal acknowledgment.",
+              "say_this_if_helpful": "We are here to pick two proposals to take into design. Only two move forward today. Before we dig in, I want to flag that we have not established what happens if we cannot agree — so if that becomes relevant, we will need to pause and sort that out rather than push past it."
             },
             {
-              "topic": "Begrüßung, Ziel & Spielregeln",
-              "time_allocated": 8,
-              "objective": "Klares Meeting-Ziel setzen, psychologische Sicherheit herstellen, Struktur erklären",
-              "facilitator_role": "Ziel vorlesen, Parking-Lot vorstellen, Redezeiten und Hand-heben-Protokoll erklären, Disagree-and-Commit kurz einführen",
-              "speaker_order": [
-                "Moderation"
-              ],
-              "time_warning": "Noch 1 Minute für Rückfragen zur Agenda"
+              "title": "Clarify the proposals",
+              "minutes": 10,
+              "purpose": "Give every participant a shared, accurate picture of all four proposals before evaluation starts.",
+              "how_to_run_it": "Invite a brief summary of each proposal — one or two sentences each, from whoever knows it best. Hold questions until all four are described. If a proposal is already well understood by everyone, skip its summary.",
+              "say_this_if_helpful": "Quick summaries only — enough that anyone who is less familiar can evaluate fairly. We will get into pros and cons next."
             },
             {
-              "topic": "Überblick: Die vier Feature-Vorschläge",
-              "time_allocated": 12,
-              "objective": "Allen Teilnehmenden denselben Informationsstand geben – keine Diskussion, nur Fakten",
-              "facilitator_role": "Je Vorschlag 3 Minuten: zuständige Person stellt kurz vor (Nutzen, Aufwand, Risiko), Moderation stoppt bei Zeit",
-              "speaker_order": [
-                "Feature-Owner A",
-                "Feature-Owner B",
-                "Feature-Owner C",
-                "Feature-Owner D"
-              ],
-              "time_warning": "Noch 30 Sekunden – bitte zum Kernpunkt kommen"
+              "title": "Evaluate against shared criteria",
+              "minutes": 20,
+              "purpose": "Surface the strongest reasons for and against each proposal so the group is making a reasoned choice.",
+              "how_to_run_it": "Ask the group to name what criteria matter most for moving to design, then work through the proposals against those criteria in open discussion. Keep the focus on the criteria, not on advocacy. If the conversation lingers on one proposal, move it forward explicitly.",
+              "say_this_if_helpful": "What do we need a proposal to demonstrate before we invest in designing it? Let us agree on that first, then use it to look at each one."
             },
             {
-              "topic": "Klärungsfragen (keine Debatte)",
-              "time_allocated": 10,
-              "objective": "Offene Sachfragen beantworten, bevor Bewertung beginnt",
-              "facilitator_role": "Reihenfolge per Handheben steuern, maximal 1 Frage pro Person pro Runde, Diskussionen sofort in Parking Lot verweisen",
-              "speaker_order": [
-                "Alle per Hand-Heben-Funktion in Zoom"
-              ],
-              "time_warning": "Noch 2 Minuten für Klärungsfragen – dann starten wir mit der Bewertung"
+              "title": "Make the selection",
+              "minutes": 15,
+              "purpose": "Reach the actual decision — two proposals chosen — using the criteria the group named.",
+              "how_to_run_it": "Ask directly which two proposals the group supports advancing, using the criteria as the reference point. If there is clear convergence, name it and confirm. If there is disagreement, surface the specific sticking point and resolve it — or, if the group cannot resolve it, invoke the clarification you named at the start about who decides.",
+              "say_this_if_helpful": "Based on what we just worked through, which two are we advancing? I want to name what I am hearing and check whether we are aligned."
             },
             {
-              "topic": "Stille Einzelbewertung (Silent Voting Round 1)",
-              "time_allocated": 8,
-              "objective": "Jede Person bewertet die vier Features unabhängig – verhindert Gruppendenken",
-              "facilitator_role": "Zoom-Umfrage öffnen: jede Person vergibt 3 Punkte auf die vier Vorschläge, Ergebnisse noch nicht zeigen",
-              "speaker_order": [
-                "Alle individuell, stumm"
-              ],
-              "time_warning": "Noch 1 Minute zum Abschicken der Stimme"
-            },
-            {
-              "topic": "Ergebnisse sichten & strukturierte Diskussion",
-              "time_allocated": 20,
-              "objective": "Abstimmungsergebnis als Gesprächsgrundlage nutzen, alle Perspektiven hören",
-              "facilitator_role": "Ergebnisse teilen, reihum je 90 Sekunden pro Person (feste Reihenfolge, kein Unterbrechen), Moderation trackt Redezeiten aktiv",
-              "speaker_order": [
-                "Teilnehmende in alphabetischer Reihenfolge, reihum"
-              ],
-              "time_warning": "Noch 5 Minuten – letzte zwei Personen bitte kurz fassen"
-            },
-            {
-              "topic": "Breakout-Session: Paarvergleich (2 Gruppen à 4 Personen)",
-              "time_allocated": 12,
-              "objective": "Vertiefte Abwägung in kleineren Gruppen ohne Dominanz-Dynamiken",
-              "facilitator_role": "Breakout-Rooms öffnen, Gruppe A bewertet Features 1 vs. 2, Gruppe B bewertet Features 3 vs. 4, je ein Spokesperson bestimmen",
-              "speaker_order": [
-                "Gruppeninterne Moderation"
-              ],
-              "time_warning": "2-Minuten-Hinweis vor Rückkehr ins Hauptraum"
-            },
-            {
-              "topic": "Gruppen-Berichte & Abschluss-Diskussion",
-              "time_allocated": 10,
-              "objective": "Erkenntnisse aus Breakout zusammenführen, letzte Argumente sammeln",
-              "facilitator_role": "Spokesperson je Gruppe hat 3 Minuten, dann 4 Minuten offene Runde per Hand-heben, neue Punkte in Parking Lot",
-              "speaker_order": [
-                "Spokesperson Gruppe A",
-                "Spokesperson Gruppe B",
-                "Freiwillige per Hand-Heben"
-              ],
-              "time_warning": "Noch 1 Minute – dann gehen wir zur Entscheidung"
-            },
-            {
-              "topic": "Finale Entscheidung: Disagree & Commit",
-              "time_allocated": 12,
-              "objective": "Zwei Features für Q3-Roadmap verbindlich auswählen und Dissens anerkennen",
-              "facilitator_role": "Zweite Zoom-Umfrage: Endabstimmung, Ergebnis vorlesen, Dissens-Runde (wer widerspricht, sagt es kurz), Commit-Erklärung vorlesen",
-              "speaker_order": [
-                "Moderation",
-                "Personen mit Dissens (freiwillig, max. 60 Sek. je Person)"
-              ],
-              "time_warning": "Entscheidung wird jetzt festgehalten – kein weiterer Änderungsantrag nach diesem Punkt"
-            },
-            {
-              "topic": "Verantwortliche zuweisen",
-              "time_allocated": 10,
-              "objective": "Für jedes gewählte Feature eine verantwortliche Person und erste Meilensteine benennen",
-              "facilitator_role": "Notetaker füllt Action-Items-Template live im geteilten Dokument, Moderation holt Selbstbenennung oder fragt gezielt",
-              "speaker_order": [
-                "Freiwillige, dann Moderation fragt gezielt"
-              ],
-              "time_warning": "Noch 2 Minuten – bitte alle Felder im Template vollständig machen"
-            },
-            {
-              "topic": "Parking Lot & Offene Punkte",
-              "time_allocated": 6,
-              "objective": "Geparkten Themen sichtbar machen und weiteres Vorgehen klären",
-              "facilitator_role": "Notetaker liest Parking-Lot-Punkte vor, Moderation entscheidet kurz: erledigt, Follow-up-Meeting oder asynchron klären",
-              "speaker_order": [
-                "Notetaker",
-                "Moderation"
-              ],
-              "time_warning": "Noch 1 Minute – dann Abschluss"
-            },
-            {
-              "topic": "Abschluss & nächste Schritte",
-              "time_allocated": 5,
-              "objective": "Meeting positiv abschließen, Klarheit über nächste Schritte sicherstellen",
-              "facilitator_role": "Entscheidungen und Verantwortliche zusammenfassen, Dank aussprechen, Follow-up-E-Mail ankündigen",
-              "speaker_order": [
-                "Moderation"
-              ],
-              "time_warning": "Wir sind in der Zeit – gut gemacht, alle!"
+              "title": "Capture and close",
+              "minutes": 5,
+              "purpose": "Leave with a shared record of the decision, any conditions attached to it, and the immediate next step.",
+              "how_to_run_it": "State the two selected proposals by name. Note any conditions or open questions the group flagged. Confirm who is doing what next and when. Ask if anything is missing before closing.",
+              "say_this_if_helpful": "We are advancing [proposal name] and [proposal name]. Here is what we said happens next. Anything missing before we close?"
             }
           ],
-          "buffer_time": 12,
-          "parking_lot_instructions": "Themen, die nicht zum aktuellen Tagesordnungspunkt gehören, werden sofort im gemeinsamen Dokument unter 'Parking Lot' notiert und am Ende des Meetings oder in einem Follow-up-Termin besprochen."
+          "scheduled_minutes": 55,
+          "unscheduled_minutes": 5
         },
-        "facilitator_scripts": {
-          "opening": "Herzlich willkommen! Schön, dass wir alle da sind. Heute haben wir ein klares Ziel: Wir entscheiden gemeinsam, welche zwei der vier Feature-Vorschläge in die Q3-Roadmap kommen, und wir legen Verantwortliche fest. Ich freue mich auf eine konstruktive Runde – wir haben alles, was wir brauchen, um heute eine gute Entscheidung zu treffen.",
-          "redirecting_tangent": "Das ist ein wichtiger Gedanke – ich schlage vor, wir parken ihn kurz im Parking Lot, damit wir ihn nicht verlieren, und kommen nach der Entscheidung darauf zurück.",
-          "managing_dominance": "Danke für diesen Beitrag – ich möchte sicherstellen, dass wir auch von den anderen hören, bevor wir weitergehen. Wer hat noch eine Perspektive, die wir noch nicht gehört haben?",
-          "encouraging_quiet_voices": "Ich würde gerne noch eine Stimme hören, die sich noch nicht gemeldet hat – kein Druck, aber falls du magst, wäre deine Einschätzung hier wertvoll.",
-          "time_warning": "Kurze Info vom Timekeeper: Wir haben noch 2 Minuten für diesen Punkt – bitte Gedanken abrunden.",
-          "parking_lot_response": "Sehr guter Punkt – ich trage das jetzt in den Parking Lot ein, damit es nicht verloren geht, und wir schauen am Ende, ob wir Zeit haben, darauf einzugehen.",
-          "closing": "Wir haben heute eine echte Entscheidung getroffen und klare Verantwortlichkeiten definiert – das ist keine Selbstverständlichkeit, danke euch allen für die fokussierte und respektvolle Zusammenarbeit. Die Zusammenfassung schicke ich innerhalb von 24 Stunden per E-Mail."
-        },
-        "virtual_meeting_protocols": {
-          "mute_management": "Alle Teilnehmenden sind zu Beginn stummgeschaltet; Mikrofon nur aktivieren, wenn die Moderation das Wort erteilt oder die Hand-Heben-Funktion genutzt wurde – die Moderation kann bei Bedarf zentral alle stumm schalten.",
-          "screen_sharing": "Nur die Moderation teilt den Bildschirm; Übergaben werden vorab angekündigt ('Ich übergebe jetzt den Bildschirm an [Name]'); bei technischen Problemen übernimmt der Tech-Support sofort.",
-          "chat_usage": "Der Chat dient ausschließlich für: Links und Materialien, Parking-Lot-Vorschläge (mit dem Präfix 'PARKING:') und technische Probleme – kein paralleles Diskutieren im Chat, da das ablenkt.",
-          "raise_hand": "Wer sprechen möchte, nutzt die Hand-heben-Funktion in Zoom (Reaktionen-Menü); die Moderation ruft Personen in der Reihenfolge auf, in der die Hände erscheinen.",
-          "breakout_rooms": "Zwei Breakout-Räume à 4 Personen werden von der Moderation vorab konfiguriert; Rückkehr erfolgt automatisch nach 12 Minuten mit einem 2-Minuten-Vorwarnsignal; der Tech-Support ist für alle Räume erreichbar."
-        },
-        "decision_making_structure": {
-          "when_to_use": "Das Disagree-and-Commit-Framework kommt in Tagesordnungspunkt 9 zum Einsatz, nachdem alle Argumente gehört wurden und die finale Abstimmung stattgefunden hat.",
-          "process": "1) Finale Zoom-Umfrage durchführen. 2) Ergebnis laut vorlesen. 3) Dissens-Runde: Wer nicht übereinstimmt, kann das in max. 60 Sekunden benennen. 4) Moderation liest die Commit-Formel vor. 5) Alle bestätigen per Daumen-hoch-Reaktion in Zoom, dass sie das Ergebnis mittragen.",
-          "voting_mechanism": "Anonyme Zoom-Umfrage in beiden Abstimmungsrunden; in der finalen Runde vergibt jede Person eine Stimme für zwei Features; bei Gleichstand entscheidet die Produktverantwortliche Person.",
-          "conflict_resolution": "Wenn nach Dissens-Runde kein Commit möglich ist, benennt die Moderation das sachlich, dokumentiert den Dissens im Decision Log und eskaliert die Entscheidung transparent an die nächste Führungsebene innerhalb von 24 Stunden."
-        },
-        "speaking_roles": [
+        "watch_for": [
           {
-            "role": "Moderation",
-            "responsibility": "Diskussion leiten, Zeit im Blick behalten, alle Stimmen einbeziehen und Zoom-Tools aktiv steuern"
+            "situation": "One voice is carrying most of the airtime during evaluation, and other perspectives have not been heard.",
+            "prevent_it": "In the evaluation block, explicitly invite input from others before the same person speaks again.",
+            "if_it_happens": "Redirect by name to the purpose, then open the floor broadly.",
+            "say_this": "I want to make sure we are drawing on everyone here before we stay with this thread. Is there a perspective on this proposal we have not heard yet?"
           },
           {
-            "role": "Timekeeper",
-            "responsibility": "Zeitmessung für jeden Tagesordnungspunkt, 2-Minuten- und 1-Minuten-Hinweise im Chat posten"
-          },
-          {
-            "role": "Notetaker",
-            "responsibility": "Entscheidungen, Action Items und Parking-Lot-Punkte in Echtzeit im geteilten Dokument festhalten"
-          },
-          {
-            "role": "Tech-Support",
-            "responsibility": "Technische Probleme beheben, Breakout-Räume verwalten und Chat beobachten"
+            "situation": "The conversation drifts into questions about a proposal beyond scope — its implementation, resourcing, or broader strategy — rather than whether it advances.",
+            "prevent_it": "State the evaluation criteria explicitly in the criteria block so the group has a reference to return to.",
+            "if_it_happens": "Name the drift, capture the point if it matters, and redirect to the selection criteria.",
+            "say_this": "That is worth knowing, but it is taking us past today's decision. Can we note it and come back to whether this proposal meets the criteria we set?"
           }
         ],
-        "preparation_checklist": [
-          "Agenda mindestens 24 Stunden vor dem Meeting versenden",
-          "Rollen (Moderation, Timekeeper, Notetaker, Tech-Support) vorab schriftlich zuweisen",
-          "Zoom-Technik 15 Minuten vor Beginn testen (Umfragen, Breakout-Räume, Bildschirmfreigabe)",
-          "Parking-Lot-Dokument im geteilten Arbeitsbereich anlegen und Link teilen",
-          "Alle vier Feature-Beschreibungen (Nutzen, Aufwand, Risiko) vorab als Dokument teilen",
-          "Zoom-Umfragen für beide Abstimmungsrunden vorbereiten und testen",
-          "Moderationsskripte und Anti-Hijack-Strategien durchlesen"
+        "decision_plan": {
+          "needed": true,
+          "approach": "Work toward convergence through the criteria-based evaluation. When the group discusses the proposals against shared criteria, the selection should follow from that conversation rather than requiring a separate vote. If the group converges on two proposals, name the decision and confirm it explicitly. If there is genuine disagreement, isolate the specific point of difference rather than re-litigating everything — and if agreement cannot be reached, the group will need to clarify who holds the final call before the meeting can close.",
+          "what_needs_clarifying": "Who makes the final call if the group does not agree on which two proposals advance. This is unresolved and needs to be named at the start so the group knows what happens if they get stuck. Also worth noting: two proposals come from the same team, which does not disqualify them but may make it useful to confirm early that the selection criteria apply equally to all four."
+        },
+        "before_the_meeting": [
+          "Send participants a brief summary of all four proposals with enough time to review before the meeting — they should arrive already familiar with the basics.",
+          "Decide what you will say if the group cannot agree: either you know who holds the final call, or you surface that gap at the start and let the group name it.",
+          "Confirm whether the platform chat will be available and usable — it is helpful for collecting criteria or capturing decisions in real time without interrupting the flow."
         ],
-        "anti_hijack_strategies": [
+        "finish_strong": {
+          "before_people_leave": [
+            "Name both selected proposals explicitly — not by description, by name.",
+            "Note any conditions the group attached to either selection.",
+            "Confirm the immediate next step and who owns it.",
+            "Flag any unresolved questions that need follow-up outside the meeting."
+          ],
+          "closing_script": "We are leaving with two proposals selected to move into design. If anything about that decision needs to travel outside this room, it should reflect what we agreed here — not the conversation around it. Thank you for the focus it took to get there."
+        }
+      }
+    },
+    {
+      "name": "plan-names-supplied-disagree-and-commit",
+      "endpoint": "/api/meeting-hijack-stopper",
+      "guards": "Names ARE supplied, so addressing Sam, Priya or Dana directly is allowed here — the rule is that a name may be used only when the visitor gave it. 'Disagree & commit' must be adapted as a preference: nothing may require anyone to type COMMIT, declare a decision final, or escalate to leadership. Seven challenges selected means seven watch_for entries, each describing a situation and never a person.",
+      "input": {
+        "meetingGoal": "Agree how we split on-call between the two teams for next quarter.",
+        "duration": 45,
+        "participantCount": 9,
+        "participantNotes": "Sam and Priya lead the two teams. Dana runs the platform group and will be affected.",
+        "format": "In person",
+        "platform": null,
+        "meetingType": "Difficult discussion",
+        "challenges": {
+          "airtime": true,
+          "wanders": true,
+          "interrupt": true,
+          "overrun": true,
+          "unheard": true,
+          "undecided": true,
+          "no_next_step": true
+        },
+        "challengeOther": null,
+        "decisionFramework": "Disagree & commit",
+        "extraContext": "The two teams disagreed about this last quarter and it was never resolved."
+      },
+      "optionalSections": [
+        "before_the_meeting"
+      ],
+      "output": {
+        "meeting_plan": {
+          "goal": "Agree how to split on-call responsibility between the two teams for next quarter.",
+          "end_state": "A specific on-call split is agreed, or if full agreement is not reached, a named person makes the call before everyone leaves the room.",
+          "total_minutes": 45,
+          "agenda": [
+            {
+              "title": "Frame the problem and what we need to leave with",
+              "minutes": 5,
+              "purpose": "Make the stakes and the endpoint concrete so the conversation stays anchored — especially given that this was unresolved last quarter.",
+              "how_to_run_it": "State the outcome plainly: we need a specific split agreed today, not a direction to keep discussing. Name that if we reach 45 minutes without agreement, a decision will still be made before people leave.",
+              "say_this_if_helpful": "We are here to land a specific on-call split for next quarter — not to revisit whether to do it, but how to divide it. Last quarter this did not get resolved, so today we are going to close it. If we cannot fully agree, we will still name a decision before we break up."
+            },
+            {
+              "title": "Clarify who decides if the group does not agree",
+              "minutes": 3,
+              "purpose": "Remove the ambiguity that tends to make hard discussions circular — if people know who holds the final call, the conversation has somewhere to land.",
+              "how_to_run_it": "Ask directly: if Sam, Priya, and Dana cannot reach agreement, who makes the final call? Get that named aloud now, not at the end when time is short.",
+              "say_this_if_helpful": "Before we get into the substance — if we cannot reach full agreement today, who has the final call? I want that named now so we are not figuring it out under pressure at minute 44."
+            },
+            {
+              "title": "Lay out the constraints from each team",
+              "minutes": 10,
+              "purpose": "Get the actual operating limits on the table before anyone proposes a split, so proposals are grounded in what is workable.",
+              "how_to_run_it": "Invite Sam and Priya to each state their team's constraints in two minutes or less — capacity, coverage gaps, anything that makes certain splits unworkable. Then give Dana the same floor for the platform side. Hold proposals until this block is done.",
+              "say_this_if_helpful": "Before we get to proposals, I want to hear constraints first. Sam, what makes certain splits unworkable for your team? Two minutes or so — then Priya, then Dana."
+            },
+            {
+              "title": "Propose and pressure-test options",
+              "minutes": 18,
+              "purpose": "Generate and narrow the real options, not an open-ended debate.",
+              "how_to_run_it": "Ask for proposals that take the stated constraints into account. Write each option visibly — on a whiteboard or paper everyone can see. For each one, ask what breaks and what works, not whether people like it. Aim to narrow to one or two live options within the block.",
+              "say_this_if_helpful": "What split could actually work given what we just heard? Put a proposal on the table and we will stress-test it — what breaks, what holds."
+            },
+            {
+              "title": "Reach the decision",
+              "minutes": 7,
+              "purpose": "Turn the narrowed option into a commitment, or if needed, invoke the decision-maker.",
+              "how_to_run_it": "Name the leading option. Ask whether anyone sees a critical problem not yet raised. If the group can commit, name the decision and the split. If one or two people cannot agree but everyone else can, invite those people to disagree and commit — flag that they can note their objection without blocking the outcome. If agreement is genuinely impossible, the person named earlier makes the call now.",
+              "say_this_if_helpful": "It sounds like the leading option is [the split]. Can everyone commit to that, even if it is not their first choice? If you have a serious objection we have not addressed, now is the time. Otherwise we are naming this as the decision."
+            },
+            {
+              "title": "Name next steps before leaving the room",
+              "minutes": 2,
+              "purpose": "Prevent the decision from dissolving between the meeting and implementation.",
+              "how_to_run_it": "State the agreed split, who owns communicating it, and any immediate follow-up needed. Do not move to new topics.",
+              "say_this_if_helpful": "Here is what we agreed: [the split]. Who is communicating this, and to whom, before end of day? Anything else that needs to happen this week for this to hold?"
+            }
+          ],
+          "scheduled_minutes": 45,
+          "unscheduled_minutes": 0
+        },
+        "watch_for": [
           {
-            "scenario": "Eine Person dominiert die Diskussion",
-            "prevention": "In den Spielregeln zu Beginn klar benennen: Jede Person hat in der ersten Runde genau 90 Sekunden – erst danach gibt es eine zweite Runde",
-            "response": "Danke für deinen Beitrag – ich möchte sicherstellen, dass wir heute alle acht Stimmen hören, bevor wir weiter vertiefen. Wer hat noch eine Perspektive, die wir noch nicht gehört haben?"
+            "situation": "One voice consistently fills the space before others have a chance to respond",
+            "prevent_it": "In the constraints block, structure turns explicitly — name Sam, then Priya, then Dana — so the pattern does not set in early.",
+            "if_it_happens": "Cut in cleanly at a breath and redirect to someone who has not spoken.",
+            "say_this": "I want to hear some other takes before we stay with this one. Priya, what is your read?"
           },
           {
-            "scenario": "Gespräch geht vom Thema ab",
-            "prevention": "Zu Beginn jedes Tagesordnungspunkts das Ziel des Abschnitts sichtbar im geteilten Bildschirm anzeigen",
-            "response": "Das ist ein wertvoller Punkt – ich notiere ihn jetzt im Parking Lot, damit er nicht verloren geht, und wir kehren zum aktuellen Fokus zurück."
+            "situation": "The conversation drifts into last quarter's dispute rather than the decision in front of the group",
+            "prevent_it": "Open by naming that this is about the split for next quarter, not a post-mortem.",
+            "if_it_happens": "Name the drift and redirect without relitigating it.",
+            "say_this": "That history is real, but relitigating it will not get us to a split today. Let us focus on what works for next quarter."
           },
           {
-            "scenario": "Personen unterbrechen oder reden gleichzeitig",
-            "prevention": "Klare Regel zu Beginn: Sprechen nur nach Aufruf durch die Moderation oder nach Aktivierung des Hand-Heben-Features",
-            "response": "Ich bitte kurz ums Innehalten – wir hören jetzt [Name] zu Ende, dann gebe ich das Wort weiter. Danke für eure Geduld."
+            "situation": "People talk over each other and threads get lost",
+            "prevent_it": "Keep one option or question visible at a time — write it where everyone can see it so there is a shared reference point.",
+            "if_it_happens": "Stop the conversation briefly and restate the specific question on the table.",
+            "say_this": "Let me pause us — we have multiple threads going. The question in front of us right now is [restate it]. Who wants to go first on that?"
           },
           {
-            "scenario": "Ruhige Personen kommen nicht zu Wort",
-            "prevention": "Feste Redereihung in strukturierten Runden verwenden, sodass alle reihum gehört werden – keine freie Wortmeldung als einzige Option",
-            "response": "Ich würde die Runde gerne noch mit [Name] abrunden – keine Pflicht, aber deine Perspektive interessiert uns."
+            "situation": "The clock runs short before a decision is reached",
+            "prevent_it": "Keep the options-and-proposals block to its 18 minutes; name the time when you enter the decision block.",
+            "if_it_happens": "Skip further deliberation and go straight to the decision or invoke the named decision-maker.",
+            "say_this": "We have five minutes. We are not going to resolve every concern, so we need to call it. The leading option is [the split] — who cannot commit to that?"
           },
           {
-            "scenario": "Meeting läuft aus dem Zeitplan",
-            "prevention": "Timekeeper gibt sichtbare Signale im Chat; jeder Tagesordnungspunkt hat eine harte Stopp-Zeit, die die Moderation einhält",
-            "response": "Wir sind an der Zeitgrenze für diesen Punkt – ich schließe ihn jetzt ab, damit wir die Entscheidung noch im Meeting treffen können. Offene Punkte kommen in den Parking Lot."
+            "situation": "Some participants have not contributed anything by the time options are on the table",
+            "prevent_it": "Structure the constraints block so each team lead has a named turn; Dana is also explicitly given a floor.",
+            "if_it_happens": "Offer a direct but low-pressure invitation.",
+            "say_this": "We have not heard from everyone yet. Is there a constraint or problem with this option we have not raised?"
+          },
+          {
+            "situation": "The group talks in circles and cannot land on a decision",
+            "prevent_it": "Clarify the decision-maker in the opening block so you have somewhere to go if consensus fails.",
+            "if_it_happens": "Name that the conversation has covered the ground and invoke the agreed process.",
+            "say_this": "We have heard the considerations. We are not going to resolve every concern by talking longer. [Name], this is yours to call."
+          },
+          {
+            "situation": "The meeting ends with no clear next steps attached to the decision",
+            "prevent_it": "Hold the last two minutes of the agenda for next steps only — do not let it get absorbed into the decision discussion.",
+            "if_it_happens": "Stop new discussion and state the closing questions directly.",
+            "say_this": "Before we break up — who is communicating this decision, and what needs to happen this week for the split to actually hold?"
           }
         ],
-        "meeting_artifacts": {
-          "action_items_template": "ACTION ITEMS – Q3-ROADMAP-ENTSCHEIDUNG – [DATUM]\n==============================================\n\n| # | Aufgabe | Verantwortlich | Fällig am | Status | Anmerkungen |\n|---|---------|----------------|-----------|--------|-------------|\n| 1 | [Beschreibung] | [Name] | [TT.MM.JJJJ] | Offen | |\n| 2 | | | | | |\n\nNächste Überprüfung: [Datum]",
-          "meeting_minutes_template": "PROTOKOLL\nMeeting: Q3-Roadmap-Entscheidung\nDatum: [TT.MM.JJJJ]\nUhrzeit: [HH:MM] – [HH:MM] Uhr\nTeilnehmende: [Namen]\nModeration: [Name]\nProtokoll: [Name]\n\nTAGESORDNUNGSPUNKTE:\n1. [Thema] – [Zusammenfassung]\n   - Wichtigste Punkte\n   - Getroffene Entscheidungen\n\n2. [Thema] – [Zusammenfassung]\n\nGETROFFENE ENTSCHEIDUNGEN:\n- [Entscheidung 1]: [Kontext und Ergebnis]\n- [Entscheidung 2]: [Kontext und Ergebnis]\n\nACTION ITEMS: (siehe Action-Items-Liste)\n\nPARKING LOT:\n- [Punkt 1] – Follow-up durch [Name]\n- [Punkt 2] – Thema im nächsten Meeting [Datum]\n\nNÄCHSTE SCHRITTE:\n- [Schritt 1]\n- [Schritt 2]",
-          "follow_up_email": "Betreff: Q3-Roadmap-Entscheidung – Zusammenfassung und nächste Schritte\n\nHallo zusammen,\n\nvielen Dank für eure engagierte Teilnahme heute. Hier die wichtigsten Ergebnisse im Überblick:\n\nGETROFFENE ENTSCHEIDUNGEN:\n- Feature [A] und Feature [B] kommen in die Q3-Roadmap.\n- Verantwortlich für Feature [A]: [Name], für Feature [B]: [Name].\n\nACTION ITEMS:\n- [Name]: [Aufgabe] bis [TT.MM.JJJJ]\n- [Name]: [Aufgabe] bis [TT.MM.JJJJ]\n\nPARKING LOT (für spätere Klärung):\n- [Punkt 1]\n- [Punkt 2]\n\nNÄCHSTES MEETING: [Datum und Uhrzeit, falls geplant]\n\nDas vollständige Protokoll ist hier verfügbar: [Link]\n\nBei Fragen meldet euch gerne direkt bei mir.\n\nViele Grüße,\n[Name der Moderation]",
-          "decision_log": "ENTSCHEIDUNGSPROTOKOLL\nDatum: [TT.MM.JJJJ]\nEntscheidung: [Was wurde entschieden]\nFramework: Disagree and Commit\nTeilnehmende: [Namen aller Beteiligten]\nBegründung: [Warum diese Entscheidung getroffen wurde]\nDissens: [Wer hat widersprochen und warum – kurz]\nNächste Überprüfung: [Datum, zu dem die Entscheidung ggf. neu bewertet wird]"
+        "decision_plan": {
+          "needed": true,
+          "approach": "Narrow to one workable option through constraint-grounded proposals, then ask for commitment. Frame it as: if you have a serious unresolved objection, name it now; otherwise you are committing even if this is not your preferred split. If one or two people resist but the group is otherwise aligned, invite them to disagree and commit — their objection is noted, the decision still stands. If genuine deadlock remains, the person named at the start of the meeting makes the final call before everyone leaves the room.",
+          "what_needs_clarifying": "Who holds the final decision if Sam, Priya, and Dana cannot agree — this is not established and needs to be named at the start of the meeting, not after the discussion fails."
         },
-        "success_metrics": "Das Meeting gilt als erfolgreich, wenn: (1) zwei Features für Q3 verbindlich ausgewählt wurden, (2) alle acht Teilnehmenden mindestens einmal aktiv beigetragen haben, (3) die 120-Minuten-Grenze eingehalten wurde, (4) jede Aufgabe eine verantwortliche Person und ein Fälligkeitsdatum hat, (5) niemand das Gefühl hatte, übergangen oder dominiert worden zu sein, und (6) alle Parking-Lot-Punkte dokumentiert sind."
+        "before_the_meeting": [
+          "Ask Sam, Priya, and Dana to come with their team's constraints written down — not a proposal, just what makes certain splits unworkable.",
+          "Confirm privately who has the final call if the group cannot agree, so you are not surfacing that question cold in the room.",
+          "Have a whiteboard or large paper available so options can be written visibly during the proposals block."
+        ],
+        "finish_strong": {
+          "before_people_leave": [
+            "The specific on-call split for next quarter is stated aloud and agreed or called.",
+            "Any dissenting views are acknowledged without reopening the decision.",
+            "One person is named to communicate the decision and to whom.",
+            "Any immediate follow-up actions are named with an owner."
+          ],
+          "closing_script": "Here is where we landed: [restate the split]. That is the decision for next quarter. [Name] is communicating it to [whoever needs to know]. Thank you for staying in it — this one needed to get closed."
+        }
+      }
+    },
+    {
+      "name": "plan-bare-minimum",
+      "endpoint": "/api/meeting-hijack-stopper",
+      "guards": "Only a goal and a duration. Nothing else was supplied, so nothing may be invented: no headcount, no platform features, no roles, no lead times ('send it 24 hours in advance'), no named participants. No challenges selected, so watch_for is capped at 2 and may legitimately be short. This is the case that catches a model filling silence.",
+      "input": {
+        "meetingGoal": "Work out why the last release slipped and what we change before the next one.",
+        "duration": 30,
+        "participantCount": null,
+        "participantNotes": null,
+        "format": null,
+        "platform": null,
+        "meetingType": null,
+        "challenges": {},
+        "challengeOther": null,
+        "decisionFramework": "Not sure",
+        "extraContext": null
+      },
+      "optionalSections": [
+        "before_the_meeting",
+        "watch_for"
+      ],
+      "output": {
+        "meeting_plan": {
+          "goal": "Work out why the last release slipped and what we change before the next one.",
+          "end_state": "The group has agreed on the specific causes of the slip and named the concrete changes to make before the next release, with owners and any open questions recorded.",
+          "total_minutes": 30,
+          "agenda": [
+            {
+              "title": "Set the frame",
+              "minutes": 3,
+              "purpose": "Make sure everyone is working the same problem so the conversation stays focused.",
+              "how_to_run_it": "State the two questions driving the meeting — why did the release slip, and what changes before the next one. Say what you want to leave with: causes and agreed changes, not a full post-mortem document.",
+              "say_this_if_helpful": "We have 30 minutes. I want us to leave with a shared read on what caused the slip and a short list of concrete changes we are actually going to make before the next release. Let's stay on those two questions."
+            },
+            {
+              "title": "What happened — build a shared picture",
+              "minutes": 9,
+              "purpose": "Get the facts on the table before anyone jumps to fixes, so the group is diagnosing the same event.",
+              "how_to_run_it": "Ask what went wrong and when. Take brief notes on the key points — timeline moments, gaps, surprises. Do not let the group jump to solutions yet; if someone does, note it and bring them back.",
+              "say_this_if_helpful": "Before we talk about what to change, let's make sure we have the same picture of what actually happened. What went wrong, and when did it become visible?"
+            },
+            {
+              "title": "Root causes — what drove the slip",
+              "minutes": 9,
+              "purpose": "Move from symptoms to the causes worth acting on.",
+              "how_to_run_it": "Ask what was underneath the problems named in the previous block. Push one level deeper on anything that sounds like a symptom. Capture the causes the group agrees are real drivers, not just contributing noise.",
+              "say_this_if_helpful": "What was actually behind that? If we had caught it earlier, what would we have needed to see?"
+            },
+            {
+              "title": "What changes — agree on concrete actions",
+              "minutes": 9,
+              "purpose": "Turn the diagnosis into specific, ownable changes before the next release.",
+              "how_to_run_it": "For each root cause, ask what would concretely be different next time and who will own it. Keep the list short — a few changes you will actually make beats a long list no one owns. Record each item as a change, an owner, and any dependency.",
+              "say_this_if_helpful": "For each cause we named, what specifically changes before the next release — and who owns that change?"
+            }
+          ],
+          "scheduled_minutes": 30,
+          "unscheduled_minutes": 0
+        },
+        "watch_for": [
+          {
+            "situation": "The conversation stays on what happened and does not move to causes or changes, consuming the time available.",
+            "prevent_it": "Name the two-question structure at the start and signal the transition explicitly when you move between blocks.",
+            "if_it_happens": "Call the transition out loud and redirect to the next question.",
+            "say_this": "We have a good picture of what happened. Let's use the time we have left to get to causes and changes — that is what we need to leave with."
+          },
+          {
+            "situation": "The group surfaces more potential changes than can realistically be owned or tracked.",
+            "prevent_it": "When asking for changes, prompt for the two or three that matter most rather than inviting an open list.",
+            "if_it_happens": "Ask the group to name which changes would have the most impact on the next release.",
+            "say_this": "We have several options. Which two or three would actually change the outcome if we committed to them before the next release?"
+          }
+        ],
+        "decision_plan": {
+          "needed": true,
+          "approach": "Work toward agreement on the change list through open discussion. Where the group converges, record it as agreed. Where it does not, name the open question explicitly rather than forcing a close. Each agreed change needs an owner — do not leave the list as collective intent.",
+          "what_needs_clarifying": "Who has the authority to decide if the group disagrees on a change — this is not established and should be named before or at the start of the meeting so a stalemate has a way forward."
+        },
+        "before_the_meeting": [
+          "Know the basic facts of the slip yourself — what was late, by how much, and what was affected — so you can anchor the opening if the group does not have a shared starting point.",
+          "Decide how you will capture the output in the room: a shared doc, a whiteboard, notes you will send after — have that ready before you start.",
+          "If it is not clear who has final authority when the group disagrees, resolve that before the meeting or plan to name it explicitly at the start."
+        ],
+        "finish_strong": {
+          "before_people_leave": [
+            "Read back the agreed root causes so the group confirms them.",
+            "Read back each agreed change with its owner.",
+            "Name any open questions or unresolved causes that need follow-up.",
+            "Confirm how and when the output will be shared."
+          ],
+          "closing_script": "Here is what we agreed: the slip came down to these causes, and we are making these specific changes before the next release, each with an owner. I will send this out so it is on record. If anything looks wrong, flag it before it gets treated as settled."
+        }
+      }
+    },
+    {
+      "name": "follow-up-full-capture",
+      "endpoint": "/api/meeting-hijack-stopper/follow-up",
+      "guards": "Every section captured, and one next step deliberately has no owner and no date. That step must come back with empty strings rather than a guessed owner or an invented deadline, and the message must not thank anyone for contributions it cannot see or announce a next meeting nobody mentioned.",
+      "input": {
+        "meetingGoal": "Agree how we split on-call between the two teams for next quarter.",
+        "decided": "Platform team takes weekday on-call, product team takes weekends, reviewed after six weeks.",
+        "nextSteps": [
+          {
+            "task": "Update the rota in PagerDuty",
+            "owner": "Dana",
+            "when": "Friday"
+          },
+          {
+            "task": "Write up the six-week review criteria",
+            "owner": "",
+            "when": ""
+          }
+        ],
+        "stillOpen": "Who covers public holidays.",
+        "forNextTime": "We needed the incident numbers in front of us."
+      },
+      "optionalSections": [],
+      "output": {
+        "what_we_decided": [
+          "Platform team takes weekday on-call; product team takes weekends.",
+          "The arrangement will be reviewed after six weeks."
+        ],
+        "what_happens_next": [
+          {
+            "task": "Update the rota in PagerDuty",
+            "owner": "Dana",
+            "when": "Friday"
+          },
+          {
+            "task": "Write up the six-week review criteria",
+            "owner": "",
+            "when": ""
+          }
+        ],
+        "still_open": [
+          "Who covers public holidays."
+        ],
+        "message": "Here is where we landed on on-call for next quarter. The platform team takes weekday on-call and the product team takes weekends, with a review after six weeks. Dana will update the rota in PagerDuty by Friday. The six-week review criteria still need to be written up — no owner or date was agreed. We also did not resolve who covers public holidays, so that needs a decision before the rota goes live."
+      }
+    },
+    {
+      "name": "follow-up-only-one-section",
+      "endpoint": "/api/meeting-hijack-stopper/follow-up",
+      "guards": "Nothing was decided and no next steps were captured — only an open question. what_we_decided and what_happens_next MUST come back as empty arrays. A placeholder, a bracket or a guessed decision here is the exact failure the old tool shipped, which pre-generated a decision log before the meeting had happened.",
+      "input": {
+        "meetingGoal": "Decide the Q4 priorities.",
+        "decided": "",
+        "nextSteps": [],
+        "stillOpen": "We could not agree on whether the migration comes before or after the audit.",
+        "forNextTime": ""
+      },
+      "optionalSections": [
+        "what_we_decided",
+        "what_happens_next",
+        "still_open"
+      ],
+      "output": {
+        "what_we_decided": [],
+        "what_happens_next": [],
+        "still_open": [
+          "Whether the migration comes before or after the audit"
+        ],
+        "message": "We met to decide Q4 priorities. We were not able to reach agreement on the sequencing question: whether the migration should come before or after the audit. That question remains open and will need to be resolved before Q4 planning can be finalized."
       }
     }
   ]
