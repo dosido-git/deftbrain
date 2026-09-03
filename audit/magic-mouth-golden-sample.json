@@ -4,130 +4,104 @@
     "generated": "2026-07-13",
     "model": "claude-sonnet-4-6 (MODELS.SMART), 3 endpoints",
     "baseline_commit": "magicmouth-v1",
-    "how_to_regression_diff": "Re-run each case (npm run check:golden magic-mouth) and diff for QUALITY not exact match: HTTP 200, expected top-level fields present, no truncation. GUARDS: (1) German what_to_say/script/magic_sentences quoted phrases used to emit UNESCAPED double-quotes -> invalid JSON -> 500 every German call; fixed with a 'never place a double-quote inside a string value' rule in ALL 3 prompts (the main+nuclear DE cases guard it). (2) nuclear situation_assessment.leverage_level must be a CLEAN enum (high|medium|low|very_low) — the frontend switches on it for badge color + .toUpperCase(); (3) winnable is emitted under situation_assessment (frontend was reading honest_assessment.winnable -> badge always dead; repointed); (4) nuclear escalation_ladder<=4 + magic_sentences<=3 + max_tokens 5500 (was uncapped at 4000); (5) main guard keys !the_script (was phantom !scripts). DO NOT silently reverse: (1) all 3 endpoints sonnet-4-6 via callClaudeWithRetry; (2) the no-inner-double-quote rule in every prompt; (3) leverage_level clean enum; (4) frontend reads situation_assessment.winnable; (5) nuclear caps + max_tokens 5500; (6) main guard !situation_read && !the_script; (7) NO annotation suffixes on titles/names."
+    "how_to_regression_diff": "Re-run each case (npm run check:golden magic-mouth) and diff for QUALITY not exact match: HTTP 200, expected top-level fields present, no truncation. GUARDS: (1) German what_to_say/script/magic_sentences quoted phrases used to emit UNESCAPED double-quotes -> invalid JSON -> 500 every German call; fixed with a 'never place a double-quote inside a string value' rule in ALL 3 prompts (the main+nuclear DE cases guard it). (2) nuclear situation_assessment.leverage_level must be a CLEAN enum (high|medium|low|very_low) — the frontend switches on it for badge color + .toUpperCase(); (3) winnable is emitted under situation_assessment (frontend was reading honest_assessment.winnable -> badge always dead; repointed); (4) nuclear escalation_ladder<=4 + magic_sentences<=3 + max_tokens 5500 (was uncapped at 4000); (5) main guard keys !the_script (was phantom !scripts). DO NOT silently reverse: (1) all 3 endpoints sonnet-4-6 via callClaudeWithRetry; (2) the no-inner-double-quote rule in every prompt; (3) leverage_level clean enum; (4) frontend reads situation_assessment.winnable; (5) nuclear caps + max_tokens 5500; (6) main guard !situation_read && !the_script; (7) NO annotation suffixes on titles/names.",
+    "captured": "2026-09-02",
+    "baseline": "magicmouth-v2",
+    "note": "Re-recorded 2026-09-02 for the core-system-prompt rewrite. The old shape is gone: situation_read, delivery_notes.body_language, best_angle.who_to_ask/when_to_ask, and the phone-tree and nuclear schemas that asked outright for menu cheat codes, magic phrases, an executive email formula and a named regulator with a filing URL. The German ask case keeps the guard the old one had — JSON validity and the difficulty enum staying English while the prose translates, since the frontend switches on it."
   },
   "cases": [
     {
-      "name": "main-de-json-and-guard",
+      "name": "ask-de-defect-not-late-return",
       "endpoint": "/api/magic-mouth",
       "input": {
-        "whatYouWant": "Eine Rückerstattung für einen annullierten Flug",
-        "situation": "Die Airline bietet nur einen Gutschein an",
-        "whoYoureAsking": "Kundenservice",
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "DE"
+        "whatYouWant": "Eine Rückerstattung für eine Jacke, die ich vor 45 Tagen gekauft habe. Die Rückgabefrist beträgt 30 Tage, aber der Reißverschluss ist nach zwei Wochen kaputtgegangen.",
+        "situation": "Ich habe den Kassenbon und die Jacke. Ich kaufe dort seit Jahren ein.",
+        "whoYoureAsking": "Wer auch immer am Servicetresen steht",
+        "triedAlready": "Noch nichts",
+        "userLanguage": "de"
       },
       "output": {
-        "situation_read": "Die rechtliche Lage ist hier eindeutig auf Seite des Reisenden: Bei annullierten Flügen von und nach EU-Destinationen greift die EU-Fluggastrechteverordnung (EG) Nr. 261/2004, die eine Rückerstattung in bar vorschreibt — ein Gutschein ist kein gesetzlich ausreichender Ersatz, außer der Passagier stimmt ausdrücklich zu. Die Airline weiß das, setzt aber darauf, dass Reisende es nicht wissen oder zu schnell aufgeben. Der einzige Gegenwind: Manche Agenten sind darauf trainiert, auf Zeit zu spielen.",
-        "difficulty": "moderate",
+        "your_ask": "Du möchtest eine Rückerstattung für eine Jacke, die du vor 45 Tagen gekauft hast – außerhalb der 30-Tage-Frist – aber der Reißverschluss ist nach nur zwei Wochen Nutzung kaputtgegangen, und du hast Kassenbon und Jacke dabei.",
+        "the_read": {
+          "summary": "Das hier ist kein Rückgabewunsch – das ist eine Qualitätsbeschwerde. Dieser Rahmen ist viel stärker, weil er den Defekt in den Mittelpunkt stellt statt die Fristüberschreitung.",
+          "what_makes_it_hard": "Die 30-Tage-Frist ist abgelaufen, und der Servicetresen wird das zuerst sehen.",
+          "where_you_have_room": "Der Reißverschluss ist nach zwei Wochen kaputtgegangen – das ist ein Produktfehler, kein Rückgabewunsch, und diese Unterscheidung gibt dem Gegenüber eine andere Grundlage zum Handeln.",
+          "still_unknown": "Ob der Laden eine eigene Gewährleistungspolitik hat, die über die Rückgabefrist hinausgeht, oder ob es einen Weg zu jemandem mit mehr Handlungsspielraum gibt."
+        },
+        "difficulty": "real_ask",
         "best_angle": {
-          "name": "Der Gesetzesanker",
-          "why_this_works": "Wer seinen Anspruch auf eine konkrete EU-Verordnung stützt, zwingt den Agenten aus der Gutschein-Routine heraus. Es geht nicht mehr um Kulanz, sondern um eine rechtliche Verpflichtung — das verändert die Gesprächsdynamik sofort.",
-          "who_to_ask": "Direkt beim ersten Kontakt ruhig und bestimmt auftreten — aber sofort nach einem Teamleiter oder Supervisor fragen, wenn der erste Agent auf den Gutschein besteht. Erstlinien-Agenten haben oft eingeschränkte Befugnisse, Supervisoren können Rückerstattungen freigeben.",
-          "when_to_ask": "Werktags zwischen 10:00 und 14:00 Uhr anrufen — dann sind erfahrenere Mitarbeitende im Dienst und die Warteschlangen sind kürzer als zu Stoßzeiten. Per E-Mail oder Chat hat man außerdem einen schriftlichen Nachweis, was für eventuelle Eskalationen Gold wert ist."
+          "title": "Defekt, nicht Rückgabe",
+          "why_stronger": "Wer mit 'Ich möchte die Jacke zurückgeben' beginnt, kämpft sofort gegen die Frist. Wer mit 'Der Reißverschluss ist nach zwei Wochen kaputtgegangen' beginnt, zwingt das Gegenüber zuerst, auf einen konkreten Defekt zu reagieren – das ist ein anderes Gespräch mit anderem Spielraum."
         },
+        "who_to_ask": "Beginne am Servicetresen – wenn dort keine Lösung möglich ist, frage ruhig, ob jemand mit mehr Möglichkeiten einen Blick darauf werfen kann.",
+        "when_to_ask": "Geh zu einer ruhigen Zeit, wenn kein Andrang ist – das gibt dem Gegenüber Raum, sich mit deiner Situation zu beschäftigen.",
         "the_script": {
-          "opener": "Guten Tag, mein Name ist [Ihr Name], ich habe eine Buchungsnummer und würde gerne eine bereits entschiedene Angelegenheit klären — ich bin sicher, das lässt sich gemeinsam schnell lösen.",
-          "the_ask": "Mein Flug [Flugnummer] am [Datum] wurde von Ihrer Airline annulliert. Ich habe Anspruch auf eine vollständige Rückerstattung des Ticketpreises in Höhe von [Betrag] Euro direkt auf mein Zahlungsmittel — das ist in Artikel 8 der EU-Verordnung 261/2004 so geregelt. Ich möchte keinen Gutschein annehmen, sondern bitte um die gesetzlich vorgesehene Barrückerstattung. Wie können wir das heute direkt klären?",
-          "if_they_hesitate": "Ich verstehe, dass das intern ein Prozess ist — aber ich möchte sicherstellen, dass wir das hier lösen, bevor ich den nächsten Schritt gehen muss. Was brauchen Sie von mir, damit die Rückerstattung heute eingeleitet werden kann?",
-          "graceful_exit": "Gut, dann halte ich schriftlich fest, dass eine Rückerstattung abgelehnt wurde, obwohl ein gesetzlicher Anspruch nach EU-VO 261/2004 besteht. Ich werde mich an die Schlichtungsstelle Luftverkehr beim Luftfahrt-Bundesamt wenden. Danke für Ihre Zeit."
+          "opener": "Hallo, ich hoffe Sie können mir helfen. Ich habe hier eine Jacke, die ich vor einigen Wochen gekauft habe, und der Reißverschluss ist nach gerade mal zwei Wochen kaputtgegangen.",
+          "the_ask": "Ich habe den Kassenbon dabei, und ich bin seit Jahren Kunde hier. Der Defekt ist klar erkennbar – das ist kein normaler Verschleiß, das war einfach ein Qualitätsproblem. Ich würde mich über eine Rückerstattung oder zumindest eine unkomplizierte Lösung sehr freuen. Gibt es eine Möglichkeit, das für mich zu prüfen?",
+          "if_they_hesitate": "Ich verstehe, dass die Rückgabefrist ein Thema ist – aber der Reißverschluss war schon nach zwei Wochen hin, das hat nichts mit der Zeit zu tun. Wenn eine vollständige Rückerstattung schwierig ist, wäre vielleicht auch eine andere Lösung möglich – zum Beispiel ein Gutschein oder ein Umtausch? Was wäre aus Ihrer Sicht denkbar?",
+          "graceful_exit": "Ich schätze, dass Sie sich die Zeit genommen haben, das zu prüfen. Kann ich fragen, ob es einen anderen Weg gibt – vielleicht jemanden, den ich kontaktieren könnte? Ich würde das gerne lösen, ohne großen Aufwand für Sie."
         },
-        "delivery_notes": {
-          "tone": "Sachlich und ruhig, nicht aggressiv — klingen Sie wie jemand, der die Regeln kennt und sich sicher ist, nicht wie jemand, der sich beschwert. Keine Entschuldigungen, keine Bitten um Gefallen. Fakten, klare Sprache, kurze Sätze.",
-          "body_language": "Am Telefon: aufrecht sitzen, lächeln beim Sprechen — das überträgt sich tatsächlich auf die Stimme. Keine Füllwörter wie ähm oder eigentlich — die signalisieren Unsicherheit. Bei Chat oder E-Mail: kurze Absätze, keine Ausrufezeichen, professionelle Anrede.",
-          "dont_do_this": "Erstens: Den Gutschein niemals kommentarlos annehmen oder auch nur halbherzig zustimmen — das gilt als Einverständnis und Sie verlieren Ihren Anspruch. Zweitens: Nicht emotional werden oder mit schlechten Bewertungen drohen — das schwächt die Position sofort und lenkt vom rechtlichen Argument ab."
-        },
+        "delivery_notes": "Zeig den defekten Reißverschluss früh im Gespräch – ein sichtbarer Defekt spricht für sich und macht das Anliegen konkret, bevor die Fristfrage überhaupt aufkommt.",
+        "dont_do_this": "Fang nicht mit 'Ich weiß, die Frist ist abgelaufen, aber...' an – damit gibst du den stärksten Einwand selbst vor. Lass das Gegenüber die Frist erwähnen, wenn es das tut.",
         "backup_angle": {
-          "name": "Die Eskalationsankündigung",
-          "pivot_line": "Dann möchte ich das Gespräch gerne mit Ihrem Vorgesetzten weiterführen, und falls das keinen Erfolg hat, werde ich meinen Anspruch über die Schlichtungsstelle Luftverkehr beim Luftfahrt-Bundesamt einreichen — das ist kostenlos für mich und verbindlich für die Airline."
+          "title": "Treue als Hebel",
+          "how_it_differs": "Wenn der Defekt-Rahmen nicht greift, wechsle zu deiner langjährigen Kundenbeziehung als Grund für eine kulante Ausnahme – nicht als Forderung, sondern als freundliche Erinnerung.",
+          "pivot_line": "Ich kaufe seit Jahren hier ein und war bisher immer sehr zufrieden – ich würde mir wünschen, dass wir gemeinsam eine Lösung finden, damit das auch so bleibt."
         },
-        "pro_tip": "Die Schlichtungsstelle Luftverkehr (söp) ist ein offiziell anerkanntes Schlichtungsorgan in Deutschland — Airlines, die dort registriert sind, sind zur Teilnahme verpflichtet. Schon die glaubwürdige Ankündigung, dort eine Beschwerde einzureichen, reicht oft aus, um plötzlich doch eine Barrückerstattung zu erhalten. Noch schneller geht es manchmal über spezialisierte Portale wie Flightright oder EUclaim, die den Anspruch auf Erfolgsprovisionsbasis durchsetzen — das kostet zwar einen Teil der Rückerstattung, ist aber ohne Aufwand und Risiko für Sie."
+        "pro_tip": "Zwei Wochen ist dein stärkster Satz. Ein Reißverschluss, der nach 14 Tagen versagt, klingt nach Produktfehler – nicht nach Abnutzung. Wer das früh und ruhig benennt, macht es dem Gegenüber leichter, kulant zu sein, ohne das Gefühl zu haben, eine Ausnahme zu machen."
       }
     },
     {
-      "name": "nuclear-de-enum-sync-truncation",
-      "endpoint": "/api/magic-mouth/nuclear",
+      "name": "phone-tree-verify-not-invent",
+      "endpoint": "/api/magic-mouth/phone-tree",
       "input": {
-        "company": "Große Fluggesellschaft",
-        "problem": "Flug annulliert, 800 € Erstattung seit 3 Monaten verweigert",
-        "whatTried": "Zwei E-Mails, ein Anruf",
-        "goal": "Volle Rückerstattung",
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "DE"
+        "company": "My internet provider",
+        "issue": "Billed twice for the same month. Three calls, three transfers, no fix.",
+        "goal": "The duplicate charge refunded",
+        "userLanguage": "en"
       },
       "output": {
-        "situation_assessment": {
-          "leverage_level": "high",
-          "their_strongest_card": "EU-Verordnung 261/2004 gewährt bei Annullierung einen gesetzlich einklagbaren Erstattungsanspruch ohne Ermessensspielraum der Airline — das ist kein Kulanzfall, sondern zwingendes Recht",
-          "why_nice_failed": "Fluggesellschaften setzen auf Zermürbung: Wer nur zweimal schreibt und dann aufgibt, spart ihnen 800 Euro — das System ist darauf ausgelegt",
-          "winnable": true
+        "your_situation": "You have been billed twice for the same month by your internet provider and want the duplicate charge refunded.",
+        "where_youre_stuck": "Three calls and three transfers have produced no resolution — you are cycling through frontline agents who either cannot act or are passing the problem along without it moving forward.",
+        "the_move": {
+          "strategy": "Bypass phone support entirely and route to the billing disputes or accounts receivable function in writing — email, chat transcript, or their formal dispute submission channel.",
+          "why": "A documented written dispute creates a paper trail that frontline agents cannot ignore the way they can a call, and it may route internally to someone whose job is actually to close billing errors rather than field them."
         },
-        "escalation_ladder": [
-          {
-            "rung": 1,
-            "title": "Executive Escalation per E-Mail",
-            "action": "Recherchiere den CEO oder Head of Customer Relations auf LinkedIn, der Unternehmenswebsite oder über das Impressum, und schreibe direkt an — Führungskräfte reagieren, weil ungelöste Beschwerden auf ihrem Schreibtisch schlechte Zahlen bedeuten",
-            "the_email_formula": "Das übliche Format bei europäischen Fluggesellschaften ist vorname.nachname@airline.com — teste Varianten mit einem kostenlosen Tool wie hunter.io oder verifyemailaddress.org um die korrekte Schreibweise zu bestätigen",
-            "subject_line": "Offene Forderung 800 EUR — Flugannullierung — Az. [deine Buchungsnummer] — EU-VO 261/2004 — Fristsetzung 7 Tage",
-            "opening_paragraph": "Ich wende mich direkt an Sie, da drei Kontaktversuche in drei Monaten erfolglos blieben. Mein Erstattungsanspruch über 800 EUR aus der Annullierung von Flug [Nummer] am [Datum] ergibt sich unmittelbar aus Art. 8 der EU-Verordnung 261/2004 und ist nicht verhandelbar. Ich setze Ihnen eine letzte Frist von 7 Tagen, bevor ich alle verfügbaren rechtlichen und behördlichen Wege einleite."
-          },
-          {
-            "rung": 2,
-            "title": "Beschwerde bei der Luftfahrtbehörde",
-            "action": "Reiche sofort eine Beschwerde beim Luftfahrt-Bundesamt ein — diese Behörde ist die zuständige Durchsetzungsbehörde für EU-VO 261/2004 in Deutschland und hat Befugnis zu Bußgeldern gegen Airlines",
-            "agency_name": "Luftfahrt-Bundesamt (LBA)",
-            "where_to_file": "https://www.lba.de/DE/Verbraucher/Beschwerden/beschwerden_node.html — dort das Online-Formular Passagierrechte ausfüllen",
-            "why_it_works": "Das LBA kann Bußgelder verhängen und Airlines fürchten Einträge in der behördlichen Akte mehr als einzelne Kundenklagen, weil Muster systematischer Verstöße zu regulatorischen Maßnahmen führen können",
-            "what_to_include": "Buchungsnummer, Flugnummer, genaues Annullierungsdatum, Nachweis der Annullierung durch die Airline, alle bisherigen Kontaktversuche mit Datum und Antwort, sowie die konkrete Forderungssumme von 800 EUR"
-          },
-          {
-            "rung": 3,
-            "title": "Schlichtung und formelles Mahnverfahren",
-            "action": "Stelle einen Antrag beim söp (Schlichtungsstelle für den öffentlichen Personenverkehr) und versende parallel ein formelles Mahnschreiben mit 14-Tage-Frist — beides zusammen signalisiert ernsthafte Rechtsverfolgungsabsicht",
-            "threshold": "Das söp-Verfahren ist kostenlos für Verbraucher und deckt Ansprüche bis 5.000 EUR ab — 800 EUR liegt klar im Rahmen; alternativ ist das gerichtliche Mahnverfahren (Amtsgericht) bei Ansprüchen unter 5.000 EUR mit ca. 32 EUR Gerichtskosten möglich",
-            "demand_letter_opener": "Hiermit fordere ich Sie letztmalig und unter Fristsetzung bis zum [Datum 14 Tage ab heute] zur Zahlung von 800,00 EUR nebst Verzugszinsen in Höhe von 5 Prozentpunkten über dem Basiszinssatz seit dem [Datum der ersten Zahlungsaufforderung] auf, andernfalls werde ich ohne weitere Ankündigung gerichtliche Schritte einleiten.",
-            "the_magic_sentence": "Ich habe dieses Schreiben gleichzeitig dem Luftfahrt-Bundesamt sowie der Schlichtungsstelle söp zur Kenntnis gegeben und werde im Falle der Untätigkeit ein gerichtliches Mahnverfahren beim zuständigen Amtsgericht einleiten."
-          },
-          {
-            "rung": 4,
-            "title": "Öffentlicher Reputationsdruck",
-            "action": "Veröffentliche eine sachliche, faktenbasierte Schilderung mit Buchungsdatum, Flugdatum, Annullierung und Verweigerungsdauer — keine Emotion, nur Daten — auf mehreren Plattformen gleichzeitig",
-            "platform": "Twitter/X mit direktem Tag der offiziellen Airline-Accounts (@AirlineName), zusätzlich Trustpilot-Bewertung und der Subreddit r/Flugrecht oder r/germany für Reichweite in der deutschen Community",
-            "why_this_platform": "Fluggesellschaften haben Social-Media-Teams mit KPI-Vorgaben für Reaktionszeit — ein öffentlich sichtbarer ungelöster Rechtsanspruch schadet dem Markenimage messbar und löst interne Eskalation aus",
-            "post_formula": "Buchungsdatum + Flugnummer + Annullierungsdatum + 3 Monate keine Erstattung + Verweis auf EU-VO 261/2004 + bereits eingereichte LBA-Beschwerde — das beweist Ernsthaftigkeit und keine bloße Frustration"
-          }
-        ],
-        "magic_sentences": [
-          {
-            "sentence": "Ich habe bereits eine Beschwerde beim Luftfahrt-Bundesamt eingereicht und werde in 7 Tagen das gerichtliche Mahnverfahren einleiten.",
-            "when": "Im Executive-E-Mail und in jedem weiteren Telefonat mit dem Kundenservice sofort einsetzen",
-            "what_it_triggers": "Aktiviert die interne Rechtsabteilung, weil LBA-Beschwerden dokumentiert werden und Mahnverfahren Gerichtskosten auslösen — aus einer Kulanzfrage wird ein Haftungsrisiko"
-          },
-          {
-            "sentence": "Mein Anspruch ergibt sich aus Art. 8 Abs. 1 EU-Verordnung 261/2004 — dies ist kein Ermessensspielraum, sondern geltendes Recht.",
-            "when": "Gleich zu Beginn jeder schriftlichen Kommunikation, um zu signalisieren dass man die Rechtslage kennt",
-            "what_it_triggers": "Verschiebt das Gespräch weg von Kulanz hin zu Compliance — Mitarbeiter können Kulanz ablehnen, Recht nicht"
-          },
-          {
-            "sentence": "Ich behalte mir vor, anfallende Rechtsverfolgungskosten und Verzugszinsen gemäß §§ 286, 288 BGB in die Forderung einzubeziehen.",
-            "when": "Im formellen Mahnschreiben als letzten Satz vor der Unterschrift",
-            "what_it_triggers": "Signalisiert juristisches Grundwissen und erhöht die Gesamtschadenssumme für die Airline — macht frühzeitige Zahlung finanziell attraktiver als weiteres Verzögern"
-          }
-        ],
-        "the_one_to_start": {
-          "rung": "Rung 2 — LBA-Beschwerde, parallel zur Executive-E-Mail aus Rung 1",
-          "why": "Nach drei Monaten und drei erfolglosen Kontaktversuchen ist Höflichkeit erschöpft — die LBA-Beschwerde kostet nichts, erzeugt aber sofort behördlichen Druck und gibt jedem weiteren Brief echtes Gewicht",
-          "first_action_today": "Fülle heute das LBA-Online-Beschwerdeformular unter lba.de aus, fotografiere alle Belege (Buchungsbestätigung, Annullierungsnachweis, E-Mail-Verläufe), und sende gleichzeitig die Executive-E-Mail mit Verweis auf die eingereichte LBA-Beschwerde"
+        "what_to_say": "Hi — I have a duplicate charge for the same billing period and I have called three times without resolution. I am not calling to be transferred again. I need to know: who in your billing disputes team handles charge corrections, and how do I reach them directly — by email, by chat, or by a direct submission form? I would like to put this in writing so there is a record.",
+        "if_they_bounce_you": "Before you transfer me, can you tell me the name of the department you are sending me to and confirm they have the authority to issue a refund? If you are not certain they can close this, I would rather you escalate a note internally than have me repeat this story a fourth time to someone who also cannot help.",
+        "the_magic_mouth_move": "Frame the duplicate charge as a billing error you are reporting on their behalf, not just a complaint — say something like: I want to make sure this is flagged as a system or processing error, not just a one-off. That framing shifts it from a customer grievance into something that may need internal correction, which can get it in front of someone with more ownership over billing integrity.",
+        "what_to_verify": [
+          "The name or label of their formal billing dispute channel — web form, email address, or chat option",
+          "Whether your provider has a state public utilities commission or consumer protection office that accepts billing complaints, in case internal routes stay blocked"
+        ]
+      }
+    },
+    {
+      "name": "nuclear-no-named-regulator",
+      "endpoint": "/api/magic-mouth/nuclear",
+      "input": {
+        "company": "An airline",
+        "problem": "They cancelled my flight, promised a refund in writing by email eight weeks ago, and it has not arrived.",
+        "whatTried": "Two phone calls and one web form. I have the email promising the refund.",
+        "goal": "The refund paid",
+        "userLanguage": "en"
+      },
+      "output": {
+        "your_situation": "The airline cancelled your flight, confirmed a refund in writing eight weeks ago, and has not paid it despite two phone calls and a web form submission.",
+        "the_line_youve_reached": "Three contacts across two channels have produced nothing, and the refund window they implicitly set by promising repayment has long passed without action or explanation.",
+        "strongest_lever": {
+          "lever": "A written refund promise from the airline, now eight weeks old and unmet — you are not asking them to agree you are owed money, they have already agreed in writing.",
+          "why_it_holds": "There is no disputed claim here, only an unfulfilled commitment in their own words, which removes the usual out of contesting whether the refund was warranted."
         },
-        "honest_assessment": {
-          "time_investment": "Bei konsequenter Ausführung aller Schritte sollte innerhalb von 4 bis 8 Wochen eine Reaktion oder Zahlung erfolgen — das LBA-Verfahren allein kann 3 Monate dauern, aber der kombinierte Druck beschleunigt die Airline-interne Reaktion erheblich",
-          "most_likely_outcome": "Volle Erstattung der 800 EUR, häufig nachdem Rung 1 oder 2 greift — Airlines zahlen lieber als eine LBA-Akte oder ein Mahnbescheid-Eintrag",
-          "when_to_walk_away": "Wenn das söp-Verfahren scheitert und das Amtsgericht-Mahnverfahren angefochten wird, steige auf eine spezialisierte Fluggastrechte-Plattform wie Flightright oder EUclaim um, die auf Erfolgsbasis arbeiten — dann kein eigenes Prozesskostenrisiko"
-        }
+        "the_nuclear_script": "Eight weeks ago your airline confirmed in writing that a refund would be issued following the cancellation of my flight. I have that email. I have since contacted you twice by phone and once via your web form, and the refund has not been received. I am not disputing whether I am owed this money — your own written communication settled that. What I need now is written confirmation of the payment date and reference number within five business days. If I do not receive that, I will be pursuing every formal complaint and external resolution channel available to me, and I will document this entire sequence — including the written promise and the three unanswered contacts — as part of that record. I would prefer to resolve this with you directly, and I am asking clearly for the opportunity to do that.",
+        "next_escalation": "You should look into the consumer complaint authority, aviation regulator, or financial dispute resolution body that covers airline refunds in your jurisdiction — some have formal powers over airline payment obligations. If you paid by credit or debit card, verify whether a chargeback or card dispute process is available to you through your card provider.",
+        "what_not_to_say": [
+          "Any claim that you have consulted a lawyer or are prepared to sue, unless you actually have done so.",
+          "Threats to post publicly on social media as leverage — it reads as pressure rather than principle and dilutes the strength of your documented paper trail.",
+          "References to consumer law by name or statute unless you have verified those provisions apply to your specific situation and jurisdiction.",
+          "Any suggestion that their failure was deliberate or in bad faith — the written record does the work without the accusation."
+        ],
+        "exit_condition": "If a formal written escalation citing the documented promise and three prior contacts also goes unacknowledged or unresolved, you are past the point where further persuasion adds value — the choice at that stage is between a concrete external channel such as a regulator, ombudsman, or card dispute, and deciding the sum is not worth the effort of pursuing it."
       }
     }
   ]

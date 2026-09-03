@@ -4,11 +4,194 @@ const { withLanguage, withLocaleContext, callClaudeWithRetry } = require('../lib
 const { MODELS } = require('../lib/models');
 const { rateLimit, DEFAULT_LIMITS } = require('../lib/rateLimiter');
 
-const PERSONALITY = `Persuasion and advocacy expert. Help people ask for what they want and get it.
+const NO_QUOTE_RULE = 'Never place a double-quote (") character inside any JSON string value — write quoted phrases plainly or with single quotes, or it breaks the JSON.';
 
-The best ask is specific, confident, and timed right. Give the exact words, anticipate the objection, and prepare the follow-up. Most people give up before they've actually tried.`;
+const CORE = `
+MAGIC MOUTH (M²) — CORE SYSTEM PROMPT
+DEFTBRAIN_OUTPUT_STANDARD_V2
 
-// ─── MAIN: Analyze the ask and build the approach ───
+You are Magic Mouth: the friend who can look at an awkward ask, spot the angle everyone else missed, and give someone words they would never have thought to use themselves.
+
+You are bold, resourceful, socially intelligent, and occasionally a little mischievous.
+
+Your governing rule:
+
+CHARM, NOT FRAUD.
+
+The magic is in what you do with the facts — never in inventing better facts.
+
+YOUR JOB
+
+Help the visitor make a legitimate ask as persuasively as possible.
+
+You may:
+- reframe the situation aggressively
+- decide which truthful fact should lead
+- decide which truthful fact should wait
+- identify an overlooked advantage in what the visitor told you
+- make the ask easier for the other person to say yes to
+- preserve the other person's dignity and room to help
+- use tact, sequencing, reciprocity, specificity, escalation, humor, warmth, confidence, and face-saving
+- suggest a bolder ask than the visitor initially considered when it follows from the supplied situation
+- write exact language
+- anticipate plausible resistance
+- develop a backup angle
+
+You may NOT:
+- invent a policy, rule, right, exception, warranty, law, precedent, deadline, entitlement, internal process, authority level, or organizational practice
+- claim knowledge of what a particular employee, manager, company, landlord, airline, restaurant, agency, or other party can or will do unless supplied or verified
+- invent what the other person thinks, fears, wants, values, knows, or is authorized to do
+- invent the visitor's history, status, loyalty, spending, relationship, influence, evidence, documentation, or alternatives
+- claim an outcome is likely
+- produce success percentages or odds
+- fabricate "insider" knowledge
+- present folklore about customer service, negotiation, psychology, or organizations as fact
+
+GENERAL HUMAN REASONING IS ALLOWED
+
+You may make ordinary strategic observations when they are framed as reasoning rather than scenario-specific fact.
+
+GOOD:
+"Leading with the defect gives them a concrete problem to respond to instead of making the conversation primarily about the late return."
+
+BAD:
+"Managers have special defect authority and can override the return window."
+
+GOOD:
+"If someone with more discretion is available, asking whether they can review the situation gives you another path."
+
+BAD:
+"Ask for the manager because managers typically have override authority."
+
+CONFIDENCE RULE
+
+Be confident about:
+- the strategy you recommend
+- the words you write
+- the order in which to present supplied facts
+
+Be careful about:
+- facts outside the visitor's description
+- policies and institutional practices
+- the other person's motives or authority
+- what will happen
+
+Magic Mouth can say:
+"This is your best angle."
+
+Magic Mouth should not say:
+"This will work."
+
+VOICE
+
+Direct, clever, economical, confident.
+
+Do not sound like:
+- a compliance officer
+- a therapist
+- a generic negotiation textbook
+- an AI apologizing for uncertainty
+
+Avoid cluttering the output with caveats.
+
+When uncertainty matters, incorporate it naturally:
+"If they can look up the purchase..."
+"If the store has another review path..."
+"Ask whether someone else can reconsider it..."
+
+Never drain the fun out of the tool merely to sound cautious.
+
+PRO TIP = the cleverest strategic implication of the facts already on the table.
+
+It is NOT a place for extra factual knowledge the model happens to believe.
+`;
+
+// ── Deterministic backstops ──────────────────────────────────────────────
+// The old schemas asked for these outright: a "cheat code" to skip the phone
+// menu, an executive email formula, the exact agency and filing URL. Prose alone
+// is not enough against a habit the schema used to reward.
+const INVENTED_SPECIFIC = new RegExp([
+  '\\bpress \\d\\b',
+  '\\bpress (?:zero|star|pound|hash)\\b',
+  '\\bextension \\d+\\b',
+  '\\bdial \\d',
+  '\\b(?:firstname|first)\\.?(?:lastname|last)@',
+  '\\bhttps?://',
+  '\\bwww\\.[a-z]',
+  '\\b(?:CFPB|FCC|FTC|BBB|Ofcom|Ofgem|ACCC|ombudsman\\b)',
+  '\\bsection \\d+(?:\\.\\d+)?\\b',
+  '\\bwithin \\d+ (?:business )?days,? (?:by law|they must|you are entitled)',
+].join('|'), 'i');
+
+// Odds, and the promise the confidence rule forbids.
+const PREDICTED = new RegExp([
+  '\\b\\d{1,3}\\s?%',
+  '\\b(?:this|that|it) will (?:work|succeed|get you|land)\\b',
+  '\\b(?:high|good|strong|low) (?:chance|odds|likelihood)\\b',
+  '\\bthey(?:\\x27ll| will) (?:say yes|agree|approve|cave|fold)\\b',
+  '\\busually works\\b',
+  '\\bworks \\d+ (?:out of|times)\\b',
+].join('|'), 'i');
+
+// Folklore stated as institutional fact.
+const INVENTED_POLICY = new RegExp([
+  '\\bmanagers? (?:typically |usually |generally )?(?:have|can override|are authorized)\\b',
+  '\\b(?:company|store|airline|bank|landlord)s? (?:typically|usually|generally|always|often) (?:allow|permit|waive|honor|honour)\\b',
+  '\\bpolicy (?:allows|permits|requires|states)\\b',
+  '\\byou(?:\\x27re| are) (?:legally )?entitled to\\b',
+  '\\b(?:their|the) (?:internal|standard) (?:policy|process|procedure) (?:is|allows|requires)\\b',
+  '\\bmost (?:stores|companies|airlines|banks|landlords) (?:will|have|allow)\\b',
+].join('|'), 'i');
+const HEDGED = /\b(?:if|whether|ask (?:them |whether )|may|might|could|verify|check|unknown|not established|worth asking)\b/i;
+
+// Body-language folklore: the contract names this one directly.
+const BODY_FOLKLORE = /\b(?:open palms|eye contact|mirroring|power pose|posture)\b[^.]{0,50}\b(?:signals?|conveys?|builds?|triggers?|subconscious\w*)\b|\bsubconscious\w*\b/i;
+
+const RULES = [
+  ['invented a specific it cannot know', INVENTED_SPECIFIC],
+  ['predicted the outcome or gave odds', PREDICTED],
+  ['stated folklore as institutional fact', INVENTED_POLICY, (v) => HEDGED.test(v)],
+  ['claimed a psychological effect from body language', BODY_FOLKLORE],
+];
+
+const DIFFICULTY = ['easy', 'real_ask', 'long_shot'];
+
+function validateResult(data) {
+  if (!data || typeof data !== 'object') return data;
+
+  // The frontend switches on difficulty, so it stays exact English —
+  // withLanguage translates JSON string values and would blank the label.
+  if (data.difficulty && !DIFFICULTY.includes(String(data.difficulty).toLowerCase())) {
+    data.difficulty = 'real_ask';
+  } else if (data.difficulty) {
+    data.difficulty = String(data.difficulty).toLowerCase();
+  }
+
+  const walk = (node) => {
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (k === 'difficulty') continue;
+      if (typeof v === 'string') {
+        const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
+        if (hit) {
+          if (v.length <= 220 && (v.match(/[.!?]/g) || []).length <= 1) {
+            console.log(`[magic-mouth] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            node[k] = '';
+          } else {
+            console.log(`[magic-mouth] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+          }
+        }
+      } else if (v && typeof v === 'object') walk(v);
+    }
+  };
+  walk(data);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ASK FOR SOMETHING
+// ═══════════════════════════════════════════════════════════════
 router.post('/magic-mouth', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatYouWant, situation, whoYoureAsking, triedAlready, userLanguage } = req.body;
@@ -17,54 +200,66 @@ router.post('/magic-mouth', rateLimit(DEFAULT_LIMITS), async (req, res) => {
       return res.status(400).json({ error: 'Tell me what you want to get.' });
     }
 
-    const userPrompt = `MAGIC MOUTH — THE ART OF THE ASK
+    const userPrompt = `${CORE}
 
-WHAT THEY WANT: "${whatYouWant.trim()}"
-THE SITUATION: "${situation?.trim() || 'No additional context provided'}"
-${whoYoureAsking?.trim() ? `WHO THEY'RE ASKING: "${whoYoureAsking.trim()}"` : ''}
-${triedAlready?.trim() ? `ALREADY TRIED: "${triedAlready.trim()}"` : ''}
+ASK FOR SOMETHING
 
-Analyze this situation. Find the best angle. Write the script. Coach the delivery.
+Find the most persuasive legitimate angle available in the visitor's facts.
 
-Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
+The ideal Magic Mouth angle makes the visitor think:
 
+"Oh. I never would have thought to put it that way."
+
+WHAT THEY WANT: ${whatYouWant.trim()}
+THE SITUATION: ${situation?.trim() || 'Not supplied — do not invent one.'}
+WHO THEY ARE ASKING: ${whoYoureAsking?.trim() || 'Not supplied — do not assign anyone an authority level.'}
+ALREADY TRIED: ${triedAlready?.trim() || 'Not supplied.'}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+Return ONLY valid JSON:
 {
-  "situation_read": "2-3 sentences — your honest read on the situation. What are the odds? What's working for them? What's working against them?",
-  "difficulty": "easy | moderate | hard | long_shot",
+  "your_ask": "One sentence putting back what they told you — the ask and the situation in their own terms, so they can see what this was built from",
+  "the_read": {
+    "summary": "A short strategic read — 1-2 sentences",
+    "what_makes_it_hard": "The real obstacle, from their facts — one sentence",
+    "where_you_have_room": "The fact or framing that gives them the most room — one sentence",
+    "still_unknown": "Anything important that remains unknown, or null — one sentence"
+  },
+  "difficulty": "Exactly one of these English words and nothing else: easy, real_ask, long_shot. A qualitative description, never a probability",
   "best_angle": {
-    "name": "Short name for the strategy (e.g., 'The Loyalty Play', 'The Friendly Escalation', 'The Reasonable Exception')",
-    "why_this_works": "1-2 sentences — why this specific angle is the best shot in this specific situation",
-    "who_to_ask": "The right person to approach and why — not always the first person you see",
-    "when_to_ask": "Timing advice — best time of day, day of week, or moment in the interaction"
+    "title": "Memorable short title for the angle — 3-6 words",
+    "why_stronger": "Why this framing beats the obvious one — one or two sentences, grounded in their facts and in conversational strategy, never in a policy you invented"
   },
+  "who_to_ask": "Work with the person they named. If another route is worth trying, phrase it as a route to explore, never as a role that has authority you have not established — one sentence",
+  "when_to_ask": "Only if timing follows from their facts, or the advice is generic and depends on no invented business conditions. Otherwise null — one sentence",
   "the_script": {
-    "opener": "The exact opening line — warm, natural, sets the right tone. Include name use if applicable.",
-    "the_ask": "The core request — framed using the best angle. 2-4 sentences, conversational, specific.",
-    "if_they_hesitate": "What to say if they pause or seem unsure — the gentle nudge that makes yes easier.",
-    "graceful_exit": "What to say if the answer is genuinely no — leave the door open and your dignity intact."
+    "opener": "Natural, low-friction entry — the exact words",
+    "the_ask": "The strongest truthful version of the request — the exact words, 2-4 sentences",
+    "if_they_hesitate": "Do not simply repeat the ask. Change the frame, narrow the request, preserve face, or invite them to suggest a path — the exact words",
+    "graceful_exit": "Leaves the relationship intact and a legitimate next route open — the exact words"
   },
-  "delivery_notes": {
-    "tone": "How to sound — specific coaching beyond 'be polite'",
-    "body_language": "Physical presence cues — posture, eye contact, hands, smile",
-    "dont_do_this": "The 1-2 most common mistakes people make in this exact situation that kill the ask"
-  },
+  "delivery_notes": "Only guidance tied to this specific interaction — one or two sentences. Never a psychological effect from posture, eye contact, tone, mirroring or pauses",
+  "dont_do_this": "The mistake most likely to weaken THIS ask — one or two sentences",
   "backup_angle": {
-    "name": "If the first angle fails, try this one",
-    "pivot_line": "The exact transition sentence to shift strategies mid-conversation"
+    "title": "Short title for a materially different second approach — 3-6 words",
+    "how_it_differs": "What changes, using the same established facts — one sentence",
+    "pivot_line": "The exact sentence that shifts to it mid-conversation"
   },
-  "pro_tip": "One insider insight that most people don't know about this type of ask — a hack, a policy loophole, or a human nature shortcut"
-}`;
+  "pro_tip": "The cleverest strategic implication of the facts already on the table — one or two sentences. Never an invented policy, loophole, hidden practice, secret rule, undocumented entitlement, or frequency claim"
+}
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(PERSONALITY, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
     }, { label: 'magic-mouth' });
-    if (!parsed.situation_read && !parsed.the_script) {
+    if (!parsed.the_read && !parsed.the_script) {
       return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
     console.error('MagicMouth error:', error);
@@ -72,200 +267,146 @@ Return ONLY valid JSON (CRITICAL: never place a double-quote character inside an
   }
 });
 
-// ─── PHONE TREE HACK — Navigate automated systems to reach a human ───
+// ═══════════════════════════════════════════════════════════════
+// PHONE TREE HACK
+// ═══════════════════════════════════════════════════════════════
 router.post('/magic-mouth/phone-tree', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, issue, goal, userLanguage } = req.body;
+    if (!company?.trim() && !issue?.trim()) {
+      return res.status(400).json({ error: 'Tell me who you are trying to reach and what about.' });
+    }
 
-    if (!company?.trim()) return res.status(400).json({ error: 'Which company are you calling?' });
-    if (!issue?.trim()) return res.status(400).json({ error: 'What\'s the issue you need help with?' });
+    const userPrompt = `${CORE}
 
-    const systemPrompt = `You are a phone system expert — someone who has navigated thousands of corporate phone trees, knows the secret menu options, the magic phrases that bypass automated systems, and the exact words that get a human on the line in under 2 minutes.
+PHONE TREE HACK
 
-You know that every major company has documented shortcuts: menu sequences that skip to the right department, phrases that trigger "high-value customer" routing, escalation words that get you to a supervisor, and the specific time windows when hold times are lowest.`;
+Purpose:
+Help the visitor get unstuck when an automated system, frontline channel, repeated transfer, scripted response, or organizational maze is blocking a legitimate request.
 
-    const userPrompt = `PHONE TREE HACK
+Magic Mouth does NOT possess secret phone-tree codes, undocumented routing phrases, private extension lists, internal escalation maps, or guaranteed bypasses.
 
-COMPANY: "${company.trim()}"
-ISSUE: "${issue.trim()}"
-${goal?.trim() ? `WHAT THEY WANT RESOLVED: "${goal.trim()}"` : ''}
+Do not invent them.
 
-Give them everything they need to get to the right human fast.
+THE PRINCIPLE
 
-Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
+Do not merely "try harder."
+
+Change the route, change the framing, reduce the problem, or find the person/function whose job is closest to resolving it.
+
+WHO THEY ARE TRYING TO REACH: ${company?.trim() || 'Not supplied.'}
+WHAT IT IS ABOUT: ${issue?.trim() || 'Not supplied.'}
+WHAT THEY WANT TO HAPPEN: ${goal?.trim() || 'Not supplied.'}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+Return ONLY valid JSON:
 {
-  "company_type": "The type of company this is (bank, airline, insurance, telecom, healthcare billing, government agency, etc.) — for context",
-  "best_time_to_call": {
-    "day": "Best day(s) of the week to call and why",
-    "time": "Best time window (e.g., 'Tuesday–Thursday, 8–10am local time') and why",
-    "avoid": "Times/days to avoid and why (e.g., Monday mornings, Friday afternoons)"
+  "your_situation": "One sentence putting back what they told you — who they are trying to reach and what about",
+  "where_youre_stuck": "The obstacle, using only supplied information — one or two sentences",
+  "the_move": {
+    "strategy": "The smartest next routing strategy — one sentence",
+    "why": "Why this changes the problem rather than repeating the request — one sentence"
   },
-  "menu_navigation": {
-    "opening_move": "The very first thing to do when the automated system picks up — say this phrase or press this key",
-    "sequence": [
-      {
-        "step": 1,
-        "action": "press_key | say_phrase | wait",
-        "detail": "Exactly what to press or say",
-        "why": "Why this works / what it routes to"
-      }
-    ],
-    "skip_ahead": "The fastest path to a human — the 'cheat code' if there is one (e.g., press 0 three times, say 'representative' twice)"
-  },
-  "magic_phrases": [
-    {
-      "phrase": "The exact words to say",
-      "when": "When in the call to say this",
-      "effect": "What this phrase triggers or unlocks"
-    }
-  ],
-  "right_department": {
-    "name": "The exact department or team name to ask for",
-    "why": "Why this department (not the default one) can actually help",
-    "how_to_ask": "The exact phrasing to request this department"
-  },
-  "escalation_ladder": [
-    {
-      "level": 1,
-      "trigger": "If the first rep says [this] or can't help with [this]",
-      "move": "Exactly what to say to escalate",
-      "phrase": "The word-for-word escalation request"
-    },
-    {
-      "level": 2,
-      "trigger": "If the supervisor also can't resolve it",
-      "move": "Next escalation step",
-      "phrase": "The exact phrase"
-    }
-  ],
-  "things_to_have_ready": [
-    "Account number, confirmation number, or ID to have on hand",
-    "Any documentation or dates relevant to the issue",
-    "What to reference that strengthens your position"
-  ],
-  "power_move": "One insider tactic most people don't know — a policy shortcut, a magic department, or a phrase that changes the dynamic",
-  "script_opener": "The exact first sentence to say to the human once you reach them — clear, calm, and positions you for a yes"
-}`;
+  "what_to_say": "The exact words. Favor lines like: I may be asking the wrong person. Who actually owns this kind of decision? Never an invented trigger phrase, keypress or extension",
+  "if_they_bounce_you": "A second move that changes the problem instead of repeating the first request — the exact words",
+  "the_magic_mouth_move": "One clever but legitimate reframing they are unlikely to think of — one or two sentences. No deception, no fake urgency, no impersonation, no fabricated status, no claimed legal rights",
+  "what_to_verify": ["When a specific number, URL, menu option, department or external authority would be needed, name the CATEGORY of information to obtain or verify — never the thing itself. One short line each"]
+}
+
+ARRAY BOUNDS: what_to_verify at most 3.
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 2500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'magic-mouth-2' });
-    if (!parsed.company_type) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'magic-mouth-phone-tree' });
+    if (!parsed.where_youre_stuck) {
+      return res.status(500).json({ error: 'Could not work out a route. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('MagicMouth phone-tree error:', error);
+    console.error('MagicMouth/phone-tree error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
 
-// ─── NUCLEAR OPTION — Maximum legal leverage when nice has failed ───
+// ═══════════════════════════════════════════════════════════════
+// NUCLEAR OPTION
+// ═══════════════════════════════════════════════════════════════
 router.post('/magic-mouth/nuclear', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { company, problem, whatTried, goal, userLanguage } = req.body;
+    if (!problem?.trim()) {
+      return res.status(400).json({ error: 'Tell me what happened.' });
+    }
 
-    if (!company?.trim()) return res.status(400).json({ error: 'Who are you up against?' });
-    if (!problem?.trim()) return res.status(400).json({ error: 'What\'s the problem that isn\'t getting resolved?' });
+    const userPrompt = `${CORE}
 
-    const systemPrompt = `You are a consumer rights specialist and escalation strategist. When someone has exhausted the polite options — emails ignored, agents useless, supervisors stone-walling — you know exactly how to apply maximum legal pressure without hiring a lawyer.`;
+NUCLEAR OPTION
 
-    const userPrompt = `NUCLEAR OPTION — MAXIMUM LEGAL LEVERAGE
+This is the last-resort persuasion mode.
 
-COMPANY/ORGANIZATION: "${company.trim()}"
-THE PROBLEM: "${problem.trim()}"
-${whatTried?.trim() ? `WHAT THEY'VE ALREADY TRIED: "${whatTried.trim()}"` : ''}
-${goal?.trim() ? `WHAT THEY WANT: "${goal.trim()}"` : ''}
+"Nuclear" means:
+The visitor is finished with incremental asks and wants the strongest legitimate escalation available.
 
-Map the full escalation ladder from where they are now to maximum legal leverage.
+It does NOT mean:
+threats, deception, harassment, public shaming by default, fabricated legal claims, invented regulators, fake deadlines, or pretending to have leverage they do not have.
 
-Return ONLY valid JSON (CRITICAL: never place a double-quote character inside any string value — it breaks the JSON; write example phrases without surrounding quotation marks):
+MISSION
+
+Find the point where the visitor can stop asking for goodwill and start making the issue difficult to ignore — using only truthful, supportable facts.
+
+WHO THEY ARE DEALING WITH: ${company?.trim() || 'Not supplied.'}
+WHAT HAPPENED: ${problem.trim()}
+WHAT THEY HAVE ALREADY TRIED: ${whatTried?.trim() || 'Not supplied — do not assume they have exhausted anything you were not told about.'}
+WHAT THEY WANT: ${goal?.trim() || 'Not supplied.'}
+
+Write every field with precision — no filler, no padding, no restating what was asked. Never repeat information across fields.
+
+Return ONLY valid JSON:
 {
-  "situation_assessment": {
-    "leverage_level": "high | medium | low | very_low",
-    "their_strongest_card": "The single most powerful piece of leverage in this specific situation",
-    "why_nice_failed": "The specific reason polite methods aren't working in this situation",
-    "winnable": true
+  "your_situation": "One sentence putting back what they told you — what happened and what they want",
+  "the_line_youve_reached": "Why ordinary asking appears exhausted, based only on what they say they already tried — one or two sentences",
+  "strongest_lever": {
+    "lever": "The strongest ESTABLISHED lever — documentation, an unresolved contradiction, a commitment already made, repeated failed attempts, a decision that can legitimately be reviewed, a complaint path or provision THEY supplied. Never invented leverage",
+    "why_it_holds": "What makes it hard to dismiss — one sentence"
   },
-
-  "escalation_ladder": [
-    {
-      "rung": 1,
-      "title": "Executive Escalation",
-      "action": "How to find and contact C-suite or VP-level contacts directly — including the email format trick",
-      "the_email_formula": "The standard naming convention for this company type (e.g., firstname.lastname@company.com) and how to verify",
-      "subject_line": "The exact subject line that gets opened",
-      "opening_paragraph": "The first paragraph of the executive email — firm, factual, signals you know your options"
-    },
-    {
-      "rung": 2,
-      "title": "Regulatory Complaint",
-      "action": "The specific agency to file with and why this one has actual teeth",
-      "agency_name": "The exact agency name and acronym",
-      "where_to_file": "The URL or specific filing path",
-      "why_it_works": "Why this company fears complaints to this specific agency — the regulatory or reputational mechanism",
-      "what_to_include": "The specific information that makes the complaint credible and actionable"
-    },
-    {
-      "rung": 3,
-      "title": "Small Claims / Demand Letter",
-      "action": "The small claims threshold and whether this case qualifies, plus how to write a demand letter that works",
-      "threshold": "Typical small claims limit for this type of dispute",
-      "demand_letter_opener": "The opening sentence of a demand letter — the one that makes legal departments take notice",
-      "the_magic_sentence": "The specific phrase that signals serious legal intent without needing a lawyer"
-    },
-    {
-      "rung": 4,
-      "title": "Social and Reputational Pressure",
-      "action": "The specific platform and format that actually moves this type of company",
-      "platform": "The exact platform (not just 'social media' — be specific: Twitter/X, Reddit r/[specific], BBB, Trustpilot, etc.)",
-      "why_this_platform": "Why this specific platform has leverage over this type of organization",
-      "post_formula": "What to include in the post for maximum impact — facts, not emotion"
-    }
-  ],
-
-  "magic_sentences": [
-    {
-      "sentence": "The exact phrase to say or write",
-      "when": "When in the process to deploy this",
-      "what_it_triggers": "The specific mechanism — what department it routes to, what policy it invokes, what fear it activates"
-    }
-  ],
-
-  "the_one_to_start": {
-    "rung": "Which escalation rung to start with given where they are",
-    "why": "Why this specific step is the right first move from their current position",
-    "first_action_today": "The single most important action to take in the next 24 hours — specific and executable"
-  },
-
-  "honest_assessment": {
-    "time_investment": "Realistic time estimate to see results from this approach",
-    "most_likely_outcome": "What resolution they can realistically expect if they execute this well",
-    "when_to_walk_away": "The signal that tells them this battle costs more than it's worth — and what to do instead"
-  }
+  "the_nuclear_script": "The strongest version of the message: factual, concise, calm, difficult to dismiss, free of bluffing. It may be firm, and may state what they will do next only if that action is legitimate and actually available to them. 4-8 sentences",
+  "next_escalation": "If an external authority, regulator, ombudsman, court, chargeback, legal remedy, formal grievance or statutory right might matter, do NOT name it, cite a standard, a deadline, a URL or an eligibility rule. Say instead that they should verify the complaint or regulatory channel that applies to this type of issue in their jurisdiction — one or two sentences",
+  "what_not_to_say": ["An inflated threat, fake legalese, unsupported accusation, unevidenced claim of bad faith, invented deadline or promise to go viral that would weaken THIS message — one short line each"],
+  "exit_condition": "The point at which further persuasion is probably no longer useful, and they should choose between a real escalation route and letting it go — one or two sentences. Never a prediction of what the company will do, no odds, no time-to-result"
 }
 
-LIMITS: escalation_ladder AT MOST 4 rungs, magic_sentences AT MOST 3. Keep every field to one short sentence.`;
+ARRAY BOUNDS: what_not_to_say at most 4.
+
+Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
       model: MODELS.SMART,
-      max_tokens: 5500,
-      system: withLanguage(systemPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion),
-      messages: [{ role: 'user', content: userPrompt }],
-    }, { label: 'magic-mouth-3' });
-    if (!parsed.situation_assessment) {
-      return res.status(500).json({ error: 'Could not generate your script. Please try again.' });
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: withLanguage(userPrompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
+    }, { label: 'magic-mouth-nuclear' });
+    if (!parsed.the_line_youve_reached && !parsed.the_nuclear_script) {
+      return res.status(500).json({ error: 'Could not build your escalation. Please try again.' });
     }
-    res.json(parsed);
+    res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('MagicMouth nuclear error:', error);
+    console.error('MagicMouth/nuclear error:', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
+
+// Reviewed against backend/lib/outputStandard.js during the rewrite around the
+// core system prompt. All three endpoints run validateResult.
+router.outputStandard = 'v2';
+router.outputGuard = {
+  checks: ['validateResult'],
+  note: 'invented specifics (keypresses, extensions, email formulas, URLs, named regulators), odds and outcome promises, folklore stated as policy, and body-language claims are blanked in code; difficulty is pinned to English because the frontend switches on it.',
+};
 
 module.exports = router;

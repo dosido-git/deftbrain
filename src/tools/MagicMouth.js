@@ -17,10 +17,10 @@ const MagicMouth = ({ tool }) => {
   const { t } = useTranslation();
   const sym = currencySymbol(userLocale, userCurrency);
 
+  // Three qualitative descriptions, not four points on a probability scale.
   const DIFFICULTY_MAP = {
     easy:      { label: t('mm_diff_easy'),      icon: '🟢' },
-    moderate:  { label: t('mm_diff_moderate'),  icon: '🟡' },
-    hard:      { label: t('mm_diff_hard'),      icon: '🟠' },
+    real_ask:  { label: t('mm_diff_real_ask'),  icon: '🟡' },
     long_shot: { label: t('mm_diff_long_shot'), icon: '🔴' },
   };
 
@@ -69,8 +69,6 @@ const MagicMouth = ({ tool }) => {
     goldBg:        isDark ? 'bg-amber-900/20' : 'bg-amber-50',
     goldBorder:    isDark ? 'border-amber-700' : 'border-amber-300',
     goldText:      isDark ? 'text-amber-300' : 'text-amber-700',
-    greenBg:       isDark ? 'bg-emerald-900/20' : 'bg-emerald-50',
-    greenText:     isDark ? 'text-emerald-300' : 'text-emerald-700',
     errorBg:       isDark ? 'bg-red-900/20' : 'bg-red-50',
     accentBorder:  isDark ? 'border-amber-700' : 'border-amber-300',
   };
@@ -165,15 +163,20 @@ const MagicMouth = ({ tool }) => {
     }
   };
 
+  // PF-16: one reset for the tool. It used to clear only the Ask fields, and a
+  // second handler existed for Nuclear with no button attached to it — so from
+  // Phone Tree or Nuclear there was no way back to an empty form.
+  const hasAnything = !!(results || phoneResults || nuclearResults
+    || whatYouWant.trim() || situation.trim() || whoYoureAsking.trim() || triedAlready.trim()
+    || phoneCompany.trim() || phoneIssue.trim() || phoneGoal.trim()
+    || nuclearCompany.trim() || nuclearProblem.trim() || nuclearTried.trim() || nuclearGoal.trim());
+
   const handleReset = () => {
-    setWhatYouWant('');
-    setSituation('');
-    setWhoYoureAsking('');
-    setTriedAlready('');
-    setResults(null);
-    setError('');
-    setExpandedSections({});
-    setShowBackup(false);
+    setWhatYouWant(''); setSituation(''); setWhoYoureAsking(''); setTriedAlready('');
+    setPhoneCompany(''); setPhoneIssue(''); setPhoneGoal('');
+    setNuclearCompany(''); setNuclearProblem(''); setNuclearTried(''); setNuclearGoal('');
+    setResults(null); setPhoneResults(null); setNuclearResults(null);
+    setError(''); setExpandedSections({}); setShowBackup(false);
   };
 
   const handlePhoneTree = async () => {
@@ -215,9 +218,6 @@ const MagicMouth = ({ tool }) => {
     }
   };
 
-  const handleNuclearReset = () => {
-    setNuclearCompany(''); setNuclearProblem(''); setNuclearTried(''); setNuclearGoal(''); setNuclearResults(null); setError('');
-  };
 
   // ─── Build text ───
   const buildFullText = useCallback(() => {
@@ -227,36 +227,35 @@ const MagicMouth = ({ tool }) => {
     out += `${t('mm_want_label')} ${whatYouWant}\n`;
     if (situation) out += `${t('mm_situation_label')}: ${situation}\n`;
     out += `${DIFFICULTY_MAP[r.difficulty]?.label || r.difficulty}\n\n`;
-
-    if (r.situation_read) out += `━━ ${t('mm_the_read')} ━━\n${r.situation_read}\n\n`;
-
-    if (r.best_angle) {
-      out += `━━ ${t('mm_best_angle')}: ${r.best_angle.name} ━━\n`;
-      out += `${r.best_angle.why_this_works}\n`;
-      out += `${t('mm_who_to_ask')}: ${r.best_angle.who_to_ask}\n`;
-      out += `${t('mm_when_to_ask')}: ${r.best_angle.when_to_ask}\n\n`;
+    if (r.your_ask) out += `${t('mm_your_ask')}: ${r.your_ask}\n\n`;
+    if (r.the_read) {
+      out += `━━ ${t('mm_the_read')} ━━\n${r.the_read.summary || ''}\n`;
+      if (r.the_read.what_makes_it_hard) out += `${t('mm_l_hard')} ${r.the_read.what_makes_it_hard}\n`;
+      if (r.the_read.where_you_have_room) out += `${t('mm_l_room')} ${r.the_read.where_you_have_room}\n`;
+      if (r.the_read.still_unknown) out += `${t('mm_l_unknown')} ${r.the_read.still_unknown}\n`;
+      out += `\n`;
     }
-
+    if (r.best_angle) {
+      out += `━━ ${t('mm_best_angle')}: ${r.best_angle.title} ━━\n`;
+      out += `${r.best_angle.why_stronger}\n`;
+      if (r.who_to_ask) out += `${t('mm_who_to_ask')}: ${r.who_to_ask}\n`;
+      if (r.when_to_ask) out += `${t('mm_when_to_ask')}: ${r.when_to_ask}\n`;
+      out += `\n`;
+    }
     if (r.the_script) {
       out += `━━ ${t('mm_the_script')} ━━\n\n`;
-      out += `${t('mm_opener')}: "${r.the_script.opener}"\n\n`;
-      out += `${t('mm_the_ask')}: "${r.the_script.the_ask}"\n\n`;
-      out += `${t('mm_if_hesitate')}: "${r.the_script.if_they_hesitate}"\n\n`;
-      out += `${t('mm_graceful_exit')}: "${r.the_script.graceful_exit}"\n\n`;
+      out += `${t('mm_opener')}: ${r.the_script.opener}\n\n`;
+      out += `${t('mm_the_ask')}: ${r.the_script.the_ask}\n\n`;
+      out += `${t('mm_if_hesitate')}: ${r.the_script.if_they_hesitate}\n\n`;
+      out += `${t('mm_graceful_exit')}: ${r.the_script.graceful_exit}\n\n`;
     }
-
-    if (r.delivery_notes) {
-      out += `━━ ${t('mm_delivery_notes')} ━━\n`;
-      out += `${t('mm_tone')}: ${r.delivery_notes.tone}\n`;
-      out += `${t('mm_body_language')}: ${r.delivery_notes.body_language}\n`;
-      out += `${t('mm_dont_do_this')}: ${r.delivery_notes.dont_do_this}\n\n`;
-    }
-
+    if (r.delivery_notes) out += `━━ ${t('mm_delivery_notes')} ━━\n${r.delivery_notes}\n\n`;
+    if (r.dont_do_this) out += `${t('mm_dont_do_this')}: ${r.dont_do_this}\n\n`;
     if (r.backup_angle) {
-      out += `━━ ${t('mm_backup_angle')}: ${r.backup_angle.name} ━━\n`;
-      out += `"${r.backup_angle.pivot_line}"\n\n`;
+      out += `━━ ${t('mm_backup_angle')}: ${r.backup_angle.title} ━━\n`;
+      if (r.backup_angle.how_it_differs) out += `${r.backup_angle.how_it_differs}\n`;
+      out += `${r.backup_angle.pivot_line}\n\n`;
     }
-
     if (r.pro_tip) out += `━━ ${t('mm_pro_tip')} ━━\n${r.pro_tip}\n\n`;
 
     out += BRAND;
@@ -336,6 +335,19 @@ const MagicMouth = ({ tool }) => {
             </button>
           ))}
         </div>
+        {/* PF-16: the tool's one reset, on the mode row so it is reachable from
+            all three. It used to live inside the Ask results only, and Nuclear
+            had a reset handler with no button wired to it at all. */}
+        {hasAnything && (
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={handleReset}
+              className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold`}
+            >
+              ↺ {t('start_over')}
+            </button>
+          </div>
+        )}
         </div>
       </div>
 
@@ -381,128 +393,50 @@ const MagicMouth = ({ tool }) => {
         )}
 
         {mode === 'phone' && phoneResults && (
-          <div className="space-y-4">
-            {/* Best time to call */}
-            <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-              <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>⏰ {t('mm_best_time')}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                <div className={`p-3 rounded-xl ${c.warningBox} border ${c.accentBorder}`}>
-                  <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>{t('mm_day')}</p>
-                  <p className={c.text}>{phoneResults.best_time_to_call?.day}</p>
-                </div>
-                <div className={`p-3 rounded-xl ${c.warningBox} border ${c.accentBorder}`}>
-                  <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>{t('mm_time_window')}</p>
-                  <p className={c.text}>{phoneResults.best_time_to_call?.time}</p>
-                </div>
-                <div className={`p-3 rounded-xl ${c.errorBg} border ${isDark ? 'border-red-600/30' : 'border-zinc-500'}`}>
-                  <p className={`text-xs font-semibold ${isDark ? 'text-red-400' : 'text-red-600'} mb-1`}>{t('mm_avoid')}</p>
-                  <p className={c.text}>{phoneResults.best_time_to_call?.avoid}</p>
-                </div>
-              </div>
-            </div>
+          <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
 
-            {/* Menu Navigation */}
-            {phoneResults.menu_navigation && (
+            {phoneResults.your_situation && (
+              <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>📝 {t('mm_your_situation')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{phoneResults.your_situation}</p>
+              </div>
+            )}
+
+            {phoneResults.where_youre_stuck && (
+              <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('mm_pt_stuck')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{phoneResults.where_youre_stuck}</p>
+              </div>
+            )}
+
+            {phoneResults.the_move && (
+              <div className={`${c.goldBg} ${c.goldBorder} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-1`}>{t('mm_pt_move')}</p>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>{phoneResults.the_move.strategy}</h3>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{phoneResults.the_move.why}</p>
+              </div>
+            )}
+
+            {phoneResults.what_to_say && <ScriptLine label={t('mm_pt_say')} icon="💬" text={phoneResults.what_to_say} />}
+            {phoneResults.if_they_bounce_you && <ScriptLine label={t('mm_pt_bounce')} icon="🔁" text={phoneResults.if_they_bounce_you} />}
+
+            {phoneResults.the_magic_mouth_move && (
+              <div className={`${c.warningBox} ${c.accentBorder} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-1`}>✨ {t('mm_pt_magic')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{phoneResults.the_magic_mouth_move}</p>
+              </div>
+            )}
+
+            {phoneResults.what_to_verify?.length > 0 && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>📱 {t('mm_menu_nav')}</p>
-                {phoneResults.menu_navigation.skip_ahead && (
-                  <div className={`mb-3 p-3 rounded-xl ${c.goldBg} border ${c.goldBorder}`}>
-                    <p className={`text-xs font-semibold ${c.goldText} mb-1`}>⚡ {t('mm_shortcut')}</p>
-                    <p className={`text-sm font-medium ${c.text}`}>{phoneResults.menu_navigation.skip_ahead}</p>
-                  </div>
-                )}
-                <p className={`text-sm mb-3 ${c.text}`}><span className="font-semibold">{t('mm_opening_move')}</span> <span className={c.textSecondary}>{phoneResults.menu_navigation.opening_move}</span></p>
-                {phoneResults.menu_navigation.sequence?.length > 0 && (
-                  <div className="space-y-2">
-                    {phoneResults.menu_navigation.sequence.map((s, i) => (
-                      <div key={i} className={`flex gap-3 items-start p-3 rounded-xl border ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-slate-50'}`}>
-                        <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-cyan-700 text-white`}>{s.step}</span>
-                        <div className="text-sm">
-                          <p className={`font-medium ${c.text}`}>{s.detail}</p>
-                          <p className={`text-xs mt-0.5 ${c.textMuteded}`}>{s.why}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Magic Phrases */}
-            {phoneResults.magic_phrases?.length > 0 && (
-              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>✨ {t('mm_magic_phrases')}</p>
-                <div className="space-y-3">
-                  {phoneResults.magic_phrases.map((p, i) => (
-                    <div key={i} className={`p-3 rounded-xl border ${c.greenBg} border-[${isDark ? 'emerald-600' : 'emerald-300'}]`}>
-                      <p className={`text-sm font-semibold italic ${c.text}`}>"{p.phrase}"</p>
-                      <p className={`text-xs mt-1 ${c.textMuteded}`}>{t('mm_when')} {p.when} · {p.effect}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Right Department + Escalation */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {phoneResults.right_department && (
-                <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📋 {t('mm_right_dept')}</p>
-                  <p className={`text-sm font-bold ${c.text} mb-1`}>{phoneResults.right_department.name}</p>
-                  <p className={`text-xs mb-2 ${c.textMuteded}`}>{phoneResults.right_department.why}</p>
-                  <div className={`p-2 rounded-lg ${c.warningBox} border ${c.accentBorder}`}>
-                    <p className={`text-xs font-medium italic ${c.accentTxt}`}>"{phoneResults.right_department.how_to_ask}"</p>
-                  </div>
-                </div>
-              )}
-              {phoneResults.escalation_ladder?.length > 0 && (
-                <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                  <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>⬆️ {t('mm_escalation_ladder')}</p>
-                  <div className="space-y-2">
-                    {phoneResults.escalation_ladder.map((e, i) => (
-                      <div key={i} className={`p-2 rounded-lg border text-xs ${c.border} ${isDark ? 'bg-zinc-800' : 'bg-slate-50'}`}>
-                        <p className={`font-semibold ${c.text}`}>{t('mm_level', { n: e.level })} {e.trigger}</p>
-                        {e.move && <p className={`text-xs ${c.textSecondary} mt-0.5`}>{e.move}</p>}
-                        <p className={`italic mt-1 ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>"{e.phrase}"</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Power Move + Script Opener */}
-            {(phoneResults.power_move || phoneResults.script_opener) && (
-              <div className="space-y-3">
-                {phoneResults.power_move && (
-                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${c.goldText}`}>⚡ {t('mm_power_move')}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{phoneResults.power_move}</p>
-                  </div>
-                )}
-                {phoneResults.script_opener && (
-                  <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>🎬 {t('mm_opening_line')}</p>
-                    <p className={`text-sm font-medium italic ${c.text}`} style={{ fontFamily: 'Georgia, serif' }}>"{phoneResults.script_opener}"</p>
-                    <div className="mt-2">
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Have Ready + Reset */}
-            {phoneResults.things_to_have_ready?.length > 0 && (
-              <div className={`${c.card} ${c.border} border rounded-2xl p-4`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${c.textMuteded}`}>📎 {t('mm_have_ready')}</p>
-                <ul className="space-y-1">
-                  {phoneResults.things_to_have_ready.map((item, i) => (
-                    <li key={i} className={`text-sm flex gap-2 ${c.textSecondary}`}><span>•</span>{item}</li>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('mm_pt_verify')}</p>
+                <ul className="space-y-1.5">
+                  {phoneResults.what_to_verify.map((x, i) => (
+                    <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
                   ))}
                 </ul>
               </div>
             )}
-
           </div>
         )}
 
@@ -617,12 +551,20 @@ const MagicMouth = ({ tool }) => {
         {mode === 'ask' && results && (
           <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
 
+            {/* What this was built from, in one line, before any of it. */}
+            {results?.your_ask && (
+              <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>📝 {t('mm_your_ask')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{results.your_ask}</p>
+              </div>
+            )}
+
             {/* Situation read + difficulty */}
             <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-5`}>
               <div className="flex items-center justify-between mb-3">
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded}`}>{t('mm_the_read')}</p>
                 {results?.difficulty && (() => {
-                  const d = DIFFICULTY_MAP[results?.difficulty] || DIFFICULTY_MAP.moderate;
+                  const d = DIFFICULTY_MAP[results?.difficulty] || DIFFICULTY_MAP.real_ask;
                   return (
                     <span className={`text-xs font-semibold flex items-center gap-1 ${c.textMuteded}`}>
                       {d.icon} {d.label}
@@ -630,24 +572,35 @@ const MagicMouth = ({ tool }) => {
                   );
                 })()}
               </div>
-              <p className={`text-sm ${c.text} leading-relaxed`}>{results?.situation_read}</p>
+              <p className={`text-sm ${c.text} leading-relaxed`}>{results?.the_read?.summary}</p>
+              {results?.the_read?.what_makes_it_hard && (
+                <p className={`text-sm mt-2 ${c.textSecondary}`}><span className="font-semibold">{t('mm_l_hard')} </span>{results.the_read.what_makes_it_hard}</p>
+              )}
+              {results?.the_read?.where_you_have_room && (
+                <p className={`text-sm mt-1.5 ${c.textSecondary}`}><span className="font-semibold">{t('mm_l_room')} </span>{results.the_read.where_you_have_room}</p>
+              )}
+              {results?.the_read?.still_unknown && (
+                <p className={`text-sm mt-1.5 ${c.textMuteded}`}><span className="font-semibold">{t('mm_l_unknown')} </span>{results.the_read.still_unknown}</p>
+              )}
             </div>
 
             {/* Best angle */}
             {results?.best_angle && (
               <div className={`${c.goldBg} ${c.goldBorder} border rounded-2xl p-5`}>
                 <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-1`}>{t('mm_best_angle')}</p>
-                <h3 className={`text-lg font-bold ${c.text} mb-2`}>{results?.best_angle?.name}</h3>
-                <p className={`text-sm ${c.text} leading-relaxed mb-3`}>{results?.best_angle?.why_this_works}</p>
+                <h3 className={`text-lg font-bold ${c.text} mb-2`}>{results?.best_angle?.title}</h3>
+                <p className={`text-sm ${c.text} leading-relaxed mb-3`}>{results?.best_angle?.why_stronger}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className={`${c.card} rounded-lg p-3`}>
                     <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>👤 {t('mm_who_to_ask')}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results?.best_angle?.who_to_ask}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results?.who_to_ask}</p>
                   </div>
-                  <div className={`${c.card} rounded-lg p-3`}>
-                    <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>⏰ {t('mm_when_to_ask')}</p>
-                    <p className={`text-sm ${c.textSecondary}`}>{results?.best_angle?.when_to_ask}</p>
-                  </div>
+                  {results?.when_to_ask && (
+                    <div className={`${c.card} rounded-lg p-3`}>
+                      <p className={`text-xs font-semibold ${c.textMuteded} mb-1`}>⏰ {t('mm_when_to_ask')}</p>
+                      <p className={`text-sm ${c.textSecondary}`}>{results.when_to_ask}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -668,7 +621,7 @@ const MagicMouth = ({ tool }) => {
             )}
 
             {/* Delivery Notes */}
-            {results?.delivery_notes && (
+            {(results?.delivery_notes || results?.dont_do_this) && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
                 <button onClick={() => toggleSection('delivery')} className="w-full flex items-center justify-between">
                   <h3 className={`font-bold ${c.text} flex items-center gap-2`}>
@@ -679,17 +632,15 @@ const MagicMouth = ({ tool }) => {
                 {expandedSections['delivery'] !== false && (
                   <div className="mt-4 space-y-3">
                     <div className={`${c.warningBox} rounded-xl p-3`}>
-                      <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>🎤 {t('mm_tone')}</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.tone}</p>
+                      <p className={`text-xs font-semibold ${c.accentTxt} mb-1`}>🎤 {t('mm_delivery_notes')}</p>
+                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes}</p>
                     </div>
-                    <div className={`${c.greenBg} rounded-xl p-3`}>
-                      <p className={`text-xs font-semibold ${c.greenText} mb-1`}>🧍 {t('mm_body_language')}</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.body_language}</p>
-                    </div>
-                    <div className={`${c.errorBg} rounded-xl p-3`}>
-                      <p className={`text-xs font-semibold ${isDark ? 'text-zinc-500' : 'text-red-900'} mb-1`}>🚫 {t('mm_dont_do_this')}</p>
-                      <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results?.delivery_notes?.dont_do_this}</p>
-                    </div>
+                    {results?.dont_do_this && (
+                      <div className={`${c.errorBg} rounded-xl p-3`}>
+                        <p className={`text-xs font-semibold ${isDark ? 'text-zinc-500' : 'text-red-900'} mb-1`}>🚫 {t('mm_dont_do_this')}</p>
+                        <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{results.dont_do_this}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -708,10 +659,13 @@ const MagicMouth = ({ tool }) => {
                 ) : (
                   <div className={`${c.warningBox} ${c.accentBorder} border rounded-2xl p-5`}>
                     <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-1`}>{t('mm_backup_angle')}</p>
-                    <h3 className={`text-base font-bold ${c.text} mb-2`}>{results?.backup_angle?.name}</h3>
+                    <h3 className={`text-base font-bold ${c.text} mb-2`}>{results?.backup_angle?.title}</h3>
+                    {results?.backup_angle?.how_it_differs && (
+                      <p className={`text-sm ${c.textSecondary} mb-2`}>{results.backup_angle.how_it_differs}</p>
+                    )}
                     <p className={`text-sm ${c.text} leading-relaxed`}
                        style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
-                      "{results?.backup_angle?.pivot_line}"
+                      {results?.backup_angle?.pivot_line}
                     </p>
                   </div>
                 )}
@@ -737,14 +691,6 @@ const MagicMouth = ({ tool }) => {
             )}
 
             {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={handleReset}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5`}
-              >
-                <span>🔄</span> {t('mm_new_ask')}
-              </button>
-            </div>
 
             {/* Cross-references */}
             <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
@@ -822,167 +768,62 @@ const MagicMouth = ({ tool }) => {
 
         {/* ─── Nuclear Option Mode — Results ─── */}
         {mode === 'nuclear' && nuclearResults && (
-          <div className="space-y-4">
+          <div data-copy-results ref={resultsRef} className="scroll-mt-24 space-y-5">
 
-            {/* Assessment */}
-            {nuclearResults.situation_assessment && (
-              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <div className="flex items-center justify-between mb-2">
-                  <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>{t('mm_leverage_assessment')}</p>
-                  <span className={`text-xs font-black px-2 py-1 rounded-full ${
-                    nuclearResults.situation_assessment.leverage_level === 'high'
-                      ? (isDark ? 'bg-emerald-600/20 text-zinc-500' : 'bg-zinc-500 text-zinc-500')
-                      : nuclearResults.situation_assessment.leverage_level === 'medium'
-                      ? (isDark ? 'bg-amber-500/20 text-amber-400' : 'bg-zinc-500 text-amber-800')
-                      : (isDark ? 'bg-red-600/20 text-zinc-500' : 'bg-zinc-500 text-red-900')
-                  }`}>{nuclearResults.situation_assessment.leverage_level?.toUpperCase()}</span>
-                </div>
-                {nuclearResults.situation_assessment.their_strongest_card && (
-                  <p className={`text-sm font-semibold mb-1 ${c.text}`}>💪 {nuclearResults.situation_assessment.their_strongest_card}</p>
-                )}
-                {nuclearResults.situation_assessment.company_type && (
-                  <p className={`text-xs ${c.textSecondary} mb-1`}>{nuclearResults.situation_assessment.company_type}</p>
-                )}
-                {nuclearResults.situation_assessment.why_nice_failed && (
-                  <p className={`text-xs ${c.textMuteded}`}>{nuclearResults.situation_assessment.why_nice_failed}</p>
-                )}
+            {nuclearResults.your_situation && (
+              <div className={`${c.card} ${c.border} border rounded-xl p-4`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-1`}>📝 {t('mm_your_situation')}</p>
+                <p className={`text-sm ${c.textSecondary}`}>{nuclearResults.your_situation}</p>
               </div>
             )}
 
-            {/* Escalation Ladder */}
-            {nuclearResults.escalation_ladder?.length > 0 && (
-              <div className="space-y-3">
-                <p className={`text-xs font-black uppercase tracking-widest px-1 ${c.textMuteded}`}>📶 {t('mm_nuclear_escalation')}</p>
-                {nuclearResults.escalation_ladder.map((rung, i) => (
-                  <div key={i} className={`${c.card} ${c.border} border rounded-2xl overflow-hidden`}>
-                    <div className={`px-5 py-3 flex items-center gap-3 ${isDark ? 'bg-red-600/10' : 'bg-zinc-500'}`}>
-                      <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 bg-red-600 text-white">{rung.rung}</span>
-                      <p className={`font-bold text-sm ${c.text}`}>{rung.title}</p>
-                    </div>
-                    <div className="px-5 py-4 space-y-2">
-                      <p className={`text-sm ${c.textSecondary}`}>{rung.action}</p>
-                      {/* Rung-specific fields */}
-                      {rung.the_email_formula && (
-                        <div className={`p-2 rounded-lg border font-mono text-xs ${isDark ? 'bg-zinc-900 border-zinc-700 text-zinc-300' : 'bg-slate-50 border-zinc-300 text-zinc-500'}`}>
-                          {rung.the_email_formula}
-                        </div>
-                      )}
-                      {rung.subject_line && (
-                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('mm_subject')}</span> {rung.subject_line}</p>
-                      )}
-                      {rung.opening_paragraph && (
-                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondary}`}>
-                          "{rung.opening_paragraph}"
-                          <div className="mt-2 not-italic">
-                          </div>
-                        </div>
-                      )}
-                      {rung.agency_name && (
-                        <p className={`text-xs font-bold ${isDark ? 'text-zinc-500' : 'text-red-900'}`}>{rung.agency_name} {t('mm_agency_dash')} <span className="font-normal">{rung.where_to_file}</span></p>
-                      )}
-                      {rung.why_it_works && (
-                        <p className={`text-xs ${c.textMuteded}`}>{rung.why_it_works}</p>
-                      )}
-                      {rung.what_to_include && (
-                        <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">{t('mm_include')}</span> {rung.what_to_include}</p>
-                      )}
-                      {rung.threshold && (
-                        <p className={`text-xs ${c.textSecondary}`}><span className="font-semibold">{t('mm_limit')}</span> {rung.threshold}</p>
-                      )}
-                      {rung.demand_letter_opener && (
-                        <div className={`p-3 rounded-xl border italic text-sm ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-zinc-200'} ${c.textSecondary}`}>
-                          "{rung.demand_letter_opener}"
-                        </div>
-                      )}
-                      {rung.the_magic_sentence && (
-                        <div className={`p-2 rounded-lg border ${isDark ? 'bg-emerald-600/15 border-emerald-600/40' : 'bg-zinc-500 border-zinc-500'}`}>
-                          <p className={`text-xs font-bold mb-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{t('mm_magic_sentence')}</p>
-                          <p className={`text-xs font-mono ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>"{rung.the_magic_sentence}"</p>
-                          <div className="mt-1.5">
-                          </div>
-                        </div>
-                      )}
-                      {rung.platform && (
-                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('mm_platform')}</span> {rung.platform} {t('mm_agency_dash')} {rung.why_this_platform}</p>
-                      )}
-                      {rung.post_formula && (
-                        <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('mm_post_formula')}</span> {rung.post_formula}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            {nuclearResults.the_line_youve_reached && (
+              <div className={`${c.cardAlt} ${c.border} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('mm_nk_line')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{nuclearResults.the_line_youve_reached}</p>
               </div>
             )}
 
-            {/* Magic sentences */}
-            {nuclearResults.magic_sentences?.length > 0 && (
+            {nuclearResults.strongest_lever && (
+              <div className={`${c.goldBg} ${c.goldBorder} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.goldText} mb-1`}>{t('mm_nk_lever')}</p>
+                <h3 className={`text-base font-bold ${c.text} mb-2`}>{nuclearResults.strongest_lever.lever}</h3>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{nuclearResults.strongest_lever.why_it_holds}</p>
+              </div>
+            )}
+
+            {nuclearResults.the_nuclear_script && (
               <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${c.textMuteded}`}>✨ {t('mm_magic_sentences')}</p>
-                <div className="space-y-3">
-                  {nuclearResults.magic_sentences.map((s, i) => (
-                    <div key={i} className={`p-3 rounded-xl border ${isDark ? 'bg-emerald-600/10 border-emerald-600/30' : 'bg-zinc-500 border-zinc-500'}`}>
-                      <p className={`text-sm font-semibold italic mb-1 ${c.text}`}>"{s.sentence}"</p>
-                      <p className={`text-xs ${c.textMuteded}`}>{s.when} · {s.what_it_triggers}</p>
-                      <div className="mt-2">
-                      </div>
-                    </div>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-2`}>☢️ {t('mm_nk_script')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed whitespace-pre-line`}
+                   style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>{nuclearResults.the_nuclear_script}</p>
+              </div>
+            )}
+
+            {nuclearResults.next_escalation && (
+              <div className={`${c.warningBox} ${c.accentBorder} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.accentTxt} mb-1`}>{t('mm_nk_next')}</p>
+                <p className={`text-sm ${c.text} leading-relaxed`}>{nuclearResults.next_escalation}</p>
+              </div>
+            )}
+
+            {nuclearResults.what_not_to_say?.length > 0 && (
+              <div className={`${c.errorBg} rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-red-900'} mb-2`}>🚫 {t('mm_nk_not')}</p>
+                <ul className="space-y-1.5">
+                  {nuclearResults.what_not_to_say.map((x, i) => (
+                    <li key={i} className={`text-sm ${c.textSecondary}`}>• {x}</li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
-            {/* First move + honest assessment */}
-            {nuclearResults.the_one_to_start && (
-              <div className={`rounded-2xl border-2 p-5 ${isDark ? 'border-cyan-700 bg-cyan-700/10' : 'border-cyan-700 bg-zinc-500'}`}>
-                <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isDark ? 'text-zinc-500' : 'text-cyan-700'}`}>⚡ {t('mm_start_here')}</p>
-                <p className={`text-sm font-semibold mb-1 ${c.text}`}>{t('mm_step', { n: nuclearResults.the_one_to_start.rung })} {nuclearResults.the_one_to_start.why}</p>
-                <p className={`text-sm ${c.textSecondary}`}>{nuclearResults.the_one_to_start.first_action_today}</p>
+            {nuclearResults.exit_condition && (
+              <div className={`${c.card} ${c.border} border rounded-2xl p-5`}>
+                <p className={`text-xs font-semibold uppercase tracking-wider ${c.textMuteded} mb-2`}>{t('mm_nk_exit')}</p>
+                <p className={`text-sm ${c.textSecondary} leading-relaxed`}>{nuclearResults.exit_condition}</p>
               </div>
             )}
-            {nuclearResults.honest_assessment && (
-              <div className={`${c.card} ${c.border} border rounded-2xl p-4 space-y-1`}>
-                <p className={`text-xs font-bold uppercase tracking-wider ${c.textMuteded}`}>📊 {t('mm_honest_assessment')}</p>
-                {nuclearResults.honest_assessment.most_likely_outcome && (
-                  <p className={`text-sm ${c.textSecondary}`}><span className={`font-semibold ${c.text}`}>{t('mm_likely_outcome')}</span> {nuclearResults.honest_assessment.most_likely_outcome}</p>
-                )}
-                {nuclearResults.situation_assessment?.winnable !== undefined && (
-                  <p className={`text-xs font-semibold ${nuclearResults.situation_assessment.winnable ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-amber-400' : 'text-amber-600')}`}>
-                    {nuclearResults.situation_assessment.winnable ? `✓ ${t('mm_winnable')}` : `⚠️ ${t('mm_may_be_difficult')}`}
-                  </p>
-                )}
-                {nuclearResults.honest_assessment.time_investment && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('mm_time')}</span> {nuclearResults.honest_assessment.time_investment}</p>
-                )}
-                {nuclearResults.honest_assessment.when_to_walk_away && (
-                  <p className={`text-xs ${c.textMuteded}`}><span className="font-semibold">{t('mm_walk_away')}</span> {nuclearResults.honest_assessment.when_to_walk_away}</p>
-                )}
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex flex-wrap items-center gap-2">
-              <button onClick={handleNuclearReset}
-                className={`${c.btnSecondary} px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-1.5`}>
-                <span>🔄</span> {t('mm_new_situation')}
-              </button>
-            </div>
-
-            {/* Cross-references */}
-            <div className={`${c.cardAlt} ${c.border} border rounded-xl p-4 space-y-2`}>
-              <p className={`text-xs font-semibold ${c.textMuteded} uppercase tracking-wider`}>{t('mm_related')}</p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'NotSoFast', icon: '🚪', label: t('mm_ref_rulebookbreaker') },
-                  { id: 'LeaseTrapDetector', icon: '🔍', label: t('mm_ref_leasetrapdetector') },
-                  { id: 'TruthBomb', icon: '💣', label: t('mm_ref_truthbomb') },
-                ].map(ref => (
-                  <a key={ref.id} href={`/${ref.id}`}
-                    className={`text-xs ${linkStyle}`}>
-                    <span>{ref.icon}</span> {ref.label}
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
