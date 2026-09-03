@@ -898,7 +898,7 @@ export const tools = [
 
 {
   modified: "2025-03-05",
-  id: "LuckSurface",
+  id: "GetNoticed",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
@@ -907,17 +907,17 @@ export const tools = [
     get: "A plain read of how new people and ideas currently reach you, what narrows that, what already works, and three to five practical ways to widen it.",
     edge: "It works only from what you supplied — no luck score, no percentage, and no claim about what any move will produce.",
   },
-  seoDescription: "Find practical ways to create more chances for useful things to happen. Describe where your life already puts you in contact with new people and ideas, and get concrete moves to widen it — no luck score, no predictions.",
-  seoTitle: "Luck Surface: Create More Chances for Useful Things to Happen",
-  title: "Luck Surface",
-  tagline: "Create more chances for useful things to happen",
+  seoDescription: "Find practical ways to become more visible to the people who could matter. Describe how your work, interests and relationships already put you in contact with new people and ideas, and get concrete moves to widen it — no score, no predictions.",
+  seoTitle: "Get Noticed: Become More Visible to the People Who Matter",
+  title: "Get Noticed",
+  tagline: "Widen the circle of people who know what you do",
   tags: ['luck', 'serendipity', 'opportunity', 'networking', 'connections', 'visibility', 'career'],
   icon: "🧲",
   categories: ['Pursuits'],
   headerColor: "#e8d5b7",
-  description: "Want more opportunities to find you? Describe where your work, interests, and relationships currently put you in contact with new people and ideas. Luck Surface finds practical ways to increase the number of useful collisions you make possible.",
+  description: "Want more opportunities to be seen? Describe how your work, interests, and relationships put you in contact with new people and ideas. Get Noticed suggests practical ways to become more visible and create more opportunities for meaningful connections.",
   guide: {
-      overview: "Luck Surface helps you create more opportunities for useful, unexpected connections and discoveries. Describe where your life currently puts you in contact with new people or ideas — work, hobbies, communities, places you spend time, things you make or share — and it describes how new people and opportunities reach you today, what narrows that, what is already working, and three to five practical ways to widen it. It does not calculate a luck percentage, because there is no defensible denominator for available serendipity, and it does not claim any move will produce a particular result. It explains the mechanism instead: what a change makes possible, not what it will deliver.",
+      overview: "Get Noticed helps you create more opportunities for useful, unexpected connections and discoveries. Describe where your life currently puts you in contact with new people or ideas — work, hobbies, communities, places you spend time, things you make or share — and it describes how new people and opportunities reach you today, what narrows that, what is already working, and three to five practical ways to widen it. It does not calculate a luck percentage, because there is no defensible denominator for available serendipity, and it does not claim any move will produce a particular result. It explains the mechanism instead: what a change makes possible, not what it will deliver.",
 
       howToUse: [
         "Describe where your life already puts you in contact with new people or ideas",

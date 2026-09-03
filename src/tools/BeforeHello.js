@@ -241,7 +241,7 @@ const BeforeHello = ({ tool }) => {
               <div className="flex flex-wrap gap-3">
                 <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('bh_xref_velvet')}</a>
                 <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>🎤 {t('bh_xref_heckler')}</a>
-                <a href="/LuckSurface" className={`text-xs ${linkStyle}`}>🧲 {t('bh_xref_luck')}</a>
+                <a href="/GetNoticed" className={`text-xs ${linkStyle}`}>🧲 {t('bh_xref_luck')}</a>
               </div>
             </div>
           </div>
@@ -319,7 +319,7 @@ const BeforeHello = ({ tool }) => {
             <div className={`rounded-xl border p-4 ${c.cardAlt} ${c.border}`}>
               <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('bh_related')}</p>
               <div className="flex flex-wrap gap-3">
-                <a href="/LuckSurface" className={`text-xs ${linkStyle}`}>🧲 {t('bh_xref_luck')}</a>
+                <a href="/GetNoticed" className={`text-xs ${linkStyle}`}>🧲 {t('bh_xref_luck')}</a>
                 <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('bh_xref_velvet')}</a>
                 <a href="/HecklerPrep" className={`text-xs ${linkStyle}`}>🎤 {t('bh_xref_heckler')}</a>
               </div>

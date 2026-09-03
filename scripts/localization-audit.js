@@ -94,7 +94,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/OnePercenter.js',
   'src/tools/WrongAnswersOnly.js',
   'src/tools/TimeWarp.js',
-  'src/tools/LuckSurface.js',
+  'src/tools/GetNoticed.js',
   'src/tools/SignalVsNoise.js',
   'src/tools/CrowdWisdom.js',
   'src/tools/HecklerPrep.js',

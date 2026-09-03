@@ -404,7 +404,7 @@ const ChaosPilot = ({ tool }) => {
             </p>
             <p className={`text-xs ${c.textMuted} text-center`}>
               {t('chp_xref_luck_pre')}{' '}
-              <a href="/LuckSurface" className={linkStyle}>🍀 {t('chp_lucksurface')}</a>{' '}
+              <a href="/GetNoticed" className={linkStyle}>🍀 {t('chp_lucksurface')}</a>{' '}
               {t('chp_xref_luck_suffix')}
             </p>
           </div>

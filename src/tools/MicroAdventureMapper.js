@@ -760,7 +760,7 @@ const MicroAdventureMapper = ({ tool }) => {
         <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
           <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>{t('mam_related')}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="/LuckSurface" className={`text-xs ${linkStyle}`}>🧲 {t('mam_xref_lucksurface')}</a>
+            <a href="/GetNoticed" className={`text-xs ${linkStyle}`}>🧲 {t('mam_xref_lucksurface')}</a>
             <a href="/BeforeHello" className={`text-xs ${linkStyle}`}>🌀 {t('mam_xref_gravitywell')}</a>
           </div>
         </div>

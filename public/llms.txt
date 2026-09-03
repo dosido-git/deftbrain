@@ -18,7 +18,7 @@
 - [Drive Home](https://deftbrain.com/DriveHome): A clearer call before you get behind the wheel
 - [Final Wish](https://deftbrain.com/FinalWish): Organize what matters. Say what needs to be said.
 - [Jargon Assassin](https://deftbrain.com/JargonAssassin): Confusing documents → plain language → what to do about it
-- [LaundroMat](https://deftbrain.com/LaundroMat): AI laundry expert — wash smarter, treat stains faster, rescue ruined clothes
+- [LaundroMat](https://deftbrain.com/LaundroMat): What to wash, how to wash it, and what to do when things go wrong
 - [Lease Trap Detector](https://deftbrain.com/LeaseTrapDetector): Find predatory clauses hiding in your lease
 - [Mise en Place](https://deftbrain.com/MiseEnPlace): The hard part isn't the cooking. It's deciding.
 - [Not So Fast!](https://deftbrain.com/NotSoFast): The overlooked options, key conversations, and escalation paths nobody ever explains
@@ -53,7 +53,6 @@
 - [Friendship Fade Alerter](https://deftbrain.com/FriendshipFadeAlerter): Stay connected to the people you care about
 - [Giftology](https://deftbrain.com/Giftology): The perfect gift for the hardest person to shop for.
 - [Gratitude Debt Clearer](https://deftbrain.com/GratitudeDebtClearer): Turn what happened into the thank-you you've been meaning to send.
-- [Luck Surface](https://deftbrain.com/LuckSurface): Calculate your luck surface area. Expand it with five specific moves.
 - [Mend](https://deftbrain.com/Mend): Match your apology to the actual harm caused
 - [Money Diplomat](https://deftbrain.com/MoneyDiplomat): The right number for every money moment — tips, splits, gifts, salary
 - [Read the Room](https://deftbrain.com/ReadTheRoom): Read the room before you walk in
@@ -82,8 +81,9 @@
 - [Cold Open Craft](https://deftbrain.com/ColdOpenCraft): Make the first message easier to send — and easier to answer.
 - [Concept Coach](https://deftbrain.com/ConceptCoach): Stress-test your business idea before you invest time or money
 - [Future Proof](https://deftbrain.com/FutureProof): Stress-test a career, skill, technology, investment or long-term bet — before you go all in
+- [Get Noticed](https://deftbrain.com/GetNoticed): Widen the circle of people who know what you do
 - [Ghost Writer](https://deftbrain.com/GhostWriter): You know why they deserve it. This helps you say it.
-- [Leverage Logic](https://deftbrain.com/LeverageLogic): Win any negotiation with the right strategy
+- [Leverage Logic](https://deftbrain.com/LeverageLogic): Know where you stand before you negotiate
 - [Name Audit](https://deftbrain.com/NameAudit): Stress-test any name before you commit
 - [Name Storm](https://deftbrain.com/NameStorm): Name anything. Know it works before you commit.
 - [Skill Gap Map](https://deftbrain.com/SkillGapMap): Your GPS from current role to dream job

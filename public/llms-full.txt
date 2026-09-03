@@ -250,7 +250,7 @@ URL: https://deftbrain.com/JargonAssassin
 Tagline: Confusing documents → plain language → what to do about it
 Categories: The Grind, Go Deep!
 
-Paste any legal, medical, insurance, or financial document and get it translated into plain language — with danger scoring, red flags, enforceability notes, and a glossary built as you read. Translation is the starting point. From there: Red-Line generates specific edits to propose with negotiation strategy. Template Compare shows whether your document is standard or aggressive for its type. Action Plan turns the translation into ordered next steps with deadlines. Explain To reframes everything for someone else (your parent, your roommate). Letter Generator writes your response referencing specific clauses. The full arc from confusion to action in one tool.
+Paste or upload a document you don't fully understand. Jargon Assassin translates the dense language, shows you what matters, flags terms worth a closer look, and helps you figure out what the document means for your situation.
 
 **What it does.** JargonAssassin is for the moment you're staring at a lease, medical consent form, insurance policy, or employment contract and thinking 'what does this actually mean for me?' Paste the document, pick your reading level, and get it translated with every red flag, deadline, and hidden catch identified. But translation is just the start — the tool completes the full arc from confusion to understanding to action. Red-Line tells you what to push back on with specific alternative language. Template Compare gives you a baseline for what's normal. Action Plan orders your next steps with deadlines pulled from the document. Letter Generator writes your response. And if you need to explain it to someone else — your parent, your roommate, your partner — the Explain To mode reframes everything for that specific person.
 
@@ -287,10 +287,10 @@ Output: Full translation with 3 red flags and 2 deadlines identified. Red-line w
 ### LaundroMat
 
 URL: https://deftbrain.com/LaundroMat
-Tagline: AI laundry expert — wash smarter, treat stains faster, rescue ruined clothes
+Tagline: What to wash, how to wash it, and what to do when things go wrong
 Categories: The Grind
 
-Five-in-one laundry companion: AI load advisor, emergency stain treatment, garment rescue for wash disasters, care label translator, and smart timers with audio alerts.
+Not sure how to wash it, remove the stain, read the care label, or fix what went wrong? LaundroMat gives you practical laundry help for the clothes in front of you.
 
 **What it does.** LaundroMat is a five-in-one laundry tool built around a simple idea — clothes are expensive and easy to ruin. (1) AI Load Advisor tells you exactly how to wash any combination of items, what to separate, and cycle settings. (2) Stain SOS gives urgent treatment steps using household supplies. (3) Garment Rescue is for when something's already gone wrong — shrunk, faded, colours bled — with honest recovery steps and a clear verdict on whether the item can be saved. (4) Care Symbols translates every laundry label into plain English. (5) Smart Timers count down your wash and dry cycles with audio alerts so nothing sits forgotten.
 
@@ -1256,37 +1256,6 @@ Input: Your friend Sarah helped you move apartments last weekend. She spent 6 ho
 
 Output: You get 2-3 message options like a warm text ('Sarah! I seriously can't thank you enough for yesterday. Six hours of packing and you never once complained — plus those donuts were clutch. You made what could've been a nightmare actually kind of fun. I owe you big time.') You can copy it directly, make it less intense, or add more specifics with one click.
 
-### Luck Surface
-
-URL: https://deftbrain.com/LuckSurface
-Tagline: Calculate your luck surface area. Expand it with five specific moves.
-Categories: Humans, Pursuits, Me
-
-Calculates your luck surface area — the percentage of available serendipity you're actually exposed to — and designs five specific asymmetric moves to expand it. Each move is a different mechanism: broadcast a signal, infiltrate a new room, create a serendipity artifact, curate a connection, or compound an existing asset.
-
-**What it does.** Luck surface area is the aggregate exposure to serendipitous collisions with opportunities, people, and ideas. It's not random — it's engineered. LuckSurface audits your current patterns and designs five asymmetric moves: low effort, high serendipity potential.
-
-**How to use it.**
-
-1. Describe your life in detail — where you go, who you know, what you make or share publicly
-2. Add what kind of luck you want more of — opportunities, collaborators, clients, mentors
-3. Optionally note what you already do to put yourself out there
-4. Review each of the five moves and expand the ones that resonate
-5. Start with the 'Start Here' move at the bottom — it's the highest-leverage first step
-
-**Tips.**
-
-- The mechanism labels explain why each move works — not just what to do
-- The 'time to first result' estimate helps calibrate expectations per move
-- Choose the lowest-friction move first — momentum matters more than perfection
-- Re-run every 6 months — the bottleneck shifts as your surface grows
-
-**Example.**
-
-Input: Remote software engineer, feeling professionally invisible
-
-Output: Current surface: 14%. Invisible wall: professional identity outsourced entirely to employer — no external signal of what you know or care about. Five moves: (1) One technical post per month about something you had to figure out; (2) Next local tech meetup, introduce yourself to one person; (3) Open-source one internal tool with a thoughtful README; (4) One coffee with a former colleague per quarter; (5) Add one line to LinkedIn about what you're interested in next.
-
 ### Mend
 
 URL: https://deftbrain.com/Mend
@@ -2034,6 +2003,37 @@ Input: Is UX design a good skill to invest heavily in right now?
 
 Output: Trajectory: Transforming. Tailwinds: AI tools increasing design output speed, more products competing on experience. Headwinds: AI automating wireframing and research synthesis. Automation risk: low-fidelity mockups at risk, strategy less so. The pivot: UX + AI tooling fluency is the moat. One action: ship one project using Figma AI this month.
 
+### Get Noticed
+
+URL: https://deftbrain.com/GetNoticed
+Tagline: Widen the circle of people who know what you do
+Categories: Pursuits
+
+Want more opportunities to be seen? Describe how your work, interests, and relationships put you in contact with new people and ideas. Get Noticed suggests practical ways to become more visible and create more opportunities for meaningful connections.
+
+**What it does.** Get Noticed helps you create more opportunities for useful, unexpected connections and discoveries. Describe where your life currently puts you in contact with new people or ideas — work, hobbies, communities, places you spend time, things you make or share — and it describes how new people and opportunities reach you today, what narrows that, what is already working, and three to five practical ways to widen it. It does not calculate a luck percentage, because there is no defensible denominator for available serendipity, and it does not claim any move will produce a particular result. It explains the mechanism instead: what a change makes possible, not what it will deliver.
+
+**How to use it.**
+
+1. Describe where your life already puts you in contact with new people or ideas
+2. Optionally say what you would like more chances to encounter, and what you already do
+3. Read your current opportunity surface — narrow, mixed, or broad — and what narrows it
+4. Work through the moves; each names the exposure it creates, not a result it promises
+5. Start with the one move marked Start here
+
+**Tips.**
+
+- Say what you actually do, not what you think sounds impressive — every move has to connect to something you supplied
+- Leaving a field blank is fine; it will say so rather than invent an answer
+- Nothing here predicts a result. A move is worth doing if it would still be worth doing when nobody unexpected replies
+- If a suggestion names a specific event or venue you never mentioned, that is a bug — tell us
+
+**Example.**
+
+Input: You work from home on the same team you have been on for three years, see a small group of friends, and share nothing publicly about what you do.
+
+Output: A narrow reading with the reasons named concretely — most contact runs through one team and one friend group — what already works, and three to five moves that each open a different route, with the smallest first step for each.
+
 ### Ghost Writer
 
 URL: https://deftbrain.com/GhostWriter
@@ -2068,33 +2068,33 @@ Output: Ghost Writer generates 3 versions: a narrative letter opening with the Q
 ### Leverage Logic
 
 URL: https://deftbrain.com/LeverageLogic
-Tagline: Win any negotiation with the right strategy
+Tagline: Know where you stand before you negotiate
 Categories: Pursuits, Veer
 
-Map both sides' leverage in any negotiation — salary, lease, vendor, dispute — then get scripts, a concession ladder, war-gamed counters, and ready-to-send emails.
+Facing a negotiation? Describe the situation, what you want, and anything you think gives you leverage. Leverage Logic helps you see where each side has room to move, what you may be assuming, and how to make your case without giving away more than you need to.
 
-**What it does.** LeverageLogic is a negotiation strategist. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — and it reads the power balance, maps your leverage points and theirs, and builds a full game plan: what to ask for, scripts for the conversation, a concession ladder, your BATNA, and traps to avoid. Then use the companion modes to counter what they just said, check your prep, war-game their likely responses, draft the email, and debrief afterward.
+**What it does.** Leverage Logic helps you reason about negotiating power instead of manufacturing it. Describe the negotiation — a raise, a lease renewal, a vendor contract, a dispute — along with anything working in your favour and anything working in theirs, and it separates what you have actually established from what you are assuming on top of it. Where something important is unknown, it says so and tells you how to find it out, rather than filling the gap with a plausible guess. It does not rate your leverage strong or weak, invent the other side's budget or motives, predict what they will do, or score your readiness out of a hundred, because none of that can be known from what you typed.
 
 **How to use it.**
 
 1. Describe the negotiation, what you want, and pick the type (salary, lease, vendor, purchase…)
-2. Review your game plan: leverage map, power balance, scripts, concession ladder, BATNA
-3. Paste what they said into Counter mode for a read and a response
-4. War-game their likely pushback in the Simulator before the real conversation
-5. Draft the ask as an email, and run a Debrief afterward to grade the outcome
+2. Add anything working in your favour — and, separately, anything working in theirs
+3. Read your position and theirs: each fact, what it may mean, and what its value depends on
+4. Work through what is still unknown before you go in, using Am I ready?
+5. Paste what they said into Counter for a read on what it settles and what it leaves open, or draft the ask as an email
 
 **Tips.**
 
-- Log each round in the timeline so Counter mode knows the history
-- Your BATNA (best alternative) is your real leverage — know it before you start
-- Use the Prep Check before high-stakes conversations; it scores your readiness
-- Run the Debrief even on losses — the lessons feed your next negotiation
+- Fill in their side if you can, even partially — with it blank, the tool will not guess it for you
+- The amber lines are the point: they mark where a fact stops being worth what you think it is
+- If a piece of leverage has no established fact under it, it is an assumption wearing a suit
+- Am I ready? gives you a verdict and what it turns on, not a score
 
 **Example.**
 
-Input: You're asking for a raise after two years without one, and you have a competing offer.
+Input: You're asking for a raise after two years without one, and you have a written offer from another company.
 
-Output: A game plan that leads with the competing offer as leverage, scripts for the opening and pushback, a concession ladder (title bump if not salary), and a clear walk-away point.
+Output: Three established facts with what each may mean and what its worth depends on; an empty column for their position saying that is the biggest gap; five things to find out first, including whether the outside offer has an expiry; and an approach that names which fact it rests on.
 
 ### Name Audit
 
@@ -2768,7 +2768,7 @@ URL: https://deftbrain.com/LazyWorkoutAdapter
 Tagline: Low-barrier movement that meets you where you are
 Categories: Energy
 
-For the days you don't want to move. The inputs — your energy, what hurts, and what actually happened today (bad sleep, long meeting, emotional day) — change the routine itself, not just the duration. Modes scale from a 2-minute floor to a weekly menu, with targeted body relief, sleep wind-downs, and recovery protocols for life events. History tracks how movement shifts your energy; Prove It shows whether it's actually helping you — in your own numbers.
+Don't feel like working out? Tell us how much energy and time you have, what's bothering you, and what kind of day you've had. Lazy Workout Adapter turns that into movement you can actually manage right now.
 
 **What it does.** LazyWorkoutAdapter is for the moment you know you should move but don't want to. Instead of pretending you have motivation, it starts from your actual energy, what happened today, and where your body hurts — then builds something you can realistically do right now. Context triggers ('bad sleep', 'emotional day', 'been in meetings') change the workout more meaningfully than an energy number alone. Environment Stack eliminates the idea that movement is separate from your day by weaving micro-movements into things you're already doing. Sleep Prep helps you wind down before bed with progressive relaxation. Recovery handles the aftermath of life events — post-flight, post-argument, post-migraine. After enough sessions, Prove It shows your own data back to you: does movement actually raise your energy? By how much? What type works best? Your data convinces you, not motivational quotes.
 

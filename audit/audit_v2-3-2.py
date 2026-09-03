@@ -866,7 +866,7 @@ for name, fpath in tools:
                          # came off the input screen in the rewrite, and a store
                          # nothing renders is exactly what this rule is for, so
                          # the recording went with the display.
-                         'LuckSurface',
+                         'GetNoticed',
                          # GratitudeDebtClearer joined on 2026-08-28. The rewrite
                          # keeps the last result and nothing else, deliberately:
                          # a stored list of who you have thanked, and what you

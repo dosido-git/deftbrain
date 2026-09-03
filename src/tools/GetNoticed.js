@@ -30,7 +30,7 @@ const EXAMPLES = [
   },
 ];
 
-const LuckSurface = ({ tool }) => {
+const GetNoticed = ({ tool }) => {
   const { isDark } = useTheme();
   const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
   const { t } = useTranslation();
@@ -99,7 +99,7 @@ const LuckSurface = ({ tool }) => {
   };
 
   const loadExample = () => {
-    const ex = pickExample('LuckSurface', EXAMPLES);
+    const ex = pickExample('GetNoticed', EXAMPLES);
     setDescription(ex.desc); setGoals(ex.goals); setResults(null);
   };
 
@@ -360,5 +360,5 @@ const LuckSurface = ({ tool }) => {
   );
 };
 
-LuckSurface.displayName = 'LuckSurface';
-export default LuckSurface;
+GetNoticed.displayName = 'GetNoticed';
+export default GetNoticed;

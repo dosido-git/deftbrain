@@ -62,7 +62,6 @@
   "LazyWorkoutAdapter": "lazy-workout-adapter",
   "LeaseTrapDetector": "lease-trap-detector",
   "LeverageLogic": "leverage-logic",
-  "LuckSurface": "luck-surface",
   "MagicMouth": "magic-mouth",
   "MarkupDetective": "markup-detective",
   "MeetingBSDetector": "meeting-b-s-detector",
@@ -127,5 +126,6 @@
   "WhereDidTheTimeGo": "where-did-the-time-go",
   "WhichLife": "contrast-report",
   "WrongAnswersOnly": "wrong-answers-only",
-  "ConceptCoach": "idea-autopsy"
+  "ConceptCoach": "idea-autopsy",
+  "GetNoticed": "luck-surface"
 }

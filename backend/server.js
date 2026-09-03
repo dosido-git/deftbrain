@@ -239,7 +239,7 @@ const TOOL_IDS = [
   'FriendshipFadeAlerter','FutureProof','GentlePushGenerator','GhostWriter',
   'Giftology','GratitudeDebtClearer','BeforeHello','GriefGuide','HecklerPrep','HistoryToday','ConceptCoach',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
-  'LeaseTrapDetector','LeverageLogic','LuckSurface','MagicMouth','MarkupDetective',
+  'LeaseTrapDetector','LeverageLogic','GetNoticed','MagicMouth','MarkupDetective',
   'MeetingBSDetector','MeetingHijackPreventer','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
@@ -273,6 +273,9 @@ RETIRED_SLUGS.forEach(slug => {
 
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
+  '/LuckSurface': '/GetNoticed',   // renamed 2026-09-02
+  '/lucksurface': '/GetNoticed',
+  '/luck-surface': '/GetNoticed',
   // Legacy /tool/ routes
  '/tool/renters-deposit-saver': '/RentersDepositSaver',
  '/tool/bill-rescue':           '/BillRescue',
