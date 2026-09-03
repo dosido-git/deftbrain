@@ -174,7 +174,7 @@ const LOCALIZED_TOOLS = [
   'src/tools/GentlePushGenerator.js',
   'src/tools/LaundroMat.js',
   'src/tools/LayoverMaximizer.js',
-  'src/tools/MeetingBSDetector.js',
+  'src/tools/JustifyMyMeeting.js',
   'src/tools/NameAudit.js',
   'src/tools/SocialBatteryAdvisor.js',
   'src/tools/PaperworkPath.js',

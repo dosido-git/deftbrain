@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Generate the exact async-suggestion script",
-    body:     "Meeting BS Detector takes your meeting description, identifies whether async actually works, and produces the specific format, channel, and message — calibrated for the relationship and the company.",
+    body:     "Justify My Meeting checks whether async genuinely fits the goal before it writes anything, then drafts a message calibrated to who owns the meeting. It proposes rather than announces, and gives you a version for when the answer is no.",
     features: [
       "Async format suggestions",
       "Tailored DM scripts",
@@ -63,7 +63,7 @@ module.exports = {
       "Trial-period framing",
       "Time-saved estimates",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

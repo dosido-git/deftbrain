@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Run the test on any meeting before you accept",
-    body:     "Meeting BS Detector takes a meeting description and tells you whether it's legitimate, borderline, or unnecessary — with the exact alternative to suggest, the time it would save, and a script to propose it.",
+    body:     "Justify My Meeting takes a meeting description and asks what being in the room together actually accomplishes here. You get the verdict, the reasoning, the time footprint calculated from your own numbers, and the message that proposes the alternative.",
     features: [
       "Five-question diagnostic",
       "BS/borderline/legitimate verdict",
@@ -63,7 +63,7 @@ module.exports = {
       "Time-saved estimates",
       "Diplomatic decline scripts",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

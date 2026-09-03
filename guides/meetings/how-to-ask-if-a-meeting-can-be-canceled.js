@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Get the right cancel-message for any meeting",
-    body:     "Meeting BS Detector reads the invite, identifies whether the meeting still has a purpose, and generates a tailored cancel-request script — calibrated for the organizer's seniority and the relationship.",
+    body:     "The Zombie Check in Justify My Meeting compares what a recurring meeting was set up for with what it does now, using only what you supply. It says what would actually be lost if it stopped, what to change instead of cancelling, and — when it comes to that — how to ask.",
     features: [
       "Cancel-request scripts",
       "Tone calibration",
@@ -63,7 +63,7 @@ module.exports = {
       "Meeting-purpose audit",
       "Time-saved estimates",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

@@ -95,7 +95,7 @@
 - [Batch Flow](https://deftbrain.com/BatchFlow): Your tasks, grouped so the day stops fighting you
 - [Email Urgency Triager](https://deftbrain.com/EmailUrgencyTriager): Find out what actually needs a reply today
 - [Heckler Prep](https://deftbrain.com/HecklerPrep): Anticipate the hardest questions before they land.
-- [Meeting BS Detector](https://deftbrain.com/MeetingBSDetector): Is this meeting necessary or could it be an email?
+- [Justify My Meeting](https://deftbrain.com/JustifyMyMeeting): 🕵️ Is a meeting justified?
 - [Meeting Hijack Preventer](https://deftbrain.com/MeetingHijackPreventer): Keep meetings structured, inclusive, and on track
 - [Pre-Mortem](https://deftbrain.com/PreMortem): Your plan has already failed. This is the memo explaining why.
 - [The Debrief](https://deftbrain.com/TheDebrief): The meeting ended. Now figure out what actually happened.

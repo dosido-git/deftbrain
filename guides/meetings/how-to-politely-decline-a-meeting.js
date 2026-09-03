@@ -55,7 +55,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Get the exact decline message for any meeting",
-    body:     "Meeting BS Detector analyzes the invite, classifies it, and generates a tailored decline script — with an alternative contribution and the right tone for your relationship to the organizer.",
+    body:     "Justify My Meeting gives you the argument before the script: why this verdict, what would change it, and what the meeting costs in people's time. Then it drafts the message — one that proposes a change and keeps the relationship intact, not one that assumes you can walk away.",
     features: [
       "Tailored decline scripts",
       "Async alternative suggestions",
@@ -63,7 +63,7 @@ module.exports = {
       "Tone calibration",
       "Permission to skip",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

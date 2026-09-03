@@ -5119,53 +5119,53 @@ tagline: "Personal Energy Planner — understand your energy, plan around it",
 
 {
   modified: "",
-  id: "MeetingBSDetector",
+  id: "JustifyMyMeeting",
   // Preamble — the four questions a new visitor has, in order.
   // `give` states the input burden before the form; see ToolPageWrapper.
   primer: {
-    when: "A meeting invite arrives and you suspect it's an email.",
-    give: "The meeting description, duration and headcount.",
-    get: "A verdict, the real cost in salaried hours, and how to propose the async version. Then an agenda if it should happen, an audit of your recurring meetings, and messages to decline the rest.",
-    edge: "It prices the meeting in people-hours, which turns a vibe into an argument you can send.",
+    when: "A meeting is on the calendar and you are not sure it deserves to be.",
+    give: "The invite, or a description of what actually happens. Duration and headcount if you know them.",
+    get: "A verdict — keep it, shorten it, fix it, or make it async — with the reasoning, what would change the verdict, and what to send. Then an agenda if it should happen, or the message if it should not.",
+    edge: "It weighs whether being in the room at the same time is what the goal actually needs, instead of grading the meeting on vibes.",
   },
-  seoDescription: "Could this meeting be an email? Get a verdict with a confidence score, the agenda's red flags, an async alternative, and a decline script. Free.",
-  seoTitle: "Could This Meeting Be an Email? Checker",
-  title: "Meeting BS Detector",
-  tagline: "Is this meeting necessary or could it be an email?",
+  seoDescription: "Should this meeting happen? Get a verdict — keep it, shorten it, fix it, or make it async — with the reasoning, the time it costs, and the message to send. Free.",
+  seoTitle: "Should This Meeting Be a Meeting? Checker",
+  title: "Justify My Meeting",
+  tagline: "🕵️ Is a meeting justified?",
   tags: ['meeting', 'waste time', 'unnecessary', 'decline', 'calendar', 'work'],
   icon: "🕵️",
   categories: ['The Office'],
   headerColor: "#d4dde8",
-  description: "Detects whether meetings are necessary or could be emails/async updates. Analyzes red flags like 'status update', 'touch base', no agenda. Provides alternative approaches (Loom, doc, Slack) with time saved estimates and permission to decline.",
+  description: "Have a meeting coming up? Paste the invite or describe what happens. Justify My Meeting looks at the goal of the meeting and whether having everyone there at the same time is the best use of everyone’s time. Then it tells you whether to keep it, shorten it, fix it, or replace it with something better.",
   guide: {
-    overview: "Most meetings are unnecessary and could be handled asynchronously. This tool analyzes meeting descriptions to detect BS meetings (status updates, FYI info sharing, vague 'syncs') vs legitimate ones (collaborative problem-solving, decisions, conflict resolution). Provides concrete alternatives and scripts to suggest them.",
-    
+    overview: "A meeting earns its place when the goal genuinely needs people thinking together in real time — a decision that needs the disagreement in the room, a conversation that would go wrong in writing, work that has to be built jointly. Justify My Meeting starts from the goal you describe, asks what synchronous time actually adds to it, and returns one of four answers: keep it, shorten it, fix it, or replace it with something asynchronous. It says which parts of its reasoning are inference rather than fact, and what it would need to know to say more.",
+
     howToUse: [
-      "Describe the meeting (purpose, agenda if any)",
-      "Add duration and number of attendees if known",
-      "Get verdict: BS/borderline/legitimate with confidence score",
-      "Receive alternative approach with exact template to send",
-      "Use permission statement to decline or suggest alternative"
+      "Judge a Meeting: paste the invite or describe what happens, add duration and headcount if you know them, and get the verdict with its reasoning",
+      "Zombie Check: for a recurring meeting — what it was set up for versus what it does now, and what to change",
+      "Week Audit: list the meetings in your week and see which ones earn their time",
+      "Rescue This Meeting: you are in one right now and it is going nowhere — get words you can say out loud",
+      "After a FIX IT verdict, build the agenda. After SHORTEN IT or MAKE IT ASYNC, draft the message."
     ],
-    
+
     example: {
-      scenario: "Your manager scheduled a 60-minute 'weekly sync' with 8 people to share status updates. No agenda, just 'touching base on projects.'",
-      action: "Input: 'Weekly team sync, 60 minutes, 8 people, status updates on projects'.",
-      result: "Verdict: BS (95% confidence). Red flags: 'Status update' (should be written), 'Touch base' (vague purpose), 60 min for info sharing (excessive), 8 people (too many for no decision). Alternative: 'Send this as a Slack thread instead. Each person posts 2-3 bullet update by Tuesday 5pm. Saves 8 hours of collective time.' Template provided: 'Hi [Manager], I think we could make our weekly sync more efficient. What if each person posted a brief status update in #team-updates by Tuesday 5pm? We could reserve meetings for collaborative problem-solving. This would save everyone an hour/week. Thoughts?' Permission: This meeting is wasting 8 collective hours/week. You're not being difficult by suggesting a better way."
+      scenario: "A standing 60-minute engineering all-hands with 22 attendees. The agenda is 'status updates from each team lead' — no prep, no decisions, everyone reports out what they did last week.",
+      action: "Paste the invite, set duration to 1 hour and attendees to 22.",
+      result: "Verdict: MAKE IT ASYNC. The reasoning names what synchronous time is buying here — nothing a written update would not — and what would change the verdict, such as a decision that needs the disagreement in the room. The time footprint is computed from your own numbers: 22 × 1h = 22 person-hours. A better way: a written update thread with a short live slot kept only for what needs discussion. Then it drafts the message, which proposes rather than announces, because you may not have the authority to change someone else's meeting."
     },
-    
+
     tips: [
-      "Use this BEFORE accepting meeting invites, not after they're scheduled",
-      "The template messages are designed to be diplomatically firm, not confrontational",
-      "If verdict is 'borderline', the tool suggests how to make meeting shorter/smaller",
-      "Track time saved estimates - they add up to days per year",
-      "Some meetings are legitimate; don't decline everything just because you can"
+      "Describe what actually happens, not what the invite claims — that is where the answer usually lives",
+      "Duration and headcount are optional, but supplying them is what makes the time footprint real rather than guessed",
+      "'Anything else that matters?' is where context belongs — who is not invited, what was already decided, who is not speaking to whom",
+      "A NOT ENOUGH TO TELL verdict is a real answer: it tells you what is missing rather than guessing",
+      "Some meetings genuinely earn their hour. A tool that never says 'keep it' would not be worth consulting."
     ],
-    
+
     pitfalls: [
-      "Don't use this as excuse to avoid necessary difficult conversations",
-      "Some managers don't respond well to meeting pushback - assess your context",
-      "If company culture is meeting-heavy, you may need to pick your battles"
+      "It reads only what you supply — it cannot see the politics, the history, or the person who will take it personally",
+      "It never tells you that you are allowed to skip. It helps you propose a change, which is a different thing",
+      "In a meeting-heavy culture the verdict may be right and still not worth acting on this week"
     ]
   }
 },

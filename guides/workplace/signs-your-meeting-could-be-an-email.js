@@ -22,15 +22,15 @@ module.exports = {
   cta: {
     glyph:    '🕵️',
     headline: "Should this be a meeting? Probably not.",
-    body:     "Meeting BS Detector analyzes any meeting against red flags — vague purposes, missing agendas, info-sharing disguised as collaboration — and produces a verdict with confidence score. It also writes the script for suggesting an async alternative without sounding difficult.",
+    body:     "Justify My Meeting reads the invite, or your description of what actually happens, and weighs whether the goal genuinely needs everyone there at once. If it does not, it says so and drafts the message that proposes the written version — proposing, never announcing, because you may not have the authority to change someone else's meeting.",
     features: [
       "Verdict (BS / borderline / legitimate) with confidence score",
       "Specific red flags identified — and what they mean",
       "Async alternative with exact template to propose it",
       "Permission statement: you are not being difficult by asking"
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
   published: '2026-04-29',
   modified:  '2026-04-29',

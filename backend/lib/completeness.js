@@ -11,7 +11,7 @@
 // request. That is the wrong fix twice over. It makes the user's experience
 // worse — someone who would have got 9 of 10 sections now gets nothing — and
 // guards are this codebase's single biggest cause of hard-down tools.
-// MeetingBSDetector, RoomReader, GratitudeDebtClearer and
+// JustifyMyMeeting, RoomReader, GratitudeDebtClearer and
 // ComplaintEscalationWriter were each 500ing on EVERY call because a guard
 // keyed a nested or nullable field, and a guard that validates an enum is a
 // hard 500 in all twelve non-English languages, because withLanguage

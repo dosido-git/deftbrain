@@ -255,7 +255,7 @@ const EXAMPLE_BUCKETS = {
         'Don\u2019t soften this into confusion: \u201cThe last three projects came in late \u2014 [dates]. That\u2019s affecting my planning. I need the next deliverable by [date], hard stop. If that\u2019s not feasible, let\u2019s talk about wrapping up cleanly.\u201d Specific dates. Clear stakes. No ambiguity about what happens next.',
     },
     {
-      id: 'MeetingBSDetector',
+      id: 'JustifyMyMeeting',
       title: 'Meeting BS Detector',
       icon: '🎯',
       tagline: 'Cut the language that wastes everyone\u2019s time',

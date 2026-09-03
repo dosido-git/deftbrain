@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Detect the signs across your whole calendar",
-    body:     "Meeting BS Detector scans any meeting invite and surfaces the red flags — vague title, no agenda, status-only content, runaway recurrence — with a confidence-scored verdict and the alternative that should have been used.",
+    body:     "Justify My Meeting takes any invite and works out what live time is buying. When the honest answer is nothing a written update would not, it says MAKE IT ASYNC, shows the person-hours the meeting costs from your own numbers, and drafts the message that proposes the change.",
     features: [
       "Red-flag detection",
       "Pattern analysis",
@@ -57,7 +57,7 @@ module.exports = {
       "Recurring-meeting audit",
       "Async alternative suggestions",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

@@ -883,7 +883,17 @@ for name, fpath in tools:
                          # front of you, not a laundry log. Timers still
                          # persist (laundromat-timers) — a running cycle, not
                          # a record of past ones.
-                         'LaundroMat'}
+                         'LaundroMat',
+                         # JustifyMyMeeting joined on 2026-09-02 with the
+                         # Justify My Meeting rewrite. Two reasons, and either
+                         # would be enough. The Stats mode that displayed the
+                         # history was one of the seven modes the rewrite cut,
+                         # so the writes had nothing left to render into. And
+                         # the record itself is a list of the meetings someone
+                         # tried to get out of, with the verdict attached,
+                         # sitting in the browser of a work machine. That is
+                         # not a thing to keep by default.
+                         'JustifyMyMeeting'}
     _tool_name = os.path.splitext(os.path.basename(fpath))[0]
     _skip_history = _tool_name in _NO_HISTORY_TOOLS
 

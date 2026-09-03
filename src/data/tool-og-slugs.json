@@ -64,7 +64,6 @@
   "LeverageLogic": "leverage-logic",
   "MagicMouth": "magic-mouth",
   "MarkupDetective": "markup-detective",
-  "MeetingBSDetector": "meeting-b-s-detector",
   "MeetingHijackPreventer": "meeting-hijack-preventer",
   "MentalHealthNavigator": "mental-health-navigator",
   "MicroAdventureMapper": "micro-adventure-mapper",
@@ -127,5 +126,6 @@
   "WhichLife": "contrast-report",
   "WrongAnswersOnly": "wrong-answers-only",
   "ConceptCoach": "idea-autopsy",
-  "GetNoticed": "luck-surface"
+  "GetNoticed": "luck-surface",
+  "JustifyMyMeeting": "meeting-b-s-detector"
 }

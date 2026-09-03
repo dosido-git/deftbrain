@@ -186,7 +186,7 @@ function validateResult(data) {
     // below enumerates its indices and node[k] = '' assigns into it — while
     // forEach(walk) handed each STRING element to a function that returns
     // immediately for non-objects, so every array-of-strings field went
-    // unchecked. Found when Meeting Worth It emitted "most attendees are
+    // unchecked. Found when Justify My Meeting emitted "most attendees are
     // passive listeners" inside why_this_verdict and the rule that exists
     // to catch exactly that did not fire.
     if (!node || typeof node !== 'object') return;
@@ -196,10 +196,10 @@ function validateResult(data) {
         const hit = RULES.find(([, re, spare]) => re.test(v) && !(spare && spare(v)));
         if (hit) {
           if (v.length <= 220 && (v.match(/[.!?]/g) || []).length <= 1) {
-            console.log(`[meeting-worth-it] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
+            console.log(`[justify-my-meeting] ${k} blanked — ${hit[0]}: ${v.slice(0, 200)}`);
             node[k] = '';
           } else {
-            console.log(`[meeting-worth-it] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
+            console.log(`[justify-my-meeting] ${k} ${hit[0]} (left intact, too long to cut safely): ${v.slice(0, 200)}`);
           }
         }
       } else if (v && typeof v === 'object') walk(v);
@@ -247,6 +247,18 @@ function timeFootprint(durationHours, attendees, perYear) {
 
 const PER_YEAR = { daily: 250, weekly: 52, biweekly: 26, fortnightly: 26, monthly: 12, quarterly: 4 };
 
+// The frontend colours and localises these by value, so they have to survive
+// withLanguage exactly. The prompt asks for English; this makes it true. Note
+// the frontend maps the pinned value to a t() key — pinning to English here
+// does not mean the visitor reads English.
+const READS = ['earns its time', 'worth questioning', 'worth revisiting', 'not enough to tell'];
+const FORMATS = ['Keep as-is', 'Shorter meeting', 'Smaller meeting', 'Async update', 'Async first meeting if needed', 'Other'];
+
+function pinTo(value, allowed, fallback) {
+  const v = String(value || '').trim().toLowerCase();
+  return allowed.find(a => a.toLowerCase() === v) || fallback;
+}
+
 function pinVerdict(data, allowed, fallback) {
   if (!data) return data;
   const v = String(data.verdict || '').toUpperCase().trim();
@@ -257,7 +269,7 @@ function pinVerdict(data, allowed, fallback) {
 // ═══════════════════════════════════════════════════════════════
 // JUDGE A MEETING
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingText, duration, attendees, context, userLanguage } = req.body;
     if (!meetingText?.trim()) return res.status(400).json({ error: 'Paste the invite, or describe the meeting.' });
@@ -303,15 +315,16 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it' });
+    }, { label: 'justify-my-meeting' });
     if (!parsed.verdict) return res.status(500).json({ error: 'Could not judge this one. Please try again.' });
 
     pinVerdict(parsed, VERDICTS, 'NOT ENOUGH TO TELL');
+    if (parsed.better_format) parsed.better_format.recommendation = pinTo(parsed.better_format.recommendation, FORMATS, 'Other');
     parsed.time_footprint = timeFootprint(duration, attendees, null);
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt]', error);
+    console.error('[JustifyMyMeeting]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -319,7 +332,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // ═══════════════════════════════════════════════════════════════
 // ZOMBIE CHECK
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it/zombie', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting/zombie', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingName, originalPurpose, whatActuallyHappens, frequency, duration, attendees, userLanguage } = req.body;
     if (!meetingName?.trim()) return res.status(400).json({ error: 'What is the meeting called?' });
@@ -375,7 +388,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 4000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it-zombie' });
+    }, { label: 'justify-my-meeting-zombie' });
     if (!parsed.verdict) return res.status(500).json({ error: 'Could not check this one. Please try again.' });
 
     pinVerdict(parsed, ZOMBIE_VERDICTS, 'NOT ENOUGH TO TELL');
@@ -383,7 +396,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt/zombie]', error);
+    console.error('[JustifyMyMeeting/zombie]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -391,7 +404,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // ═══════════════════════════════════════════════════════════════
 // WEEK AUDIT
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it/week', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting/week', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetings, userLanguage } = req.body;
     if (!Array.isArray(meetings) || !meetings.length) {
@@ -421,6 +434,11 @@ Then identify:
 Do not invent focus-time needs or recommend specific meeting-free blocks unless
 the visitor supplies their working schedule and focus requirements.
 
+The list says only whether a meeting recurs. It does not say how often, on what
+day, or at what time. Never describe a meeting as daily, weekly, morning, or
+back-to-back, and never infer any of that from its name. If a name looks like it
+implies a day, that is the name, not a fact about the schedule.
+
 Calculate known scheduled meeting hours and person-hours exactly.
 Do not calculate 'potential savings' unless tied to explicit proposed changes.
 
@@ -431,7 +449,7 @@ Write every field with precision — no filler, no padding, no restating what wa
 
 Return ONLY valid JSON:
 {
-  "summary": "What this week actually looks like from what they supplied — 1-2 sentences. No grade, no verdict on the calendar as a whole",
+  "summary": "What this week actually looks like from what they supplied — 1-2 sentences. No grade, no verdict on the calendar as a whole. NO NUMBERS AT ALL in this field: no counts, no totals, no ranges, no hours, no headcounts. Every figure is computed separately from their own data and shown beside this. Describe the shape in words",
   "per_meeting": [
     {
       "name": "The meeting, copied from their list",
@@ -449,7 +467,7 @@ Return ONLY valid JSON:
 
 ARRAY BOUNDS: one per_meeting entry per supplied meeting, opportunities at most 4, unknowns_that_matter at most 3.
 
-Do not include totals or arithmetic in any field — those are computed separately.
+Do not include totals, counts, ranges or any other arithmetic in any field — every number is computed separately from their own data. A summary that says how many people or how many hours is inventing a figure it was told not to produce.
 
 Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 
@@ -457,8 +475,11 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 5000,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it-week' });
+    }, { label: 'justify-my-meeting-week' });
     if (!parsed.per_meeting) return res.status(500).json({ error: 'Could not audit your week. Please try again.' });
+    if (Array.isArray(parsed.per_meeting)) {
+      parsed.per_meeting.forEach(m => { if (m) m.read = pinTo(m.read, READS, 'not enough to tell'); });
+    }
 
     // Totals, from their numbers only. A meeting missing either figure is
     // counted as unknown rather than estimated.
@@ -478,7 +499,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt/week]', error);
+    console.error('[JustifyMyMeeting/week]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -486,7 +507,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // ═══════════════════════════════════════════════════════════════
 // RESCUE THIS MEETING
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it/rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting/rescue', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { whatsHappening, minutesIn, yourRole, userLanguage } = req.body;
     if (!whatsHappening?.trim()) return res.status(400).json({ error: 'What is happening in there?' });
@@ -535,12 +556,12 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it-rescue' });
+    }, { label: 'justify-my-meeting-rescue' });
     if (!parsed.say_this_now) return res.status(500).json({ error: 'Could not find a way in. Please try again.' });
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt/rescue]', error);
+    console.error('[JustifyMyMeeting/rescue]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -548,7 +569,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // ═══════════════════════════════════════════════════════════════
 // AGENDA — offered after FIX IT, not a mode of its own
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it/agenda', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting/agenda', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingText, duration, attendees, context, userLanguage } = req.body;
     if (!meetingText?.trim()) return res.status(400).json({ error: 'Describe the meeting first.' });
@@ -613,12 +634,12 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 3500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it-agenda' });
+    }, { label: 'justify-my-meeting-agenda' });
     if (!parsed.why_are_we_meeting) return res.status(500).json({ error: 'Could not build an agenda. Please try again.' });
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt/agenda]', error);
+    console.error('[JustifyMyMeeting/agenda]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });
@@ -626,7 +647,7 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
 // ═══════════════════════════════════════════════════════════════
 // MESSAGE — offered after SHORTEN IT, MAKE IT ASYNC or FIX IT
 // ═══════════════════════════════════════════════════════════════
-router.post('/meeting-worth-it/message', rateLimit(DEFAULT_LIMITS), async (req, res) => {
+router.post('/justify-my-meeting/message', rateLimit(DEFAULT_LIMITS), async (req, res) => {
   try {
     const { meetingText, verdict, better, relationship, userLanguage } = req.body;
     if (!meetingText?.trim()) return res.status(400).json({ error: 'Describe the meeting first.' });
@@ -677,12 +698,12 @@ Return ONLY valid JSON. ${NO_QUOTE_RULE}`;
       model: MODELS.SMART,
       max_tokens: 2500,
       messages: [{ role: 'user', content: withLanguage(prompt, userLanguage) + withLocaleContext(req.body.userLocale, req.body.userCurrency, req.body.userRegion) }],
-    }, { label: 'meeting-worth-it-message' });
+    }, { label: 'justify-my-meeting-message' });
     if (!parsed.message) return res.status(500).json({ error: 'Could not draft the message. Please try again.' });
     res.json(validateResult(parsed));
 
   } catch (error) {
-    console.error('[MeetingWorthIt/message]', error);
+    console.error('[JustifyMyMeeting/message]', error);
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 });

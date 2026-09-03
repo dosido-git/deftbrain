@@ -240,7 +240,7 @@ const TOOL_IDS = [
   'Giftology','GratitudeDebtClearer','BeforeHello','GriefGuide','HecklerPrep','HistoryToday','ConceptCoach',
   'HobbyMatch','JargonAssassin','LaundroMat','LayoverMaximizer','LazyWorkoutAdapter',
   'LeaseTrapDetector','LeverageLogic','GetNoticed','MagicMouth','MarkupDetective',
-  'MeetingBSDetector','MeetingHijackPreventer','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
+  'JustifyMyMeeting','MeetingHijackPreventer','Mend','MentalHealthNavigator','MicroAdventureMapper','MiseEnPlace',
 'MoneyDiplomat','NameAudit','NerveCheck','NameStorm','NameThatFeeling','CutToTheChase',
   'OnePercenter','PaperworkPath','PartyArchitect','PetWeirdnessDecoder','PlainTalk',
   'PlantRescue','PlotHole','PlotTwist','PreMortem','ProcedureProbe','TheCrux',
@@ -273,6 +273,9 @@ RETIRED_SLUGS.forEach(slug => {
 
 // ── Legacy /tool/ route redirects ──
 const LEGACY_REDIRECTS = {
+  '/MeetingBSDetector':  '/JustifyMyMeeting',  // renamed 2026-09-02
+  '/meetingbsdetector':  '/JustifyMyMeeting',
+  '/meeting-bs-detector': '/JustifyMyMeeting',
   '/LuckSurface': '/GetNoticed',   // renamed 2026-09-02
   '/lucksurface': '/GetNoticed',
   '/luck-surface': '/GetNoticed',

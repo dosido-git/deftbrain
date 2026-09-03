@@ -14,6 +14,7 @@ const TOOL_ALIASES = {
   Recall: 'TheCrux',          // renamed 2026-07-22 (broadened beyond lectures)
   IdeaAutopsy: 'ConceptCoach', // renamed 2026-08-31
   LuckSurface: 'GetNoticed',   // renamed 2026-09-02
+  MeetingBSDetector: 'JustifyMyMeeting', // renamed 2026-09-02
 };
 
 const ToolRenderer = ({ college }) => {

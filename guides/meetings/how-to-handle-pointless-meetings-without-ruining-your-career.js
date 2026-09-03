@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Plan the portfolio across your whole calendar",
-    body:     "Meeting BS Detector classifies each invite — decline, trim, attend — and generates the right script for each: trim asks for the borderline ones, capacity-framed declines for the pointless ones, agenda nudges for the rest.",
+    body:     "Justify My Meeting judges each meeting on its own: keep it, shorten it, fix it, or make it async. For the ones worth saving it builds the agenda; for the ones that should change it writes the message. It never suggests you simply skip, because that is rarely the move that survives contact with the office.",
     features: [
       "Portfolio meeting analysis",
       "Trim and decline scripts",
@@ -57,7 +57,7 @@ module.exports = {
       "Capacity-framed language",
       "Agenda improvement nudges",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };

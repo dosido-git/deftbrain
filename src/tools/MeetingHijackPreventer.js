@@ -842,7 +842,7 @@ const MeetingHijackPreventer = ({ tool }) => {
 
 
           <p className={`text-xs text-center ${c.textMuted}`}>
-            {t('mhp_xref_decode')} <a href="/MeetingBSDetector" className={`text-xs ${linkStyle}`}>🔍 {t('mhp_bs_detector')}</a> {t('mhp_xref_bs_analyzes')}
+            {t('mhp_xref_decode')} <a href="/JustifyMyMeeting" className={`text-xs ${linkStyle}`}>🔍 {t('mhp_bs_detector')}</a> {t('mhp_xref_bs_analyzes')}
           </p>
           {error && <div className={`${c.danger} border rounded-lg p-4 flex items-start gap-2`}><span>⚠️</span><p className="text-sm">{error}</p></div>}
         </div>
@@ -927,7 +927,7 @@ const MeetingHijackPreventer = ({ tool }) => {
           <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
             <p className={`text-[10px] font-bold ${c.textMuted} uppercase mb-2`}>🔗 {t('mhp_related')}</p>
             <div className="flex flex-wrap gap-3">
-              <a href="/MeetingBSDetector" className={`text-xs ${linkStyle}`}>🔍 {t('mhp_bs_detector')}</a>
+              <a href="/JustifyMyMeeting" className={`text-xs ${linkStyle}`}>🔍 {t('mhp_bs_detector')}</a>
               <a href="/VelvetHammer" className={`text-xs ${linkStyle}`}>🔨 {t('mhp_velvet_hammer')}</a>
             </div>
           </div>

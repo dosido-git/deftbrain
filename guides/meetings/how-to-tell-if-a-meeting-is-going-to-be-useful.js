@@ -49,7 +49,7 @@ module.exports = {
   cta: {
     glyph:    '🕵',
     headline: "Get a verdict on the meeting before you accept",
-    body:     "Meeting BS Detector reads the invite — title, agenda, duration, attendees — and gives you a confidence-scored verdict on whether it'll produce anything, plus what to do if it won't.",
+    body:     "Justify My Meeting reads the invite — title, agenda, duration, attendees — and judges whether the goal actually needs everyone there at the same time. It names what would change the verdict rather than sounding more certain than the information allows.",
     features: [
       "Pre-meeting verdict",
       "Confidence scoring",
@@ -57,7 +57,7 @@ module.exports = {
       "Five-question diagnostic",
       "Decline or trim suggestions",
     ],
-    toolId:   'MeetingBSDetector',
-    toolName: 'Meeting BS Detector',
+    toolId:   'JustifyMyMeeting',
+    toolName: 'Justify My Meeting',
   },
 };
