@@ -21,13 +21,13 @@ module.exports = {
   ],
   cta: {
     glyph:    '🎭',
-    headline: "There's a word for that. Find it.",
-    body:     "Describe a feeling you cannot quite name — the messy emotional state, the bittersweet mix, the thing there should be a word for — and Name That Feeling finds the precise term. From common English words you forgot to obscure terms from German, Japanese, Portuguese, and Finnish that captured what English missed.",
+    headline: "There's a word for that. Let's find it.",
+    body:     "Describe a feeling you cannot quite name — the messy emotional state, the bittersweet mix, the thing there should be a word for — and Name That Feeling looks for language that comes close. An ordinary English phrase when that's the honest answer, a word from another language when one genuinely fits, and it says plainly where even the best match falls short.",
     features: [
       "The messier and more specific your description, the better the match",
-      "Pulls from words across languages — German, Japanese, Portuguese, Finnish",
-      "Explains the etymology and why it fits",
-      "Surfaces related words that live in the same emotional neighborhood"
+      "Rates how closely a word actually fits — strong, close, or partial",
+      "Names where the best match falls short, not just where it works",
+      "Suggests other words that come close, and what each one misses"
     ],
     toolId:   'NameThatFeeling',
     toolName: 'Name That Feeling',

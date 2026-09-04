@@ -48,14 +48,14 @@ module.exports = {
 
   cta: {
     glyph:    '🎭',
-    headline: "Find the words for what you're actually feeling",
-    body:     "Name That Feeling handles mixtures — describe the contradictory feelings you're holding together, and the tool finds the precise vocabulary, including the multilingual words that capture mixed states English hasn't named.",
+    headline: "Find language for what you're actually feeling",
+    body:     "Name That Feeling handles mixtures — describe the contradictory feelings you're holding together, and it looks for the closest word or phrase it can support, in English or another language, and says honestly how well it actually fits.",
     features: [
       "Mixed-emotion naming",
-      "Multilingual vocabulary",
+      "Rates how closely a word actually fits",
       "Adjacent-emotion distinctions",
       "Description-to-word matching",
-      "Cultural context notes",
+      "Says plainly where a match falls short",
     ],
     toolId:   'NameThatFeeling',
     toolName: 'Name That Feeling',

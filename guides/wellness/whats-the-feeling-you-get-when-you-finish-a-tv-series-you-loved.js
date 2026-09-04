@@ -48,14 +48,14 @@ module.exports = {
 
   cta: {
     glyph:    '🎭',
-    headline: "Find the precise word for any modern feeling",
-    body:     "Name That Feeling matches descriptions of contemporary emotional experiences — post-series emptiness, doomscroll exhaustion, group-chat dread — to the precise vocabulary, in English or whatever language captured it best.",
+    headline: "Find language for any modern feeling",
+    body:     "Name That Feeling matches descriptions of contemporary emotional experiences — post-series emptiness, doomscroll exhaustion, group-chat dread — to the closest word or phrase it can support, in English or another language, and says honestly how well it fits.",
     features: [
       "Modern-emotion vocabulary",
-      "Multilingual matching",
-      "Description-to-word translation",
+      "Description-to-word matching",
+      "Rates how closely a word actually fits",
       "Adjacent-feeling distinctions",
-      "Cultural context notes",
+      "Says plainly where a match falls short",
     ],
     toolId:   'NameThatFeeling',
     toolName: 'Name That Feeling',

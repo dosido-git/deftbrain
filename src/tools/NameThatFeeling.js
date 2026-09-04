@@ -21,7 +21,7 @@ const LANGUAGE_FLAGS = {
 // COMPONENT
 // ════════════════════════════════════════════════════════════
 const NameThatFeeling = ({ tool }) => {
-  const { callToolEndpoint, loading, userLocale, userCurrency, userRegion } = useClaudeAPI();
+  const { callToolEndpoint, loading } = useClaudeAPI();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -68,9 +68,7 @@ const NameThatFeeling = ({ tool }) => {
     // Tool-specific display keys
     warm:          isDark ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200',
     quoteBg:       isDark ? 'bg-zinc-700/50' : 'bg-slate-50',
-    world:         isDark ? 'bg-sky-900/20 border-sky-700/50' : 'bg-sky-50 border-sky-200',
     poetic:        isDark ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200',
-    hug:           isDark ? 'bg-emerald-900/20 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200',
   };
   c.textMuteded = c.textMuted;
   c.label = c.labelText;
@@ -86,32 +84,55 @@ const NameThatFeeling = ({ tool }) => {
 
   // ── State ──
   const [description, setDescription] = useState('');
-  const [context, setContext] = useState('');
-  const [results, setResults] = usePersistentState('namethatfeeling-result', null);
-  const [sessionHistory, setSessionHistory] = usePersistentState('namethatfeeling-history', []);
+  const [whatWasHappening, setWhatWasHappening] = useState('');
+  const [whyHardToName, setWhyHardToName] = useState('');
+  const [results, setResults] = usePersistentState('namethatfeeling-result-v2', null);
+  const [sessionHistory, setSessionHistory] = usePersistentState('namethatfeeling-history-v2', []);
   const [error, setError] = useState('');
   // PF-16: this tool shipped with no reset at all — setResults(null) existed
   // only inside the submit handler. Added, on the title row like every other.
-  const handleReset = () => { setDescription(''); setContext(''); setResults(null); setError(''); };
+  const handleReset = () => { setDescription(''); setWhatWasHappening(''); setWhyHardToName(''); setResults(null); setError(''); };
+
+  const matchLabelKeys = { 'STRONG MATCH': 'ntf_match_strong', 'CLOSE MATCH': 'ntf_match_close', 'PARTIAL MATCH': 'ntf_match_partial' };
+  const matchLabel = (m) => matchLabelKeys[m] ? t(matchLabelKeys[m]) : m;
+  const matchStyle = (m) => {
+    if (m === 'STRONG MATCH') return c.success;
+    if (m === 'PARTIAL MATCH') return c.warning;
+    return c.warm;
+  };
 
   // ── API ──
   const runSearch = useCallback(async () => {
     if (!description.trim()) return;
     setError('');
     setResults(null);
+    // The two optional fields fold into one context string — the backend
+    // schema only ever needed one CONTEXT block, and two separate params
+    // would be a field the route never reads.
+    const contextParts = [];
+    if (whatWasHappening.trim()) contextParts.push(`What was happening: ${whatWasHappening.trim()}`);
+    if (whyHardToName.trim()) contextParts.push(`Why this is hard to name: ${whyHardToName.trim()}`);
     try {
       const data = await callToolEndpoint('name-that-feeling', {
         description: description.trim(),
-        context: context.trim() || undefined,
-        userLocale, userCurrency, userRegion,
+        context: contextParts.join('\n') || undefined,
       });
-      setResults(data)
-      // PF-25 exception: 40-char preview-text truncation; session history is capped at 6.
-      setSessionHistory(prev => [{ id: Date.now(), date: new Date().toISOString(), preview: (description || '').slice(0, 40) }, ...prev].slice(0, 6));
+      setResults(data);
+      // Store only what the visitor actually gave us and what came back — no
+      // inferred pattern or history across sessions, per the tool's own rule
+      // against inventing emotional history.
+      setSessionHistory(prev => [{
+        id: Date.now(),
+        date: new Date().toISOString(),
+        // PF-25 exception: this 40 is string-preview truncation, not a
+        // history cap — the array itself is capped at 6, right below.
+        preview: description.trim().slice(0, 40),
+        bestMatchWord: data?.best_match?.word || '',
+      }, ...prev].slice(0, 6));
     } catch (err) {
       setError(err.message || t('ntf_error'));
     }
-  }, [description, context, callToolEndpoint, setResults, setSessionHistory, userLocale, userCurrency, userRegion, t]);
+  }, [description, whatWasHappening, whyHardToName, callToolEndpoint, setResults, setSessionHistory, t]);
 
   const loadExample = useCallback(() => {
     const ex = pickExample('NameThatFeeling', [
@@ -119,37 +140,45 @@ const NameThatFeeling = ({ tool }) => {
       { desc: 'ntf_ex2_desc', ctx: 'ntf_ex2_context' },
     ]);
     setDescription(t(ex.desc));
-    setContext(t(ex.ctx));
+    setWhatWasHappening(t(ex.ctx));
+    setWhyHardToName('');
     setResults(null);
   }, [setResults, t]);
 
   // ── Build text ──
   const buildFullText = useCallback(() => {
     if (!results) return '';
-    const lines = [`🎭 NameThatFeeling`, '', `"${description}"`, ''];
-    if (results?.best_match) {
-      lines.push(`✨ ${t('ntf_copy_best')} ${results?.best_match?.word} (${results?.best_match?.language})`);
-      lines.push(results?.best_match?.definition, '');
+    const lines = [`🎭 ${t('ntf_title')}`, '', `"${description}"`, ''];
+    if (results?.what_you_described?.ingredients?.length) {
+      lines.push(t('ntf_copy_describing'), results.what_you_described.ingredients.join(' · '));
+      if (results.what_you_described.tension) lines.push(results.what_you_described.tension);
+      lines.push('');
     }
-    if (results?.close_matches?.length) {
-      lines.push(`🎯 ${t('ntf_copy_close')}`);
-      results?.close_matches?.forEach(m => {
+    if (results?.best_match) {
+      const bm = results.best_match;
+      lines.push(`✨ ${t('ntf_copy_best')} ${bm.word} (${bm.language}) — ${matchLabel(bm.match)}`);
+      lines.push(bm.definition);
+      if (bm.why_it_fits) lines.push(t('ntf_why_it_fits'), bm.why_it_fits);
+      if (bm.where_it_doesnt) lines.push(t('ntf_where_it_doesnt'), bm.where_it_doesnt);
+      lines.push('');
+    }
+    if (results?.other_words?.length) {
+      lines.push(`🎯 ${t('ntf_other_words')}`);
+      results.other_words.forEach(m => {
         lines.push(`  ${LANGUAGE_FLAGS[m.language] || '🌍'} ${m.word} (${m.language})`);
         lines.push(`  ${m.definition}`);
-        if (m.what_it_misses) lines.push(`  ${t('ntf_copy_missing')} ${m.what_it_misses}`);
+        if (m.captures) lines.push(`  ${t('ntf_captures')} ${m.captures}`);
+        if (m.misses) lines.push(`  ${t('ntf_misses')} ${m.misses}`);
       });
       lines.push('');
     }
-    if (results?.from_other_languages?.length) {
-      lines.push(t('ntf_copy_other'));
-      results?.from_other_languages?.forEach(w => {
-        lines.push(`  ${LANGUAGE_FLAGS[w.language] || '🌍'} ${w.word} (${w.language}) — ${w.actual_meaning}`);
-      });
+    if (results?.plain_english) lines.push(`💬 ${t('ntf_plain_english')}`, `"${results.plain_english}"`, '');
+    if (results?.made_up_name?.useful && results.made_up_name.name) {
+      lines.push(`🪶 ${t('ntf_made_up_label')}`, results.made_up_name.name);
+      if (results.made_up_name.meaning) lines.push(results.made_up_name.meaning);
       lines.push('');
     }
-    if (results?.the_poetic_name) lines.push(`🪶 "${results?.the_poetic_name}"`);
-    if (results?.you_are_not_alone) lines.push('', results?.you_are_not_alone);
-    if (results?.share_line) lines.push('', `📸 ${results?.share_line}`);
+    if (results?.share_line) lines.push(`📸 ${results.share_line}`);
     return lines.join('\n') + BRAND;
   }, [results, description, t]);
 
@@ -200,7 +229,7 @@ const NameThatFeeling = ({ tool }) => {
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
               {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(results || description.trim() || context.trim()) ? (
+              {(results || description.trim() || whatWasHappening.trim() || whyHardToName.trim()) ? (
                 <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
                   ↺ {t('start_over')}
                 </button>
@@ -238,16 +267,31 @@ const NameThatFeeling = ({ tool }) => {
           </div>
         </div>
 
-        {/* Optional context */}
+        {/* Optional context — two narrow questions, never a classification */}
         <details className={`mb-5 ${c.textSecondary}`}>
           <summary className={`text-xs font-bold cursor-pointer ${c.accentTxt} mb-2`}>{t('ntf_add_context')}</summary>
-          <input
-            type="text"
-            value={context}
-            onChange={e => setContext(e.target.value)}
-            placeholder={t('ntf_ph_context')}
-            className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2 mt-2`}
-          />
+          <div className="space-y-3 mt-2">
+            <div>
+              <label className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_what_label')}</label>
+              <input
+                type="text"
+                value={whatWasHappening}
+                onChange={e => setWhatWasHappening(e.target.value)}
+                placeholder={t('ntf_ctx_what_ph')}
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+              />
+            </div>
+            <div>
+              <label className={`text-xs font-medium ${c.labelText} block mb-1`}>{t('ntf_ctx_why_label')}</label>
+              <input
+                type="text"
+                value={whyHardToName}
+                onChange={e => setWhyHardToName(e.target.value)}
+                placeholder={t('ntf_ctx_why_ph')}
+                className={`w-full px-3 py-2 border rounded-lg text-sm ${c.input} outline-none focus:ring-2`}
+              />
+            </div>
+          </div>
         </details>
 
         <button title={t('cmd_enter')}
@@ -265,7 +309,13 @@ const NameThatFeeling = ({ tool }) => {
           </kbd>
         )}
         </button>
-        <p className={`text-xs ${c.textMuted}`}>{t('ntf_xref_pre')} <a href="/SpiralStopper" className={linkStyle}>🌀 {t('ntf_spiralstopper')}</a> {t('ntf_xref_post')}</p>
+        {/* Neutral discovery link, not an intervention — Spiral Stopper used
+            to sit here as "Thoughts spiraling?", presuming every visitor
+            naming a feeling is in distress. Naming wistfulness or
+            post-book sadness is not spiraling. */}
+        {!results && (
+          <p className={`text-xs ${c.textMuted}`}>{t('ntf_xref_related')} <a href="/NerveCheck" className={linkStyle}>🫁 {t('ntf_nervecheck')}</a></p>
+        )}
         </div>
       </div>
 
@@ -287,77 +337,83 @@ const NameThatFeeling = ({ tool }) => {
               <span className="text-3xl block mb-2">✨</span>
               <p className={`text-[10px] font-bold uppercase mb-1 ${c.textMuteded}`}>{t('ntf_the_word')}</p>
               <p className={`text-3xl font-black ${c.text} mb-1`}>{results?.best_match?.word}</p>
-              <p className={`text-xs ${c.textMuteded} mb-3`}>
+              <p className={`text-xs ${c.textMuteded} mb-2`}>
                 {getFlag(results?.best_match?.language)} {results?.best_match?.language}
                 {results?.best_match?.pronunciation && ` · ${results?.best_match?.pronunciation}`}
               </p>
+              {results?.best_match?.match && (
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border mb-3 ${matchStyle(results.best_match.match)}`}>
+                  {matchLabel(results.best_match.match)}
+                </span>
+              )}
               <p className={`text-sm max-w-md mx-auto mb-3`}>{results?.best_match?.definition}</p>
-              {results?.best_match?.why_this_fits && (
-                <p className={`text-xs ${c.textMuteded} italic max-w-sm mx-auto`}>{results?.best_match?.why_this_fits}</p>
+              {results?.best_match?.why_it_fits && (
+                <div className="max-w-sm mx-auto mb-2">
+                  <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_why_it_fits')}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{results.best_match.why_it_fits}</p>
+                </div>
+              )}
+              {/* Only rendered when the model actually supplied a caveat — a
+                  genuinely strong match has nothing to manufacture here. */}
+              {results?.best_match?.where_it_doesnt && (
+                <div className="max-w-sm mx-auto">
+                  <p className={`text-[10px] font-bold uppercase ${c.textMuteded}`}>{t('ntf_where_it_doesnt')}</p>
+                  <p className={`text-xs ${c.textSecondary}`}>{results.best_match.where_it_doesnt}</p>
+                </div>
               )}
             </div>
           )}
 
-          {/* Close matches */}
-          {results?.close_matches?.length > 0 && (
+          {/* What you're describing */}
+          {results?.what_you_described?.ingredients?.length > 0 && (
             <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 {t('ntf_close_matches')}</h3>
+              <h3 className={`text-sm font-bold ${c.text} mb-2`}>🧩 {t('ntf_describing')}</h3>
+              <p className={`text-sm ${c.textSecondary} mb-1`}>{results.what_you_described.ingredients.join(' · ')}</p>
+              {results.what_you_described.tension && (
+                <p className={`text-xs ${c.textMuteded} italic`}>{results.what_you_described.tension}</p>
+              )}
+            </div>
+          )}
+
+          {/* Other words that come close */}
+          {results?.other_words?.length > 0 && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
+              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🎯 {t('ntf_other_words')}</h3>
               <div className="space-y-2">
-                {results?.close_matches?.map((m, i) => (
+                {results?.other_words?.map((m, i) => (
                   <div key={i} className={`${c.quoteBg} rounded-lg p-3`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-bold ${c.text}`}>{m.word}</span>
-                      <span className={`text-[9px] ${c.textMuteded}`}>{getFlag(m.language)} {m.language}</span>
+                      <span className={`text-[9px] ${c.textMuteded}`}>
+                        {getFlag(m.language)} {m.language}{m.pronunciation && ` · ${m.pronunciation}`}
+                      </span>
                     </div>
                     <p className={`text-xs ${c.textSecondary} mb-1`}>{m.definition}</p>
-                    {m.what_it_misses && (
-                      <p className={`text-[10px] ${c.textMuteded} italic`}>{t('ntf_missing')} {m.what_it_misses}</p>
-                    )}
+                    {m.captures && <p className={`text-[10px] ${c.textMuteded}`}>{t('ntf_captures')} {m.captures}</p>}
+                    {m.misses && <p className={`text-[10px] ${c.textMuteded} italic`}>{t('ntf_misses')} {m.misses}</p>}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* From other languages */}
-          {results?.from_other_languages?.length > 0 && (
-            <div className={`${c.card} border ${c.border} rounded-xl p-4`}>
-              <h3 className={`text-sm font-bold ${c.text} mb-3`}>🌍 {t('ntf_other_langs')}</h3>
-              <div className="space-y-3">
-                {results?.from_other_languages?.map((w, i) => (
-                  <div key={i} className={`${c.world} border rounded-lg p-4`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{getFlag(w.language)}</span>
-                      <span className={`text-lg font-black ${c.text}`}>{w.word}</span>
-                    </div>
-                    <p className={`text-[10px] ${c.textMuteded} mb-1`}>
-                      {w.language} {w.pronunciation && `· ${w.pronunciation}`}
-                      {w.literal_meaning && ` · ${t('ntf_lit')} "${w.literal_meaning}"`}
-                    </p>
-                    <p className={`text-sm mb-1.5`}>{w.actual_meaning}</p>
-                    {w.beauty_note && (
-                      <p className={`text-xs ${c.textMuteded} italic`}>💎 {w.beauty_note}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
+          {/* Plain English */}
+          {results?.plain_english && (
+            <div className={`${c.card} border ${c.border} rounded-xl p-4 text-center`}>
+              <p className={`text-[10px] font-bold uppercase mb-1.5 ${c.textMuteded}`}>💬 {t('ntf_plain_english')}</p>
+              <p className={`text-sm font-medium italic`}>"{results.plain_english}"</p>
             </div>
           )}
 
-          {/* The poetic name */}
-          {results?.the_poetic_name && (
+          {/* A name we made up — only when the model judged it useful */}
+          {results?.made_up_name?.useful && results?.made_up_name?.name && (
             <div className={`${c.poetic} border-2 rounded-xl p-5 text-center`}>
               <span className="text-2xl block mb-2">🪶</span>
-              <p className={`text-[10px] font-bold uppercase mb-2`}>{t('ntf_poetic_label')}</p>
-              <p className={`text-lg font-bold italic`}>"{results?.the_poetic_name}"</p>
-            </div>
-          )}
-
-          {/* You are not alone */}
-          {results?.you_are_not_alone && (
-            <div className={`${c.hug} border-2 rounded-xl p-5 text-center`}>
-              <span className="text-2xl block mb-2">💚</span>
-              <p className={`text-sm`}>{results?.you_are_not_alone}</p>
+              <p className={`text-[10px] font-bold uppercase mb-2`}>{t('ntf_made_up_label')}</p>
+              <p className={`text-lg font-bold italic mb-1`}>{results.made_up_name.name}</p>
+              {results.made_up_name.meaning && (
+                <p className={`text-xs ${c.textSecondary}`}>{results.made_up_name.meaning}</p>
+              )}
             </div>
           )}
 
@@ -371,7 +427,7 @@ const NameThatFeeling = ({ tool }) => {
 
           {/* Go again */}
           <button
-            onClick={() => { setResults(null); setDescription(''); setContext(''); }}
+            onClick={() => { setResults(null); setDescription(''); setWhatWasHappening(''); setWhyHardToName(''); }}
             className={`${c.btnSecondary} px-4 py-2 rounded-lg text-xs font-bold min-h-[36px]`}
           >
             {t('ntf_go_again')}
@@ -389,7 +445,22 @@ const NameThatFeeling = ({ tool }) => {
         </div>
       )}
       <p className={`text-xs text-center ${c.textMuted}`}>{t('ntf_disclaimer')}</p>
-      {sessionHistory.length > 0 && (<div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}><p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('ntf_recent')}</p><div className="space-y-1">{sessionHistory.map(s => (<div key={s.id} className="flex items-center justify-between"><span className={`text-xs ${c.textSecondary} truncate`}>{s.preview || t('ntf_session')}</span><span className={`text-xs ${c.textMuted} ms-2`}>{new Date(s.date).toLocaleDateString()}</span></div>))}</div></div>)}
+      {sessionHistory.length > 0 && (
+        <div className={`${c.cardAlt} border ${c.border} rounded-xl p-4`}>
+          <p className={`text-xs font-bold ${c.textMuted} mb-2`}>📋 {t('ntf_recent')}</p>
+          <div className="space-y-1">
+            {sessionHistory.map(s => (
+              <div key={s.id} className="flex items-center justify-between gap-2">
+                <span className={`text-xs ${c.textSecondary} truncate`}>
+                  {s.preview || t('ntf_session')}
+                  {s.bestMatchWord ? ` — ${s.bestMatchWord}` : ''}
+                </span>
+                <span className={`text-xs ${c.textMuted} ms-2 flex-shrink-0`}>{new Date(s.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1770,9 +1770,9 @@ export const tools = [
   primer: {
     when: "You feel something and 'sad' or 'anxious' isn't it.",
     give: "The feeling in your own messy words — when it happens, what it's near but not quite.",
-    get: "The precise word, from forgotten English terms to ones other languages have and English doesn't.",
+    get: "Language for it — the strongest match, how well it actually fits, and a plain-English phrase either way.",
   },
-  seoDescription: "Can't name what you're feeling? Describe it in your own messy words and get the precise word back — from English to terms other languages nailed.",
+  seoDescription: "Can't name what you're feeling? Describe it in your own words and find language that comes close — an English phrase, a word from another language, or one we coin, honestly labeled either way.",
   seoTitle: "Find the Word for a Feeling: Emotion Namer",
   title: "Name That Feeling",
   tagline: "There's a word for that. Let's find it.",
@@ -1780,25 +1780,25 @@ export const tools = [
   icon: "🎭",
   categories: ['Energy', 'Me'],
   headerColor: "#e0b8b8",
-  description: "Describe a feeling you can't quite name — that weird mix of emotions, the thing there should be a word for. AI finds the precise word, whether it's in English, German, Japanese, or any language that nailed it.",
+  description: "Describe a feeling you can't quite name — a strange mix, a familiar ache, or something there should be a word for. Name That Feeling looks across languages for words that come close, explains the differences, and gives you language for what you're experiencing.",
   guide: {
-    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and AI finds the precise word for it — from common English terms you forgot to obscure words from other languages that captured the exact feeling. Because sometimes knowing the name for something makes it easier to carry.",
+    overview: "Name That Feeling is for the emotions that live between the words you know. Describe what you're feeling in whatever messy way you can, and it finds the strongest word or phrase it can actually support — an ordinary English one when that's the honest answer, a word from another language when one genuinely fits closer, and it says plainly where even the best match falls short. Because sometimes knowing there's language for something makes it easier to carry.",
     howToUse: [
       "Describe the feeling in your own words — messy is fine",
-      "Be as specific as possible about the nuances (when it happens, what triggers it, what it's close to but not quite)",
-      "Read the word, its origin, and why it fits",
-      "Discover words from languages around the world that nailed feelings English missed",
-      "Share the perfect word with someone who's feeling the same thing"
+      "Optionally add what was happening and why it's hard to name — not required",
+      "Read the word, how closely it actually matches, and where it doesn't",
+      "Check the other words that come close, and what each one captures or misses",
+      "Share the word — or the plain-English phrase — with someone who'd get it"
     ],
     example: {
       scenario: "You feel nostalgic for a time you never actually experienced — like missing the 1970s even though you were born in 1995.",
       action: "Describe that feeling as best you can.",
-      result: "AI surfaces 'anemoia' — nostalgia for a time you've never known. It explains the origin, why it fits, and gives you related words like 'saudade' and 'sehnsucht' that live in the same emotional neighborhood."
+      result: "Name That Feeling surfaces 'anemoia' as a close match — nostalgia for a time you've never known — names exactly where it fits and where it's broader than your specific feeling, and offers a plain-English phrase you could use just as easily."
     },
     tips: [
       "The weirder and more specific your description, the better the match",
-      "If the first word doesn't quite fit, tell it why — it'll dig deeper",
-      "Some of the best emotion words come from German, Japanese, Portuguese, and Finnish",
+      "A plain English phrase is not a consolation prize — sometimes it's the more honest answer than a foreign word stretched to fit",
+      "Pay attention to 'where it doesn't' — that's usually more interesting than the match itself",
       "This is a surprisingly fun party game — describe a feeling and see who guesses closest"
     ]
   }

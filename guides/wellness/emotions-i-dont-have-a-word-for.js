@@ -48,12 +48,12 @@ module.exports = {
 
   cta: {
     glyph:    '🎭',
-    headline: "Find the word for the feeling you're trying to name",
-    body:     "Name That Feeling matches your description of an emotion to its precise word in any language that captured it — including the German, Japanese, and Portuguese vocabulary English never adopted.",
+    headline: "Find language for the feeling you're trying to name",
+    body:     "Name That Feeling matches your description of an emotion to the closest word it can support — an English phrase when that's the honest answer, a word from another language when one genuinely fits — and says plainly how well it actually matches.",
     features: [
-      "Multilingual emotional vocabulary",
       "Description-to-word matching",
-      "Cultural context notes",
+      "Rates how closely a word actually fits",
+      "Says plainly where a match falls short",
       "Mixed-emotion naming",
       "Adjacent-feeling distinctions",
     ],

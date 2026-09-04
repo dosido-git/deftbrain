@@ -1,80 +1,238 @@
 {
   "_meta": {
-    "tool": "NameThatFeeling",
-    "generated": "2026-07-13",
-    "model": "claude-haiku (MODELS.FAST), 1 endpoint",
-    "baseline_commit": "namethatfeeling-v1",
-    "how_to_regression_diff": "Re-run (npm run check:golden name-that-feeling). Diff for QUALITY not exact match: HTTP 200, best_match present, close_matches + from_other_languages each 2-3, no annotation suffixes. GUARDS: guard keys top-level parsed.best_match (always emitted); no leaks; caps EXACTLY 2-3 each. DO NOT reverse: the global brevity line in PERSONALITY; EXACTLY 2-3 caps; no annotation suffixes."
+    "tool": "name-that-feeling",
+    "captured": "2026-09-05",
+    "baseline": "namethatfeeling-v2",
+    "model": "MODELS.FAST",
+    "note": "Regression reference for Name That Feeling, re-recorded after the 2026-09-05 grounding rewrite. The v1 golden (1 case) was discarded: its expected output carried close_matches/from_other_languages/you_are_not_alone/the_poetic_name — fields the rewrite removed or restructured entirely (close_matches + from_other_languages merged into other_words; the_poetic_name restructured into made_up_name with a useful flag; you_are_not_alone deleted outright). Re-run with `npm run check:golden name-that-feeling` against a local backend. What to read for by eye, since no gate can see it: (1) best_match.match is never STRONG when the description's specific timing/context genuinely diverges from the word's established meaning — where_it_doesnt must name the gap; (2) no culture-stereotyping ('only X understand this', 'this language bothered to name it') and no personality-reading ('the mark of someone who...'); (3) share_line's framing (There's a word for / One word that comes close is / This reminds me of) must match the match enum, never upgraded; (4) made_up_name.useful is false as often as it's true — a coined term should appear only when nothing established covers the feeling, not as a guaranteed closer. Each case carries its own `guards` line. See audit/tool-notes/NAMETHATFEELING-NOTES.md."
   },
   "cases": [
     {
-      "name": "de-fernweh",
+      "name": "vacation-nostalgia-close-match",
       "endpoint": "/api/name-that-feeling",
       "input": {
-        "userLanguage": "de",
-        "userLocale": "de-DE",
-        "userCurrency": "EUR",
-        "userRegion": "Germany",
-        "description": "Diese wehmütige Sehnsucht nach einem Ort, an dem ich nie war, aber der sich wie Zuhause anfühlt",
-        "context": "beim Betrachten alter Fotos"
+        "description": "That feeling on the last day of a vacation where I am happy I went, sad it is ending, and somehow already nostalgic for it before I am even home. It happens every time, even on short trips.",
+        "context": "Happens most when the place felt like somewhere I could have lived."
       },
+      "guards": "The reference case this rewrite exists for. best_match.match should read CLOSE MATCH or PARTIAL, not STRONG, since the timing (missing it while still there) is not what the classic word usually means — where_it_doesnt must name that gap explicitly, not stay silent because the match otherwise sounds good. No 'only Portuguese people feel this,' no 'the mark of someone who...', no invented etymology. made_up_name.useful may legitimately be false here if an established word or phrase already covers it — do not force a coined term to fill the field.",
+      "optionalSections": [],
       "output": {
-        "best_match": {
-          "word": "Fernweh",
-          "language": "Deutsch",
-          "pronunciation": "FERN-vay",
-          "definition": "Das tiefe Verlangen nach einem Ort, den man noch nicht kennt, gemischt mit dem Gefühl, dass man dort eigentlich hingehört",
-          "why_this_fits": "Fernweh erfasst genau diese Paradoxie: das Heimweh nach einem Zuhause, das du nie hattest. Es ist nicht nur Wanderlust — es ist die wehmütige Gewissheit, dass ein bestimmter Ort dein Zuhause *sein sollte*. Beim Betrachten alter Fotos wird dieses Gefühl besonders scharf, weil die Vergangenheit in den Bildern eine Art emotionale Landkarte zu einem Ort zeichnet, den deine Seele schon kennt"
+        "what_you_described": {
+          "ingredients": [
+            "happiness about the experience itself",
+            "sadness that it is ending",
+            "nostalgia arriving before the experience is actually over",
+            "the place feeling like somewhere you could have lived"
+          ],
+          "tension": "You are still physically present in the good thing while already grieving its loss — the end arrives before you leave."
         },
-        "close_matches": [
+        "best_match": {
+          "word": "saudade",
+          "language": "Portuguese",
+          "pronunciation": "sow-DAH-duh",
+          "match": "CLOSE MATCH",
+          "definition": "A deep emotional state of nostalgic longing for something absent, lost, or unattainable; a melancholic yearning for what is no longer present or may never be.",
+          "why_it_fits": "Saudade captures the simultaneous pleasure and ache of missing something while it is still happening. It names the bittersweet knowledge that a good thing is already slipping away. Your description of nostalgia arriving before you leave is precisely the structure of saudade — the feeling contains both the presence of the thing and the absence that is about to begin.",
+          "where_it_doesnt": "Saudade traditionally emphasizes yearning and absence more than active present-moment happiness. Your feeling includes genuine contentment about being there right now, not only regret about leaving. The nostalgia overlaps with immediate joy, not replaces it."
+        },
+        "other_words": [
           {
-            "word": "Sehnsucht",
-            "language": "Deutsch",
-            "definition": "Ein tiefes, oftmals unerreichbares Verlangen nach etwas oder jemandem",
-            "what_it_misses": "Sehnsucht ist breiter und weniger spezifisch — sie benannt das Verlangen, aber nicht die eigenartige Gewissheit, dass dieser Ort *wie Zuhause* sein sollte. Sie fehlt die räumliche Komponente und die Heimat-Paradoxie"
+            "word": "wistfulness",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "A feeling of vague or regretful longing, often tinged with sadness or pensiveness.",
+            "captures": "The bittersweet quality and the sense of longing for something you are aware you will lose.",
+            "misses": "Does not quite capture the temporal oddness of missing something before it ends, or the active happiness component. It skews more toward gentle sadness than toward the coexistence of joy and grief."
           },
           {
-            "word": "Nostalgie für die Zukunft",
-            "language": "Deutsch (poetische Umschreibung)",
-            "definition": "Das Gefühl, bereits etwas zu vermissen, das man noch nicht erlebt hat",
-            "what_it_misses": "Diese Phrase erfasst den zeitlichen Widerspruch, aber nicht die emotionale Tiefe der *Zugehörigkeit*, die in deinem Gefühl so zentral ist"
-          },
-          {
-            "word": "Hiraeth-ähnliches Gefühl",
-            "language": "Deutsch (Lehnwort-Adaption)",
-            "definition": "Ein diffuses Heimweh nach einem Ort, der vielleicht nie existierte oder dem man nie angehörte",
-            "what_it_misses": "Hiraeth (Walisisch) kommt sehr nahe, aber es fehlt die spezifische Komponente der alten Fotos — das Gefühl, dass visuelle Erinnerungen an einen Ort dich zu etwas Vergangenem zurückziehen"
+            "word": "end-of-chapter feeling",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "The specific poignancy of standing at the threshold of an ending while still inside the thing that is ending — aware that a closed chapter is about to become memory.",
+            "captures": "The timing of your experience: sadness arriving early, while you are still there. The sense that a place or time was meaningful enough to have shaped you, and the knowledge of that shaping happening in real time.",
+            "misses": "Less lyrical than saudade; more descriptive than evocative. Does not name a single unified feeling so much as describe the temporal moment."
           }
         ],
-        "from_other_languages": [
+        "plain_english": "That bittersweet last-day feeling where you are happy you went, sad it is ending, and already missing it while you are still there — especially when a place felt like somewhere you could have lived.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "One word that comes close is saudade — Portuguese for that ache of longing for something still present but already leaving."
+      }
+    },
+    {
+      "name": "rootless-displacement-made-up-name",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "description": "I moved away from my hometown years ago and built a whole life somewhere else. Sometimes I feel homesick for a place that does not really exist anymore, and I am not sure I would even fit there now. It is not quite grief and not quite nostalgia.",
+        "context": "What was happening: thinking about visiting for the holidays. Anything important: I have moved countries twice and feel a bit unmoored between places."
+      },
+      "guards": "The exact shape of feeling ('displacement,' 'unmoored between countries') that invites culture-stereotyping and personality-reading in the old tool. Nothing may say 'only expats understand this,' 'this culture has a word because...', or attribute the feeling to what kind of person the visitor is. Any Portuguese/German/etc. word offered must carry a real, honest definition — no invented etymology or pronunciation offered without genuine confidence.",
+      "optionalSections": [
+        "made_up_name"
+      ],
+      "output": {
+        "what_you_described": {
+          "ingredients": [
+            "longing for a place from your past",
+            "awareness that the place has changed",
+            "uncertainty about whether you belong there now",
+            "displacement across multiple countries",
+            "homesickness without a clear home to be sick for"
+          ],
+          "tension": "You miss a place partly because it no longer exists as you knew it, and you're not certain you would fit even if it did. The homesickness is real, but its object is unstable."
+        },
+        "best_match": {
+          "word": "homesickness for a home that no longer exists",
+          "language": "English",
+          "pronunciation": "",
+          "match": "STRONG MATCH",
+          "definition": "Longing for a place you once belonged to, complicated by the knowledge that both the place and your relationship to it have fundamentally changed.",
+          "why_it_fits": "You named the core of it yourself: homesick, but for something that doesn't exist anymore. This isn't nostalgia for how things were (though that may be part of it), and it isn't grief for a loss you've processed. It's the specific ache of missing a version of home that can't be visited because it exists only in time, not in geography.",
+          "where_it_doesnt": ""
+        },
+        "other_words": [
           {
-            "word": "Hiraeth",
-            "language": "Walisisch",
-            "pronunciation": "HEER-eyth",
-            "literal_meaning": "Kombination aus 'Hir' (lang her) und 'Aeth' (Sehnsucht) — wörtlich 'alte Sehnsucht'",
-            "actual_meaning": "Ein unbeschreibliches Heimweh nach einem Ort, einem Zustand oder einer Zeit, die man nie hatte oder die nicht mehr existiert. Eine Sehnsucht nach etwas Tieferem als nur einem physischen Ort — nach einem emotionalen Zustand der Zugehörigkeit",
-            "beauty_note": "Das Walisische hat dieses Wort geschaffen, weil die Kultur selbst zwischen Vergangenheit und Gegenwart aufgespannt ist. Es benannt das, was viele Menschen fühlen, aber nur wenige Sprachen trauen sich zu benennen: die Trauer um Heimat, die man nie hatte"
+            "word": "rootlessness",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "The condition of not being firmly anchored to any single place; feeling unmoored between locations.",
+            "captures": "The broader state you describe—having moved countries twice and feeling between places. This names the chronic condition rather than the acute feeling.",
+            "misses": "It doesn't capture the specific ache of missing something that existed. Rootlessness is more about lack of ground; your feeling includes active longing."
           },
           {
-            "word": "Saudade",
-            "language": "Portugiesisch",
-            "pronunciation": "saw-DAH-duh",
-            "literal_meaning": "'Süße Abwesenheit' oder 'süße Trauer'",
-            "actual_meaning": "Ein tiefes emotionales Zustand — gleichzeitig Wehmut, Sehnsucht und Trauer um etwas (oder jemanden) Abwesendes, das man vielleicht nie hatte oder das verloren ging. Es ist melancholisch, aber nicht hoffnungslos",
-            "beauty_note": "Saudade ist das Gefühl selbst, das in einer Kolonialmacht entstanden ist, die zwischen Heimat und Ferne zerrissen war. Es benennt die *Schönheit* in dieser Trauer — nicht die Trauer selbst, sondern die süße Erinnerung an Abwesenheit"
-          },
-          {
-            "word": "Toska",
-            "language": "Russisch (тоска)",
-            "pronunciation": "TAWS-kuh",
-            "literal_meaning": "Schwer zu übersetzen — irgendwo zwischen Sehnsucht, Trauer und innerer Leere",
-            "actual_meaning": "Ein diffuses, existentielles Gefühl der Sehnsucht nach etwas Undefinierbarem. Es ist nicht Traurigkeit über etwas Konkretes, sondern ein Schmerz im Vorbeigehen — als würde man einen Traum vermissen, von dem man nie wusste, dass man ihn träumte",
-            "beauty_note": "Dostojevskij schrieb über Toska als das typisch Russische Gefühl — eine Sehnsucht nach allem und nichts zugleich. Beim Betrachten alter Fotos tritt dieses Gefühl auf, weil die Bilder dir zeigen, dass etwas Wichtiges in deiner Geschichte fehlt"
+            "word": "saudade",
+            "language": "Portuguese",
+            "pronunciation": "sow-DAH-duh",
+            "definition": "A deep emotional state of nostalgic longing, often tinged with melancholy, for something absent or lost.",
+            "captures": "The melancholic quality and the sense of absence. It holds both the longing and the slight hopelessness without requiring a clear object.",
+            "misses": "Saudade doesn't emphasize the specific complication you're naming—the doubt about whether you'd fit if you returned. It's a cleaner, more poetic longing; yours is tangled with uncertainty."
           }
         ],
-        "the_poetic_name": "Bilderwärts-Heimweh — das Gefühl, in alten Fotos nach einem Zuhause zu suchen, das in deiner Seele schon existiert, aber auf der Landkarte verloren ist",
-        "you_are_not_alone": "Dieses Gefühl — diese wehmütige Sicherheit, dass ein unbekannter Ort dein Zuhause sein *sollte* — entsteht nicht aus Verwirrung, sondern aus einer tieferen Form von Erinnerung, die viele Menschen kennen, besonders wenn sie alte Fotos betrachten und plötzlich spüren, dass sie an einem Ort gehören, den sie nie kannten",
-        "share_line": "Es gibt ein Wort für dieses Gefühl: Hiraeth (Walisisch) — das Heimweh nach einem Ort, an dem man nie war, aber der sich wie Heimat anfühlt"
+        "plain_english": "Missing a place that doesn't exist anymore—and not being sure you'd belong there even if it did.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "There's a word for the homesickness you're describing: it's homesickness for a home that no longer exists. The place has moved on, you've moved on, and the fit is no longer what it was."
+      }
+    },
+    {
+      "name": "schadenfreude-strong-match-sparse",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "description": "That little flicker of satisfaction when someone who was rude to me gets stuck in traffic right after."
+      },
+      "guards": "A well-known, easily-matched feeling with NO context supplied — nothing may invent a target audience, backstory, or reason for the feeling beyond what was said. If the match is genuinely strong (schadenfreude or equivalent), where_it_doesnt may legitimately be empty — must not manufacture a caveat just to fill the field. share_line must use 'There's a word for...' ONLY if match is STRONG MATCH; if the model instead returns CLOSE MATCH, share_line must use 'One word that comes close is...' instead — the two must agree.",
+      "optionalSections": [
+        "where_it_doesnt",
+        "other_words"
+      ],
+      "output": {
+        "what_you_described": {
+          "ingredients": [
+            "a small, bright feeling of satisfaction",
+            "witnessing mild misfortune befall someone who wronged you",
+            "the timing — it happens right after their rudeness",
+            "a sense of cosmic balance or fitting consequence"
+          ],
+          "tension": "You're not angry or vengeful — the feeling is too small and fleeting for that. It's more like noticing a neat symmetry: rudeness followed immediately by inconvenience, as though the world briefly corrected itself."
+        },
+        "best_match": {
+          "word": "schadenfreude",
+          "language": "German",
+          "pronunciation": "SHAH-den-froy-duh",
+          "match": "CLOSE MATCH",
+          "definition": "A feeling of pleasure or satisfaction at another person's misfortune or failure.",
+          "why_it_fits": "It captures the core of what you described — that little spark of satisfaction when something goes wrong for someone who deserved it. The timing you mentioned (right after their rudeness) makes it feel earned rather than cruel.",
+          "where_it_doesnt": "Schadenfreude can carry connotations of malice or prolonged gloating. Your feeling sounds lighter, more momentary — a flicker rather than a sustained pleasure. You're not wishing harm on them; you're just noticing when minor harm coincidentally follows."
+        },
+        "other_words": [
+          {
+            "word": "cosmic justice",
+            "language": "English phrase",
+            "pronunciation": "",
+            "definition": "The satisfaction of witnessing a fitting or deserved consequence arrive seemingly by chance or fate.",
+            "captures": "The sense that the universe briefly balanced itself — rudeness followed by traffic feels like cause and effect, even though you know it's coincidence. This captures that 'the world corrected itself' element.",
+            "misses": "It's more conceptual than emotional. Doesn't quite name the *feeling* itself, more the story you tell about what happened."
+          },
+          {
+            "word": "vindication",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "A feeling of satisfaction when your view of a situation is confirmed by events.",
+            "captures": "If you had thought 'someone this rude will have bad luck,' then seeing it happen is vindication. It confirms your instinct or worldview.",
+            "misses": "Vindication is usually about proving yourself right in a dispute. Your situation doesn't involve defending a claim — just noticing a pleasing coincidence."
+          }
+        ],
+        "plain_english": "That little hit of satisfaction when someone's rudeness gets immediately rewarded with inconvenience — like the universe briefly setting things straight.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "One word that comes close is schadenfreude — though yours sounds lighter and more fleeting, less like revenge and more like noticing a neat bit of cosmic timing."
+      }
+    },
+    {
+      "name": "social-fatigue-prefer-english",
+      "endpoint": "/api/name-that-feeling",
+      "input": {
+        "description": "The specific tiredness of small talk with someone I don't actually want to talk to, where I have to perform interest I don't feel.",
+        "context": "What was happening: a work event where I had to network. Anything important: it's not social anxiety, just exhaustion from faking engagement."
+      },
+      "guards": "Tests 'prefer a familiar English phrase over an impressive foreign word that only loosely matches.' If the honest best answer is an ordinary English phrase, best_match.language should legitimately read 'English' rather than the model reaching for an exotic foreign word merely for novelty — do not treat a foreign-language result on this case as a bug on its own, but do check that whichever word is chosen is not stretched to fit better than it genuinely does.",
+      "optionalSections": [
+        "made_up_name",
+        "other_words"
+      ],
+      "output": {
+        "what_you_described": {
+          "ingredients": [
+            "Exhaustion from sustained performance",
+            "Forced engagement with someone you have no genuine interest in",
+            "The specific depletion of faking attention and interest",
+            "Clarity that this is fatigue, not anxiety"
+          ],
+          "tension": "The effort required to appear engaged while feeling the opposite — a gap between internal reality and external performance that drains rather than energizes"
+        },
+        "best_match": {
+          "word": "conversational fatigue",
+          "language": "English",
+          "pronunciation": "",
+          "match": "STRONG MATCH",
+          "definition": "The depletion that comes from sustaining attention and performed interest in an interaction that holds no real engagement for you",
+          "why_it_fits": "You named the exact mechanism: tiredness from the work of performing interest. It is not social anxiety (fear) or discomfort (aversion) — it is the specific exhaustion of maintaining a false front. Conversational fatigue captures that this is about the labor of the performance itself.",
+          "where_it_doesnt": ""
+        },
+        "other_words": [
+          {
+            "word": "social performance drain",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "The energy cost of maintaining a persona or level of engagement that does not match your actual interest",
+            "captures": "Emphasizes that the drain comes from the gap between real and performed interest, not from interaction itself",
+            "misses": "Slightly more formal; conversational fatigue is more immediate and embodied"
+          },
+          {
+            "word": "hollow engagement",
+            "language": "English",
+            "pronunciation": "",
+            "definition": "The experience of going through the motions of connection while feeling nothing genuine beneath",
+            "captures": "The specific hollowness of faking it — the sense that something is being performed but nothing is being felt",
+            "misses": "Emphasizes the feeling of emptiness over the feeling of tiredness; you described exhaustion more than vacancy"
+          }
+        ],
+        "plain_english": "The tiredness of pretending to be interested when you aren't — the specific exhaustion of faking engagement.",
+        "made_up_name": {
+          "useful": false,
+          "name": "",
+          "meaning": ""
+        },
+        "share_line": "There's a word for that specific exhaustion: conversational fatigue — the depletion that comes from sustaining false interest in an interaction that means nothing to you."
       }
     }
   ]
