@@ -206,6 +206,110 @@ judgment rule is the general counterweight for everything the prompt doesn't
 script line-by-line, not a retraction of a phrasing given minutes earlier in
 writing.
 
+## The 2026-09-05 individual-audit + Compare corrections
+
+Four more from a live Kindling probe (bakery/coffee, "warm, easy to remember"),
+plus the Compare grounding boundary reintroducing exactly the current-world
+claims the single-name audit had already removed.
+
+**A legal-conflation rule, not just a hedging one.** "Trademark registration
+for a common descriptive word is harder and more expensive" sounds like
+restraint and isn't — it treats "this is an English word" as though it
+settles "this word is descriptive of THESE goods/services," which is a
+category error: a word can be highly descriptive for one category (Kindling,
+for firestarters) and arbitrary — a STRONG mark — for an unrelated one
+(Kindling, for a bakery). The tool cannot make that determination on its own.
+New rule in COMPETITION & FINDABILITY plus a dedicated backstop. Correct
+version: "Because '[name]' is an existing English word, its protectability
+and any conflicting uses are worth checking before investing heavily in the
+brand" — the check survives, the legal conclusion doesn't.
+
+**SOUND & IMPRESSION needed a second, stricter pass.** The 2026-09-04 rewrite
+already banned unhedged phoneme-to-emotion claims ("open vowels signal
+approachability"); what survived was the SAME move wearing a hedge: "the
+initial K gives the name a clear start, while the '-ling' ending softens the
+sound" is still phoneme-by-phoneme analysis, just with softer verbs. The fix
+wasn't a stronger hedge — it was moving the unit of analysis. The section now
+describes the WHOLE WORD (easy to say, familiar vs. invented, fits the
+stated context) and explicitly forbids naming which letter or suffix does
+what, hedged or not. No backstop: two "gives it a [feeling] sound"
+phrasings look identical to a detector and aren't (the tool's own approved
+"rounded, softer sound" example would have false-positived), so this stays
+prompt-only — same call as the Justify My Meeting no-prep/pre-read-timing
+rules.
+
+**Restraint had quietly eaten the tool's personality, not just its
+overclaims.** `word_of_mouth` had been collapsed from five named heuristic
+tests into one hedged paragraph over the two prior passes — technically
+accurate, and also the thing that made this tool distinctive. Restored as
+four named tests (SAY-IT-ONCE, SPELL-IT, NOISY-ROOM, DRUNK), each a short
+verdict plus one sentence, with the SAME restraint rules threaded through
+each individually rather than one paragraph trying to cover all of them:
+`spell_it_test` only names a misspelling that's genuinely plausible;
+`noisy_room_test` only names a real near-homophone, never an invented
+frequency ("particularly in typing or voice search"); none of the four
+assert memorability as an achieved fact or use absolutist language. The
+lesson: hedging isn't the same axis as detail. You can cut a tool's specific,
+checkable structure while making every sentence MORE cautious, and the
+result reads worse, not more honest.
+
+**Evolution Timeline was rendering duplicate entries from repeat audits of
+the same unchanged name** — "three Kindli entries," the truncated 6-char bar
+label making three identical audits look like three broken ones.
+`saveToEvolution` now skips a new entry when the immediately-prior one has
+the same name (trimmed, case-insensitive) and the same verdict. The render
+guard is independent of that: it counts DISTINCT (name, verdict) pairs
+currently in the array and requires at least 2, because data saved before
+this fix can still be sitting in a visitor's localStorage — a raw
+`length >= 2` check would still render a fake "timeline" built entirely from
+old duplicates.
+
+**Compare had reintroduced exactly the claims the single-name audit
+removed, in the one place it looks least like a regression.** Comparing two
+names naturally invites "which one is occupied" as a differentiator, and
+because a real product (Loomly, a social-media scheduling tool) IS
+recognizable from training data, the model asserted it as settled fact —
+then, by contrast, described the other candidate as "carrying no known
+competing brand," which is exactly as unverified as the claim it was
+implicitly contrasted against. Compare now states, in as many words, that it
+follows the identical verification boundary as the single-name audit. A
+recognized name may surface only inside `needs_verification`, phrased
+"Worth checking: [name/entity]" — never in `best_quality`/`biggest_risk`,
+and never as what `recommendation.why`/`decision_driver` cite as the reason
+one candidate won. Verified live: Kindling vs. Loomly for a bakery now wins
+on semantic fit ("Kindling has a genuine semantic connection to heat,
+warmth, and morning ritual that Loomly simply lacks") with Loomly's product
+conflict correctly demoted to a hedged verification item — the exact
+opposite of the original bug, where the verdict depended on which name
+happened to be free.
+
+**The `stated a live-world ownership fact as settled` backstop needed
+widening twice over, not once.** Broadened for Compare to add
+product/service/tool to the noun list and allow "a"/"an" — but "is an
+existing social-media scheduling product" still didn't fire, because the
+noun list required the adjective (existing/active/funded) to sit directly
+next to the noun. Real sentences put modifiers between them ("existing
+**social-media scheduling** product"). Fixed by allowing up to 40 characters
+between the adjective and the noun. Caught by testing the exact sentence
+from the bug report, not a simplified version of it.
+
+**A null byte crept into a template-literal edit and made the file invisible
+to grep.** `` `${e.name} ${e.verdict}` `` — the space between the two
+interpolations came out as `\x00` in one Edit call, for reasons that never
+became clear. The file stayed syntactically valid JS (`node --check` and
+eslint both passed) and functionally correct (a null character in a Set key
+still works for uniqueness), so nothing broke — but `grep`/`ugrep` treat a
+file containing a null byte as binary and silently skip it, meaning every
+`grep`-based check across this whole session (guard sweeps, key diffs, the
+regression test extraction) would have reported false negatives against
+this file without ever erroring. Found by chance, because a routine `grep`
+for `compareResults` came back with zero hits in a 1600-line file that
+obviously uses it dozens of times. Worth an occasional
+`python3 -c "b'\x00' in open(path,'rb').read()"` sanity check after an Edit
+that composes a template literal by hand, and a reason not to fully trust a
+clean `grep` result as proof of anything until the file's byte-validity is
+separately confirmed.
+
 ## Things allowed, deliberately
 
 - **A stable, well-known name collision, stated as what it is.** The Compare
@@ -225,6 +329,22 @@ writing.
   name is typography, not a claim.
 
 ## Things that will bite the next person
+
+**`revealSection` on `loading` alone can scroll to the wrong place — this
+tool's own header card is why.** The effect fired on `loading || results`,
+meaning it ran the instant Submit was clicked, before `results` existed. At
+that moment `resultsAnchorRef` is the LAST thing the tool has rendered — no
+results yet — so its position is dominated by whatever page chrome (footer,
+guides, newsletter) follows the component, not by the tool's own content.
+Name Audit's input form is unusually tall (12 context chips, 3 optional
+fields, a growing audit-history block), which pushed the anchor far enough
+down that the premature scroll read as "jumped to the bottom of the page."
+A second, correct scroll fired moments later once results arrived, but the
+first jump had already happened and was what a visitor actually saw. Fixed
+by dropping `loading`/`compareLoading` from the trigger entirely — the
+anchor now only fires once there's real content to point at. Worth checking
+other tools with an unusually tall input form for the same `loading ||
+results` trigger pattern; a short form may simply never have exposed this.
 
 **"Widen the submit button" means change `flex-1` to `w-full` — nothing
 else.** Fixed once as a one-line swap (`flex-1` is a no-op without a flex

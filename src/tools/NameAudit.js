@@ -303,8 +303,21 @@ const NameAudit = ({ tool }) => {
   // a score — there is no numeric score any more. A 5-step category rank
   // rendered as relative height is a fair visual encoding; a fabricated
   // percentage would not be.
+  //
+  // Do not record a repeat audit of the same unchanged name. Re-running the
+  // identical name (same verdict) — a re-audit from history, a quick re-check,
+  // testing — is not a new point on a "naming journey," and three identical
+  // entries all truncate to the same 6-character bar label with nothing to
+  // tell them apart. Only a genuinely new name, or a genuinely different
+  // outcome for a name already tracked (context changed, verdict moved), adds
+  // a point.
   const saveToEvolution = useCallback((data) => {
     setEvolutionTimeline(prev => {
+      const last = prev[prev.length - 1];
+      const sameAsLast = last
+        && last.name?.trim().toLowerCase() === data.name_analyzed?.trim().toLowerCase()
+        && last.verdict === data.verdict;
+      if (sameAsLast) return prev;
       const entry = {
         name: data.name_analyzed,
         verdict: data.verdict,
@@ -503,8 +516,15 @@ const NameAudit = ({ tool }) => {
   };
 
   // ─── Evolution Timeline Component ───
+  // Guards independently of saveToEvolution's own dedup, because data saved
+  // before that existed can still be sitting in localStorage — a raw
+  // length check alone would render a "timeline" built entirely from three
+  // audits of the same name, all truncating to the same 6-character label.
   const EvolutionTimeline = () => {
-    if (evolutionTimeline.length < 2) return null;
+    const distinctCount = new Set(
+      evolutionTimeline.map(e => `${e.name?.trim().toLowerCase()} :: ${e.verdict}`)
+    ).size;
+    if (distinctCount < 2) return null;
     return (
       <div className={`${c.card} border ${c.border} rounded-xl shadow-sm p-6`}>
         <h3 className={`font-bold ${c.text} mb-3 flex items-center gap-2`}>
@@ -662,7 +682,6 @@ const NameAudit = ({ tool }) => {
         lines.push(t('nau_copy_verdict', { verdict: verdictLabel(cand.verdict) }));
         lines.push(cand.best_quality ? t('nau_copy_best', { value: cand.best_quality }) : '');
         lines.push(cand.biggest_risk ? t('nau_copy_risk', { value: cand.biggest_risk }) : '');
-        lines.push(cand.fit_for_context || '');
         lines.push('');
       });
       if (compareResults.decision_driver) {
@@ -766,15 +785,23 @@ const NameAudit = ({ tool }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, compareLoading]);
 
-  // ─── Scroll to results anchor when loading starts OR results arrive ───
+  // ─── Scroll to results anchor once results actually exist ───
+  // Firing this on `loading` too used to move focus the instant Submit was
+  // clicked — but at that moment results/compareResults are still null, so
+  // the anchor sits right after a short, results-less page, close to
+  // whatever page chrome (footer, guides, newsletter) follows the tool.
+  // Landing there read as "jumped to the bottom of the page." A second,
+  // correct scroll fired moments later once results arrived, but the first
+  // jump had already happened. Only the arrival of real content should move
+  // focus.
   useEffect(() => {
-    if ((loading || compareLoading || results || compareResults) && resultsAnchorRef.current) {
+    if ((results || compareResults) && resultsAnchorRef.current) {
       const timeout = setTimeout(() => {
         revealSection(resultsAnchorRef.current);
       }, 100);
       return () => clearTimeout(timeout);
     }
-  }, [loading, compareLoading, results, compareResults]);
+  }, [results, compareResults]);
 
   // ─── URL param handoff (from NameStorm) ───
   useEffect(() => {
@@ -1037,7 +1064,6 @@ const NameAudit = ({ tool }) => {
                     <h4 className={`text-lg font-bold ${c.text}`}>{cand.name}</h4>
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${verdictColors[cand.verdict] || c.warning}`}>{verdictLabel(cand.verdict)}</span>
                   </div>
-                  {cand.fit_for_context && <p className={`text-sm ${c.textSecondary} mb-3`}>{cand.fit_for_context}</p>}
                   <div className="space-y-2">
                     {cand.best_quality && (
                       <div className={`p-2 rounded-lg ${c.success} border`}>
@@ -1228,17 +1254,18 @@ const NameAudit = ({ tool }) => {
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold border ${ratingStyle(results.word_of_mouth.rating)}`}>
                   {ratingLabel(results.word_of_mouth.rating)}
                 </span>
-                {results.word_of_mouth.why && <p className={`text-sm ${c.textSecondary}`}>{results.word_of_mouth.why}</p>}
-                {results.word_of_mouth.likely_misspellings?.length > 0 && (
-                  <div className={`p-3 rounded-lg ${c.warning} border`}>
-                    <p className="text-xs font-bold mb-1">{t('nau_likely_misspellings')}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {results.word_of_mouth.likely_misspellings.map((m, i) => (
-                        <span key={i} className={`px-2 py-0.5 rounded text-xs font-mono ${isDark ? 'bg-zinc-800' : 'bg-white'}`}>{m}</span>
-                      ))}
-                    </div>
+                {[
+                  { key: 'say_it_once_test', labelKey: 'nau_wom_test_say_it_once' },
+                  { key: 'spell_it_test', labelKey: 'nau_wom_test_spell_it' },
+                  { key: 'noisy_room_test', labelKey: 'nau_wom_test_noisy_room' },
+                  { key: 'drunk_test', labelKey: 'nau_wom_test_drunk' },
+                ].map(({ key, labelKey }) => results.word_of_mouth[key] && (
+                  <div key={key} className={`p-3 rounded-lg ${c.cardAlt}`}>
+                    <p className={`text-xs font-bold ${c.textMuteded} mb-1`}>{t(labelKey)}</p>
+                    <p className={`text-sm ${c.textSecondary}`}>{results.word_of_mouth[key]}</p>
                   </div>
-                )}
+                ))}
+                <p className={`text-xs ${c.textMuteded} italic`}>{t('nau_wom_test_caption')}</p>
               </div>
             </Section>
           )}

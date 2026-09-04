@@ -202,8 +202,22 @@ const RULES = [
 
   // A live-world fact stated as settled, without a live check having occurred.
   // Scoped to ownership/existence verbs so it doesn't catch a legitimate
-  // linguistic-meaning observation ("already means X in Spanish").
-  ['stated a live-world ownership fact as settled', /\bis (?:already |currently )?(?:owned|trademarked|registered|used|taken) by\b|\balready (?:exists|taken) as a\b|\bcurrently dominates\b|\bis a (?:funded|active|existing) (?:company|startup|brand)\b/i,
+  // linguistic-meaning observation ("already means X in Spanish"). Widened in
+  // the Compare grounding pass to cover "product"/"service"/"tool" and both
+  // "a"/"an" — "is an existing social-media scheduling product" walked
+  // through the original noun list twice: once for missing nouns, and again
+  // because the noun has to allow modifiers between the adjective and itself
+  // ("existing ... scheduling product") rather than sit right next to it.
+  ['stated a live-world ownership fact as settled', /\bis (?:already |currently )?(?:owned|trademarked|registered|used|taken) by\b|\balready (?:exists|taken) as a\b|\bcurrently dominates\b|\bis an? (?:funded|active|existing)\b[^.!?]{0,40}\b(?:company|startup|brand|product|service|tool)\b/i,
+    (v) => HEDGED.test(v)],
+
+  // The absence of a conflict is just as unverified as the presence of one —
+  // "carries no known competing brand", "carries no such conflict" claim
+  // knowledge of a search that never happened, the same way asserting a
+  // conflict exists would. Found in Compare, where one candidate's asserted
+  // conflict made the other's asserted clean record look like a fact by
+  // contrast.
+  ['claimed a verified absence of a real-world conflict', /\bcarries no known (?:competing|conflicting) (?:brand|product|company|trademark)\b|\bcarries no such conflict\b|\bhas no (?:known|existing) (?:competitor|conflict)s?\b/i,
     (v) => HEDGED.test(v)],
 
   // "If it were a person…" and its variants — a fictional personality for the
@@ -246,6 +260,14 @@ const RULES = [
   // Absolutist confidence about how a real person would perceive or spell an
   // untested name — "almost certainly", "no plausible rival word".
   ['made an absolutist behavioral claim about an untested name', /\balmost certainly\b|\bno plausible rival\b/i],
+
+  // "Being a real word" is a structural fact; "therefore harder/more
+  // expensive to trademark" is a legal conclusion the tool cannot support —
+  // descriptiveness depends on the specific goods/services, which a word can
+  // be highly descriptive for in one category and arbitrary (a STRONG mark)
+  // in an unrelated one. "Kindling" for a bakery is the case this was found
+  // on: not descriptive of baked goods at all.
+  ['treated a common word as settled trademark descriptiveness or difficulty', /\b(?:descriptive|generic|common) (?:word|term|name)\b[^.!?]{0,40}\b(?:harder|more difficult|more expensive|costlier) to (?:register|trademark|protect)\b|\btrademark registration for a (?:common |generic )?descriptive word\b|\bmore likely to have prior registrations?\b/i],
 ];
 
 function validateResult(data) {
@@ -333,16 +355,21 @@ SOUND & IMPRESSION
 Describe how the name sounds, and what impression its sound may create. Do
 not claim universal psychological effects from individual phonemes, and do
 not assign an emotional quality — cozy, gentle, warm, authoritative — to a
-sound or suffix as a direct, unhedged effect. That includes soft phrasing that
-avoids words like "signals": "the -ling ending gives it a gentle, cozy sound"
-makes the same unhedged claim as "signals approachability" does. Separate the
-two moves instead: state the acoustic fact plainly, then hedge the impression.
+specific sound, letter, or suffix, even hedged. "The initial K gives the name
+a clear start, while the '-ling' ending softens the sound" is still
+phoneme-by-phoneme analysis dressed up as observation — naming which letter
+does what is the move to avoid, not just the unhedged verb. Describe the
+WHOLE WORD instead: is it easy to say in one breath, does it read as a real,
+familiar word or an invented/stylized one, and — grounded in what the visitor
+actually supplied — does that fit the direction they described.
 Avoid: "Open vowels signal approachability." "Hard consonants create
 authority." "The soft opening consonant and the -ling ending give it a
-gentle, slightly cozy sound."
-Prefer: "The long 'oo' gives the name a rounded, softer sound." "The initial K
-gives the name a clear start, while the '-ling' ending softens the overall
-sound; in this context it may read as informal and warm rather than refined."
+gentle, slightly cozy sound." "The initial K gives the name a clear start,
+while the '-ling' ending softens the sound."
+Prefer: "The long 'oo' gives the name a rounded, softer sound." "Short and
+easy to say. Because it is a familiar English word, it sounds more everyday
+than invented or highly stylized. In this bakery-café context, that works
+with the warm, neighborhood-oriented direction you described."
 Do not present branding folklore as behavioral science.
 
 PHONETICS
@@ -353,35 +380,44 @@ non-native speakers will pronounce the name. If pronunciation varies plausibly,
 show the alternatives — otherwise leave alternate_pronunciations empty.
 
 MEMORABILITY & WORD-OF-MOUTH
-These are heuristic stress tests, not measured predictions — nothing here was
-tried on a real listener. Ask: is it distinctive enough to stick? Could
-someone repeat it after hearing it once? Could they plausibly spell it from
-hearing it? Could they search for it later without seeing it written? Does it
-survive a noisy-room / "drunk test"? Is there a genuinely similar-sounding
-word or name it could be confused with?
+Four heuristic stress tests, not measured predictions — nothing here was
+tried on a real listener. Each gets a short, direct verdict (a word or short
+phrase — Strong, Workable, Weak, Pass, Worth testing) followed by one brief
+reason. Do not write a paragraph; each test is one sentence.
 
-Do not assert memorability as an achieved fact. "It is short, common, and
-spelled exactly as it sounds, making it easy to remember and search after
-hearing it once" states an outcome nobody tested. A short, familiar,
-phonetically transparent spelling is a good STARTING POINT for word of mouth
-— say that, not that it succeeds at it.
+SAY-IT-ONCE TEST: could someone repeat it back after hearing it a single
+time? Judge this from the word's length and syllable structure.
 
-Do not use absolutist language for an untested name — "someone who hears it
-once can almost certainly spell it and search for it," "there is no plausible
-rival word it could be confused with." If a specific word is close enough to
-be worth naming (a well-known near-homophone), name it as something worth
-testing — never invent HOW OFTEN or in WHAT CONTEXT (typing, voice search)
-that confusion would occur; there is no basis for that specificity.
+SPELL-IT TEST: could they spell it correctly from hearing it, with no text in
+front of them? Name a plausible misspelling only if one genuinely follows
+from how the name sounds or a common spelling confusion — a dropped or
+altered vowel nobody would actually mishear reads as generated, not
+observed. Say "no likely misspelling" rather than invent one to fill space.
+
+NOISY-ROOM TEST: is there a genuinely similar-sounding word or name it could
+be confused with in a loud room or a quick search? Name it only if a real,
+well-known near-homophone exists — frame it as something worth testing
+against, never invent HOW OFTEN or in WHAT CONTEXT (typing, voice search)
+that confusion would occur; there is no basis for that specificity. If
+nothing genuinely close exists, say the name is distinctive enough that this
+isn't a real risk.
+
+DRUNK TEST: would it likely survive being recalled and typed correctly at
+the end of a loud, distracted evening? This folds in overall memorability —
+is it short and distinctive enough to have a fighting chance, or does it
+blend into a category of interchangeable-sounding names?
+
+Do not assert memorability as an achieved fact anywhere in these four. "It
+is short, common, and spelled exactly as it sounds, making it easy to
+remember and search after hearing it once" states an outcome nobody tested —
+a short, familiar, phonetically transparent spelling is a good STARTING
+POINT, not a guarantee. Do not use absolutist language — "almost certainly,"
+"no plausible rival word."
 
 Do not output true/false predictions of whether a person WILL remember it —
-rate LIKELY EASY, WORKABLE, or LIKELY CONFUSING, and explain why in terms of
-these tests.
-
-likely_misspellings: only a misspelling that plausibly follows from how the
-name sounds or a common spelling confusion belongs here. A dropped or altered
-vowel that does not reflect how anyone would actually mishear the name reads
-as generated, not observed — leave the array empty rather than manufacture
-one to fill it.
+rate the overall word_of_mouth.rating as LIKELY EASY, WORKABLE, or LIKELY
+CONFUSING based on how the four tests land, in addition to writing them out
+individually.
 
 TONE & ASSOCIATIONS
 Describe plausible impressions created by the name in the supplied context. Do
@@ -422,9 +458,21 @@ asserts a specific unverified conflict rather than a structural fact. For a
 common dictionary word, the structural fact is that search results MAY be
 SHARED WITH general uses of the word; whether an actual business-name
 conflict exists still needs to be checked. Evaluate only structural
-findability: dictionary word vs. coined term, spelling ambiguity,
-generic/descriptive quality, likely query ambiguity inherent in the word
-itself.
+findability: dictionary word vs. coined term, spelling ambiguity, likely
+query ambiguity inherent in the word itself.
+
+Do not treat "this is an existing English word" as though it settles
+trademark descriptiveness or difficulty of registration. Whether a word is
+legally descriptive depends on the specific goods or services it names for —
+a word can be highly descriptive for one category and arbitrary (a STRONG
+mark) for an unrelated one, which the tool has no way to determine on its
+own. Never write a sentence like "trademark registration for a common
+descriptive word is harder and more expensive" — that treats a structural
+fact (it's a real word) as a legal conclusion it does not support. Instead:
+"Because '[name]' is an existing English word, its protectability and any
+conflicting uses are worth checking before investing heavily in the brand."
+Keep the recommendation to check trademark databases; drop the conclusion
+about how hard or costly that will be.
 
 LONGEVITY
 Whether the name itself depends on slang, a dated naming construction, a
@@ -452,7 +500,7 @@ Return ONLY this JSON (no markdown, no preamble):
   "what_works": ["Specific strength — one sentence each, 2-4 items"],
   "what_could_get_in_the_way": ["Specific problem or risk — one sentence each, 0-4 items"],
   "how_it_sounds": { "pronunciation": "e.g. LOO-mly, 2 syllables — one sentence", "alternate_pronunciations": ["plausible alternate — only if genuinely ambiguous"], "impression": "One or two cautious sentences on the impression the sound may create" },
-  "word_of_mouth": { "rating": "Exactly one of: LIKELY EASY, WORKABLE, LIKELY CONFUSING", "why": "One or two sentences referencing the specific test(s) this depends on — no absolutist language ('almost certainly', 'no plausible rival')", "likely_misspellings": ["Only if genuinely plausible — omit the field entirely if none stand out"] },
+  "word_of_mouth": { "rating": "Exactly one of: LIKELY EASY, WORKABLE, LIKELY CONFUSING", "say_it_once_test": "Short verdict word/phrase, then one brief reason — one sentence", "spell_it_test": "Short verdict, then one brief reason; name a misspelling only if genuinely plausible — one sentence", "noisy_room_test": "Short verdict, then one brief reason; name a real sound-alike only if one genuinely exists, never invent frequency or context — one sentence", "drunk_test": "Short verdict, then one brief reason — one sentence" },
   "tone_and_associations": { "summary": "1-2 cautious sentences, no personification", "associations": ["short phrase", "short phrase"] },
   "fit_for_context": "One or two sentences",
   "how_it_looks": { "url_form": "name.com. Nothing else.", "logo_potential": "One sentence", "issues": "Specific trap or null" },
@@ -526,12 +574,36 @@ WHAT IT'S FOR: ${context}
 INDUSTRY: ${industry || 'Not specified'}
 WHAT MATTERS MOST: ${priority || 'Not specified — weigh the dimensions evenly'}
 
-Compare the candidates against the visitor's stated purpose and priorities. Do
-not manufacture a winner merely because the interface asks for one — if the
-choice is genuinely close, say so. A verified real-world conflict may
-disqualify a candidate; an unverified possible conflict belongs under
-needs_verification and may not be treated as established. Prefer useful
-differences over faux scoring precision.
+Compare the candidates against the visitor's stated purpose and priorities.
+Analyze boldly wherever the judgment comes from the names themselves and the
+context supplied — a clear semantic-fit difference, one candidate's greater
+flexibility, an obvious association the other lacks, is exactly the kind of
+call this tool exists to make, and none of it needs a current-world lookup to
+support it.
+
+Compare Names follows exactly the same verification boundary as the single-
+name audit. Do not assert, for ANY candidate, that a company or product
+currently exists, that a trademark is owned, that current search competition
+exists, or that a domain or social handle is available or taken — unless that
+came from verified current-world data, which it has not. Model memory is not
+verification. This applies even when it would make one candidate look
+cleaner than another by contrast: "carries no known competing brand" is just
+as unverified as asserting a competitor exists — both claim knowledge of a
+search that never happened. A possible known conflict may be surfaced only
+inside needs_verification, phrased as "Worth checking: [name/entity]" — never
+asserted as settled fact in best_quality or biggest_risk.
+
+Never let an unverified current-world claim determine the winner.
+recommendation.why and decision_driver must be grounded in semantic fit,
+structural qualities, and the visitor's stated priorities — never in which
+candidate happens to have, or lack, a real-world conflict nobody checked. A
+real conflict can disqualify a candidate only once the visitor verifies it;
+this audit's job is to say which name is the better fit before that
+verification, and what to verify next.
+
+Do not manufacture a winner merely because the interface asks for one — if
+the choice is genuinely close, say so. Prefer useful differences over faux
+scoring precision.
 
 Return ONLY this JSON:
 
@@ -540,22 +612,21 @@ Return ONLY this JSON:
     {
       "name": "The name — 3-6 words",
       "verdict": "Exactly one of: STRONG FIT, GOOD FIT, MIXED, HAS PROBLEMS, RECONSIDER",
-      "best_quality": "Its single biggest strength — one sentence",
-      "biggest_risk": "Its single biggest weakness — one sentence",
+      "best_quality": "Its single biggest strength — one sentence, may include how well it fits the stated context/priorities when that's the standout strength",
+      "biggest_risk": "Its single biggest weakness — one sentence, may include a fit gap when that's the standout weakness. Never a current-world claim not already in needs_verification",
       "word_of_mouth": "Exactly one of: easy, workable, difficult",
-      "fit_for_context": "One sentence on how well it fits the stated purpose",
-      "needs_verification": ["A specific current-world check this candidate warrants — 0-2 items"]
+      "needs_verification": ["A specific check this candidate warrants, phrased as a check ('Search for existing businesses and products using [name]') or as 'Worth checking: [name/entity]' for a specific possible conflict — never as an asserted fact. 2-3 items"]
     }
   ],
   "recommendation": {
     "name": "The recommended name — 3-6 words",
-    "why": "Clear reasoning for why this one is the better fit — one sentence",
+    "why": "Grounded in semantic fit and the visitor's stated priorities only — one sentence",
     "how_close": "Exactly one of: clear choice, slight edge, genuinely close"
   },
-  "decision_driver": "The single most important difference between these names that should drive the decision — one sentence"
+  "decision_driver": "The single most important difference between these names that should drive the decision, grounded the same way as recommendation.why — one sentence"
 }
 
-Be honest and decisive where the input supports it. Return ONLY JSON.
+Be honest and decisive where the judgment is actually supported. Return ONLY JSON.
 ${NO_QUOTE_RULE}`;
 
     const parsed = await callClaudeWithRetry({
