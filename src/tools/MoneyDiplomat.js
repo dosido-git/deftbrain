@@ -1579,7 +1579,6 @@ const MoneyDiplomat = ({ tool }) => {
                   </kbd>
                 )}
                 </button>
-                {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline block`}>{t('md_back')}</button>}
               </div>
             </div>
           )}
