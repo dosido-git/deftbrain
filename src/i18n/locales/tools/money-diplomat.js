@@ -8,6 +8,7 @@
 // value is intentional — keep it inside the string.
 export const moneyDiplomat = {
   en: {
+    md_start_over: "Start Over",
     md_charity_disaster: "Disaster relief",
     md_charity_friend: "Friend's cause",
     md_charity_gofundme: "GoFundMe",
@@ -367,6 +368,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI-generated guidance — not financial or legal advice. Verify important figures independently.",
   },
   es: {
+    md_start_over: "Empezar de nuevo",
     md_charity_disaster: "Ayuda en desastres",
     md_charity_friend: "Causa de un amigo",
     md_charity_gofundme: "GoFundMe",
@@ -726,6 +728,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Orientación generada por IA — no es asesoramiento financiero ni legal. Verifica las cifras importantes de forma independiente.",
   },
   zh: {
+    md_start_over: "重新开始",
     md_charity_disaster: "救灾",
     md_charity_friend: "朋友的事由",
     md_charity_gofundme: "GoFundMe",
@@ -1085,6 +1088,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI 生成的指导 — 并非财务或法律建议。请自行核实重要数字。",
   },
   hi: {
+    md_start_over: "फिर से शुरू करें",
     md_charity_disaster: "आपदा राहत",
     md_charity_friend: "दोस्त का अभियान",
     md_charity_gofundme: "GoFundMe",
@@ -1444,6 +1448,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI द्वारा बनाया गया मार्गदर्शन — यह वित्तीय या कानूनी सलाह नहीं है। महत्वपूर्ण आँकड़ों की स्वतंत्र रूप से पुष्टि करें।",
   },
   ar: {
+    md_start_over: "ابدأ من جديد",
     md_charity_disaster: "إغاثة الكوارث",
     md_charity_friend: "قضية صديق",
     md_charity_gofundme: "GoFundMe",
@@ -1803,6 +1808,7 @@ export const moneyDiplomat = {
     md_disclaimer: "إرشادات مولّدة بالذكاء الاصطناعي — ليست نصيحة مالية أو قانونية. تحقق من الأرقام المهمة بشكل مستقل.",
   },
   pt: {
+    md_start_over: "Começar de novo",
     md_charity_disaster: "Ajuda em desastres",
     md_charity_friend: "Causa de um amigo",
     md_charity_gofundme: "GoFundMe",
@@ -2162,6 +2168,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Orientação gerada por IA — não é aconselhamento financeiro ou jurídico. Verifique os números importantes de forma independente.",
   },
   fr: {
+    md_start_over: "Recommencer",
     md_charity_disaster: "Aide aux sinistrés",
     md_charity_friend: "Cause d'un ami",
     md_charity_gofundme: "GoFundMe",
@@ -2521,6 +2528,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Conseils générés par IA — ne constituent pas un avis financier ou juridique. Vérifiez les chiffres importants de manière indépendante.",
   },
   de: {
+    md_start_over: "Neu beginnen",
     md_charity_disaster: "Katastrophenhilfe",
     md_charity_friend: "Sache eines Freundes",
     md_charity_gofundme: "GoFundMe",
@@ -2880,6 +2888,7 @@ export const moneyDiplomat = {
     md_disclaimer: "KI-generierte Hinweise — keine Finanz- oder Rechtsberatung. Wichtige Zahlen unabhängig überprüfen.",
   },
   ja: {
+    md_start_over: "最初から",
     md_charity_disaster: "災害支援",
     md_charity_friend: "友人の活動",
     md_charity_gofundme: "GoFundMe",
@@ -3239,6 +3248,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI が生成したガイダンスです — 金融・法律上の助言ではありません。重要な数字はご自身で確認してください。",
   },
   ko: {
+    md_start_over: "처음부터",
     md_charity_disaster: "재난 구호",
     md_charity_friend: "친구의 모금",
     md_charity_gofundme: "GoFundMe",
@@ -3598,6 +3608,7 @@ export const moneyDiplomat = {
     md_disclaimer: "AI가 생성한 안내 — 재정적·법적 조언이 아닙니다. 중요한 수치는 별도로 직접 확인하세요.",
   },
   ru: {
+    md_start_over: "Начать заново",
     md_charity_disaster: "Помощь при бедствии",
     md_charity_friend: "Дело друга",
     md_charity_gofundme: "GoFundMe",
@@ -3957,6 +3968,7 @@ export const moneyDiplomat = {
     md_disclaimer: "Рекомендации сгенерированы ИИ — это не финансовый или юридический совет. Проверяйте важные цифры самостоятельно.",
   },
   th: {
+    md_start_over: "เริ่มใหม่",
     md_charity_disaster: "บรรเทาภัยพิบัติ",
     md_charity_friend: "เพื่อเพื่อน",
     md_charity_gofundme: "GoFundMe",
@@ -4316,6 +4328,7 @@ export const moneyDiplomat = {
     md_disclaimer: "คำแนะนำที่สร้างโดย AI — ไม่ใช่คำแนะนำทางการเงินหรือกฎหมาย โปรดตรวจสอบตัวเลขสำคัญด้วยตนเอง",
   },
   vi: {
+    md_start_over: "Bắt đầu lại",
     md_charity_disaster: "Cứu trợ thiên tai",
     md_charity_friend: "Việc của bạn bè",
     md_charity_gofundme: "GoFundMe",

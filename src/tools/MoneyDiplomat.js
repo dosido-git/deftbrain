@@ -554,6 +554,53 @@ const MoneyDiplomat = ({ tool }) => {
 
   const clearResults = () => { setResults(null); setSituation(''); setError(''); setNudgeData(null); };
 
+  // The only reset the tool has, and it clears the whole tool — not just the
+  // practice simulator, which is all the previous one reached. Every per-mode
+  // field object goes back to the value it ships with, so switching scenario
+  // after a reset does not surface someone else's half-filled form.
+  const FIELD_DEFAULTS = {
+    tip: { country: 'USA', serviceType: 'restaurant', billAmount: '', partySize: '' },
+    split: { people: '', totalBill: '' },
+    venmo: { amount: '', relationship: 'Friend', timePassed: '' },
+    gift: { occasion: '', relationship: '', theirSpend: '', yourBudget: '', region: 'USA' },
+    roommate: { people: '', totalCost: '' },
+    family: { familyDynamic: '', culturalContext: '' },
+    dining: { context: '', yourBudget: '' },
+    group: { eventType: '', people: '', expenses: '' },
+    lend: { amount: '', relationship: '', sessionHistory: '' },
+    work: { role: '', companySize: '' },
+    travel: { destination: '' },
+    date: { dateNumber: '', dynamic: '', culturalContext: '' },
+    subs: { service: '', people: '', monthlyCost: '' },
+    salary: { currentSalary: '', targetRole: '', location: '', experience: '' },
+    afford: { cost: '', income: '', context: '' },
+    inheritance: { familyDynamic: '', culturalContext: '' },
+    cultural: { yourBackground: '', theirBackground: '' },
+    charity: { askType: '', relationship: '', amount: '' },
+  };
+
+  const handleReset = () => {
+    setResults(null); setSituation(''); setError(''); setNudgeData(null);
+    setActiveType(null);
+    setTipFields(FIELD_DEFAULTS.tip); setSplitFields(FIELD_DEFAULTS.split);
+    setVenmoFields(FIELD_DEFAULTS.venmo); setGiftFields(FIELD_DEFAULTS.gift);
+    setRoommateFields(FIELD_DEFAULTS.roommate); setFamilyFields(FIELD_DEFAULTS.family);
+    setDiningFields(FIELD_DEFAULTS.dining); setGroupFields(FIELD_DEFAULTS.group);
+    setLendFields(FIELD_DEFAULTS.lend); setWorkFields(FIELD_DEFAULTS.work);
+    setTravelFields(FIELD_DEFAULTS.travel); setDateFields(FIELD_DEFAULTS.date);
+    setSubsFields(FIELD_DEFAULTS.subs); setSalaryFields(FIELD_DEFAULTS.salary);
+    setAffordFields(FIELD_DEFAULTS.afford); setInheritanceFields(FIELD_DEFAULTS.inheritance);
+    setCulturalFields(FIELD_DEFAULTS.cultural); setCharityFields(FIELD_DEFAULTS.charity);
+    setSimPrompt(null); setSimHistory([]); setSimSituation(''); setSimOtherPerson(''); setSimResponse('');
+  };
+
+  // Shown from the first keystroke, or the moment a scenario is picked — a
+  // half-filled form someone wants to abandon is where the button earns itself,
+  // and gating it on `results` is what hides it exactly then.
+  const canReset = !!results || !!activeType || situation.trim().length > 0
+    || !!simPrompt || simHistory.length > 0 || simSituation.trim().length > 0
+    || !!nudgeData;
+
   const addDebt = () => {
     if (!newDebt.person.trim() || !newDebt.amount) return;
     setDebts(prev => [{ ...newDebt, id: Date.now(), date: newDebt.date || new Date().toISOString().split('T')[0], settled: false, attempts: 0 }, ...prev]);
@@ -891,10 +938,13 @@ const MoneyDiplomat = ({ tool }) => {
                 <p className={`text-sm ${c.textSecondary}`}>{toolTagline(tool?.tagline ?? t('md_tagline'))}</p>
                 <button onClick={loadExample} disabled={loading} style={{ backgroundColor: (tool?.headerColor ?? '#888888') + '80' }} className="mt-2 px-4 py-2 rounded-full text-sm font-semibold border border-black/25 text-zinc-900 shadow-sm hover:brightness-105 hover:shadow transition disabled:opacity-40 whitespace-nowrap">✨ {t('try_example')}</button>
               </div>
-              {/* PF-16: the tool's one reset, on the title row, from the first keystroke. */}
-              {(simPrompt || simHistory.length || simSituation.trim()) ? (
-                <button onClick={() => { setSimPrompt(null); setSimHistory([]); setSimSituation(''); }} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
-                  ↺ {t('md_sim_new_scenario')}
+              {/* PF-16: the tool's one reset, on the title row, from the first
+                  keystroke. It used to be scoped to the practice simulator, so
+                  the main flow — pick a scenario, type, get an answer — had no
+                  way back at all. */}
+              {canReset ? (
+                <button onClick={handleReset} className={`${c.btnSecondary} px-3 py-1.5 rounded-lg text-xs font-semibold flex-shrink-0 whitespace-nowrap`}>
+                  ↺ {t('md_start_over')}
                 </button>
               ) : null}
             </div>
@@ -1518,8 +1568,8 @@ const MoneyDiplomat = ({ tool }) => {
                 </div>
               )}
 
-              <div className="flex items-center gap-2 pt-2">
-                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`relative ${((!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))) ? c.btnIdle : c.btnPrimary} px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2`}>
+              <div className="pt-2 space-y-2">
+                <button title={t('cmd_enter')} onClick={handleSubmit} disabled={loading || (!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))} className={`relative w-full ${((!situation.trim() && !['travel', 'gift', 'cultural'].includes(activeType))) ? c.btnIdle : c.btnPrimary} px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 min-h-[48px]`}>
                 {loading ? <span className="inline-block animate-spin">{tool?.icon ?? '💵'}</span> : <span>💸</span>}
                 {t('md_get_advice')}
                 {!loading && (
@@ -1529,7 +1579,7 @@ const MoneyDiplomat = ({ tool }) => {
                   </kbd>
                 )}
                 </button>
-                {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline`}>{t('md_back')}</button>}
+                {activeType && <button onClick={() => { setActiveType(null); setSituation(''); setError(''); }} className={`text-xs ${c.textMuteded} underline block`}>{t('md_back')}</button>}
               </div>
             </div>
           )}
